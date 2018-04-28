@@ -120,9 +120,11 @@ static int replicateSearch( const char *name )
     DbgAssert( name[0] != '$' );
 #endif
     for( i = 0 ; i < next_replicate ; i++ ) {
-         if( len == replicate[i].len ) {
-             if( strcmp( name, replicate[i].ptr ) == 0 ) return( i );
-         }
+        if( len == replicate[i].len ) {
+            if( strcmp( name, replicate[i].ptr ) == 0 ) {
+                return( i );
+            }
+        }
     }
     if( i < MAX_REPLICATE ) {
         replicate[i].len = len;
@@ -141,7 +143,8 @@ static uint_32 objNameHash( uint_32 h, char *s )
     for(;;) {
         /* ( h & ~0x0ffffff ) == 0 is always true here */
         c = *s;
-        if( c == 0 ) break;
+        if( c == 0 )
+            break;
         h = (h << 4) + c;
         g = h & ~0x0ffffff;
         h ^= g;
@@ -716,7 +719,8 @@ static void appendScopeMangling(// APPEND CLASS SCOPES
             appendStr( IN_NAME_SUFFIX );
             for(;;) {
                 next = scope->enclosing;
-                if( ScopeId( next ) != SCOPE_BLOCK ) break;
+                if( ScopeId( next ) != SCOPE_BLOCK )
+                    break;
                 scope = next;
                 DbgAssert( ScopeId( scope ) == SCOPE_BLOCK );
             }
@@ -728,7 +732,8 @@ static void appendScopeMangling(// APPEND CLASS SCOPES
             appendChar( IN_CLASS_DELIM );
             for(;;) {
                 curr = ScopeOrderedNext( stop, curr );
-                if( curr == NULL ) break;
+                if( curr == NULL )
+                    break;
                 appendTemplateParm( curr );
             }
             break;
@@ -866,7 +871,7 @@ static char* setMangling(       // SET FOR MANGLING
     setPrefix( last );
     save = strsave( VbufString( &mangled_name ) );
     VbufRewind( &mangled_name );
-    return save;
+    return( save );
 }
 
 static NAME retMangling(        // RETURN MANGLED NAME

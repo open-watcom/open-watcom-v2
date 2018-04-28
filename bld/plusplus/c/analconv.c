@@ -63,7 +63,7 @@ static unsigned get_ptr_cv(     // GET CONST/VOLATILE POINTED AT
             flags = 0;
         }
     }
-    return flags;
+    return( flags );
 }
 
 
@@ -266,7 +266,7 @@ static CNV_RETN diagnoseCommon( // DIAGNOSE A COMMON CONVERSION
     ConversionInfDisable();
     ConversionDiagnose( retn, expr, diagnosis );
     ConversionDiagLR( left, right );
-    return CNV_ERR;
+    return( CNV_ERR );
 }
 
 static bool convertCommonClass( // CONVERT TO COMMON TYPE, FROM CLASS
@@ -285,7 +285,7 @@ static bool convertCommonClass( // CONVERT TO COMMON TYPE, FROM CLASS
     switch( ctd ) {
     case CTD_NO :
         if( CastCommonClass( a_expr, diagnosis ) ) {
-            return true;
+            return( true );
         }
         /* fall through */
     case CTD_LEFT_AMBIGUOUS :
@@ -328,7 +328,7 @@ static bool convertCommonClass( // CONVERT TO COMMON TYPE, FROM CLASS
 static bool nodeMemberPtr(      // TEST IF NODE IS MEMB-PTR
     PTREE node )                // - NODE
 {
-    return NULL != MemberPtrType( TypeReferenced( node->type ) );
+    return( NULL != MemberPtrType( TypeReferenced( node->type ) ) );
 }
 
 

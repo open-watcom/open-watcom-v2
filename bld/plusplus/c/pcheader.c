@@ -237,7 +237,9 @@ static void dumpCheckData( char *include_file )
     for( ; ; ) {
         HFileListNext( buff );
         dumpFileString( buff );
-        if( buff[0] == '\0' ) break;
+        if( buff[0] == '\0' ) {
+            break;
+        }
     }
     src = SrcFileNotReadOnly( SrcFileWalkInit() );
     for( ; src != NULL; ) {
@@ -377,7 +379,7 @@ void PCHVerifyFile( void *handle )    // DEBUG -- verify handle ok
 long PCHSeek( long offset, int type )
 {
     lseek( pchFile, offset, type );
-    return tell( pchFile );
+    return( tell( pchFile ) );
 }
 #endif
 
@@ -732,7 +734,9 @@ static bool stalePCH( char *include_file )
             if( stringIsDifferent( buff1, buff2, WARN_PCH_CONTENTS_INCLUDE ) ) {
                 return( true );
             }
-            if( buff1[0] == '\0' ) break;
+            if( buff1[0] == '\0' ) {
+                break;
+            }
         }
     }
     for( ; *readFileString( buff1 ) != '\0'; ) {
@@ -757,7 +761,7 @@ static unsigned pchReadBuffer( unsigned left_check )
     if( left == -1 || left == left_check ) {
         fail();
     }
-    return left;
+    return( left );
 }
 
 static unsigned initialRead( void )
@@ -873,7 +877,7 @@ void *PCHRead( void *p, unsigned size )
     }
     memcpy( p, buff_ptr, size );
     pch_buff_cur = buff_ptr + aligned_size;
-    return retn;
+    return( retn );
 }
 
 void *PCHReadUnaligned( void *p, unsigned size )
@@ -896,7 +900,7 @@ void *PCHReadUnaligned( void *p, unsigned size )
     }
     memcpy( p, buff_ptr, size );
     pch_buff_cur = buff_ptr + size;
-    return retn;
+    return( retn );
 }
 
 static unsigned doReadUnsigned( void )
@@ -923,9 +927,9 @@ unsigned PCHReadUInt( void )
         p_value = (unsigned *)buff_ptr;
         pch_buff_cur = end;
         value = *p_value;
-        return value;
+        return( value );
     }
-    return doReadUnsigned();
+    return( doReadUnsigned() );
 }
 
 void *PCHReadCVIndexElement( cvinit_t *data )
@@ -967,10 +971,10 @@ unsigned PCHReadUIntUnaligned( void )
         p_value = (unsigned *)buff_ptr;
         pch_buff_cur = end;
         value = *p_value;
-        return value;
+        return( value );
     }
     PCHReadUnaligned( &value, sizeof( value ) );
-    return value;
+    return( value );
 }
 
 pch_status PCHReadVerify( void )

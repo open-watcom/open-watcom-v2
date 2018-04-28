@@ -95,7 +95,7 @@ static CNV_RETN conversionErr(  // ISSUE CONVERSION ERROR
 {
     PTreeErrorExpr( expr, msg_no );
     ConversionDiagnoseInf();
-    return CNV_ERR;
+    return( CNV_ERR );
 }
 
 
@@ -141,7 +141,7 @@ CNV_RETN ConversionDiagnose(    // DIAGNOSE RETURN FROM A CONVERSION
         break;
     DbgDefault( "ConversionDiagnose: unexpected 'retn' value" );
     }
-    return retn;
+    return( retn );
 }
 
 

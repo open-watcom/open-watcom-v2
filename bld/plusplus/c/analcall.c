@@ -88,7 +88,7 @@ PTREE NodeGetCallExpr(          // POINT AT CALL EXPRESSION
         }
         call_expr = expr;
     }
-    return call_expr;
+    return( call_expr );
 }
 
 
@@ -107,7 +107,7 @@ static PTREE makeCall(          // MAKE A CALL OR INDIRECT CALL
         node = VfunSetupCall( proc );
         node = NodeBinary( CO_CALL_EXEC_IND, node, args );
     }
-    return NodeSetType( node, type, PTF_MEANINGFUL | PTF_SIDE_EFF );
+    return( NodeSetType( node, type, PTF_MEANINGFUL | PTF_SIDE_EFF ) );
 }
 
 
@@ -119,7 +119,7 @@ PTREE NodeMakeCall(             // FABRICATE A FUNCTION CALL EXPRESSION
     DbgVerify( (PointerTypeEquivalent( type ) == NULL)
                == (PointerTypeEquivalent( SymFuncReturnType( proc ) ) == NULL)
              , "NodeMakeCall -- return type mismatch" );
-    return makeCall( NodeMakeCallee( proc ), type, args, true );
+    return( makeCall( NodeMakeCallee( proc ), type, args, true ) );
 }
 
 
@@ -202,7 +202,7 @@ static PTREE arg_fillout(       // FILL OUT A CONVERTED ARGUMENT
     right = arg->u.subtree[1];
     arg->type = right->type;
     arg->flags = (arg->flags & PTF_ARGS ) | right->flags;
-    return arg;
+    return( arg );
 }
 
 
@@ -211,7 +211,7 @@ static PTREE arg_finish(        // FINISH A CONVERTED VALUE
     PTREE arg )                 // - the argument node
 {
     arg->u.subtree[1] = converted;
-    return arg_fillout( arg );
+    return( arg_fillout( arg ) );
 }
 
 
@@ -257,14 +257,14 @@ static bool passStructOnStack(  // PASS A STRUCT/CLASS ON STACK
         if( right->op == PT_ERROR ) {
             arg->u.subtree[1] = right;
             PTreeErrorNode( arg );
-            return false;
+            return( false );
         }
     }
     arg_finish( right, arg );
     if( TypeHasSpecialFields( type ) ) {
         PTreeWarnExpr( arg, warning );
     }
-    return true;
+    return( true );
 }
 
 
@@ -469,14 +469,14 @@ static PTREE convertVaStart(    // CONVERT va_start function call
     PTREE right;                // - right operand
 
     if( alist->num_args != 3 ) {
-        return expr;
+        return( expr );
     }
     plist = TypeArgList( type );
     // va_list symbol
     arg = expr->u.subtree[1];
     if( ! arg_convert( arg, plist->type_list[0] ) ) {
         PTreeErrorNode( expr );
-        return expr;
+        return( expr );
     }
     // second argument -- must be parameter to current function
     // - here we check for symbol
@@ -486,7 +486,7 @@ static PTREE convertVaStart(    // CONVERT va_start function call
     if( right->op != PT_SYMBOL ) {
         if( ! canCoaxVAStartSym( &arg->u.subtree[1] ) ) {
             PTreeErrorExpr( expr, ERR_INVALID_VASTART_SYMBOL );
-            return expr;
+            return( expr );
         }
     }
     // third argument -- must be 0 or one
@@ -494,9 +494,9 @@ static PTREE convertVaStart(    // CONVERT va_start function call
     right = PTreeOp( &arg->u.subtree[1] );
     if( right->op != PT_INT_CONSTANT ) {
         PTreeErrorExpr( expr, ERR_INVALID_VASTART_SYMBOL );
-        return expr;
+        return( expr );
     }
-    return expr;
+    return( expr );
 }
 
 
@@ -547,7 +547,9 @@ static PTREE transformVaStart   // TRANSFORM TO CO_VASTART OPCODE
             arg_size = _RoundUp( arg_size, TARGET_PACKING );
         }
         offset += arg_size;
-        if( curr == pre_ellipsis_sym ) break;
+        if( curr == pre_ellipsis_sym ) {
+            break;
+        }
     }
     if( ScopeOrderedNext( stop, curr ) != NULL ) {
         PTreeErrorExpr( expr, ERR_INVALID_VASTART_SYMBOL );
@@ -562,7 +564,7 @@ static PTREE transformVaStart   // TRANSFORM TO CO_VASTART OPCODE
     }
     NodeFreeDupedExpr( expr );
     expr = NodeBinary( CO_VASTART, valist, NodeOffset( offset ) );
-    return expr;
+    return( expr );
 }
 #endif
 
@@ -626,9 +628,11 @@ static intrinsic_mapping* intrinsicMapping // GET INTRINSIC MAPPING
         }
         /* it would be nice to do a pointer compare but we would
            need to convert the strings to NAMEs first (AFS) */
-        if( strcmp( NameStr( name ), iname ) == 0 ) break;
+        if( strcmp( NameStr( name ), iname ) == 0 ) {
+            break;
+        }
     }
-    return curr;
+    return( curr );
 }
 
 
@@ -642,7 +646,7 @@ static PTREE insertArg(         // INSERT ARGUMENT BEFORE ARGUMENT SEQUENCE
         arg->u.subtree[0] = seq;
         seq = arg;
     }
-    return seq;
+    return( seq );
 }
 
 
@@ -660,7 +664,7 @@ static PTREE appendArg(         // APPEND ARGUMENT AFTER ARGUMENT SEQUENCE
            ; last = last->u.subtree[0] );
         last->u.subtree[0] = arg;
     }
-    return seq;
+    return( seq );
 }
 
 
@@ -689,7 +693,7 @@ PC_CALLIMPL PcCallImpl(         // OBTAIN PC CALL IMPLEMENTATION
             retn = CALL_IMPL_C;
         }
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -702,7 +706,7 @@ static PTREE insertRetnCopy(    // INSERT COPY OF RETURN ON STACK
         callexpr->flags |= PTF_MEMORY_EXACT;
         callexpr = NodeCopyClassObject( temp, callexpr );
     }
-    return callexpr;
+    return( callexpr );
 }
 
 
@@ -715,7 +719,7 @@ static PTREE insertCppRetnArg(  // INSERT C++ RETURN ARGUMENT
         retnnode->flags |= PTF_ARG_RETURN;
         arglist = insertArg( arglist, NodeArg( retnnode ) );
     }
-    return arglist;
+    return( arglist );
 }
 
 
@@ -732,7 +736,7 @@ static PTREE insertCppRetnCopy( // INSERT C++ RETURN COPY
         callnode->flags |= PTF_CLASS_RVREF;
         break;
     }
-    return callnode;
+    return( callnode );
 }
 
 
@@ -753,7 +757,7 @@ static PTREE insertCDtor(       // INSERT CDTOR NODE INTO CALL LIST
             PTreeFree( val );
         }
     }
-    return insertArg( seq, arg );
+    return( insertArg( seq, arg ) );
 }
 
 
@@ -795,7 +799,7 @@ PTREE CallArgsArrange(          // ARRANGE CALL ARGUMENTS
     }
     callnode->u.subtree[1] = arglist;
     callnode = insertCppRetnCopy( callnode, retnnode, return_kind );
-    return callnode;
+    return( callnode );
 }
 
 static void outputCallTriggeredWarning( PTREE expr, SYMBOL sym )
@@ -1147,7 +1151,7 @@ PTREE AnalyseCall(              // ANALYSIS FOR CALL
                 NodeFreeDupedExpr( this_node );
                 ArgListTempFree( alist, num_args );
                 PtListFree( ptlist, num_args );
-                return expr;
+                return( expr );
             }
         }
         if( NULL != TypeReference( type ) ) {
@@ -1193,7 +1197,7 @@ PTREE AnalyseCall(              // ANALYSIS FOR CALL
     }
     ArgListTempFree( alist, num_args );
     PtListFree( ptlist, num_args );
-    return expr;
+    return( expr );
 }
 
 PTREE AnalyseDtorCall(          // ANALYSIS FOR SPECIAL DTOR CALLS
@@ -1233,7 +1237,7 @@ PTREE AnalyseDtorCall(          // ANALYSIS FOR SPECIAL DTOR CALLS
         expr->u.subtree[0] = VfnDecorateCall( expr->u.subtree[0], dtor_sym );
     }
     expr->flags |= PTF_MEANINGFUL | PTF_SIDE_EFF;
-    return expr;
+    return( expr );
 }
 
 #if 0 // not ref'ed
@@ -1263,6 +1267,6 @@ PTREE MakeDeleteCall(   // MAKE A CALL TO 'OPERATOR DELETE'
                           , NULL
                           , NULL
                           , NULL );
-    return expr;
+    return( expr );
 }
 #endif

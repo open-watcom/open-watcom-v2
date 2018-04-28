@@ -90,7 +90,7 @@ char *DbgSymNameFull(           // GET FULL SYMBOL NAME
 const char *DbgSymNameShort(    // GET Short SYMBOL NAME
     SYMBOL sym )                // - symbol
 {
-    return FEName( sym );
+    return( FEName( sym ) );
 }
 
 
@@ -1452,12 +1452,18 @@ void DumpMemberPtrInfo(         // DUMP MEMBER_PTR_CAST STRUCTURE
 
     flags[0] = '\0';
     fptr = flags;
-    if( inf->safe )           fptr = stxpcpy( fptr, "safe," );
-    if( inf->init_conv )      fptr = stxpcpy( fptr, "init_conv," );
-    if( inf->delta_reqd )     fptr = stxpcpy( fptr, "delta_reqd," );
-    if( inf->mapping_reqd )   fptr = stxpcpy( fptr, "mapping_reqd," );
-    if( inf->test_reqd )      fptr = stxpcpy( fptr, "test_reqd," );
-    if( inf->single_mapping ) fptr = stxpcpy( fptr, "single_mapping," );
+    if( inf->safe )
+        fptr = stxpcpy( fptr, "safe," );
+    if( inf->init_conv )
+        fptr = stxpcpy( fptr, "init_conv," );
+    if( inf->delta_reqd )
+        fptr = stxpcpy( fptr, "delta_reqd," );
+    if( inf->mapping_reqd )
+        fptr = stxpcpy( fptr, "mapping_reqd," );
+    if( inf->test_reqd )
+        fptr = stxpcpy( fptr, "test_reqd," );
+    if( inf->single_mapping )
+        fptr = stxpcpy( fptr, "single_mapping," );
     --fptr;
     *fptr = '\0';
     printf( "MEMBER_PTR_CAST" F_BADDR

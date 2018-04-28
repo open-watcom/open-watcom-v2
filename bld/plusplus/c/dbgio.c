@@ -113,7 +113,7 @@ int DbgRedirectEnd              // COMPLETE REDIRECTION
     } else {
         reDirEnd();
     }
-    return retn;
+    return( retn );
 }
 
 void DbgLogBeg                  // START LOGGING
@@ -131,5 +131,5 @@ int DbgLogEnd                   // END LOGGING
     if( fstk_index > 0 ) {
         reDirEnd();
     }
-    return fstk_index;
+    return( fstk_index );
 }

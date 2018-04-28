@@ -278,7 +278,7 @@ static cg_name directRef(       // DO DIRECT REFERENCE IF POSSIBLE
     } else {
         op = NULL;
     }
-    return op;
+    return( op );
 }
 
 
@@ -292,7 +292,7 @@ cg_name IbpFetchRef(            // FETCH A REFERENCE PARAMETER
     if( NULL == op ) {
         op = CgFetchType( CgSymbol( sym ), CgGetCgType( sym->sym_type ) );
     }
-    return op;
+    return( op );
 }
 
 
@@ -314,7 +314,7 @@ static SCOPE scopeForSymType(   // GET SCOPE FOR TYPE OF SYMBOL
     if( ptype != NULL ) {
         type = ptype;
     }
-    return TypeScope( ClassTypeForType( type ) );
+    return( TypeScope( ClassTypeForType( type ) ) );
 }
 
 
@@ -385,7 +385,7 @@ static target_offset_t offsetOfBase( // GET OFFSET TO BASE
         DbgVerify( inf.vbase_bound != NULL, "offsetOfBase -- no bound base" );
         exact_orig -= inf.vbase_orig->delta - inf.vbase_bound->delta;
     }
-    return exact_orig;
+    return( exact_orig );
 }
 
 
@@ -411,7 +411,7 @@ void IbpDefineVbOffset(         // DEFINE OFFSET FOR BOUND VB-REF PARAMETER
 static cg_type typeVbVfPtr(     // MAKE CG TYPE FOR VB/VF PTR
     SYMBOL sym )                // - base symbol
 {
-    return CgExprType( MakePointerTo( sym->sym_type ) );
+    return( CgExprType( MakePointerTo( sym->sym_type ) ) );
 }
 
 
@@ -430,7 +430,7 @@ static cg_name fetchVbVfPtr(    // FETCH VB/VF PTR
     vfvbtbl_type = CgExprType( vfvbtbl_cpp );
     *a_type = vfvbtbl_type;
     op = CgFetchType( op, vfvbtbl_type );
-    return op;
+    return( op );
 }
 
 
@@ -470,7 +470,7 @@ cg_name IbpFetchVbRef(          // MAKE A REFERENCE FROM A BOUND PARAMETER
         op = CgOffsetExpr( op, delta, vbptr_type );
         op = CgComma( temp, op, vbptr_type );
     }
-    return op;
+    return( op );
 }
 
 
@@ -560,7 +560,7 @@ cg_name IbpFetchVfRef(          // FETCH A VIRTUAL FUNCTION ADDRESS
                            , MakeVFTableFieldType( true )
                            , &vfptr_type );
     }
-    return expr;
+    return( expr );
 }
 
 

@@ -127,7 +127,8 @@ static void build_file_nesting  // DUMP OUT THE INCLUDE NESTING TRACEBACK
             }
             for( src_file = err_locn.src_file; ; ) {
                 src_file = SrcFileIncluded( src_file, &line );
-                if( src_file == NULL ) break;
+                if( src_file == NULL )
+                    break;
                 fname = fileName( src_file );
                 MsgDisplayArgs( IDEMSGSEV_NOTE, INF_FILE_NEST, fname, line );
             }
@@ -206,7 +207,7 @@ static SYMBOL msgBuild(         // BUILD ERROR MESSAGE
 
     CBanner();
     doDecodeMessage( msgbuf, msgnum );
-    return FormatMsg( pbuf, msgbuf, args );
+    return( FormatMsg( pbuf, msgbuf, args ) );
 }
 
 
@@ -229,7 +230,7 @@ static IDEBool IDEAPI idePrt    // PRINT FOR IDE
         fputs( buffer, err_file );
         fputc( '\n', err_file );
     }
-    return 0;
+    return( 0 );
 }
 
 
@@ -653,7 +654,7 @@ static msg_status_t doError(    // ISSUE ERROR
             if( flag.print_err && ( level == WLEVEL_ERROR ) ) {
                 internalErrCount++;
             }
-            return MS_NULL;
+            return( MS_NULL );
         } else if( ErrLimit == -1 ) {
             /* unlimited messages */
             flag.too_many = false;
@@ -687,7 +688,7 @@ static msg_status_t doError(    // ISSUE ERROR
     }
     /* turn off SetErrLoc setting */
     err_locn.src_file = NULL;
-    return retn;
+    return( retn );
 }
 
 msg_status_t CErr(              // ISSUE ERROR
@@ -720,7 +721,7 @@ msg_status_t CWarnDontCount(    // ISSUE WARNING BUT DON'T COUNT IT
 msg_status_t CErr1(             // ISSUE ERROR (NO PARAMETERS)
     MSG_NUM msgnum )            // - message number
 {
-    return CErr( msgnum );
+    return( CErr( msgnum ) );
 }
 
 
@@ -728,7 +729,7 @@ msg_status_t CErr2(             // ISSUE ERROR (int PARAMETER)
     MSG_NUM msgnum,             // - message number
     int p1 )                    // - parameter
 {
-    return CErr( msgnum, p1 );
+    return( CErr( msgnum, p1 ) );
 }
 
 
@@ -736,7 +737,7 @@ msg_status_t CErr2p(            // ISSUE ERROR (char* PARAMETER)
     MSG_NUM msgnum,             // - message number
     void const *p1 )            // - parameter
 {
-    return CErr( msgnum, p1 );
+    return( CErr( msgnum, p1 ) );
 }
 
 void CFatal(                    // ISSUE ERROR AND COMMIT SUICIDE
@@ -781,7 +782,7 @@ unsigned CErrUnsuppress(
 {
     unsigned val = suppressCount;
     suppressCount = 0;
-    return val;
+    return( val );
 }
 
 bool CErrSuppressedOccurred(
@@ -980,7 +981,7 @@ void DefAddPrototype(           // ADD PROTOTYPE FOR SYMBOL TO .DEF FILE
 unsigned ErrPCHVersion(         // PROVIDE A VERSION NUMBER FOR THE ERROR MESSAGES
     void )
 {
-    return sizeof( msg_level );
+    return( sizeof( msg_level ) );
 }
 
 

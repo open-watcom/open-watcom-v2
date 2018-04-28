@@ -52,7 +52,7 @@ static PTREE set_meaningful_side_effects(   // SET MEANINGFUL, SIDE_EFFECTS
         node->flags |= PTreeEffFlags( node->u.subtree[1] )
                      | PTreeEffFlags( node->u.subtree[0] );
     }
-    return node;
+    return( node );
 }
 
 
@@ -63,7 +63,7 @@ bool NodeIsUnaryOp(             // TEST IF UNARY OPERATION OF GIVEN TYPE
 {
     DbgVerify( (node->cgop == operation) ? (node->op==PT_UNARY) : 1
              , "NodeIsUnaryOp -- node/operator mismatch" );
-    return ___NodeIsOp( node, operation );
+    return( ___NodeIsOp( node, operation ) );
 }
 
 
@@ -73,7 +73,7 @@ bool NodeIsBinaryOp(            // TEST IF BINARY OPERATION OF GIVEN TYPE
 {
     DbgVerify( (node->cgop == operation) ? (node->op==PT_BINARY) : 1
              , "NodeIsBinaryOp -- node/operator mismatch" );
-    return ___NodeIsOp( node, operation );
+    return( ___NodeIsOp( node, operation ) );
 }
 #endif
 
@@ -83,7 +83,7 @@ PTREE NodeBinary(               // MAKE A BINARY NODE
     PTREE left,                 // - left operand
     PTREE right )               // - right operand
 {
-    return set_meaningful_side_effects( PTreeBinary( op, left, right ) );
+    return( set_meaningful_side_effects( PTreeBinary( op, left, right ) ) );
 }
 
 
@@ -91,7 +91,7 @@ PTREE NodeUnary(                // MAKE A UNARY NODE
     CGOP op,                    // - operator
     PTREE expr )                // - operand
 {
-    return set_meaningful_side_effects( PTreeUnary( op, expr ) );
+    return( set_meaningful_side_effects( PTreeUnary( op, expr ) ) );
 }
 
 
@@ -106,7 +106,7 @@ PTREE NodeUnaryCopy(            // MAKE A UNARY NODE, COPY ATTRIBUTES
     node->flags = expr->flags;
     node->flags &= ~PTF_NEVER_PROPPED;
     node = PTreeCopySrcLocation( node, expr );
-    return node;
+    return( node );
 }
 
 
@@ -119,7 +119,7 @@ static PTREE nodeCommaPropogate(// PROPOGATE DATA FOR COMMA OPERATOR
     node = PTreeCopySrcLocation( node, right );
     node->type = right->type;
     node->flags = right->flags;
-    return set_meaningful_side_effects( node );
+    return( set_meaningful_side_effects( node ) );
 }
 
 
@@ -155,7 +155,7 @@ static PTREE fixupTraverse(     // CLEANUP before freeing
         NodeFreeSearchResult( node );
         break;
     }
-    return node;
+    return( node );
 }
 
 
@@ -200,7 +200,7 @@ PTREE NodePruneTop(             // PRUNE TOP OPERAND NODE
     PTREE dlt;                  // - a node to be deleted
 
     if( curr == NULL )
-        return curr;
+        return( curr );
     last = NULL;
     while( NodeIsBinaryOp( curr, CO_COMMA ) ) {
         next = curr->u.subtree[1];
@@ -279,28 +279,28 @@ static PTREE pruneSubtree(      // PRUNE A SUBTREE (KEEP COMMA'D EXPR'S)
         *ref = expr;
         expr = dlt;
     }
-    return expr;
+    return( expr );
 }
 
 
 PTREE NodePruneLeft(            // PRUNE LEFT OPERAND
     PTREE expr )                // - expression
 {
-    return pruneSubtree( expr, &expr->u.subtree[0] );
+    return( pruneSubtree( expr, &expr->u.subtree[0] ) );
 }
 
 
 PTREE NodePruneRight(           // PRUNE RIGHT OPERAND
     PTREE expr )                // - expression
 {
-    return pruneSubtree( expr, &expr->u.subtree[1] );
+    return( pruneSubtree( expr, &expr->u.subtree[1] ) );
 }
 
 
 PTREE NodePruneLeftTop(         // PRUNE LEFT, THEN TOP
     PTREE expr )                // - expression to be pruned
 {
-    return NodePruneTop( NodePruneLeft( expr ) );
+    return( NodePruneTop( NodePruneLeft( expr ) ) );
 }
 
 
@@ -331,7 +331,7 @@ PTREE NodeReplace(              // REPLACE EXPRESSION WITH ANOTHER
         *ref = replace;
         replace = old;
     }
-    return replace;
+    return( replace );
 }
 
 
@@ -344,7 +344,7 @@ PTREE NodeReplaceTop(           // REPLACE TOP EXPRESSION WITH ANOTHER
         old = NodePruneTop( old );
         replace = NodeComma( old, replace );
     }
-    return replace;
+    return( replace );
 }
 
 
@@ -356,7 +356,7 @@ static PTREE nodeMakeConvert(   // MAKE A CONVERSION NODE
 #define PTF_CONVERT ( PTF_SIDE_EFF     \
                     | PTF_MEANINGFUL   \
                     | PTF_MEMORY_EXACT \
-                    | PTF_PTR_NONZERO  )
+                    | PTF_PTR_NONZERO )
 
     PTREE orig;                 // - original node
     PTREE cast;                 // - cast node
@@ -380,7 +380,7 @@ static PTREE nodeMakeConvert(   // MAKE A CONVERSION NODE
         }
     }
     expr = FoldBinary( expr );
-    return expr;
+    return( expr );
 
 #undef PTF_CONVERT
 #else
@@ -398,7 +398,7 @@ static PTREE nodeMakeConvert(   // MAKE A CONVERSION NODE
         }
     }
     expr = FoldBinary( expr );
-    return expr;
+    return( expr );
 #endif
 }
 
@@ -411,7 +411,7 @@ PTREE NodeConvert(              // MAKE A CONVERSION NODE IF REQ'D
       ||( ( expr->flags & PTF_LVALUE ) && ( NULL == TypeReference( type ) ) ) ) ) {
         expr = nodeMakeConvert( type, expr );
     }
-    return expr;
+    return( expr );
 }
 
 
@@ -427,7 +427,7 @@ PTREE NodeConvertFlags(         // MAKE A CONVERSION NODE WITH FLAGS, IF REQ'D
     }
     expr = NodeConvert( type, expr );
     expr = NodeSetType( expr, type, flags );
-    return expr;
+    return( expr );
 }
 
 
@@ -436,7 +436,7 @@ PTREE NodeSetBooleanType(       // SET NODE TO TYPE OF A REL-OP EXPR
 {
     expr->flags |= PTF_BOOLEAN;
     expr->type = GetBasicType( TYP_BOOL );
-    return expr;
+    return( expr );
 }
 
 
@@ -448,10 +448,10 @@ PTREE NodeCompareToZero(        // MAKE A COMPARE-TO-ZERO NODE, IF REQ'D
     TYPE type;                  // - expression type, unmodified
 
     if( expr->flags & PTF_BOOLEAN ) {
-        return expr;
+        return( expr );
     }
     if( PTreeOpFlags( expr ) & PTO_BOOLEAN ) {
-        return expr;
+        return( expr );
     }
     type = TypeReferenced( expr->type );
     type = TypedefModifierRemoveOnly( type );
@@ -475,7 +475,7 @@ PTREE NodeCompareToZero(        // MAKE A COMPARE-TO-ZERO NODE, IF REQ'D
         expr = NodeSetBooleanType( expr );
         expr = ConvertBoolean( expr );
     }
-    return expr;
+    return( expr );
 }
 
 static CNV_DIAG diagConvertToBool = // DIAGNOSIS FOR CONVERT-TO-BOOL NODE
@@ -494,10 +494,10 @@ PTREE NodeConvertToBool(        // MAKE A CONVERT-TO-BOOL NODE, IF REQ'D
     TYPE type;                  // - expression type, unmodified
 
     if( expr->flags & PTF_BOOLEAN ) {
-        return expr;
+        return( expr );
     }
     if( PTreeOpFlags( expr ) & PTO_BOOLEAN ) {
-        return expr;
+        return( expr );
     }
     type = TypeReferenced( expr->type );
     type = TypedefModifierRemoveOnly( type );
@@ -513,7 +513,7 @@ PTREE NodeConvertToBool(        // MAKE A CONVERT-TO-BOOL NODE, IF REQ'D
         expr = PTreeCopySrcLocation( expr, operand );
         expr = AnalyseOperator( expr );
     }
-    return expr;
+    return( expr );
 }
 
 
@@ -532,7 +532,7 @@ PTREE NodeRemoveCasts(          // REMOVE CASTING FROM NODE
         }
     }
 
-    return node;
+    return( node );
 }
 
 
@@ -541,7 +541,7 @@ PTREE NodeRemoveCastsCommas(    // REMOVE COMMAS, DTORING, CASTING FROM NODE
 {
     PTREE not_used;             // - dtoring, not used
 
-    return *NodeReturnSrc( &node, &not_used );
+    return( *NodeReturnSrc( &node, &not_used ) );
 }
 
 
@@ -565,7 +565,7 @@ PTREE NodeSymbolNoRef(          // FILL IN NODE FOR A SYMBOL, NO REF. SETTING
             expr->cgop = CO_NAME_CONVERT;
         }
     }
-    return expr;
+    return( expr );
 }
 
 
@@ -575,7 +575,7 @@ PTREE NodeSymbol(               // CONVERT NODE TO BE SYMBOL
     SEARCH_RESULT *result )     // - search result
 {
     sym = SymMarkRefed( sym );
-    return NodeSymbolNoRef( expr, sym, result );
+    return( NodeSymbolNoRef( expr, sym, result ) );
 }
 
 
@@ -587,7 +587,7 @@ PTREE NodeSymbolCallee(         // MAKE SYMBOL FOR A CALLEE
     if( ! SymIsVirtual( sym ) ) {
         sym = SymMarkRefed( sym );
     }
-    return NodeSymbolNoRef( expr, sym, result );
+    return( NodeSymbolNoRef( expr, sym, result ) );
 }
 
 
@@ -598,7 +598,7 @@ PTREE MakeNodeSymbol(           // MAKE PT_SYMBOL NODE FROM SYMBOL
     if( NULL != StructType( sym->sym_type ) ) {
         sym->flag |= PTF_MEMORY_EXACT;
     }
-    return NodeSymbolNoRef( NULL, sym, NULL );
+    return( NodeSymbolNoRef( NULL, sym, NULL ) );
 }
 
 
@@ -608,7 +608,7 @@ PTREE NodeMakeCallee(           // MAKE A CALLEE NODE
     if( ! SymIsVirtual( func ) ) {
         func = SymMarkRefed( func );
     }
-    return NodeSymbolNoRef( NULL, func, NULL );
+    return( NodeSymbolNoRef( NULL, func, NULL ) );
 }
 
 
@@ -646,7 +646,7 @@ PTREE NodeGetConstantNode(      // RETURN CONSTANT-INT NODE
         node = NULL;
         break;
     }
-    return node;
+    return( node );
 }
 
 
@@ -807,7 +807,7 @@ bool NodeIsNullptr( PTREE node )
         return( false );
     }
 
-    return ( node->op == PT_PTR_CONSTANT );
+    return( node->op == PT_PTR_CONSTANT );
 }
 
 
@@ -820,7 +820,7 @@ PTREE NodeFromConstSym(         // BUILD CONSTANT NODE FROM CONSTANT SYMBOL
     con = SymConstantValue( con, &icon );
     retn = PTreeInt64Constant( icon.u.value, TYP_SLONG64 );
     retn->type = SymUnmodifiedType( con );
-    return retn;
+    return( retn );
 }
 
 
@@ -837,10 +837,10 @@ void NodeFreeSearchResult(      // FREE SEARCH_RESULT FROM A NODE
 static bool nodeIsAssignment(   // TEST IF NODE IS "=" or initialization
     PTREE node )                // - node
 {
-    return NodeIsBinaryOp( node, CO_EQUAL )
+    return( NodeIsBinaryOp( node, CO_EQUAL )
         || NodeIsBinaryOp( node, CO_INIT )
         || NodeIsBinaryOp( node, CO_EQUAL_REF )
-        || NodeIsBinaryOp( node, CO_INIT_REF );
+        || NodeIsBinaryOp( node, CO_INIT_REF ) );
 }
 
 
@@ -884,7 +884,7 @@ static PTREE nodeSimplifyComma( // REMOVE CO_TRASH TO GET RVALUE
             }
         }
     }
-    return node;
+    return( node );
 }
 
 
@@ -908,7 +908,7 @@ PTREE NodeStripPoints(          // STRIP * APPLIED TO & OPERATION
         PTreeFree( orig );
         PTreeFree( left );
     }
-    return expr;
+    return( expr );
 }
 
 
@@ -943,7 +943,7 @@ static PTREE nodeDoFetch(       // FETCH A VALUE
     fet = set_meaningful_side_effects( fet );
     PTreeCopySrcLocation( fet, old );
     curr->flags &= PTF_FETCH;
-    return curr;
+    return( curr );
 }
 
 
@@ -951,14 +951,14 @@ static PTREE nodeDoFetchRef(    // DO A REFERENCE-PARAMETER FETCH
     PTREE node )                // - the reference parameter
 {
     node->cgop = CO_NAME_PARM_REF;
-    return nodeDoFetch( node, CO_RARG_FETCH );
+    return( nodeDoFetch( node, CO_RARG_FETCH ) );
 }
 
 
 PTREE NodeFetch(                // FETCH A VALUE
     PTREE curr )                // - node to be transformed
 {
-    return NodeStripPoints( nodeDoFetch( curr, CO_FETCH ) );
+    return( NodeStripPoints( nodeDoFetch( curr, CO_FETCH ) ) );
 }
 
 
@@ -976,7 +976,7 @@ static PTREE nodeRvalueArray(   // CONVERT ARRAY TO POINTER
                    , SCOPE_FUNCTION ) ) ) {
         curr = NodeFetch( curr );
     }
-    return curr;
+    return( curr );
 }
 
 
@@ -1018,7 +1018,7 @@ static PTREE nodeRvalueFetch(   // FETCH RVALUE IF REQUIRED
             break;
         }
     }
-    return curr;
+    return( curr );
 }
 
 
@@ -1111,7 +1111,7 @@ PTREE NodeRvalue(               // GET RVALUE, IF LVALUE
     } else if( NULL != ArrayType( node_type ) ) {
         curr = nodeRvalueArray( curr );
     }
-    return curr;
+    return( curr );
 }
 
 
@@ -1133,21 +1133,21 @@ static PTREE nodeRefedRvalue(   // PROPOGATE RVALUE RESULT
         start->flags = mod->flags;
         start->type = mod->type;
     }
-    return mod;
+    return( mod );
 }
 
 
 PTREE NodeRvalueLeft(           // SET RVALUE ON LEFT
     PTREE node )                // - current node
 {
-    return nodeRefedRvalue( &node->u.subtree[0] );
+    return( nodeRefedRvalue( &node->u.subtree[0] ) );
 }
 
 
 PTREE NodeRvalueRight(          // SET RVALUE ON RIGHT
     PTREE node )                // - current node
 {
-    return nodeRefedRvalue( &node->u.subtree[1] );
+    return( nodeRefedRvalue( &node->u.subtree[1] ) );
 }
 
 
@@ -1179,21 +1179,21 @@ PTREE NodeRvalueExact(          // SET RVALUE (EXACT)
         node->type = exact_type;
         break;
     }
-    return node;
+    return( node );
 }
 
 
 PTREE NodeRvalueExactLeft(      // SET RVALUE (EXACT) ON LEFT
     PTREE node )                // - current node
 {
-    return NodeRvalueExact( nodeRefedRvalue( &node->u.subtree[0] ) );
+    return( NodeRvalueExact( nodeRefedRvalue( &node->u.subtree[0] ) ) );
 }
 
 
 PTREE NodeRvalueExactRight(     // SET RVALUE (EXACT) ON RIGHT
     PTREE node )                // - current node
 {
-    return NodeRvalueExact( nodeRefedRvalue( &node->u.subtree[1] ) );
+    return( NodeRvalueExact( nodeRefedRvalue( &node->u.subtree[1] ) ) );
 }
 
 
@@ -1223,7 +1223,7 @@ PTREE NodeIntegralConstant      // BUILD AN INTEGRAL NODE FOR A VALUE
     }
     retn = PTreeIntConstant( val, id );
     retn->type = type;
-    return retn;
+    return( retn );
 }
 
 
@@ -1233,7 +1233,7 @@ PTREE NodeOffset(               // BUILD CONSTANT NODE FOR AN OFFSET
     TYPE otype;
 
     otype = GetBasicType( TYP_UINT );
-    return NodeIntegralConstant( offset, otype );
+    return( NodeIntegralConstant( offset, otype ) );
 }
 
 
@@ -1247,14 +1247,14 @@ PTREE NodeArgument(             // MAKE AN ARGUMENT NODE
     arg->type = right->type;
     arg->flags = right->flags;
     arg = PTreeCopySrcLocation( arg, right );
-    return arg;
+    return( arg );
 }
 
 
 PTREE NodeArg(                  // MAKE A SINGLE ARGUMENT NODE
     PTREE argval )              // - value for argument
 {
-    return NodeArgument( NULL, argval );
+    return( NodeArgument( NULL, argval ) );
 }
 
 
@@ -1274,7 +1274,7 @@ PTREE NodeArguments(            // MAKE A LIST OF ARGUMENTS
         argument = va_arg( args, PTREE );
     }
     va_end( args );
-    return expr;
+    return( expr );
 }
 
 
@@ -1307,7 +1307,7 @@ static PTREE makeDupNode(       // DUPLICATE THE EXPRESSION
     node = PTreeDupExpr( old );
     node->u.dup.node = node_expr;
     node_expr->u.dup.node = node;
-    return node;
+    return( node );
 }
 
 
@@ -1340,7 +1340,7 @@ PTREE NodeDupExpr(              // DUPLICATE EXPRESSION
             break;
         }
     }
-    return node;
+    return( node );
 }
 
 
@@ -1393,7 +1393,7 @@ PTREE NodeComma(                // MAKE A COMMA PTREE NODE
         node = NodeBinary( CO_COMMA, left, right );
         node = nodeCommaPropogate( node );
     }
-    return node;
+    return( node );
 }
 
 
@@ -1416,7 +1416,7 @@ PTREE NodeCommaIfSideEffect(    // MAKE A COMMA PTREE NODE (IF LHS HAS side-effe
             node = right;
         }
     }
-    return node;
+    return( node );
 }
 
 
@@ -1429,7 +1429,7 @@ TYPE NodeSetReference(          // MAKE AN LVALUE IF REFERENCE TYPE
             node->flags |= PTF_LVALUE;
         }
     }
-    return type;
+    return( type );
 }
 
 
@@ -1458,7 +1458,7 @@ PTREE NodeThis(                 // MAKE A "THIS" NODE
             node->flags |= PTF_MEMORY_EXACT;
         }
     }
-    return node;
+    return( node );
 }
 
 PTREE NodeThisCopyLocation(     // MAKE A RVALUE "THIS" NODE WITH LOCATION
@@ -1470,7 +1470,7 @@ PTREE NodeThisCopyLocation(     // MAKE A RVALUE "THIS" NODE WITH LOCATION
     if( this_node != NULL && use_locn != NULL ) {
         this_node = PTreeCopySrcLocation( this_node, use_locn );
     }
-    return this_node;
+    return( this_node );
 }
 
 
@@ -1486,7 +1486,7 @@ PTREE NodeCDtorExtra(           // MAKE A CTOR/DTOR EXTRA PARM NODE
     node->u.symcg.symbol = NULL;
     node->u.symcg.result = NULL;
     node = NodeRvalue( node );
-    return node;
+    return( node );
 }
 
 
@@ -1501,7 +1501,7 @@ static PTREE assignNode(        // CREATE ASSIGNMENT NODE
     expr->type = tgt->type;
     expr->flags |= PTF_LVALUE | PTF_LV_CHECKED;
     expr = PTreeCopySrcLocation( expr, src );
-    return expr;
+    return( expr );
 }
 
 
@@ -1509,7 +1509,7 @@ PTREE NodeAssign(               // CREATE ASSIGNMENT NODE FOR VALUE
     PTREE tgt,                  // - target
     PTREE src )                 // - source
 {
-    return assignNode( tgt, src, CO_EQUAL );
+    return( assignNode( tgt, src, CO_EQUAL ) );
 }
 
 
@@ -1517,14 +1517,14 @@ PTREE NodeAssignRef(            // CREATE ASSIGNMENT NODE FOR REFERENCE
     PTREE tgt,                  // - target
     PTREE src )                 // - source
 {
-    return assignNode( tgt, src, CO_EQUAL_REF );
+    return( assignNode( tgt, src, CO_EQUAL_REF ) );
 }
 
 
 PTREE NodeTemporary(            // CREATE TEMPORARY AND NODE FOR IT
     TYPE type )                 // - type of temporary
 {
-    return MakeNodeSymbol( TemporaryAlloc( type ) );
+    return( MakeNodeSymbol( TemporaryAlloc( type ) ) );
 }
 
 
@@ -1557,7 +1557,7 @@ PTREE NodeAssignTemporaryNode(  // ASSIGN NODE TO A TEMPORARY NODE
         expr->flags |= PTF_MEMORY_EXACT;
         expr->locn = temp_node->locn;
     }
-    return expr;
+    return( expr );
 }
 
 
@@ -1565,7 +1565,7 @@ PTREE NodeAssignTemporary(      // ASSIGN NODE TO A TEMPORARY
     TYPE type,                  // - type of temporary
     PTREE expr )                // - the expression to be assigned to temp
 {
-    return NodeAssignTemporaryNode( type, expr, NodeTemporary( type ) );
+    return( NodeAssignTemporaryNode( type, expr, NodeTemporary( type ) ) );
 }
 
 
@@ -1576,7 +1576,7 @@ PTREE NodeDone(                 // MAKE A NODE-DONE
         expr = nodeSimplifyComma( expr );
         expr = NodeUnaryCopy( CO_EXPR_DONE, expr );
     }
-    return expr;
+    return( expr );
 }
 
 
@@ -1604,7 +1604,7 @@ PTREE NodeFetchReference(       // FETCH A REFERENCE, IF REQ'D
         expr->type = type_refd;
         expr->flags |= PTF_LVALUE;
     }
-    return expr;
+    return( expr );
 }
 
 
@@ -1622,7 +1622,7 @@ PTREE NodeCopyClassObject(      // COPY OBJECT W/O CTOR
                  | PTF_SIDE_EFF
                  | PTF_MEANINGFUL
                  | PTF_MEMORY_EXACT;
-    return expr;
+    return( expr );
 }
 
 
@@ -1637,7 +1637,7 @@ PTREE CallArgumentExactCtor(    // GET EXACT CTOR ARG., IF REQUIRED
     } else {
         arg = NULL;
     }
-    return arg;
+    return( arg );
 }
 
 
@@ -1652,7 +1652,7 @@ PTREE NodeArgumentExactCtor(    // ADD EXACT CTOR ARG., IF REQUIRED
         arg->u.subtree[0] = args;
         args = arg;
     }
-    return args;
+    return( args );
 }
 
 
@@ -1678,7 +1678,7 @@ static addr_func_t checkFunction(   // CHECK IF FUNCTION
     } else {
         retn = ADDR_FN_NONE;
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -1730,7 +1730,7 @@ addr_func_t NodeAddrOfFun(      // GET PTREE FOR &FUN (FUN IS OVERLOADED)
             break;
         }
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -1750,7 +1750,7 @@ bool NodePtrNonZero(            // TEST IF A PTR NODE IS ALWAYS NON-ZERO
     } else {
         non_zero = false;
     }
-    return non_zero;
+    return( non_zero );
 }
 
 
@@ -1767,7 +1767,7 @@ PTREE NodeTestExpr(             // GENERATE A TERNARY TEST EXPRESSION
     expr->type = type;
     expr = NodeBinary( CO_QUESTION, b_expr, expr );
     expr->type = type;
-    return expr;
+    return( expr );
 }
 
 
@@ -1780,7 +1780,7 @@ TYPE NodeType(                  // GET TYPE FOR A NODE
     if( (node->flags & PTF_LVALUE) && ( NULL != type ) && ( NULL == TypeReference( type ) ) ) {
         type = MakeReferenceTo( type );
     }
-    return type;
+    return( type );
 }
 
 
@@ -1817,7 +1817,7 @@ PTREE NodeDtorExpr(             // MARK FOR DTOR'ING AFTER EXPRESSION
             expr->flags = orig->flags;
         }
     }
-    return expr;
+    return( expr );
 }
 
 
@@ -1827,7 +1827,7 @@ PTREE NodeSetMemoryExact(       // SET PTF_MEMORY_EXACT, IF REQ'D
     if( StructType( expr->type ) != NULL ) {
         expr->flags |= PTF_MEMORY_EXACT;
     }
-    return expr;
+    return( expr );
 }
 
 
@@ -1840,7 +1840,7 @@ PTREE NodeBasedStr(             // BUILD EXPRESSION FOR TF1_BASED_STRING TYPE
     segid.uvalue = SegmentFindBased( expr_type );
     node = PTreeIc( IC_SEGOP_SEG, segid );
     node->type = TypeSegmentShort();
-    return node;
+    return( node );
 }
 
 
@@ -1898,7 +1898,7 @@ PTREE NodeActualNonOverloaded(  // POSITION OVER DEFAULT-ARG SYMBOLS
     func = ActualNonOverloadedFunc( node->u.symcg.symbol, node->u.symcg.result );
     node->u.symcg.symbol = func;
     node->type = func->sym_type;
-    return node;
+    return( node );
 }
 
 
@@ -1922,7 +1922,7 @@ PTREE* NodeReturnSrc(           // GET ADDR OF SOURCE OPERAND RETURNED
             break;
         }
     }
-    return src;
+    return( src );
 }
 
 
@@ -1935,7 +1935,8 @@ static PTREE* getTempSrc(       // GET ADDR OF SOURCE OPERAND FOR TEMPORARY
     *dtor = NULL;
     for( node = *src; ; ) {
         if( NodeIsBinaryOp( node, CO_CONVERT ) ) {
-            if( node->u.subtree[0]->cgop == CO_USER_CAST ) break;
+            if( node->u.subtree[0]->cgop == CO_USER_CAST )
+                break;
             src = &node->u.subtree[1];
             node = *src;
         } else if( NodeIsBinaryOp( node, CO_COMMA ) ) {
@@ -1949,7 +1950,7 @@ static PTREE* getTempSrc(       // GET ADDR OF SOURCE OPERAND FOR TEMPORARY
             break;
         }
     }
-    return src;
+    return( src );
 }
 
 
@@ -1962,7 +1963,7 @@ static PTREE* nodePossibleTemp( // LOCATE POSSIBLE TEMPORARY LOCATION
      && NodeIsUnaryOp( *src, CO_FETCH ) ) {
         src = getTempSrc( &(*src)->u.subtree[0], dtor );
     }
-    return src;
+    return( src );
 }
 
 
@@ -1972,7 +1973,7 @@ static bool isNonConstRef(      // DETERMINE IF NON-CONSTANT REFERENCE
     TYPE refed;                 // - type referenced
 
     refed = TypeReference( arg_type );
-    return refed != NULL && ! TypeIsConst( refed );
+    return( refed != NULL && !TypeIsConst( refed ) );
 }
 
 
@@ -2050,11 +2051,11 @@ bool NodeNonConstRefToTemp(     // CHECK IF TEMP. PASSED AS NON-CONST REF
         if( nodeMakesTemporary( *a_src ) ) {
             PTreeErrorExpr( node, ANSI_TEMP_USED_TO_INIT_NONCONST_REF );
             if( node->op == PT_ERROR ) {
-                return true;
+                return( true );
             }
         }
     }
-    return false;
+    return( false );
 }
 
 
@@ -2084,7 +2085,7 @@ PTREE NodeSegname(              // BUILD EXPRESSION FOR __segname
     sym.pvalue = SegmentLabelSym( SegmentFindNamed( segname ) );
     node = PTreeIc( IC_SEGNAME, sym );
     node->type = TypeSegmentShort();
-    return node;
+    return( node );
 }
 
 
@@ -2113,7 +2114,7 @@ PTREE NodeBitQuestAssign(       // ASSIGN (expr?bit-fld:bit-fld) = expr
     colon = PTreeOpRight( PTreeOp( &result ) );
     assignBitDup( &colon->u.subtree[0], expr );
     assignBitDup( &colon->u.subtree[1], dup );
-    return result;
+    return( result );
 }
 
 
@@ -2143,7 +2144,7 @@ static PTREE nodeIcCgValue(     // ADD A PTREE NODE
 {
     PTREE node = PTreeIc( opcode, value );
     node->type = GetBasicType( TYP_UINT );
-    return node;
+    return( node );
 }
 
 
@@ -2154,14 +2155,14 @@ PTREE NodeIcUnsigned(           // ADD A PTREE-IC NODE, UNSIGNED OPERAND
     CGVALUE val;                // - operand
 
     val.uvalue = operand;
-    return nodeIcCgValue( opcode, val );
+    return( nodeIcCgValue( opcode, val ) );
 }
 
 
 PTREE NodeIc(                   // ADD A PTREE-IC NODE
     CGINTEROP opcode )          // - opcode
 {
-    return NodeIcUnsigned( opcode, 0 );
+    return( NodeIcUnsigned( opcode, 0 ) );
 }
 
 
@@ -2226,7 +2227,7 @@ PTREE NodeAddSideEffect(        // ADD A SIDE-EFFECT EXPRESSION
         side_effect->type = orig->type;
         side_effect = PTreeCopySrcLocation( side_effect, orig );
     }
-    return side_effect;
+    return( side_effect );
 }
 
 
@@ -2237,7 +2238,7 @@ PTREE NodeFuncForCall(          // GET FUNCTION NODE FOR CALL
     if( NodeIsBinaryOp( call_node, CO_VIRT_FUNC ) ) {
         call_node = call_node->u.subtree[0];
     }
-    return call_node->u.subtree[0];
+    return( call_node->u.subtree[0] );
 }
 
 
@@ -2312,14 +2313,14 @@ PTREE NodeTypeSig               // MAKE NODE FOR TYPE-SIG ADDRESS
         node->type = snode->type;
         node->flags = snode->flags;
     }
-    return node;
+    return( node );
 }
 
 
 PTREE NodeTypeSigArg            // MAKE ARGUMENT NODE FOR TYPE-SIG ADDRESS
     ( TYPE_SIG* sig )           // - type signature
 {
-    return NodeArg( NodeTypeSig( sig ) );
+    return( NodeArg( NodeTypeSig( sig ) ) );
 }
 
 
@@ -2336,7 +2337,7 @@ PTREE NodeSetType               // SET NODE TYPE, FLAGS
     }
     expr->type = type;
     expr->flags |= flags;
-    return expr;
+    return( expr );
 }
 
 
@@ -2388,7 +2389,7 @@ PTREE NodeLvExtract             // EXTRACT LVALUE, IF POSSIBLE
             expr = curr;
         }
     }
-    return expr;
+    return( expr );
 }
 
 
@@ -2403,7 +2404,7 @@ PTREE NodeForceLvalue           // FORCE EXPRESSION TO BE LVALUE
         expr = NodeAssign( MakeNodeSymbol( temp ), expr );
         TemporaryClass( old );
     }
-    return expr;
+    return( expr );
 }
 
 
@@ -2414,7 +2415,7 @@ PTREE NodeRvForRefClass         // MAKE RVALUE FOR REF CLASS
     DbgVerify( OMR_CLASS_REF == ObjModelArgument( type )
              , "NodeRvForRefClass -- not reference class" );
     expr = NodeConvertFlags( type, expr, PTF_CLASS_RVREF );
-    return expr;
+    return( expr );
 }
 
 
@@ -2427,7 +2428,7 @@ PTREE NodeLvForRefClass         // MAKE LVALUE FOR REF CLASS
     DbgVerify( OMR_CLASS_REF == ObjModelArgument( ClassTypeForType( type ) )
              , "NodeRvForRefClass -- not reference class" );
     expr = NodeConvertFlags( type, expr, flags );
-    return expr;
+    return( expr );
 }
 
 // use as follows:
@@ -2448,7 +2449,7 @@ PTREE NodeUnComma(              // EXTRACT OUT UNCOMMA'D EXPR (rest is stashed)
 
     if( ! NodeIsBinaryOp( expr, CO_COMMA ) ) {
         *pextra = NULL;
-        return expr;
+        return( expr );
     }
     // Algorithm follows CO_COMMA nodes to the right, linking to the parent
     // using u.subtree[1].  The original node is marked by setting the
@@ -2475,7 +2476,7 @@ PTREE NodeUnComma(              // EXTRACT OUT UNCOMMA'D EXPR (rest is stashed)
         curr = next;
     }
     *pextra = bottom;
-    return uncomma;
+    return( uncomma );
 }
 
 
@@ -2488,21 +2489,21 @@ PTREE NodeDottedFunction        // BUILD A DOT NODE FOR A FUNCTION
     node = NodeBinary( CO_DOT, NodeForceLvalue( left ), right );
     node->flags = right->flags | PTF_LVALUE | PTF_LV_CHECKED;
     node->type = right->type;
-    return node;
+    return( node );
 }
 
 
 PTREE NodeZero                  // BUILD A ZERO NODE
     ( void )
 {
-    return PTreeIntConstant( 0, TYP_SINT );
+    return( PTreeIntConstant( 0, TYP_SINT ) );
 }
 
 
 PTREE NodeIntDummy              // BUILD A DUMMY INTEGRAL NODE
     ( void )
 {
-    return PTreeIntConstant( 12345, TYP_SINT );
+    return( PTreeIntConstant( 12345, TYP_SINT ) );
 }
 
 

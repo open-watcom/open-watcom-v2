@@ -51,14 +51,14 @@ typedef struct res_act          RES_ACT;            // resolution actions
 
 #define USAGE_DEFS                  /* unresolved usages                */ \
                                     /* - function usages:               */ \
- USAGE_DEF( FNUSE_CALL           )  /* - - call in a scope              */ \
-,USAGE_DEF( FNUSE_CALL_TEMP      )  /* - - call in statement scope      */ \
-,USAGE_DEF( FNUSE_CALL_SCOPE     )  /* - - call in block scope          */ \
-,USAGE_DEF( FNUSE_CALL_CTOR      )  /* - - ctor call in statement scope */ \
-,USAGE_DEF( FNUSE_SCOPE          )  /* - - scope resolution req'd       */ \
+ USAGE_DEF( FNUSE_CALL )            /* - - call in a scope              */ \
+,USAGE_DEF( FNUSE_CALL_TEMP )       /* - - call in statement scope      */ \
+,USAGE_DEF( FNUSE_CALL_SCOPE )      /* - - call in block scope          */ \
+,USAGE_DEF( FNUSE_CALL_CTOR )       /* - - ctor call in statement scope */ \
+,USAGE_DEF( FNUSE_SCOPE )           /* - - scope resolution req'd       */ \
                                     /* - scope usages:                  */ \
-,USAGE_DEF( SCUSE_DTOR_BLK       )  /* - - dtor: block                  */ \
-,USAGE_DEF( SCUSE_DTOR_TEMP      )  /* - - dtor: temporary              */ \
+,USAGE_DEF( SCUSE_DTOR_BLK )        /* - - dtor: block                  */ \
+,USAGE_DEF( SCUSE_DTOR_TEMP )       /* - - dtor: temporary              */ \
 ,USAGE_DEF( SCUSE_DTOR_COMPONENT )  /* - - dtor: component              */
 
 #define RES_DEFS        /* type of resolution                           */ \
@@ -157,12 +157,12 @@ static void _print( char const * msg )
 
 static char const* _res_type( RES_TYPE type )
 {
-    return ( type < MAX_RES_DEF ) ? res_names[type] : "BAD RES_TYPE";
+    return( ( type < MAX_RES_DEF ) ? res_names[type] : "BAD RES_TYPE" );
 }
 
 static char const* _unr_use( UNR_USE type )
 {
-    return ( type < MAX_USAGE_DEF ) ? usage_names[type] : "BAD UNR_USE";
+    return( ( type < MAX_USAGE_DEF ) ? usage_names[type] : "BAD UNR_USE" );
 }
 
 static void _printAction( RES_ACT const * ra, char const * msg )
@@ -255,7 +255,7 @@ static bool _printCallNode
         } RingIterEnd( fu );
         VbufFree( &vbuf );
     }
-    return false;
+    return( false );
 }
 
 #define _printAction1   _printAction
@@ -286,7 +286,7 @@ static SYMBOL symDefaultBase(   // GET ACTUAL SYMBOL FOR A DEFAULT
     if( fun != NULL ) {
         fun = SymDefaultBase( fun );
     }
-    return fun;
+    return( fun );
 }
 
 
@@ -302,7 +302,7 @@ static SCOPE_RES* openScopesTop // GET TOP OF OPEN-SCOPES STACK
     } else {
         sr = *a_sr;
     }
-    return sr;
+    return( sr );
 }
 
 
@@ -324,7 +324,7 @@ static SCOPE_RES* openScopesPush // PUSH OPEN-SCOPES STACK
     } else {
         sr->scope_throw = false;
     }
-    return sr;
+    return( sr );
 }
 
 
@@ -340,7 +340,7 @@ static SCOPE_RES* openScopesPop // POP OPEN-SCOPES STACK
     } else {
         sr = *a_sr;
     }
-    return sr;
+    return( sr );
 }
 
 
@@ -358,7 +358,7 @@ static RES_ACT* pushAction      // PUSH ACTION
 {
     RES_ACT* res = VstkPush( &actions );
     res->type = type;
-    return res;
+    return( res );
 }
 
 
@@ -374,7 +374,7 @@ static RES_ACT* pushActionCaller// PUSH FUNCTION-RELATED ACTION
         res = pushAction( type );
         res->u.node = node;
     }
-    return res;
+    return( res );
 }
 
 
@@ -391,7 +391,7 @@ static CALLNODE* makeThrowFun   // FUNCTION BECOMES A THROWING FUNCTION
         _printAction1( pushActionCaller( owner, RES_FN_TH ), "Function resolved: throwable" );
         CgResolve();
     }
-    return owner;
+    return( owner );
 }
 
 
@@ -408,7 +408,7 @@ static CALLNODE* makeNonThrowFun// FUNCTION BECOMES A NON-THROWING FUNCTION
         _printAction1( pushActionCaller( owner, RES_FN_NT ), "Function resolved: non-throwable" );
         CgResolve();
     }
-    return owner;
+    return( owner );
 }
 
 
@@ -431,7 +431,7 @@ static SCOPE_RES* markScopeGen  // MARK SCOPE AS GENERATED
         }
     }
     CgrfMarkNodeGen( sr->func );
-    return sr;
+    return( sr );
 }
 
 
@@ -475,7 +475,7 @@ static SCOPE_RES* scopeResolve  // COMPLETE SCOPE RESOLUTION, IF POSSIBLE
             CgResolve();
         }
     }
-    return sr;
+    return( sr );
 }
 
 
@@ -483,7 +483,7 @@ static SCOPE_RES* makeScopeGen  // SCOPE BECOMES GENERATED
     ( SCOPE_RES* sr )           // - unresolved scope
 {
     sr = markScopeGen( sr );
-    return scopeResolve( sr );
+    return( scopeResolve( sr ) );
 }
 
 
@@ -507,7 +507,7 @@ static SCOPE_RES* newScope      // ALLOCATE A NEW SCOPE TO BE RESOLVED
     sr->call_ct = false;
     sr->scanning = true;
     sr->gen_stab = false;
-    return sr;
+    return( sr );
 }
 
 
@@ -567,7 +567,7 @@ SCOPE CgResScScanEnd            // COMPLETE SCANNING OF A SCOPE
         retn = top->scope;
     }
     scopeResolve( sr );
-    return retn;
+    return( retn );
 }
 
 
@@ -590,7 +590,8 @@ static bool resolveSymbol       // RESOLVE FUNCTION SYMBOL, IF POSSIBLE
     bool ok;                    // - return: true ==> process it
 
     *a_callnode = NULL;
-    if( NULL == fun ) return true;
+    if( NULL == fun )
+        return( true );
     _printFunction( fun, "resolve:" );
     fun = symDefaultBase( fun );
     if( fun->flag & SF_FN_LONGJUMP ) {
@@ -607,7 +608,7 @@ static bool resolveSymbol       // RESOLVE FUNCTION SYMBOL, IF POSSIBLE
              && NULL == *except_spec ) {
                 fun->flag |= SF_NO_LONGJUMP;
                 _print( "non-throwable with throw()\n" );
-                return true;
+                return( true );
             } else {
                 REPO_REC_FUN* frec = RepoFunRead( fun->name->name );
                 if( NULL == frec ) {
@@ -637,7 +638,7 @@ static UNR_USAGE* addUsage      // ADD A USAGE ENTRY
     use->type = type;
     use->u.unresolved = unresolved;
     use->scope = NULL;
-    return use;
+    return( use );
 }
 
 
@@ -646,7 +647,7 @@ static UNR_USAGE* addFnUsage    // ADD A USAGE FOR A FUNCTION
     , CALLNODE* node            // - CALLNODE for function
     , void* unresolved )        // - unresolved ptr
 {
-    return addUsage( type, &node->unresolved, unresolved );
+    return( addUsage( type, &node->unresolved, unresolved ) );
 }
 
 
@@ -664,7 +665,7 @@ static UNR_USAGE* addScUsage    // ADD A USAGE FOR A SCOPE
     , SCOPE_RES* sr             // - unresolved scope
     , void* unresolved )        // - unresolved ptr
 {
-    return addUsage( type, &sr->unresolved, unresolved );
+    return( addUsage( type, &sr->unresolved, unresolved ) );
 }
 
 
@@ -1122,7 +1123,8 @@ void CgResolve                  // RESOLVE ANY PENDING ACTIONS
 {
     static bool active;         // - true ==> resolution is active
 
-    if( active ) return;
+    if( active )
+        return;
     active = true;
     for( ; ; ) {
         RES_ACT* res = VstkPop( &actions );
@@ -1162,7 +1164,7 @@ bool CgResolveNonThrow          // RESOLVE A FUNCTION AS NON-THROW
             }
         }
     }
-    return false;
+    return( false );
 }
 
 

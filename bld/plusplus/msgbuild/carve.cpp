@@ -54,7 +54,8 @@ Carve::~Carve                   // DESTRUCTOR
     RingIter iter( _blks );
     for( ; ; ) {
         CarveBlock* curr = (CarveBlock*)iter.next();
-        if( 0 == curr ) break;
+        if( 0 == curr )
+            break;
         delete[] curr->_data;
         delete curr;
     }
@@ -75,7 +76,7 @@ void* Carve::alloc              // ALLOCATOR
         }
         retn = _freed.pop();
     }
-    return retn;
+    return( retn );
 }
 
 

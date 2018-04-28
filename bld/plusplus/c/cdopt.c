@@ -47,15 +47,15 @@
 #endif
 
 #define TIS_DEFS                /* types in input stack     */ \
-  TIS_DEF( DT_INPUT  )          /* - dtor, unprocessed      */ \
-, TIS_DEF( DT_STR    )          /* - dtor, stretching       */ \
+  TIS_DEF( DT_INPUT )           /* - dtor, unprocessed      */ \
+, TIS_DEF( DT_STR )             /* - dtor, stretching       */ \
 , TIS_DEF( DT_NO_OPT )          /* - dtor, no optimization  */ \
-, TIS_DEF( DT_OPT    )          /* - dtor, optimized ok     */
+, TIS_DEF( DT_OPT )             /* - dtor, optimized ok     */
 
 
 #define CDOPT_DEFS              /* types of optimization    */ \
-  CDO_DEF( CDOPT_DTOR  )        /* - dtor                   */ \
-, CDO_DEF( CDOPT_CTOR  )        /* - default ctor           */ \
+  CDO_DEF( CDOPT_DTOR )         /* - dtor                   */ \
+, CDO_DEF( CDOPT_CTOR )         /* - default ctor           */ \
 , CDO_DEF( CDOPT_OPREQ )        /* - operator =             */
 
 typedef enum {                  // CDOPT_TYPE -- type of optimization
@@ -200,7 +200,7 @@ ExtraRptCtr( ctr_dtor_kept );   // # dtor elements kept
 ExtraRptCtr( ctr_opeq_desc );   // # opeq descriptors
 ExtraRptCtr( ctr_opeq_elem );   // # opeq elements processed
 ExtraRptCtr( ctr_opeq_kept );   // # opeq elements kept
-ExtraRptCtr( ctr_caches    );   // # caches
+ExtraRptCtr( ctr_caches );      // # caches
 
 #ifndef NDEBUG
 
@@ -238,25 +238,25 @@ static const char *titer_names[] = {
 
 static const char *__fmt_TOB( TOB tob )    // FORMAT TOB
 {
-    return ( tob >= MAX_TOB_DEF ) ? "*** BAD TOB ***" : tob_names[tob];
+    return( ( tob >= MAX_TOB_DEF ) ? "*** BAD TOB ***" : tob_names[tob] );
 }
 
 
 static const char *__fmt_CDOPT_TYPE( CDOPT_TYPE cdot )
 {
-    return ( cdot >= MAX_CDOPT_TYPE ) ? "*** BAD CDOPT ***" : cdopt_names[cdot];
+    return( ( cdot >= MAX_CDOPT_TYPE ) ? "*** BAD CDOPT ***" : cdopt_names[cdot] );
 }
 
 #if 0
 static const char *__fmt_TIS( TIS tis )
 {
-    return ( tis >= MAX_TIS_TYPE ) ? "*** BAD TIS ***" : tis_names[tis];
+    return( ( tis >= MAX_TIS_TYPE ) ? "*** BAD TIS ***" : tis_names[tis] );
 }
 #endif
 
 static const char *__fmt_TITER( TITER val )
 {
-    return ( val >= MAX_TITER_DEF ) ? "*** BAD TITER ***" : titer_names[val];
+    return( ( val >= MAX_TITER_DEF ) ? "*** BAD TITER ***" : titer_names[val] );
 }
 
 
@@ -505,7 +505,7 @@ static CL_ELEM *activeElement   // GET ACTIVE ELEMENT
     if( NULL != exp ) {
         elem = exp->elem;
     }
-    return elem;
+    return( elem );
 }
 
 
@@ -521,7 +521,7 @@ static CL_ITER* pushClElem(     // PUSH CLASS ELEMENT
     exp->elem = NULL;
     exp->comp_otype = object_type;
     DumpClIter( exp, "-- PUSHED" );
-    return exp;
+    return( exp );
 }
 
 
@@ -533,7 +533,7 @@ static CL_ITER* popClElem(      // POP CLASS ELEMENT
     exp = VstkPop( &iter->stack );
     DumpClIter( exp, "-- POPPED" );
     exp = VstkTop( &iter->stack );
-    return exp;
+    return( exp );
 }
 
 
@@ -548,7 +548,7 @@ CDOPT_ITER* CDoptIterBeg(       // START OF ITERATION
     VstkOpen( &iter->stack, sizeof( CL_ITER ), 16 );
     pushClElem( iter->info, iter, TOB_MEMB );
     DumpCdoptIter( iter, "-- DEFINED", "" );
-    return iter;
+    return( iter );
 }
 
 
@@ -610,7 +610,7 @@ TITER CDoptIterNextComp(        // GET NEXT COMPONENT
     }
     iter->orig_otype = retn;
     DumpCdoptIter( iter, "-- Next Comp: ", __fmt_TITER( retn ) );
-    return retn;
+    return( retn );
 }
 
 
@@ -703,7 +703,7 @@ TITER CDoptIterNextElement(     // GET NEXT ELEMENT ACTION FOR COMPONENT
         }
     }
     DumpCdoptIter( iter, "-- Next Element: ", __fmt_TITER( retn ) );
-    return retn;
+    return( retn );
 }
 
 
@@ -738,7 +738,7 @@ DTC_KIND CDoptObjectKind        // DETERMINE DTC_... OBJECT KIND
 target_offset_t CDoptIterOffsetComp( // GET EXACT OFFSET OF CURRENT COMPONENT
     CDOPT_ITER* iter )          // - iteration data
 {
-    return iter->off_comp;
+    return( iter->off_comp );
 }
 
 
@@ -755,7 +755,7 @@ target_offset_t CDoptIterOffsetExact( // GET EXACT OFFSET OF CURRENT ELEMENT
     if( elem != NULL ) {
         offset += elem->offset;
     }
-    return offset;
+    return( offset );
 }
 
 
@@ -765,7 +765,7 @@ SYMBOL CDoptIterFunction(       // GET FUNCTION SYMBOL FOR CURRENT ELEMENT
     CL_ITER* exp;               // - expansion information
 
     exp = VstkTop( &iter->stack );
-    return exp->elem->cdtor;
+    return( exp->elem->cdtor );
 }
 
 
@@ -776,7 +776,7 @@ SYMBOL CDoptIterSymbol(         // GET SYMBOL FOR CURRENT ELEMENT
     CL_ITER* exp;               // - expansion information
 
     exp = VstkTop( &iter->stack );
-    return exp->elem->sym;
+    return( exp->elem->sym );
 }
 #endif
 
@@ -819,14 +819,14 @@ TYPE CDoptIterType(             // GET TYPE FOR CURRENT ELEMENT
     } else {
         type = elem->cltype;
     }
-    return type;
+    return( type );
 #else
     elem = activeElement( iter );
     type = NULL;
     if( NULL != elem ) {
         type = elem->cltype;
     }
-    return type;
+    return( type );
 #endif
 }
 
@@ -834,7 +834,7 @@ TYPE CDoptIterType(             // GET TYPE FOR CURRENT ELEMENT
 BASE_CLASS* CDoptIterVBase(     // GET VIRTUAL BASE CLASS FOR CURRENT ELEMENT
     CDOPT_ITER* iter )          // - iteration data
 {
-    return iter->vbase;
+    return( iter->vbase );
 }
 
 
@@ -909,7 +909,7 @@ static CD_DESCR** refCiPtr      // GET REF TO CD_DESCR PTR IN CLASSINFO
         break;
     DbgDefault( "refCiPtr -- bad opt" );
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -946,7 +946,7 @@ static CD_DESCR* cacheFind(     // FIND IN CACHE
     } else {
         retn = *refCiPtr( type, defn->otype );
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -1019,7 +1019,7 @@ static SYMBOL dtorLocate(       // FIND DTOR FOR TYPE
     TYPE cltype )               // - class type
 {
     cltype = StructType( cltype );
-    return ( NULL == cltype ) ? NULL : RoDtorFindType( cltype );
+    return( ( NULL == cltype ) ? NULL : RoDtorFindType( cltype ) );
 }
 
 
@@ -1029,28 +1029,28 @@ static SYMBOL dtorFind(         // FIND DTOR FOR CLASS ELEMENT
     TYPE cltype;                // - type for class
 
     cltype = StructType( elem->cltype );
-    return ( NULL == cltype ) ? NULL : RoDtorFindType( cltype );
+    return( ( NULL == cltype ) ? NULL : RoDtorFindType( cltype ) );
 }
 
 
 static bool dtorBasePushable(   // TEST IF BASE CLASS FOR DTOR NEEDS PUSHING
     BASE_CLASS *bcl )           // - base class
 {
-    return TypeRequiresDtoring( bcl->type );
+    return( TypeRequiresDtoring( bcl->type ) );
 }
 
 
 static bool dtorMembPushable(   // TEST IF MEMBER FOR DTOR NEEDS PUSHING
     SYMBOL sym )                // - symbol for dtor
 {
-    return SymIsThisDataMember( sym ) && SymRequiresDtoring( sym );
+    return( SymIsThisDataMember( sym ) && SymRequiresDtoring( sym ) );
 }
 
 
 static SYMBOL dtorArraySym(     // GET ARRAY DTOR SYMBOL
     SYMBOL arr )                // - array symbol
 {
-    return dtorLocate( arr->sym_type );
+    return( dtorLocate( arr->sym_type ) );
 }
 
 
@@ -1076,7 +1076,7 @@ static bool dtorInclude(        // TEST IF DTOR NEEDS TO BE INCLUDED
 static SYMBOL dtorArrayAcc(     // GET ARRAY-ACCESS SYMBOL
     TYPE type )                 // - array base type
 {
-    return RoDtorFindType( type );
+    return( RoDtorFindType( type ) );
 }
 
 
@@ -1192,7 +1192,7 @@ static SYMBOL getDefedCtor(     // FIND DEFINED DEFAULT CTOR
         }
         ScopeFreeResult( result );
     }
-    return ctor;
+    return( ctor );
 }
 
 
@@ -1222,7 +1222,7 @@ static SYMBOL defCtorFind(      // FIND DEF.CTOR FOR TYPE
     if( NULL == ctor && NULL != cltype ) {
         elem->cannot_define = true;
     }
-    return ctor;
+    return( ctor );
 }
 
 
@@ -1265,7 +1265,7 @@ static bool defCtorInclude(     // TEST IF CTOR REQUIRED TO BE INCLUDED
 static SYMBOL defCtorArrayAcc(  // GET ARRAY-ACCESS SYMBOL
     TYPE type )                 // - array base type
 {
-    return defCtorLocate( type );
+    return( defCtorLocate( type ) );
 }
 
 
@@ -1356,7 +1356,7 @@ static SYMBOL defAssFind(       // GET DEFAULT OP= (OR NULL IF SCALAR )
     } else {
         opeq = ClassDefaultOpEq( type, type );
     }
-    return opeq;
+    return( opeq );
 }
 
 
@@ -1365,7 +1365,7 @@ static bool defAssBasePushable( // TEST IF BASE CLASS PUSHABLE FOR OP=
 {
     /* unused parameters */ (void)bcl;
 
-    return true;
+    return( true );
 }
 
 
@@ -1374,7 +1374,7 @@ static bool defAssMembPushable( // TEST IF MEMBER PUSHABLE FOR OP=
 {
     /* unused parameters */ (void)sym;
 
-    return true;
+    return( true );
 }
 
 
@@ -1406,7 +1406,7 @@ static SYMBOL defAssArrayAcc(   // GET ARRAY-ACCESS SYMBOL
     } else {
         opeq = ClassDefaultOpEq( type, type );
     }
-    return opeq;
+    return( opeq );
 }
 
 
@@ -1464,7 +1464,7 @@ static void defAssRptElKept(    // RPT: element kept
 static SYMBOL origArraySym(     // RETURN ORIGINAL ARRAY SYMBOL
     SYMBOL arr )                // - symbol
 {
-    return arr;
+    return( arr );
 }
 
 
@@ -1520,7 +1520,7 @@ static STKIN* pushElement(      // PUSH AN ELEMENT
     stk->info = expansion->info;
     stk->elem = elem;
     DumpCdoptIn( stk, "-- PUSHED" );
-    return stk;
+    return( stk );
 }
 
 
@@ -1616,7 +1616,7 @@ static CD_DESCR* cdoptExpandClass( // EXPAND A CLASS
     ScopeWalkVirtualBases( scope, &pushVbase, &expansion );
     ScopeWalkDirectBases( scope, &pushDbase, &expansion );
     ScopeWalkDataMembers( scope, &pushMember, &expansion );
-    return info;
+    return( info );
 }
 
 
@@ -1637,7 +1637,8 @@ static CD_DESCR* cdoptBuildOrig(// BUILD FOR ORIGINATING FUNCTION
         mfuns = info->mfuns;
         for( ; ; ) {
             stk = VstkTop( &stackSTKIN );
-            if( stk == NULL ) break;
+            if( stk == NULL )
+                break;
             DumpCdoptIn( stk, "--PROCESS" );
             elem = stk->elem;
             if( elem->otype == TOB_ARRAY ) {
@@ -1685,7 +1686,7 @@ static CD_DESCR* cdoptBuildOrig(// BUILD FOR ORIGINATING FUNCTION
         }
         DumpCdoptInfo( info );
     }
-    return info;
+    return( info );
 }
 
 
@@ -1714,7 +1715,7 @@ static CDOPT_DEFN const dtor_defn =   // DEFINITION FOR DTOR
 CD_DESCR* CDoptDtorBuild(       // BUILD LIST OF OBJECTS TO BE DTOR'D
     TYPE cltype )               // - type for dtor
 {
-    return cdoptBuildOrig( cltype, &dtor_defn );
+    return( cdoptBuildOrig( cltype, &dtor_defn ) );
 }
 
 
@@ -1744,7 +1745,7 @@ static CDOPT_DEFN ctor_defn =   // DEFINITION FOR DEFAULT CTOR
 CD_DESCR* CDoptDefCtorBuild(    // BUILD LIST OF OBJECTS TO BE DEFAULT CTOR'ED
     TYPE cltype )               // - type for dtor
 {
-    return cdoptBuildOrig( cltype, &ctor_defn );
+    return( cdoptBuildOrig( cltype, &ctor_defn ) );
 }
 
 
@@ -1773,14 +1774,14 @@ static CDOPT_DEFN opeq_defn =   // DEFINITION FOR OP=
 CD_DESCR* CDoptDefOpeqBuild(    // BUILD LIST OF OBJECTS TO BE DEFAULT OP='ED
     TYPE cltype )               // - type for dtor
 {
-    return cdoptBuildOrig( cltype, &opeq_defn );
+    return( cdoptBuildOrig( cltype, &opeq_defn ) );
 }
 
 
 bool CDoptErrorOccurred(        // TEST IF ERROR OCCURRED
     CD_DESCR* info )
 {
-    return info->err_occurred;
+    return( info->err_occurred );
 }
 
 
@@ -1847,14 +1848,14 @@ static bool typeDtorable(       // TEST IF TYPE REALLY NEEDS DTOR'ING
 bool TypeReallyDtorable(        // TEST IF TYPE REALLY NEEDS DTOR'ING
     TYPE type )                 // - declared type
 {
-    return typeDtorable( type, false );
+    return( typeDtorable( type, false ) );
 }
 
 
 bool TypeExactDtorable(         // TEST IF EXACT TYPE REALLY NEEDS DTOR'ING
     TYPE type )                 // - declared type
 {
-    return typeDtorable( type, true );
+    return( typeDtorable( type, true ) );
 }
 
 
@@ -1915,7 +1916,7 @@ static void cdoptInit(          // INITIALIZATION FOR CDOPT
     allDescriptors.cdopt_dtor = NULL;
     allDescriptors.cdopt_opeq = NULL;
     carveCD_DESCR = CarveCreate( sizeof( CD_DESCR ), 32 );
-    carveCL_ELEM = CarveCreate( sizeof( CL_ELEM  ), 64 );
+    carveCL_ELEM = CarveCreate( sizeof( CL_ELEM ), 64 );
     carveCDOPT_ITER = CarveCreate( sizeof( CDOPT_ITER ), 16 );
     carveACC_FUN = CarveCreate( sizeof( ACC_FUN ), 64 );
     carveCDOPT_CACHE = CarveCreate( sizeof( CDOPT_CACHE ), 32 );

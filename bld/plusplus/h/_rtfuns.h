@@ -42,7 +42,7 @@
 
 // C Library
 
-, RTFNC( RTF_SETJMP,            _setjmp   )                 // - C: setjmp
+, RTFNC( RTF_SETJMP,            _setjmp )                   // - C: setjmp
 
 // exception handling
 
@@ -112,10 +112,10 @@
 , RTFUN( RTF_FS_HANDLER,        fs_handler )                // - fs handler (indirected)
 #endif
 , RTFNP( RTF_FS_PUSH,           .FsPush )                   // - #pragma push fs:0
-, RTFNP( RTF_FS_POP,            .FsPop  )                   // - #pragma pop fs:0
+, RTFNP( RTF_FS_POP,            .FsPop )                    // - #pragma pop fs:0
 , RTFNP( RTD_TS_GENERIC,        __compiled_under_generic )  // - checker xref: generic
-, RTFNP( RTD_TS_OS2,            __compiled_under_OS2     )  // - checker xref: OS/2
-, RTFNP( RTD_TS_NT,             __compiled_under_NT      )  // - checker xref: NT
+, RTFNP( RTD_TS_OS2,            __compiled_under_OS2 )      // - checker xref: OS/2
+, RTFNP( RTD_TS_NT,             __compiled_under_NT )       // - checker xref: NT
 #if _CPU == _AXP
 , RTFUN( RTF_PD_HANDLER_RTN,    pd_handler_rtn )            // - fs handler (actual)
 #else

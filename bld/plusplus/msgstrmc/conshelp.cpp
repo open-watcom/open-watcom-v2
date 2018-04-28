@@ -43,9 +43,10 @@ ConsoleHelp::ConsoleHelp(       // CTOR to display array of messages
 {
     const char* line;
 
-    for( ; ; ){
+    for( ; ; ) {
         line = *text++;
-        if( line == 0 ) break;
+        if( line == 0 )
+            break;
         cout << line << endl;
     }
 }

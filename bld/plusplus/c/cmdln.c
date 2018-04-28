@@ -148,7 +148,9 @@ void PreDefineStringMacro(      // PREDEFINE A MACRO
                     break;
                 }
                 *bptr = *sptr;
-                if( *bptr == '\0' ) break;
+                if( *bptr == '\0' ) {
+                    break;
+                }
             }
             if( NULL == RingNameLookup( &undef_names, buffer ) ) {
                 mptr = defineStringMacro( str );

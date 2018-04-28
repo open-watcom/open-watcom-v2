@@ -172,7 +172,7 @@ static void displayDiagInfo(    // DISPLAY DIAG_INFO FOR ARGUMENT
     SYMBOL orig )               // - original function
 {
     ConversionTypesSet( diag->bad_src, diag->bad_tgt );
-    PTreeErrorExpr( expr, msg  );
+    PTreeErrorExpr( expr, msg );
     InfSymbolDeclaration( orig );
     if( diag->bad_parm == 0 ) {
         CErr1( INF_THIS_MISMATCH );
@@ -307,5 +307,5 @@ CALL_DIAG* CallDiagFromCnvDiag  // MAKE CALL_DIAG FROM CNV_DIAG
     call_diag->msg_ambiguous = cnv_diag->msg_ambiguous;
     call_diag->msg_no_match_one = cnv_diag->msg_impossible;
     call_diag->msg_no_match_many = cnv_diag->msg_impossible;
-    return call_diag;
+    return( call_diag );
 }

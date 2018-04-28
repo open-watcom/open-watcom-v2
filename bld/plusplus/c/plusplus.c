@@ -188,9 +188,11 @@ static bool parseCmdLine(       // PARSE COMMAND LINE
     char    *p;
     bool    display_only;
 
-    if( argv[0] == NULL ) argv[0] = "";
+    if( argv[0] == NULL )
+        argv[0] = "";
     p = argv[0];
-    while( isspace( *p ) ) ++p;
+    while( isspace( *p ) )
+        ++p;
     if( *p == '?' || *p == '\0' ) {
         CCusage();
         display_only = true;
@@ -201,7 +203,7 @@ static bool parseCmdLine(       // PARSE COMMAND LINE
         }
         display_only = false;
     }
-    return display_only;
+    return( display_only );
 }
 
 static int makeExitStatus( int exit_status )
@@ -416,7 +418,7 @@ static int doCCompile(          // COMPILE C++ PROGRAM
     IAliasFini();
     CloseFiles();
     ExitPointRelease( cpp_front_end );
-    return exit_status;
+    return( exit_status );
 }
 
 static void initCompFlags( void )
@@ -510,7 +512,8 @@ static int compileFiles(        // COMPILE FILES
         CompInfo.compfile_max = false;
         file_status = front_end( argv );
         if( file_status > exit_status ) {
-            if( exit_status == WPP_BATCH_FILES ) break;
+            if( exit_status == WPP_BATCH_FILES )
+                break;
             exit_status = file_status;
         }
         if( CompFlags.fatal_error )
@@ -521,7 +524,7 @@ static int compileFiles(        // COMPILE FILES
             break;
         }
     }
-    return exit_status;
+    return( exit_status );
 }
 
 
@@ -550,7 +553,7 @@ static int compilePrimaryCmd(   // COMPILE PRIMARY CMD LINE
             }
         }
     }
-    return exit_status;
+    return( exit_status );
 }
 
 
@@ -565,7 +568,8 @@ static void stackZap( void )        // ZAP 20K OF STACK TO 0xA7
 
     for( i = 0; i < ZAP_NUM; ++i ) {
         stack = alloca( ZAP_SIZE );
-        if( NULL == stack ) break;
+        if( NULL == stack )
+            break;
         DbgZapMem( stack, ZAP_CHAR, ZAP_SIZE );
     }
 }
@@ -649,5 +653,5 @@ int WppCompile(                 // MAIN-LINE (DLL)
     }
     DbgHeapFini();
     ExitPointRelease( mem_management );
-    return exit_status;
+    return( exit_status );
 }

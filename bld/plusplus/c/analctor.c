@@ -121,7 +121,7 @@ static SEARCH_RESULT *ctorResult(   // GET SEARCH RESULT FOR A CTOR
     if( locn != NULL && result != NULL ) {
         ScopeResultErrLocn( result, locn );
     }
-    return result;
+    return( result );
 }
 
 
@@ -152,7 +152,7 @@ FNOV_LIST *CtorFindList( TYPE src, TYPE tgt )
         } RingIterEnd( sym )
         ScopeFreeResult( search_result );
     }
-    return list;
+    return( list );
 }
 
 
@@ -188,7 +188,7 @@ static FNOV_RESULT ctorExplicitDiag(// FIND CONSTRUCTOR FOR ARGUMENT LIST
         }
         ScopeFreeResult( result );
     }
-    return ovret;
+    return( ovret );
 }
 
 
@@ -228,7 +228,7 @@ static CNV_RETN ctorFindDiag(   // FIND CONSTRUCTOR FOR ARGUMENT LIST
         break;
     DbgDefault( "unexpected return from ctorExplicitDiag" );
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -240,7 +240,7 @@ CNV_RETN CtorFind(              // FIND CONSTRUCTOR FOR ARGUMENT LIST
     TOKEN_LOCN *locn,           // - location for access errors
     SYMBOL *ctor )              // - addr( constructor symbol )
 {
-    return ctorFindDiag( access, cl_type, alist, ptlist, locn, ctor, NULL );
+    return( ctorFindDiag( access, cl_type, alist, ptlist, locn, ctor, NULL ) );
 }
 
 
@@ -261,7 +261,7 @@ static CNV_RETN single_arg(     // VERIFY ZERO OR SINGLE CTOR ARGUMENT
         PTreeFree( expr );
         retn = CNV_OK;
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -327,7 +327,7 @@ static CNV_RETN analyseCtorClassDiag( // ANALYSE A CLASS CTOR
     *expr = node;
     ArgListTempFree( alist, count );
     PtListFree( ptlist, count );
-    return retn;
+    return( retn );
 }
 
 // Determine if the "type" is properly CTORable:
@@ -371,13 +371,12 @@ static CNV_RETN analyseTypeCtorDiag( // ANALYSE CONSTRUCTOR FOR A TYPE
         retn = CNV_ERR;
         break;
     case TYP_BITFIELD :
-        return analyseTypeCtorDiag( scope
+        return( analyseTypeCtorDiag( scope
                                   , base_type->of
                                   , reqd_cnv
                                   , ctor
                                   , initial
-                                  , fnov_diag );
-        break;
+                                  , fnov_diag ) );
     case TYP_FUNCTION :
     case TYP_VOID :
         if( NULL == *initial ) {
@@ -428,7 +427,7 @@ static CNV_RETN analyseTypeCtorDiag( // ANALYSE CONSTRUCTOR FOR A TYPE
         }
         break;
     }
-    return retn;
+    return( retn );
 }
 
 CNV_RETN AnalyseTypeCtor(       // ANALYSE CONSTRUCTOR FOR A TYPE
@@ -438,12 +437,7 @@ CNV_RETN AnalyseTypeCtor(       // ANALYSE CONSTRUCTOR FOR A TYPE
     SYMBOL *ctor,               // - ctor to be filled in
     PTREE *initial )            // - initialization arguments (modified)
 {
-    return analyseTypeCtorDiag( scope
-                              , type
-                              , reqd_cnv
-                              , ctor
-                              , initial
-                              , NULL );
+    return( analyseTypeCtorDiag( scope, type, reqd_cnv, ctor, initial, NULL ) );
 }
 
 
@@ -468,12 +462,7 @@ CNV_RETN AnalyseCtorDiag(       // ANALYSE CONSTRUCTOR
             return( CNV_ERR );
         }
     }
-    return analyseTypeCtorDiag( NULL
-                              , type
-                              , CNV_CAST
-                              , ctor
-                              , initial
-                              , fnov_diag );
+    return( analyseTypeCtorDiag( NULL, type, CNV_CAST, ctor, initial, fnov_diag ) );
 }
 
 
@@ -485,7 +474,7 @@ static PTREE bareArg(           // STRIP LIST NODE FROM ARGUMENT
     DbgVerify( NodeIsBinaryOp( arg, CO_LIST ), "bareArg -- impossible" );
     retn = arg->u.subtree[1];
     PTreeFree( arg );
-    return retn;
+    return( retn );
 }
 
 
@@ -637,10 +626,13 @@ PTREE EffectCtor(               // EFFECT A CONSTRUCTION
                                    , opt );
                 control &= ~ EFFECT_CTOR_DECOR;
             }
-            if( node->op == PT_ERROR ) break;
+            if( node->op == PT_ERROR )
+                break;
             if( check_dtoring ) {
                 node = NodeDtorExpr( node, this_node->u.symcg.symbol );
-                if( node->op == PT_ERROR ) break;
+                if( node->op == PT_ERROR ) {
+                    break;
+                }
             }
             if( control & EFFECT_EXACT ) {
                 node->flags |= PTF_MEMORY_EXACT;
@@ -665,5 +657,5 @@ PTREE EffectCtor(               // EFFECT A CONSTRUCTION
         node = this_node;
         break;
     }
-    return node;
+    return( node );
 }

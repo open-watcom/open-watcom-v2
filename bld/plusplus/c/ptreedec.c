@@ -37,42 +37,41 @@
 #include "fnbody.h"
 #include "pcheader.h"
 
-#define PTD_DEFS                                                          \
-                            /* PTD_KIND -- kinds of entries             */\
- PTD_DEF( PTD_CTORCOMP     )/* - ctored component (code)                */\
-,PTD_DEF( PTD_CTORED_COMP  )/* - ctored component (scope-call)          */\
-,PTD_DEF( PTD_DEL_DTORED   )/* - complete dtor of element to be del'ed  */\
-,PTD_DEF( PTD_DEL_DTOR_ARR )/* - dtor of array to be deleted            */\
-,PTD_DEF( PTD_DEL_DTOR_ELM )/* - dtor of element to be deleted          */\
-,PTD_DEF( PTD_DEL_DTOR_SIZE)/* - size of element in object to be del'd  */\
-,PTD_DEF( PTD_DTOR_EXPR    )/* - dtorable object in expression          */\
-,PTD_DEF( PTD_DTOR_KIND    )/* - dtor kind                              */\
-,PTD_DEF( PTD_DTOR_REF     )/* - dtor reference                         */\
-,PTD_DEF( PTD_DTOR_SCOPE   )/* - dtorable object in scope               */\
-,PTD_DEF( PTD_DTOR_USE     )/* - dtor usage                             */\
-,PTD_DEF( PTD_EXPR_CONST   )/* - expression is constant                 */\
-,PTD_DEF( PTD_INIT_SYM_END )/* - end of initialization of symbol        */\
-,PTD_DEF( PTD_NEW_ALLOC    )/* - signal new allocation                  */\
-,PTD_DEF( PTD_NEW_CTOR     )/* - ctoring new'ed expression              */\
-,PTD_DEF( PTD_OBJ_OFFSET   )/* - push object: offset                    */\
-,PTD_DEF( PTD_OBJ_PUSH     )/* - push object                            */\
-,PTD_DEF( PTD_OBJ_POP      )/* - pop object                             */\
-,PTD_DEF( PTD_OBJ_SYM      )/* - push object: symbol                    */\
-,PTD_DEF( PTD_RETNOPT_VAR  )/* - gen IC_RETNOPT_VAR                     */\
-,PTD_DEF( PTD_RETNOPT_END  )/* - gen IC_RETNOPT_END                     */\
-,PTD_DEF( PTD_SCOPE_CALL   )/* - call to possible throwable function    */\
-,PTD_DEF( PTD_SCOPE_GEN    )/* - force scope to have statement table    */\
-,PTD_DEF( PTD_THROW        )/* - throw (or equivalent) in expression    */\
-,PTD_DEF( PTD_VB_DELTA     )/* - virtual base delta                     */\
-,PTD_DEF( PTD_VB_EXACT     )/* - virtual base exact                     */\
-,PTD_DEF( PTD_VB_INDEX     )/* - virtual base index                     */\
-,PTD_DEF( PTD_VB_OFFSET    )/* - virtual base offset                    */\
-,PTD_DEF( PTD_VF_INDEX     )/* - virtual function index                 */\
-,PTD_DEF( PTD_VF_OFFSET    )/* - virtual function offset                */\
-,PTD_DEF( PTD_VF_SYM       )/* - virtual function symbol                */\
-,PTD_DEF( PTD_OFFSETOF_EXPR)/* - offsetof field name                    */\
-,PTD_DEF( PTD_PCH_FREE     )/* - used to mark free PTDs for PCH write   */\
-,PTD_DEF( MAX_PTD_KIND )    /* bound for debugging                      */
+#define PTD_DEFS                /* PTD_KIND -- kinds of entries             */\
+ PTD_DEF( PTD_CTORCOMP )        /* - ctored component (code)                */\
+,PTD_DEF( PTD_CTORED_COMP )     /* - ctored component (scope-call)          */\
+,PTD_DEF( PTD_DEL_DTORED )      /* - complete dtor of element to be del'ed  */\
+,PTD_DEF( PTD_DEL_DTOR_ARR )    /* - dtor of array to be deleted            */\
+,PTD_DEF( PTD_DEL_DTOR_ELM )    /* - dtor of element to be deleted          */\
+,PTD_DEF( PTD_DEL_DTOR_SIZE )   /* - size of element in object to be del'd  */\
+,PTD_DEF( PTD_DTOR_EXPR )       /* - dtorable object in expression          */\
+,PTD_DEF( PTD_DTOR_KIND )       /* - dtor kind                              */\
+,PTD_DEF( PTD_DTOR_REF )        /* - dtor reference                         */\
+,PTD_DEF( PTD_DTOR_SCOPE )      /* - dtorable object in scope               */\
+,PTD_DEF( PTD_DTOR_USE )        /* - dtor usage                             */\
+,PTD_DEF( PTD_EXPR_CONST )      /* - expression is constant                 */\
+,PTD_DEF( PTD_INIT_SYM_END )    /* - end of initialization of symbol        */\
+,PTD_DEF( PTD_NEW_ALLOC )       /* - signal new allocation                  */\
+,PTD_DEF( PTD_NEW_CTOR )        /* - ctoring new'ed expression              */\
+,PTD_DEF( PTD_OBJ_OFFSET )      /* - push object: offset                    */\
+,PTD_DEF( PTD_OBJ_PUSH )        /* - push object                            */\
+,PTD_DEF( PTD_OBJ_POP )         /* - pop object                             */\
+,PTD_DEF( PTD_OBJ_SYM )         /* - push object: symbol                    */\
+,PTD_DEF( PTD_RETNOPT_VAR )     /* - gen IC_RETNOPT_VAR                     */\
+,PTD_DEF( PTD_RETNOPT_END )     /* - gen IC_RETNOPT_END                     */\
+,PTD_DEF( PTD_SCOPE_CALL )      /* - call to possible throwable function    */\
+,PTD_DEF( PTD_SCOPE_GEN )       /* - force scope to have statement table    */\
+,PTD_DEF( PTD_THROW )           /* - throw (or equivalent) in expression    */\
+,PTD_DEF( PTD_VB_DELTA )        /* - virtual base delta                     */\
+,PTD_DEF( PTD_VB_EXACT )        /* - virtual base exact                     */\
+,PTD_DEF( PTD_VB_INDEX )        /* - virtual base index                     */\
+,PTD_DEF( PTD_VB_OFFSET )       /* - virtual base offset                    */\
+,PTD_DEF( PTD_VF_INDEX )        /* - virtual function index                 */\
+,PTD_DEF( PTD_VF_OFFSET )       /* - virtual function offset                */\
+,PTD_DEF( PTD_VF_SYM )          /* - virtual function symbol                */\
+,PTD_DEF( PTD_OFFSETOF_EXPR )   /* - offsetof field name                    */\
+,PTD_DEF( PTD_PCH_FREE )        /* - used to mark free PTDs for PCH write   */\
+,PTD_DEF( MAX_PTD_KIND )        /* bound for debugging                      */
 
 typedef enum                    // PTD_KIND -- kinds of entries
 {
@@ -154,7 +153,7 @@ static PTD* ptdAlloc            // ALLOCATE AND INITIALIZE BASE ENTRY
     ptd = RingCarveAlloc( carvePTD, ring );
     ptd->base.kind = kind;
     ptd->base.fmt = fmt;
-    return ptd;
+    return( ptd );
 }
 
 
@@ -167,7 +166,7 @@ static PTREE ptdOffset          // ALLOCATE AN OFFSET ENTRY
 
     pto = ptdAlloc( &expr->decor, kind, PTD_FMT_OFFSET );
     pto->off.offset = offset;
-    return expr;
+    return( expr );
 }
 
 
@@ -180,7 +179,7 @@ static PTREE ptdSize            // ALLOCATE A SIZE ENTRY
 
     pto = ptdAlloc( &expr->decor, kind, PTD_FMT_SIZE );
     pto->size.size = size;
-    return expr;
+    return( expr );
 }
 
 
@@ -193,7 +192,7 @@ static PTREE ptdType            // ALLOCATE A TYPE ENTRY
 
     pto = ptdAlloc( &expr->decor, kind, PTD_FMT_TYPE );
     pto->type.type = type;
-    return expr;
+    return( expr );
 }
 
 
@@ -202,7 +201,7 @@ static PTREE ptdBase            // DECORATE WITH BASIC ENTRY
     , PTD_KIND kind )           // - kind of entry
 {
     ptdAlloc( &expr->decor, kind, PTD_FMT_BASE );
-    return expr;
+    return( expr );
 }
 
 
@@ -215,7 +214,7 @@ static PTREE ptdSymbol          // DECORATE WITH A SYMBOL
 
     ptd = ptdAlloc( &expr->decor, kind, PTD_FMT_SYMBOL );
     ptd->symbol.sym = sym;
-    return expr;
+    return( expr );
 }
 
 
@@ -228,7 +227,7 @@ static PTREE ptdPTree           // DECORATE WITH A PTREE
 
     ptd = ptdAlloc( &expr->decor, kind, PTD_FMT_PTREE );
     ptd->ptree.tree = tree;
-    return expr;
+    return( expr );
 }
 
 
@@ -236,7 +235,7 @@ PTREE PtdFree                   // FREE ENTRIES FOR A PARSE TREE NODE
     ( PTREE expr )              // - parse tree node
 {
     RingCarveFree( carvePTD, &expr->decor );
-    return expr;
+    return( expr );
 }
 
 
@@ -273,7 +272,7 @@ PTD* PtdDuplicateReloc          // DUPLICATE DECORATION, RELOC SYMBOLS
         DbgDefault( "PtdDuplicate -- bad format" );
         }
     } RingIterEnd( curr );
-    return ring;
+    return( ring );
 }
 
 PTD* PtdDuplicate               // DUPLICATE DECORATION
@@ -294,7 +293,7 @@ PTREE PtdInsert                 // INSERT A DECORATION RING
         ring->base.next = expr->decor->base.next;
         expr->decor->base.next = first;
     }
-    return expr;
+    return( expr );
 }
 
 
@@ -311,7 +310,7 @@ static SYMBOL dtorForType       // LOCATE DTOR FOR TYPE
     } else {
         dtor = NULL;
     }
-    return dtor;
+    return( dtor );
 }
 
 
@@ -327,7 +326,7 @@ PTREE PtdRetnOptVar             // DECORATE WITH IC_RETNOPT_VAR
             expr = ptdSymbol( expr, var, PTD_RETNOPT_VAR );
         }
     }
-    return expr;
+    return( expr );
 }
 
 
@@ -342,7 +341,7 @@ PTREE PtdRetnOptEnd             // DECORATE WITH IC_RETNOPT_END
             expr = ptdBase( expr, PTD_RETNOPT_END );
         }
     }
-    return expr;
+    return( expr );
 }
 
 
@@ -355,7 +354,7 @@ PTREE PtdDtorUseSym             // DECORATE WITH DTOR USAGE (SYMBOL)
         expr = FunctionCalled( expr, dtor );
         expr = ptdSymbol( expr, dtor, PTD_DTOR_USE );
     }
-    return expr;
+    return( expr );
 }
 
 
@@ -369,7 +368,7 @@ static PTREE dtorDecorate       // DTOR DECORATION
         expr = FunctionCalled( expr, dtor );
         expr = ptdSymbol( expr, dtor, kind );
     }
-    return expr;
+    return( expr );
 }
 
 
@@ -377,7 +376,7 @@ PTREE PtdCtoredComponent        // CTORED COMPONENT (BASE OR ELEMENT)
     ( PTREE expr                // - expression
     , TYPE type )               // - type of component
 {
-    return dtorDecorate( expr, dtorForType( type ), PTD_CTORED_COMP );
+    return( dtorDecorate( expr, dtorForType( type ), PTD_CTORED_COMP ) );
 }
 
 
@@ -385,7 +384,7 @@ PTREE PtdDtorScopeSym           // DTOR OF SCOPE (SYMBOL)
     ( PTREE expr                // - expression
     , SYMBOL dtor )             // - destructor
 {
-    return dtorDecorate( expr, dtor, PTD_DTOR_SCOPE );
+    return( dtorDecorate( expr, dtor, PTD_DTOR_SCOPE ) );
 }
 
 
@@ -393,7 +392,7 @@ PTREE PtdDtorScopeType          // DTOR OF SCOPE (TYPE)
     ( PTREE expr                // - expression
     , TYPE type )               // - type dtored
 {
-    return PtdDtorScopeSym( expr, dtorForType( type ) );
+    return( PtdDtorScopeSym( expr, dtorForType( type ) ) );
 }
 
 
@@ -404,7 +403,7 @@ PTREE PtdScopeCall              // SCOPE-CALL RECORDING
     if( fun != NULL && (fun->flag & SF_NO_LONGJUMP) == 0 ) {
         expr = ptdSymbol( expr, fun, PTD_SCOPE_CALL );
     }
-    return expr;
+    return( expr );
 }
 
 
@@ -450,7 +449,7 @@ static PTREE exprCtoring        // EXPRESSION CTORING
             expr = dtorDecorate( expr, dtor, kind );
         }
     }
-    return expr;
+    return( expr );
 }
 
 
@@ -459,7 +458,7 @@ PTREE PtdCtoredExprType         // DECORATE TEMP AFTER CTORING
     , SYMBOL ctor               // - ctor used
     , TYPE cl_type )            // - class type
 {
-    return exprCtoring( expr, ctor, cl_type, PTD_DTOR_EXPR );
+    return( exprCtoring( expr, ctor, cl_type, PTD_DTOR_EXPR ) );
 }
 
 
@@ -468,21 +467,21 @@ PTREE PtdCtoredScopeType        // DECORATE AUTO AFTER CTORING
     , SYMBOL ctor               // - ctor used
     , TYPE cl_type )            // - class type
 {
-    return exprCtoring( expr, ctor, cl_type, PTD_DTOR_SCOPE );
+    return( exprCtoring( expr, ctor, cl_type, PTD_DTOR_SCOPE ) );
 }
 
 
 PTREE PtdThrow                  // DECORATE TO INDICATE THROW (OR EQUIVALENT)
     ( PTREE expr )              // - expression
 {
-    return ptdBase( expr, PTD_THROW );
+    return( ptdBase( expr, PTD_THROW ) );
 }
 
 
 PTREE PtdExprConst              // DECORATE A CONSTANT EXPRESSION
     ( PTREE expr )              // - expression
 {
-    return ptdBase( expr, PTD_EXPR_CONST );
+    return( ptdBase( expr, PTD_EXPR_CONST ) );
 }
 
 
@@ -546,7 +545,7 @@ PTREE PtdObjPush                // DECORATE FOR START OF DTORABLE OBJECT
         }
         expr = ptdOffset( expr, offset, PTD_OBJ_OFFSET );
     }
-    return expr;
+    return( expr );
 }
 
 
@@ -558,7 +557,7 @@ PTREE PtdObjPop                 // DECORATE FOR END OF DTORABLE OBJECT
     } else {
         expr = ptdBase( expr, PTD_OBJ_POP );
     }
-    return expr;
+    return( expr );
 }
 
 
@@ -575,14 +574,14 @@ PTREE PtdInitSymEnd             // DECORATE FOR END OF SYMBOL INITIALIZATION
     } else {
         expr = ptdSymbol( expr, sym, PTD_INIT_SYM_END );
     }
-    return expr;
+    return( expr );
 }
 
 
 PTREE PtdNewAlloc               // DECORATE NEW ALLOCATION
     ( PTREE expr )              // - expression
 {
-    return ptdBase( expr, PTD_NEW_ALLOC );
+    return( ptdBase( expr, PTD_NEW_ALLOC ) );
 }
 
 
@@ -590,7 +589,7 @@ PTREE PtdNewCtor                // DECORATE FOR CTORING NEW'ED EXPRESSION
     ( PTREE expr                // - expression
     , TYPE type )               // - class type
 {
-    return ptdType( expr, type, PTD_NEW_CTOR );
+    return( ptdType( expr, type, PTD_NEW_CTOR ) );
 }
 
 
@@ -603,7 +602,7 @@ PTREE PtdVfunAccess             // ACCESS VIRTUAL FUNCTION
     expr = ptdOffset( expr, vf_index, PTD_VF_INDEX );
     expr = ptdOffset( expr, vf_offset, PTD_VF_OFFSET );
     expr = ptdSymbol( expr, baser, PTD_VF_SYM );
-    return expr;
+    return( expr );
 }
 
 
@@ -615,10 +614,10 @@ PTREE PtdVbaseFetch             // FETCH OF VIRTUAL BASE
     , target_offset_t vb_exact )// - virtual base exact offset
 {
     expr = ptdOffset( expr, vb_offset, PTD_VB_OFFSET );
-    expr = ptdOffset( expr, vb_index,  PTD_VB_INDEX  );
-    expr = ptdOffset( expr, vb_delta,  PTD_VB_DELTA  );
-    expr = ptdOffset( expr, vb_exact,  PTD_VB_EXACT  );
-    return expr;
+    expr = ptdOffset( expr, vb_index, PTD_VB_INDEX );
+    expr = ptdOffset( expr, vb_delta, PTD_VB_DELTA );
+    expr = ptdOffset( expr, vb_exact, PTD_VB_EXACT );
+    return( expr );
 }
 
 
@@ -652,14 +651,14 @@ static target_offset_t getOffset // SEARCH FOR OFFSET IN DECORATION
 target_offset_t PtdGetVbExact   // GET VBASE EXACT DECORATION
     ( PTREE expr )              // - expression
 {
-    return getOffset( expr, PTD_VB_EXACT );
+    return( getOffset( expr, PTD_VB_EXACT ) );
 }
 
 
 target_offset_t PtdGetVbOffset  // GET VBASE OFFSET DECORATION
     ( PTREE expr )              // - expression
 {
-    return getOffset( expr, PTD_VB_OFFSET );
+    return( getOffset( expr, PTD_VB_OFFSET ) );
 }
 
 
@@ -667,7 +666,7 @@ PTREE PtdDltDtorArr             // DECORATE FOR DELETE OF DTORABLE-ARRAY
     ( PTREE expr                // - expression
     , SYMBOL del )              // - operator delete
 {
-    return ptdSymbol( expr, del, PTD_DEL_DTOR_ARR );
+    return( ptdSymbol( expr, del, PTD_DEL_DTOR_ARR ) );
 }
 
 
@@ -675,7 +674,7 @@ PTREE PtdDltDtorElm             // DECORATE FOR DELETE OF DTORABLE-ELEMENT
     ( PTREE expr                // - expression
     , SYMBOL del )              // - operator delete
 {
-    return ptdSymbol( expr, del, PTD_DEL_DTOR_ELM );
+    return( ptdSymbol( expr, del, PTD_DEL_DTOR_ELM ) );
 }
 
 
@@ -683,7 +682,7 @@ PTREE PtdDltDtorSize            // DECORATE FOR SIZE OF DTORABLE-ELEMENT
     ( PTREE expr                // - expression
     , target_size_t size )      // - size
 {
-    return ptdSize( expr, size, PTD_DEL_DTOR_SIZE );
+    return( ptdSize( expr, size, PTD_DEL_DTOR_SIZE ) );
 }
 
 
@@ -692,7 +691,7 @@ PTREE PtdDltDtorEnd             // DECORATE FOR END OF DTORABLE-ELEMENT ON DEL
 {
     ScopeKeep( GetCurrScope() );
     FunctionHasRegistration();
-    return ptdBase( expr, PTD_DEL_DTORED );
+    return( ptdBase( expr, PTD_DEL_DTORED ) );
 }
 
 
@@ -700,7 +699,7 @@ PTREE PtdOffsetofExpr           // DECORATE FOR OFFSETOF EXPR
     ( PTREE expr                // - expression
     , PTREE tree )              // - operator delete
 {
-    return ptdPTree( expr, tree, PTD_OFFSETOF_EXPR );
+    return( ptdPTree( expr, tree, PTD_OFFSETOF_EXPR ) );
 }
 
 PTREE PtdGetOffsetofExpr(       // GET OFFSETOF EXPR

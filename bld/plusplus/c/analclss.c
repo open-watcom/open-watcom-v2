@@ -144,7 +144,7 @@ static type_flag cvFlags(       // GET CV FLAGS FOR AN OPERAND
     type_flag flags;            // - flags for expression
 
     TypeModFlags( TypeReferenced( expr->type ), &flags );
-    return flags & TF1_CV_MASK;
+    return( flags & TF1_CV_MASK );
 }
 
 static void returnThis(         // RETURN "this" value
@@ -177,7 +177,7 @@ static PTREE addOffsetToThis( target_offset_t offset, TYPE type )
 static PTREE nodeFirstParm(     // GET FIRST PARM AS A NODE
     void )
 {
-    return NodeFetchReference( MakeNodeSymbol( ScopeFuncParm( 0 ) ) );
+    return( NodeFetchReference( MakeNodeSymbol( ScopeFuncParm( 0 ) ) ) );
 }
 
 static PTREE addOffsetToFirstParm( target_offset_t offset, TYPE type )
@@ -186,7 +186,7 @@ static PTREE addOffsetToFirstParm( target_offset_t offset, TYPE type )
 
     expr = nodeFirstParm();
     type = TypeMergeForMember( expr->type, type );
-    return addOffset( expr, offset, type );
+    return( addOffset( expr, offset, type ) );
 }
 
 static PTREE addVBOffsetToExpr( // ADD VB-OFFSET TO EXPRESSION
@@ -203,7 +203,7 @@ static PTREE addVBOffsetToExpr( // ADD VB-OFFSET TO EXPRESSION
     type = TypeMergeForMember( expr->type, type );
     expr = NodeConvertVirtualPtr( expr, type, info->vb_offset, base->vb_index );
     expr->flags |= PTF_LVALUE;
-    return expr;
+    return( expr );
 }
 
 static PTREE addVBOffsetToFirstParm(
@@ -211,7 +211,7 @@ static PTREE addVBOffsetToFirstParm(
     BASE_CLASS *base,
     TYPE type )
 {
-    return addVBOffsetToExpr( scope, base, type, nodeFirstParm() );
+    return( addVBOffsetToExpr( scope, base, type, nodeFirstParm() ) );
 }
 
 static PTREE addVBOffsetToThis(
@@ -219,7 +219,7 @@ static PTREE addVBOffsetToThis(
     BASE_CLASS *base,
     TYPE type )
 {
-    return addVBOffsetToExpr( scope, base, type, NodeThis() );
+    return( addVBOffsetToExpr( scope, base, type, NodeThis() ) );
 }
 
 static PTREE accessSourceBase( SCOPE scope, BASE_CLASS *base )
@@ -233,7 +233,7 @@ static PTREE accessSourceBase( SCOPE scope, BASE_CLASS *base )
     } else {
         src = addOffsetToFirstParm( base->delta, type );
     }
-    return src;
+    return( src );
 }
 
 static PTREE accessThisBase( SCOPE scope, BASE_CLASS *base )
@@ -247,7 +247,7 @@ static PTREE accessThisBase( SCOPE scope, BASE_CLASS *base )
     } else {
         src = addOffsetToThis( base->delta, type );
     }
-    return src;
+    return( src );
 }
 
 static PTREE getRefSymFromFirstParm( SYMBOL sym, target_offset_t cl_offset )
@@ -279,7 +279,7 @@ static PTREE setThisFromOffset( // SET "THIS" BACK BY AN OFFSET
         return( expr );
     }
     if( expr->op == PT_ERROR ) {
-        return expr;
+        return( expr );
     }
     if( expr->type->id == TYP_VOID ) {
         /* no return value to adjust */
@@ -396,7 +396,8 @@ static void memberWalkWithData( // WALK MEMBERS IN CTOR ORDER
     stop = ScopeOrderedStart( scope );
     for(;;) {
         curr = ScopeOrderedNext( stop, curr );
-        if( curr == NULL ) break;
+        if( curr == NULL )
+            break;
         (*memb_rtn)( curr, data );
     }
 }
@@ -436,7 +437,7 @@ static SYMBOL classArrayRtn(    // OBTAIN ARRAY ROUTINE FOR ARRAY TYPE
     DbgDefault( "classAssignMember: impossible return" );
     }
     ScopeFreeResult( result );
-    return rtn;
+    return( rtn );
 }
 
 
@@ -458,7 +459,7 @@ static PTREE classArrayRtCall(  // GENERATE R/T CALL FOR ARRAY
     expr = RunTimeCall( expr
                       , PointerTypeForArray( artype )
                       , rt_code );
-    return expr;
+    return( expr );
 }
 
 
@@ -697,7 +698,8 @@ void GenerateDefaultAssign(     // EMIT A DEFAULT ASSIGN
         iter = CDoptIterBeg( optinfo );
         for( ; ; ) {
             TITER comp_type = CDoptIterNextComp( iter );
-            if( comp_type == TITER_NONE ) break;
+            if( comp_type == TITER_NONE )
+                break;
             emitOpeq( iter, qualifier, scope );
         }
         CDoptIterEnd( iter );
@@ -748,7 +750,7 @@ SYMBOL ClassDefaultOpEq(        // GET DEFAULT OP= FOR A CLASS
     if( result != NULL ) {
         ScopeFreeResult( result );
     }
-    return opeq;
+    return( opeq );
 }
 
 
@@ -795,7 +797,7 @@ static PTREE doBinaryCopy(      // DO A BINARY COPY
         src = NodeConvertFlags( tgt_type, src, PTF_MEMORY_EXACT );
     }
     tgt = NodeConvertFlags( tgt_type, tgt, PTF_MEMORY_EXACT | PTF_LVALUE );
-    return NodeCopyClassObject( tgt, src );
+    return( NodeCopyClassObject( tgt, src ) );
 }
 
 static PTREE doClassAssign(     // ASSIGN TO CLASS OBJECT
@@ -840,13 +842,13 @@ static PTREE doClassAssign(     // ASSIGN TO CLASS OBJECT
         PTreeErrorExpr( expr, ERR_ASSIGN_TO_UNDEF_CLASS );
         call_expr = expr;
     }
-    return call_expr;
+    return( call_expr );
 }
 
 PTREE ClassAssign(              // ASSIGN TO CLASS OBJECT
     PTREE expr )                // - expression ( "=" at top )
 {
-    return doClassAssign( expr, NULL );
+    return( doClassAssign( expr, NULL ) );
 }
 
 void GenerateDefaultCopy(       // EMIT A DEFAULT COPY CTOR
@@ -878,7 +880,7 @@ static SEARCH_RESULT *accessDefaultCopy( // ACCESS DEFAULT-COPY CTOR
         ClassAddDefaultCopy( type->u.c.scope );
         result = classResult( type, ctor, name, NULL );
     }
-    return result;
+    return( result );
 }
 
 
@@ -896,7 +898,7 @@ SYMBOL CopyCtorFind(            // FIND (OR CREATE) A COPY CTOR FOR A TYPE
         ctor = NULL;
     }
     ScopeFreeResult( result );
-    return ctor;
+    return( ctor );
 }
 
 
@@ -919,7 +921,7 @@ static SEARCH_RESULT* classCopyResult( // GET SEARCH_RESULT FOR COPY CTOR
     if( result == NULL ) {
         result = accessDefaultCopy( type, ctor );
     }
-    return result;
+    return( result );
 }
 
 
@@ -962,7 +964,7 @@ static PTREE genDefaultCopyDiag(// GENERATE COPY TO CLASS OBJECT, WITH DIAGNOSIS
             *a_ctor_used = ctor;
         }
     }
-    return expr;
+    return( expr );
 }
 
 
@@ -1110,7 +1112,7 @@ static PTREE defaultCopyDiag(   // COPY TO CLASS OBJECT, WITH DIAGNOSIS
         expr->flags |= PTF_MEMORY_EXACT;
     }
     *a_ctor_used = ctor_udc;
-    return expr;
+    return( expr );
 }
 
 
@@ -1120,7 +1122,7 @@ PTREE ClassDefaultCopy(         // COPY TO CLASS OBJECT
 {
     SYMBOL not_used;            // - not used
 
-    return defaultCopyDiag( tgt, src, &diagCopy, false, &not_used );
+    return( defaultCopyDiag( tgt, src, &diagCopy, false, &not_used ) );
 }
 
 
@@ -1132,11 +1134,11 @@ PTREE ClassDefaultCopyDiag(     // COPY TO CLASS OBJECT, WITH DIAGNOSIS
     CALL_DIAG diagnosis;        // - diagnosis for call
     SYMBOL not_used;            // - not used
 
-    return defaultCopyDiag( tgt
+    return( defaultCopyDiag( tgt
                           , src
                           , CallDiagFromCnvDiag( &diagnosis, cnvdiag )
                           , false
-                          , &not_used );
+                          , &not_used ) );
 }
 
 
@@ -1148,11 +1150,11 @@ PTREE ClassDefaultCopyTemp(     // COPY TEMP TO CLASS OBJECT, WITH DIAGNOSIS
     CALL_DIAG diagnosis;        // - diagnosis for call
     SYMBOL not_used;            // - not used
 
-    return defaultCopyDiag( tgt
+    return( defaultCopyDiag( tgt
                           , src
                           , CallDiagFromCnvDiag( &diagnosis, cnvdiag )
                           , true
-                          , &not_used );
+                          , &not_used ) );
 }
 
 
@@ -1196,7 +1198,7 @@ PTREE ClassCopyTemp(            // COPY A TEMPORARY
         expr = NodeDtorExpr( expr, temp_node->u.symcg.symbol );
 #endif
     }
-    return expr;
+    return( expr );
 }
 
 
@@ -1244,7 +1246,7 @@ static SYMBOL findDefCtorToGen( // FIND DEFAULT CTOR TO GENERATE
         InfMsgPtr( INF_DEF_CTOR, cl_type );
         ctor = NULL;
     }
-    return ctor;
+    return( ctor );
 }
 
 
@@ -1261,7 +1263,7 @@ static PTREE generateArrayClassCall( // CALL CTOR/DTOR FOR ARRAY OF CLASS OBJ.s
                            , sym
                            , artype
                            , rt_code );
-    return expr;
+    return( expr );
 }
 
 static PTREE generateArrayDtorCall( // CALL R/T ROUTINE TO DTOR ARRAY
@@ -1285,7 +1287,7 @@ static PTREE generateArrayDtorCall( // CALL R/T ROUTINE TO DTOR ARRAY
                                      , node_this
                                      , RTF_DTOR_ARR );
     }
-    return expr;
+    return( expr );
 }
 
 void GenerateDefaultCtor(       // EMIT A DEFAULT CTOR
@@ -1311,7 +1313,7 @@ CNV_RETN ClassDefaultCtorFind(  // FIND DEFAULT CTOR FOR A CLASS
 
     cl_type = ClassTypeForType( cl_type );
     InitArgList( &alist );
-    return CtorFind( NULL, cl_type, &alist, NULL, src_locn, pctor );
+    return( CtorFind( NULL, cl_type, &alist, NULL, src_locn, pctor ) );
 }
 
 
@@ -1531,7 +1533,7 @@ SYMBOL DtorFind(                // FIND DTOR, CHECK ACCESS
     } else {
         dtor = findOrDefineDtor( type, true, NULL, NULL, false );
     }
-    return dtor;
+    return( dtor );
 }
 
 SYMBOL DtorFindCg(              // FIND DTOR, DURING CODE-GEN
@@ -1544,7 +1546,7 @@ SYMBOL DtorFindCg(              // FIND DTOR, DURING CODE-GEN
     } else {
         dtor = findOrDefineDtor( type, false, NULL, NULL, false );
     }
-    return dtor;
+    return( dtor );
 }
 
 SYMBOL DtorFindLocn(            // FIND DTOR, CHECK ACCESS, WITH ERR LOC'N
@@ -1559,7 +1561,7 @@ SYMBOL DtorFindLocn(            // FIND DTOR, CHECK ACCESS, WITH ERR LOC'N
         dtor = findOrDefineDtor( type, true, NULL, err_locn, true );
     }
 //  dtor = ClassFunMakeAddressable( dtor );
-    return dtor;
+    return( dtor );
 }
 
 static SYMBOL RoDtorFindTypeLocn       // FIND DTOR FOR USE WITH R/O BLOCKS
@@ -1575,19 +1577,19 @@ static SYMBOL RoDtorFindTypeLocn       // FIND DTOR FOR USE WITH R/O BLOCKS
     }
     dtor = ClassFunMakeAddressable( dtor );
     dtor->flag |= SF_ADDR_TAKEN;
-    return SymMarkRefed( dtor );
+    return( SymMarkRefed( dtor ) );
 }
 
 SYMBOL RoDtorFindType(          // FIND DTOR FOR USE WITH R/O BLOCKS
     TYPE type )                 // - type for DTOR
 {
-    return RoDtorFindTypeLocn( type, NULL );
+    return( RoDtorFindTypeLocn( type, NULL ) );
 }
 
 SYMBOL RoDtorFind(              // FIND DTOR FOR USE WITH R/O BLOCKS
     SYMBOL sym )                // - symbol to be DTOR'd
 {
-    return RoDtorFindTypeLocn( sym->sym_type, NULL );
+    return( RoDtorFindTypeLocn( sym->sym_type, NULL ) );
 }
 
 
@@ -1632,7 +1634,7 @@ static PTREE ctorPrologueInit(  // GENERATE INITIALIZATION FOR CTOR PROLOGUE
         if( StructType( init_type ) == NULL || ! TypeNeedsCtor( init_type ) ) {
             PTreeFreeSubtrees( init_item );
             ctorScopeCall( init_type );
-            return NULL;
+            return( NULL );
         }
     } else {
         if( options & CI_MEM_INIT ) {
@@ -1644,7 +1646,7 @@ static PTREE ctorPrologueInit(  // GENERATE INITIALIZATION FOR CTOR PROLOGUE
             if( init_expr != NULL && init_expr->op == PT_ERROR ) {
                 NodeFreeDupedExpr( init_expr );
                 PTreeFreeSubtrees( init_item );
-                return NULL;
+                return( NULL );
             }
         }
     }
@@ -1669,7 +1671,7 @@ static PTREE ctorPrologueInit(  // GENERATE INITIALIZATION FOR CTOR PROLOGUE
         if( ConversionDiagnose( retn, init_expr, &diagProInit ) != CNV_OK ) {
             NodeFreeDupedExpr( init_expr );
             PTreeFreeSubtrees( init_item );
-            return NULL;
+            return( NULL );
         }
     }
     {
@@ -1694,7 +1696,7 @@ static PTREE ctorPrologueInit(  // GENERATE INITIALIZATION FOR CTOR PROLOGUE
                          , &locn
                          , effect_flags );
     }
-    return stmt;
+    return( stmt );
 }
 
 
@@ -1727,7 +1729,7 @@ static PTREE ctorPrologueArray( // GENERATE INITIALIZATION FOR CTOR OF ARRAY
     if( data->gen_copy ) {
         if( NULL == StructType( cltype )
          || NULL == CopyCtorFind( cltype, NULL ) ) {
-            return bitFieldNodeAssign( init_item, init_expr, NodeFetch );
+            return( bitFieldNodeAssign( init_item, init_expr, NodeFetch ) );
         }
         if( TypeHasVirtualBases( cltype ) ) {
             rt_code = RTF_COPY_VARR;
@@ -1738,7 +1740,7 @@ static PTREE ctorPrologueArray( // GENERATE INITIALIZATION FOR CTOR OF ARRAY
     } else if( TypeNeedsCtor( cltype ) ) {
         if( NULL == findDefCtorToGen( cltype ) ) {
             NodeFreeDupedExpr( init_item );
-            return NULL;
+            return( NULL );
         }
         if( TypeHasVirtualBases( cltype ) ) {
             rt_code = RTF_CTOR_VARR;
@@ -1749,7 +1751,7 @@ static PTREE ctorPrologueArray( // GENERATE INITIALIZATION FOR CTOR OF ARRAY
     } else {
         ctorScopeCall( cltype );
         NodeFreeDupedExpr( init_item );
-        return NULL;
+        return( NULL );
     }
     sig = TypeSigFind( tsa, cltype, NULL, &errors );
     DbgVerify( ! errors, "ctorPrologueArray -- unexpected errors" );
@@ -1772,7 +1774,7 @@ static PTREE ctorPrologueArray( // GENERATE INITIALIZATION FOR CTOR OF ARRAY
     if( data->comp_options & CI_INLINED ) {
         ScopeGenAccessReset();
     }
-    return stmt;
+    return( stmt );
 }
 
 
@@ -1857,7 +1859,7 @@ static void ctorGenComponent(   // GENERATE CTOR OF COMPONENT
 }
 
 static bool isForThisItem(      // IS CDOPT ITER FOR THIS ITEM?
-    ctor_prologue *data  )      // - traversal data
+    ctor_prologue *data )       // - traversal data
 {
     CDOPT_ITER* optiter;        // - next input ctor for CD optimization
 
@@ -2018,7 +2020,7 @@ static PTREE extractMemberInit( // EXTRACT INITIALIZATION TREE
         }
         last = &(curr->u.subtree[0]);
     }
-    return NULL;
+    return( NULL );
 }
 
 

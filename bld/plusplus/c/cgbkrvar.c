@@ -61,7 +61,7 @@ static SYMBOL makeCgVar(        // MAKE CODEGEN VARIABLE OF A CERTAIN TYPE
         LinkageSet( var, "C++" );
         CgSegId( var );
     }
-    return var;
+    return( var );
 }
 
 
@@ -79,7 +79,7 @@ SYMBOL CgVarRw(                 // MAKE R/W CODEGEN VARIABLE
         type = MakeCompilerReadWriteData( type );
         flags = SF_ADDR_TAKEN | SF_REFERENCED;
     }
-    return makeCgVar( type, id, NULL, flags );
+    return( makeCgVar( type, id, NULL, flags ) );
 }
 
 
@@ -89,7 +89,7 @@ SYMBOL CgVarTemp(               // MAKE R/W AUTO TEMPORARY
     TYPE type;
 
     type = MakeInternalType( size );
-    return makeCgVar( type, SC_AUTO, NULL, SF_REFERENCED );
+    return( makeCgVar( type, SC_AUTO, NULL, SF_REFERENCED ) );
 }
 
 
@@ -99,7 +99,7 @@ SYMBOL CgVarTempTyped(          // MAKE R/W AUTO TEMPORARY, FOR cg_type
     TYPE type;
 
     type = TypeFromCgType( cgtype );
-    return makeCgVar( type, SC_AUTO, NULL, SF_REFERENCED );
+    return( makeCgVar( type, SC_AUTO, NULL, SF_REFERENCED ) );
 }
 
 
@@ -116,5 +116,5 @@ SYMBOL CgVarRo(                 // MAKE R/O CODEGEN VARIABLE
     } else {
         type = MakeCompilerConstCommonData( type );
     }
-    return makeCgVar( type, id, name, SF_ADDR_TAKEN | SF_REFERENCED );
+    return( makeCgVar( type, id, name, SF_ADDR_TAKEN | SF_REFERENCED ) );
 }

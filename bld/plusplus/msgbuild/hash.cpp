@@ -97,5 +97,5 @@ void const* HashTable::find     // FIND IN HASH TABLE
             break;
         }
     }
-    return retn;
+    return( retn );
 }

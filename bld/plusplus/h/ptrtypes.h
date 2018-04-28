@@ -41,8 +41,8 @@
 
 // need to fill out for based pointers
 {   PTR_TYPE( _NR       ,&CompInfo.ptr_diff_near )
-,   PTR_TYPE( _FR       ,&CompInfo.ptr_diff_far  )
+,   PTR_TYPE( _FR       ,&CompInfo.ptr_diff_far )
 ,   PTR_TYPE( _HG       ,&CompInfo.ptr_diff_huge )
-,   PTR_TYPE( _FAR16    ,&CompInfo.ptr_diff_far16)
+,   PTR_TYPE( _FAR16    ,&CompInfo.ptr_diff_far16 )
 }
 #undef PTR_TYPE

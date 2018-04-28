@@ -75,7 +75,7 @@ bool FnovCvFlagsRank( type_flag src, type_flag tgt, FNOV_RANK *rank )
         if( src & ~tgt ) {
             // not allowed to remove const or volatile
             rank->rank = OV_RANK_NO_MATCH;
-            return true;                     // <<<--- early return
+            return( true );                     // <<<--- early return
         } else {
             // special trivial cases:
             //      T* -> {const|volatile} T*
@@ -84,7 +84,7 @@ bool FnovCvFlagsRank( type_flag src, type_flag tgt, FNOV_RANK *rank )
             rank->u.no_ud.trivial = 1;
         }
     }
-    return false;
+    return( false );
 }
 
 void FnovMemFlagsRank( type_flag src, type_flag tgt,
@@ -145,7 +145,7 @@ static RKD initFNOV_TYPE( FNOV_TYPE *ft, TYPE basic, PTREE* pt )
     }
     basic = PointerTypeForArray( basic );
     ft->basic = basic;
-    return RkdForTypeId( basic->id );
+    return( RkdForTypeId( basic->id ) );
 }
 
 static void completeFNOV_TYPE( FNOV_TYPE* ft )
@@ -202,7 +202,7 @@ static bool trivialRankPtrToPtr( FNOV_CONV *conv )
     if( ( conv->wtgt.final->id == TYP_VOID )
       && ( conv->wtgt.final->flag & TF1_STDOP )
       && ( (conv->rank->control & FNC_STDOP_CV_VOID) == 0 ) ) {
-        return false;
+        return( false );
     } else {
         // need to look down all levels here
         src = conv->wsrc.original;
@@ -216,12 +216,12 @@ static bool trivialRankPtrToPtr( FNOV_CONV *conv )
         ConvCtlTypeDecay( &info, &info.tgt );
         if( !ConvCtlAnalysePoints( &info ) ) {
             conv->rank->rank = OV_RANK_NO_MATCH;
-            return true;
+            return( true );
         } else if( info.used_cv_convert ) {
             conv->rank->rank = OV_RANK_TRIVIAL;
             conv->rank->u.no_ud.trivial = 1;
         }
-        return false;
+        return( false );
     }
 }
 
@@ -295,7 +295,7 @@ static bool fromZeroConstOrNull( FNOV_CONV *conv )
     }
     node = *pnode;
     if( node == NULL ) {
-        return false;
+        return( false );
     }
 
     if( NodeIsNullptr( node )
@@ -304,9 +304,9 @@ static bool fromZeroConstOrNull( FNOV_CONV *conv )
 
         conv->rank->rank = OV_RANK_STD_CONV;
         conv->rank->u.no_ud.standard++;
-        return true;
+        return( true );
     }
-    return false;
+    return( false );
 }
 
 
@@ -346,11 +346,11 @@ static bool sameRankPtrToPtr( FNOV_CONV *conv )
         if( src_final->id == TYP_FUNCTION ) {
             if( !functionsAreIdentical( src_final, tgt_final ) ) {
                 conv->rank->rank = OV_RANK_NO_MATCH;
-                return true;
+                return( true );
             }
         }
     }
-    return false;
+    return( false );
 }
 
 
@@ -371,7 +371,7 @@ static bool trivialRank( FNOV_CONV *conv )
                               , conv->wtgt.refflag
                               , conv->rank );
     }
-    return quit;
+    return( quit );
 }
 
 
@@ -412,7 +412,7 @@ static bool rankTgtRefCvMem( FNOV_CONV *conv )
         }
         triv = false;
     }
-    return triv;
+    return( triv );
 }
 
 static bool functionRank( FNOV_CONV *conv )
@@ -430,10 +430,10 @@ static bool functionRank( FNOV_CONV *conv )
             if( !functionsAreIdentical( src_final, tgt_final ) ) {
                 conv->rank->rank = OV_RANK_NO_MATCH;
             }
-            return true;
+            return( true );
         }
     }
-    return false;
+    return( false );
 }
 
 
@@ -470,11 +470,11 @@ static bool toBoolRank( FNOV_CONV *conv )
         case TYP_MEMBER_POINTER:
             conv->rank->rank = OV_RANK_STD_BOOL;
             conv->rank->u.no_ud.standard++;
-            return true;
+            return( true );
             break;
         }
     }
-    return false;
+    return( false );
 }
 
 static bool fnovScopeDerived( TYPE src, type_flag srcflags, TYPE tgt,
@@ -772,9 +772,12 @@ static FNOV_COARSE_RANK fnovUdcLocateRef( FNOV_UDC_CONTROL control,
                 bool found_ref = false;
                 for( amb_list = NULL; ; ) {
                     next = FnovGetAmbiguousEntry( &my_fnov_diag, &amb_list );
-                    if( next == NULL ) break;
+                    if( next == NULL )
+                        break;
                     found_ref = ( NULL != TypeReference( SymFuncReturnType( next ) ) );
-                    if( found_ref ) break;
+                    if( found_ref ) {
+                        break;
+                    }
                 }
                 if( !found_ref ) {
                     try_again = true;
@@ -845,7 +848,7 @@ static FNOV_COARSE_RANK fnovUdcLocateRef( FNOV_UDC_CONTROL control,
         if( isctor != NULL ) {
             *isctor = my_isctor;
         }
-        return coarse;
+        return( coarse );
     } else {
         return( fnovUdcLocate( control
                      , ictl
@@ -1071,8 +1074,10 @@ static void rankPtrToPtr(           // RANK: PTR --> PTR
     FNOV_CONV *conv )               // - conversion information
 {
     bool triv_fail;             // true only if triv conversion impossible
-    if( exactRank( conv ) ) return;
-    if( sameRankPtrToPtr( conv ) ) return;
+    if( exactRank( conv ) )
+        return;
+    if( sameRankPtrToPtr( conv ) )
+        return;
 
     // asume rank is same
     conv->rank->rank = OV_RANK_SAME;
@@ -1136,11 +1141,11 @@ static bool sameMemberPtrFun( FNOV_CONV *conv )
         if( src_final->id == TYP_FUNCTION ) {
             if( !TypesIdentical( src_final, tgt_final ) ) {
                 conv->rank->rank = OV_RANK_NO_MATCH;
-                return true;
+                return( true );
             }
         }
     }
-    return false;
+    return( false );
 }
 
 
@@ -1148,8 +1153,10 @@ static void rankMbrPtrToMbrPtr(     // RANK: MEMBER PTR --> MEMBER PTR
     FNOV_CONV *conv )               // - conversion information
 {
     bool triv;
-    if( exactRank( conv ) ) return;
-    if( sameMemberPtrFun( conv ) ) return;
+    if( exactRank( conv ) )
+        return;
+    if( sameMemberPtrFun( conv ) )
+        return;
 
     // asume rank is same
     conv->rank->rank = OV_RANK_SAME;
@@ -1176,7 +1183,9 @@ static void rankMbrPtrToMbrPtr(     // RANK: MEMBER PTR --> MEMBER PTR
                                 , conv->rank );
             }
         }
-        if( toMbrPtrFromMbrPtrRank( conv ) ) return;
+        if( toMbrPtrFromMbrPtrRank( conv ) ) {
+            return;
+        }
     }
 
     conv->rank->rank = OV_RANK_NO_MATCH;
@@ -1298,7 +1307,8 @@ static FNOV_COARSE_RANK enumArithRank( type_id src, type_id tgt )
 static void rankArithEnumToArith(   // RANK: Arith, Enum --> Arith
     FNOV_CONV *conv )               // - conversion information
 {
-    if( exactRank( conv ) ) return;
+    if( exactRank( conv ) )
+        return;
 
     // assume rank is same
     conv->rank->rank = OV_RANK_SAME;
@@ -1306,7 +1316,7 @@ static void rankArithEnumToArith(   // RANK: Arith, Enum --> Arith
 
     // check for trivial conversion or no std conversion possible
     if( ! conv->wtgt.reference
-     || ! rankTgtRefCvMem( conv ) ) {
+      || ! rankTgtRefCvMem( conv ) ) {
         FNOV_COARSE_RANK    result;
         type_id tgt_id;
         TYPE src;
@@ -1519,7 +1529,7 @@ void FNOV_ARG_RANK( TYPE src, TYPE tgt, PTREE *pt, FNOV_RANK *rank )
             }
         }
         // try to find user-defined conversion
-        if( rank->control & FNC_DISTINCT_CHECK  ) {
+        if( rank->control & FNC_DISTINCT_CHECK ) {
             conv.rank->rank = OV_RANK_NO_MATCH;
         } else {
             fromClsRank( &conv );
@@ -1543,7 +1553,7 @@ void FNOV_ARG_RANK( TYPE src, TYPE tgt, PTREE *pt, FNOV_RANK *rank )
             }
         }
         // try to find user-defined conversion
-        if( rank->control & FNC_DISTINCT_CHECK  ) {
+        if( rank->control & FNC_DISTINCT_CHECK ) {
             conv.rank->rank = OV_RANK_NO_MATCH;
         } else {
             fromClsRank( &conv );
@@ -1596,7 +1606,7 @@ void FNOV_ARG_RANK( TYPE src, TYPE tgt, PTREE *pt, FNOV_RANK *rank )
             break;
         }
         // try to find user-defined conversion
-        if( rank->control & FNC_DISTINCT_CHECK  ) {
+        if( rank->control & FNC_DISTINCT_CHECK ) {
             conv.rank->rank = OV_RANK_NO_MATCH;
         } else if( rkd_src == RKD_CLASS ) {
             fromClsRank( &conv );
@@ -1616,7 +1626,7 @@ void FNOV_ARG_RANK( TYPE src, TYPE tgt, PTREE *pt, FNOV_RANK *rank )
         if( conv.wtgt.reference ) {
             rankTgtRefCvMem( &conv );
         }
-        if( rank->control & FNC_DISTINCT_CHECK  ) {
+        if( rank->control & FNC_DISTINCT_CHECK ) {
             conv.rank->rank = OV_RANK_NO_MATCH;
         } else {
             toClsRank( &conv );
@@ -1636,7 +1646,7 @@ void FNOV_ARG_RANK( TYPE src, TYPE tgt, PTREE *pt, FNOV_RANK *rank )
             triv = rankTgtRefCvMem( &conv );
         }
         // try to find user-defined conversion
-        if( rank->control & FNC_DISTINCT_CHECK  ) {
+        if( rank->control & FNC_DISTINCT_CHECK ) {
             conv.rank->rank = OV_RANK_NO_MATCH;
         } else {
             fromClsRank( &conv );

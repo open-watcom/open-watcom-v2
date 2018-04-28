@@ -88,7 +88,7 @@ static SYMBOL lookupOptSym(     // LOOK UP OPTIMIZATION SYMBOL
         odef->sym = var;
         ScopeFreeResult( result );
     }
-    return var;
+    return( var );
 }
 
 
@@ -108,7 +108,7 @@ static cg_name pointOptSym(     // POINT AT OPTIMIZED SYMBOL, IF OPTIMIZABLE
         }
         expr = CgSymbol( odef->sym );
     }
-    return expr;
+    return( expr );
 }
 
 
@@ -137,7 +137,7 @@ static SYMBOL registerHandler(  // REGISTER THE HANDLER
             , CgAddrSymbol( RunTimeCallSymbol( rt_code ) )
             , TY_CODE_PTR );
 #endif
-    return rw;
+    return( rw );
 }
 
 

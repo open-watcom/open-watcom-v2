@@ -327,7 +327,7 @@ DT_METHOD DtmDirect(            // CONVERT DTOR METHOD TO DIRECT COUNTERPART
         dtm = DTM_DIRECT;
         break;
     }
-    return dtm;
+    return( dtm );
 }
 
 
@@ -355,14 +355,14 @@ static bool dtmTabular(         // DETERMINE IF METHOD IS TABULAR
 bool DtmTabular(                // DETERMINE IF SCOPE TABULAR DESTRUCTION METHOD, SCOPE
     FN_CTL* fctl )              // - function control
 {
-    return dtmTabular( fctl->dtor_method );
+    return( dtmTabular( fctl->dtor_method ) );
 }
 
 
 bool DtmTabularFunc(            // DETERMINE IF SCOPE TABULAR DESTRUCTION METHOD, FUNCTION
     FN_CTL* fctl )              // - function control
 {
-    return dtmTabular( fctl->func_dtor_method );
+    return( dtmTabular( fctl->func_dtor_method ) );
 }
 
 
@@ -376,14 +376,14 @@ cg_name CgFetchType(            // PERFORM A FETCH
     cg_name operand,            // - operand to be fetched
     cg_type type )              // - type of fetch
 {
-    return CGUnary( O_POINTS, operand, type );
+    return( CGUnary( O_POINTS, operand, type ) );
 }
 
 
 cg_name CgFetchPtr(             // FETCH A POINTER
     cg_name operand )           // - operand to be fetched
 {
-    return CgFetchType( operand, TY_POINTER );
+    return( CgFetchType( operand, TY_POINTER ) );
 }
 
 
@@ -391,7 +391,7 @@ cg_name CgFetchTemp(            // FETCH A TEMPORARY
     temp_handle handle,         // - handle for temporary
     cg_type type )              // - type of temp
 {
-    return CgFetchType( CGTempName( handle, type ), type );
+    return( CgFetchType( CGTempName( handle, type ), type ) );
 }
 
 
@@ -404,7 +404,7 @@ cg_name CgSaveAsTemp(           // SAVE INTO A TEMPORARY
 
     handle = CGTemp( type );
     *a_hand = handle;
-    return CGLVAssign( CGTempName( handle, type ), expr, type );
+    return( CGLVAssign( CGTempName( handle, type ), expr, type ) );
 }
 
 
@@ -420,7 +420,7 @@ static void addArgument(        // ADD AN ARGUMENT
 cg_name CgSymbol(               // PASS SYMBOL TO CODE GENERATOR
     SYMBOL sym )                // - symbol
 {
-    return CGFEName( (cg_sym_handle)sym, CgTypeSym( sym ) );
+    return( CGFEName( (cg_sym_handle)sym, CgTypeSym( sym ) ) );
 }
 
 
@@ -434,7 +434,7 @@ cg_name CgOffsetExpr(           // MAKE OFFSET EXPRESSION
     } else {
         expr = CGBinary( O_PLUS, expr, CgOffset( offset ), type );
     }
-    return expr;
+    return( expr );
 }
 
 
@@ -442,9 +442,9 @@ cg_name CgAddrSymbol(           // PASS ADDR OF SYMBOL TO CODE GENERATOR
     SYMBOL sym )                // - symbol
 {
 #if 0
-    return CGFEName( (cg_sym_handle)sym, CgTypePtrSym( sym ) );
+    return( CGFEName( (cg_sym_handle)sym, CgTypePtrSym( sym ) ) );
 #else
-    return CGFEName( (cg_sym_handle)sym, CgTypeSym( sym ) );
+    return( CGFEName( (cg_sym_handle)sym, CgTypeSym( sym ) ) );
 #endif
 }
 
@@ -452,7 +452,7 @@ cg_name CgAddrSymbol(           // PASS ADDR OF SYMBOL TO CODE GENERATOR
 cg_name CgOffset(               // PASS ABSOLUTE OFFSET TO CODE GENERATOR
     unsigned offset )           // - offset value
 {
-    return CGInteger( offset, CgTypeOffset() );
+    return( CGInteger( offset, CgTypeOffset() ) );
 }
 
 
@@ -460,7 +460,7 @@ cg_name CgSymbolPlusOffset(     // GENERATE SYMBOL + OFFSET
     SYMBOL sym,                 // - symbol
     target_offset_t offset )    // - offset
 {
-    return CgOffsetExpr( CgAddrSymbol( sym ), offset, CgTypePtrSym( sym ) );
+    return( CgOffsetExpr( CgAddrSymbol( sym ), offset, CgTypePtrSym( sym ) ) );
 }
 
 
@@ -468,7 +468,7 @@ cg_name CgFetchSymbolAddOffset( // GENERATE RVALUE( SYMBOL ) + OFFSET
     SYMBOL sym,                 // - symbol
     unsigned offset )           // - offset
 {
-    return CgOffsetExpr( CgFetchSym( sym ), offset, CgTypeSym( sym ) );
+    return( CgOffsetExpr( CgFetchSym( sym ), offset, CgTypeSym( sym ) ) );
 }
 
 
@@ -478,7 +478,7 @@ cg_type CgReturnType(           // GET CG-TYPE FOR RETURN
     if( CompFlags.returns_promoted && 0 == CgBackInlinedDepth() ) {
         type = FEParmType( NULL, NULL, type );
     }
-    return type;
+    return( type );
 }
 
 
@@ -486,7 +486,7 @@ cg_name CgFetchSym(             // FETCH A SYMBOL
     SYMBOL sym )                // - symbol
 {
 
-    return CgFetchType( CgSymbol( sym ), CgTypeSym( sym ) );
+    return( CgFetchType( CgSymbol( sym ), CgTypeSym( sym ) ) );
 }
 
 
@@ -503,7 +503,7 @@ cg_name CgMakeDup(              // MAKE A DUPLICATE
     // returned cg_name must be emitted before
     // any sequence points that use *orig
     // (i.e., returned cg_name sets up the duplicate value)
-    return dup;
+    return( dup );
 }
 
 
@@ -522,7 +522,7 @@ cg_name CgMakeTwoDups(          // MAKE TWO DUPLICATES
     // returned cg_name must be emitted before
     // any sequence points that use *orig or *second
     // (i.e., returned cg_name sets up the duplicate value)
-    return dup;
+    return( dup );
 }
 
 
@@ -533,7 +533,7 @@ static cg_type prcCgType(       // PROCESS A NEW CODE-GEN TYPE
       ||( type == TY_DOUBLE ) ) {         //***** LATER UPGRADE FOR LONG DBL
         CompFlags.float_used = true;
     }
-    return type;
+    return( type );
 }
 
 
@@ -553,7 +553,7 @@ cg_type CgGetCgType(            // GET CODEGEN TYPE
     } else {
         cgtype = prcCgType( CgTypeOutput( type ) );
     }
-    return cgtype;
+    return( cgtype );
 }
 
 
@@ -569,14 +569,14 @@ cg_type CgFuncRetnType(         // GET CG RETURN TYPE FOR A FUNCTION
     } else {
         cgtype = prcCgType( CgTypeOutput( ftype->of ) );
     }
-    return cgtype;
+    return( cgtype );
 }
 
 
 cg_type CgExprType(             // GET EXPRESSION TYPE
     TYPE type )                 // - C++ type
 {
-    return prcCgType( CgTypeOutput( type ) );
+    return( prcCgType( CgTypeOutput( type ) ) );
 }
 
 
@@ -673,7 +673,7 @@ cg_name CgDestructSymOffset(    // CONSTRUCT DTOR CALL FOR SYMBOL+OFFSET
     if( inlined ) {
         CallStackPop();
     }
-    return finiDtorCall( handle, cdtor );
+    return( finiDtorCall( handle, cdtor ) );
 }
 
 
@@ -686,7 +686,7 @@ cg_name CgDestructExpr(         // CONSTRUCT DTOR CALL FOR EXPRESSION
 
     handle = initDtorCall( dtor );
     addDtorArgs( handle, dtor, var, cdtor );
-    return finiDtorCall( handle, cdtor );
+    return( finiDtorCall( handle, cdtor ) );
 }
 
 
@@ -704,7 +704,7 @@ static cg_name cgCommaSideEffect( // CONSTRUCT COMMA/SIDE-EFFECT EXPRESSION
     } else {
         expr = CGBinary( opcode, lhs, rhs, type );
     }
-    return expr;
+    return( expr );
 }
 
 
@@ -713,7 +713,7 @@ cg_name CgComma(                // CONSTRUCT COMMA EXPRESSION
     cg_name rhs,                // - expression on right
     cg_type type )              // - type of right expression
 {
-    return cgCommaSideEffect( lhs, rhs, type, O_COMMA );
+    return( cgCommaSideEffect( lhs, rhs, type, O_COMMA ) );
 }
 
 
@@ -738,7 +738,7 @@ cg_name CgSideEffect(           // CONSTRUCT SIDE-EFFECT EXPRESSION
     cg_type type )              // - type of right expression
 {
 #if 0
-    return cgCommaSideEffect( lhs, rhs, type, O_SIDE_EFFECT );
+    return( cgCommaSideEffect( lhs, rhs, type, O_SIDE_EFFECT ) );
 #else
     cg_name expr;               // - result
     if( NULL == lhs ) {
@@ -751,7 +751,7 @@ cg_name CgSideEffect(           // CONSTRUCT SIDE-EFFECT EXPRESSION
         expr = CgComma( expr, rhs, type );
         expr = CgComma( expr, CgFetchTemp( handle, type ), type );
     }
-    return expr;
+    return( expr );
 #endif
 }
 
@@ -882,7 +882,7 @@ cg_name CgRtCallExec(           // EXECUTE R/T CALL
     RT_DEF *def )               // - definition for call
 {
     CgBackCallGened( def->handle );
-    return CgFetchType( CGCall( def->handle ), def->type );
+    return( CgFetchType( CGCall( def->handle ), def->type ) );
 }
 
 
@@ -1037,5 +1037,5 @@ TYPE TypeFromCgType(            // GET C++ TYPE FOR cg_type
         type = MakeInternalType( BETypeLength( cgtype ) );
         break;
     }
-    return type;
+    return( type );
 }

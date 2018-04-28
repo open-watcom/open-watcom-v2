@@ -138,14 +138,14 @@ void FnCtlPop(                  // POP FILE CONTROL
 FN_CTL* FnCtlTop(               // GET TOP FN_CTL ITEM
     void )
 {
-    return VstkTop( &stack_files );
+    return( VstkTop( &stack_files ) );
 }
 
 
 FN_CTL* FnCtlPrev(              // GET PREVIOUS FN_CTL ITEM
     FN_CTL* curr )              // - current file control
 {
-    return VstkNext( &stack_files, curr );
+    return( VstkNext( &stack_files, curr ) );
 }
 
 
@@ -161,7 +161,7 @@ unsigned FnCtlCondFlagExpr(     // START FLAGS OFFSET FOR EXPRESSION
     fctl->cond_next = start;
     DbgVerify( start <= cond_flags_offset + fctl->cond_flags
              , "FnCtlCondFlagExpr -- flags overflow" );
-    return start;
+    return( start );
 }
 
 
@@ -171,7 +171,7 @@ unsigned FnCtlCondFlagCtor(     // GET FLAG # FOR CTOR-TEST
     /* unused parameters */ (void)fctl;
 
     DbgVerify( fctl->has_ctor_test, "FnCtlCondFlagCtor -- ! has_ctor_test" );
-    return cond_flags_offset;
+    return( cond_flags_offset );
 }
 
 
@@ -180,7 +180,7 @@ unsigned FnCtlCondFlagNext(     // GET NEXT FLAG OFFSET FOR EXPRESSION
 {
     DbgVerify( fctl->cond_next < cond_flags_offset + fctl->cond_flags
              , "FnCtlCondFlagNext -- flags overflow" );
-    return fctl->cond_next++;
+    return( fctl->cond_next++ );
 }
 
 
@@ -193,7 +193,7 @@ SYMBOL FnCtlNewCtorPtr(         // GET SYMBOL FOR NEW-CTORED PTR.
         new_ctor_ptr->sym_type = TypePtrToVoid();
         fctl->new_ctor_ptr = new_ctor_ptr;
     }
-    return new_ctor_ptr;
+    return( new_ctor_ptr );
 }
 
 

@@ -404,7 +404,7 @@ TYPE MakeExpandableType( type_id base_id )
 
     expands = MakeArrayType( 1 );
     expands->of = GetBasicType( base_id );
-    return expands;
+    return( expands );
 }
 
 TYPE MakeModifiedType( TYPE type, type_flag flag )
@@ -647,7 +647,7 @@ TYPE MakeBasedModifierOf(       // MAKE BASED MODIFIER FOR A TYPE
     if( flags == TF1_NULL ) {
         return( type );
     }
-    return MakeTypeOf( makeFullModifier( flags, baser, NULL ), type );
+    return( MakeTypeOf( makeFullModifier( flags, baser, NULL ), type ) );
 }
 
 static type_flag convertCVSpec( specifier_t spec )
@@ -758,7 +758,7 @@ TYPE MakeMemberPointerTo( TYPE class_type, TYPE base_type )
         flags &= ~TF1_MPTR_REMOVE;
         base_type = MakeBasedModifierOf( unmod_type, flags, base );
     }
-    return MakeTypeOf( mptr_type, base_type );
+    return( MakeTypeOf( mptr_type, base_type ) );
 }
 
 static bool newTypeIllegal( TYPE type )
@@ -900,10 +900,13 @@ static bool dupCompare( TYPE test1, TYPE test2 )
             }
             for(;;) {
                 tp1 = *p1;
-                if( tp1 == NULL ) return false;
+                if( tp1 == NULL )
+                    return( false );
                 tp2 = *p2;
-                if( tp2 == NULL ) return false;
-                if( tp1 != tp2 ) return false;
+                if( tp2 == NULL )
+                    return( false );
+                if( tp1 != tp2 )
+                    return( false );
                 ++p1;
                 ++p2;
             }
@@ -1002,7 +1005,7 @@ static TYPE typeDuplicated(     // GET DUPLICATED TYPE
                     ExtraRptIncrementCtr( ctr_dup_succ );
                     typeFree( newtype );
                     newtype = RingPromote( head, check, prev );
-                    return newtype;
+                    return( newtype );
                 }
             }
         }
@@ -1026,7 +1029,7 @@ static TYPE typeDuplicated(     // GET DUPLICATED TYPE
     ExtraRptAddtoCtr( ctr_dup_fail_probes, ctr_lookup );
     ExtraRptIncrementCtr( ctr_dup_fail );
     newtype = RingPush( head, newtype );
-    return newtype;
+    return( newtype );
 }
 
 #define typeHashVal( t ) ((t)->of->dbg.handle & TYPE_HASH_MASK )
@@ -1109,7 +1112,7 @@ TYPE CheckDupType( TYPE newtype )
                  , "type: attempt to set base type to NULL" );
         newtype = typeDuplicated( newtype, &head[typeHashVal( newtype )] );
     }
-    return newtype;
+    return( newtype );
 }
 
 
@@ -1194,7 +1197,8 @@ static DECL_INFO *prependTypeToDeclarator( DECL_INFO *dinfo, TYPE type )
     if( type != NULL ) {
         end = type;
         for(;;) {
-            if( end->of == NULL ) break;
+            if( end->of == NULL )
+                break;
             end = end->of;
         }
         end->of = dinfo->list;
@@ -1325,7 +1329,7 @@ void ForceNoDefaultArgs( DECL_INFO *dinfo, int err_msg )
     DECL_INFO *parms;
 
     parms = dinfo->parms;
-    if( cantHaveDefaultArgs( err_msg, parms )){
+    if( cantHaveDefaultArgs( err_msg, parms )) {
         removeDefaultArgs( parms );
     }
 }
@@ -1445,7 +1449,8 @@ static TYPE buildFnType( TYPE ret_type, va_list count_args, va_list use_args )
     num_args = 0;
     for(;;) {
         arg_type = va_arg( count_args, TYPE );
-        if( arg_type == NULL ) break;
+        if( arg_type == NULL )
+            break;
         ++num_args;
     }
     va_end( count_args );
@@ -1453,7 +1458,8 @@ static TYPE buildFnType( TYPE ret_type, va_list count_args, va_list use_args )
     curr_arg = args->type_list;
     for(;;) {
         arg_type = va_arg( use_args, TYPE );
-        if( arg_type == NULL ) break;
+        if( arg_type == NULL )
+            break;
         *curr_arg = arg_type;
         ++curr_arg;
     }
@@ -1547,7 +1553,7 @@ static TYPE* dumpTypeRing(      // DUMP A TYPE RING
         stats->max = length;
     }
     putchar( '\n' );
-    return ring + 1;
+    return( ring + 1 );
 }
 
 static TYPE* dumpTypeVector(    // DUMP VECTOR OF TYPE RINGS
@@ -1561,7 +1567,7 @@ static TYPE* dumpTypeVector(    // DUMP VECTOR OF TYPE RINGS
         vector = dumpTypeRing( vector, stats );
         putchar( '\n' );
     }
-    return vector;
+    return( vector );
 }
 
 void DumpTypeTables( void )
@@ -1785,7 +1791,8 @@ static void figureOutDSpec( DECL_SPEC *dspec )
     specifier_t specs;
     type_flag cv_flags;
 
-    if( dspec->decl_checked ) return;
+    if( dspec->decl_checked )
+        return;
     figureOutStgClass( dspec );
     if( dspec->partial == NULL ) {
         dspec->partial = findScalarType( dspec );
@@ -1802,8 +1809,10 @@ TYPE TypedefRemove( TYPE typ )
 /****************************/
 {
     for(;;) {
-        if( typ == NULL ) break;
-        if( typ->id != TYP_TYPEDEF ) break;
+        if( typ == NULL )
+            break;
+        if( typ->id != TYP_TYPEDEF )
+            break;
         typ = typ->of;
     }
     return( typ );
@@ -1813,7 +1822,7 @@ TYPE TypedefModifierRemoveOnly( TYPE typ )
 /****************************************/
 {
     TypeStripTdMod( typ );
-    return typ;
+    return( typ );
 }
 
 TYPE TypedefModifierRemove( TYPE typ )
@@ -1879,11 +1888,11 @@ CLASS_INST *TypeClassInstantiation( TYPE type )
         if( type->id == TYP_CLASS ) {
             if( type->flag & TF1_INSTANTIATION ) {
                 SCOPE inst_scope = type->u.c.scope->enclosing;
-                return inst_scope->owner.inst;
+                return( inst_scope->owner.inst );
             }
         }
     }
-    return NULL;
+    return( NULL );
 }
 
 static NAME betterAnonEnumName( SYMBOL sym, TYPE typ )
@@ -1945,7 +1954,8 @@ bool TypeDefined( TYPE typ )
 /**************************/
 {
     for(;;) {
-        if( typ == NULL ) return( false );
+        if( typ == NULL )
+            return( false );
         TypeStripTdMod( typ );
         switch( typ->id ) {
         case TYP_CLASS:
@@ -1969,7 +1979,8 @@ bool TypePartiallyDefined( TYPE typ )
 /***********************************/
 {
     for(;;) {
-        if( typ == NULL ) return( false );
+        if( typ == NULL )
+            return( false );
         TypeStripTdMod( typ );
         switch( typ->id ) {
         case TYP_CLASS:
@@ -2016,7 +2027,8 @@ bool TypeAbstract( TYPE typ )
 /***************************/
 {
     for(;;) {
-        if( typ == NULL ) return( false );
+        if( typ == NULL )
+            return( false );
         TypeStripTdMod( typ );
         switch( typ->id ) {
         case TYP_CLASS:
@@ -2057,7 +2069,7 @@ TYPE TypeNeedsCtor( TYPE type )
 }
 
 #define MASK_TYPE_CHAR_STR  \
-    ( 1 << TYP_CHAR  )    | \
+    ( 1 << TYP_CHAR )     | \
     ( 1 << TYP_SCHAR )    | \
     ( 1 << TYP_UCHAR )    | \
     ( 1 << TYP_WCHAR )
@@ -2187,7 +2199,8 @@ static void checkScalar( DECL_SPEC *d1, DECL_SPEC *d2 )
         /* warn about deprecated use of 'long char' */
         CErr1( WARN_LONG_CHAR_DEPRECATED );
     }
-    if( findTypeId( combo ) != TYP_MAX ) return;
+    if( findTypeId( combo ) != TYP_MAX )
+        return;
     d1->scalar = STM_NULL;
     CErr1( ERR_ILLEGAL_TYPE_COMBO );
 }
@@ -2550,7 +2563,7 @@ DECL_SPEC *CheckNoDeclarator( DECL_SPEC *dspec )
 
     /* defining a new class or enum doesn't need a declarator */
     figureOutStgClass( dspec );
-    if( dspec->type_declared || dspec->type_defined || dspec->nameless_allowed){
+    if( dspec->type_declared || dspec->type_defined || dspec->nameless_allowed) {
         if( dspec->specifier != STY_NULL ) {
             dspec->specifier = STY_NULL;
             CErr1( ANSI_TYPE_SPECIFIER_QUALIFIER );
@@ -2736,13 +2749,13 @@ static TYPE makeThunkType( TYPE type, unsigned mtt_control )
 TYPE MakeThunkFunction( TYPE type )
 /*********************************/
 {
-    return makeThunkType( type, MTT_INLINE );
+    return( makeThunkType( type, MTT_INLINE ) );
 }
 
 TYPE MakeThunkPragmaFunction( TYPE type )
 /***************************************/
 {
-    return makeThunkType( type, MTT_INLINE | MTT_COPY_PRAGMA );
+    return( makeThunkType( type, MTT_INLINE | MTT_COPY_PRAGMA ) );
 }
 
 TYPE RemoveFunctionPragma( TYPE type )
@@ -3615,7 +3628,7 @@ static TYPE makeModifiedTypeOf( TYPE mod, TYPE of )
         if( ( mod->flag == TF1_NULL )
          && ( mod->u.m.base == NULL )
          && ( mod->u.m.pragma == NULL ) ) {
-            return of;
+            return( of );
         }
     }
     return( MakeTypeOf( mod, of ) );
@@ -4346,8 +4359,10 @@ DECL_SPEC *PTypeDecltypeExpr( PTREE expr, bool idexpr )
         SYMBOL sym;
         bool is_qualified = NodeIsBinaryOp( expr, CO_COLON_COLON );
         if ( is_qualified ) {
-            if( !AnalyseClQualRes( &expr, &result ) ) goto EXIT;
-            if( !AnalyseSymbolAccess( expr, expr, NULL, &diagMemb ) ) goto EXIT;
+            if( !AnalyseClQualRes( &expr, &result ) )
+                goto EXIT;
+            if( !AnalyseSymbolAccess( expr, expr, NULL, &diagMemb ) )
+                goto EXIT;
             sym = expr->u.symcg.symbol;
         } else {
 
@@ -4511,20 +4526,20 @@ TYPE SegmentShortType( TYPE type )
 
 #define MASK_TYPE_INTEGRAL  \
     ( 1 << TYP_ERROR )    | \
-    ( 1 << TYP_BOOL  )    | \
-    ( 1 << TYP_CHAR  )    | \
+    ( 1 << TYP_BOOL )     | \
+    ( 1 << TYP_CHAR )     | \
     ( 1 << TYP_SCHAR )    | \
     ( 1 << TYP_UCHAR )    | \
     ( 1 << TYP_WCHAR )    | \
     ( 1 << TYP_SSHORT )   | \
     ( 1 << TYP_USHORT )   | \
-    ( 1 << TYP_SINT  )    | \
-    ( 1 << TYP_UINT  )    | \
+    ( 1 << TYP_SINT )     | \
+    ( 1 << TYP_UINT )     | \
     ( 1 << TYP_SLONG )    | \
     ( 1 << TYP_ULONG )    | \
     ( 1 << TYP_SLONG64 )  | \
     ( 1 << TYP_ULONG64 )  | \
-    ( 1 << TYP_ENUM  )
+    ( 1 << TYP_ENUM )
 
 TYPE IntegralType( TYPE type )
 /****************************/
@@ -4533,13 +4548,13 @@ TYPE IntegralType( TYPE type )
     if( ! TypeIdMasked( type, MASK_TYPE_INTEGRAL ) ) {
         type = NULL;
     }
-    return type;
+    return( type );
 }
 
 #define MASK_TYPE_FLOATING  \
     ( 1 << TYP_ERROR )    | \
-    ( 1 << TYP_FLOAT  )   | \
-    ( 1 << TYP_DOUBLE  )  | \
+    ( 1 << TYP_FLOAT )    | \
+    ( 1 << TYP_DOUBLE )   | \
     ( 1 << TYP_LONG_DOUBLE )
 
 TYPE FloatingType( TYPE type )
@@ -4549,13 +4564,13 @@ TYPE FloatingType( TYPE type )
     if( ! TypeIdMasked( type, MASK_TYPE_FLOATING ) ) {
         type = NULL;
     }
-    return type;
+    return( type );
 }
 
 #define MASK_TYPE_SIGNED_INT \
     ( 1 << TYP_SCHAR )    | \
     ( 1 << TYP_SSHORT )   | \
-    ( 1 << TYP_SINT  )    | \
+    ( 1 << TYP_SINT )     | \
     ( 1 << TYP_SLONG )    | \
     ( 1 << TYP_SLONG64 )
 
@@ -4564,14 +4579,14 @@ bool SignedIntType( TYPE type )
 /*****************************/
 {
     TypeStripTdModEnumChar( type );
-    return TypeIdMasked( type, MASK_TYPE_SIGNED_INT );
+    return( TypeIdMasked( type, MASK_TYPE_SIGNED_INT ) );
 }
 
 #define MASK_TYPE_UNSIGNED_INT  \
     ( 1 << TYP_UCHAR )    | \
     ( 1 << TYP_WCHAR )    | \
     ( 1 << TYP_USHORT )   | \
-    ( 1 << TYP_UINT  )    | \
+    ( 1 << TYP_UINT )     | \
     ( 1 << TYP_ULONG )    | \
     ( 1 << TYP_ULONG64 )
 
@@ -4580,25 +4595,25 @@ bool UnsignedIntType( TYPE type )
 /*******************************/
 {
     TypeStripTdModEnumChar( type );
-    return TypeIdMasked( type, MASK_TYPE_UNSIGNED_INT );
+    return( TypeIdMasked( type, MASK_TYPE_UNSIGNED_INT ) );
 }
 
 #define MASK_TYPE_ARITH     \
     ( 1 << TYP_ERROR )    | \
-    ( 1 << TYP_BOOL  )    | \
-    ( 1 << TYP_CHAR  )    | \
+    ( 1 << TYP_BOOL )     | \
+    ( 1 << TYP_CHAR )     | \
     ( 1 << TYP_SCHAR )    | \
     ( 1 << TYP_UCHAR )    | \
     ( 1 << TYP_WCHAR )    | \
     ( 1 << TYP_SSHORT )   | \
     ( 1 << TYP_USHORT )   | \
-    ( 1 << TYP_SINT  )    | \
-    ( 1 << TYP_UINT  )    | \
+    ( 1 << TYP_SINT )     | \
+    ( 1 << TYP_UINT )     | \
     ( 1 << TYP_SLONG )    | \
     ( 1 << TYP_ULONG )    | \
     ( 1 << TYP_SLONG64 )  | \
     ( 1 << TYP_ULONG64 )  | \
-    ( 1 << TYP_ENUM  )    | \
+    ( 1 << TYP_ENUM )     | \
     ( 1 << TYP_FLOAT )    | \
     ( 1 << TYP_DOUBLE )   | \
     ( 1 << TYP_LONG_DOUBLE ) | \
@@ -4611,7 +4626,7 @@ TYPE ArithType( TYPE type )
     if( ! TypeIdMasked( type, MASK_TYPE_ARITH ) ) {
         type = NULL;
     }
-    return type;
+    return( type );
 }
 
 TYPE FunctionDeclarationType( TYPE type )
@@ -4626,15 +4641,17 @@ TYPE FunctionDeclarationType( TYPE type )
 
 #define MASK_TYPE_ENUM        \
     ( 1 << TYP_ENUM )       | \
-    ( 1 << TYP_MODIFIER  )  | \
-    ( 1 << TYP_TYPEDEF  )
+    ( 1 << TYP_MODIFIER )   | \
+    ( 1 << TYP_TYPEDEF )
 
 TYPE EnumType( TYPE type )
 /************************/
 {
     for( ; ; type = type->of ) {
         if( TypeIdMasked( type, MASK_TYPE_ENUM ) ) {
-            if( type->id == TYP_ENUM ) break;
+            if( type->id == TYP_ENUM ) {
+                break;
+            }
         } else {
             type = NULL;
             break;
@@ -4645,15 +4662,17 @@ TYPE EnumType( TYPE type )
 
 #define MASK_TYPE_BOOL        \
     ( 1 << TYP_BOOL )       | \
-    ( 1 << TYP_MODIFIER  )  | \
-    ( 1 << TYP_TYPEDEF  )
+    ( 1 << TYP_MODIFIER )   | \
+    ( 1 << TYP_TYPEDEF )
 
 TYPE BoolType( TYPE type )
 /************************/
 {
     for( ; ; type = type->of ) {
         if( TypeIdMasked( type, MASK_TYPE_BOOL ) ) {
-            if( type->id == TYP_BOOL ) break;
+            if( type->id == TYP_BOOL ) {
+                break;
+            }
         } else {
             type = NULL;
             break;
@@ -4664,15 +4683,17 @@ TYPE BoolType( TYPE type )
 
 #define MASK_TYPE_GENERIC     \
     ( 1 << TYP_GENERIC )    | \
-    ( 1 << TYP_MODIFIER  )  | \
-    ( 1 << TYP_TYPEDEF  )
+    ( 1 << TYP_MODIFIER )   | \
+    ( 1 << TYP_TYPEDEF )
 
 TYPE GenericType( TYPE type )
 /***************************/
 {
     for( ; ; type = type->of ) {
         if( TypeIdMasked( type, MASK_TYPE_GENERIC ) ) {
-            if( type->id == TYP_GENERIC ) break;
+            if( type->id == TYP_GENERIC ) {
+                break;
+            }
         } else {
             type = NULL;
             break;
@@ -4682,8 +4703,8 @@ TYPE GenericType( TYPE type )
 }
 
 #define MASK_TYPE_ELABOR      \
-    ( 1 << TYP_ENUM    )    | \
-    ( 1 << TYP_CLASS   )
+    ( 1 << TYP_ENUM )       | \
+    ( 1 << TYP_CLASS )
 
 TYPE ElaboratableType( TYPE type )
 /********************************/
@@ -4692,7 +4713,7 @@ TYPE ElaboratableType( TYPE type )
     if( ! TypeIdMasked( type, MASK_TYPE_ELABOR ) ) {
         type = NULL;
     }
-    return type;
+    return( type );
 }
 
 // 'ClassType' is used by code generator!
@@ -4816,7 +4837,8 @@ TYPE ArrayBaseType( TYPE type )
 {
     for(;;) {
         TypeStripTdMod( type );
-        if( type->id != TYP_ARRAY ) break;
+        if( type->id != TYP_ARRAY )
+            break;
         type = type->of;
     }
     return( type );
@@ -4831,7 +4853,8 @@ TYPE ArrayModifiedBaseType( TYPE type )
 {
     TypeStripTdMod( type );
     for(;;) {
-        if( ! TypeIdMasked( type, MASK_TYPE_TDEF_ARR ) ) break;
+        if( ! TypeIdMasked( type, MASK_TYPE_TDEF_ARR ) )
+            break;
         type = type->of;
     }
     return( type );
@@ -4855,7 +4878,7 @@ TYPE Integral64Type             // GET 64-BIT TYPE IF POSSIBLE
         type = NULL;
         break;
     }
-    return type;
+    return( type );
 }
 
 #define MASK_TYPE_INT64  \
@@ -4986,7 +5009,7 @@ TYPE MakeConstReferenceTo(      // MAKE A CONST REFERENCE TO A TYPE
 /*************************/
     TYPE type )                 // - the type
 {
-    return MakeReferenceTo( MakeModifiedType( type, TF1_CONST ) );
+    return( MakeReferenceTo( MakeModifiedType( type, TF1_CONST ) ) );
 }
 
 TYPE GetReferenceTo( TYPE base )
@@ -5080,7 +5103,7 @@ derived_status TypeDerived( TYPE type_derived, TYPE type_potential_base )
             retn = ScopeDerived( derived, potential_base );
         }
     }
-    return retn;
+    return( retn );
 }
 
 TYPE TypeCommonBase( TYPE class_1, TYPE class_2 )
@@ -5134,7 +5157,7 @@ AUX_INFO *TypeHasPragma( TYPE type )
 type_flag DefaultMemoryFlag(    // GET DEFAULT MEMORY FLAG FOR A TYPE
     TYPE type )                 // - unmodified type
 {
-    return defaultMemoryFlag( type );
+    return( defaultMemoryFlag( type ) );
 }
 
 TYPE TypeModExtract(            // EXTRACT MODIFIER INFORMATION
@@ -5319,7 +5342,7 @@ type_flag TypeExplicitModFlags( TYPE type )
         flag |= type->flag;
     }
 
-    return flag;
+    return( flag );
 }
 
 
@@ -5799,7 +5822,8 @@ static unsigned declareDefaultProtos( SCOPE scope, DECL_INFO *dinfo )
     num_args = 0;
     is_template = SymIsFunctionTemplateModel( dinfo->sym );
     RingIterBeg( dinfo->parms, curr ) {
-        if( curr->type->id == TYP_DOT_DOT_DOT ) break;
+        if( curr->type->id == TYP_DOT_DOT_DOT )
+            break;
         def_arg_sym = NULL;
         if( curr->has_defarg ) {
             def_arg_sym = makeDefaultProto( dinfo, num_args, curr );
@@ -5843,7 +5867,8 @@ static void deferDefaultRewrites( DECL_INFO *dinfo )
     fn_dinfo->sym = dinfo->sym;
     fn_dinfo->sym_used = true;
     RingIterBeg( dinfo->parms, curr ) {
-        if( curr->type->id == TYP_DOT_DOT_DOT ) break;
+        if( curr->type->id == TYP_DOT_DOT_DOT )
+            break;
         parm_dinfo = makeDeclInfo( NULL );
         parm_dinfo->type = curr->type;
         if( curr->has_defarg ) {
@@ -6784,7 +6809,8 @@ void InsertArgs( DECL_INFO **args )
     NAME name;
 
     RingIterBeg( *args, curr ) {
-        if( curr->type->id == TYP_DOT_DOT_DOT ) break;
+        if( curr->type->id == TYP_DOT_DOT_DOT )
+            break;
         if( curr->sym == NULL ) {
             curr->sym = SymMakeDummy( curr->type, &name );
             curr->name = name;
@@ -6795,9 +6821,9 @@ void InsertArgs( DECL_INFO **args )
 }
 
 #define MASK_TYPE_POINTS      \
-    ( 1 << TYP_POINTER   )  | \
-    ( 1 << TYP_FUNCTION  )  | \
-    ( 1 << TYP_ARRAY     )
+    ( 1 << TYP_POINTER )    | \
+    ( 1 << TYP_FUNCTION )   | \
+    ( 1 << TYP_ARRAY )
 
 static bool typePoints(         // TEST IF POINTER, ARRAY, REFERENCE, FUNCTION
     TYPE type )                 // - type to be tested
@@ -6818,7 +6844,7 @@ TYPE TypePointedAtModified(     // GET MODIFIED TYPE POINTED AT
     TYPE original;              // - original type
 
     if( NULL == type ) {
-        return type;
+        return( type );
     }
     original = type;
     TypeStripTdMod( type );
@@ -6917,7 +6943,8 @@ uint_32 TypeHash( TYPE type )
 
     hash = 17;
     for(;;) {
-        if( type == NULL ) break;
+        if( type == NULL )
+            break;
         hash <<= 4;
         hash *= type->id;
         hash += type->id;
@@ -7265,7 +7292,7 @@ TYPE MemberPtrType( TYPE type )
             type = NULL;
         }
     }
-    return type;
+    return( type );
 }
 
 TYPE MemberPtrClass( TYPE type )
@@ -7371,7 +7398,8 @@ static bool markAllUnused( SCOPE scope, void (*diag)( SYMBOL ) )
     stop = ScopeOrderedStart( scope );
     for(;;) {
         curr = ScopeOrderedNext( stop, curr );
-        if( curr == NULL ) break;
+        if( curr == NULL )
+            break;
         generic_type = TypedefRemove( curr->sym_type );
         DbgAssert( curr->id == SC_TYPEDEF && generic_type->id == TYP_GENERIC );
         curr_flags = generic_type->flag;
@@ -7538,7 +7566,8 @@ static void checkTemplateClass( PSTK_CTL *stk, TYPE class_type )
     stop = ScopeOrderedStart( parm_scope );
     for(;;) {
         curr = ScopeOrderedNext( stop, curr );
-        if( curr == NULL ) break;
+        if( curr == NULL )
+            break;
         if( curr->id == SC_TYPEDEF ) {
             PstkPush( stk, curr->sym_type );
         }
@@ -7595,7 +7624,8 @@ bool FunctionUsesAllTypes( SYMBOL sym, SCOPE scope, void (*diag)( SYMBOL ) )
     pushArguments( &type_stack, fn_type->u.f.args );
     for(;;) {
         top = (TYPE *)PstkPop( &type_stack );
-        if( top == NULL ) break;
+        if( top == NULL )
+            break;
         if( *top != NULL ) {
             scanForGenerics( &type_stack, *top );
         }
@@ -7614,8 +7644,10 @@ static void clearGenericBindings( PSTK_CTL *stk, SCOPE decl_scope )
 
     for(;;) {
         top = (TYPE *)PstkPop( stk );
-        if( top == NULL ) break;
-        if( *top == NULL ) continue;
+        if( top == NULL )
+            break;
+        if( *top == NULL )
+            continue;
         bound_type = *top;
         switch( bound_type->id ) {
         case TYP_GENERIC:
@@ -7638,8 +7670,8 @@ static void clearGenericBindings( PSTK_CTL *stk, SCOPE decl_scope )
         curr = NULL;
         for(;;) {
             curr = ScopeOrderedNext( stop, curr );
-            if( curr == NULL ) break;
-
+            if( curr == NULL )
+                break;
             if( curr->sym_type->id == TYP_TYPEDEF ) {
                 bound_type = curr->sym_type->of;
                 if( bound_type->id == TYP_GENERIC ) {
@@ -7710,8 +7742,10 @@ static bool compareClassTypes( TYPE b_type, TYPE u_type,
     for(;;) {
         b_curr = ScopeOrderedNext( b_stop, b_curr );
         u_curr = ScopeOrderedNext( u_stop, u_curr );
-        if( b_curr == NULL ) break;
-        if( u_curr == NULL ) break;
+        if( b_curr == NULL )
+            break;
+        if( u_curr == NULL )
+            break;
         if( b_curr->id == SC_TYPEDEF ) {
             PstkPush( &(data->without_generic),
                       PTreeType( b_curr->sym_type ) );
@@ -8174,13 +8208,15 @@ static void binderFini( type_bind_info *data )
 
     for(;;) {
         top = (PTREE *)PstkPop( &(data->with_generic) );
-        if( top == NULL ) break;
+        if( top == NULL )
+            break;
         PTreeFree( *top );
     }
 
     for(;;) {
         top = (PTREE *)PstkPop( &(data->without_generic) );
-        if( top == NULL ) break;
+        if( top == NULL )
+            break;
         PTreeFree( *top );
     }
 
@@ -8205,7 +8241,7 @@ static SYMBOL templateArgTypedef( TYPE type )
     SYMBOL tsym;
 
     tsym = templateArgSym( SC_TYPEDEF, type );
-    return tsym;
+    return( tsym );
 }
 
 static void injectTemplateParm( SCOPE scope, PTREE parm, NAME name )
@@ -8259,7 +8295,7 @@ int BindExplicitTemplateArguments( SCOPE parm_scope, PTREE templ_args )
     something_went_wrong = false;
     decl_scope = parm_scope->enclosing;
     if( ( decl_scope == NULL ) && ( templ_args == NULL ) ) {
-        return num_explicit;
+        return( num_explicit );
     }
 
     node = templ_args;
@@ -8320,10 +8356,10 @@ int BindExplicitTemplateArguments( SCOPE parm_scope, PTREE templ_args )
     }
 
     if( something_went_wrong || ( node != NULL ) ) {
-        return -1;
+        return( -1 );
     }
 
-    return num_explicit;
+    return( num_explicit );
 }
 
 bool BindGenericTypes( SCOPE parm_scope, PTREE parms, PTREE args,
@@ -8351,7 +8387,8 @@ bool BindGenericTypes( SCOPE parm_scope, PTREE parms, PTREE args,
         curr = NULL;
         for(;;) {
             curr = ScopeOrderedNext( stop, curr );
-            if( curr == NULL ) break;
+            if( curr == NULL )
+                break;
 
             if( ( curr->sym_type->id == TYP_TYPEDEF )
              && ( curr->sym_type->of->id == TYP_GENERIC ) ) {
@@ -8824,7 +8861,7 @@ static unsigned pchCountHashes(
         count += RingCount( *vector );
         ++ vector;
     }
-    return count;
+    return( count );
 }
 
 static void pchWriteArgLists( type_pch_walk *data )
@@ -8947,7 +8984,7 @@ static arg_list *argListMapIndex( type_pch_walk *d, arg_list *index )
         return( NULL );
     }
     DbgAssert( !( PCHGetUInt( index ) >= d->count + PCH_FIRST_INDEX ) );
-    return d->translate[PCHGetUInt( index ) - PCH_FIRST_INDEX];
+    return( d->translate[PCHGetUInt( index ) - PCH_FIRST_INDEX] );
 }
 
 static arg_list *argListGetIndex( type_pch_walk *d, arg_list *arg )

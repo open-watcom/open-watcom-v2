@@ -240,7 +240,7 @@ char *stxdcpy(                  // CONCATENATE DECIMAL NUMBER
 {
     char buffer[16];
 
-    return stxpcpy( tgt, ultoa( value, buffer, 10 ) );
+    return( stxpcpy( tgt, ultoa( value, buffer, 10 ) ) );
 }
 
 
@@ -250,7 +250,7 @@ char *stxicpy(                  // CONCATENATE INTEGER NUMBER
 {
     char buffer[16];
 
-    return stxpcpy( tgt, ltoa( value, buffer, 10 ) );
+    return( stxpcpy( tgt, ltoa( value, buffer, 10 ) ) );
 }
 
 
@@ -259,7 +259,7 @@ char *stxi64cpy(                // CONCATENATE I64 NUMBER
     signed_64 value )           // - value to be concatenated
 {
     sprintf( tgt, "%lld", VAL64( value ) );
-    return strend( tgt );
+    return( strend( tgt ) );
 }
 
 bool strpref(                   // IS STRING A PREFIX OF A STRING

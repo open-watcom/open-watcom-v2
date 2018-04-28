@@ -74,7 +74,7 @@ CALL_OPT AnalyseCallOpts        // ANALYSE CALL OPTIMIZATIONS
     } else {
         retn = CALL_OPT_NONE;
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -107,7 +107,7 @@ static PTREE doCopySubstitution( // EFFECT COPY SUBSTITUTION
                            | PTF_MEMORY_EXACT
                            | PTF_SIDE_EFF
                            | PTF_MEANINGFUL );
-    return orig;
+    return( orig );
 }
 
 
@@ -123,7 +123,7 @@ static PTREE doCopyElimination( // EFFECT COPY ELIMINATION
         parm->flags = ( parm->flags & PTF_ARGS ) | repl->flags;
         parm->type = repl->type;
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -163,6 +163,6 @@ PTREE CopyOptimize              // COPY OPTIMIZATION
         break;
     DbgDefault( "CopyOptimize -- impossible optimization" );
     }
-    return expr;
+    return( expr );
 }
 

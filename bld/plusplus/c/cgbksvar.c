@@ -191,7 +191,7 @@ static SE* stateTableAddSe(     // ADD TO STATE TABLE
         }
 #endif
     }
-    return se;
+    return( se );
 }
 
 
@@ -206,14 +206,14 @@ STAB_DEFN* StabDefnInit(        // INITIALIZE STAB_DEFN
     defn->kind = kind;
     defn->state_table = NULL;
     defn->ro = NULL;
-    return defn;
+    return( defn );
 }
 
 
 STAB_DEFN* StabDefnAllocate(    // ALLOCATE STAB_DEFN
     unsigned kind )             // - kind of table
 {
-    return StabDefnInit( CarveAlloc( carveSTAB_DEFN ), kind );
+    return( StabDefnInit( CarveAlloc( carveSTAB_DEFN ), kind ) );
 }
 
 
@@ -228,7 +228,7 @@ SE* StabDefnAddSe(              // ADD STATE ENTRY TO STATE TABLE
     SE* se,                     // - entry to be added
     STAB_DEFN* defn )           // - state table definition
 {
-    return stateTableAddSe( se, &defn->state_table );
+    return( stateTableAddSe( se, &defn->state_table ) );
 }
 
 
@@ -263,7 +263,7 @@ STAB_CTL* StabCtlInit(          // INITIALIZE STAB_CTL
 {
     stab->rw = NULL;
     stab->defn = defn;
-    return stab;
+    return( stab );
 }
 
 
@@ -277,14 +277,14 @@ SE* StateTableCurrPosn(         // GET STATE ENTRY FOR CURRENT POSITION
     } else {
         curr_posn = SeSetSvPosition( sctl->defn->state_table );
     }
-    return curr_posn;
+    return( curr_posn );
 }
 
 
 SE* StateTableActualPosn(       // GET (UN-OPTIMIZED) CURRENT STATE ENTRY
     STAB_CTL* sctl )            // - control info
 {
-    return sctl->defn->state_table;
+    return( sctl->defn->state_table );
 }
 
 
@@ -296,7 +296,7 @@ SE* StabCtlPrecedes(            // GET PRECEDING ENTRY OR NULL
     if( se == sctl->defn->state_table ) {
         se = NULL;
     }
-    return se;
+    return( se );
 }
 
 
@@ -304,7 +304,7 @@ SE* StabCtlPrevious(            // GET PREVIOUS ENTRY OR NULL
     STAB_CTL* sctl,             // - control info
     SE* se )                    // - state entry
 {
-    return SeSetSvPosition( StabCtlPrecedes( sctl, se ) );
+    return( SeSetSvPosition( StabCtlPrecedes( sctl, se ) ) );
 }
 
 
@@ -323,7 +323,9 @@ static void pruneFixUp(         // FIX-UP PTR. TO ENTRY, FOR PRUNING
             for( ; ; ) {
                 se = se->base.prev;
                 if( se->base.state_var == state_var ) {
-                    if( se->base.gen ) break;
+                    if( se->base.gen ) {
+                        break;
+                    }
                 }
             }
         }
@@ -349,7 +351,7 @@ void StabCtlPrune(              // PRUNE UN-GENNED ENTRIES UP TO AN ENTRY
         done = false;
         for( ; ; se = prev ) {
             prev = se->base.prev;
-            if( ending == 0  ) {
+            if( ending == 0 ) {
                 if( prev == *hdr ) {
                     done = true;
                 }
@@ -403,11 +405,13 @@ SE* StabCtlPosnGened(           // GET GENERATED POSITION IF REQUIRED
             tgt = NULL;
         } else {
             for( ; ; tgt = tgt->base.prev ) {
-                if( tgt->base.gen && tgt->base.state_var == sv ) break;
+                if( tgt->base.gen && tgt->base.state_var == sv ) {
+                    break;
+                }
             }
         }
     }
-    return tgt;
+    return( tgt );
 }
 
 
@@ -444,7 +448,7 @@ char const * DbgSeName          // DUMP DTC_... name
     } else {
         sv_name = dtc_names[se_type];
     }
-    return sv_name;
+    return( sv_name );
 }
 
 
@@ -579,7 +583,9 @@ void DbgDumpStateTableDefn(     // DUMP STATE TABLE DEFINITION
         if( defn->state_table != NULL ) {
             for( se = defn->state_table; ; se = se->base.prev ) {
                 DbgDumpStateEntry( se );
-                if( se == defn->state_table->base.next ) break;
+                if( se == defn->state_table->base.next ) {
+                    break;
+                }
             }
         }
         fflush( stdout );
@@ -620,7 +626,7 @@ SE* StateTableAdd(              // ADD TO STATE TABLE
     SE* se,                     // - state entry
     STAB_CTL* sctl )            // - state table information
 {
-    return stateTableAddSe( se, &sctl->defn->state_table );
+    return( stateTableAddSe( se, &sctl->defn->state_table ) );
 }
 
 
@@ -632,7 +638,7 @@ SE* SeAlloc(                    // ALLOCATE AN SE ENTRY
     se = CarveAlloc( seCarver( se_type ) );
     se->base.se_type = se_type;
     se->base.gen = BlkPosnUseStab();;
-    return se;
+    return( se );
 }
 
 
@@ -652,7 +658,7 @@ SE* SeSetSvPosition(            // LOCATE STATE ENTRY PAST OPTIONAL SET_SV'S
         }
         break;
     }
-    return se;
+    return( se );
 }
 
 
@@ -666,14 +672,14 @@ STATE_VAR SeStateVar(           // GET STATE VARIABLE AT CURRENT POSITION
     } else {
         state_var = se->base.state_var;
     }
-    return state_var;
+    return( state_var );
 }
 
 
 STATE_VAR SeStateOptimal(       // GET STATE VALUE FOR POSITION (OPTIMAL)
     SE* se )                    // - state entry
 {
-    return SeStateVar( SeSetSvPosition( se ) );
+    return( SeStateVar( SeSetSvPosition( se ) ) );
 }
 
 
@@ -691,8 +697,8 @@ static void stabInit(           // INITIALIZATION
     #include "_dtccarv.h"
     #undef pick
 
-    carveSTAB_DEFN      = CarveCreate( sizeof( STAB_DEFN ),         8  );
-    carveSTAB_CTL       = CarveCreate( sizeof( STAB_CTL ),          8  );
+    carveSTAB_DEFN      = CarveCreate( sizeof( STAB_DEFN ), 8 );
+    carveSTAB_CTL       = CarveCreate( sizeof( STAB_CTL ), 8 );
 }
 
 

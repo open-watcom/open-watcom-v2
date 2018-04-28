@@ -59,7 +59,7 @@ static carve_t carveTC_DATA;
 
 static TC_DATA *pushTC_DATA( TC_DATA **h )
 {
-    return StackCarveAlloc( carveTC_DATA, h );
+    return( StackCarveAlloc( carveTC_DATA, h ) );
 }
 
 static void popTC_DATA( TC_DATA **h )
@@ -251,12 +251,14 @@ bool TypeCompareExclude( TYPE type1, TYPE type2, type_exclude mask )
     stack = NULL;
     state = FOLLOW_OF;
     for(;;) {
-        if( type1 == NULL || type2 == NULL ) break;
+        if( type1 == NULL || type2 == NULL )
+            break;
 
         // tweak type1 and type2 to ignore minor distinctions
         type1 = TypeModExtract( type1, &flag1, &base1, mask|TC1_NOT_MEM_MODEL );
         type2 = TypeModExtract( type2, &flag2, &base2, mask|TC1_NOT_MEM_MODEL );
-        if( type1 == NULL || type2 == NULL ) break;
+        if( type1 == NULL || type2 == NULL )
+            break;
 
         if( mask & TC1_PTR_FUN ) {
             type_flag   extra;
@@ -357,7 +359,7 @@ bool TypesSameExclude( TYPE type1, TYPE type2, type_exclude mask )
 bool TypesIdentical( TYPE type1, TYPE type2 )
 /*******************************************/
 {
-    return TypeCompareExclude( type1, type2, TC1_PTR_FUN | TC1_NOT_ENUM_CHAR );
+    return( TypeCompareExclude( type1, type2, TC1_PTR_FUN | TC1_NOT_ENUM_CHAR ) );
 }
 
 static void typeCompareInit(    // INITIALIZATION

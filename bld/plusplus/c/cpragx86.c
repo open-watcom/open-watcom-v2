@@ -568,7 +568,7 @@ static enum sym_type CodePtrType( type_flag flags )
     } else {
         retn = SYM_FNEAR;
     }
-    return retn;
+    return( retn );
 }
 #endif
 
@@ -586,7 +586,7 @@ static enum sym_type PtrType( type_flag flags )
     } else {
         retn = SYM_DNEAR;
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -716,8 +716,10 @@ static int insertFixups( VBUF *src_code )
             owner = &FixupHead;
             for( ;; ) {
                 chk = *owner;
-                if( chk == NULL ) break;
-                if( chk->fixup_loc > fix->fixup_loc ) break;
+                if( chk == NULL )
+                    break;
+                if( chk->fixup_loc > fix->fixup_loc )
+                    break;
                 owner = &chk->next;
             }
             next = fix->next;
@@ -1308,7 +1310,7 @@ bool PragmasTypeEquivalent(     // TEST IF TWO PRAGMAS ARE TYPE-EQUIVALENT
         inf2 = &DefaultInfo;
     }
     if( inf1 == inf2 ) {
-        return true;
+        return( true );
     }
     return
            ( ( inf1->cclass & ~CALL_CLASS_IGNORE ) ==
@@ -1324,12 +1326,12 @@ bool PragmaOKForInlines(        // TEST IF PRAGMA IS SUITABLE FOR INLINED FN
     AUX_INFO *fnp )             // - pragma
 {
     if( fnp->code != NULL ) {
-        return false;
+        return( false );
     }
     if( ReverseParms( fnp ) ) {
-        return false;
+        return( false );
     }
-    return true;
+    return( true );
 }
 
 bool PragmaOKForVariables(      // TEST IF PRAGMA IS SUITABLE FOR A VARIABLE
@@ -1376,7 +1378,7 @@ static bool okClassChange(      // TEST IF OK TO CHANGE A CLASS IN PRAGMA
     call_class newp,                 // - new
     call_class defp )                // - default
 {
-    return ( ( oldp & newp) == oldp ) || ( oldp == defp );
+    return( ( ( oldp & newp) == oldp ) || ( oldp == defp ) );
 }
 
 static bool okPtrChange(        // TEST IF OK TO CHANGE A PTR IN PRAGMA
@@ -1384,7 +1386,7 @@ static bool okPtrChange(        // TEST IF OK TO CHANGE A PTR IN PRAGMA
     void *newp,                 // - new ptr
     void *defp )                // - default pointer
 {
-    return ( oldp == newp ) || ( oldp == defp );
+    return( ( oldp == newp ) || ( oldp == defp ) );
 }
 
 
@@ -1394,7 +1396,7 @@ static bool okStrChange(        // TEST IF OK TO CHANGE A STRING IN PRAGMA
     void *defp )                // - default pointer
 {
     if( oldp == NULL || newp == NULL || defp == NULL ) {
-        return ( oldp == newp ) || ( oldp == defp );
+        return( ( oldp == newp ) || ( oldp == defp ) );
     }
     return ( 0 == strcmp( oldp, newp ) )
         || ( 0 == strcmp( oldp, defp ) );
@@ -1406,7 +1408,7 @@ static bool okHwChange(         // TEST IF OK TO CHANGE HARDWARE DEFINITION
     hw_reg_set newr,            // - reg. set, new
     hw_reg_set defr )           // - reg. set, default
 {
-    return HW_Equal( oldr, newr ) || HW_Equal( oldr, defr );
+    return( HW_Equal( oldr, newr ) || HW_Equal( oldr, defr ) );
 }
 
 
@@ -1415,7 +1417,7 @@ static bool okParmChange(       // TEST IF OK TO CHANGE PARMS
     hw_reg_set *newr,           // - addr[ reg. set, new ]
     hw_reg_set *defr )          // - addr[ reg. set, default ]
 {
-    return parmSetsIdentical( oldr, newr ) || parmSetsIdentical( oldr, defr );
+    return( parmSetsIdentical( oldr, newr ) || parmSetsIdentical( oldr, defr ) );
 }
 
 
@@ -1430,7 +1432,7 @@ bool PragmaChangeConsistent(    // TEST IF PRAGMA CHANGE IS CONSISTENT
         newp = &DefaultInfo;
     }
     if( oldp == newp ) {
-        return true;
+        return( true );
     }
     return( ( okClassChange( oldp->cclass
                          , newp->cclass

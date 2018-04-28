@@ -1157,7 +1157,7 @@ void CmdSysAnalyse( OPT_STORAGE *data )
         Stack87 = 4;
     } else {
         if( mmc & MMC_NETWARE ) {
-            if(TS_NETWARE5 != TargetSystem){
+            if(TS_NETWARE5 != TargetSystem) {
                 Stack87 = 4;    /* no fpr for netware 5 */
             }
         }

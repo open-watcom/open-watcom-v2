@@ -79,7 +79,7 @@ unsigned ConsoleRead            // READ FROM CONSOLE
         }
     }
     buffer[index] = '\0';
-    return index;
+    return( index );
 }
 
 
@@ -89,5 +89,5 @@ unsigned ConsoleReadPrefixed    // READ FROM CONSOLE, PREFIXED
     , const char* prefix )      // - prefix
 {
     fputs( prefix, stdout );
-    return ConsoleRead( buffer, bsize );
+    return( ConsoleRead( buffer, bsize ) );
 }

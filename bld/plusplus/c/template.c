@@ -170,7 +170,7 @@ static void popInstContext( void )
 bool IsTemplateInstantiationActive( void )
 /****************************************/
 {
-    return templateData.curr_depth > 0;
+    return( templateData.curr_depth > 0 );
 }
 
 static TYPE extractTemplateClass( TEMPLATE_CONTEXT *ctx )
@@ -288,7 +288,7 @@ static TEMPLATE_INFO *classInstTemplateInfo( TYPE cls )
 
     DbgAssert( ScopeType( scope, SCOPE_TEMPLATE_PARM ) );
 
-    return scope->owner.tinfo;
+    return( scope->owner.tinfo );
 }
 
 static TEMPLATE_INFO *classUnboundTemplateInfo( TYPE cls )
@@ -305,7 +305,7 @@ static TEMPLATE_INFO *classUnboundTemplateInfo( TYPE cls )
     scope = scope->enclosing;
     DbgAssert( ScopeType( scope, SCOPE_TEMPLATE_PARM ) );
 
-    return scope->owner.tinfo;
+    return( scope->owner.tinfo );
 }
 
 static TYPE setArgIndex( SYMBOL sym, unsigned index )
@@ -318,7 +318,7 @@ static TYPE setArgIndex( SYMBOL sym, unsigned index )
     type->u.g.index = index;
     type = CheckDupType( type );
     sym->sym_type = type;
-    return type;
+    return( type );
 }
 
 void TemplateDeclInit( TEMPLATE_DATA *data )
@@ -620,29 +620,29 @@ static NAME *getUniqueArgNames( DECL_INFO *args, TEMPLATE_SPECIALIZATION *tspec 
 static bool templateArgSame( PTREE left, PTREE right )
 {
     if( ( left->op == PT_TYPE ) && ( right->op == PT_TYPE ) ) {
-        return TypesIdentical( left->type, right->type );
+        return( TypesIdentical( left->type, right->type ) );
     } else if( ( left->op == PT_INT_CONSTANT )
             && ( right->op == PT_INT_CONSTANT ) ) {
         // integer constant
-        return ! U64Cmp( &left->u.int64_constant, &right->u.int64_constant);
+        return( ! U64Cmp( &left->u.int64_constant, &right->u.int64_constant) );
     } else if( ( left->op == PT_SYMBOL ) && ( right->op == PT_SYMBOL ) ) {
         // unbound constant
         return TypesIdentical( left->u.symcg.symbol->sym_type,
                                right->u.symcg.symbol->sym_type );
     } else if( ( left->op == PT_TYPE ) && ( right->op == PT_SYMBOL ) ) {
         // unbound constant
-        return TypesIdentical( left->type, right->u.symcg.symbol->sym_type );
+        return( TypesIdentical( left->type, right->u.symcg.symbol->sym_type ) );
     } else if( ( left->op == PT_SYMBOL ) && ( right->op == PT_TYPE ) ) {
         // unbound constant
-        return TypesIdentical( left->u.symcg.symbol->sym_type, right->type );
+        return( TypesIdentical( left->u.symcg.symbol->sym_type, right->type ) );
     } else if( ( left->op == PT_SYMBOL )
             && ( right->op == PT_INT_CONSTANT ) ) {
         // left: unbound constant, right: bound constant
-        return false;
+        return( false );
     } else if( ( left->op == PT_INT_CONSTANT )
             && ( right->op == PT_SYMBOL ) ) {
         // left: unbound constant, right: bound constant
-        return false;
+        return( false );
     }
 
     // TODO: add missing cases
@@ -650,7 +650,7 @@ static bool templateArgSame( PTREE left, PTREE right )
     DbgStmt( DumpPTree( right ) );
     CFatal( "not yet implemented: templateArgSame" );
 
-    return false;
+    return( false );
 }
 
 static TEMPLATE_SPECIALIZATION *findMatchingTemplateSpecialization(
@@ -741,8 +741,8 @@ static TEMPLATE_SPECIALIZATION *findMatchingTemplateSpecialization(
         stop = ScopeOrderedStart( currentTemplate->decl_scope );
         for( ;; ) {
             curr = ScopeOrderedNext( stop, curr );
-            if( curr == NULL ) break;
-
+            if( curr == NULL )
+                break;
             if( ( curr->sym_type->id == TYP_TYPEDEF )
              && ( curr->sym_type->of->id == TYP_GENERIC ) ) {
                 /* TODO: check for unused symbol */
@@ -761,11 +761,11 @@ static TEMPLATE_SPECIALIZATION *findMatchingTemplateSpecialization(
             /* TODO: diagnose error */
             CFatal( "not yet implemented: findMatchingTemplateSpecialization, error message" );
         }
-        return NULL;
+        return( NULL );
     }
 
     if( is_primary ) {
-        return tprimary;
+        return( tprimary );
     }
 
 
@@ -797,7 +797,7 @@ static TEMPLATE_SPECIALIZATION *findMatchingTemplateSpecialization(
         }
     } RingIterEnd( curr_spec )
 
-    return tspec;
+    return( tspec );
 }
 
 static void updateTemplatePartialOrdering( TEMPLATE_INFO *tinfo,
@@ -990,11 +990,11 @@ static TEMPLATE_SPECIALIZATION *mergeClassTemplates( TEMPLATE_DATA *data,
         if( ( data->num_args != tspec->num_args )
          || ! templateArgListsSame( args, tinfo ) ) {
             CErr2p( ERR_CANT_OVERLOAD_CLASS_TEMPLATES, tinfo );
-            return NULL;
+            return( NULL );
         }
     }
     if( tspec->corrupted ) {
-        return tspec;
+        return( tspec );
     }
     defn = data->defn;
     defarg_list = primary_specialization ? tinfo->defarg_list : NULL;
@@ -1025,7 +1025,7 @@ static TEMPLATE_SPECIALIZATION *mergeClassTemplates( TEMPLATE_DATA *data,
         data->defn = NULL;
     }
 
-    return tspec;
+    return( tspec );
 }
 
 static void addMemberEntry( TEMPLATE_SPECIALIZATION *tspec, SCOPE scope,
@@ -1044,7 +1044,7 @@ static void addClassTemplateMember( TEMPLATE_DATA *data, SYMBOL sym,
 {
     NAME *arg_names;
 
-    if( ( NULL == data) || ( NULL == sym) ){
+    if( ( NULL == data) || ( NULL == sym) ) {
         return;
     }
 
@@ -1110,7 +1110,8 @@ static void copyWithNewNames( SCOPE old_scope, NAME *names )
     stop = ScopeOrderedStart( old_scope );
     for(;;) {
         curr = ScopeOrderedNext( stop, curr );
-        if( curr == NULL ) break;
+        if( curr == NULL )
+            break;
         sym = dupTemplateParm( curr );
         sym = ScopeInsert( GetCurrScope(), sym, *names );
         ++names;
@@ -1175,7 +1176,7 @@ static void defineAllClassDecls( TEMPLATE_SPECIALIZATION *tspec )
     ScopeAdjustUsing( NULL, save_scope );
 }
 
-extern int WalkTemplateInst( SYMBOL sym, AInstSCOPE fscope  )
+extern int WalkTemplateInst( SYMBOL sym, AInstSCOPE fscope )
 {
     TEMPLATE_INFO *tinfo;
     TEMPLATE_SPECIALIZATION *tspec;
@@ -1184,7 +1185,7 @@ extern int WalkTemplateInst( SYMBOL sym, AInstSCOPE fscope  )
     tinfo = sym->u.tinfo;
     RingIterBeg( tinfo->specializations, tspec ) {
         RingIterBeg( tspec->instantiations, curr ) {
-            if( !fscope( curr->scope ) ){
+            if( !fscope( curr->scope ) ) {
                 return( false );
             }
         } RingIterEnd( curr )
@@ -1350,8 +1351,8 @@ void TemplateFunctionAttachDefn( DECL_INFO *dinfo )
             for(;;) {
                 decl_curr = ScopeOrderedNext( decl_stop, decl_curr );
                 parm_curr = ScopeOrderedNext( parm_stop, parm_curr );
-                if( ( parm_curr == NULL ) || ( decl_curr == NULL ) ) break;
-
+                if( ( parm_curr == NULL ) || ( decl_curr == NULL ) )
+                    break;
                 // reuse the symbol with a new name in a new scope
                 parm_curr->name->name_type = NULL;
                 parm_curr->name = NULL;
@@ -1590,7 +1591,7 @@ static SYMBOL buildTemplateFn( TYPE bound_type, SYMBOL sym, DECL_INFO *dinfo,
     fn_inst->inst_scope = inst_scope;
     fn_inst->processed = false;
 
-    return new_sym;
+    return( new_sym );
 }
 
 SYMBOL TemplateFunctionGenerate( SYMBOL sym, arg_list *args,
@@ -1608,7 +1609,7 @@ SYMBOL TemplateFunctionGenerate( SYMBOL sym, arg_list *args,
     control = BGT_TRIVIAL;
     dinfo = attemptGen( args, sym, templ_args, locn, &parm_scope, &control );
     if( dinfo == NULL ) {
-        return NULL;
+        return( NULL );
     }
 
     fn_type = dinfo->sym->sym_type;
@@ -1616,7 +1617,7 @@ SYMBOL TemplateFunctionGenerate( SYMBOL sym, arg_list *args,
 
     if( fn_type == NULL ) {
         FreeDeclInfo( dinfo );
-        return NULL;
+        return( NULL );
     }
 
     generated_fn = NULL;
@@ -1703,13 +1704,13 @@ SYMBOL TemplateFunctionGenerate( SYMBOL sym, arg_list *args,
             num_args = alist->num_args;
 
             if( num_args == args->num_args ) {
-                return generated_fn;
+                return( generated_fn );
             }
 
             if( num_args != 0 ) {
                 if( num_args <= args->num_args + 1 ) {
                     if( alist->type_list[num_args - 1]->id == TYP_DOT_DOT_DOT ) {
-                        return generated_fn;
+                        return( generated_fn );
                     }
                 }
             }
@@ -1721,7 +1722,7 @@ SYMBOL TemplateFunctionGenerate( SYMBOL sym, arg_list *args,
         generated_fn = generated_fn->thread;
     }
 
-    return NULL;
+    return( NULL );
 }
 
 static void commonTemplateClass( TEMPLATE_DATA *data, PTREE id, SCOPE scope, NAME name )
@@ -2103,7 +2104,7 @@ static bool sameConstantInt( SYMBOL s1, SYMBOL s2 )
 
     SymConstantValue( s1, &con1 );
     SymConstantValue( s2, &con2 );
-    return 0 == U64Cmp( &con1.u.value, &con2.u.value );
+    return( 0 == U64Cmp( &con1.u.value, &con2.u.value ) );
 }
 
 bool TemplateParmEqual( SYMBOL parm1, SYMBOL parm2 )
@@ -2113,7 +2114,7 @@ bool TemplateParmEqual( SYMBOL parm1, SYMBOL parm2 )
     SYMBOL sym2;
 
     if( SymIsConstantInt( parm1 ) && SymIsConstantInt( parm2 ) ) {
-        return sameConstantInt( parm1, parm2 );
+        return( sameConstantInt( parm1, parm2 ) );
     }
     if( SymIsTypedef( parm1 ) && SymIsTypedef( parm2 ) ) {
         return( TypesIdentical( parm1->sym_type, parm2->sym_type ) );
@@ -2175,9 +2176,11 @@ static bool sameParms( SCOPE parm_scope, PTREE parms )
             return( true );
         }
         curr = ScopeOrderedNext( stop, curr );
-        if( curr == NULL ) break;
+        if( curr == NULL )
+            break;
         parm = list->u.subtree[1];
-        if( parmsDifferent( curr, parm ) ) break;
+        if( parmsDifferent( curr, parm ) )
+            break;
         list = list->u.subtree[0];
     }
     return( false );
@@ -2240,7 +2243,7 @@ static SYMBOL templateArgTypedef( TYPE type )
     SYMBOL tsym;
 
     tsym = templateArgSym( SC_TYPEDEF, type );
-    return tsym;
+    return( tsym );
 }
 
 static void injectTemplateParm( SCOPE scope, PTREE parm, NAME name )
@@ -2528,7 +2531,7 @@ findTemplateClassSpecialization( TEMPLATE_INFO *tinfo, PTREE parms, SCOPE *parm_
         tspec = tprimary;
     }
 
-    return tspec;
+    return( tspec );
 }
 
 TYPE TemplateClassReference( PTREE tid, PTREE parms )
@@ -2544,7 +2547,7 @@ TYPE TemplateClassReference( PTREE tid, PTREE parms )
 
     if( ( tid->sym_name == NULL ) && ( tid->flags & PTF_TYPENAME ) ) {
         NodeFreeDupedExpr( parms );
-        return typ;
+        return( typ );
     }
 
     DbgAssert( tid->sym_name != NULL );
@@ -2666,7 +2669,8 @@ static PTREE fakeUpTemplateParms( SCOPE parm_scope, arg_list *type_args )
     stop = ScopeOrderedStart( parm_scope );
     for(;;) {
         curr = ScopeOrderedNext( stop, curr );
-        if( curr == NULL ) break;
+        if( curr == NULL )
+            break;
         if( curr->id == SC_TYPEDEF ) {
             if( curr_type_arg ) {
                 parm = PTreeType( BindTemplateClass( *curr_type_arg, NULL, false ) );
@@ -2762,7 +2766,7 @@ TYPE BoundTemplateClass( TYPE typ )
         }
     }
 
-    return ( ( tptr == NULL ) && ( bound != NULL ) ) ? bound : typ;
+    return( ( ( tptr == NULL ) && ( bound != NULL ) ) ? bound : typ );
 }
 
 TYPE BindTemplateClass( TYPE typ, TOKEN_LOCN *locn, bool deref_ptrs )
@@ -2801,7 +2805,7 @@ TYPE BindTemplateClass( TYPE typ, TOKEN_LOCN *locn, bool deref_ptrs )
         }
     }
 
-    return ( ( tptr == NULL ) && ( bound != NULL ) ) ? bound : typ;
+    return( ( ( tptr == NULL ) && ( bound != NULL ) ) ? bound : typ );
 }
 
 void TemplateHandleClassMember( DECL_INFO *dinfo )
@@ -2860,7 +2864,8 @@ static bool sameParmArgNames( SCOPE parm_scope, NAME *arg_names )
     stop = ScopeOrderedStart( parm_scope );
     for(;;) {
         curr = ScopeOrderedNext( stop, curr );
-        if( curr == NULL ) break;
+        if( curr == NULL )
+            break;
         if( curr->name->name != *arg_names ) {
             return( false );
         }
@@ -3131,7 +3136,8 @@ void TemplateFreeDefns( void )
             RingIterBeg( tspec->instantiations, curr_instance ) {
                 for(;;) {
                     curr_member = RingPop( &(curr_instance->members) );
-                    if( curr_member == NULL ) break;
+                    if( curr_member == NULL )
+                        break;
                     FreeDeclInfo( curr_member->dinfo );
                 }
             } RingIterEnd( curr_instance)
@@ -3275,7 +3281,7 @@ bool TemplateProcessInstantiations( void )
 
     templateData.extra_members = false;
 
-    return templateData.keep_going;
+    return( templateData.keep_going );
 }
 
 bool TemplateMemberCanBeIgnored( void )
@@ -3427,8 +3433,10 @@ bool TemplateUnboundSame( TYPE ub1, TYPE ub2 )
     for(;;) {
         ub1_curr = ScopeOrderedNext( ub1_stop, ub1_curr );
         ub2_curr = ScopeOrderedNext( ub2_stop, ub2_curr );
-        if( ub1_curr == NULL ) break;
-        if( ub2_curr == NULL ) break;
+        if( ub1_curr == NULL )
+            break;
+        if( ub2_curr == NULL )
+            break;
         DbgAssert( ub1_curr->id == ub2_curr->id );
         if( ub1_curr->id != SC_TYPEDEF ) {
             if( ! TemplateParmEqual( ub1_curr, ub2_curr ) ) {
@@ -3536,7 +3544,7 @@ static void saveTemplateSpecialization( TEMPLATE_SPECIALIZATION *s, TEMPLATE_SPE
     for( i = 0; i < s->num_args; ++i ) {
         TypePCHWrite( s->type_list[i] );
     }
-    RingIterBeg( s->member_defns, member ){
+    RingIterBeg( s->member_defns, member ) {
         ScopePCHWrite( member->scope );
         RewritePCHWrite( member->defn );
         if( member->arg_names != s->arg_names ) {

@@ -85,7 +85,7 @@ cg_name CgExprPop(              // POP CG EXPRESSION
 {
     cg_type not_used;
 
-    return CgExprPopType( &not_used );
+    return( CgExprPopType( &not_used ) );
 }
 
 
@@ -105,7 +105,7 @@ cg_name CgExprPopType(          // POP CG EXPRESSION and TYPE
         *a_type = top->type;
         retn = top->expr;
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -143,7 +143,7 @@ bool CgExprPopGarbage(          // POP EXPR STACK IF TOP EXPR IS GARBAGE
 unsigned CgExprStackSize(       // RETURN # TEMPS STACKED
     void )
 {
-    return VstkDimension( &expressions );
+    return( VstkDimension( &expressions ) );
 }
 
 
@@ -169,7 +169,7 @@ static SYMBOL getExprTempSym(   // EMIT CGDone, CGTrash, OR COPY TO TEMP
         temp = NULL;
     }
     fctl->temp_dtoring = false;
-    return temp;
+    return( temp );
 }
 #endif
 

@@ -145,10 +145,14 @@ void BrinfSrcSync               // SYNCHONIZE THE OPEN/CLOSE DIRECTIVES
     SRCFILE tgt = locn->src_file;
     for( ; ; ) {
         PP_INS* ins = ins_queue;
-        if( NULL == ins ) break;
+        if( NULL == ins )
+            break;
         if( cursor.src_file == tgt ) {
-            if( ins->locn.src_file != tgt ) break;
-            if( ins->opcode == IC_BR_SRC_END ) break;
+            if( ins->locn.src_file != tgt )
+                break;
+            if( ins->opcode == IC_BR_SRC_END ) {
+                break;
+            }
         }
         deQueue();
     }

@@ -183,7 +183,7 @@ static void moduleInitRestore(  // RESTORE ENVIRONMENT AFTER MOD-INIT.
 SCOPE ModuleFnScope(            // SCOPE MOD-INIT FN IS DEF'D IN
     void )
 {
-    return GetFileScope();
+    return( GetFileScope() );
 }
 
 

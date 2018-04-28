@@ -151,14 +151,14 @@ static SYMBOL getPtreeSymbol(   // PICK UP SYMBOL FROM PTREE NODE
             sym = SymDeAlias( sym );
         }
     }
-    return sym;
+    return( sym );
 }
 
 
 static SYMBOL getLeftPtreeSymbol( // PICK UP SYMBOL FROM LEFT PTREE NODE
     PTREE node )                // - node at top
 {
-    return getPtreeSymbol( PTreeOpLeft( node ) );
+    return( getPtreeSymbol( PTreeOpLeft( node ) ) );
 }
 
 
@@ -210,7 +210,7 @@ static void generateRargVbOffset( // GENERATE BINDING FOR VB-REF ARG., OFFSET
 static unsigned vbaseDelta(     // GET OFFSET FOR CO_VBASE_FETCH
     PTREE expr )                // - CO_VBASE_FETCH expression
 {
-    return PtdGetVbExact( expr );
+    return( PtdGetVbExact( expr ) );
 }
 
 
@@ -224,7 +224,7 @@ static PTREE getChildNode(      // GET CHILD, REMOVE CASTING
     } else {
         retn = NodeRemoveCasts( PTreeOp( a_src ) );
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -298,7 +298,7 @@ static TYPE generate_call_type( // GENERATE TYPE FOR CALL SETUP
     } else {
         CgSetTypeExact( retn );
     }
-    return type;
+    return( type );
 }
 
 
@@ -307,7 +307,7 @@ static SYMBOL getAliasDtorSym(  // GET ALIASED DTOR SYMBOL
 {
     sym = SymDeAlias( sym );
     sym->flag |= SF_ADDR_TAKEN;
-    return SymMarkRefed( sym );
+    return( SymMarkRefed( sym ) );
 }
 
 
@@ -317,7 +317,7 @@ static bool emitAutoMarking(    // EMIT MARKING FOR AN AUTO VAR
     bool br = CgFrontRetnOptVar( sym );
     CgFrontCodePtr( IC_DTOR_AUTO, sym );
     FunctionHasCtorTest();
-    return br;
+    return( br );
 }
 
 
@@ -822,7 +822,7 @@ static PTREE emitNode(          // EMIT A PTREE NODE
     if( expr->decor != NULL ) {
         PtdGenAfter( expr->decor );
     }
-    return expr;
+    return( expr );
 }
 
 
@@ -843,7 +843,7 @@ TOKEN_LOCN SrcPosnEmitCurrent(  // EMIT LINE NO. FOR CURRENT POSITION
 
     SrcFileGetTokenLocn( &posn );
     SrcPosnEmit( &posn );
-    return posn;
+    return( posn );
 }
 
 
@@ -902,7 +902,7 @@ PTREE IcEmitExpr(               // EMIT EXPRESSION
     TOKEN_LOCN posn;            // - position for source file
 
     if( expr == NULL ) {
-        return expr;
+        return( expr );
     }
     init_ref_temp = NULL;
     LabelExprBegin();
@@ -937,7 +937,7 @@ PTREE IcEmitExpr(               // EMIT EXPRESSION
     checkDeadCode( expr );
     LabelExprEnd();
     PTreeFreeSubtrees( expr );
-    return expr;
+    return( expr );
 }
 
 

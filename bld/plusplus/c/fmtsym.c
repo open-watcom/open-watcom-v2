@@ -269,7 +269,8 @@ void FormatTemplateParmScope( VBUF *parms, SCOPE parm_scope )
     stop = ScopeOrderedStart( parm_scope );
     for(;;) {
         curr = ScopeOrderedNext( stop, curr );
-        if( curr == NULL ) break;
+        if( curr == NULL )
+            break;
         VbufConcStr( parms, delim );
         type = curr->sym_type;
         if( SymIsConstantInt( curr ) ) {

@@ -1187,7 +1187,8 @@ static void defineInlineFuncsAndDefArgExprs( CLASS_DATA *data )
     save_scope = GetCurrScope();
     for(;;) {
         curr = RingPop( &(data->defargs) );
-        if( curr == NULL ) break;
+        if( curr == NULL )
+            break;
         sym_scope = SymScope( curr->sym );
         ScopeAdjustUsing( GetCurrScope(), sym_scope );
         SetCurrScope( sym_scope );
@@ -1216,7 +1217,8 @@ static void defineInlineFuncsAndDefArgExprs( CLASS_DATA *data )
     // process inline functions
     for(;;) {
         curr = RingPop( &(data->inlines) );
-        if( curr == NULL ) break;
+        if( curr == NULL )
+            break;
         ClassProcessFunction( curr, true );
         FreeDeclInfo( curr );
     }
@@ -1876,7 +1878,7 @@ bool ClassIsDefaultCtor( SYMBOL sym, TYPE class_type )
     /* unused parameters */ (void)class_type;
 
     /* name has already been checked */
-    return TypeHasNumArgs( sym->sym_type, 0 );
+    return( TypeHasNumArgs( sym->sym_type, 0 ) );
 }
 
 static bool isDefaultCopy( SYMBOL sym, TYPE class_type, unsigned *arg_info )
@@ -2680,7 +2682,8 @@ static BASE_CLASS *addBase( BASE_CLASS **ring, BASE_CLASS *base, BASE_CLASS *ins
         /* keep virtual bases at the front of the list */
         if( insert == NULL ) {
             RingIterBeg( *ring, curr ) {
-                if( ! _IsVirtualBase( curr ) ) break;
+                if( ! _IsVirtualBase( curr ) )
+                    break;
                 insert = curr;
             } RingIterEnd( curr )
         }
@@ -3013,7 +3016,7 @@ void ClassStoreInlineFunc( DECL_INFO *dinfo )
         CFatal( "inline function is not in a class definition" );
     }
 #else
-    if( data == NULL ){
+    if( data == NULL ) {
         CErr1( ERR_PARSER_DIED );
         CSuicide();
     }
@@ -3058,7 +3061,8 @@ void ClassMakeUniqueName( TYPE class_type, NAME signature )
     curr = NULL;
     for(;;) {
         curr = ScopeOrderedNext( stop, curr );
-        if( curr == NULL ) break;
+        if( curr == NULL )
+            break;
         ++count;
         hash <<= 8;
         hash += count;
@@ -3145,7 +3149,8 @@ static void promoteMembers( TYPE class_type, SYMBOL owner )
     curr = NULL;
     for(;;) {
         curr = ScopeOrderedNext( stop, curr );
-        if( curr == NULL ) break;
+        if( curr == NULL )
+            break;
         if( curr->flag & SF_PRIVATE ) {
             CErr2p( ERR_UNION_PRIVATE_MEMBER, curr );
             problems = true;
@@ -3182,7 +3187,8 @@ static void promoteMembers( TYPE class_type, SYMBOL owner )
     stop = ScopeOrderedStart( scope );
     curr = ScopeOrderedNext( stop, NULL );
     for(;;) {
-        if( curr == NULL ) break;
+        if( curr == NULL )
+            break;
         next = ScopeOrderedNext( stop, curr );
         doPromotion( curr->name );
         curr = next;
@@ -3544,8 +3550,8 @@ void ClassDtorNullBody( SYMBOL dtor )
                 // };
                 //
                 TYPE fn_type = FunctionDeclarationType( dtor->sym_type );
-                if( ((fn_type->flag & TF1_PURE   )!=0) &&
-                    ((fn_type->flag & TF1_VIRTUAL)!=0) ) {
+                if( ( (fn_type->flag & TF1_PURE) != 0 ) &&
+                     ((fn_type->flag & TF1_VIRTUAL) != 0 ) ) {
                     return;
                 }
                 if( info->dtor_user_code_checked ) {
@@ -3571,7 +3577,7 @@ bool ClassParmIsRef( TYPE class_type )
     CLASSINFO *info;
 
     info = class_type->u.c.info;
-    return info->passed_ref;
+    return( info->passed_ref );
 }
 
 

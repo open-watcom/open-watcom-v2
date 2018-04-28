@@ -175,7 +175,7 @@ static SYMBOL callNodeCaller(   // GET SYMBOL FOR CALLER FROM CALLNODE
     SYMBOL sym;                 // - caller symbol
 
     sym = cnode->base.object;
-    return sym;
+    return( sym );
 }
 
 
@@ -222,7 +222,7 @@ static TCF cgbackFuncType(      // DETERMINE TYPE OF FUNCTION
     } else {
         retn = TCF_OTHER_FUNC;
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -236,7 +236,7 @@ static CGFILE* nodeCgFile(      // GET CGFILE FOR NODE
         retn = CgioLocateFile( node->base.object );
         node->cgfile = retn;
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -294,7 +294,7 @@ static bool oeInlineable(       // DETERMINE IF /oe CAN INLINE THE FUNCTION
 static bool canBeOeInlined(     // DETERMINE IF /oe CAN INLINE THE FUNCTION
     CALLNODE* node )            // - node for function
 {
-    return oeInlineable( node->base.object, nodeCgFile( node ) );
+    return( oeInlineable( node->base.object, nodeCgFile( node ) ) );
 }
 
 
@@ -308,11 +308,13 @@ static bool shouldBeInlined(    // DETERMINE IF INLINING AN INLINABLE FN IS OK
     }
     fctl = FnCtlTop();
     if( fctl == NULL || SymIsThunk( fctl->func ) ) {
-        return false;
+        return( false );
     }
     if( !callGraphFlags.inline_recursion ) {
         for( ; fctl != NULL; fctl = FnCtlPrev( fctl ) ) {
-            if( sym == fctl->func ) return( false );
+            if( sym == fctl->func ) {
+                return( false );
+            }
         }
     }
     return( true );
@@ -350,7 +352,7 @@ static CALLNODE* addNode(       // ADD A CALL NODE
         break;
     DbgDefault( "addNode -- bad type" );
     }
-    return node;
+    return( node );
 }
 
 
@@ -374,7 +376,7 @@ static CALLNODE *addCallee(     // ADD CALL TO CALL GRAPH
             break;
         }
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -608,12 +610,14 @@ static void scanFunctionBody(   // SCAN FUNCTION FOR CALLS
             sc.curr_scope = CgResScScanEnd();
             continue;
         case IC_EXPR_TEMP:
-            if( ! call_graph->scope_call_opt ) continue;
+            if( ! call_graph->scope_call_opt )
+                continue;
             CgResScStmtScanBegin( sc.curr_scope, cnode, sc.func_dtm );
             call_graph->stmt_scope = true;
             continue;
         case IC_STMT_SCOPE_END :
-            if( ! call_graph->scope_call_opt ) continue;
+            if( ! call_graph->scope_call_opt )
+                continue;
             if( call_graph->stmt_scope ) {
                 CgResScScanEnd();
                 call_graph->stmt_scope = false;
@@ -694,7 +698,8 @@ static void scanFunctionBody(   // SCAN FUNCTION FOR CALLS
             ThrowCnvInit( &ctl, ins->value.pvalue );
             for( ; ; ) {
                 type = ThrowCnvType( &ctl, &not_used );
-                if( type == NULL ) break;
+                if( type == NULL )
+                    break;
                 addTypeSigRefs( cnode, type );
             }
             ThrowCnvFini( &ctl );
@@ -994,7 +999,7 @@ static bool procEdge(           // PROCESS EDGE IN CALL GRAPH
         }
         target->depth = 1;
     }
-    return false;
+    return( false );
 }
 
 
@@ -1048,7 +1053,8 @@ static bool procInlineFunction( // PROCESS INLINE FUNCTIONS IN CALL GRAPH
     depth = 0;
     for( ; ; ) {
         inl = VstkTop( &ctl->calls );
-        if( inl == NULL ) break;
+        if( inl == NULL )
+            break;
         if( inl->expanded ) {
             inl = VstkPop( &ctl->calls );
             -- depth;
@@ -1071,7 +1077,7 @@ static bool procInlineFunction( // PROCESS INLINE FUNCTIONS IN CALL GRAPH
             CgrfWalkCalls( ctl, node, &procEdge );
         }
     }
-    return false;
+    return( false );
 }
 
 
@@ -1103,7 +1109,7 @@ static bool procStaticFunction( // PROCESS STATIC FUNCTIONS IN CALL GRAPH
             } else if( node->refs == 1 && SymIsRegularStaticFunc( func ) ) {
                 flags.oe_static = true;
 #else
-            } else if( node->refs == 1  ) {
+            } else if( node->refs == 1 ) {
                 flags.oe_static = true;
 #endif
             }
@@ -1124,7 +1130,7 @@ static bool procStaticFunction( // PROCESS STATIC FUNCTIONS IN CALL GRAPH
             }
         }
     }
-    return false;
+    return( false );
 }
 
 
@@ -1198,7 +1204,7 @@ static bool procFunction(       // POST-PROCESS FUNCTION IN CALL GRAPH
             func->flag &= ~SF_CG_INLINEABLE;
         }
     }
-    return false;
+    return( false );
 }
 
 
@@ -1223,7 +1229,7 @@ static bool pruneFunction(      // PRUNE UNREFERENCED FUNCTION
         }
         break;
     }
-    return false;
+    return( false );
 }
 
 
@@ -1242,7 +1248,7 @@ static bool procStabEdge(       // PROCESS INLINE-CALL EDGE FROM NODE
             }
         }
     }
-    return false;
+    return( false );
 }
 
 
@@ -1269,7 +1275,8 @@ static bool setFunctionStab(    // SET STATE-TABLE INFO. FOR FUNCTION
             pushCaller( ctl, node );
             for( depth = 0; ; ) {
                 inl = VstkTop( &ctl->calls );
-                if( inl == NULL ) break;
+                if( inl == NULL )
+                    break;
                 if( inl->expanded ) {
                     inl = VstkPop( &ctl->calls );
                     -- depth;
@@ -1315,7 +1322,7 @@ static bool setFunctionStab(    // SET STATE-TABLE INFO. FOR FUNCTION
 #endif
         }
     }
-    return false;
+    return( false );
 }
 
 
@@ -1385,7 +1392,8 @@ void MarkFuncsToGen(            // DETERMINE FUNCTIONS TO BE GENERATED
             SYMBOL sym;
             CALLNODE* node;
             pfunc = VstkPop( &ctl.calls );
-            if( pfunc == NULL ) break;
+            if( pfunc == NULL )
+                break;
             sym = *pfunc;
             node = addNode( sym );
             if( TCF_VFT == cgbackFuncType( sym ) ) {
@@ -1402,7 +1410,9 @@ void MarkFuncsToGen(            // DETERMINE FUNCTIONS TO BE GENERATED
         if( ctl.scope_call_opt ) {
             CgrfWalkFunctions( &ctl, &CgResolveNonThrow );
         }
-        if( NULL == VstkTop( &ctl.calls ) ) break;
+        if( NULL == VstkTop( &ctl.calls ) ) {
+            break;
+        }
     }
     if( vfcg != NULL ) {
         CgioCloseInputFile( vfcg );
@@ -1479,7 +1489,7 @@ bool CgBackGetInlineRecursion(  // GET INLINE RECURSION
 CALLNODE* CgrfCallNode(         // GET CALLNODE FOR FUNCTION
     SYMBOL fun )                // - function
 {
-    return addCallee( fun );
+    return( addCallee( fun ) );
 }
 
 
@@ -1489,7 +1499,7 @@ CALLNODE* CgrfDtorCall(         // DTOR CALL HAS BEEN ESTABLISHED
 {
     dtor->flag |= SF_REFERENCED;
     addCalleeFuncToGen( owner, dtor );
-    return owner;
+    return( owner );
 }
 
 
@@ -1499,14 +1509,14 @@ CALLNODE* CgrfDtorAddr(         // DTOR ADDR-OF HAS BEEN ESTABLISHED
 {
     dtor->flag |= SF_REFERENCED | SF_ADDR_TAKEN;
     addAddrOf( owner, dtor );
-    return owner;
+    return( owner );
 }
 
 #ifndef NDEBUG
 
 void* DbgCallGraph( void )
 {
-    return call_graph;
+    return( call_graph );
 }
 
 #endif

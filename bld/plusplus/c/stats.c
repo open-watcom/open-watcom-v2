@@ -333,7 +333,7 @@ void ExtraRptSymDefn(           // REPORT SYMBOL DEFINITION IN PRIMARY SOURCE
     if( isReposSym( sym ) ) {
         SRCFILE current = SrcFileCurrent();
         REPO_STAT* repo = reposStat( current );
-        ++ repo->defns;
+        ++repo->defns;
     }
 }
 
@@ -439,8 +439,8 @@ static void extraRptInit(       // INITIALIZATION FOR EXTRA REPORTING
     rpt_registrations = NULL;
     carve_ctr = CarveCreate( sizeof( RPTREG_CTR ), 32 );
     carve_avg = CarveCreate( sizeof( RPTREG_AVG ), 32 );
-    carve_tab = CarveCreate( sizeof( RPTREG_TAB ),  4 );
-    carve_sf  = CarveCreate( sizeof( REPO_STAT  ), 32 );
+    carve_tab = CarveCreate( sizeof( RPTREG_TAB ), 4 );
+    carve_sf  = CarveCreate( sizeof( REPO_STAT ), 32 );
     VstkOpen( &srcFiles, sizeof( SYMBOL ), 32 );
 }
 
@@ -522,7 +522,7 @@ static RPTREG* extraRptLookupCtr( // LOOK UP CTR ENTRY
         }
     } RingIterEnd( curr )
     DbgVerify( entry != NULL, "extraRptLookup -- missing counter" );
-    return entry;
+    return( entry );
 }
 
 
@@ -550,7 +550,8 @@ static void extraRptPrintAvg(   // PRINT AN AVERAGE
     sprintf( frac_part, "%d", fract + 1000 );
     frac_part[0] = '.';
     sprintf( int_part, "%d", integ + 100000 );
-    for( p = int_part+1; *p == '0'; ++p ) *p = ' ';
+    for( p = int_part+1; *p == '0'; ++p )
+        *p = ' ';
     MsgDisplayLineArgs( int_part+1
                       , frac_part
                       , " = "
@@ -584,10 +585,10 @@ static void extraRptTable(      // PRINT A TABLE
 
     digits = 0;
     maxval = 1;
-    for( r = 0; r < reg->tab.dim_row; ++ r ) {
-        for( c = 0; c < reg->tab.dim_col; ++ c ) {
+    for( r = 0; r < reg->tab.dim_row; ++r ) {
+        for( c = 0; c < reg->tab.dim_col; ++c ) {
             int val = reg->tab.table[r * reg->tab.dim_col + c];
-            for( ; maxval < val; ++ digits, maxval *= 10 );
+            for( ; maxval < val; ++digits, maxval *= 10 );
         }
     }
     if( digits > 0 ) {
@@ -613,7 +614,7 @@ static void extraRptTable(      // PRINT A TABLE
         MsgDisplayLine( (char*)reg->tab.title );
         MsgDisplayLine( "" );
         sprintf( fmt, "%%%dd", digits + 1 );
-        for( r = 0; r < reg->tab.dim_row; ++ r ) {
+        for( r = 0; r < reg->tab.dim_row; ++r ) {
             int *row = &reg->tab.table[r * reg->tab.dim_col];
             VbufRewind( &buffer );
             if( row_lbl == NULL ) {
@@ -631,7 +632,7 @@ static void extraRptTable(      // PRINT A TABLE
                 VbufConcStr( &buffer, l );
                 VbufConcStr( &buffer, ": " );
             }
-            for( c = 0; c < reg->tab.dim_col; ++ c ) {
+            for( c = 0; c < reg->tab.dim_col; ++c ) {
                 sprintf( buf, fmt, row[c] );
                 VbufConcStr( &buffer, buf );
             }

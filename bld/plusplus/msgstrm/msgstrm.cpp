@@ -103,7 +103,7 @@ static unsigned numericOption(  // PROCESS A NUMERIC OPTION
             DieInFlames( );
         }
     }
-    return value;
+    return( value );
 }
 
 static void DoOption( const char * s ) {

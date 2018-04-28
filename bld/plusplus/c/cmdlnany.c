@@ -455,7 +455,7 @@ static bool openCmdFile(        // OPEN A COMMAND FILE
 
     stxvcpy( fnm, filename, size );
     StripQuotes( fnm );
-    return IoSuppOpenSrc( fnm, FT_CMD );
+    return( IoSuppOpenSrc( fnm, FT_CMD ) );
 }
 
 static const char *get_env(     // GET ENVIRONMENT VAR
@@ -505,14 +505,18 @@ static void processCmdFile(     // PROCESS A COMMAND FILE
     for(;;) {
         for(;;) {
             c = NextChar();
-            if( c == LCHR_EOF ) break;
-            if( c == '\n' ) break;
-            if( c == '\r' ) break;
+            if( c == LCHR_EOF )
+                break;
+            if( c == '\n' )
+                break;
+            if( c == '\r' )
+                break;
             VbufConcChr( &rec, (char)c );
         }
         procOptions( data, VbufString( &rec ) );
         for( ; ( c == '\n' ) || ( c == '\r' ); c = NextChar() );
-        if( c == LCHR_EOF ) break;
+        if( c == LCHR_EOF )
+            break;
         VbufRewind( &rec );
         VbufConcChr( &rec, (char)c );
     }
@@ -536,7 +540,8 @@ static void procOptions(        // PROCESS AN OPTIONS LINE
         CmdScanInit( str );
         for(;;) {
             c = CmdScanWhiteSpace();
-            if( c == '\0' ) break;
+            if( c == '\0' )
+                break;
             CmdScanSwitchBegin();
             CmdLnCtxSwitch( CmdScanAddr() - 1 );
             if( c == '-'  ||  c == SwitchChar ) {
@@ -1147,7 +1152,8 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
     if( data->tp ) {
         for(;;) {
             OPT_STRING* str = data->tp_value;
-            if( NULL == str ) break;
+            if( NULL == str )
+                break;
             data->tp_value = str->next;
             strcpy( Buffer, str->data );
             CMemFree( str );

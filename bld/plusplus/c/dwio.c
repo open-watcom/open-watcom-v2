@@ -103,7 +103,7 @@ void *DwioRead(                 // READ A BYTE STREAM
 {
     void *ptr;
     ctl->buffer = DwioBuffRead( ctl->buffer, &ptr, size );
-    return ptr;
+    return( ptr );
 }
 
 

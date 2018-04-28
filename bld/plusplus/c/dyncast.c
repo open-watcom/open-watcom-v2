@@ -56,7 +56,7 @@ static PTREE DynamicCastVoid           // DYNAMIC CAST CODE: VOID *
                         , expr
                         , NULL );
     expr = RunTimeCall( expr, ctl->tgt.orig , RTF_DYN_CAST_VOID );
-    return expr;
+    return( expr );
 }
 
 PTREE DynamicCast               // DYNAMIC CAST CODE
@@ -93,5 +93,5 @@ PTREE DynamicCast               // DYNAMIC CAST CODE
             expr = RunTimeCall( expr, ctl->tgt.orig , RTF_DYN_CAST_PTR );
         }
     }
-    return expr;
+    return( expr );
 }

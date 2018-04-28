@@ -162,9 +162,13 @@ static type_id figureOutBaseType( ENUM_DATA *edata )
     step = ( edata->has_sign ) ? 2 : 1;
     for( ; index < ENUM_RNG_MAX; index += step ) {
         if( edata->next_signed ) {
-            if( I64Cmp( &edata->next_value, &(range_table[index].lo.s64val) ) >= 0 ) break;
+            if( I64Cmp( &edata->next_value, &(range_table[index].lo.s64val) ) >= 0 ) {
+                break;
+            }
         } else {
-            if( U64Cmp( &edata->next_value, &(range_table[index].hi.s64val) ) <= 0 ) break;
+            if( U64Cmp( &edata->next_value, &(range_table[index].hi.s64val) ) <= 0 ) {
+                break;
+            }
         }
     }
     if( index >= ENUM_RNG_MAX ) {
@@ -175,7 +179,7 @@ static type_id figureOutBaseType( ENUM_DATA *edata )
     }
     edata->index = (uint_8)index;
     base_type = range_table[index].id;
-    return base_type;
+    return( base_type );
 }
 
 void InitEnumState( ENUM_DATA *edata, PTREE id )

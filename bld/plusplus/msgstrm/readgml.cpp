@@ -183,7 +183,7 @@ static char *gmlState(          // GET NAME OF STATE
     ,   "ERRBAD"                // - - :ERRBAD read
     };
 
-    return name[state];
+    return( name[state] );
 }
 
 
@@ -200,7 +200,7 @@ static char *gmlTrans(          // GET NAME OF TRANSITION
     ,   "eERRBAD"               // - :eERRBAD
     };
 
-    return name[trans];
+    return( name[trans] );
 }
 
 GMLfilestat ReadGMLFile( MsgDscr& file_ok, MsgDscr& file_er ) {
@@ -311,5 +311,5 @@ GMLfilestat ReadGMLFile( MsgDscr& file_ok, MsgDscr& file_er ) {
             DieInFlames( );
         }
     }
-    return GMLfilestat( current_good_file - 1, current_bad_file - 1 );
+    return( GMLfilestat( current_good_file - 1, current_bad_file - 1 ) );
 }

@@ -410,7 +410,7 @@ static SYMBOL getNextDiagnosticEntry( FNOV_LIST **list )
 SYMBOL FnovNextAmbiguousEntry( FNOV_DIAG *fnov_diag )
 /**********************************************/
 {
-    return getNextDiagnosticEntry( &fnov_diag->diag_ambig );
+    return( getNextDiagnosticEntry( &fnov_diag->diag_ambig ) );
 }
 
 SYMBOL FnovGetAmbiguousEntry( FNOV_DIAG *fnov_diag, FNOV_LIST **ptr )
@@ -434,7 +434,7 @@ SYMBOL FnovGetAmbiguousEntry( FNOV_DIAG *fnov_diag, FNOV_LIST **ptr )
 SYMBOL FnovNextRejectEntry( FNOV_DIAG *fnov_diag )
 /*******************************************/
 {
-    return getNextDiagnosticEntry( &fnov_diag->diag_reject );
+    return( getNextDiagnosticEntry( &fnov_diag->diag_reject ) );
 }
 
 int FnovRejectParm( FNOV_DIAG *fnov_diag, unsigned *pidx )
@@ -785,20 +785,20 @@ static bool myTypesSame( TYPE first_type, TYPE second_type )
         first_type = TypeModExtract( first_type->of
                               , &flag
                               , &refbase
-                              , TC1_NOT_ENUM_CHAR| TC1_FUN_LINKAGE  );
+                              , TC1_NOT_ENUM_CHAR| TC1_FUN_LINKAGE );
         second_type = TypeModExtract( second_type->of
                               , &flag
                               , &refbase
-                              , TC1_NOT_ENUM_CHAR| TC1_FUN_LINKAGE  );
+                              , TC1_NOT_ENUM_CHAR| TC1_FUN_LINKAGE );
     }
     same = TypesSameExclude( first_type, second_type,
-                             TC1_NOT_ENUM_CHAR| TC1_FUN_LINKAGE  );
+                             TC1_NOT_ENUM_CHAR| TC1_FUN_LINKAGE );
     if( !same ) {
         if( (first_type->flag & TF1_STDOP) || (second_type->flag & TF1_STDOP) ) {
             same = true;
         }
     }
-    return same;
+    return( same );
 }
 
 // code for WP13332
@@ -924,7 +924,7 @@ static OV_RESULT compareDerived(TYPE first_type, TYPE second_type )
     if( first_scope == second_scope ) {
         return( OV_CMP_SAME );
     }
-    if( ScopeDerived( first_scope, second_scope ) != DERIVED_NO  ) {
+    if( ScopeDerived( first_scope, second_scope ) != DERIVED_NO ) {
         return( OV_CMP_BETTER_FIRST );
     } else if( ScopeDerived( second_scope, first_scope ) != DERIVED_NO ) {
         return( OV_CMP_BETTER_SECOND );
@@ -1412,7 +1412,7 @@ FNOV_COARSE_RANK RankandResolveUDCsDiag( FNOV_LIST **ctorList,
     setFnovDiagnosticRejectList( fnov_diag, &rejects );
     FnovListFree( ctorList ); // will contain those with other than one parm
     DbgAssert( *udcfList == NULL );
-    return result;
+    return( result );
 }
 
 static void computeFuncRankSym( SYMBOL fsym, SYMBOL curr, TYPE *tgt,
@@ -1703,7 +1703,7 @@ static FNOV_RESULT resolveOverload( FNOV_INFO* info )
             updateFnovList( info );
         }
     } RingIterEndSafe( info->candfunc )
-    return info->result;
+    return( info->result );
 }
 
 static FNOV_RESULT doOverload( FNOV_INFO* info )
@@ -1968,7 +1968,7 @@ static SYMBOL findNonDefargSym( FNOV_LIST *match)
             return( curr->sym );
         }
     } RingIterEnd( curr )
-    return match->sym;
+    return( match->sym );
 }
 
 static FNOV_RESULT doFunctionDistinctCheck( FNOV_CONTROL control, SYMBOL *pold_sym,
@@ -2055,7 +2055,7 @@ static FNOV_RESULT doFunctionDistinctCheck( FNOV_CONTROL control, SYMBOL *pold_s
 
     setFnovDiagnosticRejectList( info.fnov_diag, info.pcandidates );
     setFnovDiagnosticAmbigList( info.fnov_diag, info.pmatch );
-    return result;
+    return( result );
 }
 
 
@@ -2071,7 +2071,7 @@ FNOV_RESULT IsOverloadedFuncDistinct( SYMBOL *pold_sym, SYMBOL new_sym, NAME nam
 {
     DbgAssert( (control & ~(FNC_NO_DEALIAS)) == 0 );
     control |= FNC_EXCLUDE_ELLIPSIS | FNC_DISTINCT_CHECK;
-    return doFunctionDistinctCheck( control, pold_sym, new_sym, name );
+    return( doFunctionDistinctCheck( control, pold_sym, new_sym, name ) );
 }
 
 FNOV_RESULT AreFunctionsDistinct( SYMBOL *pold_sym, SYMBOL new_sym, NAME name )
@@ -2141,7 +2141,7 @@ static bool doneCheckIdentical( SYMBOL curr, bool isUDC, TYPE udc_retn, SYMBOL *
             done = true;
         }
     }
-    return done;
+    return( done );
 }
 
 SYMBOL ActualNonOverloadedFunc( // GET SYMBOL FOR ACTUAL NON-OVERLOADED FUNC.
@@ -2182,7 +2182,7 @@ SYMBOL ActualNonOverloadedFunc( // GET SYMBOL FOR ACTUAL NON-OVERLOADED FUNC.
             }
         } RingIterEnd( region )
     }
-    return retn;
+    return( retn );
 }
 
 

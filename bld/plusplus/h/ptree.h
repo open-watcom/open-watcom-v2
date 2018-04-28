@@ -147,22 +147,22 @@ typedef enum                            // operand definitions
 #define PTO_BINARY_CPP  ( PTO_BINARY )
 #define PTO_UNARY_CPP   ( PTO_UNARY )
 #define PTO_BINARY_NO_OVLD ( PTO_BINARY )
-#define PTO_UNARY_NO_OVLD  ( PTO_UNARY  )
+#define PTO_UNARY_NO_OVLD  ( PTO_UNARY )
 
-#define PTO_BIN_ARITH   ( PTO_BINARY_OVLD  )
+#define PTO_BIN_ARITH   ( PTO_BINARY_OVLD )
 #define PTO_UN_ARITH    ( PTO_UNARY_OVLD )
 #define PTO_BIN_ASSIGN  ( PTO_BINARY_OVLD )
 #define PTO_UN_ASSIGN   ( PTO_UNARY_OVLD )
 #define PTO_COMPARES    ( PTO_BINARY_OVLD | PTO_BOOLEAN )
 #define PTO_FLOW_UNARY  ( PTO_UNARY_OVLD  | PTO_BOOLEAN )
 #define PTO_FLOW_BINARY ( PTO_BINARY_OVLD | PTO_BOOLEAN )
-#define PTO_ADDR_OPER   ( PTO_UNARY_OVLD  )
+#define PTO_ADDR_OPER   ( PTO_UNARY_OVLD )
 #define PTO_INDEX       ( PTO_BINARY_OVLD )
 #define PTO_POINTS_TO   ( PTO_BINARY_OVLD )
 #define PTO_FUNCALL     ( PTO_BINARY_OVLD )
 #define PTO_DOT         ( PTO_BINARY_NO_OVLD )
 #define PTO_FETCH       ( PTO_UNARY_CPP | PTO_RVALUE )
-#define PTO_VFETCH      ( PTO_UNARY_CPP      )
+#define PTO_VFETCH      ( PTO_UNARY_CPP )
 
 typedef enum
     #define PTOP( code, bits ) code
@@ -362,7 +362,7 @@ PTREE PTreeCopyPrefix(          // COPY A PTREE IN (SELF,LEFT,RIGHT) ORDER
     PTREE (*copy_rtn)           // - copy routine
         ( PTREE curr,           // - - addr( current node )
           void *param ),        // - - parameter
-    void *param  )              // param to pass to copy_rtn
+    void *param )               // param to pass to copy_rtn
 ;
 PTREE PTreeUnary(               // CREATE UNARY PTREE NODE
     CGOP cgop,                  // - operator for code generation

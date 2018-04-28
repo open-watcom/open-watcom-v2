@@ -73,7 +73,8 @@ static void cgBackStatHandlesFree(     // FREE STATIC HANDLES
 
     for(;;) {
         top = PstkPopElement( &nonFileScopeSyms );
-        if( top == NULL ) break;
+        if( top == NULL )
+            break;
         CgBackFreeHandle( top );
     }
 }
@@ -124,7 +125,7 @@ back_handle FEBack(             // GET BACK HANDLE FOR A SYMBOL
         printf( "FEBack( %p ) -> bh[%p]\n", orig, cg_handle );
     }
 #endif
-    return cg_handle;
+    return( cg_handle );
 }
 
 

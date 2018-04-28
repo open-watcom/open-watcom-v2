@@ -36,9 +36,9 @@
 #include "vbuf.h"
 
 #define SPECIAL_TYPE_FMTS \
- TFMT_DEF(CLASS_TEMPLATE,       "<class template> "     ) \
- TFMT_DEF(NAMESPACE,            "<namespace> "          ) \
- TFMT_DEF(MAX,                  ""                      )
+ TFMT_DEF(CLASS_TEMPLATE,   "<class template> " ) \
+ TFMT_DEF(NAMESPACE,        "<namespace> " ) \
+ TFMT_DEF(MAX,              "" )
 
 typedef enum {
     #define TFMT_DEF(a,b) TFMT_##a,

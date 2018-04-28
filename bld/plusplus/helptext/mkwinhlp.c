@@ -139,7 +139,8 @@ int main( int argc, char **argv )
     fprintf( hfp, "\n" );
     for(;;) {
         check = fgets( ibuff, sizeof(ibuff), ifp );
-        if( check == NULL ) break;
+        if( check == NULL )
+            break;
         len = strlen(ibuff);
         if( len ) {
             // remove '\n' on the end

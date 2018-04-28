@@ -56,107 +56,107 @@ static CNV_DIAG diagExplicit =  // DIAGNOSIS FOR EXPLICIT CAST
 #define diagStatic   diagExplicit
 #define diagDynamic  diagExplicit
 
-#define dfnCAST_RESULTs                                                 \
-  dfnCAST_RESULT( CAST_ERR_NODE )   /* one or both nodes in error    */ \
-, dfnCAST_RESULT( CAST_REINT_PTR_TO_ARITH ) /* do reinterpret ptr->ar*/ \
-, dfnCAST_RESULT( CAST_REINT_MPTR_TO_MPTR ) /* do reinterpret mp->mp */ \
-, dfnCAST_RESULT( CAST_EXPLICIT_MPTR_REINT ) /* do reinterpret mp->mp */ \
-, dfnCAST_RESULT( CAST_STATIC_MEMBPTR ) /* static, mptr -> mptr      */ \
-, dfnCAST_RESULT( CAST_IMPLICIT_MEMBPTR ) /* implicit, mptr -> mptr  */ \
-, dfnCAST_RESULT( CAST_DO_DYNAMIC )   /* do dynamic cast             */ \
-, dfnCAST_RESULT( CAST_DO_CGCONV )    /* do codegen cast             */ \
-, dfnCAST_RESULT( CAST_TO_VOID )      /* do cast to void             */ \
-, dfnCAST_RESULT( CAST_ARITH_TO_PTR)/* (ptr)arith                    */ \
-, dfnCAST_RESULT( CAST_PTR_TO_PTR)  /* (ptr)ptr                      */ \
-, dfnCAST_RESULT( CAST_TO_VOID_PTR )/* (void cv *)ptr                */ \
-, dfnCAST_RESULT( CAST_TO_BASE    ) /* (base ptr)ptr                 */ \
-, dfnCAST_RESULT( CAST_LV_TO_BASE_LV ) /* (lvalue base)(lvalue)      */ \
-, dfnCAST_RESULT( CAST_RV_TO_BASE_LV ) /* (lvalue base)(rvalue)      */ \
-, dfnCAST_RESULT( CAST_LV_TO_BASE_RV ) /* (rvalue base)(lvalue)      */ \
-, dfnCAST_RESULT( CAST_RV_TO_BASE_RV ) /* (rvalue base)(rvalue)      */ \
-, dfnCAST_RESULT( CAST_TO_DERIVED    ) /* (derived ptr)ptr           */ \
-, dfnCAST_RESULT( CAST_LV_TO_DERIVED_LV ) /* (lvalue derived)(lvalue)*/ \
-, dfnCAST_RESULT( CAST_RV_TO_DERIVED_LV ) /* (lvalue derived)(rvalue)*/ \
-, dfnCAST_RESULT( CAST_LV_TO_DERIVED_RV ) /* (rvalue derived)(lvalue)*/ \
-, dfnCAST_RESULT( CAST_RV_TO_DERIVED_RV ) /* (rvalue derived)(rvalue)*/ \
-, dfnCAST_RESULT( CAST_TO_SAME_PTR) /* (T cv *)T cv-2 *              */ \
-, dfnCAST_RESULT( CAST_CTOR_LV )    /* ctor making lvalue            */ \
-, dfnCAST_RESULT( CAST_CTOR_RV )    /* ctor making rvalue            */ \
-, dfnCAST_RESULT( CAST_UDCF_LV )    /* udcf making lvalue            */ \
-, dfnCAST_RESULT( CAST_UDCF_RV )    /* udcf making rvalue            */ \
-, dfnCAST_RESULT( CAST_CONVERT_TO_BOOL )  /* convert to bool         */ \
-, dfnCAST_RESULT( CAST_REPLACE_INTEGRAL)  /* replace with integral # */ \
-, dfnCAST_RESULT( CAST_NULLPTR_TO_PTR)     /* (ptr/membptr) nullptr  */ \
-, dfnCAST_RESULT( CAST_ZERO_TO_NULLPTR ) /* implicit 0 -> nullptr    */ \
-                                                                        \
-  /* ERRORS */                                                          \
-, dfnCAST_RESULT( DIAG_ALREADY )    /* already diagnosed(must be 1st)*/ \
-, dfnCAST_RESULT( DIAG_MESSAGE )    /* message set                   */ \
-, dfnCAST_RESULT( DIAG_CORRUPTED )  /* class corrupted               */ \
-, dfnCAST_RESULT( DIAG_IMPOSSIBLE )                                     \
-, dfnCAST_RESULT( DIAG_CAST_AWAY_CONST )                                \
-, dfnCAST_RESULT( DIAG_CAST_ILLEGAL )                                   \
-, dfnCAST_RESULT( DIAG_CAST_PRIVATE )                                   \
-, dfnCAST_RESULT( DIAG_CAST_PROTECTED )                                 \
-, dfnCAST_RESULT( DIAG_CAST_TO_AMBIGUITY )                              \
-, dfnCAST_RESULT( DIAG_CAST_FROM_AMBIGUITY )                            \
-, dfnCAST_RESULT( DIAG_CONVERT_FROM_UNDEFD_TYPE )                       \
-, dfnCAST_RESULT( DIAG_CONVERT_TO_UNDEFD_TYPE )                         \
-, dfnCAST_RESULT( DIAG_CTOR_IMPOSSIBLE )                                \
-, dfnCAST_RESULT( DIAG_UNDEFD_CLASS_PTR )                               \
-, dfnCAST_RESULT( DIAG_CONST_CAST_REF_TYPE )                            \
-, dfnCAST_RESULT( DIAG_CONST_CAST_PTR_TYPE )                            \
-, dfnCAST_RESULT( DIAG_CONST_CAST_MPTR_CLASS )                          \
-, dfnCAST_RESULT( DIAG_CONST_CAST_MPTR_TYPE )                           \
-, dfnCAST_RESULT( DIAG_CONST_CAST_TYPE )                                \
-, dfnCAST_RESULT( DIAG_REINT_CAST_REF_TYPE )                            \
-, dfnCAST_RESULT( DIAG_REINT_CAST_INT_TYPE )                            \
-, dfnCAST_RESULT( DIAG_REINT_CAST_PTR_TYPE )                            \
-, dfnCAST_RESULT( DIAG_REINT_CAST_MPTR_TYPE )                           \
-, dfnCAST_RESULT( DIAG_REINT_CAST_TYPE )                                \
-, dfnCAST_RESULT( DIAG_REINT_TO_INT_TYPE )                              \
-, dfnCAST_RESULT( DIAG_STATIC_CAST_REF_TYPE )                           \
-, dfnCAST_RESULT( DIAG_STATIC_CAST_PTR_TYPE )                           \
-, dfnCAST_RESULT( DIAG_STATIC_CAST_MPTR_TYPE )                          \
-, dfnCAST_RESULT( DIAG_STATIC_CAST_TYPE )                               \
-, dfnCAST_RESULT( DIAG_STATIC_CAST_EXPR )                               \
-, dfnCAST_RESULT( DIAG_STATIC_CAST_OTHER_TO_ENUM )                      \
-, dfnCAST_RESULT( DIAG_DYNAMIC_CAST_TYPE )                              \
-, dfnCAST_RESULT( DIAG_DYNAMIC_CAST_EXPR )                              \
-, dfnCAST_RESULT( DIAG_DYNAMIC_CAST_NO_VFN_SRC )                        \
-, dfnCAST_RESULT( DIAG_DYNAMIC_CAST_NO_VFN_TGT )                        \
-, dfnCAST_RESULT( DIAG_EXPLICIT_CAST_TYPE )                             \
-, dfnCAST_RESULT( DIAG_BASE_AMBIGUOUS )                                 \
-, dfnCAST_RESULT( DIAG_BASE_PRIVATE )                                   \
-, dfnCAST_RESULT( DIAG_BASE_PROTECTED )                                 \
-, dfnCAST_RESULT( DIAG_CTOR_AMBIGUOUS )                                 \
-, dfnCAST_RESULT( DIAG_DERIVED_AMBIGUOUS )                              \
-, dfnCAST_RESULT( DIAG_SRC_UNDEFED )                                    \
-, dfnCAST_RESULT( DIAG_TGT_ABSTRACT )                                   \
-, dfnCAST_RESULT( DIAG_TGT_UNDEFED )                                    \
-, dfnCAST_RESULT( DIAG_TO_DERIVED )                                     \
-, dfnCAST_RESULT( DIAG_UDCF_IMPOSSIBLE )                                \
-, dfnCAST_RESULT( DIAG_UDCF_AMBIGUOUS )                                 \
-, dfnCAST_RESULT( DIAG_VIRTUAL_DERIVED )                                \
-, dfnCAST_RESULT( DIAG_UDC_AMBIGUOUS )                                  \
-, dfnCAST_RESULT( DIAG_MPTR_NOT_DERIVED )                               \
-, dfnCAST_RESULT( DIAG_BAD_ENUM_TGT )                                   \
-, dfnCAST_RESULT( DIAG_TGT_VOID_VOLATILE_STAR )                         \
-, dfnCAST_RESULT( DIAG_TGT_VOID_CONST_STAR )                            \
-, dfnCAST_RESULT( DIAG_TGT_VOID_STAR )                                  \
-, dfnCAST_RESULT( DIAG_REF_ADDS_BOTH )                                  \
-, dfnCAST_RESULT( DIAG_REF_ADDS_CONST )                                 \
-, dfnCAST_RESULT( DIAG_REF_ADDS_VOLATILE )                              \
-, dfnCAST_RESULT( DIAG_NOT_CONST_REF )                                  \
-, dfnCAST_RESULT( DIAG_FROM_BASE_PRIVATE )                              \
-, dfnCAST_RESULT( DIAG_FROM_BASE_PROTECTED )                            \
-/*                                          */                          \
-/* following are only used as codes         */                          \
-/*                                          */                          \
-, dfnCAST_RESULT( CAST_TESTED_OK )  /* TEST SUCCEEDED               */  \
-, dfnCAST_RESULT( CAST_CTOR )       /* CTOR FOUND                   */  \
-, dfnCAST_RESULT( CAST_UDCF )       /* UDCF FOUND                   */  \
-, dfnCAST_RESULT( CAST_UDC_IMPOSSIBLE )                                 \
+#define dfnCAST_RESULTs \
+  dfnCAST_RESULT( CAST_ERR_NODE )           /* one or both nodes in error     */ \
+, dfnCAST_RESULT( CAST_REINT_PTR_TO_ARITH ) /* do reinterpret ptr->ar         */ \
+, dfnCAST_RESULT( CAST_REINT_MPTR_TO_MPTR ) /* do reinterpret mp->mp          */ \
+, dfnCAST_RESULT( CAST_EXPLICIT_MPTR_REINT )/* do reinterpret mp->mp          */ \
+, dfnCAST_RESULT( CAST_STATIC_MEMBPTR )     /* static, mptr -> mptr           */ \
+, dfnCAST_RESULT( CAST_IMPLICIT_MEMBPTR )   /* implicit, mptr -> mptr         */ \
+, dfnCAST_RESULT( CAST_DO_DYNAMIC )         /* do dynamic cast                */ \
+, dfnCAST_RESULT( CAST_DO_CGCONV )          /* do codegen cast                */ \
+, dfnCAST_RESULT( CAST_TO_VOID )            /* do cast to void                */ \
+, dfnCAST_RESULT( CAST_ARITH_TO_PTR)        /* (ptr)arith                     */ \
+, dfnCAST_RESULT( CAST_PTR_TO_PTR)          /* (ptr)ptr                       */ \
+, dfnCAST_RESULT( CAST_TO_VOID_PTR )        /* (void cv *)ptr                 */ \
+, dfnCAST_RESULT( CAST_TO_BASE )            /* (base ptr)ptr                  */ \
+, dfnCAST_RESULT( CAST_LV_TO_BASE_LV )      /* (lvalue base)(lvalue)          */ \
+, dfnCAST_RESULT( CAST_RV_TO_BASE_LV )      /* (lvalue base)(rvalue)          */ \
+, dfnCAST_RESULT( CAST_LV_TO_BASE_RV )      /* (rvalue base)(lvalue)          */ \
+, dfnCAST_RESULT( CAST_RV_TO_BASE_RV )      /* (rvalue base)(rvalue)          */ \
+, dfnCAST_RESULT( CAST_TO_DERIVED )         /* (derived ptr)ptr               */ \
+, dfnCAST_RESULT( CAST_LV_TO_DERIVED_LV )   /* (lvalue derived)(lvalue)       */ \
+, dfnCAST_RESULT( CAST_RV_TO_DERIVED_LV )   /* (lvalue derived)(rvalue)       */ \
+, dfnCAST_RESULT( CAST_LV_TO_DERIVED_RV )   /* (rvalue derived)(lvalue)       */ \
+, dfnCAST_RESULT( CAST_RV_TO_DERIVED_RV )   /* (rvalue derived)(rvalue)       */ \
+, dfnCAST_RESULT( CAST_TO_SAME_PTR)         /* (T cv *)T cv-2 *               */ \
+, dfnCAST_RESULT( CAST_CTOR_LV )            /* ctor making lvalue             */ \
+, dfnCAST_RESULT( CAST_CTOR_RV )            /* ctor making rvalue             */ \
+, dfnCAST_RESULT( CAST_UDCF_LV )            /* udcf making lvalue             */ \
+, dfnCAST_RESULT( CAST_UDCF_RV )            /* udcf making rvalue             */ \
+, dfnCAST_RESULT( CAST_CONVERT_TO_BOOL )    /* convert to bool                */ \
+, dfnCAST_RESULT( CAST_REPLACE_INTEGRAL)    /* replace with integral #        */ \
+, dfnCAST_RESULT( CAST_NULLPTR_TO_PTR)      /* (ptr/membptr) nullptr          */ \
+, dfnCAST_RESULT( CAST_ZERO_TO_NULLPTR )    /* implicit 0 -> nullptr          */ \
+\
+/* ERRORS */                                                                     \
+, dfnCAST_RESULT( DIAG_ALREADY )            /* already diagnosed(must be 1st) */ \
+, dfnCAST_RESULT( DIAG_MESSAGE )            /* message set                    */ \
+, dfnCAST_RESULT( DIAG_CORRUPTED )          /* class corrupted                */ \
+, dfnCAST_RESULT( DIAG_IMPOSSIBLE )                                              \
+, dfnCAST_RESULT( DIAG_CAST_AWAY_CONST )                                         \
+, dfnCAST_RESULT( DIAG_CAST_ILLEGAL )                                            \
+, dfnCAST_RESULT( DIAG_CAST_PRIVATE )                                            \
+, dfnCAST_RESULT( DIAG_CAST_PROTECTED )                                          \
+, dfnCAST_RESULT( DIAG_CAST_TO_AMBIGUITY )                                       \
+, dfnCAST_RESULT( DIAG_CAST_FROM_AMBIGUITY )                                     \
+, dfnCAST_RESULT( DIAG_CONVERT_FROM_UNDEFD_TYPE )                                \
+, dfnCAST_RESULT( DIAG_CONVERT_TO_UNDEFD_TYPE )                                  \
+, dfnCAST_RESULT( DIAG_CTOR_IMPOSSIBLE )                                         \
+, dfnCAST_RESULT( DIAG_UNDEFD_CLASS_PTR )                                        \
+, dfnCAST_RESULT( DIAG_CONST_CAST_REF_TYPE )                                     \
+, dfnCAST_RESULT( DIAG_CONST_CAST_PTR_TYPE )                                     \
+, dfnCAST_RESULT( DIAG_CONST_CAST_MPTR_CLASS )                                   \
+, dfnCAST_RESULT( DIAG_CONST_CAST_MPTR_TYPE )                                    \
+, dfnCAST_RESULT( DIAG_CONST_CAST_TYPE )                                         \
+, dfnCAST_RESULT( DIAG_REINT_CAST_REF_TYPE )                                     \
+, dfnCAST_RESULT( DIAG_REINT_CAST_INT_TYPE )                                     \
+, dfnCAST_RESULT( DIAG_REINT_CAST_PTR_TYPE )                                     \
+, dfnCAST_RESULT( DIAG_REINT_CAST_MPTR_TYPE )                                    \
+, dfnCAST_RESULT( DIAG_REINT_CAST_TYPE )                                         \
+, dfnCAST_RESULT( DIAG_REINT_TO_INT_TYPE )                                       \
+, dfnCAST_RESULT( DIAG_STATIC_CAST_REF_TYPE )                                    \
+, dfnCAST_RESULT( DIAG_STATIC_CAST_PTR_TYPE )                                    \
+, dfnCAST_RESULT( DIAG_STATIC_CAST_MPTR_TYPE )                                   \
+, dfnCAST_RESULT( DIAG_STATIC_CAST_TYPE )                                        \
+, dfnCAST_RESULT( DIAG_STATIC_CAST_EXPR )                                        \
+, dfnCAST_RESULT( DIAG_STATIC_CAST_OTHER_TO_ENUM )                               \
+, dfnCAST_RESULT( DIAG_DYNAMIC_CAST_TYPE )                                       \
+, dfnCAST_RESULT( DIAG_DYNAMIC_CAST_EXPR )                                       \
+, dfnCAST_RESULT( DIAG_DYNAMIC_CAST_NO_VFN_SRC )                                 \
+, dfnCAST_RESULT( DIAG_DYNAMIC_CAST_NO_VFN_TGT )                                 \
+, dfnCAST_RESULT( DIAG_EXPLICIT_CAST_TYPE )                                      \
+, dfnCAST_RESULT( DIAG_BASE_AMBIGUOUS )                                          \
+, dfnCAST_RESULT( DIAG_BASE_PRIVATE )                                            \
+, dfnCAST_RESULT( DIAG_BASE_PROTECTED )                                          \
+, dfnCAST_RESULT( DIAG_CTOR_AMBIGUOUS )                                          \
+, dfnCAST_RESULT( DIAG_DERIVED_AMBIGUOUS )                                       \
+, dfnCAST_RESULT( DIAG_SRC_UNDEFED )                                             \
+, dfnCAST_RESULT( DIAG_TGT_ABSTRACT )                                            \
+, dfnCAST_RESULT( DIAG_TGT_UNDEFED )                                             \
+, dfnCAST_RESULT( DIAG_TO_DERIVED )                                              \
+, dfnCAST_RESULT( DIAG_UDCF_IMPOSSIBLE )                                         \
+, dfnCAST_RESULT( DIAG_UDCF_AMBIGUOUS )                                          \
+, dfnCAST_RESULT( DIAG_VIRTUAL_DERIVED )                                         \
+, dfnCAST_RESULT( DIAG_UDC_AMBIGUOUS )                                           \
+, dfnCAST_RESULT( DIAG_MPTR_NOT_DERIVED )                                        \
+, dfnCAST_RESULT( DIAG_BAD_ENUM_TGT )                                            \
+, dfnCAST_RESULT( DIAG_TGT_VOID_VOLATILE_STAR )                                  \
+, dfnCAST_RESULT( DIAG_TGT_VOID_CONST_STAR )                                     \
+, dfnCAST_RESULT( DIAG_TGT_VOID_STAR )                                           \
+, dfnCAST_RESULT( DIAG_REF_ADDS_BOTH )                                           \
+, dfnCAST_RESULT( DIAG_REF_ADDS_CONST )                                          \
+, dfnCAST_RESULT( DIAG_REF_ADDS_VOLATILE )                                       \
+, dfnCAST_RESULT( DIAG_NOT_CONST_REF )                                           \
+, dfnCAST_RESULT( DIAG_FROM_BASE_PRIVATE )                                       \
+, dfnCAST_RESULT( DIAG_FROM_BASE_PROTECTED )                                     \
+\
+/* following are only used as codes                                           */ \
+\
+, dfnCAST_RESULT( CAST_TESTED_OK )          /* TEST SUCCEEDED                 */ \
+, dfnCAST_RESULT( CAST_CTOR )               /* CTOR FOUND                     */ \
+, dfnCAST_RESULT( CAST_UDCF )               /* UDCF FOUND                     */ \
+, dfnCAST_RESULT( CAST_UDC_IMPOSSIBLE )
 
 
 #define dfnCAST_RESULT(a) a
@@ -209,21 +209,21 @@ static PTREE stripOffCast       // STRIP CAST NODES
         old->u.subtree[0] = NULL;
         PTreeFree( old );
     }
-    return ctl->expr;
+    return( ctl->expr );
 }
 
 
 static PTREE stripOffCastOk     // STRIP CAST NODES, WHEN OK
     ( CONVCTL* ctl )            // - conversion control
 {
-    return stripOffCast( ctl, true );
+    return( stripOffCast( ctl, true ) );
 }
 
 
 static PTREE stripOffCastOrig   // STRIP CAST NODES, WHEN ORIGINAL TO BE LEFT
     ( CONVCTL* ctl )            // - conversion control
 {
-    return stripOffCast( ctl, false );
+    return( stripOffCast( ctl, false ) );
 }
 
 
@@ -249,7 +249,7 @@ static bool getClassRvalue      // GET RVALUE FOR CLASS EXPRESSION
         expr = NodeRvForRefClass( expr );
     }
     ctl->expr->u.subtree[1] = expr;
-    return okSoFar( ctl );
+    return( okSoFar( ctl ) );
 }
 
 
@@ -283,7 +283,7 @@ static bool getLvalue           // GET LVALUE FOR EXPRESSION
         }
     }
     ctl->expr->u.subtree[1] = expr;
-    return okSoFar( ctl );
+    return( okSoFar( ctl ) );
 }
 
 
@@ -304,7 +304,7 @@ static CAST_RESULT diagNonConstRefBinding // DIAGNOSE BINDING TO NON-CONST REF
             result = CAST_TESTED_OK;
         }
     }
-    return result;
+    return( result );
 }
 
 
@@ -323,7 +323,7 @@ static CAST_RESULT diagExtConversion // DIAGNOSE EXTENDED CONVERSION
             result = CAST_TESTED_OK;
         }
     }
-    return result;
+    return( result );
 }
 
 
@@ -348,7 +348,7 @@ static CAST_RESULT checkConstRef// CHECK FOR TEMP -> NON-CONST REFERENCE
             result = def_result;
         }
     }
-    return result;
+    return( result );
 }
 
 
@@ -363,7 +363,7 @@ static CAST_RESULT reqdConstRef // CHECK FOR TEMP -> NON-CONST REFERENCE
     } else {
         result = diagNonConstRefBinding( ctl );
     }
-    return result;
+    return( result );
 }
 
 
@@ -511,7 +511,7 @@ static CAST_RESULT findConvRtn   // LOCATE UDC FOR CONVERSION
         break;
     DbgDefault( "FindConvRtn -- bad return from overloading" );
     }
-    return result;
+    return( result );
 }
 
 
@@ -521,7 +521,7 @@ static CAST_RESULT findConvFunc // LOCATE UDC FOR CONVERSION
     FNOV_UDC_CONTROL control;
 
     control = ctl->clscls_copy_init ? FNOV_UDC_COPY : FNOV_UDC_DIRECT;
-    return findConvRtn( ctl, control );
+    return( findConvRtn( ctl, control ) );
 }
 
 
@@ -540,7 +540,7 @@ static CAST_RESULT findConvCtor // LOCATE CTOR FOR CONVERSION
             retn = CAST_CTOR;
         }
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -553,7 +553,7 @@ static CNV_DIAG* getDiagnosis   // GET DIAGNOSIS TO BE USED
     if( NULL == diag ) {
         diag = ctl->diag_good;
     }
-    return diag;
+    return( diag );
 }
 
 
@@ -586,9 +586,9 @@ static CAST_RESULT warnRefTruncation // WARN IF TRUNCATION
     ( CONVCTL* ctl              // - conversion control
     , TYPE src_type )           // - source type
 {
-    return warnTruncTypes( ctl, ctl->tgt.unmod, src_type )
+    return( warnTruncTypes( ctl, ctl->tgt.unmod, src_type )
          ? CAST_TESTED_OK
-         : DIAG_ALREADY;
+         : DIAG_ALREADY );
 }
 
 
@@ -596,7 +596,7 @@ static bool zeroSrc             // TEST IF SOURCE OPERAND IS CONST ZERO
     ( CONVCTL* ctl )            // - conversion control
 {
     PTREE expr = PTreeOpRight( ctl->expr );
-    return NodeIsZeroIntConstant( expr );
+    return( NodeIsZeroIntConstant( expr ) );
 }
 
 
@@ -620,7 +620,7 @@ static PTREE doReintMPtrToMPtr  // DO A RE-INTERPRET MEMB-PTR CONVERSION
     MembPtrReint( &ctl->expr->u.subtree[1], ctl->tgt.orig );
 #endif
     stripOffCastOk( ctl );
-    return ctl->expr;
+    return( ctl->expr );
 }
 
 
@@ -637,7 +637,7 @@ static PTREE doCgConversion     // DO A CONVERSION ACCOMPLISHED BY CODEGEN
     ctl->expr->cgop = CO_CONVERT;
     markUserCast( ctl );
     setConversionNode( ctl );
-    return ctl->expr;
+    return( ctl->expr );
 }
 
 
@@ -664,16 +664,16 @@ static CAST_RESULT staticCvClClOk // TEST IF CONST CASTED AWAY ON STATIC CONV
     } else {
         retn = CAST_TESTED_OK;
     }
-    return retn;
+    return( retn );
 }
 
 
 static TYPE getTargetAsReference// GET TARGET TYPE AS A REFERENCE
     ( CONVCTL* ctl )            // - conversion control
 {
-    return ctl->tgt.reference
+    return( ctl->tgt.reference
          ? ctl->tgt.orig
-         : MakeReferenceTo( ctl->tgt.orig );
+         : MakeReferenceTo( ctl->tgt.orig ) );
 }
 
 
@@ -684,7 +684,7 @@ static bool castToBase          // DO CAST TO LV --> LV BASE
                             , getTargetAsReference( ctl )
                             , ctl->src.class_type->u.c.scope
                             , ctl->tgt.class_type->u.c.scope );
-    return okSoFar( ctl );
+    return( okSoFar( ctl ) );
 }
 
 
@@ -694,7 +694,7 @@ static PTREE castLvToLvBase     // CAST LV-DERIVED --> LV-BASE
     if( castToBase( ctl ) ) {
         doCgConversion( ctl );
     }
-    return ctl->expr;
+    return( ctl->expr );
 }
 
 
@@ -705,7 +705,7 @@ static PTREE castLvToRvBase     // CAST LV-DERIVED --> RV-BASE
      && getClassRvalue( ctl ) ) {
         doCgConversion( ctl );
     }
-    return ctl->expr;
+    return( ctl->expr );
 }
 
 
@@ -716,7 +716,7 @@ static PTREE castRvToLvBase     // CAST RV-DERIVED --> LV-BASE
      && castToBase( ctl ) ) {
         doCgConversion( ctl );
     }
-    return ctl->expr;
+    return( ctl->expr );
 }
 
 
@@ -728,7 +728,7 @@ static PTREE castRvToRvBase     // CAST RV-DERIVED --> LV-BASE
      && getClassRvalue( ctl ) ) {
         doCgConversion( ctl );
     }
-    return ctl->expr;
+    return( ctl->expr );
 }
 
 
@@ -756,7 +756,9 @@ static bool castCtor            // APPLY CTOR
             if( NULL == temp ) {
                 if( ctl->tgt.reference ) {
                     CAST_RESULT result = reqdConstRef( ctl );
-                    if( result != CAST_TESTED_OK ) return false;
+                    if( result != CAST_TESTED_OK ) {
+                        return( false );
+                    }
                 }
                 temp = NodeTemporary( ctl->tgt.class_type );
                 ctl->destination = temp;
@@ -828,7 +830,7 @@ static PTREE castCtorLv         // CTOR --> LVALUE
     if( castCtor( ctl ) ) {
         doCgConversion( ctl );
     }
-    return ctl->expr;
+    return( ctl->expr );
 }
 
 
@@ -839,7 +841,7 @@ static PTREE castCtorRv         // CTOR --> RVALUE
      && getClassRvalue( ctl ) ) {
         doCgConversion( ctl );
     }
-    return ctl->expr;
+    return( ctl->expr );
 }
 
 
@@ -911,21 +913,21 @@ static PTREE castUdcf           // APPLY USER-DEFINED CONVERSION FUNCTION
             }
         }
     }
-    return ctl->expr;
+    return( ctl->expr );
 }
 
 
 static PTREE castUdcfLv         // UDCF --> LVALUE
     ( CONVCTL* ctl )            // - conversion control
 {
-    return castUdcf( ctl );
+    return( castUdcf( ctl ) );
 }
 
 
 static PTREE castUdcfRv         // UDCF --> RVALUE
     ( CONVCTL* ctl )            // - conversion control
 {
-    return castUdcf( ctl );
+    return( castUdcf( ctl ) );
 }
 
 
@@ -936,7 +938,7 @@ static bool castToDerived       // CAST LV-BASE --> LV_DERIVED
                             , getTargetAsReference( ctl )
                             , ctl->tgt.class_type->u.c.scope
                             , ctl->src.class_type->u.c.scope );
-    return okSoFar( ctl );
+    return( okSoFar( ctl ) );
 }
 
 
@@ -946,7 +948,7 @@ static PTREE castLvToLvDerived  // CAST LV-BASE --> LV_DERIVED
     if( castToDerived( ctl ) ) {
         doCgConversion( ctl );
     }
-    return ctl->expr;
+    return( ctl->expr );
 }
 
 
@@ -957,7 +959,7 @@ static PTREE castLvToRvDerived  // CAST LV-BASE --> RV_DERIVED
      && getClassRvalue( ctl ) ) {
         doCgConversion( ctl );
     }
-    return ctl->expr;
+    return( ctl->expr );
 }
 
 
@@ -968,7 +970,7 @@ static PTREE castRvToLvDerived  // CAST RV-BASE --> LV_DERIVED
      && castToDerived( ctl ) ) {
         doCgConversion( ctl );
     }
-    return ctl->expr;
+    return( ctl->expr );
 }
 
 
@@ -980,7 +982,7 @@ static PTREE castRvToRvDerived  // CAST RV-BASE --> RV_DERIVED
      && getClassRvalue( ctl ) ) {
         doCgConversion( ctl );
     }
-    return ctl->expr;
+    return( ctl->expr );
 }
 
 
@@ -1055,7 +1057,7 @@ static CAST_RESULT resultToNonBase // DO A CONVERSION TO NON-BASE CLASS
             result = CAST_UDCF_RV;
         }
     }
-    return result;
+    return( result );
 }
 
 
@@ -1090,7 +1092,8 @@ static CAST_RESULT resultToClass// DO A CONVERSION TO CLASS, CLASS-REF
             if( NULL != ctl->destination ) {
                 // req'd to initialize destination
                 result = findConvCtor( ctl );
-                if( result != CAST_CTOR ) break;
+                if( result != CAST_CTOR )
+                    break;
                 if( ctl->tgt.reference ) {
                     result = CAST_CTOR_LV;
                 } else {
@@ -1099,25 +1102,31 @@ static CAST_RESULT resultToClass// DO A CONVERSION TO CLASS, CLASS-REF
             } else if( ctl->tgt.reference ) {
                 // no destination, lvalue req'd
                 result = staticCvClClOk( ctl );
-                if( result != CAST_TESTED_OK ) break;
+                if( result != CAST_TESTED_OK )
+                    break;
                 if( ctl->src.reference ) {
                     result = checkConstRef( ctl, CAST_TESTED_OK );
-                    if( result != CAST_TESTED_OK ) break;
+                    if( result != CAST_TESTED_OK )
+                        break;
                     result = warnRefTruncation( ctl, ctl->src.orig );
-                    if( result != CAST_TESTED_OK ) break;
+                    if( result != CAST_TESTED_OK )
+                        break;
                     result = CAST_LV_TO_BASE_LV;
                 } else {
                     result = checkConstRef( ctl, CAST_TESTED_OK );
-                    if( result != CAST_TESTED_OK ) break;
+                    if( result != CAST_TESTED_OK )
+                        break;
                     result = warnRefTruncation
                                 ( ctl, MakeReferenceTo( ctl->src.orig ) );
-                    if( result != CAST_TESTED_OK ) break;
+                    if( result != CAST_TESTED_OK )
+                        break;
                     result = CAST_RV_TO_BASE_LV;
                 }
             } else {
                 // no destination, rvalue req'd
                 result = findConvCtor( ctl );
-                if( result != CAST_CTOR ) break;
+                if( result != CAST_CTOR )
+                    break;
                 if( ctl->src.reference ) {
                     if( OMR_CLASS_VAL == ObjModelArgument( ctl->tgt.class_type ) ) {
                         result = CAST_LV_TO_BASE_RV;
@@ -1131,7 +1140,8 @@ static CAST_RESULT resultToClass// DO A CONVERSION TO CLASS, CLASS-REF
             break;
         case CTD_RIGHT_VIRTUAL :
             result = resultToNonBase( ctl );
-            if( result != CAST_UDC_IMPOSSIBLE ) break;
+            if( result != CAST_UDC_IMPOSSIBLE )
+                break;
             if( ctl->clscls_explicit
              || ctl->clscls_static ) {
                 result = DIAG_VIRTUAL_DERIVED;
@@ -1143,12 +1153,14 @@ static CAST_RESULT resultToClass// DO A CONVERSION TO CLASS, CLASS-REF
         case CTD_RIGHT_PRIVATE :
         case CTD_RIGHT_PROTECTED :
             result = resultToNonBase( ctl );
-            if( result != CAST_UDC_IMPOSSIBLE ) break;
+            if( result != CAST_UDC_IMPOSSIBLE )
+                break;
             result = DIAG_TO_DERIVED;
             break;
         case CTD_NO :
             result = resultToNonBase( ctl );
-            if( result != CAST_UDC_IMPOSSIBLE ) break;
+            if( result != CAST_UDC_IMPOSSIBLE )
+                break;
             result = DIAG_CAST_ILLEGAL;
             break;
         case CTD_LEFT_AMBIGUOUS :
@@ -1170,7 +1182,7 @@ static CAST_RESULT resultToClass// DO A CONVERSION TO CLASS, CLASS-REF
         DbgDefault( "resultToClass -- impossible CTD" );
         }
     }
-    return result;
+    return( result );
 }
 
 
@@ -1240,7 +1252,7 @@ static CAST_RESULT resultClassToScalar // DO A CONVERSION CLASS -> SCALAR
             break;
         }
     }
-    return result;
+    return( result );
 }
 
 
@@ -1251,7 +1263,7 @@ static PTREE diagnoseCastError  // DIAGNOSE CASTING ERROR
     if( ConvCtlWarning( ctl, ctl->msg_no ) ) {
         ConvCtlDiagnoseTypes( ctl );
     }
-    return ctl->expr;
+    return( ctl->expr );
 }
 
 
@@ -1282,7 +1294,7 @@ static PTREE diagnoseCast       // DIAGNOSE CASTING ERROR
         msg = ERR_REINT_INTEGRAL_PTR;
     }
     ctl->msg_no = msg;
-    return diagnoseCastError( ctl );
+    return( diagnoseCastError( ctl ) );
 }
 
 
@@ -1337,7 +1349,7 @@ static PTREE doReintPtrToArith  // DO REINTERPRET: PTR -> ARITH
     } else {
         expr = doCgConversion( ctl );
     }
-    return expr;
+    return( expr );
 }
 
 
@@ -1350,7 +1362,7 @@ static PTREE convertToBool          // CONVERT TO BOOL
         ConvCtlWarning( ctl, WARN_IMPLICIT_NULLPTR_TO_BOOL );
     }
 
-    return NodeConvertToBool( ctl->expr );
+    return( NodeConvertToBool( ctl->expr ) );
 }
 
 
@@ -1375,7 +1387,7 @@ static CAST_RESULT arithToArith     // EXPLICIT, IMPLICIT ARITH->ARITH
             }
         }
     }
-    return result;
+    return( result );
 }
 
 
@@ -1399,7 +1411,7 @@ static CAST_RESULT implicitArithToPtr // IMPLICIT ARITH,ENUM->PTR
     } else {
         result = DIAG_CAST_ILLEGAL;
     }
-    return result;
+    return( result );
 }
 
 
@@ -1475,7 +1487,7 @@ static CAST_RESULT analysePtrToPtr  // ANALYSE PTR --> PTR
     } else {
         result = DIAG_CAST_ILLEGAL;
     }
-    return result;
+    return( result );
 }
 
 
@@ -1529,7 +1541,7 @@ static CAST_RESULT analyseImplicitPtrToPtr // IMPLICIT ANALYSIS: PTR --> PTR
         }
         break;
     }
-    return result;
+    return( result );
 }
 
 
@@ -1545,7 +1557,7 @@ static CAST_RESULT analyseExplicitPtrToPtr // EXPLICIT ANALYSIS: PTR --> PTR
             result = DIAG_VIRTUAL_DERIVED;
         }
     }
-    return result;
+    return( result );
 }
 
 
@@ -1556,7 +1568,7 @@ static PTREE checkMptrConversion    // CHECK RESULT OF MEMBER-PTR CONVERSION
     if( CNV_OK == ConversionDiagnose( retn, ctl->expr, ctl->diag_cast ) ) {
         stripOffCastOk( ctl );
     }
-    return ctl->expr;
+    return( ctl->expr );
 }
 
 static TYPE isHostDerivationKnown( TYPE type )
@@ -1930,7 +1942,7 @@ static PTREE doCastResult           // DO CAST RESULT
          expr->cgop = CO_CONVERT;
          expr = NodeSetType( expr, ctl->tgt.orig, PTF_LV_CHECKED );
     }
-    return expr;
+    return( expr );
 }
 
 
@@ -2005,7 +2017,7 @@ static PTREE forceToDestination // FORCE TO DESTINATION ON CAST, FUNC_ARG
             }
         }
     }
-    return expr;
+    return( expr );
 }
 
 
@@ -2120,7 +2132,7 @@ PTREE CastConst                 // CONST_CAST< TYPE >( EXPR )
             break;
         }
     }
-    return doCastResult( &ctl, result );
+    return( doCastResult( &ctl, result ) );
 }
 
 /**
@@ -2232,7 +2244,7 @@ PTREE CastReint                 // REINTERPRET_CAST< TYPE >( EXPR )
             break;
         }
     }
-    return doCastResult( &ctl, result );
+    return( doCastResult( &ctl, result ) );
 }
 
 
@@ -2401,7 +2413,7 @@ PTREE CastStatic                // STATIC_CAST< TYPE >( EXPR )
         }
         break;
     }
-    return doCastResult( &ctl, result );
+    return( doCastResult( &ctl, result ) );
 }
 
 
@@ -2525,7 +2537,7 @@ PTREE CastDynamic               // DYNAMIC_CAST< TYPE >( EXPR )
         }
         break;
     }
-    return doCastResult( &ctl, result );
+    return( doCastResult( &ctl, result ) );
 }
 
 
@@ -2679,7 +2691,7 @@ PTREE CastExplicit              // EXPLICIT CAST: ( TYPE )( EXPR )
         break;
     }
     ctl.expr = doCastResult( &ctl, result );
-    return forceToDestination( &ctl );
+    return( forceToDestination( &ctl ) );
 }
 
 
@@ -2737,8 +2749,8 @@ bool CharIsPromoted             // CHECK IF char PROMOTED TO int
     ( TYPE src_type             // - source type
     , TYPE tgt_type )           // - target type
 {
-    return TYP_CHAR == TypedefModifierRemoveOnly( src_type )->id
-        && TYP_SINT == TypedefModifierRemoveOnly( tgt_type )->id;
+    return( TYP_CHAR == TypedefModifierRemoveOnly( src_type )->id
+        && TYP_SINT == TypedefModifierRemoveOnly( tgt_type )->id );
 }
 
 
@@ -2753,7 +2765,7 @@ PTREE CheckCharPromotion        // CHECK FOR CHARACTER-TO-INT promotion
             PTreeWarnExpr( expr, WARN_CHAR_PROMOTION );
         }
     }
-    return expr;
+    return( expr );
 }
 
 
@@ -2764,14 +2776,14 @@ PTREE AddCastNode               // ADD A CAST NODE
 #define PTF_CONVERT ( PTF_SIDE_EFF     \
                     | PTF_MEANINGFUL   \
                     | PTF_MEMORY_EXACT \
-                    | PTF_PTR_NONZERO  )
+                    | PTF_PTR_NONZERO )
     PTF_FLAG flags;             // - flags for cast node
     flags = expr->flags & PTF_CONVERT;
     type = BindTemplateClass( type, &expr->locn, true );
     expr = NodeBinary( CO_CONVERT, PTreeType( type ), expr );
     expr = NodeSetType( expr, type, flags );
     expr = PTreeCopySrcLocation( expr, expr->u.subtree[1] );
-    return CheckCharPromotion( expr );
+    return( CheckCharPromotion( expr ) );
 #undef PTF_CONVERT
 }
 
@@ -2946,7 +2958,7 @@ static PTREE doCastImplicit     // DO AN IMPLICIT CAST
     ctl.expr = doCastResult( &ctl, result );
     ctl.expr = forceToDestination( &ctl );
     DbgVerify( --infinite_ctr >= 0, "Bad Implicit Conversion Unwind" );
-    return ctl.expr;
+    return( ctl.expr );
 }
 
 
@@ -2956,7 +2968,7 @@ PTREE CastImplicit              // IMPLICIT CAST
     , CNV_REQD reqd_cnv         // - required kind of conversion
     , CNV_DIAG* diagnosis )     // - diagnosis
 {
-    return doCastImplicit( expr, type, reqd_cnv, diagnosis, NULL );
+    return( doCastImplicit( expr, type, reqd_cnv, diagnosis, NULL ) );
 }
 
 
@@ -2975,7 +2987,7 @@ PTREE CastImplicitRight         // IMPLICIT CAST OF RIGHT OPERAND
             && NULL != TypeReference( type ) ) {
         expr->cgop = CO_INIT_REF;
     }
-    return expr;
+    return( expr );
 }
 
 
@@ -2985,11 +2997,7 @@ PTREE CopyDirect                // DIRECT COPY
     , TYPE type                 // - type copied
     , CNV_DIAG* diag )          // - diagnosis
 {
-    return doCastImplicit( src
-                         , type
-                         , CNV_INIT
-                         , diag
-                         , tgt );
+    return( doCastImplicit( src, type, CNV_INIT, diag, tgt ) );
 }
 
 
@@ -2999,12 +3007,7 @@ PTREE CopyInit                  // INITIALIZATION COPY
     , TYPE type                 // - type copied
     , CNV_DIAG* diag )          // - diagnosis
 {
-    return doCastImplicit( src
-//                       , MakeReferenceTo( type )
-                         , type
-                         , CNV_INIT_COPY
-                         , diag
-                         , tgt );
+    return( doCastImplicit( src, /* MakeReferenceTo( type ), */type, CNV_INIT_COPY, diag, tgt ) );
 }
 
 
@@ -3014,11 +3017,7 @@ PTREE CopyClassRetnVal          // COPY TO RETURN SYMBOL A CLASS VALUE
     , TYPE type                 // - type copied
     , CNV_DIAG* diag )          // - diagnosis
 {
-    return doCastImplicit( src
-                         , type
-                         , CNV_FUNC_RET
-                         , diag
-                         , tgt );
+    return( doCastImplicit( src, type, CNV_FUNC_RET, diag, tgt ) );
 }
 
 
@@ -3032,7 +3031,7 @@ static TYPE commonDiag          // PRINT DIAGNOSIS MESSAGE
         ConversionTypesSet( src, tgt );
         ConversionDiagnoseInf();
     }
-    return NULL;
+    return( NULL );
 }
 
 
@@ -3096,7 +3095,7 @@ static PTREE commonCastEx       // EXPLICIT CAST FOR COMMON
             retn = expr;
         }
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -3218,7 +3217,7 @@ PTREE CastImplicitCommonPtrExpr // CONVERT TO COMMON PTR EXPRESSION
     if( PT_ERROR != expr->op ) {
         expr = NodeSetType( expr, final_type, PTF_LV_CHECKED );
     }
-    return expr;
+    return( expr );
 }
 
 
@@ -3245,7 +3244,7 @@ static CAST_RESULT castCommon   // ATTEMPT A COMMON-CAST
                  , "castCommon -- funny types" );
         result = CAST_ERR_NODE;
     }
-    return result;
+    return( result );
 }
 
 
@@ -3255,7 +3254,7 @@ static PTREE castCommonExpr     // CAST TO COMMON EXPRESSION
 {
     ctl->expr = doCastResult( ctl, result );
     ctl->expr = forceToDestination( ctl );
-    return ctl->expr;
+    return( ctl->expr );
 }
 
 

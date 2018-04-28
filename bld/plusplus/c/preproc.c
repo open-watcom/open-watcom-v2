@@ -331,7 +331,8 @@ void PpParse(                   // PARSE WHEN PREPROCESSING
 {
     for(;;) {
         GetNextToken();
-        if( CurToken == T_EOF ) break;
+        if( CurToken == T_EOF )
+            break;
         PrtToken();
     }
     idMangleFini();

@@ -65,7 +65,7 @@ static char const * scanBlanks  // SCAN OVER BLANKS
     ( char const * scan )       // - scanner
 {
     for( ; *scan == ' '; ++scan );
-    return scan;
+    return( scan );
 }
 
 
@@ -84,7 +84,7 @@ static IDEBool getString           // COPY A STRING
     , char const * src )        // - source
 {
     strcpy( tgt, src );
-    return OK;
+    return( OK );
 }
 
 
@@ -98,7 +98,7 @@ static char const * fmtBool     // FORMAT A BOOL VALUE
     } else {
         retn = "FALSE";
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -123,7 +123,7 @@ static int optionsWriter        // WRITE FUN (PASSED TO DLL)
     } else {
         size = 0;
     }
-    return size;
+    return( size );
 }
 
 
@@ -150,7 +150,7 @@ static int optionsReader        // READ FUN (PASSED TO DLL)
     } else {
         size = 0;
     }
-    return size;
+    return( size );
 }
 
 
@@ -212,7 +212,7 @@ static void *allocMem           // ALLOCATE MEMORY
     , unsigned long size )      // - size to be allocated
 {
     _Verify( hdl == FAKE_HDL, "reAllocMem -- bad handle" );
-    return malloc( size );
+    return( malloc( size ) );
 }
 
 
@@ -233,7 +233,7 @@ static void *reAllocMem         // RE-ALLOCATE MEMORY
     , unsigned long size )      // - size to be allocated
 {
     _Verify( hdl == FAKE_HDL, "reAllocMem -- bad handle" );
-    return realloc( ptr, size );
+    return( realloc( ptr, size ) );
 }
 
 
@@ -267,7 +267,7 @@ static IDEBool printMessage     // PRINT A MESSAGE
             fputs( "info: Help: ", stdout ); puts( number );
         }
     }
-    return OK;
+    return( OK );
 }
 
 
@@ -288,7 +288,7 @@ static unsigned expandMacro     // EXPAND A MACRO
     if( fmt_size <= bufsize ) {
         memcpy( buf, fmtstr, fmt_size );
     }
-    return fmt_size;
+    return( fmt_size );
 }
 
 
@@ -321,7 +321,7 @@ static IDEBool getInfo          // GET INFORMATION
         retn = FAILED;
         break;
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -425,5 +425,5 @@ int main()
         break;
     }
     IDEFiniDLL( FAKE_HDL );
-    return 0;
+    return( 0 );
 }

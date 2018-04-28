@@ -103,7 +103,7 @@ static SYMBOL blkDtorSymbol(    // GET LAST DTORABLE SYMBOL FOR A BLOCK
     if( dtor_sym == NULL ) {
         dtor_sym = blk->sym_dtored_containing;
     }
-    return dtor_sym;
+    return( dtor_sym );
 }
 
 
@@ -116,7 +116,7 @@ static SYMBOL blkDcledSymbol(   // GET LAST DTORABLE DCL'ED SYMBOL FOR A BLOCK
     if( dtor_sym == NULL ) {
         dtor_sym = blk->sym_dtored_containing;
     }
-    return dtor_sym;
+    return( dtor_sym );
 }
 
 
@@ -200,28 +200,28 @@ static BLK_INIT *labelFindBlk(  // FIND INITIALIZATION BLOCK FOR SCOPE
 static SYMBOL scopeDtorSymbol(  // GET LAST DTORABLE SYMBOL FOR A SCOPE
     SCOPE scope )
 {
-    return blkDtorSymbol( labelFindBlk( scope ) );
+    return( blkDtorSymbol( labelFindBlk( scope ) ) );
 }
 
 
 static SYMBOL scopeDcledSymbol( // GET LAST DCL'ED DTORABLE SYMBOL FOR A SCOPE
     SCOPE scope )
 {
-    return blkDcledSymbol( labelFindBlk( scope ) );
+    return( blkDcledSymbol( labelFindBlk( scope ) ) );
 }
 
 
 static SYMBOL currDtorSymbol(   // GET LAST DTORABLE SYMBOL FOR CurrScope
     void )
 {
-    return scopeDtorSymbol( GetCurrScope() );
+    return( scopeDtorSymbol( GetCurrScope() ) );
 }
 
 
 static SYMBOL currDcledSymbol(  // GET LAST DTORABLE DCL'ED SYMBOL, CurrScope
     void )
 {
-    return scopeDcledSymbol( GetCurrScope() );
+    return( scopeDcledSymbol( GetCurrScope() ) );
 }
 
 
@@ -244,7 +244,7 @@ static SCOPE dtorScope(         // FIND SIGNIFICANT SCOPE FOR DTOR'ING
             break;
         }
     }
-    return scope;
+    return( scope );
 }
 
 
@@ -390,7 +390,7 @@ static bool popsTryCatch(       // CHECK IF JUMP POPS A TRY/CATCH BLOCK
             break;
         }
     }
-    return popped;
+    return( popped );
 }
 
 
@@ -407,7 +407,7 @@ static bool popsCatch(          // CHECK IF JUMP POPS A CATCH BLOCK
             break;
         }
     }
-    return popped;
+    return( popped );
 }
 
 
@@ -945,14 +945,18 @@ void *LabelBlockOpenFindZap( LAB_MEM *lm, CGFILE_INS *p )
 
     RingIterBeg( lm->blk_hdr, h ) {
         if( h->open_zap || h->dead_zap ) {
-            if( p->block != h->open_ins.block ) continue;
-            if( p->offset != h->open_ins.offset ) continue;
+            if( p->block != h->open_ins.block )
+                continue;
+            if( p->offset != h->open_ins.offset )
+                continue;
             return( labelBlockGetIndex( lm->carve, h ) );
         }
         RingIterBeg( h->contains, b ) {
             if( b->open_zap || b->dead_zap ) {
-                if( p->block != b->open_ins.block ) continue;
-                if( p->offset != b->open_ins.offset ) continue;
+                if( p->block != b->open_ins.block )
+                    continue;
+                if( p->offset != b->open_ins.offset )
+                    continue;
                 return( labelBlockGetIndex( lm->carve, b ) );
             }
         } RingIterEnd( b );

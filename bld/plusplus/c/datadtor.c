@@ -64,7 +64,7 @@ static PTREE addPtIc(           // DECORATE TREE WITH PT_IC NODE
         *a_expr = NodeAddSideEffect( node, *a_expr );
         tree = dup;
     }
-    return tree;
+    return( tree );
 }
 
 
@@ -73,7 +73,7 @@ static PTREE addPtIcUnsigned(   // DECORATE TREE WITH PT_IC NODE (unsigned)
     CGINTEROP opcode,           // - opcode
     unsigned value )            // - value
 {
-    return addPtIc( tree, NodeIcUnsigned( opcode, value ) );
+    return( addPtIc( tree, NodeIcUnsigned( opcode, value ) ) );
 }
 
 
@@ -103,7 +103,7 @@ PTREE DataDtorObjPush(          // START OF DTORABLE OBJECT
     }
     CDoptDtorBuild( dtor_type );
     FunctionHasRegistration();
-    return PtdObjPush( expr, type, init_sym, offset );
+    return( PtdObjPush( expr, type, init_sym, offset ) );
 }
 
 
@@ -115,7 +115,7 @@ PTREE DataDtorObjPop(           // COMPLETE DTORABLE OBJECT
         printf( "DataDtorObjPop\n" );
     }
 #endif
-    return PtdObjPop( expr );
+    return( PtdObjPop( expr ) );
 }
 
 
@@ -143,5 +143,5 @@ PTREE DataDtorCompArrEl(        // MARK ARRAY ELEMENT AS DTORABLE COMPONENT
         printf( "DataDtorCompArrEl -- index(%x)\n", index );
     }
 #endif
-    return addPtIcUnsigned( expr, IC_DTARRAY_INDEX, index );
+    return( addPtIcUnsigned( expr, IC_DTARRAY_INDEX, index ) );
 }

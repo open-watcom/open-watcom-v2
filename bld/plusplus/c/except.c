@@ -48,7 +48,7 @@ static TYPE throwCnvTypeRetn(   // RETURN NEXT THROW TYPE
 {
     ctl->cur = cnv;
     *offset = cnv->offset;
-    return cnv->sig->type;
+    return( cnv->sig->type );
 }
 
 
@@ -72,7 +72,7 @@ TYPE ThrowCnvType(              // THROW CONVERSIONS: GET NEXT TYPE
     } else {
         type = throwCnvTypeRetn( ctl, offset, cnv->next );
     }
-    return type;
+    return( type );
 }
 
 
@@ -111,7 +111,7 @@ THROBJ ThrowCategory(           // GET THROW-OBJECT CATEGORY FOR A TYPE
             }
         }
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -165,7 +165,7 @@ target_offset_t ThrowBaseOffset(  // GET OFFSET OF BASE
     result = ScopeBaseResult( thr_scope, base_scope );
     offset = result->exact_delta;
     ScopeFreeResult( result );
-    return offset;
+    return( offset );
 }
 
 
@@ -306,7 +306,7 @@ unsigned ThrowCnvInit(          // THROW CONVERSIONS: INITIALIZE
         break;
     DbgDefault( "EXCEPT -- illegal throw object" );
     }
-    return RingCount( ctl->hdr );
+    return( RingCount( ctl->hdr ) );
 }
 
 
@@ -328,14 +328,14 @@ static bool throwCnvFront(      // GET FRONT-END INFO. FOR THROW TYPE
     ThrowCnvInit( &ctl, type );
     ret = ! ctl.error_occurred;
     ThrowCnvFini( &ctl );
-    return ret;
+    return( ret );
 }
 
 
 static TYPE canonicalBaseType(  // GET CANONICAL BASE TYPE
     TYPE type )                 // - type
 {
-    return TypedefModifierRemoveOnly( type );
+    return( TypedefModifierRemoveOnly( type ) );
 }
 
 
@@ -352,7 +352,7 @@ static TYPE canonicalPtrType(   // GET CANONICAL PTR TYPE
     } else {
         type = MakePointerTo( canonicalBaseType( test->of ) );
     }
-    return type;
+    return( type );
 }
 
 
@@ -369,7 +369,7 @@ TYPE TypeCanonicalThr(          // GET CANONICAL THROW TYPE
             type = MakeReferenceTo( canonicalPtrType( test ) );
         }
     }
-    return type;
+    return( type );
 }
 
 
@@ -388,7 +388,7 @@ PTREE ThrowTypeSig(             // GET THROW ARGUMENT FOR TYPE SIGNATURE
     } else {
         node = NULL;
     }
-    return node;
+    return( node );
 }
 
 

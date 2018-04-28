@@ -271,13 +271,17 @@ static size_t copySafe( size_t i, const char *m )
             Buffer[i] = '\0';
             break;
         }
-        if(( Buffer[i] = *m++ ) == 0 ) break;
+        if(( Buffer[i] = *m++ ) == 0 )
+            break;
         ++i;
-        if(( Buffer[i] = *m++ ) == 0 ) break;
+        if(( Buffer[i] = *m++ ) == 0 )
+            break;
         ++i;
-        if(( Buffer[i] = *m++ ) == 0 ) break;
+        if(( Buffer[i] = *m++ ) == 0 )
+            break;
         ++i;
-        if(( Buffer[i] = *m++ ) == 0 ) break;
+        if(( Buffer[i] = *m++ ) == 0 )
+            break;
         ++i;
     }
     return( i );
@@ -954,7 +958,7 @@ static MACRO_TOKEN *glueTokens( MACRO_TOKEN *head )
                         //  EMPTY##
                         //keep the next token...
                         rem = next;
-                        while( mtok->next != rem ){ //free old stuff [mtoken,##,{atok,} next]
+                        while( mtok->next != rem ) { //free old stuff [mtoken,##,{atok,} next]
                             next = mtok->next;
                             CMemFree( mtok );
                             mtok = next;

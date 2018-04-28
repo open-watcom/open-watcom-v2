@@ -326,7 +326,8 @@ static MEPTR grabTokens(            // SAVE TOKENS IN A MACRO DEFINITION
         }
     }
     for(;;) {
-        if( CurToken == T_NULL ) break;
+        if( CurToken == T_NULL )
+            break;
         switch( CurToken ) {
         case T_SHARP:
         case T_ALT_SHARP:
@@ -831,7 +832,8 @@ void DirectiveFini(             // COMPLETE DIRECTIVE PROCESSING
 
     for(;;) {
         pp = VstkPop( &vstkPp );
-        if( pp == NULL ) break;
+        if( pp == NULL )
+            break;
         SetErrLoc( &pp->locn );
         CErr1( ERR_MISSING_CENDIF );
     }

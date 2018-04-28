@@ -62,7 +62,7 @@ Ring* RingHdr::append           // Add to end of ring
         _hdr->_next = element;
     }
     _hdr = element;
-    return element;
+    return( element );
 }
 
 
@@ -73,9 +73,11 @@ unsigned RingHdr::countElements // count the # elements in the ring
     unsigned count = 0;
     for( ; ; ++count ) {
         Ring const* curr = iter.next();
-        if( 0 == curr ) break;
+        if( 0 == curr ) {
+            break;
+        }
     }
-    return count;
+    return( count );
 }
 
 
@@ -91,7 +93,8 @@ void RingHdr::sort              // Sort a ring
         Ring ** curr = vect;
         for( ; ; ) {
             Ring* old = iter.next();
-            if( 0 == old ) break;
+            if( 0 == old )
+                break;
             *curr = old;
             ++curr;
         }
@@ -118,7 +121,7 @@ Ring* RingHdr::pop              // POP THE FIRST ENTRY
             _hdr->_next = entry->_next;
         }
     }
-    return entry;
+    return( entry );
 }
 
 
@@ -132,5 +135,5 @@ Ring* RingHdr::push             // PUSH AN ENTRY
         element->_next = _hdr->_next;
         _hdr->_next = element;
     }
-    return element;
+    return( element );
 }

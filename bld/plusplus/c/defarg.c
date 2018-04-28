@@ -107,12 +107,12 @@ static PTREE storeIfDebug( PTREE defarg_info )
     // link to rest of list
     link_node->u.subtree[1] = DefargList;
     DefargList = link_node;
-    return link_node;
+    return( link_node );
 }
 
 static PTREE retrieveIfDebug( PTREE defarg_info )
 {
-    return defarg_info == NULL ? NULL : defarg_info->u.subtree[0];
+    return( defarg_info == NULL ? NULL : defarg_info->u.subtree[0] );
 }
 #else
 
@@ -187,7 +187,7 @@ static PTREE copyRtn (  // Copy Routine -- pass to PTreeCopyPrefix
         break;
     }
     copy->flags |= PTF_DEFARG_COPY; // mark this ptree as a copy for defargs
-    return copy;
+    return( copy );
 }
 
 static PTREE defaultArgSymError( MSG_NUM msg, PTREE expr, SYMBOL sym )
@@ -250,7 +250,7 @@ bool AddDefaultArgs(            // ADD DEFAULT ARGUMENTS, AS REQ'D
     PTREE defarg_info;          // PTREE containing the expr and scope
 
     if( expr == NULL || expr->op == PT_ERROR ) {
-        return true;
+        return( true );
     }
     arg_locn = expr;
     init_node = expr->u.subtree[0];
@@ -275,7 +275,7 @@ bool AddDefaultArgs(            // ADD DEFAULT ARGUMENTS, AS REQ'D
             if( NULL == defarg_info
              || defarg_info->u.type.next->op == PT_ERROR ) {
                 PTreeErrorNode( expr );
-                return false;
+                return( false );
             }
             defarg_temps = defarg_info->u.type.scope;
             if( defarg_temps != NULL && defarg_temps->ordered != NULL ) {
@@ -283,7 +283,8 @@ bool AddDefaultArgs(            // ADD DEFAULT ARGUMENTS, AS REQ'D
                 stop = ScopeOrderedStart( defarg_temps );
                 for(;;) {
                     curr = ScopeOrderedNext( stop, curr );
-                    if( curr == NULL ) break;
+                    if( curr == NULL )
+                        break;
 
                     // build reloc-list
                     // that is, list of: [curr, dest]
@@ -328,7 +329,7 @@ bool AddDefaultArgs(            // ADD DEFAULT ARGUMENTS, AS REQ'D
             init_node->type = func->sym_type;
         }
     }
-    return true;
+    return( true );
 }
 
 static void analyseDefaultExpr( // ANALYSE A DEFAULT ARGUMENT EXPRESSION
@@ -398,7 +399,8 @@ void DefineDefaultValues( DECL_INFO *dinfo )
     DECL_INFO *curr;
 
     RingIterBeg( dinfo->parms, curr ) {
-        if( curr->type->id == TYP_DOT_DOT_DOT ) break;
+        if( curr->type->id == TYP_DOT_DOT_DOT )
+            break;
         if( curr->has_defarg ) {
             DbgAssert( curr->defarg_expr != NULL );
             DbgAssert( curr->defarg_rewrite == NULL );

@@ -46,7 +46,7 @@ template <class T,int size>
         T pop( void )
         {
             --index;
-            return storage[index];
+            return( storage[index] );
         }
     private:
         T storage[size];

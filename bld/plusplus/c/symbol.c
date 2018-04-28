@@ -132,14 +132,14 @@ static SCOPE symClassScope(     // GET SCOPE FOR CLASS CONTAINING SYMBOL
 bool SymIsData(                 // TEST IF SYMBOL IS DATA
     SYMBOL sym )                // - the symbol
 {
-    return symIsDataFunction( sym ) && symIsDataSym( sym );
+    return( symIsDataFunction( sym ) && symIsDataSym( sym ) );
 }
 
 
 bool SymIsFunction(             // TEST IF SYMBOL IS A FUNCTION
     SYMBOL sym )                // - the function
 {
-    return symIsDataFunction( sym ) && symIsFuncSym( sym );
+    return( symIsDataFunction( sym ) && symIsFuncSym( sym ) );
 }
 
 
@@ -169,7 +169,7 @@ bool SymIsInMem(                // TEST IF SYMBOL SHOULD STAY IN MEMORY
 bool SymIsClassMember(          // TEST IF SYMBOL IS MEMBER OF A CLASS
     SYMBOL sym )                // - the symbol
 {
-    return symIsDataFunction( sym ) && symClassScope( sym ) != NULL;
+    return( symIsDataFunction( sym ) && symClassScope( sym ) != NULL );
 }
 
 bool SymIsNameSpaceMember(      // TEST IF SYMBOL IS MEMBER OF NAMESPACE
@@ -184,7 +184,7 @@ bool SymIsNameSpaceMember(      // TEST IF SYMBOL IS MEMBER OF NAMESPACE
         NAME_SPACE *ns;
 
         ns = scope->owner.ns;
-        if( !ns->u.s.global_fs  ){
+        if( !ns->u.s.global_fs ) {
             ret = true;
         }
     }
@@ -287,7 +287,7 @@ SYMBOL SymDefaultBase(          // REMOVE DEFAULT ARGUMENTS TO GET BASE SYMBOL
     while( SymIsDefArg( sym ) ) {
         sym = sym->thread;
     }
-    return sym;
+    return( sym );
 }
 
 
@@ -297,7 +297,7 @@ bool SymIsStatic(               // DETERMINE IF SYMBOL IS STATIC
     symbol_class id;
 
     id = SymDefaultBase( sym )->id;
-    return ( SC_STATIC == id ) || ( SC_STATIC_FUNCTION_TEMPLATE == id );
+    return( ( SC_STATIC == id ) || ( SC_STATIC_FUNCTION_TEMPLATE == id ) );
 }
 
 
@@ -327,7 +327,7 @@ bool SymIsThisMember(           // TEST IF SYMBOL IS DATA/FUNCTION MEMBER
 bool SymIsThisDataMember(       // TEST IF SYMBOL IS THIS DATA MEMBER
     SYMBOL sym )                // - the symbol
 {
-    return SymIsThisMember( sym ) && symIsDataSym( sym );
+    return( SymIsThisMember( sym ) && symIsDataSym( sym ) );
 }
 
 
@@ -348,7 +348,7 @@ bool SymIsStaticFuncMember(     // TEST IF SYMBOL IS A STATIC MEMBER FUNC.
 bool SymIsThisFuncMember(       // TEST IF SYMBOL IS A THIS MEMBER FUNC.
     SYMBOL sym )                // - the symbol
 {
-    return SymIsThisMember( sym ) && symIsFuncSym( sym );
+    return( SymIsThisMember( sym ) && symIsFuncSym( sym ) );
 }
 
 
@@ -379,7 +379,7 @@ bool SymIsStaticData(           // TEST IF SYMBOL IS STATIC DATA ELEMENT
 CLASSINFO *SymClassInfo(        // GET CLASSINFO FOR SYMBOL
     SYMBOL sym )                // - the symbol
 {
-    return TypeClassInfo( SymClass( sym ) );
+    return( TypeClassInfo( SymClass( sym ) ) );
 }
 
 
@@ -442,7 +442,7 @@ static SYMBOL symAllocate(      // ALOOCATE A NEW SYMBOL
     sym->id = id;
     sym->sym_type = type;
     sym->flag = flags;
-    return sym;
+    return( sym );
 }
 
 
@@ -451,7 +451,7 @@ SYMBOL SymMakeDummy(            // MAKE A DUMMY SYMBOL
     NAME *name )                // - gets filled in with the name
 {
     *name = NameDummy();
-    return symAllocate( type, 0, 0 );
+    return( symAllocate( type, 0, 0 ) );
 }
 
 
@@ -660,21 +660,21 @@ static bool funTypeFlagged(     // TEST IF ANY FLAGS ON IN FUNCTION TYPE
 bool SymIsInline(               // TEST IF FUNCTION IS INLINE
     SYMBOL fun )                // - function symbol
 {
-    return funTypeFlagged( fun, TF1_INLINE );
+    return( funTypeFlagged( fun, TF1_INLINE ) );
 }
 
 
 bool SymIsVirtual(              // TEST IF FUNCTION IS VIRTUAL
     SYMBOL fun )                // - function symbol
 {
-    return funTypeFlagged( fun, TF1_VIRTUAL );
+    return( funTypeFlagged( fun, TF1_VIRTUAL ) );
 }
 
 
 bool SymIsPure(                 // TEST IF A PURE VIRTUAL FUNCTION
     SYMBOL fun )                // - a function
 {
-    return funTypeFlagged( fun, TF1_PURE );
+    return( funTypeFlagged( fun, TF1_PURE ) );
 }
 
 
@@ -835,14 +835,14 @@ static bool symHasFuncName(     // DETERMINE IF NAMED FUNCTION
 bool SymIsCtor(                 // TEST IF SYMBOL IS A CTOR FUNCTION
     SYMBOL ctor )               // - potential CTOR function
 {
-    return symHasFuncName( ctor, CppConstructorName() );
+    return( symHasFuncName( ctor, CppConstructorName() ) );
 }
 
 
 bool SymIsDtor(                 // TEST IF SYMBOL IS A DTOR FUNCTION
     SYMBOL dtor )               // - potential DTOR function
 {
-    return symHasFuncName( dtor, CppDestructorName() );
+    return( symHasFuncName( dtor, CppDestructorName() ) );
 }
 
 
@@ -864,49 +864,49 @@ bool SymIsCtorOrDtor(           // TEST IF SYMBOL IS CTOR OR DTOR
 bool SymIsAssign(               // TEST IF SYMBOL IS "operator ="
     SYMBOL op_eq )              // - potential op= function
 {
-    return symHasFuncName( op_eq, CppOperatorName( CO_EQUAL ) );
+    return( symHasFuncName( op_eq, CppOperatorName( CO_EQUAL ) ) );
 }
 
 
 bool SymIsOpDel(                // TEST IF SYMBOL IS "operator delete"
     SYMBOL op_del )             // - potential operator delete
 {
-    return symHasFuncName( op_del, CppOperatorName( CO_DELETE ) );
+    return( symHasFuncName( op_del, CppOperatorName( CO_DELETE ) ) );
 }
 
 
 bool SymIsOpDelar(              // TEST IF SYMBOL IS "operator delete[]"
     SYMBOL op_del )             // - potential operator delete[]
 {
-    return symHasFuncName( op_del, CppOperatorName( CO_DELETE_ARRAY ) );
+    return( symHasFuncName( op_del, CppOperatorName( CO_DELETE_ARRAY ) ) );
 }
 
 
 bool SymIsUDC(                  // TEST IF SYMBOL IS USER-DEFINED CONVERSION
     SYMBOL udc )                // - symbol in question
 {
-    return symHasFuncName( udc, CppConversionName() );
+    return( symHasFuncName( udc, CppConversionName() ) );
 }
 
 
 bool SymIsThunkDtor(            // TEST IF DTOR ADDRESSABILITY THUNK
     SYMBOL sym )                // - function symbol
 {
-    return symHasFuncName( sym, CppSpecialName( SPECIAL_NAME_DTOR_THUNK ) );
+    return( symHasFuncName( sym, CppSpecialName( SPECIAL_NAME_DTOR_THUNK ) ) );
 }
 
 
 bool SymIsThunkCtorDflt(        // TEST IF DEFAULT CTOR ADDRESSABILITY THUNK
     SYMBOL sym )                // - function symbol
 {
-    return symHasFuncName( sym, CppSpecialName( SPECIAL_NAME_CTOR_THUNK ) );
+    return( symHasFuncName( sym, CppSpecialName( SPECIAL_NAME_CTOR_THUNK ) ) );
 }
 
 
 bool SymIsThunkCtorCopy(        // TEST IF COPY CTOR ADDRESSABILITY THUNK
     SYMBOL sym )                // - function symbol
 {
-    return symHasFuncName( sym, CppSpecialName( SPECIAL_NAME_COPY_THUNK ) );
+    return( symHasFuncName( sym, CppSpecialName( SPECIAL_NAME_COPY_THUNK ) ) );
 }
 
 
@@ -1076,11 +1076,11 @@ bool SymIsThunk(                // DETERMINE IF FUNCTION IS THUNK
     if( func != NULL ) {
         if( ( func->name != NULL ) && ( func->name->name != NULL ) ) {
             name = func->name->name;
-            if( ( name == CppSpecialName( SPECIAL_NAME_DTOR_THUNK     ) )
-              ||( name == CppSpecialName( SPECIAL_NAME_CTOR_THUNK     ) )
-              ||( name == CppSpecialName( SPECIAL_NAME_OP_DEL_THUNK   ) )
+            if( ( name == CppSpecialName( SPECIAL_NAME_DTOR_THUNK ) )
+              ||( name == CppSpecialName( SPECIAL_NAME_CTOR_THUNK ) )
+              ||( name == CppSpecialName( SPECIAL_NAME_OP_DEL_THUNK ) )
               ||( name == CppSpecialName( SPECIAL_NAME_OP_DELAR_THUNK ) )
-              ||( name == CppSpecialName( SPECIAL_NAME_COPY_THUNK     ) )
+              ||( name == CppSpecialName( SPECIAL_NAME_COPY_THUNK ) )
               ) {
                 ok = true;
             }
@@ -1149,7 +1149,7 @@ SYMBOL SymCreate(               // CREATE NEW SYMBOL
     if( check != sym ) {
         check = NULL;
     }
-    return check;
+    return( check );
 }
 
 
@@ -1180,7 +1180,7 @@ SYMBOL SymCreateCurrScope(      // CREATE NEW CURR-SCOPE SYMBOL
     symbol_flag flags,          // - symbol flags
     NAME name )                 // - symbol name
 {
-    return SymCreate( type, id, flags, name, GetCurrScope() );
+    return( SymCreate( type, id, flags, name, GetCurrScope() ) );
 }
 
 
@@ -1190,7 +1190,7 @@ SYMBOL SymCreateFileScope(      // CREATE NEW FILE-SCOPE SYMBOL
     symbol_flag flags,          // - symbol flags
     NAME name )                 // - symbol name
 {
-    return SymCreate( type, id, flags, name, GetFileScope() );
+    return( SymCreate( type, id, flags, name, GetFileScope() ) );
 }
 
 
@@ -1200,7 +1200,7 @@ SYMBOL SymCreateTempScope(      // CREATE NEW TEMP-SCOPE SYMBOL
     symbol_flag flags,          // - symbol flags
     NAME name )                 // - symbol name
 {
-    return SymCreate( type, id, flags, name, ScopeForTemps() );
+    return( SymCreate( type, id, flags, name, ScopeForTemps() ) );
 }
 
 
@@ -1222,7 +1222,7 @@ SYMBOL SymDeriveThrowBits(      // DERIVE SF_.._LONGJUMP BITS FROM SOURCE
 #endif
 
     tgt->flag |= src_flag;
-    return tgt;
+    return( tgt );
 }
 
 
@@ -1234,7 +1234,7 @@ symbol_flag SymThrowFlags(      // GET SYMBOL'S THROW BITS
     flags = ( sym->flag & SF_LONGJUMP ) | ( sym->flag & SF_NO_LONGJUMP );
     DbgVerify( flags != ( SF_LONGJUMP | SF_NO_LONGJUMP )
              , "SymThrowFlags -- both throw bits computed" );
-    return flags;
+    return( flags );
 }
 
 
@@ -1255,10 +1255,10 @@ SYMBOL SymReloc                 // RELOCATE SYMBOL
 
     RingIterBeg( reloc_list, curr ) {
         if( src == curr->orig ) {
-            return curr->dest;
+            return( curr->dest );
         }
     } RingIterEnd( curr )
-    return src;
+    return( src );
 }
 
 
@@ -1282,7 +1282,7 @@ SYMBOL SymForClass              // GET SYMBOL FOR CLASS IF IT EXISTS
             }
         }
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -1298,7 +1298,7 @@ TOKEN_LOCN* LocnForClass        // GET DEFINITION LOCATION, IF POSSIBLE
     } else {
         retn = &sym->locn->tl;
     }
-    return retn;
+    return( retn );
 }
 
 SYMBOL SymMakeAlias(            // DECLARE AN ALIAS IN CURRSCOPE
@@ -1348,7 +1348,7 @@ SYMBOL SymBindConstant              // BIND A CONSTANT TO A SYMBOL
             sym->flag |= SF_CONSTANT_INT64;
         }
     }
-    return sym;
+    return( sym );
 }
 
 
@@ -1364,7 +1364,7 @@ SYMBOL SymConstantValue             // GET CONSTANT VALUE FOR SYMBOL
     } else {
         Int64From32( sym->sym_type, sym->u.sval, &pval->u.value );
     }
-    return sym;
+    return( sym );
 }
 
 SYMBOL SymDefArgBase(               // GET DEFARG BASE SYMBOL
@@ -1374,5 +1374,5 @@ SYMBOL SymDefArgBase(               // GET DEFARG BASE SYMBOL
         sym = sym->thread;
     }
 
-    return sym;
+    return( sym );
 }

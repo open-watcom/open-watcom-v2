@@ -117,7 +117,7 @@ static char *stxcpy(            // CONCATENATE HEXADECIMAL NUMBER
     char buffer[16];
 
     sprintf( buffer, "%x", value );
-    return stxpcpy( tgt, buffer );
+    return( stxpcpy( tgt, buffer ) );
 }
 
 
@@ -128,7 +128,7 @@ static DECOR addDecorated(      // ADD A DECORATED NODE
 
     dec = RingCarveAlloc( carveDecoration, &decoration );
     dec->node = node;
-    return ++ decor_numb;
+    return( ++ decor_numb );
 }
 
 
@@ -172,11 +172,14 @@ static void prlineEmit(         // EMIT A PRINT LINE
     char *p;                    // - used to scan
 
     for( p = &prl->buffer[prl->width]; ; ) {
-        -- p;
-        if( p == prl->buffer ) break;
-        if( *p != ' ' ) break;
+        --p;
+        if( p == prl->buffer )
+            break;
+        if( *p != ' ' ) {
+            break;
+        }
     }
-    *(p+1) = '\0';
+    *(p + 1) = '\0';
     puts( prl->buffer );
 }
 
@@ -294,7 +297,7 @@ static LINE *addLine(           // ADD A LINE ENTRY TO SUBTREE
     line->nodes = NULL;
     line->width = 0;
     line->bound = 0;
-    return line;
+    return( line );
 }
 
 
@@ -431,7 +434,9 @@ static void buildSubtree(       // BUILD A SUBTREE
     SUBTREE *subtree;           // - info for subtree
 
     RingIterBeg( subtrees, subtree ) {
-        if( subtree->root == root ) return;
+        if( subtree->root == root ) {
+            return;
+        }
     } RingIterEnd( subtree )
     subtree = RingCarveAlloc( carveSubtree, &subtrees );
     subtree->lines = NULL;
@@ -452,7 +457,8 @@ static COL buildNode(           // BUILD A NODE
     COL offset;                 // - centre between operands
     COL bound;                  // - bound for next centre on next line
 
-    if( expr == NULL ) return 0;
+    if( expr == NULL )
+        return( 0 );
     node = CarveAlloc( carveNode );
     node->pnode = expr;
     node->centre = 0;
@@ -512,7 +518,7 @@ static COL buildNode(           // BUILD A NODE
             line->bound = bound;
         }
     }
-    return centre;
+    return( centre );
 }
 
 

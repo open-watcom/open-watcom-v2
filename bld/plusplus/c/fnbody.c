@@ -130,7 +130,7 @@ static LAB_REF *refBlkLabel(    // REFERENCE A BLOCK LABEL
     if( lab->defn == NULL ) {
         lab->defn = LabelAllocLabDef();
     }
-    return LabelAllocLabRef( lab->defn );
+    return( LabelAllocLabRef( lab->defn ) );
 }
 
 
@@ -381,7 +381,8 @@ static void endControl( void )
     CSTACK *old_block;
 
     old_block = StackPop( &(currFunction->control) );
-    if( old_block == NULL ) return;
+    if( old_block == NULL )
+        return;
 //printf( "POP:  %p (%u) %s\n", old_block, old_block->id, ScopeFunction( currFunction->fn_scope )->name->name );
     labelDefFree( &(old_block->outside) );
     switch( old_block->id ) {
@@ -458,7 +459,8 @@ static void parseLabels( void )
         } else if( CurToken != T_SAVED_ID ) {
             break;
         }
-        if( LAToken != T_COLON ) break;
+        if( LAToken != T_COLON )
+            break;
         label = findLabel( SavedId );
         if( label->defined ) {
             CErr2p( ERR_LABEL_ALREADY_DEFINED, label->name );
@@ -976,7 +978,7 @@ static void parseReturnStmt( SYMBOL func )
 bool FnRetnOpt(                 // TEST IF RETURN OPTIMIZATION ACTIVE
     void )
 {
-    return currFunction->retn_opt;
+    return( currFunction->retn_opt );
 }
 
 void FnRetnOptOff(              // TURN OFF RETURN OPTIMIZATION
@@ -994,7 +996,7 @@ void FnRetnOptSetSym(           // SET SYMBOL FOR RETURN OPTIMIZATION
 SYMBOL FnRetnOptSym(            // GET SYMBOL FOR RETURN OPTIMIZATION
     void )
 {
-    return currFunction->retn_opt_sym;
+    return( currFunction->retn_opt_sym );
 }
 
 
@@ -1059,7 +1061,7 @@ static SYMBOL allocTryVar(      // CREATE TRY VARIABLE, IF REQ'D
                            , try_block->u.t.defn_scope );
         try_block->next->try_var = try_var;
     }
-    return try_var;
+    return( try_var );
 }
 
 static void parseTryBlock(      // PARSE TRY
@@ -1159,7 +1161,7 @@ static TYPE getCatchTypeAttrs(  // GET CATCH TYPE ATTRIBUTES
     }
     *a_attrs = attrs;
     *a_tester = tester;
-    return sptype;
+    return( sptype );
 }
 
 static void catchMsg( MSG_NUM msg, FNCATCH *catch_entry )
@@ -1190,12 +1192,12 @@ static bool makeFNCATCH(        // MAKE CATCH ENTRY
     if( new_attrs & CATT_PCPTR ) {
         CErr1( ERR_CANNOT_USE_PCPTR );
         try_block->u.t.catch_err = true;
-        return false;
+        return( false );
     }
     if( new_attrs & CATT_FAR ) {
         CErr1( ERR_USE_FAR );
         try_block->u.t.catch_err = true;
-        return false;
+        return( false );
     }
     if( (new_attrs & CATT_REF_PTR_CLS) == CATT_CLS ) {
         if( ! TypeDefedNonAbstract( type
@@ -1203,7 +1205,7 @@ static bool makeFNCATCH(        // MAKE CATCH ENTRY
                                   , ERR_CATCH_ABSTRACT
                                   , ERR_CATCH_UNDEFED ) ) {
             try_block->u.t.catch_err = true;
-            return false;
+            return( false );
         }
         if( TypeRequiresDtoring( type ) ) {
             access = TSA_COPY_CTOR | TSA_DTOR;
@@ -1269,7 +1271,7 @@ static SYMBOL updateTryVar(     // UPDATE TRY VARIABLE
     if( size > try_type->u.a.array_size ) {
         try_type->u.a.array_size = size;
     }
-    return try_var;
+    return( try_var );
 }
 
 
@@ -1291,7 +1293,7 @@ static SYMBOL makeCatchVar(     // CREATE A CATCH VARIABLE
                                   , name );
     catch_var->flag |= SF_ALIAS | SF_CATCH_ALIAS;
     catch_var->u.alias = try_var;
-    return catch_var;
+    return( catch_var );
 }
 
 
@@ -1441,7 +1443,7 @@ static bool endOfStmt(          // PROCESS END-OF-STATEMENT
                  * allowed by the standard, but the current code
                  * doesn't catch that.
                  */
-                return recog;
+                return( recog );
             }
             if( ! top_block->expr_true ) {
                 dumpBlkLabel( &top_block->u.i.else_part );
@@ -1535,7 +1537,8 @@ static bool endOfStmt(          // PROCESS END-OF-STATEMENT
                 nextYYToken();
                 recog = false;
             }
-            if( CurToken == T_CATCH ) return recog;
+            if( CurToken == T_CATCH )
+                return( recog );
             if( ! top_block->u.t.catch_err ) {
                 CErr1( ERR_CATCH_MISSING );
             }
@@ -1546,17 +1549,21 @@ static bool endOfStmt(          // PROCESS END-OF-STATEMENT
                 nextYYToken();
                 recog = false;
             }
-            if( CurToken == T_CATCH ) return recog;
+            if( CurToken == T_CATCH )
+                return( recog );
             completeTry( top_block );
             break;
         }
         endControl();
         top_block = currFunction->control;
-        if( top_block == NULL ) return recog;
+        if( top_block == NULL )
+            return( recog );
         id = top_block->id;
-        if( id == CS_FUNCTION || id == CS_BLOCK ) break;
+        if( id == CS_FUNCTION || id == CS_BLOCK ) {
+            break;
+        }
     }
-    return recog;
+    return( recog );
 }
 
 
@@ -1620,7 +1627,8 @@ static void setExceptionSpecs(  // SET EXCEPTION SPEC.S FOR FUNCTION
         no_excepts_allowed = true;
         for( ; ; ) {
             except = *excepts++;
-            if( NULL == except ) break;
+            if( NULL == except )
+                break;
             no_excepts_allowed = false;
             exceptSpec( except );
         }
@@ -1801,7 +1809,7 @@ static TOKEN_LOCN *posnForFunction( // GET SOURCE POSITION FOR FUNCTION
     } else {
         srcposn = &tree->locn;
     }
-    return srcposn;
+    return( srcposn );
 }
 
 
@@ -1953,7 +1961,7 @@ static int returnIsRequired( TYPE fn_type )
             }
         }
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -2151,19 +2159,23 @@ void FunctionBody( DECL_INFO *dinfo )
             continue;
         case T_BREAK:
             parseBreakStmt();
-            if( fn_data.control->id != CS_BLOCK ) break;
+            if( fn_data.control->id != CS_BLOCK )
+                break;
             continue;
         case T_CONTINUE:
             parseContinueStmt();
-            if( fn_data.control->id != CS_BLOCK ) break;
+            if( fn_data.control->id != CS_BLOCK )
+                break;
             continue;
         case T_RETURN:
             parseReturnStmt( func );
-            if( fn_data.control->id != CS_BLOCK ) break;
+            if( fn_data.control->id != CS_BLOCK )
+                break;
             continue;
         case T_GOTO:
             parseGotoStmt();
-            if( fn_data.control->id != CS_BLOCK ) break;
+            if( fn_data.control->id != CS_BLOCK )
+                break;
             continue;
         case T_TRY:
             parseTryBlock();
@@ -2173,7 +2185,8 @@ void FunctionBody( DECL_INFO *dinfo )
             continue;
         case T___ASM:
             parseAsmStmt( fn_type );
-            if( fn_data.control->id != CS_BLOCK ) break;
+            if( fn_data.control->id != CS_BLOCK )
+                break;
             continue;
         case T_LEFT_BRACE:
         case T_ALT_LEFT_BRACE:
@@ -2203,7 +2216,8 @@ void FunctionBody( DECL_INFO *dinfo )
             continue;
         default:
             declExprStmt( false );
-            if( fn_data.control->id != CS_BLOCK ) break;
+            if( fn_data.control->id != CS_BLOCK )
+                break;
             continue;
         }
         recog_token = endOfStmt( recog_token );
@@ -2291,7 +2305,7 @@ INITDEFN( functions, functionInit, functionFini )
 bool DefargBeingCompiled(       // TEST IF DEFARG-FUNCTION BEING COMPILED
     void )
 {
-    return currFunction->is_defarg;
+    return( currFunction->is_defarg );
 }
 
 
@@ -2306,21 +2320,21 @@ unsigned FunctionRegistrationFlag( // GET NEXT FUNCTION REGISTRATION FLAG
     void )
 {
     FunctionHasRegistration();
-    return ++currFunction->flag_count;
+    return( ++currFunction->flag_count );
 }
 
 
 bool FunctionBodyCtor(          // TEST IF COMPILING CTOR
     void )
 {
-    return currFunction->is_ctor;
+    return( currFunction->is_ctor );
 }
 
 
 ACCESS_ERR** FunctionBodyAccessErrors( // POINT AT HDR OF ACCESS ERRORS
     void )
 {
-    return &currFunction->access_errs;
+    return( &currFunction->access_errs );
 }
 
 
@@ -2330,7 +2344,7 @@ PTREE FunctionCouldThrow(       // INDICATE FUNCTION COULD THROW / HAS LONGJUMP
     PTREE expr )                // - expression
 {
     currFunction->does_throw = true;
-    return PtdThrow( expr );
+    return( PtdThrow( expr ) );
 }
 
 
@@ -2353,7 +2367,7 @@ PTREE FunctionCalled(           // RECORD A FUNCTION CALL
     } else if( (called_flag & SF_NO_LONGJUMP) == 0 ) {
         currFunction->can_throw = true;
     }
-    return expr;
+    return( expr );
 }
 
 

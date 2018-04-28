@@ -64,7 +64,7 @@ int starts( char *t )
     if( NF < 1 ) {
         return( 0 );
     }
-    return memcmp( field[0], t, len ) == 0;
+    return( memcmp( field[0], t, len ) == 0 );
 }
 
 int is_err_code()
@@ -102,7 +102,8 @@ int main( int argc, char **argv )
     error_code = strdup( "???" );
     for(;;) {
         check = fgets( ibuff, sizeof(ibuff), ifp );
-        if( check == NULL ) break;
+        if( check == NULL )
+            break;
         ++line;
         make_fields();
         if( starts( ".*" ) ) {
@@ -127,7 +128,8 @@ int main( int argc, char **argv )
         } else if( ! xmp_active ) {
             for( s = ibuff; ; ++s ) {
                 s = strchr( s, '&' );
-                if( s == NULL ) break;
+                if( s == NULL )
+                    break;
                 if( match( s, "&amp", "&colon", NULL ) == 0 ) {
                     print_msg( "found potential substitution", s );
                     break;

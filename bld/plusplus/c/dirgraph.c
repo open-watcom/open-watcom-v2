@@ -58,7 +58,7 @@ DIRGRAPH_EDGE *DgrfAddEdge(     // ADD EDGE TO GRAPH
     } else {
         edge = (*ctl->vft->dup_edge)( ctl, edge );
     }
-    return edge;
+    return( edge );
 }
 
 
@@ -76,7 +76,7 @@ DIRGRAPH_NODE *DgrfAddNode(     // ADD NODE TO GRAPH, IF NOT ALREADY THERE
         node = (*ctl->vft->init_node)( ctl, node );
         RingAppend( &ctl->objects, node );
     }
-    return node;
+    return( node );
 }
 
 
@@ -94,7 +94,7 @@ DIRGRAPH_NODE *DgrfFindNode(    // FIND NODE IN GRAPH, GIVEN OBJECT
             break;
         }
     } RingIterEnd( srch )
-    return node;
+    return( node );
 }
 
 
@@ -113,7 +113,7 @@ static bool free_edge(          // FREE AN EDGE
     DIRGRAPH_EDGE *edge )       // - edge to be freed
 {
     (*ctl->vft->free_edge)( ctl, edge );
-    return false;
+    return( false );
 }
 
 
@@ -123,7 +123,7 @@ static bool free_node(          // FREE A NODE
 {
     DgrfWalkEdges( ctl, node, free_edge );
     (*ctl->vft->free_node)( ctl, node );
-    return false;
+    return( false );
 }
 
 
@@ -147,7 +147,7 @@ bool DgrfWalkEdges(             // WALK ALL EDGES FROM OBJECT
     bool ok;                    // - true ==> walking terminated
 
     ok = false;
-    RingIterBegSafe( node->edges, edge ){
+    RingIterBegSafe( node->edges, edge ) {
         ok = (*walker)( ctl, edge );
         if( ok ) {
             break;
@@ -183,7 +183,7 @@ static bool pruneEdge(          // PRUNE EDGE FROM GRAPH
 {
     (*ctl->vft->prune_edge)( ctl, edge );
     (*ctl->vft->free_edge)( ctl, edge );
-    return false;
+    return( false );
 }
 
 

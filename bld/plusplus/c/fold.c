@@ -64,7 +64,7 @@ float_handle BFCnvU64F( unsigned_64 val )
     t1 = BFAdd( t0, t2 );
     BFFree( t0 );
     BFFree( t2 );
-    return t1;
+    return( t1 );
 }
 
 static
@@ -86,7 +86,7 @@ float_handle BFCnvI64F( signed_64 val )
     t1 = BFAdd( t0, t2 );
     BFFree( t0 );
     BFFree( t2 );
-    return t1;
+    return( t1 );
 }
 
 static
@@ -100,7 +100,7 @@ signed_64 BFCnvF64( float_handle flt )
     if( 0 == sign ) {
         result.u._32[0] = 0;
         result.u._32[1] = 0;
-        return result;
+        return( result );
     }
     positive = true;
     absol = flt;
@@ -131,7 +131,7 @@ signed_64 BFCnvF64( float_handle flt )
         neg = result;
         U64Neg( &neg, &result );
     }
-    return result;
+    return( result );
 }
 
 
@@ -142,9 +142,9 @@ target_long FoldSignedRShiftMax( target_long v )
 /**********************************************/
 {
     if( v < 0 ) {
-        return -1;
+        return( -1 );
     }
-    return 0;
+    return( 0 );
 }
 
 
@@ -173,7 +173,7 @@ static PTREE overCondDecor(     // BY-PASS CONDITIONAL DECORATION
     if( isCondDecor( expr ) ) {
         expr = expr->u.subtree[1];
     }
-    return expr;
+    return( expr );
 }
 
 
@@ -204,7 +204,7 @@ static bool zeroConstant( PTREE expr )
         }
     case PT_FLOATING_CONSTANT:
       { target_ulong ul_val = BFCnvF32( expr->u.floating_constant );
-        return 0 == ul_val;
+        return( 0 == ul_val );
       }
     case PT_BINARY:
         orig = expr;
@@ -229,14 +229,15 @@ static bool nonZeroExpr( PTREE expr )
     case PT_PTR_CONSTANT:
     case PT_INT_CONSTANT:
     case PT_FLOATING_CONSTANT:
-        return ! zeroConstant( expr );
+        return( ! zeroConstant( expr ) );
     case PT_SYMBOL:
         /* a symbol r-value has a fetch by now so this PTREE means &name */
         return( true );
     case PT_BINARY:
         orig = expr;
         expr = NodeRemoveCasts( expr );
-        if( expr == orig ) break;
+        if( expr == orig )
+            break;
         return( nonZeroExpr( expr ) );
     }
     if( expr->flags & PTF_PTR_NONZERO ) {
@@ -253,7 +254,7 @@ static bool nonZeroExpr( PTREE expr )
  */
 static bool hasSideEffects( PTREE expr )
 {
-    return ( expr->flags & PTF_SIDE_EFF ) != 0 ;
+    return( ( expr->flags & PTF_SIDE_EFF ) != 0  );
 }
 
 /**
@@ -566,7 +567,7 @@ static bool anachronismFound( PTREE expr )
             /*
                 int foo( X &r )
                 {
-                    return &r != NULL;
+                    return( &r != NULL );
                 }
             */
             expr = expr->u.subtree[0];
@@ -578,7 +579,7 @@ static bool anachronismFound( PTREE expr )
                 int foo( X *p )
                 {
                     X &r = *p;
-                    return &r != NULL;
+                    return( &r != NULL );
                 }
             */
             expr = expr->u.subtree[0];
@@ -590,7 +591,7 @@ static bool anachronismFound( PTREE expr )
         /*
             int S::foo()
             {
-                return this ? 0 : field;
+                return( this ? 0 : field );
             }
         */
         expr = expr->u.subtree[0];
@@ -656,7 +657,7 @@ PTREE FoldUnary( PTREE expr )
 
     if( expr->cgop == CO_EXCLAMATION ) {
         // This is the simplest operation.
-        return makeTrueFalse( expr, op1, !nonZeroExpr( op1 ) );
+        return( makeTrueFalse( expr, op1, !nonZeroExpr( op1 ) ) );
     }
 
     if( op1->op == PT_FLOATING_CONSTANT ) {
@@ -1180,7 +1181,7 @@ static PTREE pruneExpr(         // PRUNE ONE SIDE FROM EXPRESSION
     }
     undec = PTreeCopySrcLocation( undec, orig );
     NodeFreeDupedExpr( orig );
-    return undec;
+    return( undec );
 }
 
 #define isIntFloatOp( op ) \
@@ -1332,7 +1333,8 @@ PTREE FoldBinary( PTREE expr )
     has_decoration_right = op2 != orig2;
     has_decoration = has_decoration_left | has_decoration_right;
 
-    if( !foldable( op1 ) && !foldable( op2 ) ) return( expr );
+    if( !foldable( op1 ) && !foldable( op2 ) )
+        return( expr );
 
     // Try performing left-folding on the expression.
     /* Note that right-folding is only safe in certain situations. For example
@@ -1392,7 +1394,7 @@ PTREE FoldBinary( PTREE expr )
     typ2 = op2->op;
     if( ! isIntFloatOp( typ1 ) || ! isIntFloatOp( typ2 ) ) {
         // (void)0 can make it here
-        return expr;
+        return( expr );
     }
     if( typ1 != typ2 ) {
         if( PT_FLOATING_CONSTANT == typ1 ) {
@@ -1465,7 +1467,7 @@ PTREE FoldBinary( PTREE expr )
         op1 = castConstant( op1, type, &cast_happened );
         op1 = PTreeCopySrcLocation( op1, expr );
         NodeFreeDupedExpr( expr );
-        return op1;
+        return( op1 );
     }
 
     return( expr );
@@ -1487,5 +1489,5 @@ PTREE Fold( PTREE expr )        // Fold expression
         }
         break;
     }
-    return expr;
+    return( expr );
 }

@@ -62,7 +62,8 @@ Exc::Exc                        // CONSTRUCTOR
         bptr = strcpy( bptr, text );
         bptr += strlen( bptr );
         text = va_arg( list, char const * );
-        if( 0 == text ) break;
+        if( 0 == text )
+            break;
         *bptr++ = ' ';
     }
     va_end( list );

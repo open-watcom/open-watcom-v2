@@ -63,7 +63,7 @@ static PTREE getReturnSym       // MAKE NODE FOR RETURN SYMBOL
     sym = SymFunctionReturn();
     sym->flag |= SF_REFERENCED;
     node = MakeNodeSymbol( sym );
-    return node;
+    return( node );
 }
 
 
@@ -76,7 +76,7 @@ static PTREE removeReturnNode   // REMOVE RETURN NODE
     expr = old->u.subtree[1];
     old->u.subtree[1] = NULL;
     PTreeFreeSubtrees( old );
-    return expr;
+    return( expr );
 }
 
 
@@ -187,7 +187,7 @@ PTREE AnalyseReturnClassVal     // RETURN CLASS VALUE
         }
 #endif
     }
-    return expr;
+    return( expr );
 }
 
 
@@ -229,5 +229,5 @@ PTREE AnalyseReturnSimpleVal    // RETURN A SIMPLE VALUE
             }
         }
     }
-    return expr;
+    return( expr );
 }

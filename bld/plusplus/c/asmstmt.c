@@ -45,7 +45,7 @@
 
 PTREE AsmStmt( void )
 {
-    return NULL;
+    return( NULL );
 }
 
 #else
@@ -84,12 +84,18 @@ static PTREE genFnCall( NAME name )
 
 static bool endOfAsmStmt( void )
 {
-    if( CurToken == T_EOF ) return( true );
-    if( CurToken == T_NULL ) return( true );
-    if( CurToken == T___ASM ) return( true );
-    if( CurToken == T_RIGHT_BRACE ) return( true );
-    if( CurToken == T_ALT_RIGHT_BRACE ) return( true );
-    if( CurToken == T_SEMI_COLON ) return( true );
+    if( CurToken == T_EOF )
+        return( true );
+    if( CurToken == T_NULL )
+        return( true );
+    if( CurToken == T___ASM )
+        return( true );
+    if( CurToken == T_RIGHT_BRACE )
+        return( true );
+    if( CurToken == T_ALT_RIGHT_BRACE )
+        return( true );
+    if( CurToken == T_SEMI_COLON )
+        return( true );
     return( false );
 }
 
@@ -113,7 +119,8 @@ static void getAsmLine( VBUF *buff )
         line[0] = '\0';
     }
     for(;;) {
-        if( endOfAsmStmt() ) break;
+        if( endOfAsmStmt() )
+            break;
         strncat( line, Buffer, sizeof(line)-1 );
         switch( CurToken ) {
         case T_ALT_XOR:
@@ -138,8 +145,11 @@ static void getAsmLine( VBUF *buff )
         // ; .ASM comment
         for(;;) {
             NextToken();
-            if( CurToken == T_EOF ) break;
-            if( CurToken == T_NULL ) break;
+            if( CurToken == T_EOF )
+                break;
+            if( CurToken == T_NULL ) {
+                break;
+            }
         }
     }
 }
@@ -178,9 +188,12 @@ PTREE AsmStmt( void )
         NextTokenSkipEOL();
         for(;;) {
             getAsmLine( &code_buffer );
-            if( CurToken == T_RIGHT_BRACE ) break;
-            if( CurToken == T_ALT_RIGHT_BRACE ) break;
-            if( CurToken == T_EOF ) break;
+            if( CurToken == T_RIGHT_BRACE )
+                break;
+            if( CurToken == T_ALT_RIGHT_BRACE )
+                break;
+            if( CurToken == T_EOF )
+                break;
             NextTokenSkipEOL();
         }
         skip_token = T_RIGHT_BRACE;

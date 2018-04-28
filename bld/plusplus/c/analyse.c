@@ -1010,97 +1010,97 @@ static OPAC opac_ER__NOT_FUN[] =    {   ERR__NOT_FUN
 
 // provide definitions for use with opcodes
 
-#define OPR_RTNS                                                          \
- OPR_RTN(BIN_ARITH      )/* - binary arithmetic operation               */\
-,OPR_RTN(BIN_ARITH_I    )/* - binary integral arithmetic operation      */\
-,OPR_RTN(MINUS_PP       )/* - ptr - ptr                                 */\
-,OPR_RTN(QUESTMRK       )/* - op ? op                                   */\
-,OPR_RTN(COLON_PP       )/* - ptr : ptr                                 */\
-,OPR_RTN(COLON_AA       )/* - arith : arith                             */\
-,OPR_RTN(COLON_AP       )/* - arith : ptr                               */\
-,OPR_RTN(COLON_PA       )/* - ptr : arith                               */\
-,OPR_RTN(COLON_OTHER    )/* - other : other: void, class, class         */\
-,OPR_RTN(UN_PLUS_PTR    )/* - + ptr.                                    */\
-,OPR_RTN(UN_ARITH       )/* - unary arithmetic                          */\
-,OPR_RTN(UN_ARITH_I     )/* - unary arithmetic, integral operand        */\
-,OPR_RTN(ADDR_OF        )/* - unary &                                   */\
-,OPR_RTN(INDIRECT       )/* - * operand                                 */\
-,OPR_RTN(LINCDEC_PTR    )/* - ++ptr, --ptr,                             */\
-,OPR_RTN(LINCDEC_ARITH  )/* - ++arith, --arith                          */\
-,OPR_RTN(INCDEC_PTR     )/* - ptr++, ptr--                              */\
-,OPR_RTN(INCDEC_ARITH   )/* - arith++, arith--                          */\
-,OPR_RTN(SW_LV_EXPR     )/* - switch operands, do LVALUE_BEXPR          */\
-,OPR_RTN(SHIFT_OP       )/* - shift operation                           */\
-,OPR_RTN(LVALUE_BEXPR   )/* - try lvalue expr; then BIN_ARITH           */\
-,OPR_RTN(EQUAL_PP       )/* - ptr = ptr;                                */\
-,OPR_RTN(EQUAL_AP       )/* - arithmetic = ptr                          */\
-,OPR_RTN(EQUAL_AA       )/* - arithmetic = arithmetic                   */\
-,OPR_RTN(EQUAL_PZ       )/* - ptr = arithmetic; must be zero on left    */\
-,OPR_RTN(EQUAL_OTHER    )/* - other = other                             */\
-,OPR_RTN(INIT_PP        )/* - ptr = ptr;                                */\
-,OPR_RTN(INIT_AP        )/* - arithmetic = ptr                          */\
-,OPR_RTN(INIT_AA        )/* - arithmetic = arithmetic                   */\
-,OPR_RTN(INIT_PZ        )/* - ptr = arithmetic; must be zero on left    */\
-,OPR_RTN(INIT_OTHER     )/* - other = other                             */\
-,OPR_RTN(CMP_PTR_ZERO   )/* - must be (ptr,0);                          */\
-,OPR_RTN(CMP_ZERO_PTR   )/* - must be (0,ptr);                          */\
-,OPR_RTN(CMP_PP         )/* - compare (ptr,ptr)                         */\
-,OPR_RTN(CMP_AA         )/* - compare (arith,arith)                     */\
-,OPR_RTN(CMP_MP         )/* - compare other (should be member-ptrs)     */\
-,OPR_RTN(BIN_LOG_PP     )/* - binary logical expression ( ptr, ptr )    */\
-,OPR_RTN(BIN_LOG_PA     )/* - binary logical expression ( ptr, arith )  */\
-,OPR_RTN(BIN_LOG_AP     )/* - binary logical expression ( arith, ptr )  */\
-,OPR_RTN(BIN_LOG_AA     )/* - binary logical expression ( arith, arith )*/\
-,OPR_RTN(BIN_LOG_MP     )/* - binary logical expression (memb-ptr)      */\
-,OPR_RTN(UN_LOG         )/* - unary logical expression                  */\
-,OPR_RTN(UN_LOG_P       )/* - unary logical expression (ptr)            */\
-,OPR_RTN(UN_LOG_MP      )/* - unary logical expression (memb-ptr)       */\
-,OPR_RTN(OP_SIZEOF      )/* - sizeof( type ) or sizeof( expr )          */\
-,OPR_RTN(CAST           )/* - cast                                      */\
-,OPR_RTN(DYN_CAST       )/* - dynamic_cast<type>( expr )                */\
-,OPR_RTN(CONST_CAST     )/* - const_cast<type>( expr )                  */\
-,OPR_RTN(REINT_CAST     )/* - reinterpret_cast<type>(expr)              */\
-,OPR_RTN(STAT_CAST      )/* - static_cast<type>(expr)                   */\
-,OPR_RTN(TID_EXPR       )/* - typeid(<expr>)                            */\
-,OPR_RTN(TID_TYPE       )/* - typeid(<type>)                            */\
-,OPR_RTN(OPEQ_PTR       )/* - ptr [op]= integer                         */\
-,OPR_RTN(OPEQ_ARITH     )/* - arith [op]= arith                         */\
-,OPR_RTN(OPEQ_INT       )/* - integer [op]= integer                     */\
-,OPR_RTN(OPEQ_SHIFT     )/* - integer [shift]= integer                  */\
-,OPR_RTN(INDEX_PA       )/* - ptr[arith]                                */\
-,OPR_RTN(INDEX_AP       )/* - arith[ptr]                                */\
-,OPR_RTN(COMMA          )/* - o,o                                       */\
-,OPR_RTN(CALL           )/* - function call                             */\
-,OPR_RTN(PARAMETER      )/* - parameter on function call                */\
-,OPR_RTN(PARAMETER_P    )/* - parameter on function call (could be ptr) */\
-,OPR_RTN(NEW            )/* - new operations                            */\
-,OPR_RTN(DLT            )/* - delete operations                         */\
-,OPR_RTN(CTOR           )/* - CTOR a value                              */\
-,OPR_RTN(RETURN__P      )/* - return value ( ? -> ? )                   */\
-,OPR_RTN(RETURN_PA      )/* - return value ( arith -> ptr )             */\
-,OPR_RTN(RETURN_AA      )/* - return value ( arith -> arith )           */\
-,OPR_RTN(DOT_STAR       )/* - .* operator                               */\
-,OPR_RTN(ARROW_STAR     )/* - ->* operator                              */\
-,OPR_RTN(CONVERT_INT    )/* - convert to integer                        */\
-,OPR_RTN(THROW          )/* - throw an expression                       */\
-,OPR_RTN(SEGOP          )/* - :> operator                               */\
-,OPR_RTN(SEGNAME        )/* - __segname( "..." )                        */\
-                                                                          \
-,OPR_RTN(IMPOSSIBLE     )/* - error: compiler error                     */\
-,OPR_RTN(DO_NOTHING     )/* - do nothing                                */\
-                                                                          \
-,OPR_RTN(ER__BOTH_PTR   )/* - error: both operands cannot be pointer    */\
-,OPR_RTN(ER__SUB_AP     )/* - error: arithmetic operand minus pointer   */\
-,OPR_RTN(ER__ONLY_AR    )/* - error: only arithmetic operands allowed   */\
-,OPR_RTN(ER__ONLY_AP    )/* - error: only arithmetic or ptr operands    */\
-,OPR_RTN(ER__ONLY_IN    )/* - error: only integral operands allowed     */\
-,OPR_RTN(ER__AP_ASSN    )/* - error: arith = ptr.                       */\
-,OPR_RTN(ER__NO_PTR     )/* - error: expression must be pointer         */\
-,OPR_RTN(ER__INDEX      )/* - error: attempt to subscript non-array     */\
-,OPR_RTN(ER__PP_INDEX   )/* - error: ptr[ptr]                           */\
-,OPR_RTN(ER__NOT_FUN    )/* - error: left expression not a function     */\
-,OPR_RTN(ER__SEGOP      )/* - error: bad operands for ":>"              */\
-,OPR_RTN(NOT_IMPL       )/* - for now, feature not implemented          */
+#define OPR_RTNS \
+ OPR_RTN( BIN_ARITH )     /* - binary arithmetic operation               */\
+,OPR_RTN( BIN_ARITH_I )   /* - binary integral arithmetic operation      */\
+,OPR_RTN( MINUS_PP )      /* - ptr - ptr                                 */\
+,OPR_RTN( QUESTMRK )      /* - op ? op                                   */\
+,OPR_RTN( COLON_PP )      /* - ptr : ptr                                 */\
+,OPR_RTN( COLON_AA )      /* - arith : arith                             */\
+,OPR_RTN( COLON_AP )      /* - arith : ptr                               */\
+,OPR_RTN( COLON_PA )      /* - ptr : arith                               */\
+,OPR_RTN( COLON_OTHER )   /* - other : other: void, class, class         */\
+,OPR_RTN( UN_PLUS_PTR )   /* - + ptr.                                    */\
+,OPR_RTN( UN_ARITH )      /* - unary arithmetic                          */\
+,OPR_RTN( UN_ARITH_I )    /* - unary arithmetic, integral operand        */\
+,OPR_RTN( ADDR_OF )       /* - unary &                                   */\
+,OPR_RTN( INDIRECT )      /* - * operand                                 */\
+,OPR_RTN( LINCDEC_PTR )   /* - ++ptr, --ptr,                             */\
+,OPR_RTN( LINCDEC_ARITH ) /* - ++arith, --arith                          */\
+,OPR_RTN( INCDEC_PTR )    /* - ptr++, ptr--                              */\
+,OPR_RTN( INCDEC_ARITH )  /* - arith++, arith--                          */\
+,OPR_RTN( SW_LV_EXPR )    /* - switch operands, do LVALUE_BEXPR          */\
+,OPR_RTN( SHIFT_OP )      /* - shift operation                           */\
+,OPR_RTN( LVALUE_BEXPR )  /* - try lvalue expr; then BIN_ARITH           */\
+,OPR_RTN( EQUAL_PP )      /* - ptr = ptr;                                */\
+,OPR_RTN( EQUAL_AP )      /* - arithmetic = ptr                          */\
+,OPR_RTN( EQUAL_AA )      /* - arithmetic = arithmetic                   */\
+,OPR_RTN( EQUAL_PZ )      /* - ptr = arithmetic; must be zero on left    */\
+,OPR_RTN( EQUAL_OTHER )   /* - other = other                             */\
+,OPR_RTN( INIT_PP )       /* - ptr = ptr;                                */\
+,OPR_RTN( INIT_AP )       /* - arithmetic = ptr                          */\
+,OPR_RTN( INIT_AA )       /* - arithmetic = arithmetic                   */\
+,OPR_RTN( INIT_PZ )       /* - ptr = arithmetic; must be zero on left    */\
+,OPR_RTN( INIT_OTHER )    /* - other = other                             */\
+,OPR_RTN( CMP_PTR_ZERO )  /* - must be (ptr,0);                          */\
+,OPR_RTN( CMP_ZERO_PTR )  /* - must be (0,ptr);                          */\
+,OPR_RTN( CMP_PP )        /* - compare (ptr,ptr)                         */\
+,OPR_RTN( CMP_AA )        /* - compare (arith,arith)                     */\
+,OPR_RTN( CMP_MP )        /* - compare other (should be member-ptrs)     */\
+,OPR_RTN( BIN_LOG_PP )    /* - binary logical expression ( ptr, ptr )    */\
+,OPR_RTN( BIN_LOG_PA )    /* - binary logical expression ( ptr, arith )  */\
+,OPR_RTN( BIN_LOG_AP )    /* - binary logical expression ( arith, ptr )  */\
+,OPR_RTN( BIN_LOG_AA )    /* - binary logical expression ( arith, arith )*/\
+,OPR_RTN( BIN_LOG_MP )    /* - binary logical expression (memb-ptr)      */\
+,OPR_RTN( UN_LOG )        /* - unary logical expression                  */\
+,OPR_RTN( UN_LOG_P )      /* - unary logical expression (ptr)            */\
+,OPR_RTN( UN_LOG_MP )     /* - unary logical expression (memb-ptr)       */\
+,OPR_RTN( OP_SIZEOF )     /* - sizeof( type ) or sizeof( expr )          */\
+,OPR_RTN( CAST )          /* - cast                                      */\
+,OPR_RTN( DYN_CAST )      /* - dynamic_cast<type>( expr )                */\
+,OPR_RTN( CONST_CAST )    /* - const_cast<type>( expr )                  */\
+,OPR_RTN( REINT_CAST )    /* - reinterpret_cast<type>(expr)              */\
+,OPR_RTN( STAT_CAST )     /* - static_cast<type>(expr)                   */\
+,OPR_RTN( TID_EXPR )      /* - typeid(<expr>)                            */\
+,OPR_RTN( TID_TYPE )      /* - typeid(<type>)                            */\
+,OPR_RTN( OPEQ_PTR )      /* - ptr [op]= integer                         */\
+,OPR_RTN( OPEQ_ARITH )    /* - arith [op]= arith                         */\
+,OPR_RTN( OPEQ_INT )      /* - integer [op]= integer                     */\
+,OPR_RTN( OPEQ_SHIFT )    /* - integer [shift]= integer                  */\
+,OPR_RTN( INDEX_PA )      /* - ptr[arith]                                */\
+,OPR_RTN( INDEX_AP )      /* - arith[ptr]                                */\
+,OPR_RTN( COMMA )         /* - o,o                                       */\
+,OPR_RTN( CALL )          /* - function call                             */\
+,OPR_RTN( PARAMETER )     /* - parameter on function call                */\
+,OPR_RTN( PARAMETER_P )   /* - parameter on function call (could be ptr) */\
+,OPR_RTN( NEW )           /* - new operations                            */\
+,OPR_RTN( DLT )           /* - delete operations                         */\
+,OPR_RTN( CTOR )          /* - CTOR a value                              */\
+,OPR_RTN( RETURN__P )     /* - return value ( ? -> ? )                   */\
+,OPR_RTN( RETURN_PA )     /* - return value ( arith -> ptr )             */\
+,OPR_RTN( RETURN_AA )     /* - return value ( arith -> arith )           */\
+,OPR_RTN( DOT_STAR )      /* - .* operator                               */\
+,OPR_RTN( ARROW_STAR )    /* - ->* operator                              */\
+,OPR_RTN( CONVERT_INT )   /* - convert to integer                        */\
+,OPR_RTN( THROW )         /* - throw an expression                       */\
+,OPR_RTN( SEGOP )         /* - :> operator                               */\
+,OPR_RTN( SEGNAME )       /* - __segname( "..." )                        */\
+\
+,OPR_RTN( IMPOSSIBLE )    /* - error: compiler error                     */\
+,OPR_RTN( DO_NOTHING )    /* - do nothing                                */\
+\
+,OPR_RTN( ER__BOTH_PTR )  /* - error: both operands cannot be pointer    */\
+,OPR_RTN( ER__SUB_AP )    /* - error: arithmetic operand minus pointer   */\
+,OPR_RTN( ER__ONLY_AR )   /* - error: only arithmetic operands allowed   */\
+,OPR_RTN( ER__ONLY_AP )   /* - error: only arithmetic or ptr operands    */\
+,OPR_RTN( ER__ONLY_IN )   /* - error: only integral operands allowed     */\
+,OPR_RTN( ER__AP_ASSN )   /* - error: arith = ptr.                       */\
+,OPR_RTN( ER__NO_PTR )    /* - error: expression must be pointer         */\
+,OPR_RTN( ER__INDEX )     /* - error: attempt to subscript non-array     */\
+,OPR_RTN( ER__PP_INDEX )  /* - error: ptr[ptr]                           */\
+,OPR_RTN( ER__NOT_FUN )   /* - error: left expression not a function     */\
+,OPR_RTN( ER__SEGOP )     /* - error: bad operands for ":>"              */\
+,OPR_RTN( NOT_IMPL )      /* - for now, feature not implemented          */
 
 // define routine codes for operand combinations
 //
@@ -1277,10 +1277,10 @@ static bool isRelationalOperator(   // TEST IF RELATIONAL OPERATOR
         case CO_LT:
         case CO_GE:
         case CO_LE:
-            return true;
+            return( true );
         }
     }
-    return false;
+    return( false );
 }
 
 static void warnPointerZero(    // WARN IF POINTER COMPARISON TO 0 IS CONST
@@ -1408,7 +1408,7 @@ static CGOP commRelOp( CGOP cgop ) {
         break;
     DbgDefault("Default in commRelOp in analyse.c\n");
     }
-    return cgop;
+    return( cgop );
 }
 
 static void warnIfUseless( PTREE op1, PTREE op2, CGOP cgop, PTREE expr )
@@ -1598,7 +1598,7 @@ static TYPE operandError(       // PRINT ERROR MESSAGE WITH OPERAND TYPES
             }
         }
     }
-    return NULL;
+    return( NULL );
 }
 
 
@@ -1614,7 +1614,7 @@ static TYPE analyse_err_left(   // ANALYSE KIND OF ERROR MESSAGE TO WRITE
     } else {
         msg = binary_msg;
     }
-    return operandError( expr, msg );
+    return( operandError( expr, msg ) );
 }
 
 
@@ -1634,7 +1634,7 @@ static TYPE analyse_err(        // ANALYSE KIND OF ERROR MESSAGE TO WRITE
     } else {
         msg = msgs->err_left;
     }
-    return operandError( expr, msg );
+    return( operandError( expr, msg ) );
 }
 
 
@@ -1663,7 +1663,7 @@ static bool is_ptr_constant(    // CHECK IF NODE IS TYPED AS PTR TO A CONSTANT
 static PTREE bld_type_size(     // BUILD CONSTANT NODE WITH SIZE OF TYPE
     TYPE type )                 // - type in question
 {
-    return NodeOffset( CgTypeSize( type ) );
+    return( NodeOffset( CgTypeSize( type ) ) );
 }
 
 
@@ -1681,14 +1681,14 @@ static PTREE bld_sizeof_type(   // BUILD CONSTANT NODE WITH SIZEOF() OF TYPE
         sizeof_type = TYP_ULONG;
     }
 #endif
-    return PTreeIntConstant( type_size, sizeof_type );
+    return( PTreeIntConstant( type_size, sizeof_type ) );
 }
 
 
 static PTREE bld_pted_size(     // BUILD CONSTANT NODE WITH SIZE POINTED AT
     PTREE ptr )                 // - node which is a pointer
 {
-    return bld_type_size( TypePointedAtModified( ptr->type ) );
+    return( bld_type_size( TypePointedAtModified( ptr->type ) ) );
 }
 
 
@@ -1704,11 +1704,11 @@ static PTREE bld_ptr_adj(       // BUILD A POINTER ADJUSTMENT
     factor = NodeConvert( TypePointerDiff( ptr_type ), factor );
     pted_size = CgTypeSize( TypePointedAtModified( ptr_type ) );
     if( pted_size == 1 ) {
-        return factor;
+        return( factor );
     }
     new_node = NodeBinary( CO_TIMES, factor, NodeOffset( pted_size ) );
     new_node->type = factor->type;
-    return FoldBinary( new_node );
+    return( FoldBinary( new_node ) );
 }
 
 
@@ -1720,7 +1720,7 @@ static TYPE checkForCharPromotion // CHECK FOR PLAIN CHAR PROMOTION
      && TypedefModifierRemoveOnly( src->type )->id == TYP_CHAR ) {
         PTreeWarnExpr( src, WARN_CHAR_PROMOTION );
     }
-    return tgt_type;
+    return( tgt_type );
 }
 
 
@@ -1732,9 +1732,9 @@ static TYPE unary_arith_result( // COMPUTE RESULT OF UNARY ARITHMETIC
         retn = TypeUnArithResult( left->type );
         retn = checkForCharPromotion( retn, left );
     } else {
-        return TypeUnArithResult( left->type );
+        return( TypeUnArithResult( left->type ) );
     }
-    return retn;
+    return( retn );
 }
 
 static TYPE binary_arith_result(// COMPUTE RESULT OF BINARY ARITHMETIC
@@ -1749,7 +1749,7 @@ static TYPE binary_arith_result(// COMPUTE RESULT OF BINARY ARITHMETIC
     } else {
         retn = TypeBinArithResult( left->type, right->type );
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -1763,14 +1763,14 @@ static bool ptr_scales(         // TEST IF EXPRESSION IF PTR. IS SCALABLE
     switch( type->id ) {
     case TYP_FUNCTION:
     case TYP_VOID:
-        return false;
+        return( false );
     case TYP_ARRAY:
         if( type->u.a.array_size == 0 ) {
-            return false;
+            return( false );
         }
         break;
     }
-    return true;
+    return( true );
 }
 
 
@@ -1818,7 +1818,7 @@ static unsigned classify_operand( // CLASSIFY OPERAND AS PTR, ARITH, OTHER
             }
         }
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -1849,7 +1849,7 @@ static PTREE generateCtor(      // GENERATE A CTOR CALL
                      , &ctor_node->locn
                      , EFFECT_EXACT | EFFECT_DECOR_TEMP );
     PTreeFree( ctor_node );
-    return retn;
+    return( retn );
 }
 
 
@@ -1921,7 +1921,7 @@ static PTREE convertCtor(       // CONVERT CTOR EXPRESSION
         break;
     }
     FnovFreeDiag( &fnov_diag );
-    return expr;
+    return( expr );
 }
 
 
@@ -1995,7 +1995,7 @@ static PTREE initClass(         // INIT. A CLASS ( INIT OR RETURN )
                        , diagnosis );
 #endif
     }
-    return expr;
+    return( expr );
 }
 
 
@@ -2010,7 +2010,7 @@ static PTREE initClassFromExpr( // INITIALIZE CLASS FROM EXPRESSION
     left = expr->u.subtree[0];
     right = expr->u.subtree[1];
     PTreeFree( PTreeExtractLocn( expr, &init_locn ) );
-    return initClass( left, right, diagnosis, &init_locn );
+    return( initClass( left, right, diagnosis, &init_locn ) );
 }
 
 
@@ -2069,7 +2069,7 @@ static PTREE convertInitBare(   // CONVERT type(val) TO val
         NodeFreeDupedExpr( right );
         right = PTreeOpRight( expr );
     }
-    return right;
+    return( right );
 }
 
 
@@ -2085,7 +2085,7 @@ static PTREE* nextFuncNode(     // GET NEXT NODE IN FUNCTION TRAVERSAL
     } else {
         retn = NULL;
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -2126,7 +2126,8 @@ static bool analyseStaticFunc(  // ANALYSE GOOD REFERENCE TO STATIC FUNC(S)
             prune = root;
             for( ; prune != NULL; ) {
                 expr = *prune;
-                if( expr == func ) break;
+                if( expr == func )
+                    break;
                 if( NodeIsUnaryOp( expr, CO_ADDR_OF ) ) {
                     prune = &expr->u.subtree[0];
                 } else if( NodeIsBinaryOp( expr, CO_DOT )
@@ -2141,13 +2142,15 @@ static bool analyseStaticFunc(  // ANALYSE GOOD REFERENCE TO STATIC FUNC(S)
                 }
             }
             for( expr = *root; ; ) {
-                if( expr == func ) break;
+                if( expr == func )
+                    break;
                 expr->flags |= PTF_PTR_NONZERO;
                 if( NULL != result_type ) {
                     expr->type = result_type;
                 }
                 prune = nextFuncNode( expr );
-                if( prune == NULL ) break;
+                if( prune == NULL )
+                    break;
                 expr = *prune;
             }
             ok = true;
@@ -2328,7 +2331,7 @@ static unsigned getConstBits(   // GET SIGNIFICANT BITS IN CONSTANT NODE
     for( ; sig != 0; ++bits ) {
         sig >>= 1;
     }
-    return bits;
+    return( bits );
 }
 
 
@@ -2338,7 +2341,7 @@ static unsigned getConstBitsType( // GET NUMBER OF SIGNIFICANT BITS FOR A TYPE
     if( BoolType( type ) ) {
         return( 1 );
     }
-    return CgMemorySize( type ) * TARGET_BITS_CHAR;
+    return( CgMemorySize( type ) * TARGET_BITS_CHAR );
 }
 
 static bool truncDueToPromotion(// SEE IF TRUNCATION CAN BE DUE TO DEFAULT PROMOTIONS
@@ -2548,7 +2551,7 @@ static TYPE findCommonPtrNullType( PTREE expr )
     expr_type = expr->type;
     type = TypedefModifierRemoveOnly( expr_type );
     if( PointerType( type ) == NULL ) {
-        return expr_type;
+        return( expr_type );
     }
     type = TypeModFlagsEC( type->of, &mod );
     default_mod = DefaultMemoryFlag( type );
@@ -2568,7 +2571,7 @@ static TYPE findCommonPtrNullType( PTREE expr )
         type = MakeModifiedType( type, mod );
         expr_type = MakePointerTo( type );
     }
-    return expr_type;
+    return( expr_type );
 }
 
 
@@ -2623,7 +2626,7 @@ static PTREE convertIncDec(     // CONVERT ++, -- operands
     expr = NodeSetType( expr, type, 0 );
     expr->cgop = new_op;
     expr->op = PT_BINARY;
-    return expr;
+    return( expr );
 }
 
 ExtraRptTable( ctrOps, CO_LOG, 1 );
@@ -2702,12 +2705,12 @@ PTREE AnalyseOperator(          // ANALYSE AN OPERATOR
         }
         if( !opsok ) {
             PTreeErrorNode( orig );
-            return orig;
+            return( orig );
         }
         if( flags & PTO_CAN_OVERLOAD ) {
             orig = OverloadOperator( orig );
             if( orig->op == PT_ERROR ) {
-                return orig;
+                return( orig );
             }
         }
         left = PTreeOpLeft( orig );
@@ -2982,7 +2985,7 @@ start_opac_string:
             continue;
         case REQD_ZERO_RIGHT :
             if( ( NodeIsBinaryOp( expr, CO_EQUAL ) ||
-                  NodeIsBinaryOp( expr, CO_INIT  ) )
+                  NodeIsBinaryOp( expr, CO_INIT ) )
               &&( 0 != TypeIsBasedPtr( type ) ) ) {
                 continue;
             }
@@ -4094,7 +4097,7 @@ start_opac_string:
                 }
                 type = TypePointedAtModified( type );
                 if( type != NULL ) {
-                    if( TypeTruncByMemModel( type ) ){
+                    if( TypeTruncByMemModel( type ) ) {
                         expr = throw_exp;
                         PTreeErrorExpr( expr, ERR_USE_FAR );
                         break;
@@ -4295,7 +4298,7 @@ start_opac_string:
     if( templ != NULL ) {
         PTreeFreeSubtrees( templ );
     }
-    return expr;
+    return( expr );
 }
 
 
@@ -4303,7 +4306,7 @@ PTREE AnalyseNode(              // ANALYSE PTREE NODE FOR SEMANTICS
     PTREE expr )                // - current node
 {
     if( expr->flags & PTF_ALREADY_ANALYSED ) {
-        return expr;
+        return( expr );
     }
     CtxTokenLocn( &expr->locn );
     switch( expr->op ) {
@@ -4351,14 +4354,14 @@ PTREE AnalyseNode(              // ANALYSE PTREE NODE FOR SEMANTICS
         break;
     }
     expr->flags |= PTF_ALREADY_ANALYSED;
-    return expr;
+    return( expr );
 }
 
 static PTREE clearAnalysedFlag(
     PTREE expr )
 {
     expr->flags &= ~PTF_ALREADY_ANALYSED;
-    return expr;
+    return( expr );
 }
 
 static PTREE run_traversals(    // ANALYZE EXPRESSION VIA TRAVERSALS
@@ -4376,7 +4379,7 @@ static PTREE run_traversals(    // ANALYZE EXPRESSION VIA TRAVERSALS
     }
 #endif
     if( expr == NULL ) {
-        return PTreeErrorNode( NULL );
+        return( PTreeErrorNode( NULL ) );
     }
     expr = PTreeTraversePostfix( expr, &AnalyseNode );
     if( expr->op != PT_ERROR) {
@@ -4386,7 +4389,7 @@ static PTREE run_traversals(    // ANALYZE EXPRESSION VIA TRAVERSALS
 //      AnalyseLvalue( PTreeRef( &expr ) );
         AnalyseLvalue( &expr );
     }
-    return expr;
+    return( expr );
 }
 
 
@@ -4398,7 +4401,7 @@ PTREE AnalyseStmtExpr(      // ANALYZE A STATEMENT EXPRESSION
         warnMeaningfulSideEffect( expr );
         expr = NodeDone( expr );
     }
-    return expr;
+    return( expr );
 }
 
 
@@ -4413,7 +4416,7 @@ PTREE AnalyseInitExpr(      // ANALYZE AN INITIALIZATION EXPRESSION
         }
         expr = AnalyseStmtExpr( expr );
     }
-    return expr;
+    return( expr );
 }
 
 
@@ -4423,7 +4426,7 @@ PTREE AnalyseRawExpr(       // ANALYZE AN EXPRESSION
     if( expr != NULL ) {
         expr = run_traversals( expr );
     }
-    return expr;
+    return( expr );
 }
 
 PTREE AnalyseBoolExpr(      // ANALYZE A BOOLEAN EXPRESSION
@@ -4438,7 +4441,7 @@ PTREE AnalyseBoolExpr(      // ANALYZE A BOOLEAN EXPRESSION
             expr = NodeConvertToBool( expr );
         }
     }
-    return expr;
+    return( expr );
 }
 
 
@@ -4451,7 +4454,7 @@ PTREE AnalyseValueExpr(     // ANALYZE AN EXPRESSION, MAKE IT A VALUE
             expr = NodeRvalue( expr );
         }
     }
-    return expr;
+    return( expr );
 }
 
 
@@ -4469,7 +4472,7 @@ PTREE AnalyseIntegralExpr(  // ANALYZE AN EXPRESSION, MAKE IT AN INT. VALUE
             PTreeFree( old );
         }
     }
-    return expr;
+    return( expr );
 }
 
 PTREE AnalyseReturnExpr(    // ANALYSE A RETURN EXPRESSION
@@ -4490,5 +4493,5 @@ PTREE AnalyseReturnExpr(    // ANALYSE A RETURN EXPRESSION
             expr->flags |= PTF_RETN_OPT;
         }
     }
-    return expr;
+    return( expr );
 }

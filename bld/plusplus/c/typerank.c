@@ -93,5 +93,5 @@ RKD RkdForTypeId(       // GET RKD FOR TYPE ID
         break;
     DbgDefault( "invalid RKD detected" );
     }
-    return retn;
+    return( retn );
 }

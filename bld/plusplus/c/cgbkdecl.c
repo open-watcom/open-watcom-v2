@@ -62,7 +62,7 @@ static SYMBOL push_inline_sym(  // PUSH AN INLINE SYMBOL
         locn = SymbolLocnAlloc( &sym->locn );
         locn->tl = model->locn->tl;
     }
-    return sym;
+    return( sym );
 }
 
 
@@ -119,7 +119,7 @@ static void declareParameter(   // DEFINE A FUNCTION PARAMETER
         CGParmDecl( (cg_sym_handle)sym, cgtype );
         if( fctl->debug_info
          && ( GenSwitches & DBG_LOCALS ) ) {
-            if( GenSwitches & DBG_DF ){
+            if( GenSwitches & DBG_DF ) {
                 DwarfSymDebugGenSymbol( sym, true, cgtype == TY_POINTER );
             }else{
                 SymbolicDebugGenSymbol( sym, true, cgtype == TY_POINTER );
@@ -150,7 +150,8 @@ void CgDeclParms(               // DEFINE ARGS FOR CURRENT FN IN CORRECT ORDER
     curr = NULL;
     for(;;) {
         curr = ScopeOrderedNext( stop, curr );
-        if( curr == NULL ) break;
+        if( curr == NULL )
+            break;
         if( ( curr->name != NULL ) && ( ret_name == curr->name->name ) ) {
             ret_sym = curr;
         } else {
@@ -167,7 +168,8 @@ void CgDeclParms(               // DEFINE ARGS FOR CURRENT FN IN CORRECT ORDER
     case CALL_IMPL_REV_C :
         for(;;) {
             psym = VstkPop( &sym_stack );
-            if( psym == NULL ) break;
+            if( psym == NULL )
+                break;
             declareParameter( *psym );
         }
         break;
@@ -206,7 +208,7 @@ SYMBOL CgDeclHiddenParm(        // DECLARE HIDDEN ARG (THIS, CDTOR)
     sym = push_inline_sym( symbol_model );
     sym->sym_type = type;
     sym->name = name;
-    return sym;
+    return( sym );
 }
 
 
@@ -247,7 +249,7 @@ void CgDeclSym(                 // PROCESS SYMBOL IN BLOCK-OPEN SCOPE
                 case SC_REGISTER:
                     if( ! SymIsAnonymous( sym ) ) {
                         if( !SymIsTemporary( sym ) ) {
-                            if( GenSwitches & DBG_DF ){
+                            if( GenSwitches & DBG_DF ) {
                                 DwarfSymDebugGenSymbol( sym, true, false );
                             }else{
                                 SymbolicDebugGenSymbol( sym, true, false );
@@ -266,7 +268,7 @@ void CgDeclSym(                 // PROCESS SYMBOL IN BLOCK-OPEN SCOPE
                 } else {
                     declareAuto( sym );
                     if( fctl->debug_info && ( GenSwitches & DBG_LOCALS ) ) {
-                        if( GenSwitches & DBG_DF ){
+                        if( GenSwitches & DBG_DF ) {
                             DwarfDebugGenSymbol( sym, true );
                         }else{
                             SymbolicDebugGenSymbol( sym, true, false );
@@ -282,7 +284,7 @@ void CgDeclSym(                 // PROCESS SYMBOL IN BLOCK-OPEN SCOPE
             if( ! SymIsAnonymous( sym ) ) {
                 if( SymIsReferenced( sym ) || SymIsInitialized( sym ) ) {
                     if( ! CgDeclSkippableConstObj( sym ) ) {
-                        if( GenSwitches & DBG_DF ){
+                        if( GenSwitches & DBG_DF ) {
                             DwarfDebugGenSymbol( sym, true );
                         }else{
                             SymbolicDebugGenSymbol( sym, true, false );
@@ -295,7 +297,7 @@ void CgDeclSym(                 // PROCESS SYMBOL IN BLOCK-OPEN SCOPE
     case SC_TYPEDEF:
         if( fctl->debug_info
          && ( GenSwitches & DBG_LOCALS ) ) {
-            if( GenSwitches & (DBG_CV | DBG_DF ) ){
+            if( GenSwitches & (DBG_CV | DBG_DF ) ) {
                 DBLocalType( (cg_sym_handle)sym, false );
             }
         }

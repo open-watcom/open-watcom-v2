@@ -938,19 +938,19 @@ static YYTOKENTYPE specialAngleBracket( PARSE_STACK *state, YYTOKENTYPE token )
         } else if( token == Y_LEFT_BRACE ) {
             angle_state->paren_depth++;
         } else if( token == Y_RIGHT_BRACE ) {
-            if( angle_state->paren_depth > 0) {
+            if( angle_state->paren_depth > 0 ) {
                 angle_state->paren_depth--;
             }
         } else if( token == Y_LEFT_BRACKET ) {
             angle_state->paren_depth++;
         } else if( token == Y_RIGHT_BRACKET ) {
-            if( angle_state->paren_depth > 0) {
+            if( angle_state->paren_depth > 0 ) {
                 angle_state->paren_depth--;
             }
         } else if( token == Y_LEFT_PAREN ) {
             angle_state->paren_depth++;
         } else if( token == Y_RIGHT_PAREN ) {
-            if( angle_state->paren_depth > 0) {
+            if( angle_state->paren_depth > 0 ) {
                 angle_state->paren_depth--;
             }
         }
@@ -1814,7 +1814,9 @@ static la_action lookAheadShiftReduce( YYTOKENTYPE t
             break;
         }
         what = lookAheadReduce( state, yyaction - YYUSED );
-        if( what == LA_UNDERFLOW ) break;
+        if( what == LA_UNDERFLOW ) {
+            break;
+        }
     }
     return( what );
 }
@@ -1950,8 +1952,11 @@ static YYACTIONTYPE lookAheadYYAction( YYTOKENTYPE t, PARSE_STACK *state, PARSE_
             }
 #endif
             decl_what = lookAheadShiftReduce( t, &look_ahead_decl_state, host );
-            if( expr_what != decl_what ) break;
-            if( expr_what != LA_NULL ) break;
+            if( expr_what != decl_what )
+                break;
+            if( expr_what != LA_NULL ) {
+                break;
+            }
         }
         /* something significant has happened... */
         what_to_do = response[expr_what][decl_what];
@@ -2532,7 +2537,9 @@ void ParseDecls( void )
 #endif
                 }
             }
-            if( CurToken == T_EOF ) break;
+            if( CurToken == T_EOF ) {
+                break;
+            }
         } while( what == P_CLASS_TEMPLATE );
         deleteStack( &decl_state );
         LinkageReset();

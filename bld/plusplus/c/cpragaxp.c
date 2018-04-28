@@ -102,9 +102,9 @@ bool PragmaChangeConsistent(    // TEST IF PRAGMA CHANGE IS CONSISTENT
         oldp = &DefaultInfo;
     }
     if( oldp == newp ) {
-        return true;
+        return( true );
     }
-    return false;
+    return( false );
 }
 
 bool PragmaOKForInlines(        // TEST IF PRAGMA IS SUITABLE FOR INLINED FN
@@ -158,7 +158,7 @@ bool PragmasTypeEquivalent(     // TEST IF TWO PRAGMAS ARE TYPE-EQUIVALENT
         inf2 = &DefaultInfo;
     }
     if( inf1 == inf2 ) {
-        return true;
+        return( true );
     }
     return
            ( ( inf1->cclass & ~CALL_CLASS_IGNORE ) ==

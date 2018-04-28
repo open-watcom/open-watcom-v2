@@ -89,7 +89,7 @@ PTREE UdcCall                   // CALL UDC FUNCTION
     node = NodeBinary( CO_CALL_NOOVLD, node, NULL );
     node = PTreeCopySrcLocation( node, src );
     node = AnalyseCall( node, diagnosis );
-    return node;
+    return( node );
 }
 
 
@@ -121,5 +121,5 @@ TYPE UdcFindType                // FIND TARGET TYPE FOR UDCF
         FnovListFree( &fnov_list );
         FnovFreeDiag( &diag );
     }
-    return result;
+    return( result );
 }

@@ -147,9 +147,12 @@ static int macroCompare(        // COMPARE TWO MACROS TO SEE IF IDENTICAL
     MEPTR m1,                   // - macro #1
     MEPTR m2 )                  // - macro #2
 {
-    if( m1->macro_len  != m2->macro_len )   return( -1 );
-    if( m1->macro_defn != m2->macro_defn )  return( -1 );
-    if( m1->parm_count != m2->parm_count )  return( -1 );
+    if( m1->macro_len  != m2->macro_len )
+        return( -1 );
+    if( m1->macro_defn != m2->macro_defn )
+        return( -1 );
+    if( m1->parm_count != m2->parm_count )
+        return( -1 );
     return( memcmp( m1->macro_name, m2->macro_name, m1->macro_len - offsetof( MEDEFN, macro_name ) ) );
 }
 
@@ -484,10 +487,10 @@ static MEPTR macroFind(         // LOOK UP A HASHED MACRO
         }
         if( NameMemCmp( id, name, len ) == 0 ) {
             curr = BrinfReferenceMacro( curr );
-            return curr;
+            return( curr );
         }
     } RingIterEnd( curr )
-    return NULL;
+    return( NULL );
 }
 
 
@@ -604,7 +607,7 @@ MEPTR MacroSpecialAdd(          // ADD A SPECIAL MACRO
     if( mentry != NULL ) {
         mentry->macro_flags |= flags;
     }
-    return mentry;
+    return( mentry );
 }
 
 
@@ -633,7 +636,7 @@ bool MacroExists(           // TEST IF MACRO EXISTS
     } else {
         exists = false;
     }
-    return exists;
+    return( exists );
 }
 
 

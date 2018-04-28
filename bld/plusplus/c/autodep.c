@@ -49,7 +49,7 @@ static char *DoForceSlash( char *name, char slash )
 {
     char *save = name;
     if( !slash || !save )
-        return name;
+        return( name );
     while( name[0] ) {
         if( IS_DIR_SEP( name[0] ) )
             name[0] = slash;

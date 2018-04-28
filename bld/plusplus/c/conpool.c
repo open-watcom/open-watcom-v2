@@ -57,7 +57,7 @@ static POOL_CON* allocPoolCon   // ALLOCATE CONSTANT-POOL ENTRY
     pool->free = false;
     pool->i64  = false;
     pool->flt  = false;
-    return pool;
+    return( pool );
 }
 
 

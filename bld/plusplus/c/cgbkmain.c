@@ -176,13 +176,14 @@ unsigned CgNonThunkDepth(       // COMPUTE INLINE DEPTH WITHOUT THUNKS
     if( real_depth > 0 ) {
         for( ; ; ) {
             fctl = FnCtlPrev( fctl );
-            if( fctl == NULL ) break;
+            if( fctl == NULL )
+                break;
             if( SymIsThunk( fctl->func ) ) {
                 -- real_depth;
             }
         }
     }
-    return real_depth;
+    return( real_depth );
 }
 
 #if 0
@@ -239,7 +240,7 @@ static TRY_IMPL* tryImpl(       // FIND/ALLOCATE A TRY IMPLEMENTATION
         try_impl->jmp_sym = CgVarRw( JMPBUF_SIZE, SC_AUTO );
         AutoRelRegister( try_impl->jmp_sym, &try_impl->offset_jmpbuf );
     }
-    return try_impl;
+    return( try_impl );
 }
 
 
@@ -265,7 +266,7 @@ static SE* stateTableTryBlk(    // GET CURRENT STATE TABLE TRY BLOCK
         }
     } ST_backwards_end
     DbgVerify( try_blk != NULL, "stateTableTryBlk -- none" );
-    return try_blk;
+    return( try_blk );
 }
 
 
@@ -287,24 +288,24 @@ static SYMBOL transThisSym(     // TRANSLATE TO "this_sym" WHEN NULL
      && ! SymIsStatic( fctl->func ) ) {
         sym = fctl->this_sym;
     }
-    return sym;
+    return( sym );
 }
 
 
 static void funcDebugInfo(      // DEFINE FUNCTION DEBUGGING INFORMATION
     FN_CTL *fctl )              // - current function control pointer
 {
-    if( fctl->debug_info && ( GenSwitches & DBG_LOCALS ) ){
+    if( fctl->debug_info && ( GenSwitches & DBG_LOCALS ) ) {
         if( SymIsClassMember( fctl->func ) ) {
             SYMBOL this_sym;
             this_sym = transThisSym( NULL, fctl );
-            if( GenSwitches & DBG_DF ){
+            if( GenSwitches & DBG_DF ) {
                 DwarfDebugMemberFunc( fctl->func, this_sym );
             }else{
                 SymbolicDebugMemberFunc( fctl->func, this_sym );
             }
-        }else if( SymIsNameSpaceMember( fctl->func ) ){
-            if( GenSwitches & DBG_DF ){
+        }else if( SymIsNameSpaceMember( fctl->func ) ) {
+            if( GenSwitches & DBG_DF ) {
                 DwarfDebugNameSpaceEnclosed( fctl->func );
             }
         }
@@ -381,7 +382,7 @@ static SE* nextDirectSe(        // POSITION TO NEXT SE (DIRECT DESTRUCTION)
     } else {
         se = FstabPrevious( se );
     }
-    return se;
+    return( se );
 }
 
 
@@ -397,7 +398,7 @@ static DGRP_FLAGS emitXstBeg(   // IF REQ'D, EMIT START DTOR-OF-CTOR CODE
         CgCtorTestTempsRegister( fctl );
         flags |= DGRP_CTOR_BEG;
     }
-    return flags;
+    return( flags );
 
     #undef EMIT_MASK
     #undef EMIT_REQD
@@ -421,7 +422,7 @@ static DGRP_FLAGS emitXstEnd(   // IF REQ'D, EMIT END DTOR-OF-CTOR CODE
         CgCtorTestTempsDeregister( fctl );
         flags |= DGRP_CTOR_END;
     }
-    return flags;
+    return( flags );
 
     #undef EMIT_MASK
     #undef EMIT_REQD
@@ -438,7 +439,7 @@ static DGRP_FLAGS emitTryedPosn // EMIT POSN AFTER POPPING TRY
         FstabEmitStateVarExpr( try_se, fctl );
         flags &= ~ DGRP_TRY_EMIT;
     }
-    return flags;
+    return( flags );
 }
 
 
@@ -530,7 +531,8 @@ static unsigned cgDestructGroup(// DESTRUCT UP TO STATE ENTRY
             continue;
         case DTC_CTOR_TEST :
             se = nextDirectSe( se, flags );
-            if( se == bound ) break;
+            if( se == bound )
+                break;
             se = nextDirectSe( se, flags );
             continue;
         case DTC_SET_SV :
@@ -655,7 +657,7 @@ static unsigned cgDestructGroup(// DESTRUCT UP TO STATE ENTRY
             FstabEmitStateVarExpr( bound, fctl );
         }
     }
-    return destructions;
+    return( destructions );
 }
 
 
@@ -715,7 +717,7 @@ static SE* buildObjectSe        // BUILD SUBOBJ STATE ENTRY
         se->subobj.type = array_type;
         se->subobj.dtor = RoDtorFindType( type );
     }
-    return se;
+    return( se );
 }
 
 
@@ -829,7 +831,7 @@ static STAB_OBJ* buildObjectStateTable( // BUILD STATE TABLE FOR OBJECT
             CDoptIterEnd( iter );
         }
     }
-    return obj;
+    return( obj );
 }
 
 
@@ -887,7 +889,7 @@ static SE* cgAddSeComponent     // ADD STATE DTC_COMPONENT STATE ENTRY
     } else {
         se->component.obj = init->reg;
     }
-    return se;
+    return( se );
 }
 
 
@@ -991,7 +993,7 @@ static SYMBOL saveGenedExpr(    // SAVE OPTIONAL GENERATED EXPRESSION
         break;
     DbgDefault( "saveGenedExpr -- too many temps" );
     }
-    return temp;
+    return( temp );
 }
 
 
@@ -1028,7 +1030,7 @@ static SE* dtorAutoSymbol(      // SIGNAL DTOR OF AUTO SYMBOL
     if( se->base.gen ) {
         AutoRelRegister( trans, &se->sym_auto.offset );
     }
-    return se;
+    return( se );
 }
 
 
@@ -2873,7 +2875,7 @@ for( ;; ) {
         case IC_COMPCTOR_BEG :            // START COMPONENT CTOR, TEMPS
           { OBJ_INIT* init;                 // - initialization object
             init = ObjInitClass();
-            if(NULL == init){
+            if(NULL == init) {
                 CFatal( "ObjInitClass returned NULL\nPossible: http://bugzilla.openwatcom.org/show_bug.cgi?id=63" );
             }
             if( init->defn != NULL ) {
@@ -2898,7 +2900,7 @@ for( ;; ) {
           { OBJ_INIT* init;                 // - initialization object
             cg_name expr;                   // - new expr
             init = ObjInitClass();
-            if(NULL == init){
+            if(NULL == init) {
                 CFatal( "ObjInitClass returned NULL\nPossible: http://bugzilla.openwatcom.org/show_bug.cgi?id=63" );
             }
             if( init->defn != NULL && init->se != NULL ) {
@@ -2976,7 +2978,7 @@ for( ;; ) {
     }
     IC_PARM_DONE;
     CgioCloseInputFile( file_ctl );
-    return fctl;
+    return( fctl );
 }
 
 
@@ -3153,7 +3155,7 @@ void CgBackEnd(                 // BACK-END CONTROLLER
             cdtorSym = AllocSymbol();
             cdtorSym->id = SC_AUTO;
             statics = NULL;
-            if( GenSwitches & DBG_DF ){
+            if( GenSwitches & DBG_DF ) {
                 DwarfDebugInit();
                 DwarfDebugEmit();
             }else{
@@ -3180,7 +3182,7 @@ void CgBackEnd(                 // BACK-END CONTROLLER
             } while( sig_thunk_genned );
             freeObjTables();
             CgioWalkFiles( &CgioFreeFile );
-            if( GenSwitches & DBG_DF ){
+            if( GenSwitches & DBG_DF ) {
                 DwarfDebugFini();
             }else{
                 SymbolicDebugFini();
@@ -3291,7 +3293,7 @@ unsigned CgBackGetInlineDepth(  // GET MAXIMUM INLINE DEPTH
 CALL_STAB* CgBackCallGened(     // SETUP FOR GENERATED CALL
     call_handle handle )        // - call handle
 {
-    return CallStabAlloc( handle, FnCtlTop() );
+    return( CallStabAlloc( handle, FnCtlTop() ) );
 }
 
 
@@ -3361,7 +3363,7 @@ void CgControl(                 // CONTROL OPCODE
 unsigned CgBackInlinedDepth(    // GET CURRENT INLINED DEPTH
     void )
 {
-    return depth_inline;
+    return( depth_inline );
 }
 
 
@@ -3378,7 +3380,7 @@ FN_CTL* CgBackFnCtlInit(        // INITIALIZE FN_CTL WITH CGBKMAIN INFO
     fctl->base_goto_near = push_base( &stack_goto_near );
     fctl->base_labs_cs   = push_base( &stack_labs_cs );
     SymTransFuncBeg( fctl );
-    return fctl;
+    return( fctl );
 }
 
 
@@ -3388,7 +3390,7 @@ FN_CTL* CgBackFnCtlFini(        // COMPLETE FN_CTL WITH CGBKMAIN INFO
     VstkTruncate( &stack_labs_cs,   fctl->base_labs_cs );
     VstkTruncate( &stack_goto_near, fctl->base_goto_near );
     SymTransFuncEnd( fctl );
-    return fctl;
+    return( fctl );
 }
 
 

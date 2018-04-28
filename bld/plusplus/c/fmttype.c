@@ -416,11 +416,11 @@ static bool willPrintModifier( TYPE type, type_flag flag )
         mask = modifierFlags[i].mask;
         if( (flag & mask) == mask ) {
             if( ( (mask & TF1_MEM_MODEL) == 0 ) || ( (DefaultMemoryFlag( type ) & mask) != mask ) ) {
-                return true;
+                return( true );
             }
         }
     }
-    return false;
+    return( false );
 }
 
 static void fmtTypeChangeState( FMT_LR *curr, FMT_LR new,
@@ -474,17 +474,24 @@ static void fmtTypePush( FMT_INFO **pStackFMT, TYPE type, FMT_CONTROL control )
         entry = StackCarveAlloc( carveFMT, pStackFMT );
         entry->type = type;
         entry->main_function = false;
-        if( type->id == TYP_ENUM ) break;
-        if( type->id == TYP_GENERIC ) break;
-        if( type->id == TYP_CHAR ) break;
-        if( type->id == TYP_BOOL ) break;
-        if( type->id == TYP_TYPEDEF && (control & FF_TYPEDEF_STOP) ) break;
+        if( type->id == TYP_ENUM )
+            break;
+        if( type->id == TYP_GENERIC )
+            break;
+        if( type->id == TYP_CHAR )
+            break;
+        if( type->id == TYP_BOOL )
+            break;
+        if( type->id == TYP_TYPEDEF && (control & FF_TYPEDEF_STOP) )
+            break;
         if( type->id == TYP_FUNCTION ) {
             if( main_function == NULL ) {
                 entry->main_function = true;
                 main_function = entry;
             }
-            if( control & FF_DROP_RETURN ) break;
+            if( control & FF_DROP_RETURN ) {
+                break;
+            }
         }
         type = type->of;
     }
@@ -745,7 +752,7 @@ static PTREE traverse_FormatPTreeId( PTREE curr )
         }
     }
 
-    return curr;
+    return( curr );
 }
 
 void FormatPTreeId( PTREE p, VBUF *pvbuf )

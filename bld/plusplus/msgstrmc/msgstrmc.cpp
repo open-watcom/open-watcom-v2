@@ -221,5 +221,5 @@ int main(                       // MAIN-LINE
             retn = pgm_exception.diagnose_error( err );
         }
     }
-    return retn;
+    return( retn );
 }

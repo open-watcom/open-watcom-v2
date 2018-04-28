@@ -126,7 +126,7 @@ PTREE PTreeSetLocn(             // SET LOCATION IN A PTREE NODE
     if( ( locn != NULL ) && ( locn->src_file != NULL ) ) {
         TokenLocnAssign( tree->locn, *locn );
     }
-    return tree;
+    return( tree );
 }
 
 PTREE PTreeAlloc( void )
@@ -148,7 +148,7 @@ PTREE PTreeAlloc( void )
     tree->locn.column = 0;
     tree->decor = NULL;
     tree->filler = 0;
-    return tree;
+    return( tree );
 }
 
 PTREE PTreeAssignReloc( PTREE to, PTREE from, RELOC_LIST *list )
@@ -178,13 +178,13 @@ PTREE PTreeAssignReloc( PTREE to, PTREE from, RELOC_LIST *list )
         break;
     }
     to->decor = PtdDuplicateReloc( from, list );
-    return to;
+    return( to );
 }
 
 PTREE PTreeAssign( PTREE to, PTREE from )
 /***************************************/
 {
-    return PTreeAssignReloc( to, from, NULL );
+    return( PTreeAssignReloc( to, from, NULL ) );
 }
 
 PTREE PTreeFree( PTREE tree )
@@ -213,7 +213,7 @@ PTREE PTreeFree( PTREE tree )
         ExtraRptDecrementCtr( nodes_defined );
         CarveFree( carvePTREE, tree );
     }
-    return NULL;
+    return( NULL );
 }
 
 void PTreeFreeSubtrees( PTREE tree )
@@ -242,7 +242,7 @@ static PTREE makeExpr( ptree_op_t op, CGOP cgop, PTREE sub_1, PTREE sub_2 )
     new_tree->cgop = cgop;
     new_tree->u.subtree[0] = sub_1;
     new_tree->u.subtree[1] = sub_2;
-    return new_tree;
+    return( new_tree );
 }
 
 PTREE PTreeBinary( CGOP cgop, PTREE left, PTREE right )
@@ -252,7 +252,7 @@ PTREE PTreeBinary( CGOP cgop, PTREE left, PTREE right )
     if( cgop != CO_COLON_COLON ) {
         node->flags |= PTF_LV_CHECKED;
     }
-    return node;
+    return( node );
 }
 
 
@@ -261,21 +261,21 @@ PTREE PTreeUnary( CGOP cgop, PTREE expr )
 {
     PTREE node = makeExpr( PT_UNARY, cgop, expr, NULL );
     node->flags |= PTF_LV_CHECKED;
-    return node;
+    return( node );
 }
 
 PTREE PTreeReplaceLeft( PTREE expr, PTREE new_left )
 /**************************************************/
 {
     expr->u.subtree[0] = new_left;
-    return expr;
+    return( expr );
 }
 
 PTREE PTreeReplaceRight( PTREE expr, PTREE new_right )
 /****************************************************/
 {
     expr->u.subtree[1] = new_right;
-    return expr;
+    return( expr );
 }
 
 
@@ -292,19 +292,19 @@ static PTREE strLiteral         // MAKE A STRING LITERAL NODE
     new_tree->u.string = str;
     new_tree->type = MakeArrayOf( str_len, GetBasicType( base ) );
     new_tree->flags |= PTF_LVALUE | PTF_LV_CHECKED;
-    return new_tree;
+    return( new_tree );
 }
 
 PTREE PTreeLiteral( STRING_CONSTANT str )
 /***************************************/
 {
-    return strLiteral( str, TYP_CHAR );
+    return( strLiteral( str, TYP_CHAR ) );
 }
 
 PTREE PTreeLiteralWide( STRING_CONSTANT str )
 /*******************************************/
 {
-    return strLiteral( str, TYP_WCHAR );
+    return( strLiteral( str, TYP_WCHAR ) );
 }
 
 PTREE PTreeStringLiteralConcat( PTREE left, PTREE right )
@@ -335,7 +335,7 @@ PTREE PTreeStringLiteralConcat( PTREE left, PTREE right )
     PTreeSetLocn( new_literal, &err_locn );
     PTreeFree( left );
     PTreeFree( right );
-    return new_literal;
+    return( new_literal );
 }
 
 PTREE PTreeMSSizeofKludge( PTREE type_id )
@@ -353,7 +353,7 @@ PTREE PTreeTListAppend( PTREE start, PTREE new_tree )
 /***************************************************/
 {
     new_tree->u.type.next = start;
-    return new_tree;
+    return( new_tree );
 }
 
 PTREE ThrowsAnything( void )
@@ -362,7 +362,7 @@ PTREE ThrowsAnything( void )
     PTREE dot_dot_dot;
 
     dot_dot_dot = PTreeType( GetBasicType( TYP_DOT_DOT_DOT ) );
-    return PTreeTListAppend( NULL, dot_dot_dot );
+    return( PTreeTListAppend( NULL, dot_dot_dot ) );
 }
 
 PTREE PTreeType( TYPE type )
@@ -376,14 +376,14 @@ PTREE PTreeType( TYPE type )
     new_tree->u.type.next = NULL;
     new_tree->u.type.scope = NULL;
     new_tree->flags |= PTF_LV_CHECKED;
-    return new_tree;
+    return( new_tree );
 }
 
 static PTREE ptreeSetConstantType( PTREE node, type_id id )
 {
     node->type = GetBasicType( id );
     node->flags |= PTF_LV_CHECKED;
-    return node;
+    return( node );
 }
 
 static PTREE allocConstant( uint_8 op, type_id id )
@@ -393,7 +393,7 @@ static PTREE allocConstant( uint_8 op, type_id id )
     new_tree = PTreeAlloc();
     new_tree->op = op;
     new_tree = ptreeSetConstantType( new_tree, id );
-    return new_tree;
+    return( new_tree );
 }
 
 /**
@@ -436,12 +436,12 @@ PTREE PTreeInt64Constant( signed_64 v, type_id id )
 
     new_tree = allocConstant( PT_INT_CONSTANT, id );
     new_tree->u.int64_constant = v;
-    return new_tree;
+    return( new_tree );
 }
 
 static float_handle makeFPRep( const char *buff )
 {
-    return BFCnvSF( buff );
+    return( BFCnvSF( buff ) );
 }
 
 PTREE PTreeFloatingConstantStr( const char *buff, type_id id )
@@ -450,7 +450,7 @@ PTREE PTreeFloatingConstantStr( const char *buff, type_id id )
     float_handle fp_rep;
 
     fp_rep = makeFPRep( buff );
-    return PTreeFloatingConstant( fp_rep, id );
+    return( PTreeFloatingConstant( fp_rep, id ) );
 }
 
 PTREE PTreeFloatingConstant( float_handle rep, type_id id )
@@ -461,7 +461,7 @@ PTREE PTreeFloatingConstant( float_handle rep, type_id id )
     new_tree = allocConstant( PT_FLOATING_CONSTANT, id );
     new_tree->u.floating_constant = rep;
     new_tree = PTreeCheckFloatRepresentation( new_tree );
-    return new_tree;
+    return( new_tree );
 }
 
 PTREE PTreeId( NAME id )
@@ -474,7 +474,7 @@ PTREE PTreeId( NAME id )
     new_tree->cgop = CO_NAME_NORMAL;
     new_tree->u.id.name = id;
     new_tree->u.id.scope = NULL;
-    return new_tree;
+    return( new_tree );
 }
 
 PTREE PTreeIc(                  // CREATE PT_IC NODE
@@ -488,13 +488,13 @@ PTREE PTreeIc(                  // CREATE PT_IC NODE
     node->u.ic.opcode = opcode;
     node->u.ic.value = value;
     node->flags |= PTF_LV_CHECKED;
-    return node;
+    return( node );
 }
 
 PTREE PTreeIdSym( SYMBOL sym )
 /****************************/
 {
-    return PTreeId( sym->name->name );
+    return( PTreeId( sym->name->name ) );
 }
 
 PTREE PTreeThis( void )
@@ -504,7 +504,7 @@ PTREE PTreeThis( void )
 
     node = PTreeId( CppSpecialName( SPECIAL_NAME_THIS ) );
     node->cgop = CO_NAME_THIS;
-    return node;
+    return( node );
 }
 
 PTREE PTreeCDtorExtra( void )
@@ -514,7 +514,7 @@ PTREE PTreeCDtorExtra( void )
 
     node = PTreeId( CppSpecialName( SPECIAL_NAME_CDTOR_EXTRA ) );
     node->cgop = CO_NAME_CDTOR_EXTRA;
-    return node;
+    return( node );
 }
 
 
@@ -531,17 +531,17 @@ bool PTreePropogateError(       // CHECK AND PROPOGATE ERRORS FROM SUB-TREES
         left = curr->u.subtree[0];
         if( left != NULL && left->op == PT_ERROR ) {
             PTreeErrorNode( curr );
-            return true;
+            return( true );
         }
     }
     if( ptreePTSFlags[op] & PTS_BINARY ) {
         right = curr->u.subtree[1];
         if( right != NULL && right->op == PT_ERROR ) {
             PTreeErrorNode( curr );
-            return true;
+            return( true );
         }
     }
-    return false;
+    return( false );
 }
 
 
@@ -577,7 +577,7 @@ PTREE PTreeTraversePostfix(     // TRAVERSE A PTREE IN (LEFT,RIGHT,SELF) ORDER
         been preserved for less heavily used traversal routines.
     */
     if( tree == NULL || tree->op == PT_ERROR ) {
-        return tree;
+        return( tree );
     }
     parent = NULL;
     PTREE_LEFT:
@@ -629,7 +629,7 @@ PTREE PTreeTraversePostfix(     // TRAVERSE A PTREE IN (LEFT,RIGHT,SELF) ORDER
         goto PTREE_UNWIND;
     PTREE_UNWIND:
         if( parent == NULL ) {
-            return tree;
+            return( tree );
         }
         if( parent->flags & PTF_TRAVERSE_LEFT ) {
             parent->flags &= ~PTF_TRAVERSE_LEFT;
@@ -683,7 +683,7 @@ PTREE PTreeTraverseInitRef(     // TRAVERSE A PTREE FOR REFERENCE INIT.
         }
     */
     if( tree == NULL || tree->op == PT_ERROR ) {
-        return tree;
+        return( tree );
     }
     state = PTREE_LEFT;
     parent = NULL;
@@ -767,7 +767,7 @@ PTREE PTreeTraverseInitRef(     // TRAVERSE A PTREE FOR REFERENCE INIT.
         }
         break;
     }
-    return tree;
+    return( tree );
 }
 
 
@@ -796,7 +796,7 @@ PTREE PTreeTraversePrefix(      // TRAVERSE A PTREE IN (SELF,LEFT,RIGHT) ORDER
         }
     */
     if( tree == NULL || tree->op == PT_ERROR ) {
-        return tree;
+        return( tree );
     }
     state = PTREE_PROCESS;
     parent = NULL;
@@ -873,7 +873,7 @@ PTREE PTreeTraversePrefix(      // TRAVERSE A PTREE IN (SELF,LEFT,RIGHT) ORDER
         }
         break;
     }
-    return tree;
+    return( tree );
 }
 
 static TOKEN_LOCN *extract_locn;
@@ -883,7 +883,7 @@ static PTREE set_error_location( PTREE node )
     if( node->locn.src_file != NULL ) {
         extract_locn = &(node->locn);
     }
-    return node;
+    return( node );
 }
 
 PTREE PTreeExtractLocn( PTREE expr, TOKEN_LOCN *locn )
@@ -891,7 +891,7 @@ PTREE PTreeExtractLocn( PTREE expr, TOKEN_LOCN *locn )
 {
     if( expr != NULL && expr->locn.src_file != NULL ) {
         *locn = expr->locn;
-        return expr;
+        return( expr );
     }
     // traverse tree looking for location information
     extract_locn = NULL;
@@ -901,7 +901,7 @@ PTREE PTreeExtractLocn( PTREE expr, TOKEN_LOCN *locn )
     } else {
         *locn = *extract_locn;
     }
-    return expr;
+    return( expr );
 }
 
 PTREE PTreeSetErrLoc(           // SET THE ERROR LOCATION FOR A TREE
@@ -913,7 +913,7 @@ PTREE PTreeSetErrLoc(           // SET THE ERROR LOCATION FOR A TREE
         PTreeExtractLocn( tree, &err_locn );
         SetErrLoc( &err_locn );
     }
-    return tree;
+    return( tree );
 }
 
 PTREE PTreeErrorNode(           // MAKE NODE AN ERROR NODE
@@ -938,7 +938,7 @@ PTREE PTreeErrorNode(           // MAKE NODE AN ERROR NODE
     }
     curr->op = PT_ERROR;
     curr->cgop = CO_NOP;
-    return curr;
+    return( curr );
 }
 
 
@@ -954,7 +954,7 @@ msg_status_t PTreeErrorExpr(    // ISSUE ERROR MESSAGE FOR PTREE NODE
     if(( status & MS_WARNING ) == 0 ) {
         PTreeErrorNode( expr );
     }
-    return status;
+    return( status );
 }
 
 
@@ -1027,7 +1027,7 @@ msg_status_t PTreeWarnExpr(     // ISSUE WARNING MESSAGE FOR PTREE NODE
     MSG_NUM err_code )          // - error code
 {
     PTreeSetErrLoc( expr );
-    return CErr1( err_code );
+    return( CErr1( err_code ) );
 }
 
 
@@ -1040,7 +1040,7 @@ PTO_FLAG PTreeOpFlags(          // GET FLAGS FOR A PTREE NODE
     if( ptreePTSFlags[curr->op] & PTS_HAS_CGOP ) {
         flags |= oper_flags[curr->cgop];
     }
-    return flags;
+    return( flags );
 }
 
 PTREE PTreeNonZeroConstantExpr( PTREE expr )
@@ -1056,7 +1056,7 @@ PTREE PTreeNonZeroConstantExpr( PTREE expr )
             expr = PTreeIntConstant( 1, TYP_SINT );
         }
     }
-    return expr;
+    return( expr );
 }
 
 
@@ -1066,7 +1066,7 @@ PTREE PTreeForceIntegral( PTREE cexpr )
     cexpr = AnalyseValueExpr( cexpr );
     switch( cexpr->op ) {
     case PT_INT_CONSTANT:
-        return cexpr;
+        return( cexpr );
     case PT_FLOATING_CONSTANT: {
         int sign;
         target_long result;
@@ -1078,14 +1078,14 @@ PTREE PTreeForceIntegral( PTREE cexpr )
         cexpr->u.int_constant = result;
         cexpr = ptreeSetConstantType( cexpr
                                     , sign < 0 ? TYP_SINT : TYP_UINT );
-        return cexpr;
+        return( cexpr );
     }
     }
     if( cexpr->op != PT_ERROR ) {
         PTreeErrorExpr( cexpr, ERR_NOT_A_CONSTANT_EXPR );
     }
     PTreeFreeSubtrees( cexpr );
-    return NULL;
+    return( NULL );
 }
 
 static TYPE mustBeLexicalTypeName( SCOPE scope, NAME name )
@@ -1098,7 +1098,7 @@ static TYPE mustBeLexicalTypeName( SCOPE scope, NAME name )
     result = ScopeFindNaked( scope, name );
     if( result == NULL ) {
         CErr2p( ERR_INVALID_DESTRUCTOR_NAME, name );
-        return TypeError;
+        return( TypeError );
     }
     sym_name = result->sym_name;
     sym = sym_name->name_type;
@@ -1107,14 +1107,14 @@ static TYPE mustBeLexicalTypeName( SCOPE scope, NAME name )
         result = ScopeFindLexicalClassType( scope, name );
         if( result == NULL ) {
             CErr2p( ERR_INVALID_DESTRUCTOR_NAME, name );
-            return TypeError;
+            return( TypeError );
         }
         sym_name = result->sym_name;
         sym = sym_name->name_type;
     }
     dtor_type = sym->sym_type;
     ScopeFreeResult( result );
-    return dtor_type;
+    return( dtor_type );
 }
 
 PTREE SimpleDestructorId( TYPE type )
@@ -1125,7 +1125,7 @@ PTREE SimpleDestructorId( TYPE type )
     id = PTreeId( CppDestructorName() );
     id->cgop = CO_NAME_DTOR;
     id->type = type;
-    return id;
+    return( id );
 }
 
 static PTREE makeDestructorId( SCOPE scope, PTREE id, TYPE class_type )
@@ -1137,13 +1137,13 @@ static PTREE makeDestructorId( SCOPE scope, PTREE id, TYPE class_type )
     if( class_type == NULL ) {
         class_type = mustBeLexicalTypeName( scope, name_of_class );
     }
-    return SimpleDestructorId( class_type );
+    return( SimpleDestructorId( class_type ) );
 }
 
 PTREE MakeDestructorId( PTREE id )
 /********************************/
 {
-    return makeDestructorId( GetCurrScope(), id, NULL );
+    return( makeDestructorId( GetCurrScope(), id, NULL ) );
 }
 
 PTREE MakeDestructorIdFromType( DECL_SPEC *dspec )
@@ -1152,7 +1152,7 @@ PTREE MakeDestructorIdFromType( DECL_SPEC *dspec )
     PTREE id;
 
     id = MakeIdFromType( dspec );
-    return makeDestructorId( GetCurrScope(), id, NULL );
+    return( makeDestructorId( GetCurrScope(), id, NULL ) );
 }
 
 PTREE MakeOperatorId( CGOP op )
@@ -1163,7 +1163,7 @@ PTREE MakeOperatorId( CGOP op )
     op_tree = PTreeId( CppOperatorName( op ) );
     op_tree->cgop = CO_NAME_OPERATOR;
     op_tree->id_cgop = op;
-    return op_tree;
+    return( op_tree );
 }
 
 PTREE MakeUserConversionId( DECL_SPEC *dspec, DECL_INFO *dinfo )
@@ -1176,7 +1176,7 @@ PTREE MakeUserConversionId( DECL_SPEC *dspec, DECL_INFO *dinfo )
     id_tree = PTreeId( CppConversionName() );
     id_tree->cgop = CO_NAME_CONVERT;
     id_tree->type = conversion_type;
-    return id_tree;
+    return( id_tree );
 }
 
 static PTREE makeTypeNode( DECL_SPEC *dspec )
@@ -1185,7 +1185,7 @@ static PTREE makeTypeNode( DECL_SPEC *dspec )
 
     type_tree = DoDeclSpec( dspec );
     PTypeRelease( dspec );
-    return type_tree;
+    return( type_tree );
 }
 
 PTREE MakeFunctionLikeCast( DECL_SPEC *dspec, PTREE expr_list )
@@ -1199,9 +1199,9 @@ PTREE MakeFunctionLikeCast( DECL_SPEC *dspec, PTREE expr_list )
         // 5.2.3 type( expr ) = (type)expr
         expr = expr_list->u.subtree[1];
         PTreeFree( expr_list );
-        return MakeNormalCast( ctor_type, expr );
+        return( MakeNormalCast( ctor_type, expr ) );
     }
-    return PTreeBinary( CO_CTOR, ctor_type, expr_list );
+    return( PTreeBinary( CO_CTOR, ctor_type, expr_list ) );
 }
 
 PTREE MakeNormalCast( PTREE type_node, PTREE expr_node )
@@ -1209,7 +1209,7 @@ PTREE MakeNormalCast( PTREE type_node, PTREE expr_node )
 {
     /* mark as being specified by the programmer */
     type_node->cgop = CO_USER_CAST;
-    return PTreeBinary( CO_CONVERT, type_node, expr_node );
+    return( PTreeBinary( CO_CONVERT, type_node, expr_node ) );
 }
 
 PTREE MakeMemInitItem( DECL_SPEC *dspec, PTREE id, PTREE expr_list, TOKEN_LOCN *locn )
@@ -1222,7 +1222,7 @@ PTREE MakeMemInitItem( DECL_SPEC *dspec, PTREE id, PTREE expr_list, TOKEN_LOCN *
     }
     tree = PTreeBinary( CO_CTOR, id, expr_list );
     tree = PTreeSetLocn( tree, locn );
-    return tree;
+    return( tree );
 }
 
 PTREE MakeIdFromType( DECL_SPEC *dspec )
@@ -1233,14 +1233,14 @@ PTREE MakeIdFromType( DECL_SPEC *dspec )
     id_tree = dspec->id;
     dspec->id = NULL;
     PTypeRelease( dspec );
-    return CheckScopedId( id_tree );
+    return( CheckScopedId( id_tree ) );
 }
 
 PTREE MakeDeleteExpr( PTREE gbl, CGOP op, PTREE expr )
 /*******************************************************/
 {
     PTreeFreeSubtrees( gbl );
-    return PTreeUnary( op, expr );
+    return( PTreeUnary( op, expr ) );
 }
 
 PTREE MakeGlobalId( PTREE global_id )
@@ -1255,7 +1255,7 @@ PTREE MakeGlobalId( PTREE global_id )
     new_id = PTreeBinary( CO_COLON_COLON, NULL, new_id );
     new_id = PTreeCopySrcLocation( new_id, global_id->u.subtree[0] );
     PTreeFreeSubtrees( global_id );
-    return new_id;
+    return( new_id );
 }
 
 static PTREE keepRightId( PTREE scoped_id )
@@ -1266,13 +1266,13 @@ static PTREE keepRightId( PTREE scoped_id )
     id = scoped_id->u.subtree[1];
     scoped_id->u.subtree[1] = NULL;
     PTreeFreeSubtrees( scoped_id );
-    return id;
+    return( id );
 }
 
 PTREE CutAwayQualification( PTREE scoped_id )
 /*******************************************/
 {
-    return keepRightId( scoped_id );
+    return( keepRightId( scoped_id ) );
 }
 
 PTREE MakeGlobalOperatorId( PTREE global_operator, CGOP op )
@@ -1285,7 +1285,7 @@ PTREE MakeGlobalOperatorId( PTREE global_operator, CGOP op )
     id = PTreeBinary( CO_COLON_COLON, NULL, id );
     id = PTreeCopySrcLocation( id, global_operator->u.subtree[0] );
     PTreeFreeSubtrees( global_operator );
-    return id;
+    return( id );
 }
 
 static PTREE useScopeIfPossible( PTREE scoped_thing, PTREE id )
@@ -1309,16 +1309,16 @@ static PTREE useScopeIfPossible( PTREE scoped_thing, PTREE id )
             id = PTreeCopySrcLocation( id, colon_colon_tree );
         }
     }
-    return id;
+    return( id );
 }
 
 PTREE CheckScopedId( PTREE id )
 /*****************************/
 {
     if( id->op != PT_BINARY ) {
-        return id;
+        return( id );
     }
-    return MakeScopedId( id );
+    return( MakeScopedId( id ) );
 }
 
 PTREE MakeScopedId( PTREE scoped_id )
@@ -1331,7 +1331,7 @@ PTREE MakeScopedId( PTREE scoped_id )
     scoped_id->u.subtree[1] = NULL;
     new_id = useScopeIfPossible( scoped_id, old_id );
     PTreeFreeSubtrees( scoped_id );
-    return new_id;
+    return( new_id );
 }
 
 PTREE MakeScopedDestructorId( PTREE scoped_tilde, PTREE id )
@@ -1364,7 +1364,7 @@ PTREE MakeScopedDestructorId( PTREE scoped_tilde, PTREE id )
         }
     }
     PTreeFreeSubtrees( scoped_tilde );
-    return id;
+    return( id );
 }
 
 PTREE MakeScopedUserConversionId( PTREE scoped_operator, PTREE cnv_id )
@@ -1375,7 +1375,7 @@ PTREE MakeScopedUserConversionId( PTREE scoped_operator, PTREE cnv_id )
     cnv_id = PTreeCopySrcLocation( cnv_id, scoped_operator );
     tree = useScopeIfPossible( scoped_operator, cnv_id );
     PTreeFreeSubtrees( scoped_operator );
-    return tree;
+    return( tree );
 }
 
 PTREE MakeScopedOperatorId( PTREE scoped_operator, CGOP op )
@@ -1387,7 +1387,7 @@ PTREE MakeScopedOperatorId( PTREE scoped_operator, CGOP op )
     id = PTreeCopySrcLocation( id, scoped_operator );
     id = useScopeIfPossible( scoped_operator, id );
     PTreeFreeSubtrees( scoped_operator );
-    return id;
+    return( id );
 }
 
 PTF_FLAG PTreeEffFlags(     // GET MEANINGFUL FLAGS FOR A PTREE OPERAND
@@ -1400,7 +1400,7 @@ PTF_FLAG PTreeEffFlags(     // GET MEANINGFUL FLAGS FOR A PTREE OPERAND
     } else {
         flags = node->flags & ( PTF_SIDE_EFF | PTF_MEANINGFUL );
     }
-    return flags;
+    return( flags );
 }
 
 
@@ -1425,21 +1425,21 @@ PTREE *PTreeRef(                // FIND REFERENCE TO OPERAND (PAST COMMAS)
         }
         break;
     }
-    return tgt;
+    return( tgt );
 }
 
 
 PTREE *PTreeRefLeft(            // FIND REFERENCE TO LEFT OPERAND
     PTREE expr )                // - expression
 {
-    return PTreeRef( &expr->u.subtree[0] );
+    return( PTreeRef( &expr->u.subtree[0] ) );
 }
 
 
 PTREE *PTreeRefRight(           // FIND REFERENCE TO RIGHT OPERAND
     PTREE expr )                // - expression
 {
-    return PTreeRef( &expr->u.subtree[1] );
+    return( PTreeRef( &expr->u.subtree[1] ) );
 }
 
 
@@ -1450,36 +1450,38 @@ PTREE PTreeOp(                  // FETCH (OVER COMMAS, DUP'S) PTREE PTR.
 
     for( ; ; ) {
         expr = *PTreeRef( addr_expr );
-        if( expr == NULL ) break;
-        if( expr->op != PT_DUP_EXPR ) break;
+        if( expr == NULL )
+            break;
+        if( expr->op != PT_DUP_EXPR )
+            break;
         addr_expr = &expr->u.dup.subtree[0];
     }
-    return expr;
+    return( expr );
 }
 
 
 PTREE PTreeOpLeft(              // GET LEFT NODE, SKIPPING "," OPERATOR, DUPS
     PTREE expr )                // - expression
 {
-    return PTreeOp( &expr->u.subtree[0] );
+    return( PTreeOp( &expr->u.subtree[0] ) );
 }
 
 
 PTREE PTreeOpRight(             // GET RIGHT NODE, SKIPPING "," OPERATOR, DUPS
     PTREE expr )                // - expression
 {
-    return PTreeOp( &expr->u.subtree[1] );
+    return( PTreeOp( &expr->u.subtree[1] ) );
 }
 
 static bool symAccessNeedsCode( SYMBOL sym )
 {
     if( SymIsAutomatic( sym ) ) {
-        return true;
+        return( true );
     }
     if( SymIsDllImport( sym ) ) {
-        return true;
+        return( true );
     }
-    return false;
+    return( false );
 }
 
 static PTREE linker_constant_tree_node( PTREE expr )
@@ -1489,7 +1491,7 @@ static PTREE linker_constant_tree_node( PTREE expr )
     SYMBOL      sym;
 
     if( !linkerConstantFlag ) {
-        return expr;
+        return( expr );
     }
 
     switch( expr->op ) {
@@ -1583,7 +1585,7 @@ static PTREE linker_constant_tree_node( PTREE expr )
         linkerConstantFlag = false;
         break;
     }
-    return expr;
+    return( expr );
 }
 
 bool IsLinkerConstant( PTREE tree, PTREE *ctree, target_size_t *offset )
@@ -1592,13 +1594,13 @@ bool IsLinkerConstant( PTREE tree, PTREE *ctree, target_size_t *offset )
 {
     // handle "int a = ( b=1, 2 );"
     if( tree->flags & PTF_SIDE_EFF ) {
-        return false;
+        return( false );
     }
 
     if( NodeIsUnaryOp( tree, CO_MEMPTR_CONST ) ) {
         *ctree = tree;
         *offset = 0;
-        return true;
+        return( true );
     }
 
     // traverse tree making sure that all operations and components
@@ -1611,11 +1613,11 @@ bool IsLinkerConstant( PTREE tree, PTREE *ctree, target_size_t *offset )
     PTreeTraversePostfix( tree, &linker_constant_tree_node );
 
     if( !linkerConstantFlag || ( linkerConstantSymbolNode == NULL ) ) {
-        return false;
+        return( false );
     } else {
         *ctree = linkerConstantSymbolNode;
         *offset = linkerConstantOffset;
-        return true;
+        return( true );
     }
 }
 
@@ -1643,7 +1645,7 @@ SYMBOL FunctionSymbol( PTREE node )
     SYMBOL  sym;
 
     if( node == NULL ) {
-        return NULL;
+        return( NULL );
     }
     if( node->op == PT_UNARY && node->cgop == CO_ADDR_OF ) {
         node = PTreeOpLeft( node );
@@ -1656,7 +1658,7 @@ SYMBOL FunctionSymbol( PTREE node )
     } else {
         sym = NULL;
     }
-    return sym;
+    return( sym );
 }
 
 PTREE PTreeDupExpr(             // MAKE DUPLICATE-EXPRESSION NODE
@@ -1671,7 +1673,7 @@ PTREE PTreeDupExpr(             // MAKE DUPLICATE-EXPRESSION NODE
     dup->type = expr->type;
     dup->sym_name = expr->sym_name;
     dup->flags = expr->flags;
-    return PTreeCopySrcLocation( dup, expr );
+    return( PTreeCopySrcLocation( dup, expr ) );
 }
 
 PTREE PTreeCopySrcLocation(     // COPY LOCATION OF SOURCE
@@ -1681,7 +1683,7 @@ PTREE PTreeCopySrcLocation(     // COPY LOCATION OF SOURCE
     if(( tgt != NULL )&&( src != NULL )&&( src->locn.src_file != NULL )) {
         TokenLocnAssign( tgt->locn, src->locn );
     }
-    return tgt;
+    return( tgt );
 }
 
 
@@ -1689,7 +1691,7 @@ PTREE PTreePromoteLocn(         // ENSURE TOP OF TREE HAS SOURCE LOCATION
     PTREE tree )                // - the tree
 {
     PTreeExtractLocn( tree, &tree->locn );
-    return tree;
+    return( tree );
 }
 
 PTREE PTreeIntrinsicOperator( PTREE expr, CGOP cgop )
@@ -1719,7 +1721,7 @@ PTREE PTreeIntrinsicOperator( PTREE expr, CGOP cgop )
     }
     expr->type = expr_type;
     PTreeFreeSubtrees( old_expr );
-    return expr;
+    return( expr );
 }
 
 PTREE MakeBuiltinIsFloat( PTREE expr )
@@ -1747,7 +1749,7 @@ PTREE PTreeOffsetof( PTREE type, PTREE name )
 
     tree = PTreeBinary( CO_OFFSETOF, type, NULL );
     tree = PtdOffsetofExpr( tree, name );
-    return tree;
+    return( tree );
 }
 
 PTREE PTreeCheckFloatRepresentation( PTREE tree )
@@ -1756,7 +1758,7 @@ PTREE PTreeCheckFloatRepresentation( PTREE tree )
     type_id id;
 
     id = TypedefModifierRemove( tree->type )->id;
-    switch( id ){
+    switch( id ) {
     case TYP_FLOAT:
         tree->u.floating_constant = BFCheckFloatLimit( tree->u.floating_constant );
         break;
@@ -1765,7 +1767,7 @@ PTREE PTreeCheckFloatRepresentation( PTREE tree )
         tree->u.floating_constant = BFCheckDblLimit( tree->u.floating_constant );
         break;
     }
-    return tree;
+    return( tree );
 }
 
 unsigned PTreeGetFPRaw( PTREE tree, char *buff, unsigned len )
@@ -1781,18 +1783,18 @@ unsigned PTreeGetFPRaw( PTREE tree, char *buff, unsigned len )
     len = end - buff;
     DbgAssert( buff[len] == '\0' );
     // returns strlen( buff ) + 1
-    return len + 1;
+    return( len + 1 );
 }
 
 
 PTREE PTreeGetIndex( PTREE e )
 {
-    return CarveGetIndex( carvePTREE, e );
+    return( CarveGetIndex( carvePTREE, e ) );
 }
 
 PTREE PTreeMapIndex( PTREE e )
 {
-    return CarveMapIndex( carvePTREE, e );
+    return( CarveMapIndex( carvePTREE, e ) );
 }
 
 static void markFreePTree( void *p )
@@ -1930,7 +1932,7 @@ pch_status PCHWritePTrees( void )
     CarveWalkAll( carvePTREE, savePTree, &data );
     PCHWriteCVIndexTerm();
     DefArgPCHWrite();
-    return PCHCB_OK;
+    return( PCHCB_OK );
 }
 
 pch_status PCHReadPTrees( void )
@@ -1988,7 +1990,7 @@ pch_status PCHReadPTrees( void )
         }
     }
     DefArgPCHRead();
-    return PCHCB_OK;
+    return( PCHCB_OK );
 }
 
 pch_status PCHInitPTrees( bool writing )
@@ -1999,7 +2001,7 @@ pch_status PCHInitPTrees( bool writing )
         carvePTREE = CarveRestart( carvePTREE );
         CarveMapOptimize( carvePTREE, PCHReadCVIndex() );
     }
-    return PCHCB_OK;
+    return( PCHCB_OK );
 }
 
 pch_status PCHFiniPTrees( bool writing )
@@ -2007,7 +2009,7 @@ pch_status PCHFiniPTrees( bool writing )
     if( ! writing ) {
         CarveMapUnoptimize( carvePTREE );
     }
-    return PCHCB_OK;
+    return( PCHCB_OK );
 }
 
 PTREE PTreeCopyPrefix(         // COPY A PTREE IN (SELF,LEFT,RIGHT) ORDER
@@ -2016,7 +2018,7 @@ PTREE PTreeCopyPrefix(         // COPY A PTREE IN (SELF,LEFT,RIGHT) ORDER
     PTREE (*copy_rtn)          // - copy routine
         ( PTREE curr,          // - - addr( current node )
           void *param ),       // - - parameter
-    void *param  )             // param to pass to copy_rtn
+    void *param )              // param to pass to copy_rtn
 {
     PTREE parent;               // parent of tree
     PTREE temp;                 // used to traverse tree
@@ -2043,7 +2045,7 @@ PTREE PTreeCopyPrefix(         // COPY A PTREE IN (SELF,LEFT,RIGHT) ORDER
         }
     */
     if( tree == NULL || tree->op == PT_ERROR ) {
-        return tree;
+        return( tree );
     }
     state = PTREE_PROCESS;
     parent = NULL;
@@ -2200,5 +2202,5 @@ PTREE PTreeCopyPrefix(         // COPY A PTREE IN (SELF,LEFT,RIGHT) ORDER
         }
         break;
     }
-    return the_copy;
+    return( the_copy );
 }

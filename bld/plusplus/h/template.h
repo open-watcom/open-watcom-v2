@@ -201,6 +201,6 @@ extern TEMPLATE_INFO *TemplateClassInfoMapIndex( TEMPLATE_INFO * );
 extern FN_TEMPLATE *TemplateFunctionInfoGetIndex( FN_TEMPLATE * );
 extern FN_TEMPLATE *TemplateFunctionInfoMapIndex( FN_TEMPLATE * );
 typedef int  (*AInstSCOPE)( SCOPE scope );
-extern int WalkTemplateInst( SYMBOL sym, AInstSCOPE fscope  );
+extern int WalkTemplateInst( SYMBOL sym, AInstSCOPE fscope );
 
 #endif

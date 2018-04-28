@@ -53,7 +53,7 @@ static TYPE arrayOrStructType   // PUT TYPE INTO CONICAL FORM
     if( NULL == retn ) {
         retn = ArrayType( type );
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -84,14 +84,14 @@ DTREG_OBJ* DtregObj(            // LOCATE RW_DTREG_OBJ SYMBOL
         obj->sym = obj->cg_sym;
     }
     obj->in_use = true;
-    return obj;
+    return( obj );
 }
 
 
 DTREG_OBJ* DtregActualBase(     // REGISTER AN ACTUAL BASE
     FN_CTL* fctl )              // - current function information
 {
-    return DtregObj( fctl );
+    return( DtregObj( fctl ) );
 }
 
 
@@ -125,7 +125,7 @@ static cg_name objInitField(    // GET EXPRESSION FOR OBJ_INIT FIELD
     if( NULL == init->reg ) {
         init->reg = DtregObj( fctl );
     }
-    return CgSymbolPlusOffset( init->reg->sym, offset );
+    return( CgSymbolPlusOffset( init->reg->sym, offset ) );
 }
 
 
@@ -135,14 +135,14 @@ cg_name objInitAssignBaseExpr(  // ASSIGN BASE REGISTRATION, FROM EXPR'N
     OBJ_INIT* init,             // - initialization element
     cg_name expr )              // - expression
 {
-    return CGLVAssign( objInitField( fctl, init, 0 ), expr, TY_POINTER );
+    return( CGLVAssign( objInitField( fctl, init, 0 ), expr, TY_POINTER ) );
 }
 
 
 static OBJ_INIT* objInitNext(   // GET NEXT INITIALIZATION OBJECT
     OBJ_INIT* curr )            // - current entry
 {
-    return VstkNext( &stack_object_init, curr );
+    return( VstkNext( &stack_object_init, curr ) );
 }
 
 
@@ -156,7 +156,7 @@ OBJ_INIT* ObjInitArray(         // GET OBJ_INIT FOR INDEXING
 
     array = NULL;
     base_type = NULL;
-    for( init = ObjInitTop(); ; init = objInitNext( init ) ) {;
+    for( init = ObjInitTop(); ; init = objInitNext( init ) ) {
         init_base_type = ObjInitArrayBaseType( init );
         if( init_base_type == NULL ) {
             if( base_type == NULL ) {
@@ -176,7 +176,7 @@ OBJ_INIT* ObjInitArray(         // GET OBJ_INIT FOR INDEXING
         }
     }
     DbgVerify( array != NULL, "objInitArray -- not array" );
-    return array;
+    return( array );
 }
 
 
@@ -193,7 +193,7 @@ TYPE ObjInitArrayBaseType(      // GET BASE TYPE FOR ARRAY
             base_type = ArrayBaseType( base_type );
         }
     }
-    return base_type;
+    return( base_type );
 }
 
 
@@ -209,13 +209,17 @@ OBJ_INIT* ObjInitClass(         // GET OBJ_INIT FOR A CLASS
              , "ObjInitClass -- not class type" );
     for( ; ; ) {
         init = objInitNext( clss );
-        if( init == NULL ) break;
-        if( init->offset != clss->offset ) break;
-        if( init->type != clss->type ) break;
-        if( init->sym != clss->sym ) break;
+        if( init == NULL )
+            break;
+        if( init->offset != clss->offset )
+            break;
+        if( init->type != clss->type )
+            break;
+        if( init->sym != clss->sym )
+            break;
         clss = init;
     }
-    return clss;
+    return( clss );
 }
 
 
@@ -233,7 +237,7 @@ OBJ_INIT* ObjInitPush(          // PUSH INITIALIZATION OBJECT (HAS COMPONENTS)
     init->sym = NULL;
     init->offset = 0;
     init->patch = 0;
-    return init;
+    return( init );
 }
 
 
@@ -245,14 +249,14 @@ OBJ_INIT* ObjInitPop(           // POP INITIALIZATION OBJECT (HAS COMPONENTS)
     init = VstkPop( &stack_object_init );
     DbgVerify( init != NULL, "ObjInitPop -- init object stack empty" );
     dtregObjFree( init->reg );
-    return init;
+    return( init );
 }
 
 
 OBJ_INIT* ObjInitTop(           // GET TOP INITIALIZATION OBJECT
     void )
 {
-    return VstkTop( &stack_object_init );
+    return( VstkTop( &stack_object_init ) );
 }
 
 
@@ -298,7 +302,7 @@ cg_name ObjInitRegisterObj(     // CREATE AN OBJECT REGISTRATION
     expr = CgComma( objInitAssignBaseExpr( fctl, init, base_expr )
                   , expr
                   , TY_POINTER );
-    return expr;
+    return( expr );
 }
 
 
@@ -324,7 +328,7 @@ cg_name ObjInitRegActualBase    // REGISTER FOR AN ACTUAL BASE
                       , TY_POINTER );
 #endif
     expr2 =  CgComma( expr1, expr2, TY_POINTER );
-    return expr2;
+    return( expr2 );
 }
 
 
@@ -344,7 +348,7 @@ SE* ObjInitDtorAuto(            // UPDATE OBJ_INIT FOR AUTO DTOR
     if( zap != NULL ) {
         zap->se = se;
     }
-    return se;
+    return( se );
 }
 
 

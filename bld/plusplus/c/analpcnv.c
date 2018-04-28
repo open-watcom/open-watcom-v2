@@ -52,7 +52,7 @@ static TYPE type_pointed_to(    // GET BASE TYPE POINTED TO
 {
     type_flag not_used;         // - not used
 
-    return TypePointedAt( type, &not_used );
+    return( TypePointedAt( type, &not_used ) );
 }
 
 
@@ -60,16 +60,16 @@ static bool same_ptr_types(     // TEST FOR EQUIVALENT POINTER TYPES
     TYPE t1,                    // - type [1]
     TYPE t2 )                   // - type [2]
 {
-    return TypeCompareExclude( type_pointed_to( t1 )
+    return( TypeCompareExclude( type_pointed_to( t1 )
                              , type_pointed_to( t2 )
-                             , TC1_FUN_LINKAGE );
+                             , TC1_FUN_LINKAGE ) );
 }
 
 
 static bool ptr_to_void(        // TEST IF PTR TYPE IS POINTER TO VOID
     TYPE type )                 // - the type
 {
-    return type_pointed_to( type )->id == TYP_VOID;
+    return( type_pointed_to( type )->id == TYP_VOID );
 }
 
 
@@ -84,7 +84,7 @@ static PTREE adjust_base_ptr(   // ADJUST BASE PTR AS true/TESTING CONVERSION
         orig = NodeBinary( CO_PTR_DELTA, orig, offset );
     }
     orig->type = type;
-    return orig;
+    return( orig );
 }
 
 PTREE NodeConvertVirtualPtr(    // EXECUTE A VIRTUAL BASE CAST
@@ -120,7 +120,7 @@ PTREE NodeConvertVirtualPtr(    // EXECUTE A VIRTUAL BASE CAST
     expr = NodeBinary( CO_DOT, dup, expr );
     expr->type = final_type;
     expr->flags |= PTF_LVALUE | PTF_PTR_NONZERO;
-    return expr;
+    return( expr );
 }
 
 
@@ -243,7 +243,7 @@ static TYPE convert_base_ptr(   // CONVERT TO A BASE-CLASS POINTER
     result = ScopeBaseResult( derived_scope, base_scope );
     NodeConvertToBasePtr( expr, base, result, positive );
     ScopeFreeResult( result );
-    return base;
+    return( base );
 }
 
 
@@ -253,7 +253,7 @@ TYPE NodeConvertDerivedToBase(  // CONVERT DERIVED PTR TO NONVIRTUAL BASE PTR
     SCOPE derived_scope,        // - derived scope
     SCOPE base_scope )          // - base scope
 {
-    return convert_base_ptr( expr, tgt, derived_scope, base_scope, true );
+    return( convert_base_ptr( expr, tgt, derived_scope, base_scope, true ) );
 }
 
 
@@ -263,7 +263,7 @@ static TYPE NodeConvertDerivedToVirt(  // CONVERT DERIVED PTR TO VIRTUAL BASE PT
     SCOPE derived_scope,        // - derived scope
     SCOPE base_scope )          // - base scope
 {
-    return convert_base_ptr( expr, tgt, derived_scope, base_scope, true );
+    return( convert_base_ptr( expr, tgt, derived_scope, base_scope, true ) );
 }
 
 
@@ -273,7 +273,7 @@ TYPE NodeConvertBaseToDerived(  // CONVERT BASE PTR TO DERIVED PTR
     SCOPE derived_scope,        // - derived scope
     SCOPE base_scope )          // - base scope
 {
-    return convert_base_ptr( expr, tgt, derived_scope, base_scope, false );
+    return( convert_base_ptr( expr, tgt, derived_scope, base_scope, false ) );
 }
 
 
@@ -295,7 +295,7 @@ CNV_RETN NodeCheckPtrTrunc(     // CHECK FOR POINTER TRUNCATION WARNING
     TYPE tgt,                   // - target type
     TYPE src )                  // - source type
 {
-    return CgTypeTruncation( tgt, src );
+    return( CgTypeTruncation( tgt, src ) );
 }
 
 
@@ -309,14 +309,14 @@ CNV_RETN NodeCheckPtrCastTrunc( // CHECK FOR CAST POINTER TRUNCATION WARNING
     if( retn == CNV_OK_TRUNC ) {
         retn = CNV_OK_TRUNC_CAST;
     }
-    return retn;
+    return( retn );
 }
 
 
 static SCOPE scope_for_ptr(     // GET SCOPE FOR CLASS POINTED AT
     TYPE type )                 // - pointer type
 {
-    return TypeScope( type_pointed_to( type ) );
+    return( TypeScope( type_pointed_to( type ) ) );
 }
 
 
@@ -336,7 +336,7 @@ static CNV_RETN check_result(   // CHECK RESULT OF A CONVERSION
         NodeSetReference( tgt, node );
         retn = NodeCheckPtrTrunc( tgt, src );
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -367,7 +367,7 @@ static CNV_RETN check_result_cv(// CHECK RESULT FOR CONST/VOLATILE RETURN
             break;
         }
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -379,7 +379,7 @@ static CNV_RETN emitConvMsg(    // EMIT A CONVERSION MESSAGE
 {
     ConversionTypesSet( src, tgt );
     PTreeErrorExpr( expr, msg );
-    return CNV_ERR;
+    return( CNV_ERR );
 }
 
 
@@ -440,7 +440,7 @@ CNV_RETN NodeCheckCnvPtrVoid(   // CHECK CONVERSION TO 'VOID*'
 #endif
         }
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -456,7 +456,7 @@ CNV_RETN NodeConvertPtr(        // CONVERT A POINTER
 
     if( same_ptr_types( src, tgt ) ) {
         (*expr)->type = src;
-        return CNV_OK;
+        return( CNV_OK );
     }
     src_scope = scope_for_ptr( src );
     tgt_scope = scope_for_ptr( tgt );
@@ -536,7 +536,7 @@ CNV_RETN NodeConvertPtr(        // CONVERT A POINTER
         retn = CNV_AMBIGUOUS;
         break;
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -551,7 +551,7 @@ static CNV_RETN propogateNonZero( // PROPOGATE PTF_PTR_NONZERO TO COMMON
             expr->flags |= PTF_PTR_NONZERO;
         }
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -564,7 +564,7 @@ static CNV_RETN check_common(   // CHECK RESULT OF COMMON CONVERSION
         expr->type = type;
         retn = propogateNonZero( retn, expr );
     }
-    return retn;
+    return( retn );
 }
 
 CNV_RETN PtrConvertCommon(      // CONVERT TO COMMON PTR
@@ -651,7 +651,7 @@ CNV_RETN PtrConvertCommon(      // CONVERT TO COMMON PTR
             break;
         }
     }
-    return retn;
+    return( retn );
 }
 
 bool PtrCnvInfo(                // FILL IN PTR-CONVERSION INFORMATION

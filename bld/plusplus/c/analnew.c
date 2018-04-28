@@ -45,7 +45,7 @@
 
 static PTREE sizeOfUInt( void )
 {
-    return NodeOffset( SizeTargetSizeT() );
+    return( NodeOffset( SizeTargetSizeT() ) );
 }
 
 static PTREE newCheckForNULL( PTREE value, PTREE t_expr )
@@ -143,7 +143,7 @@ static SYMBOL accessDelete(     // ACCESS DELETE OPERATOR SYMBOL
     }
     args = SymFuncArgList( del_sym );
     *num_args = args->num_args;
-    return del_sym;
+    return( del_sym );
 }
 
 
@@ -160,7 +160,7 @@ static SYMBOL checkDeleteResult( // CHECK ACCESS FOR DELETE SEARCH_RESULT
         }
         ScopeFreeResult( result );
     }
-    return sym;
+    return( sym );
 }
 
 
@@ -176,7 +176,7 @@ static SYMBOL checkDeleteAccess( // CHECK ACCESS OF DELETE OPERATOR
 
     sym = accessDelete( delete_op, scope, num_args, &result );
     sym = checkDeleteResult( sym, result, locn, compiling_dtor );
-    return sym;
+    return( sym );
 }
 
 
@@ -189,7 +189,7 @@ static PTREE setupArrayStorage( // STORE COUNT IN ARRAY_STORAGE,POINT TO ARRAY
     expr = NodeAssign( expr, array_number );
     expr = NodeConvert( new_expr_type, expr );
     expr = NodeAddToLeft( expr, sizeOfUInt(), new_expr_type );
-    return expr;
+    return( expr );
 }
 
 
@@ -252,7 +252,7 @@ static CNV_RETN checkNewCtor(   // CHECK CTOR'ING OK FOR NEW
         }
     }
     FnovFreeDiag( &fnov_diag );
-    return retn;
+    return( retn );
 }
 
 static SCOPE scopeLookup( TYPE type )
@@ -265,7 +265,7 @@ static SCOPE scopeLookup( TYPE type )
     } else {
         scope = type->u.c.scope;
     }
-    return scope;
+    return( scope );
 }
 
 static SCOPE opNewSearchScope( TYPE new_type, CGOP cgop )
@@ -349,7 +349,7 @@ static PTREE buildNewCall(      // BUILD CALL TO NEW OPERATOR
     ScopeFreeResult( result_new );
     ArgListTempFree( alist, count_placement );
     PtListFree( ptlist, count_placement );
-    return node;
+    return( node );
 }
 
 
@@ -713,7 +713,7 @@ PTREE AnalyseDelete(            // ANALYSE DELETE OPERATOR
     }
     pted = ptr_type->of;
     if( TypeTruncByMemModel( pted ) ) {
-        PTreeErrorExpr( data, ERR_DLT_OBJ_MEM_MODEL  );
+        PTreeErrorExpr( data, ERR_DLT_OBJ_MEM_MODEL );
         return( data );
     }
     del_op = flag.array_delete ? CO_DELETE_ARRAY : CO_DELETE;
@@ -895,5 +895,5 @@ PTREE AnalyseDelete(            // ANALYSE DELETE OPERATOR
         // 'dup' must be setup with a duplicate of the ptr expr
         expr = deleteCheckForNULL( dup, expr );
     }
-    return setDeleteType( expr, &err_locn );
+    return( setDeleteType( expr, &err_locn ) );
 }

@@ -193,7 +193,7 @@ static dbg_type symWVDebugClassType( TYPE type )
     ds = DBBegStruct( CgTypeOutput( type ), (root->flag & TF1_UNION) == 0 );
     dt = DBStructForward( ds );
     info = root->u.c.info;
-    if( dt != DBG_NIL_TYPE  ){
+    if( dt != DBG_NIL_TYPE ) {
         info->dbg_no_vbases = dt;
         type->dbg.handle = dt;
     }
@@ -225,7 +225,7 @@ static dbg_type symWVDebugClassType( TYPE type )
             if( SymIsStaticDataMember( curr ) ) {
                 DbgAddrTaken( curr );
                 dl = DBLocSym( dl, symbolicDebugSymAlias( curr ) );
-            } else if( SymIsThisDataMember( curr ) ){
+            } else if( SymIsThisDataMember( curr ) ) {
                 TYPE pt;
                 if( curr->u.member_offset != 0 ) {
                     dl = DBLocConst( dl, curr->u.member_offset );
@@ -383,8 +383,8 @@ static dbg_type symWVDebugClassType( TYPE type )
 }
 
 
-static dbg_type  symbolicMethodType( SYMBOL curr, TYPE cls  ){
-/*************************************************************/
+static dbg_type  symbolicMethodType( SYMBOL curr, TYPE cls ) {
+/************************************************************/
     dbg_proc    dp;
     arg_list    *alist;
     unsigned    i;
@@ -406,7 +406,7 @@ static dbg_type  symbolicMethodType( SYMBOL curr, TYPE cls  ){
                                        SD_DEFAULT ^SD_DEREF ) );//XOR
     dc = SymbolicDebugType( cls, SD_DEFAULT );
     this_type = TypeThisSymbol( curr, false );
-    if( this_type != NULL ){
+    if( this_type != NULL ) {
         this_dbg = SymbolicDebugType( this_type,
                                            SD_DEFAULT ^SD_DEREF );//XOR
     }else{
@@ -415,7 +415,8 @@ static dbg_type  symbolicMethodType( SYMBOL curr, TYPE cls  ){
     DBAddMethParms( dp, dc, this_dbg );
     alist = TypeArgList( base );
     for( i = 0 ; i < alist->num_args ; i++ ) {
-        if( alist->type_list[i]->id == TYP_DOT_DOT_DOT ) break;
+        if( alist->type_list[i]->id == TYP_DOT_DOT_DOT )
+            break;
         DBAddParm( dp,
                    SymbolicDebugType( alist->type_list[i],
                                       SD_DEFAULT^SD_DEREF ) );//XOR
@@ -441,14 +442,14 @@ static dbg_type symCVDebugClassType( TYPE type )
     TYPE        root = TypedefModifierRemoveOnly( type );
 
     info = root->u.c.info;
-    if( info->unnamed ){
+    if( info->unnamed ) {
         ds = DBBegStruct( CgTypeOutput( type ), (root->flag & TF1_UNION) == 0 );
     }else{
         ds = DBBegNameStruct( NameStr( info->name ), CgTypeOutput( type ), (root->flag & TF1_UNION) == 0 );
     }
     DBNested( false );
     dt = DBStructForward( ds );
-    if( dt != DBG_NIL_TYPE  ){
+    if( dt != DBG_NIL_TYPE ) {
         info->dbg_no_vbases = dt;
         type->dbg.handle = dt;
     }
@@ -471,7 +472,7 @@ static dbg_type symCVDebugClassType( TYPE type )
 
         // define all the direct+indirect virtual bases
         dvbt  = SymbolicDebugType( vb_FieldType, SD_DEFAULT );
-        DBAddBaseInfo( ds, info->vb_offset,vb_FieldTypeSize, dvbt, CgTypeOutput( pvb_FieldType  ) );
+        DBAddBaseInfo( ds, info->vb_offset,vb_FieldTypeSize, dvbt, CgTypeOutput( pvb_FieldType ) );
         RingIterBeg( ScopeInherits( root->u.c.scope ), base ) {
             if( _IsDirectVirtualBase( base ) ) { /* cv specific could be adapted */
                 dl = DBLocInit();
@@ -526,7 +527,7 @@ static dbg_type symCVDebugClassType( TYPE type )
                            CppNameDebug( curr ),
                            attribute,
                            SymbolicDebugType( curr->sym_type, SD_DEFAULT ) );
-                if( SymIsInitialized(  curr ) ){
+                if( SymIsInitialized(  curr ) ) {
                     if( GenSwitches & DBG_LOCALS ) {
                         DBGenStMem( (cg_sym_handle)curr, dl );
                    }
@@ -552,7 +553,7 @@ static dbg_type symCVDebugClassType( TYPE type )
                 length = curr->sym_type->u.b.field_width;
             }
             dl = DBLocInit();
-            if( SymIsThisDataMember( curr ) ){
+            if( SymIsThisDataMember( curr ) ) {
                 if( curr->u.member_offset != 0 ) {
                     dl = DBLocConst( dl, curr->u.member_offset );
                     dl = DBLocOp( dl, DB_OP_ADD, 0 );
@@ -572,7 +573,7 @@ static dbg_type symCVDebugClassType( TYPE type )
         curr = ScopeOrderedNext( stop, curr );
     }
     if( info->has_vfptr ) {
-        DBAddVFuncInfo(ds, info->vf_offset, info->last_vfn, CgTypeOutput( pvf_FieldType  ) );
+        DBAddVFuncInfo(ds, info->vf_offset, info->last_vfn, CgTypeOutput( pvf_FieldType ) );
     }
     // now function members
     stop = ScopeOrderedStart( root->u.c.scope );
@@ -609,7 +610,7 @@ static dbg_type symCVDebugClassType( TYPE type )
                 } else {
                     CFatal( "symdbg: illegal function member symbol" );
                 }
-                dmt = symbolicMethodType( curr, type  );
+                dmt = symbolicMethodType( curr, type );
                 DBAddMethod( ds,
                              dl,
                              attribute,
@@ -766,7 +767,8 @@ dbg_type SymbolicDebugType( TYPE type, SD_CONTROL control )
     // typedefs require special handling
     // normally we ignore typedefs, but we want the names to come out
     if( type->id == TYP_TYPEDEF ) {
-        if( ScopeType( type->u.t.scope, SCOPE_TEMPLATE_DECL ) ) return( dt );
+        if( ScopeType( type->u.t.scope, SCOPE_TEMPLATE_DECL ) )
+            return( dt );
         if( !ScopeType( type->u.t.scope, SCOPE_TEMPLATE_PARM )
          && !ScopeType( type->u.t.scope, SCOPE_TEMPLATE_PARM ) ) {
             if( !CompFlags.no_debug_type_names ) {
@@ -851,7 +853,7 @@ dbg_type SymbolicDebugType( TYPE type, SD_CONTROL control )
         if( bflag & TF1_BASED ) {
             dt = basedPointerType( type, base, control );
         } else if( base->flag & TF1_REFERENCE ) {
-            if( GenSwitches & DBG_CV ){
+            if( GenSwitches & DBG_CV ) {
                 dt = DBDereference( CgTypeOutput( type ),
                                     SymbolicDebugType( base->of,
                                                        control&~SD_DEREF ) );
@@ -926,7 +928,8 @@ dbg_type SymbolicDebugType( TYPE type, SD_CONTROL control )
                                            control^SD_DEREF ) );//XOR
         alist = TypeArgList( base );
         for( i = 0 ; i < alist->num_args ; i++ ) {
-            if( alist->type_list[i]->id == TYP_DOT_DOT_DOT ) break;
+            if( alist->type_list[i]->id == TYP_DOT_DOT_DOT )
+                break;
             DBAddParm( dp,
                        SymbolicDebugType( alist->type_list[i],
                                           control^SD_DEREF ) );//XOR
@@ -1034,9 +1037,12 @@ static bool typedef_is_of_basic_types( TYPE type )
 
     for(;;) {
         type = TypedefModifierRemove( type );
-        if( type == NULL ) break;
-        if( type->id == TYP_CLASS ) return( false );
-        if( type->id == TYP_MEMBER_POINTER ) return( false );
+        if( type == NULL )
+            break;
+        if( type->id == TYP_CLASS )
+            return( false );
+        if( type->id == TYP_MEMBER_POINTER )
+            return( false );
         if( type->id == TYP_FUNCTION ) {
             alist = TypeArgList( type );
             for( i = 0 ; i < alist->num_args ; i++ ) {
@@ -1081,7 +1087,7 @@ void SymbolicDebugGenSymbol( SYMBOL sym, bool scoped, bool by_ref )
     dbg_loc     dl;
     dl = DBLocInit();
     dl = DBLocSym( dl, symbolicDebugSymAlias( sym ) );
-    if( (GenSwitches & DBG_CV) == 0 ){
+    if( (GenSwitches & DBG_CV) == 0 ) {
         if( by_ref ) {
             pt = MakePointerTo( sym->sym_type );
             dl = DBLocOp( dl, DB_OP_POINTS, CgTypeOutput( pt ) );
@@ -1118,8 +1124,8 @@ static void symbolicDebugSymbol( void )
             IsCppNameInterestingDebug( curr ) ) {
             SymbolicDebugGenSymbol( curr, false, false );
             DbgAddrTaken( curr );
-        }else if( GenSwitches & DBG_CV ){
-            if( SymIsTypedef( curr ) ){
+        }else if( GenSwitches & DBG_CV ) {
+            if( SymIsTypedef( curr ) ) {
                 DBTypeDef( CppNameDebug( curr ) ,
                       SymbolicDebugType( curr->sym_type, SD_DEFAULT ) );
             }

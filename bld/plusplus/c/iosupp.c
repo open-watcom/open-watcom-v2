@@ -853,7 +853,8 @@ static void ioSuppTempOpen(             // OPEN TEMPORARY FILE
 #else
         temphandle = open( fname, AMODE, PMODE_RW );
 #endif
-        if( temphandle != -1 ) break;
+        if( temphandle != -1 )
+            break;
         if( workFile[5] == 'Z' ) {
             temphandle = -1;
             break;
@@ -901,7 +902,7 @@ char *IoSuppFullPath(           // GET FULL PATH OF FILE NAME (ALWAYS USE RET VA
     ++buff;
     --size;
 #endif
-    return _getFilenameFullPath( buff, name, size );
+    return( _getFilenameFullPath( buff, name, size ) );
 }
 
 
@@ -912,7 +913,7 @@ DISK_ADDR IoSuppTempNextBlock(  // GET NEXT BLOCK NUMBER
 
     retn = tempBlock + 1;
     tempBlock += num_blocks;
-    return retn;
+    return( retn );
 }
 
 
@@ -921,7 +922,8 @@ void IoSuppTempWrite(           // WRITE TO TEMPORARY FILE
     size_t      block_size,     // - size of blocks
     void        *data )         // - buffer to write
 {
-    if( temphandle == -1 ) ioSuppTempOpen();
+    if( temphandle == -1 )
+        ioSuppTempOpen();
     block_num--;
     if( -1 == lseek( temphandle, block_size * block_num, SEEK_SET ) ) {
         ioSuppWriteError();
@@ -937,7 +939,8 @@ void IoSuppTempRead(            // READ FROM TEMPORARY FILE
     size_t      block_size,     // - size of blocks
     void        *data )         // - buffer to read
 {
-    if( temphandle == -1 ) ioSuppTempOpen();
+    if( temphandle == -1 )
+        ioSuppTempOpen();
     block_num--;
     if( -1 == lseek( temphandle, block_size * block_num, SEEK_SET ) ) {
         ioSuppReadError();

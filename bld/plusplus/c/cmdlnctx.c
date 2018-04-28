@@ -99,7 +99,7 @@ static CTX_CL* cmdLnCtxAlloc(   // ALLOCATE NEW CONTEXT
         entry->base.cmd_line = CmdScanAddr();
         entry->base.cmd_scan = CtxGetSwitchAddr();
     }
-    return entry;
+    return( entry );
 }
 
 

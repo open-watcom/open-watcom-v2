@@ -106,7 +106,7 @@ void CtxSetSwitchAddr(          // SET ADDRESS OF CURRENT SWITCH
 char const *CtxGetSwitchAddr(   // GET CURRENT SWITCH CONTEXT
     void )
 {
-    return switch_addr;
+    return( switch_addr );
 }
 
 
@@ -230,7 +230,7 @@ void *CtxWhereAreYou(           // SET DEBUGGING BUFFER
         }
         break;
     }
-    return CompilerContext;
+    return( CompilerContext );
 }
 #endif
 

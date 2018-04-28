@@ -24,5 +24,5 @@ L2:;
 L1:;
     goto L2;
 L7:;
-    return p;
+    return( p );
 }

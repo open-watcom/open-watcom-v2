@@ -71,5 +71,5 @@ SPFN SpecialFunction(           // IDENTIFY SPECIAL FUNCTION
             retn = spp - funs;
         }
     }
-    return retn;
+    return( retn );
 }

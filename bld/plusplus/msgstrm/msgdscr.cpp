@@ -53,7 +53,7 @@ int MsgDscr::AddFile(           // ADD A NEW FILE FOR A MESSAGE
     if( msg_no > max_msg ) {
         max_msg = msg_no;
     }
-    return ++file[msg_no];
+    return( ++file[msg_no] );
 }
 
 
@@ -65,14 +65,14 @@ int MsgDscr::GetNextFile(       // GET NEXT SUB-FILE NO. FOR A MESSAGE
     if( last_no > file[msg_no] ) {
         last_no = 0;
     }
-    return last_no;
+    return( last_no );
 }
 
 
 int MsgDscr::GetMaxMsgNo(       // GET MAXIMUM MESSAGE NUMBER
     void )
 {
-    return max_msg;
+    return( max_msg );
 }
 
 
@@ -90,5 +90,5 @@ const char* MsgDscr::GetFileName( // GET FILE NAME
     last_char[0] = 'A' - 1 + file_no;
     last_char[1] = 0;
     ::strcat( filename, last_char );
-    return (const char *)filename;
+    return( (const char *)filename );
 }

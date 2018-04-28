@@ -225,7 +225,7 @@ static bool isDataInitConstant( PTREE tree
 static SYMBOL dtorableObjectInitSymbol( // SYMBOL FOR CURRENT DTORABLE OBJECT
     void )
 {
-    return currInit->auto_static ? currInit->auto_sym : currInit->sym;
+    return( currInit->auto_static ? currInit->auto_sym : currInit->sym );
 }
 
 static PTREE makeSafeSymbol( SYMBOL sym, TOKEN_LOCN *locn, SEARCH_RESULT *result )
@@ -298,7 +298,7 @@ static PTREE dataInitPadLeftSide( target_size_t start )
 static PTREE refOfSym( TYPE type, SYMBOL var )
 /********************************************/
 {
-    return NodeConvert( MakeReferenceTo( type ), MakeNodeSymbol( var ) );
+    return( NodeConvert( MakeReferenceTo( type ), MakeNodeSymbol( var ) ) );
 }
 #endif
 
@@ -406,7 +406,7 @@ static TYPE dtorableObjectType( // GET TYPE OF DTORABLE OBJECT (AT ROOT) ELEMENT
     } else {
         type = NULL;
     }
-    return type;
+    return( type );
 }
 
 static void emitDtorInitSymbol( // EMIT DTOR MARKING FOR A SYMBOL
@@ -484,7 +484,8 @@ static SYMBOL dataInitScopeOrderedNext( SYMBOL stop, SYMBOL curr )
     prev = curr;
     for(;;) {
         curr = ScopeOrderedNext( stop, curr );
-        if( curr == NULL ) break;
+        if( curr == NULL )
+            break;
         if( SymIsNextInitializableMember( &prev, curr ) ) {
             break;
         }
@@ -525,7 +526,8 @@ static target_size_t dataInitFieldSize( INITIALIZE_INFO *entry )
         for(;;) {
             DbgAssert( next != NULL );
             next = dataInitScopeOrderedNext( entry->u.c.stop, next );
-            if( next == NULL ) break;
+            if( next == NULL )
+                break;
             next_off = next->u.member_offset;
             if( next_off == 0 ) {
                 // member of the union so quit
@@ -541,7 +543,8 @@ static target_size_t dataInitFieldSize( INITIALIZE_INFO *entry )
         for(;;) {
             DbgAssert( next != NULL );
             next = dataInitScopeOrderedNext( entry->u.c.stop, next );
-            if( next == NULL ) break;
+            if( next == NULL )
+                break;
             next_off = next->u.member_offset;
             if( next_off != curr_off ) {
                 // next field
@@ -617,7 +620,7 @@ static TYPE arrayBaseStructType( // GET STRUCT TYPE OF ARRAY BASE TYPE
 {
     type = ArrayBaseType( type );
     type = StructType( type );
-    return type;
+    return( type );
 }
 
 static void dtorableObjectBeg(  // EMIT START FOR DTORABLE OBJECT IF REQ'D
@@ -658,7 +661,7 @@ static SYMBOL getCtorCalled(    // GET SCOPE-CALL TYPE FOR A CTOR
     } else {
         ctor = NULL;
     }
-    return ctor;
+    return( ctor );
 }
 
 
@@ -701,7 +704,7 @@ static PTREE emitDtorInitExpr(  // EMIT DTOR MARKING FOR AN EXPRESSION
             expr = done;
         }
     }
-    return expr;
+    return( expr );
 }
 
 static PTREE dtorableObjectCtored(// EMIT INDEX OF DTORABLE OBJECT, IF REQ'D
@@ -736,9 +739,11 @@ static PTREE dtorableObjectCtored(// EMIT INDEX OF DTORABLE OBJECT, IF REQ'D
                 eltype = arrayBaseStructType( info->type );
                 index = info->u.a.index;
                 for( prev = info->previous; prev != NULL; prev = prev->previous ) {
-                    if( prev->target != DT_ARRAY ) break;
+                    if( prev->target != DT_ARRAY )
+                        break;
                     artype = ArrayType( prev->type );
-                    if( eltype != arrayBaseStructType( artype ) ) break;
+                    if( eltype != arrayBaseStructType( artype ) )
+                        break;
                     index += prev->u.a.index * artype->u.a.array_size;
                 }
                 if( index_updated ) {
@@ -761,7 +766,7 @@ static PTREE dtorableObjectCtored(// EMIT INDEX OF DTORABLE OBJECT, IF REQ'D
             }
         }
     }
-    return expr;
+    return( expr );
 }
 
 static void dataInitPushStack( INITIALIZE_ENTRY entry, INITIALIZE_INFO *prev )

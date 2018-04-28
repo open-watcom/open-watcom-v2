@@ -45,9 +45,9 @@
 #define H       I64HI32
 
 #define I64Zero( a ) ( (a).u.uval.u._32[L] == 0 && (a).u.uval.u._32[H] == 0 )
-#define I64NonZero(a) ( ! I64Zero(a)  )
+#define I64NonZero(a) ( !I64Zero(a) )
 #define U64Zero( a ) ( (a).u.uval.u._32[L] == 0 && (a).u.uval.u._32[H] == 0 )
-#define U64NonZero(a) ( ! U64Zero(a)  )
+#define U64NonZero(a) ( !U64Zero(a) )
 #define U64Low( a ) ( a.u.uval.u._32[L] )
 #define U64High( a ) ( a.u.uval.u._32[H] )
 

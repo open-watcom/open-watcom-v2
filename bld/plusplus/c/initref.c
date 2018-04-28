@@ -102,7 +102,7 @@ static PTREE processInitNode(   // PROCESS A NODE IN INITIALIZATION TREE
             break;
         }
     }
-    return node;
+    return( node );
 }
 
 
@@ -113,9 +113,9 @@ static bool returnsStruct(      // TEST IF STRUCT RETURNED BY CALL
 
     func_type = TypeFunctionCalled( NodeFuncForCall( call )->type );
 #if 0
-    return NULL != StructType( func_type->of );
+    return( NULL != StructType( func_type->of ) );
 #else
-    return OMR_CLASS_REF == ObjModelFunctionReturn( func_type );
+    return( OMR_CLASS_REF == ObjModelFunctionReturn( func_type ) );
 #endif
 }
 
@@ -128,9 +128,11 @@ static PTREE getArgNode(        // GET ARGUMENT NODE OF SPECIFIED TYPE
 
     for( arg = call->u.subtree[1]; ; arg = arg->u.subtree[0] ) {
         DbgVerify( arg != NULL, "getArgNode -- no arg of type" );
-        if( arg->flags & flag ) break;
+        if( arg->flags & flag ) {
+            break;
+        }
     }
-    return PTreeOp( &arg->u.subtree[1] );
+    return( PTreeOp( &arg->u.subtree[1] ) );
 }
 
 

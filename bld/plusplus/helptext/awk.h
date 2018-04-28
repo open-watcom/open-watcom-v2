@@ -59,7 +59,8 @@ int match( char *text, ... )
     va_start( args, text );
     for(;;) {
         test = va_arg( args, char * );
-        if( test == NULL ) break;
+        if( test == NULL )
+            break;
         if( strstr( text, test ) != NULL ) {
             va_end( args );
             return( 1 );
@@ -83,7 +84,8 @@ unsigned make_fields( void )
         while( *p && isspace( *p ) ) {
             ++p;
         }
-        if( *p == '\0' ) break;
+        if( *p == '\0' )
+            break;
         field[nf++] = f;
         while( *p && ! isspace( *p ) ) {
             *f++ = *p++;

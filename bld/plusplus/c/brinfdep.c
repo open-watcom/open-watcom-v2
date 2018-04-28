@@ -106,7 +106,7 @@ SRCDEP* BrinfDepSrcBeg          // ALLOCATE A SRCDEP
                   , srcfile )
         );
     }
-    return sd;
+    return( sd );
 }
 
 
@@ -120,7 +120,7 @@ void BrinfDepSrcEnd             // END OF SOURCE-FILE DEPENDENCIES
 char const * BrinfDepSrcFname   // GET FILE NAME FOR SOURCE-DEPENDENCY
     ( SRCDEP const *sd )        // - dependency for source file
 {
-    return SrcFileFullName( sd->srcfile );
+    return( SrcFileFullName( sd->srcfile ) );
 }
 
 
@@ -232,7 +232,7 @@ void BrinfDepMacAdd             // ADD A MACRO DEPENDENCY
 SRCFILE BrinfDepSrcfile         // GET SRCFILE FOR DEPENDENCY
     ( SRCDEP const * sd )       // - dependency
 {
-    return sd->srcfile;
+    return( sd->srcfile );
 }
 
 

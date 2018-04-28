@@ -62,7 +62,7 @@ static PTREE membPtrTemporary(  // PLACE MEMBER PTR IN TEMPORARY
 {
     expr = NodeAssign( NodeTemporary( expr->type ), expr );
     expr->flags |= PTF_MEMORY_EXACT;
-    return expr;
+    return( expr );
 }
 
 
@@ -73,7 +73,7 @@ static PTREE membPtrStoreTemp(  // STORE MEMBER PTR EXPR IN TEMPORARY
 
     a_expr = membPtrTemporary( expr );
     MembPtrAssign( &a_expr );
-    return NodeRvalue( a_expr );
+    return( NodeRvalue( a_expr ) );
 }
 
 
@@ -81,9 +81,9 @@ static bool nodeIsMembPtrCon(   // TEST IF NODE CAN BE MEMBER-PTR CONST
     PTREE node )                // - node to be tested
 {
     if( node->op == PT_SYMBOL && (node->flags & PTF_COLON_QUALED) ) {
-        return true;
+        return( true );
     } else {
-        return CompFlags.extensions_enabled;    // KLUGE for MFC
+        return( CompFlags.extensions_enabled );    // KLUGE for MFC
     }
 }
 
@@ -91,7 +91,7 @@ static bool nodeIsMembPtrCon(   // TEST IF NODE CAN BE MEMBER-PTR CONST
 static TYPE membPtrObject(      // GET OBJECT TYPE FOR MEMBER PTR
     TYPE mp )                   // - a member-ptr type
 {
-    return MemberPtrType( mp )->of;
+    return( MemberPtrType( mp )->of );
 }
 
 
@@ -131,7 +131,7 @@ static CNV_RETN validateOkObjs( // VALIDATE TARGET ONLY ADDS QUALIFICATION
         PTreeErrorExpr( expr, ERR_MEMB_PTR_OBJS_MISMATCH );
         retn = CNV_ERR;
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -165,7 +165,7 @@ static CNV_RETN validateAddrOfObj( // VALIDATE &class::item OBJECT
     } else {
         retn = validateOkObjs( expr, true, ad_obj, mp_obj );
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -180,14 +180,14 @@ static TYPE memberPtrLayout(    // SET TYPE, OFFSETS FOR MEMBER-PTR OBJECT
     *offset_delta = delta;
     type_offset = TypeTargetSizeT();
     *offset_index = delta + CgMemorySize( type_offset );
-    return type_offset;
+    return( type_offset );
 }
 
 
 static TYPE memberPtrHostClass( // GET HOST CLASS FOR MEMBER PTR.
     TYPE mp_type )              // - member ptr. type
 {
-    return MemberPtrClass( MemberPtrType( mp_type ) );
+    return( MemberPtrClass( MemberPtrType( mp_type ) ) );
 }
 
 
@@ -202,7 +202,7 @@ static SCOPE scopeMembPtrType(  // GET SCOPE FOR A MEMBER POINTER TYPE
     } else {
         scope = type->u.c.scope;
     }
-    return scope;
+    return( scope );
 }
 
 
@@ -216,7 +216,7 @@ static PTREE accessOp(          // ACCESS AN OPERAND
     expr = NodeBinary( CO_DOT, base, NodeOffset( offset ) );
     expr->type = type;
     expr->flags |= PTF_LVALUE;
-    return expr;
+    return( expr );
 }
 
 
@@ -229,7 +229,7 @@ static PTREE addOffset(         // ADD AN OFFSET TO AN LVALUE
 
     expr = NodeAddToLeft( field, NodeOffset( offset ), type );
     expr->flags &= ~ PTF_LVALUE;
-    return expr;
+    return( expr );
 }
 
 
@@ -289,14 +289,14 @@ static TYPE dereferenceFnType(  // GET TYPE OF DE-REFERENCING FUNCTION
 
     fn_type = MakeSimpleFunction( MakePointerTo( type ), NULL );
     fn_type = MakeCommonCodeData( fn_type );
-    return fn_type;
+    return( fn_type );
 }
 
 
 TYPE MembPtrDerefFnPtr(   // GET TYPE OF DE-REFERENCING FUNC. POINTER
     void )
 {
-    return MakePointerTo( dereferenceFnType( GetBasicType( TYP_VOID ) ) );
+    return( MakePointerTo( dereferenceFnType( GetBasicType( TYP_VOID ) ) ) );
 }
 
 
@@ -330,7 +330,7 @@ static SYMBOL membPtrOffsetFunc(// GET OFFSET FUNCTION FOR MEMBER
         tgt = result->sym_name->name_syms;
         ScopeFreeResult( result );
     }
-    return tgt;
+    return( tgt );
 }
 
 
@@ -360,7 +360,7 @@ static PTREE computeNewDelta(   // COMPUTE NEW DELTA
         }
         new_delta = FoldBinary( node );
     }
-    return new_delta;
+    return( new_delta );
 }
 
 
@@ -403,7 +403,7 @@ static PTREE computeNewIndex(   // COMPUTE NEW INDEX
             new_index->flags &= ~PTF_LVALUE;
         }
     }
-    return new_index;
+    return( new_index );
 }
 
 
@@ -435,7 +435,7 @@ static PTREE computeDeltaIndex( // COMPUTE NEW DELTA, INDEX
     expr->flags &= ~ PTF_LVALUE;
     original->type = type;
     original->flags &= ~PTF_LVALUE;
-    return original;
+    return( original );
 }
 
 
@@ -450,7 +450,7 @@ static PTREE makeMembPtrExpr(   // MAKE A MEMBER-PTR EXPRESSION
     expr = NodeUnary( CO_MEMPTR_CONST
                     , NodeArguments( index, delta, func, NULL ) );
     expr->type = type;
-    return expr;
+    return( expr );
 }
 
 
@@ -499,7 +499,7 @@ static PTREE generateMembPtrCon(// GENERATE MEMBER-PTR CONSTANT
     expr = computeDeltaIndex( expr, type, inf );
     expr = PTreeCopySrcLocation( expr, item_addrof );
     item_addrof = NodePruneLeft( item_addrof );
-    return NodeReplaceTop( item_addrof, expr );
+    return( NodeReplaceTop( item_addrof, expr ) );
 }
 
 
@@ -513,7 +513,7 @@ static PTREE nextArg(           // PRUNE NEXT ASSIGNMENT ARGUMENT
     *ref = arg;
     retn = arg->u.subtree[1];
     arg->u.subtree[1] = NULL;
-    return retn;
+    return( retn );
 }
 
 
@@ -522,7 +522,7 @@ static PTREE assignMembPtrArg(  // ASSIGN A MEMBER-PTR ARGUMENT
     PTREE *a_left,              // - addr[ left operand ]
     PTREE *a_right )            // - addr[ right operand ]
 {
-    return NodeAssign( nextArg( a_left ), NodeRvalue( nextArg( a_right ) ) );
+    return( NodeAssign( nextArg( a_left ), NodeRvalue( nextArg( a_right ) ) ) );
 }
 
 
@@ -542,7 +542,7 @@ static PTREE storeMembPtrCon(   // STORE MEMBER-PTR CONSTANT
     result = NodeReplace( expr , result );
     result = NodeComma( result, tgt );
     result->flags |= PTF_SIDE_EFF;
-    return result;
+    return( result );
 }
 
 
@@ -712,7 +712,7 @@ static CNV_RETN analyseAddrOfNode( // ANALYSE NODE FOR (& item)
             retn = CNV_ERR;
         }
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -742,7 +742,7 @@ static PTREE analyseAddrOf(     // ANALYSE (& item)
     } else {
         PTreeErrorExpr( src, ERR_MEMB_PTR_ADDR_OF );
     }
-    return src;
+    return( src );
 }
 
 
@@ -763,7 +763,7 @@ static PTREE memPtrAddrOfCon(   // MAKE MEMPTR EXPRN FROM &class::item
     } else {
         expr = generateMembPtrCon( type_mp, mp_node, &castinfo );
     }
-    return expr;
+    return( expr );
 }
 
 
@@ -784,7 +784,7 @@ static PTREE convertMembPtrExpr(// CONVERT A MEMBER POINTER EXPRESSION
         expr->type = type;
         expr->flags = ( expr->flags & ~PTF_LVALUE ) | PTF_LV_CHECKED;
     }
-    return expr;
+    return( expr );
 }
 
 
@@ -798,7 +798,7 @@ static bool membPtrAddrOfNode(  // TEST IF (& class::member)
     if( NodeIsUnaryOp( node, CO_ADDR_OF ) ) {
         mbrptr = MemberPtrType( node->type );
         if( NULL != mbrptr ) {
-            return true;
+            return( true );
         } else {
             retn = NodeAddrOfFun( node, &fn );
             if( (retn != ADDR_FN_NONE )  &&
@@ -810,7 +810,7 @@ static bool membPtrAddrOfNode(  // TEST IF (& class::member)
             }
         }
     }
-    return false;
+    return( false );
 }
 
 
@@ -820,7 +820,7 @@ bool MembPtrZeroConst(          // DETERMINE IF ZERO MEMBER-PTR CONSTANT
     expr = expr->u.subtree[0];
     expr = expr->u.subtree[1];
 
-    return NodeIsZeroConstant( expr );
+    return( NodeIsZeroConstant( expr ) );
 }
 
 
@@ -856,7 +856,7 @@ PTREE MembPtrExtend             // FAKE AN ADDRESS-OF NODE FOR BARE FUNCTION
     expr->flags &= ~PTF_LVALUE;
     expr = NodeUnaryCopy( CO_ADDR_OF, expr );
     expr->type = MakeMemberPointerTo( SymClass(sym ), sym->sym_type );
-    return expr;
+    return( expr );
 }
 
 
@@ -930,7 +930,7 @@ static MP_TYPE classifyMpExpr(  // CLASSIFY A MEMBER-POINTER EXPRESSION
     } else {
         retn = MP_INVALID;
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -989,7 +989,7 @@ CNV_RETN MembPtrAssign(         // ASSIGNMENT/INITIALIZATION OF MEMBER POINTER
             retn = CNV_OK;
         }
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -1077,7 +1077,7 @@ static PTREE doDereference(     // GENERATE DE-REFERENCING CODE
         expr->flags |= PTF_CALLED_ONLY;
     }
     *r_rhs = NodeReplace( *r_rhs, expr );
-    return rhs;
+    return( rhs );
 }
 
 
@@ -1166,7 +1166,7 @@ PTREE MembPtrDereference(       // DO '.*' AND '->*' operations
         }
         break;
     }
-    return expr;
+    return( expr );
 }
 
 
@@ -1205,7 +1205,7 @@ CNV_RETN MembPtrReint(          // REINTERPRET A MEMBER POINTER
         break;
     }
     *a_expr = expr;
-    return retn;
+    return( retn );
 }
 
 
@@ -1293,7 +1293,7 @@ CNV_RETN MembPtrConvert(        // CONVERT A MEMBER POINTER
         }
         break;
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -1374,7 +1374,7 @@ static PTREE compareConst(      // BUILD COMPARISON CONSTANT
         con = generateMembPtrCon( con->type, con, &castinfo );
     }
     *r_con = con;
-    return con;
+    return( con );
 }
 
 
@@ -1388,7 +1388,7 @@ static PTREE replaceCompare(    // REPLACE COMPARISON WITH A CONSTANT
         val = !val;
     }
     con = PTreeBoolConstant( val );
-    return NodeReplace( expr, con );
+    return( NodeReplace( expr, con ) );
 }
 
 
@@ -1409,7 +1409,7 @@ static MP_TYPE classifyCompare( // CLASSIFY COMPARISON
     default :
         break;
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -1423,7 +1423,7 @@ static PTREE compareOperand(    // GET COMPARISON OPERAND
     a_operand = &( (*ref)->u.subtree[0]->u.subtree[1] );
     operand = *a_operand;
     *a_operand = NULL;
-    return operand;
+    return( operand );
 }
 
 
@@ -1446,7 +1446,7 @@ static PTREE doCompare(         // DO A COMPARISON
         expr->u.subtree[1] = NodeReplace( expr->u.subtree[1]
                                         , NodeRvalue( right ) );
     }
-    return expr;
+    return( expr );
 }
 
 
@@ -1467,7 +1467,7 @@ PTREE MembPtrCommonType(        // IMPLICIT CONVERSION TO COMMON TYPE
     orig_left = NodeType( left );
     orig_right = NodeType( right );
     ConversionTypesSet( orig_right, orig_left );
-    switch( MP_OPS( classifyCompare( r_left  )
+    switch( MP_OPS( classifyCompare( r_left )
                   , classifyCompare( r_right ) ) ) {
     case MP_OPS( MP_ZERO, MP_ZERO ) :
     case MP_OPS( MP_ZERO, MP_CONST ) :
@@ -1489,7 +1489,8 @@ PTREE MembPtrCommonType(        // IMPLICIT CONVERSION TO COMMON TYPE
             right->type = orig_left;
             orig_right = orig_left;
         }
-        if( ! validateComparisonTypes( expr ) ) break;
+        if( ! validateComparisonTypes( expr ) )
+            break;
         host_right = memberPtrHostClass( orig_right );
         host_left = memberPtrHostClass( orig_left );
         switch( TypeCommonDerivation( host_left, host_right ) ) {
@@ -1541,7 +1542,7 @@ PTREE MembPtrCommonType(        // IMPLICIT CONVERSION TO COMMON TYPE
         break;
     DbgDefault( "MembPtrCommonType -- bad" );
     }
-    return expr;
+    return( expr );
 }
 
 
@@ -1553,7 +1554,7 @@ PTREE MembPtrCompare(           // COMPARISON OF MEMBER POINTERS
 
     r_left = PTreeRefLeft( expr );
     r_right = PTreeRefRight( expr );
-    switch( MP_OPS( classifyCompare( r_left  )
+    switch( MP_OPS( classifyCompare( r_left )
                   , classifyCompare( r_right ) ) ) {
     case MP_OPS( MP_ZERO, MP_ZERO ) :
         expr = replaceCompare( expr, true );
@@ -1587,7 +1588,7 @@ PTREE MembPtrCompare(           // COMPARISON OF MEMBER POINTERS
         break;
     DbgDefault( "MembPtrCompare -- bad" );
     }
-    return expr;
+    return( expr );
 }
 
 
@@ -1620,7 +1621,7 @@ static SYMBOL funcArgSym(       // DETERMINE COMPONENT'S SYMBOL, IF THERE
     } else {
         sym = NULL;
     }
-    return sym;
+    return( sym );
 }
 
 
@@ -1652,7 +1653,7 @@ PTREE MembPtrFuncArg(           // EXPRESSION FOR FUNCTION ARGUMENT
 //      arg = NodeReplace( arg, MakeNodeSymbol( sym ) );
         arg = NodeReplace( arg, NodeMakeCallee( sym ) );
     }
-    return NodeRvalue( arg );
+    return( NodeRvalue( arg ) );
 }
 
 
@@ -1670,5 +1671,5 @@ PTREE ConvertMembPtrConst(      // CONVERT TO TEMP. A MEMBER-PTR CONST
             *a_expr = expr;
         }
     }
-    return expr;
+    return( expr );
 }

@@ -34,17 +34,17 @@
 #define __TYPERANK_H__
 
 #define dfnRKDs             \
-  dfnRKD( RKD_ERROR     )   \
-, dfnRKD( RKD_ARITH     )   \
-, dfnRKD( RKD_ENUM      )   \
-, dfnRKD( RKD_POINTER   )   \
-, dfnRKD( RKD_CLASS     )   \
-, dfnRKD( RKD_FUNCTION  )   \
-, dfnRKD( RKD_VOID      )   \
-, dfnRKD( RKD_MEMBPTR   )   \
-, dfnRKD( RKD_ELLIPSIS  )   \
-, dfnRKD( RKD_GENERIC   )   \
-, dfnRKD( RKD_NULLPTR   )
+  dfnRKD( RKD_ERROR )       \
+, dfnRKD( RKD_ARITH )       \
+, dfnRKD( RKD_ENUM )        \
+, dfnRKD( RKD_POINTER )     \
+, dfnRKD( RKD_CLASS )       \
+, dfnRKD( RKD_FUNCTION )    \
+, dfnRKD( RKD_VOID )        \
+, dfnRKD( RKD_MEMBPTR )     \
+, dfnRKD( RKD_ELLIPSIS )    \
+, dfnRKD( RKD_GENERIC )     \
+, dfnRKD( RKD_NULLPTR )
 
 #define dfnRKD(a) a
 typedef enum                    // RKD -- kind of ranking for a type

@@ -74,7 +74,7 @@ BUFFER_HDR *TokenBufInit(               // TokenBuf: INITIALIZE FOR COLLECTION
 
 
     ++(token_hdr->no_of_buffers);
-    return token_hdr;
+    return( token_hdr );
 }
 
 
@@ -96,7 +96,7 @@ BUFFER_HDR *TokenBufAddChar(            // TokenBuf: ADD A CHARACTER
     tb->h[tb->cur_pos++] = character;
     ++token_hdr->total_size;
 
-    return token_hdr;
+    return( token_hdr );
 }
 
 BUFFER_HDR *TokenBufAddToken(           // TokenBuf: ADD A TOKEN
@@ -117,7 +117,7 @@ BUFFER_HDR *TokenBufAddToken(           // TokenBuf: ADD A TOKEN
     tb->cur_pos += sizeof( TOKEN );
     token_hdr->total_size += sizeof( TOKEN );
 
-    return token_hdr;
+    return( token_hdr );
 }
 
 
@@ -141,14 +141,14 @@ BUFFER_HDR *TokenBufAddStr(             // TokenBuf: ADD A STRING
         token_hdr->total_size += len;
     }
     token_hdr = TokenBufAddChar( token_hdr, '\0' );
-    return token_hdr;
+    return( token_hdr );
 }
 
 
 size_t TokenBufSize(                    // TokenBuf: RETURN SIZE
     BUFFER_HDR *token_hdr )             // - handle to token buffer
 {
-    return token_hdr->curr->cur_pos;
+    return( token_hdr->curr->cur_pos );
 }
 
 
@@ -181,7 +181,7 @@ BUFFER_HDR *TokenBufMove(               // TokenBuf: MOVE CONTENTS, RE-INITIALIZ
 
     TokenBufFini( token_hdr );
     token_hdr = TokenBufInit( NULL );
-    return token_hdr;
+    return( token_hdr );
 }
 
 
@@ -225,7 +225,7 @@ BUFFER_HDR *TokenBufNew(                // TokenBuf: ADD A STRING
         }
     }
 
-    return token_hdr;
+    return( token_hdr );
 }
 
 size_t TokenBufTotalSize(               // TokenBuf: RETURN SIZE OF ALL BUFFERS

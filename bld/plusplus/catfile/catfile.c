@@ -103,7 +103,7 @@ static int errMsg               // PRINT ERROR MESSAGE
     }
     fputc( '\n', stderr );
     va_end( args );
-    return 1;
+    return( 1 );
 }
 
 
@@ -144,7 +144,7 @@ static int textAlloc            // ALLOCATE TEXT ITEM
         tp->date = 0;
         retn = 0;
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -163,10 +163,12 @@ static int textForAll           // PROCESS ALL ITEMS IN A TEXT RING
         do {
             curr = curr->next;
             retn = rtn( curr, data );
-            if( retn != 0 ) break;
+            if( retn != 0 ) {
+                break;
+            }
         } while( curr != ring );
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -184,7 +186,7 @@ static Text* textInsert         // INSERT INTO RING
         ring->next = tp;
     }
     *a_ring = tp;
-    return tp;
+    return( tp );
 }
 
 
@@ -218,7 +220,7 @@ static int processSwitch        // PROCESS SWITCH
         retn = errMsg( "invalid switch", sw, NULL );
         break;
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -251,9 +253,11 @@ static int processFilePattern   // PROCESS FILE PATTERN
         for( ; ; ) {
             Text* tp;           // - current entry
             dp = readdir( dp );
-            if( dp == NULL ) break;
+            if( dp == NULL )
+                break;
             retn = textAlloc( dir_size + strlen( dp->d_name ), &tp );
-            if( retn != 0 ) break;
+            if( retn != 0 )
+                break;
             textInsert( tp, &files );
             memcpy( files->text, pat, dir_size );
             strcpy( &files->text[dir_size], dp->d_name );
@@ -261,7 +265,7 @@ static int processFilePattern   // PROCESS FILE PATTERN
             files->time = dp->d_time;
         }
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -302,14 +306,14 @@ static int concFile             // CONCATENATE A FILE
         fclose( fp );
         retn = 0;
     }
-    return retn;
+    return( retn );
 }
 
 
 static int concFiles            // CONCATENATE FILES
     ( void )
 {
-    return textForAll( files, NULL, &concFile );
+    return( textForAll( files, NULL, &concFile ) );
 }
 
 
@@ -320,7 +324,7 @@ static int countFile            // INCREMENT FILE CTR
     unsigned* a_ctr = data;
     tp = tp;
     ++(*a_ctr);
-    return 0;
+    return( 0 );
 }
 
 
@@ -331,7 +335,7 @@ static int storeFile            // STORE FILE PTR
     Text*** a_tp = (Text***)data;
     **a_tp = tp;
     ++(*a_tp);
-    return 0;
+    return( 0 );
 }
 
 
@@ -345,7 +349,7 @@ static int compareFileDates     // COMPARE TWO FILE DATES
     if( retn == 0 ) {
         retn = c1->time - c2->time;
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -357,7 +361,8 @@ static unsigned extractDigs     // EXTRACT AS UNSIGNED THE DIGITS IN NAME
     value = 0;
     for( ;; ) {
         char chr = *name++;
-        if( chr == '\0' ) break;
+        if( chr == '\0' )
+            break;
         if( chr == '\\'
          || chr == ':' ) {
             value = 0;
@@ -365,7 +370,7 @@ static unsigned extractDigs     // EXTRACT AS UNSIGNED THE DIGITS IN NAME
             value = value * 10 + chr - '0';
         }
     }
-    return value;
+    return( value );
 }
 
 
@@ -392,7 +397,7 @@ static int compareFiles         // COMPARE TWO FILES
     } else {
         retn = compareFileDates( c1, c2 );
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -421,7 +426,7 @@ static int sortFiles            // SORT FILES
         free( array );
         retn = 0;
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -443,7 +448,7 @@ static int processFilePatterns  // PROCESS FILE PATTERNS
             }
         }
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -470,12 +475,14 @@ static int processCmdLine       // PROCESS COMMAND LINE
                 strcpy( file_patterns->text, cmd );
             }
         }
-        if( retn != 0 ) break;
+        if( retn != 0 ) {
+            break;
+        }
     }
     if( ! any_options ) {
         switches.sort_kluge = TRUE;
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -497,5 +504,5 @@ int main                        // MAIN-LINE
             }
         }
     }
-    return retn;
+    return( retn );
 }

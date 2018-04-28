@@ -83,12 +83,12 @@ Boolean IterFileRec::next(      // GET NEXT RECORD
         buffer[strlen( buffer ) - 1] = '\0';
         retn = TRUE;
     }
-    return retn;
+    return( retn );
 }
 
 
 void *IterFileRec::element(     // POINT AT ELEMENT
     void ) const
 {
-    return buffer;
+    return( buffer );
 }

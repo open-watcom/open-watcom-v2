@@ -59,7 +59,7 @@ static SYMBOL defineRoutine     // DEFINE R/T ROUTINE
     flags = SF_REFERENCED | SF_NO_LONGJUMP;
     sym = SymCreateFileScope( sym_type, SC_EXTERN, flags, name );
     LinkageSet( sym, "C" );
-    return sym;
+    return( sym );
 }
 
 
@@ -106,7 +106,7 @@ static PTREE insert             // INSERT AT NODE
     left = PTreeCopySrcLocation( left, node );
     comma = PTreeBinary( CO_COMMA, left, node );
     comma = PTreeCopySrcLocation( comma, node );
-    return comma;
+    return( comma );
 }
 
 
@@ -240,7 +240,7 @@ static PTREE insertNode         // INSERTION FOR A NODE
     default :
         break;
     }
-    return node;
+    return( node );
 }
 
 
@@ -250,5 +250,5 @@ PTREE DbgCommaInsertion         // COMMA INSERTION ROUTINE
     if( NULL != sym_op || NULL != sym_at ) {
         expr = PTreeTraversePostfix( expr, &insertNode );
     }
-    return expr;
+    return( expr );
 }

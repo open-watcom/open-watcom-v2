@@ -66,7 +66,8 @@ int main( int argc, char **argv )
     fprintf( ofp, ":userdoc.\n" );
     for(;;) {
         check = fgets( ibuff, sizeof(ibuff), ifp );
-        if( check == NULL ) break;
+        if( check == NULL )
+            break;
         make_fields();
         if( match( field[0], ":MSGLVL", ":eMSGLVL", ".np", NULL ) ) {
             // do zip

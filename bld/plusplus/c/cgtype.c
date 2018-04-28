@@ -385,14 +385,14 @@ static target_size_t cgSize(    // COMPUTE SIZE OF A TYPE
 target_size_t CgTypeSize(       // COMPUTE SIZE OF A TYPE IN USE
     TYPE type )                 // - type
 {
-    return cgSize( type, false );
+    return( cgSize( type, false ) );
 }
 
 
 target_size_t CgMemorySize(     // COMPUTE SIZE OF A TYPE IN MEMORY
     TYPE type )                 // - type
 {
-    return cgSize( type, true );
+    return( cgSize( type, true ) );
 }
 
 
@@ -405,7 +405,7 @@ cg_type CgTypeSym(             // COMPUTE OUTPUT TYPE FOR SYMBOL
      && OMR_CLASS_REF == ObjModelArgument( type ) ) {
         type = MakeReferenceTo( type );
     }
-    return CgTypeOutput( type );
+    return( CgTypeOutput( type ) );
 }
 
 
@@ -436,7 +436,7 @@ cg_type CgTypePtrSym(          // COMPUTE OUTPUT TYPE OF POINTER TO SYMBOL
             codegen_type = TY_POINTER;
         }
     }
-    return codegen_type;
+    return( codegen_type );
 }
 
 
@@ -556,9 +556,9 @@ cg_type CgTypeOffset(          // GET CODEGEN TYPE FOR AN OFFSET
     void )
 {
 #if _CPU == 8086
-    return TY_UINT_2;
+    return( TY_UINT_2 );
 #else
-    return TY_UINT_4;
+    return( TY_UINT_4 );
 #endif
 }
 

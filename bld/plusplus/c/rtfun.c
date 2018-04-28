@@ -89,7 +89,7 @@ static SYMBOL rtSymbolLookup(   // LOOKUP RUN-TIME SYMBOL IN FILE SCOPE
         sym = result->sym_name->name_syms;
         ScopeFreeResult( result );
     }
-    return sym;
+    return( sym );
 }
 
 
@@ -137,14 +137,14 @@ static SYMBOL rtSymbolCreate(   // CREATE NEW RUN-TIME SYMBOL
     }
     sym = SymCreate( sym_type, SC_EXTERN, flags, name, GetInternalScope() );
     LinkageSet( sym, "C" );
-    return sym;
+    return( sym );
 }
 
 
 bool RunTimeIsThrow(            // TEST IF FUNCTION IS A C++ THROW
     SYMBOL func )               // - function symbol
 {
-    return GetInternalScope() == SymScope( func ) && ( func->flag & SF_IS_THROW ) != 0;
+    return( GetInternalScope() == SymScope( func ) && ( func->flag & SF_IS_THROW ) != 0 );
 }
 
 
@@ -239,7 +239,7 @@ SYMBOL RunTimeCallSymbol(       // GET SYMBOL FOR A RUN-TIME CALL
         }
         sym = rtSymbolCreate( rt_type, name );
     }
-    return sym;
+    return( sym );
 }
 
 
@@ -254,7 +254,7 @@ PTREE RunTimeCall(              // GENERATE A RUN-TIME CALL PARSE SUBTREE
     DbgVerify( (PointerTypeEquivalent( type ) == NULL )
                == (PointerTypeEquivalent( SymFuncReturnType( func ) ) == NULL)
              , "RunTimeCall -- return type mismatch" );
-    return NodeMakeCall( func, type, expr );
+    return( NodeMakeCall( func, type, expr ) );
 }
 
 

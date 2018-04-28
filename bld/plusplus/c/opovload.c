@@ -233,7 +233,7 @@ static bool initOLINF(          // INITIALIZE OVERLOAD INFORMATION
     if( scov ) {
         olinf->scalar_overloadable = true;
     }
-    return scov || ( olinf->flags & PTO_OVLOAD );
+    return( scov || ( olinf->flags & PTO_OVLOAD ) );
 }
 
 
@@ -291,7 +291,7 @@ static unsigned colonIndex(     // COMPUTE INDEX FOR COLON OVERLOADING
     } else {
         index = 2;
     }
-    return index;
+    return( index );
 }
 
 
@@ -423,7 +423,7 @@ static CNV_RETN transform_operand(// TRANSFORM AN OPERAND (TO SCALAR)
     } else {
         cnv_status = CNV_OK;
     }
-    return cnv_status;
+    return( cnv_status );
 }
 
 
@@ -462,7 +462,7 @@ static PTREE transform_conversions( // TRANSFORM OPERAND(S) BY CONVERSIONS
     if( ( error_right != CNV_OK ) || ( error_left != CNV_OK ) ) {
         PTreeErrorNode( node );
     }
-    return node;
+    return( node );
 }
 
 // did this symbol come from this search result ?
@@ -473,13 +473,13 @@ static bool symInResult( SYMBOL sym, SEARCH_RESULT *result )
 
     RingIterBeg( result->sym_name->name_syms, curr ) {
         if( curr == sym ) {
-            return true;
+            return( true );
         } else if( SymIsFunctionTemplateModel( curr ) ) {
             FN_TEMPLATE_INST *fn_inst;
 
             RingIterBeg( curr->u.defn->instantiations, fn_inst ) {
                 if( fn_inst->bound_sym == sym ) {
-                    return true;
+                    return( true );
                 }
             } RingIterEnd( fn_inst )
         }
@@ -488,13 +488,13 @@ static bool symInResult( SYMBOL sym, SEARCH_RESULT *result )
 
         RingIterBegFrom( ptr->from, curr ) {
             if( curr == sym ) {
-                return true;
+                return( true );
             }
 
         } RingIterEndTo( curr, ptr->to )
 
     } RingIterEnd( ptr )
-    return false;
+    return( false );
 }
 
 static PTREE transform_to_call( // TRANSFORM NODE TO FUNCTION CALL
@@ -558,7 +558,7 @@ static PTREE transform_naked(   // TRANSFORM TO CALL TO NON-MEMBER FUNCTION
                             , build_fun_name( result )
                             , param );
     retn = PTreeCopySrcLocation( retn, olinf->expr );
-    return retn;
+    return( retn );
 }
 
 
@@ -577,7 +577,7 @@ static PTREE transform_member(  // TRANSFORM TO CALL TO MEMBER FUNCTION
         op_sym = olinf->result_mem->sym_name->name_syms;
         if( ! ArrowMemberOK( op_sym ) ) {
             PTreeErrorExprSym( op, ERR_OPERATOR_ARROW_RETURN_BAD, op_sym );
-            return op;
+            return( op );
         }
         caller = NodeDottedFunction( olinf->left.operand
                                    , build_fun_name( olinf->result_mem ) );
@@ -598,7 +598,7 @@ static PTREE transform_member(  // TRANSFORM TO CALL TO MEMBER FUNCTION
                 param = NodeArg( param );
             }
         } else {
-            if( ( cgop == CO_POST_PLUS_PLUS   )
+            if( ( cgop == CO_POST_PLUS_PLUS )
               ||( cgop == CO_POST_MINUS_MINUS ) ) {
                 param = NodeArg( NodeZero() );
             } else {
@@ -611,7 +611,7 @@ static PTREE transform_member(  // TRANSFORM TO CALL TO MEMBER FUNCTION
         op = transform_to_call( op, caller, param );
         op = PTreeCopySrcLocation( op, olinf->expr );
     }
-    return op;
+    return( op );
 }
 
 
@@ -642,7 +642,7 @@ static PTREE resolve_symbols(   // RESOLVE MULTIPLE OVERLOAD DEFINITIONS
 
         ScopeFreeResult( olinf->result_nonmem );
         ScopeFreeResult( olinf->result_nonmem_namespace );
-        return olinf->expr;
+        return( olinf->expr );
     }
     InitArgList( &alist.base );
     zero_node = NULL;
@@ -691,7 +691,8 @@ static PTREE resolve_symbols(   // RESOLVE MULTIPLE OVERLOAD DEFINITIONS
             // we're in the (void *, void *) area
             for( amb_list = NULL; ; ) {
                 next = FnovGetAmbiguousEntry( &fnov_diag, &amb_list );
-                if( next == NULL ) break;
+                if( next == NULL )
+                    break;
                 if( next->name != NULL ) {
                     have_user_defined = true;
                 } else if( op_basic_arg[next->u.scalar_order][0] == TYP_POINTER
@@ -731,7 +732,8 @@ static PTREE resolve_symbols(   // RESOLVE MULTIPLE OVERLOAD DEFINITIONS
         bool have_user_defined = false;
         for( amb_list = NULL; ; ) {
             next = FnovGetAmbiguousEntry( &fnov_diag, &amb_list );
-            if( next == NULL ) break;
+            if( next == NULL )
+                break;
             if( next->name != NULL ) {
                 have_user_defined = true;
                 break;
@@ -757,7 +759,8 @@ static PTREE resolve_symbols(   // RESOLVE MULTIPLE OVERLOAD DEFINITIONS
         fun = NULL;
         for( amb_list = NULL; ; ) {
             next = FnovGetAmbiguousEntry( &fnov_diag, &amb_list );
-            if( next == NULL ) break;
+            if( next == NULL )
+                break;
             if( next->name == NULL
              && next->id != SC_MEMBER
              && next->u.scalar_order < ( MAX_FUN_PROTOS - 2 ) ) {
@@ -774,7 +777,8 @@ static PTREE resolve_symbols(   // RESOLVE MULTIPLE OVERLOAD DEFINITIONS
             PTreeErrorExpr( olinf->expr, ERR_OPERATOR_AMBIGUOUS_OVERLOAD );
             for( ; ; ) {
                 SYMBOL reject = FnovNextAmbiguousEntry( &fnov_diag );
-                if( reject == NULL ) break;
+                if( reject == NULL )
+                    break;
                 if( reject->name == NULL ) {
                     CErr2p( INF_CONV_AMBIG_SCALAR
                           , SymFuncArgList( reject )->type_list[0] );
@@ -823,7 +827,7 @@ static PTREE resolve_symbols(   // RESOLVE MULTIPLE OVERLOAD DEFINITIONS
         PTreeFree( zero_node );
     }
     FnovFreeDiag( &fnov_diag );
-    return olinf->expr;
+    return( olinf->expr );
 }
 
 static SCOPE nsExtract( OLINF *inf )
@@ -857,9 +861,11 @@ PTREE OverloadOperator(         // HANDLE OPERATOR OVERLOADING, IF REQ'D
 
     ExtraRptIncrementCtr( ctrOverloads );
     for( ; ; ) {
-        if( ! initOLINF( op, &oli ) ) break;
+        if( ! initOLINF( op, &oli ) )
+            break;
         scalarOperators( &oli );
-        if( ! oli.have_user_type ) break;
+        if( ! oli.have_user_type )
+            break;
         if( oli.flags & PTO_OVLOAD ) {
             NAME ov_fun_name;           // - name of overloaded function
             TYPE type;                  // - class type
@@ -897,20 +903,26 @@ PTREE OverloadOperator(         // HANDLE OPERATOR OVERLOADING, IF REQ'D
             if( oli.result_mem == NULL
              && oli.result_nonmem == NULL
              && oli.result_nonmem_namespace == NULL ) {
-                if( oli.scalars == NULL ) break;
-                if( ! oli.have_class_type ) break;
+                if( oli.scalars == NULL )
+                    break;
+                if( ! oli.have_class_type ) {
+                    break;
+                }
             }
             op = resolve_symbols( &oli );
-            if( ! oli.repeat_overload ) break;
-            if( op->op == PT_ERROR ) break;
+            if( ! oli.repeat_overload )
+                break;
+            if( op->op == PT_ERROR )
+                break;
             ExtraRptIncrementCtr( ctrRepeats );
         } else {
-            if( NULL == oli.scalars ) break;
+            if( NULL == oli.scalars )
+                break;
             op = resolve_symbols( &oli );
             break;
         }
     }
-    return op;
+    return( op );
 }
 
 
@@ -969,12 +981,14 @@ PTREE ConvertBoolean(           // CONVERSION TO BOOLEAN EXPRESSION
               &&( NULL != ClassTypeForType( bexpr->u.subtree[0]->type ) ) ) {
                 PTreeErrorExpr( PTreeOpLeft( bexpr ), ERR_NOT_BOOLEAN );
                 PTreeErrorNode( bexpr );
-                return bexpr;
+                return( bexpr );
             }
         }
         if( MemberPtrType( bexpr->u.subtree[0]->type ) ) {
             bexpr = MembPtrCompare( bexpr );
-            if( bexpr->op == PT_ERROR ) return bexpr;
+            if( bexpr->op == PT_ERROR ) {
+                return( bexpr );
+            }
         }
         if( PT_BINARY == bexpr->op ) {
             bexpr = FoldBinary( bexpr );
@@ -993,7 +1007,7 @@ PTREE ConvertBoolean(           // CONVERSION TO BOOLEAN EXPRESSION
             bexpr = FoldUnary( bexpr );
         }
     }
-    return bexpr;
+    return( bexpr );
 }
 
 

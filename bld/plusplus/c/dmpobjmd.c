@@ -52,7 +52,7 @@ static DUMP_INFO* bufferRewind(   // INITIALIZE BUFFER
     DUMP_INFO* di )             // - dump information
 {
     VbufRewind( &di->buffer );
-    return di;
+    return( di );
 }
 
 
@@ -61,7 +61,7 @@ static DUMP_INFO* bufferChr(    // CONCATENATE CHAR TO BUFFER
     char chr )                  // - to be concatenated
 {
     VbufConcChr( &di->buffer, chr );
-    return di;
+    return( di );
 }
 
 
@@ -70,7 +70,7 @@ static DUMP_INFO* bufferStr(    // CONCATENATE STRING TO BUFFER
     const char *str )           // - to be concatenated
 {
     VbufConcStr( &di->buffer, str );
-    return di;
+    return( di );
 }
 
 
@@ -86,7 +86,7 @@ static DUMP_INFO* bufferNmb(    // CONCATENATE NUMBER TO BUFFER
         sprintf( buf, "0x%X", numb );
         VbufConcStr( &di->buffer, buf );
     }
-    return di;
+    return( di );
 }
 
 
@@ -95,7 +95,7 @@ static DUMP_INFO* bufferInit(   // INITIALIZE BUFFER (NON-TITLE LINE)
 {
     di = bufferRewind( di );
     di = bufferStr( di, "    " );
-    return di;
+    return( di );
 }
 
 
@@ -110,7 +110,7 @@ static DUMP_INFO* bufferWrite(  // WRITE A BUFFER
     DUMP_INFO* di )             // - dump information
 {
     vbufWrite( &di->buffer );
-    return di;
+    return( di );
 }
 
 
@@ -129,7 +129,7 @@ static DUMP_INFO* dumpTitle(    // DUMP A TITLE LINE
     di = bufferChr( di, ' ' );
     di = bufferStr( di, class_name );
     di = bufferWrite( di );
-    return di;
+    return( di );
 }
 
 
@@ -140,7 +140,7 @@ static DUMP_INFO* dumpOffset(   // DUMP OFFSET LINE
     di = bufferStr( di, "offset of class: " );
     di = bufferNmb( di, di->offset );
     di = bufferWrite( di );
-    return di;
+    return( di );
 }
 
 
@@ -155,7 +155,7 @@ static DUMP_INFO* dumpParentage( // DUMP PARENTAGE
         di = bufferStr( di, *daughter );
         di = bufferWrite( di );
     }
-    return di;
+    return( di );
 }
 
 
@@ -178,7 +178,7 @@ static DUMP_INFO* dumpBitMemb(  // DUMP A BITFIELD MEMBER
     di = bufferStr( di, ", bit width =" );
     di = bufferNmb( di, size );
     di = bufferWrite( di );
-    return di;
+    return( di );
 }
 
 
@@ -198,7 +198,7 @@ static DUMP_INFO* dumpDataMemb( // DUMP A DATA MEMBER
     di = bufferStr( di, ", size = " );
     di = bufferNmb( di, size );
     di = bufferWrite( di );
-    return di;
+    return( di );
 }
 
 
@@ -280,7 +280,7 @@ static DUMP_INFO* dumpStruct(   // DUMP A STRUCTURE
     }
     ScopeWalkDirectBases( type->u.c.scope, dumpDirect, di );
     VstkPop( &di->stack );
-    return di;
+    return( di );
 }
 
 

@@ -775,7 +775,8 @@ static void pragIntrinsic(      // SET FUNCTIONS TO BE (NOT TO BE) INTRINSIC
         while( IS_ID_OR_KEYWORD( CurToken ) ) {
             ScopeIntrinsic( intrinsic );
             NextToken();
-            if( CurToken != T_COMMA )  break;
+            if( CurToken != T_COMMA )
+                break;
             NextToken();
         }
         MustRecog( T_RIGHT_PAREN );
@@ -835,7 +836,7 @@ static DT_METHOD parseDtorMethod( // PARSE A DESTRUCTOR METHOD
     } else {
         method = DTM_COUNT;
     }
-    return method;
+    return( method );
 }
 
 
@@ -1576,7 +1577,9 @@ struct textsegment *LkSegName(  // LOOKUP SEGMENT NAME
     struct textsegment  *seg;
 
     for( seg = TextSegList; seg; seg = seg->next ) {
-        if( strcmp( seg->segname, name ) == 0 )  return( seg );
+        if( strcmp( seg->segname, name ) == 0 ) {
+            return( seg );
+        }
     }
     seg = CMemAlloc( sizeof( struct textsegment ) );
     seg->next = TextSegList;
@@ -1606,12 +1609,14 @@ static void writePacks( void )
     reversed_packs = NULL;
     for( ; ; ) {
         pack_entry = StackPop( &HeadPacks );
-        if( pack_entry == NULL ) break;
+        if( pack_entry == NULL )
+            break;
         StackPush( &reversed_packs, pack_entry );
     }
     for( ; ; ) {
         pack_entry = StackPop( &reversed_packs );
-        if( pack_entry == NULL ) break;
+        if( pack_entry == NULL )
+            break;
         pack_amount = pack_entry->value;
         PCHWriteUInt( pack_amount );
         StackPush( &HeadPacks, pack_entry );
@@ -1652,12 +1657,14 @@ static void writeEnums( void )
     reversed_enums = NULL;
     for( ; ; ) {
         enum_entry = StackPop( &HeadPacks );
-        if( enum_entry == NULL ) break;
+        if( enum_entry == NULL )
+            break;
         StackPush( &reversed_enums, enum_entry );
     }
     for( ; ; ) {
         enum_entry = StackPop( &reversed_enums );
-        if( enum_entry == NULL ) break;
+        if( enum_entry == NULL )
+            break;
         enum_int = enum_entry->value;
         PCHWriteUInt( enum_int );
         StackPush( &HeadPacks, enum_entry );

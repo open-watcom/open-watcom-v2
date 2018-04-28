@@ -107,7 +107,7 @@ arg_list* ArgListTempAlloc(     // ALLOCATE TEMPORARY ARG LIST
     }
     retn = InitArgList( retn );
     retn->num_args = num_args;
-    return retn;
+    return( retn );
 }
 
 
@@ -147,7 +147,7 @@ PTREE* PtListAlloc(             // ALLOCATE PTREE LIST (TEMPORARILY)
     } else {
         retn = (PTREE*)CMemAlloc( num_args * sizeof( PTREE ) );
     }
-    return retn;
+    return( retn );
 }
 #endif
 

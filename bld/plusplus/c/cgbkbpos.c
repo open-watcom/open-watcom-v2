@@ -139,7 +139,7 @@ SE* BlkPosnUpdate(              // UPDATE POSITION IN CURRENT BLOCK
     bpos = VstkTop( &stack_blk_posn );
     bpos->posn = se;
     DbgDumpBlkPosn( bpos, "Update" );
-    return se;
+    return( se );
 }
 
 
@@ -155,7 +155,7 @@ SE* BlkPosnCurr(                // GET CURRENT BLOCK POSITION
     } else {
         posn = bpos->posn;
     }
-    return posn;
+    return( posn );
 }
 
 
@@ -173,7 +173,7 @@ SE* BlkPosnEnclosing(           // GET CURRENT POSITION OF ENCLOSING BLOCK
     } else {
         posn = bpos->posn;
     }
-    return posn;
+    return( posn );
 }
 
 
@@ -235,7 +235,7 @@ SE* BlkPosnTempBegSet(          // SET STARTING POS'N FOR TEMP DTOR'ING
     DbgVerify( bpos != NULL, "BlkPosnTempBegSet -- no block" );
     bpos->temp_beg = se;
     DbgDumpBlkPosn( bpos, "BegSet" );
-    return se;
+    return( se );
 }
 
 
@@ -246,7 +246,7 @@ SE* BlkPosnTempBeg(             // GET STARTING POS'N FOR TEMP DTOR'ING
 
     bpos = VstkTop( &stack_blk_posn );
     DbgVerify( bpos != NULL, "BlkPosnTempBeg -- no block" );
-    return bpos->temp_beg;
+    return( bpos->temp_beg );
 }
 
 
@@ -259,7 +259,7 @@ SE* BlkPosnTempEndSet(          // SET ENDING POS'N FOR TEMP DTOR'ING
     DbgVerify( bpos != NULL, "BlkPosnTempEndSet -- no block" );
     bpos->temp_end = se;
     DbgDumpBlkPosn( bpos, "EndSet" );
-    return se;
+    return( se );
 }
 
 
@@ -270,7 +270,7 @@ SE* BlkPosnTempEnd(             // GET ENDING POS'N FOR TEMP DTOR'ING
 
     bpos = VstkTop( &stack_blk_posn );
     DbgVerify( bpos != NULL, "BlkPosnTempEnd -- no block" );
-    return bpos->temp_end;
+    return( bpos->temp_end );
 }
 
 

@@ -153,7 +153,8 @@ static CGIOBUFF **findDirectoryEntry( DISK_ADDR disk_addr )
     dict = directoryOfBufs;
     i = maxDictIndex;
     for(;;) {
-        if( i == dict_index ) break;
+        if( i == dict_index )
+            break;
         DbgAssert( i != 0 );
         --i;
         dict = dict->next;
@@ -245,7 +246,7 @@ static CGIOBUFF *allocateBuffer(// ALLOCATE A NEW BUFFER
     DbgStmt( ctl->check = CGIOBUFF_CHECK );
     RingAppend( &allBufs, ctl );
     ExtraRptIncrementCtr( ctr_buffers );
-    return ctl;
+    return( ctl );
 }
 
 
@@ -272,7 +273,7 @@ static CGIOBUFF *findWrBuffer(  // FIND A BUFFER FOR WRITING
 
 
 static CGIOBUFF *findRdBuffer(  // FIND A BUFFER FOR READING
-    DISK_ADDR block  )          // - disk block
+    DISK_ADDR block )           // - disk block
 {
     CGIOBUFF *ctl;
     CGIOBUFF **dict;
@@ -289,7 +290,7 @@ static CGIOBUFF *findRdBuffer(  // FIND A BUFFER FOR READING
     ctl->active = true;
     ++ctl->reading;
     DbgAssert( ctl->check == CGIOBUFF_CHECK );
-    return ctl;
+    return( ctl );
 }
 
 
@@ -320,7 +321,7 @@ static void finishRdBuffer(     // COMPLETE READ-USE OF A BUFFER
 CGIOBUFF *CgioBuffWrOpen(       // GET BUFFER FOR WRITING
     void )
 {
-    return findWrBuffer();
+    return( findWrBuffer() );
 }
 
 static CGIOBUFF *switchToNextBuffer( CGIOBUFF *ctl )
@@ -460,7 +461,7 @@ CGIOBUFF *CgioBuffWriteIC(      // WRITE AN IC RECORD
     ctl->free_offset += sizeof( CGINTER );
     // we will always be able to write an IC_NEXT so this is OK
     DbgStmt(( ++dest, dest->opcode = IC_NEXT, dest->value.ivalue = -1 ));
-    return ctl;
+    return( ctl );
 }
 
 
@@ -480,7 +481,7 @@ void CgioBuffWrClose(           // RELEASE BUFFER AFTER WRITING
 CGIOBUFF *CgioBuffRdOpen(       // GET BUFFER FOR READING
     DISK_ADDR block )           // - disk address
 {
-    return findRdBuffer( block );
+    return( findRdBuffer( block ) );
 }
 
 #ifndef NDEBUG
@@ -532,7 +533,7 @@ CGIOBUFF *CgioBuffReadIC(       // READ A RECORD
     }
     *ins = curr;
     dumpRead( ctl, curr, "Exec", "Scan" );
-    return ctl;
+    return( ctl );
 }
 
 
@@ -548,7 +549,8 @@ CGIOBUFF *CgioBuffReadICUntilOpcode(       // READ A RECORD UNTIL OPCODE IS FOUN
     ++curr;
     for(;;) {
         check_opcode = curr->opcode;
-        if( check_opcode == opcode ) break;
+        if( check_opcode == opcode )
+            break;
         if( check_opcode == IC_NEXT ) {
             _NEXT_BLOCK( ctl, curr );
         } else {
@@ -557,7 +559,7 @@ CGIOBUFF *CgioBuffReadICUntilOpcode(       // READ A RECORD UNTIL OPCODE IS FOUN
     }
     *ins = curr;
     dumpRead( ctl, curr, "Find", "Find" );
-    return ctl;
+    return( ctl );
 }
 
 
@@ -583,7 +585,7 @@ CGIOBUFF *CgioBuffReadICMask(   // READ A RECORD UNTIL OPCODE IN SET IS FOUND
     }
     *ins = curr;
     dumpRead( ctl, curr, "Mask", "Mask" );
-    return ctl;
+    return( ctl );
 }
 
 
@@ -619,7 +621,7 @@ CGIOBUFF *CgioBuffReadICMaskCount(      // READ A RECORD UNTIL OPCODE IN SET IS 
     *count += extra;
     *ins = curr;
     dumpRead( ctl, curr, "Mask", "Mask" );
-    return ctl;
+    return( ctl );
 }
 
 
@@ -658,7 +660,7 @@ CGFILE_INS CgioBuffLastRead(    // RETURN POSITION OF LAST READ
 
 
 CGFILE_INS CgioBuffLastWrite(   // RETURN POSITION OF LAST WRITE
-    CGIOBUFF *ctl  )            // - buffer control
+    CGIOBUFF *ctl )             // - buffer control
 {
     CGFILE_INS posn;
 

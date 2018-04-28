@@ -110,7 +110,7 @@ static unsigned base2( unsigned n )
     //   010000 - 1 = 01111
     //   count bits(01111) = 4
     nbits = countBits( n - 1 );
-    return nbits;
+    return( nbits );
 }
 
 static void hashInit( INITFINI *defn )
@@ -377,7 +377,7 @@ static void expandHASHTAB( HASHTAB hash )
         SYMBOL_NAME *table;
         SYMBOL_NAME *old_table;
 
-        if( expand_next == half  ) {
+        if( expand_next == half ) {
             expand_next = 0;
             hash->expand_next = expand_next;
             half <<= 1;

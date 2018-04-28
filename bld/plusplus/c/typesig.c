@@ -78,7 +78,7 @@ static SYMBOL DefaultCtorFind(         // GET SYMBOL FOR DEFAULT CTOR
         CFatal( "DefaultCtorFind -- impossible return" );
 #endif
     }
-    return ctor;
+    return( ctor );
 }
 
 //************* temporary ****************
@@ -203,7 +203,7 @@ static unsigned typeSigNameSize(// COMPUTE SIZE OF NAME IN TYPE SIGNATURE
         break;
     DbgDefault( "typeSigNameSize -- bad THROBJ_..." );
     }
-    return size;
+    return( size );
 }
 
 
@@ -311,7 +311,7 @@ TYPE_SIG *TypeSigFind(          // FIND TYPE SIGNATURE
         *error_occurred = false;
         typeSigAccess( acc, sig, err_locn, error_occurred );
     }
-    return sig;
+    return( sig );
 }
 
 

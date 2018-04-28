@@ -56,5 +56,5 @@ static ios &__say_endl( ios &strm, int i ) {
 
 SMANIP_make( int, send ) {
 //~~~~~~~~~~~~~~~~~~~~~~
-    return SMANIPint( __say_endl, __p );
+    return( SMANIPint( __say_endl, __p ) );
 };

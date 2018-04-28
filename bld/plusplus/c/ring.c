@@ -66,5 +66,5 @@ void * StackCarveAlloc(         // CARVER ALLOC AND PUSH STACK
     void** element = CarveAlloc( carver );
     *element = *stack_hdr;
     *stack_hdr = (void*)element;
-    return (void*)element;
+    return( (void*)element );
 }

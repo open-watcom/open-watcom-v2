@@ -75,49 +75,49 @@ void CallStackPush(             // PUSH CALL STACK
 call_handle CallStackPop(       // POP CALL STACK
     void )
 {
-    return ((CALL_STK*)VstkPop( &stack_calls ))->handle;
+    return( ((CALL_STK*)VstkPop( &stack_calls ))->handle );
 }
 
 
 bool CallStackTopInlined(       // TEST IF TOP OF CALL STACK IS INLINED
     void )
 {
-    return NULL != ((CALL_STK*)VstkTop( &stack_calls ))->func;
+    return( NULL != ((CALL_STK*)VstkTop( &stack_calls ))->func );
 }
 
 
 call_handle CallStackTopHandle( // GET HANDLE FOR TOP OF CALL STACK
     void )
 {
-    return ((CALL_STK*)VstkTop( &stack_calls ))->handle;
+    return( ((CALL_STK*)VstkTop( &stack_calls ))->handle );
 }
 
 
 SYMBOL CallStackTopFunction(    // GET FUNCTION FOR TOP OF CALL STACK
     void )
 {
-    return ((CALL_STK*)VstkTop( &stack_calls ))->func;
+    return( ((CALL_STK*)VstkTop( &stack_calls ))->func );
 }
 
 
 target_offset_t CallStackThisAdj( // GET "THIS" ADJUSTMENT FOR VIRTUAL CALL
     void )
 {
-    return ((CALL_STK*)VstkTop( &stack_calls ))->adj_this;
+    return( ((CALL_STK*)VstkTop( &stack_calls ))->adj_this );
 }
 
 
 target_offset_t CallStackRetnAdj( // GET RETURN ADJUSTMENT FOR VIRTUAL CALL
     void )
 {
-    return ((CALL_STK*)VstkTop( &stack_calls ))->adj_retn;
+    return( ((CALL_STK*)VstkTop( &stack_calls ))->adj_retn );
 }
 
 
 target_offset_t CallStackRetnType( // GET RETURN TYPE FOR CALL
     void )
 {
-    return ((CALL_STK*)VstkTop( &stack_calls ))->retn_type;
+    return( ((CALL_STK*)VstkTop( &stack_calls ))->retn_type );
 }
 
 
@@ -130,7 +130,7 @@ SYMBOL CallIndirectPush(        // PUSH SYMBOL FOR INDIRECT CALL
     sym->thread = ind_call_stack;
     ind_call_stack = sym;
     sym->sym_type = type;
-    return sym;
+    return( sym );
 }
 
 

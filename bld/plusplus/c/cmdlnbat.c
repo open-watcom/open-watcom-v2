@@ -72,7 +72,7 @@ static int batchReadBuffer(     // READ A BUFFER
         batch_cursor = batch_buffer;
         batch_bytes = retn;
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -92,7 +92,8 @@ static int nextChar(            // GET NEXT CHARACTER
             retn = *batch_cursor;
             ++ batch_cursor;
             -- batch_bytes;
-            if( retn != '\r' ) break;
+            if( retn != '\r' )
+                break;
             if( *batch_cursor == '\n' ) {
                 continue;
             } else {
@@ -101,7 +102,7 @@ static int nextChar(            // GET NEXT CHARACTER
             break;
         }
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -154,8 +155,10 @@ bool CmdLnBatchRead(            // READ NEXT LINE IN COMMAND BUFFER
     VbufInit( buf );
     for(;;) {
         int c = nextChar();
-        if( CompFlags.batch_file_eof ) break;
-        if( c == '\n' ) break;
+        if( CompFlags.batch_file_eof )
+            break;
+        if( c == '\n' )
+            break;
         VbufConcChr( buf, c );
     }
     DbgVerify( VbufLen( buf ) > 0, "CmdLnReadBatch -- nothing" );

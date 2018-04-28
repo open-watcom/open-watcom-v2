@@ -66,7 +66,7 @@ static COND_LABEL* condLabelFind// LOCATE SAVED CONDITIONAL LABEL
             break;
         }
     } RingIterEnd( curr )
-    return lab;
+    return( lab );
 }
 
 
@@ -82,7 +82,7 @@ label_handle CondLabelAdd       // ADD A CONDITIONAL LABEL
         lab->se = se;
         lab->label = BENewLabel();
     }
-    return lab->label;
+    return( lab->label );
 }
 
 
@@ -99,7 +99,7 @@ SE* CondLabelNext               // FIND STATE ENTRY FOR NEXT COND. LABEL
             se = curr->se;
         }
     } RingIterEnd( curr )
-    return se;
+    return( se );
 }
 
 

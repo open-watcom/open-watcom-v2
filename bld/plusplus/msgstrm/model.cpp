@@ -132,7 +132,7 @@ void ProcessModelFile(          // PROCESS MODEL FILE
                       ) {
                         buffer[idx] = 0;
                     } else if( ( buffer[idx + 1] == subgoodchar )
-                             ||( buffer[idx + 1] == subbadchar  ) ) {
+                             ||( buffer[idx + 1] == subbadchar ) ) {
                         TooManyTypeError( );
                     };
                 };
@@ -145,7 +145,8 @@ void ProcessModelFile(          // PROCESS MODEL FILE
                 for( jdx = 1; jdx < tot; jdx++ ) {
                     for( int fdx = 0; ; ) {
                         fdx = descr.GetNextFile( jdx, fdx );
-                        if( fdx == 0 ) break;
+                        if( fdx == 0 )
+                            break;
                         MakeTestFileName( filename, descr, jdx, fdx );
                         kdx = 0;
                         sub = buffer;

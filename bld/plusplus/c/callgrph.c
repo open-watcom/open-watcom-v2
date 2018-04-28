@@ -61,7 +61,7 @@ static DIRGRAPH_NODE *cgrfAllocNode( // ALLOCATE A NODE
     CALLGRAPH *ctl )            // - control information
 {
     ExtraRptIncrementCtr( ctr_nodes );
-    return CarveAlloc( ctl->carve_nodes );
+    return( CarveAlloc( ctl->carve_nodes ) );
 }
 
 
@@ -69,7 +69,7 @@ static DIRGRAPH_EDGE *cgrfAllocEdge( // ALLOCATE AN EDGE
     CALLGRAPH *ctl )            // - control information
 {
     ExtraRptIncrementCtr( ctr_edges );
-    return CarveAlloc( ctl->carve_edges );
+    return( CarveAlloc( ctl->carve_edges ) );
 }
 
 
@@ -113,7 +113,7 @@ static DIRGRAPH_NODE *cgrfInitNode( // INIT A NODE
     node->unresolved = NULL;
     node->stmt_state = STS_NONE;
     node->dtor_method = DTM_DIRECT;
-    return &node->base;
+    return( &node->base );
 }
 
 
@@ -147,7 +147,7 @@ static DIRGRAPH_EDGE *cgrfInitEdge( // INIT AN EDGE
     edge->refs = 0;
     edge->addrs = 0;
     changeCtlCounts( ctl, edge );
-    return &edge->base;
+    return( &edge->base );
 }
 
 
@@ -156,7 +156,7 @@ static DIRGRAPH_EDGE *cgrfDupEdge( // PROCESS DUPLICATED EDGE
     CALLEDGE *edge )            // - duplicated edge
 {
     changeCtlCounts( ctl, edge );
-    return &edge->base;
+    return( &edge->base );
 }
 
 
@@ -237,7 +237,7 @@ CALLNODE *CgrfAddFunction(      // ADD A FUNCTION
     CALLGRAPH *ctl,             // - call graph information
     SYMBOL func )               // - function
 {
-    return (CALLNODE*)DgrfAddNode( &ctl->base, func );
+    return( (CALLNODE*)DgrfAddNode( &ctl->base, func ) );
 }
 
 
@@ -246,7 +246,7 @@ CALLNODE *CgrfFindFunction(     // FIND A FUNCTION
     CALLGRAPH *ctl,             // - call graph information
     SYMBOL func )               // - function
 {
-    return (CALLNODE*)DgrfFindNode( &ctl->base, func );
+    return( (CALLNODE*)DgrfFindNode( &ctl->base, func ) );
 }
 #endif
 
@@ -304,7 +304,7 @@ static bool cgrfDumpCall(       // DUMP CALL GRAPH EDGE
           , edge->addrs
           , DbgSymNameFull( edge->base.target->object, &vbuf ) );
     VbufFree( &vbuf );
-    return false;
+    return( false );
 }
 
 
@@ -340,7 +340,7 @@ static bool cgrfDumpNode(       // DUMP CALL GRAPH NODE
           , func->flag );
     CgrfWalkCalls( ctl, node, &cgrfDumpCall );
     VbufFree( &vbuf );
-    return false;
+    return( false );
 }
 
 

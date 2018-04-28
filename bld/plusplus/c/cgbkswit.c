@@ -55,7 +55,7 @@ static VSTK_CTL stack_labs_sw;  // stack: labels (switches)
 static SW_CTL *switch_ctl(      // GET CURRENT SW_CTL
     void )
 {
-    return VstkTop( &stack_switches );
+    return( VstkTop( &stack_switches ) );
 }
 
 
@@ -98,7 +98,7 @@ label_handle CgSwitchBeg        // GENERATE CODE FOR START OF SWITCH STMT
     ctl->type = sw_type;
     ctl->label = BENewLabel();
     CgAssign( CGTempName( ctl->temp, sw_type ), sw_expr, sw_type );
-    return ctl->label;
+    return( ctl->label );
 }
 
 

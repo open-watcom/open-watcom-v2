@@ -65,7 +65,7 @@ PTREE ConvCtlDiagnoseTypes      // DIAGNOSE CASTING TYPES
     } else {
         ConversionDiagnoseInf();
     }
-    return ctl->expr;
+    return( ctl->expr );
 }
 
 
@@ -73,7 +73,7 @@ PTREE ConvCtlDiagnose           // DIAGNOSE CASTING ERROR
     ( CONVCTL* ctl )            // - conversion control
 {
     PTreeErrorExpr( ctl->expr, ctl->msg_no );
-    return ConvCtlDiagnoseTypes( ctl );
+    return( ConvCtlDiagnoseTypes( ctl ) );
 }
 
 
@@ -389,7 +389,7 @@ static CONVCTL* convCtlInitData // INITIALIZE CONVCTL DATA
     CONVCTL_FLAGS
     #undef CONVCTL_FLAG
     ctl->ctd = 0;
-    return ctl;
+    return( ctl );
 }
 
 
@@ -475,33 +475,40 @@ void ConvCtlInit                // INITIALIZE CONVCTL
             adjustFnAddrMembPtr( ctl );
             checkSrcForError( ctl );
         }
-        if( ! ctl->has_err_operand ) for( ; ; ) {
-            src = NodeType( expr->u.subtree[1] );
-            ConvCtlTypeInit( ctl, &ctl->src, src );
-            if( ctl->tgt.class_operand ) break;
-            if( ctl->src.class_operand ) break;
-            if( ctl->has_err_operand ) break;
-            if( ctl->tgt.reference ) {
-                if( ctl->src.reference ) break;
-                // lvalue <- rvalue (must be const ref)
-                ref_type = TypeReference( ctl->tgt.unmod );
-                if( TypeIsConst( ref_type ) ) {
-                    PTREE exp;
-                    exp = NodeAssignTemporary( ref_type, ctl->expr->u.subtree[1] );
-                    ctl->expr->u.subtree[1] = exp;
-                } else {
-                    diagnoseError( ctl, ERR_TEMP_AS_NONCONST_REF );
+        if( ! ctl->has_err_operand ) {
+            for( ; ; ) {
+                src = NodeType( expr->u.subtree[1] );
+                ConvCtlTypeInit( ctl, &ctl->src, src );
+                if( ctl->tgt.class_operand )
                     break;
-                }
-            } else {
-                if( ! ctl->src.reference ) break;
-                ref_type = TypeReference( ctl->src.unmod );
-                if( FunctionDeclarationType( ref_type ) ) {
-                    ctl->expr->u.subtree[1]->type = MakePointerTo( ref_type );
-                    ctl->expr->u.subtree[1]->flags &= ~PTF_LVALUE;
+                if( ctl->src.class_operand )
+                    break;
+                if( ctl->has_err_operand )
+                    break;
+                if( ctl->tgt.reference ) {
+                    if( ctl->src.reference )
+                        break;
+                    // lvalue <- rvalue (must be const ref)
+                    ref_type = TypeReference( ctl->tgt.unmod );
+                    if( TypeIsConst( ref_type ) ) {
+                        PTREE exp;
+                        exp = NodeAssignTemporary( ref_type, ctl->expr->u.subtree[1] );
+                        ctl->expr->u.subtree[1] = exp;
+                    } else {
+                        diagnoseError( ctl, ERR_TEMP_AS_NONCONST_REF );
+                        break;
+                    }
                 } else {
-                    expr->u.subtree[1] = NodeRvalue( expr->u.subtree[1] );
-                    src = expr->u.subtree[1]->type;
+                    if( ! ctl->src.reference )
+                        break;
+                    ref_type = TypeReference( ctl->src.unmod );
+                    if( FunctionDeclarationType( ref_type ) ) {
+                        ctl->expr->u.subtree[1]->type = MakePointerTo( ref_type );
+                        ctl->expr->u.subtree[1]->flags &= ~PTF_LVALUE;
+                    } else {
+                        expr->u.subtree[1] = NodeRvalue( expr->u.subtree[1] );
+                        src = expr->u.subtree[1]->type;
+                    }
                 }
             }
         }
@@ -864,7 +871,7 @@ static CNV_RETN checkPtrTrunc(  // CHECK POINTER TRUNCATION
     if( ( retn != CNV_OK ) && ( ( reqd_cnv == CNV_FUNC_THIS ) || ( reqd_cnv == CNV_FUNC_CD_THIS ) ) ) {
         retn = CNV_TRUNC_THIS;
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -941,14 +948,14 @@ static PTREE nodeBasedSelfExpr( // FIND EXPR TO BE USED FOR BASED __SELF
     tgt = TypeRebuildPcPtr( umod, flags, TF1_FAR );
     expr->u.subtree[0] = NodeConvert( tgt, expr->u.subtree[0] );
     expr->u.subtree[0]->flags &= ~ PTF_LVALUE;
-    return NodeDupExpr( &expr->u.subtree[0] );
+    return( NodeDupExpr( &expr->u.subtree[0] ) );
 }
 
 
 static PTREE findBasedStrSym(   // FIND REFERENCE SYMBOL FOR TF1_BASED_STRING
     TYPE expr_type )            // - type of pointer expression
 {
-    return NodeBasedStr( BasedPtrType( expr_type ) );
+    return( NodeBasedStr( BasedPtrType( expr_type ) ) );
 }
 
 
@@ -1005,7 +1012,7 @@ static PTREE convertFromPcPtr(  // CONVERT SPECIAL TO REGULAR PC PTR
             break;
         }
     }
-    return expr;
+    return( expr );
 }
 
 
@@ -1039,14 +1046,14 @@ static PTREE convertToPcPtr(    // CONVERT REGULAR TO SPECIAL PC PTR
         expr = NodeSetType( expr, ptr_type, PTF_PTR_NONZERO );
       } break;
     }
-    return expr;
+    return( expr );
 }
 
 
 static SCOPE pcPtrScope(        // GET SCOPE OF POINTED-AT ITEM
     TYPE ptype )                // - pointer type
 {
-    return TypeScope( TypePointedAtModified( ptype ) );
+    return( TypeScope( TypePointedAtModified( ptype ) ) );
 }
 
 
@@ -1145,7 +1152,7 @@ CNV_RETN PcPtrValidate(         // VALIDATE PC-FORMAT PTRS
     } else {
         retn = CNV_OK;
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -1182,7 +1189,7 @@ static CNV_RETN classPtrConversion( // CONVERT CLASS PTR (UP OR DOWN)
         break;
     }
     retn = NodeConvertPtr( reqd_cnvptr, a_expr, expr_type, proto );
-    return retn;
+    return( retn );
 }
 
 
@@ -1340,7 +1347,7 @@ static CNV_RETN pcPtrConvertSrcTgt(// PTR CONVERT SOURCE TO TARGET
         }
         *a_expr = expr;
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -1402,7 +1409,7 @@ CNV_RETN CastPtrToPtr           // IMPLICIT/EXPLICIT CAST PTR -> PTR
         retn = CNV_OK_TRUNC_CAST;
         break;
     }
-    return retn;
+    return( retn );
 }
 
 

@@ -147,7 +147,7 @@ static char rotateChar( char c, unsigned rotate )
         c = 62;
     } else {
         // don't rotate the character
-        return c;
+        return( c );
     }
     new_char = ( c + rotate ) & 0x3f;
     if( new_char == 63 ) {
@@ -166,7 +166,7 @@ static char rotateChar( char c, unsigned rotate )
     } else {
         c = '@';
     }
-    return c;
+    return( c );
 }
 
 

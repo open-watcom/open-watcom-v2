@@ -121,7 +121,7 @@ int main(                       // MAIN-LINE FOR DLL DRIVER
         retcode = IdeDrvPrintError( &info );
         break;
     }
-    return retcode;
+    return( retcode );
 }
 
 

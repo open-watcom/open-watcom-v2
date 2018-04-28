@@ -94,7 +94,7 @@ static SE* callBackCurrent(     // SET UP CURRENT POSITION
 
     posn = FstabCurrPosn();
     info->posn_last = posn;
-    return posn;
+    return( posn );
 }
 
 
@@ -270,7 +270,7 @@ static cg_name condSet(         // SET/RESET FLAG
         op_mask = CGInteger( 0xFF - cond.mask, TY_UINT_1 );
         op_flg = CGLVPreGets( O_AND, op_flg, op_mask, TY_UINT_1 );
     }
-    return op_flg;
+    return( op_flg );
 }
 
 

@@ -84,7 +84,7 @@ static VFTGEN* findVftGen(      // LOCATE VFTGEN FOR SYMBOL
             break;
         }
     } RingIterEnd( curr );
-    return retn;
+    return( retn );
 }
 
 
@@ -100,7 +100,7 @@ void BeVftRef(                  // REFERENCE TO VFT
 bool BeVftReqd(                 // CHECK IF VFT REQUIRED
     SYMBOL vft )                // - the VFT
 {
-    return NULL != findVftGen( vft );
+    return( NULL != findVftGen( vft ) );
 }
 
 

@@ -111,7 +111,7 @@ SYMBOL CgFrontCurrentFunction(  // GET CURRENT FUNCTION BEING GENERATED
     } else {
         curr = codeCGFILE->symbol;
     }
-    return curr;
+    return( curr );
 }
 
 
@@ -319,7 +319,7 @@ void CgFrontDbgLine(            // SET LINE FOR DEBUGGING
 CGFILE_INS CgFrontLastIns(      // RETURN LOCATION OF LAST WRITTEN CODE IC
     void )
 {
-    return CgioLastWrite( codeCGFILE );
+    return( CgioLastWrite( codeCGFILE ) );
 }
 
 
@@ -473,7 +473,7 @@ void *CgFrontSwitchFile(        // SWITCH VIRTUAL FUNCTION FILES
     if( ( retn == NULL ) || ( retn->symbol != symbol ) ) {
         codeCGFILE = CgioLocateFile( symbol );
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -594,7 +594,7 @@ CGFILE_INS CgFrontFuncOpen(     // OPEN A FUNCTION (AND ITS FILE)
     if( posn != NULL ) {
         emitSourcePosn( gen, posn );
     }
-    return reg;
+    return( reg );
 }
 
 

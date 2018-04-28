@@ -52,7 +52,7 @@ static carve_t carveTHROW_RO;   // allocations for THROW_ROs
 static target_size_t sizeOfThrowCnv( // GET SIZE OF A THROW TYPE CONVERSION
     void )
 {
-    return CgbkInfo.size_code_ptr + CgbkInfo.size_offset;
+    return( CgbkInfo.size_code_ptr + CgbkInfo.size_offset );
 }
 
 
@@ -82,19 +82,20 @@ static THROW_RO *throwRoGet(    // GET THROW R/O BLOCK
         ro->sym = sym;
         for( ; ; ) {
             type = ThrowCnvType( &ctl, &offset );
-            if( type == NULL ) break;
+            if( type == NULL )
+                break;
             BeTypeSignature( type );
         }
         ThrowCnvFini( &ctl );
     }
-    return ro;
+    return( ro );
 }
 
 
 cg_name ThrowRo(                // CREATE/ACCESS THROW R/O BLOCK
     TYPE type )                 // - type being thrown
 {
-    return CgSymbol( throwRoGet( type )->sym );
+    return( CgSymbol( throwRoGet( type )->sym ) );
 }
 
 
@@ -148,7 +149,8 @@ void ThrowRoGen(                // GENERATE A THROW R/O BLOCK
             DgOffset( offset );
             for( ; ; ) {
                 type = ThrowCnvType( &ctl, &offset );
-                if( type == NULL ) break;
+                if( type == NULL )
+                    break;
                 cgGenThrowCnv( type, offset );
             }
             ThrowCnvFini( &ctl );

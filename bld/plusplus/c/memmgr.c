@@ -226,7 +226,8 @@ static void addPerm( size_t size )
             linkPerm( p, amt );
             return;
         }
-        if( amt == PERM_MIN_ALLOC ) break;
+        if( amt == PERM_MIN_ALLOC )
+            break;
         amt >>= 1;
     }
 }

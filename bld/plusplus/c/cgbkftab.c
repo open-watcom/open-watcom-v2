@@ -77,7 +77,7 @@ void DbgSetState(               // DEBUG ONLY: PRINT STATE VALUE SET, IF REQ'D
 target_offset_t CgOffsetRw(     // COMPUTE OFFSET FROM R/W REGISTRATION
     target_offset_t offset )    // - offset within stack
 {
-    return offset - rw_offset_fun;
+    return( offset - rw_offset_fun );
 }
 
 
@@ -86,35 +86,35 @@ SE* FstabCtorTest(              // ALLOCATE CTOR-TEST COMMAND
 {
     SE* se = SeAlloc( DTC_CTOR_TEST );
     se->ctor_test.flag_no = FnCtlCondFlagCtor( fctl );
-    return FstabAdd( se );
+    return( FstabAdd( se ) );
 }
 
 
 SE* FstabPrevious(              // GET PREVIOUS STATE ENTRY
     SE* se )                    // - starting entry
 {
-    return StabCtlPrevious( &fstab, se );
+    return( StabCtlPrevious( &fstab, se ) );
 }
 
 
 SE* FstabPrecedes(              // GET PRECEDING STATE ENTRY
     SE* se )                    // - starting entry
 {
-    return StabCtlPrecedes( &fstab, se );
+    return( StabCtlPrecedes( &fstab, se ) );
 }
 
 
 SE* FstabActualPosn(            // GET ACTUAL POSITION IN STATE TABLE
     void )
 {
-    return StateTableActualPosn( &fstab );
+    return( StateTableActualPosn( &fstab ) );
 }
 
 
 SE* FstabAdd(                   // ADD STATE ENTRY TO STATE TABLE
     SE* se )                    // - state entry
 {
-    return StateTableAdd( se, &fstab );
+    return( StateTableAdd( se, &fstab ) );
 }
 
 
@@ -129,7 +129,7 @@ SE* FstabPosnGened(             // GET GENNED POSITION IF REQUIRED
     SE* src,                    // - source entry
     SE* tgt )                   // - target entry
 {
-    return StabCtlPosnGened( &fstab, src, tgt );
+    return( StabCtlPosnGened( &fstab, src, tgt ) );
 }
 
 
@@ -146,7 +146,7 @@ SE* FstabSetSvSe(               // ADD SET_SV FOR SE TO STATE TABLE
         se->set_sv.se = tgt;
         FstabAdd( se );
     }
-    return tgt;
+    return( tgt );
 }
 
 
@@ -201,9 +201,9 @@ static target_offset_t offsetStateVar( // GET OFFSET OF STATE VAR. IN R/W BLOCK
     void )
 {
 #if _CPU == _AXP
-    return CgbkInfo.size_data_ptr;
+    return( CgbkInfo.size_data_ptr );
 #else
-    return 2 * CgbkInfo.size_data_ptr + CgbkInfo.size_fs_hand;
+    return( 2 * CgbkInfo.size_data_ptr + CgbkInfo.size_fs_hand );
 #endif
 }
 
@@ -212,7 +212,7 @@ static cg_name assignStateVar(  // EMIT CODE TO ASSIGN STATE VARIABLE
     SE* se )                    // - NULL or state entry to be set
 {
     DbgSetState( "direct", se );
-    return CgAssignStateVar( fstab.rw, se, offsetStateVar() );
+    return( CgAssignStateVar( fstab.rw, se, offsetStateVar() ) );
 }
 
 
@@ -229,7 +229,7 @@ void FstabAssignStateVar(       // EMIT EXPRESSION TO ASSIGN STATE VARIABLE
 static bool emitSv(             // TEST IF SV TO BE UPDATED
     FN_CTL* fctl )              // - function being emitted
 {
-    return BlkPosnUseStab() && DtmTabular( fctl );
+    return( BlkPosnUseStab() && DtmTabular( fctl ) );
 }
 
 
@@ -246,7 +246,7 @@ cg_name FstabEmitStateVar(      // EMIT CODE TO SET STATE VARIABLE, IF REQ'D
     } else {
         expr = NULL;
     }
-    return expr;
+    return( expr );
 }
 
 
@@ -267,7 +267,7 @@ cg_name FstabEmitStateVarPatch( // EMIT CODE TO PATCH STATE VARIABLE, IF REQ'D
     } else {
         expr = NULL;
     }
-    return expr;
+    return( expr );
 }
 
 
@@ -299,7 +299,7 @@ SE* FstabFindAuto(              // FIND AUTO VAR ENTRY IN STATE TABLE
         }
 
     } RingIterEnd( se_curr );
-    return se_auto;
+    return( se_auto );
 }
 
 
@@ -316,7 +316,7 @@ void FstabSetDtorState(         // SET STATE VAR. FOR DTOR
 bool FstabGenerate(             // GENERATE FUNCTION STATE TABLE
     void )
 {
-    return StabGenerate( &fstab );
+    return( StabGenerate( &fstab ) );
 }
 
 
@@ -332,7 +332,7 @@ void FstabFree(                 // FREE FUNCTION STATE TABLE
 SE* FstabCurrPosn(              // GET CURRENT STATE ENTRY FOR FUNCTION
     void )
 {
-    return StateTableCurrPosn( &fstab );
+    return( StateTableCurrPosn( &fstab ) );
 }
 
 
@@ -346,7 +346,7 @@ void FstabRemove(               // REMOVE LAST STATE ENTRY
 SYMBOL FstabRw(                 // GET R/W SYMBOL FOR FUNCTION STATE TABLE
     void )
 {
-    return fstab.rw;
+    return( fstab.rw );
 }
 
 void FstabRegister(             // REGISTER FUNCTION
@@ -382,7 +382,7 @@ void FstabDeRegister(           // DE-REGISTER FUNCTION
 SE* FstabMarkedPosn(            // GET MARKED POSITION
     void )
 {
-    return fstab.marked_posn;
+    return( fstab.marked_posn );
 }
 
 
@@ -395,7 +395,7 @@ SE* FstabMarkedPosnSet(         // SET MARKED POSITION
     }
 #endif
     fstab.marked_posn = se;
-    return se;
+    return( se );
 }
 
 
@@ -425,7 +425,7 @@ SE* FstabTestFlag(              // CREATE TEST-FLAG ENTRY
                || ! se->base.gen
                || se->test_flag.se_true->base.gen
              , "FstabTestFlag: DTC_TEST_FLAG (true) base.gen mismatch" );
-    return se;
+    return( se );
 }
 
 
@@ -443,21 +443,21 @@ SYMBOL FstabExcHandler(         // ALPHA: SET EXCEPTION HANDLER
     } else {
         retn = RunTimeCallSymbol( RTF_PD_HANDLER );
     }
-    return retn;
+    return( retn );
 }
 
 
 SYMBOL FstabExcData(            // ALPHA: SET EXCEPTION DATA
     void )
 {
-    return fStabDefn.ro;
+    return( fStabDefn.ro );
 }
 
 
 SYMBOL FstabExcRw(              // ALPHA: GET R/W DATA SYMBOL
     void )
 {
-    return fstab.rw;
+    return( fstab.rw );
 }
 
 #endif

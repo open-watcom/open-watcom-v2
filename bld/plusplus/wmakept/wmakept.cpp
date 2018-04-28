@@ -70,7 +70,7 @@ static int load_dll             // LOAD A DLL (SYSTEM-DEPENDENT)
               , err_bf );
         ret = FALSE;
     }
-    return ret;
+    return( ret );
 }
 
 
@@ -89,8 +89,11 @@ static int load_dlls            // LOAD DLL'S
         for( ; ; ) {
             dp = env;
             for( ; ; ++env ) {
-                if( *env == ';' ) break;
-                if( *env == '\0' ) break;
+                if( *env == ';' )
+                    break;
+                if( *env == '\0' ) {
+                    break;
+                }
             }
             size = env - dp;
             if( size > 0 ) {
@@ -98,11 +101,12 @@ static int load_dlls            // LOAD DLL'S
                 memcpy( dll_name, dp, size );
                 retn &= load_dll( dll_name );
             }
-            if( *env == '\0' ) break;
+            if( *env == '\0' )
+                break;
             ++ env;
         }
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -126,5 +130,5 @@ int main                        // MAIN-LINE
         printf( "WMAKEPT terminated without running WMAKE\n" );
         retn = -1;
     }
-    return retn;
+    return( retn );
 }

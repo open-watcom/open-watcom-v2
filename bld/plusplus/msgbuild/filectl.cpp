@@ -156,7 +156,8 @@ int FileCtlInput::getline       // GET A LINE
         }
     } else {
         for( ; ; ++buf ) {
-            if( *buf == '\0' ) break;
+            if( *buf == '\0' )
+                break;
             if( *buf == '\n' ) {
                 *buf = '\0';
                 break;
@@ -164,5 +165,5 @@ int FileCtlInput::getline       // GET A LINE
         }
         retn = 1;
     }
-    return retn;
+    return( retn );
 }

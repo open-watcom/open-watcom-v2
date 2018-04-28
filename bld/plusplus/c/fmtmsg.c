@@ -260,5 +260,5 @@ SYMBOL FormatMsg( VBUF *pbuf, char *fmt, va_list arg )
         fmt++;
         cfmt = *fmt;
     }
-    return retn_symbol;
+    return( retn_symbol );
 }

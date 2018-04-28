@@ -59,7 +59,7 @@ OMR ObjModelFunctionReturn(     // DETERMINE TYPE OF RETURN FOR OBJECT MODEL
         retn = OMR_SCALAR;
         break;
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -76,5 +76,5 @@ OMR ObjModelArgument(           // DETERMINE HOW TYPE PASSED IN OBJECT MODEL
     } else {
         retn = OMR_CLASS_VAL;
     }
-    return retn;
+    return( retn );
 }

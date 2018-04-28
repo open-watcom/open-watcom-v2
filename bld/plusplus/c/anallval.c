@@ -61,7 +61,7 @@ static TYPE lvalueErrMsg(       // GENERATE NOT-LVALUE ERROR MESSAGE
     } else {
         PTreeErrorExpr( expr_err, msg_normal );
     }
-    return NULL;
+    return( NULL );
 }
 
 
@@ -69,10 +69,10 @@ TYPE LvalueErr(                 // NOT-LVALUE ERROR (NODE)
     PTREE expr_chk,             // - expression, to be checked
     PTREE expr )                // - expression
 {
-    return lvalueErrMsg( expr_chk
+    return( lvalueErrMsg( expr_chk
                        , expr
                        , ERR_MUST_BE_LVALUE
-                       , ERR_MUST_BE_LVALUE_CAST );
+                       , ERR_MUST_BE_LVALUE_CAST ) );
 }
 
 
@@ -80,10 +80,10 @@ TYPE LvalueErrLeft(             // NOT-LVALUE ERROR (LEFT NODE)
     PTREE expr_chk,             // - expression, to be checked
     PTREE expr )                // - expression
 {
-    return lvalueErrMsg( expr_chk
+    return( lvalueErrMsg( expr_chk
                        , expr
                        , ERR_LEFT_MUST_BE_LVALUE
-                       , ERR_LEFT_MUST_BE_LVALUE_CAST );
+                       , ERR_LEFT_MUST_BE_LVALUE_CAST ) );
 }
 
 
@@ -232,7 +232,7 @@ static PTREE reduceToRight(     // REDUCE EXPRESSION TO RIGHT EXPR
 
     node = NodePruneLeftTop( *a_node );
     *a_node = node;
-    return node;
+    return( node );
 }
 
 
@@ -252,7 +252,7 @@ static PTREE thisPointsNode(    // MAKE this->node
         node->flags |= PTF_LVALUE;
         node = PTreeCopySrcLocation( node, left );
     }
-    return node;
+    return( node );
 }
 
 
@@ -690,7 +690,7 @@ static TYPE diagMember( PTREE left, PTREE expr, MSG_NUM msg )
     PTreeErrorExpr( left, msg );
     InfMsgPtr( INF_OPERAND_TYPE, left_type );
     PTreeErrorNode( expr );
-    return NULL;
+    return( NULL );
 }
 
 
@@ -724,7 +724,7 @@ static TYPE analyseClPtrLeft(   // ANALYSE A CLASS POINTER ON LEFT
             }
         }
     }
-    return type;
+    return( type );
 }
 
 
@@ -751,7 +751,7 @@ static TYPE analyseClassLeft(   // ANALYSE A CLASS ON LEFT
     } else {
         type = LvalueErrLeft( left, expr );
     }
-    return type;
+    return( type );
 }
 
 /*
@@ -808,7 +808,7 @@ bool AnalyseClQualRes(      // ANALYSE :: operator
 bool AnalyseClQual(
     PTREE *a_expr )
 {
-    return AnalyseClQualRes(a_expr, NULL);
+    return( AnalyseClQualRes( a_expr, NULL ) );
 }
 
 
@@ -854,7 +854,7 @@ bool AnalyseLvalue(             // ANALYSE AN LVALUE
         }
         break;
     case PT_BINARY :
-        if( CO_COLON_COLON == expr->cgop ){
+        if( CO_COLON_COLON == expr->cgop ) {
             ok = AnalyseClQual( a_expr );
             if( ok ) {
                 ok = analyseSymbol( a_expr );
@@ -932,7 +932,7 @@ PTREE AnalyseLvArrow(           // ANALYSE LVALUE "->"
     } else {
         PTreeErrorNode( expr );
     }
-    return expr;
+    return( expr );
 }
 
 
@@ -975,7 +975,7 @@ PTREE AnalyseLvDot(             // ANALYSE LVALUE "."
     } else {
         PTreeErrorNode( expr );
     }
-    return expr;
+    return( expr );
 }
 
 static bool diagnoseOffsetof(   // DIAGNOSE ERROR IN OFFSETOF
@@ -995,9 +995,9 @@ static bool diagnoseOffsetof(   // DIAGNOSE ERROR IN OFFSETOF
     } else if( SymUnmodifiedType( sym )->id == TYP_BITFIELD ) {
         PTreeErrorExpr( id, ERR_OFFSETOF_BITFIELD );
     } else {
-        return false;
+        return( false );
     }
-    return true;
+    return( true );
 }
 
 static PTREE reverseTree( PTREE *ptree )
@@ -1017,7 +1017,7 @@ static PTREE reverseTree( PTREE *ptree )
         tree = left;
     }
     *ptree = parent;
-    return parent;
+    return( parent );
 }
 
 static TYPE applyIndex( PTREE tree, TYPE type, target_offset_t *poffset )
@@ -1027,20 +1027,20 @@ static TYPE applyIndex( PTREE tree, TYPE type, target_offset_t *poffset )
 
     if( ! TypeDefined( type ) ) {
         PTreeErrorExpr( tree, ERR_PTR_SCALES_LEFT );
-        return NULL;
+        return( NULL );
     }
     for( curri = reverseTree( &(tree->u.subtree[1]) ); curri != NULL; curri = curri->u.subtree[0] ) {
         DbgAssert( NodeIsBinaryOp( curri, CO_INDEX ) );
         type = ArrayType( type );
         if( type == NULL ) {
             PTreeErrorExpr( tree, ERR_EXPR_MUST_BE_ARRAY );
-            return NULL;
+            return( NULL );
         }
         offset = curri->u.subtree[1]->u.int_constant * CgTypeSize( type->of );
         *poffset += offset;
         type = type->of;
     }
-    return type;
+    return( type );
 }
 
 PTREE AnalyseOffsetOf(          // ANALYSE OFFSETOF
@@ -1108,5 +1108,5 @@ PTREE AnalyseOffsetOf(          // ANALYSE OFFSETOF
         PTreeFreeSubtrees( expr );
         expr = NodeOffset( offset );
     }
-    return expr;
+    return( expr );
 }

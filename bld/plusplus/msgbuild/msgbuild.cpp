@@ -87,7 +87,7 @@ static char const* scanOverWS   // SCAN OVER WHITE SPACE
     ( char const *scan )
 {
     for( ; isspace( *scan ); ++ scan );
-    return scan;
+    return( scan );
 }
 
 
@@ -95,7 +95,7 @@ static char const* scanOverBS   // SCAN OVER BLACK SPACE
     ( char const *scan )
 {
     for( ; *scan != '\0' && ! isspace( *scan ); ++ scan );
-    return scan;
+    return( scan );
 }
 
 enum ProcState                  // ProcState: processing state
@@ -190,7 +190,8 @@ static byte scanWords           // SCAN WORDS ON A LINE
     message_size = 0;
     for( word_count = 0; ; ++word_count ) {
         text = scanOverWS( text );
-        if( '\0' == *text ) break;
+        if( '\0' == *text )
+            break;
         word_beg = text;
         text = scanOverBS( text );
         unsigned size = text - word_beg;
@@ -201,7 +202,7 @@ static byte scanWords           // SCAN WORDS ON A LINE
         stats.max_message = message_size;
     }
     stats.space_read_in += message_size;
-    return word_count;
+    return( word_count );
 }
 
 
@@ -227,7 +228,7 @@ static byte scanLevel           // SCAN MESSAGE LEVEL
         ++ text;
     }
     checkEOL( text );
-    return retn;
+    return( retn );
 }
 
 
@@ -311,7 +312,9 @@ static void processInput        // PROCESS INPUT
                     }
                 }
             }
-            if( rec_type == REC_NONE ) continue;
+            if( rec_type == REC_NONE ) {
+                continue;
+            }
         } else {
             rec_type = REC_EOF;
         }
@@ -324,11 +327,11 @@ static void processInput        // PROCESS INPUT
             proc_state = next_state;
             continue;
         case SYM_NO_GRP :
-            processSymbol( text, 0, symbolNum  );
+            processSymbol( text, 0, symbolNum );
             proc_state = next_state;
             continue;
         case SYM_GROUP :
-            processSymbol( text, groupNum, symbolNum  );
+            processSymbol( text, groupNum, symbolNum );
             proc_state = next_state;
             continue;
         case TEXT_GROUP :
@@ -492,5 +495,5 @@ int main                        // MAIN-LINE
         puts( "MSGBUILD -- unexpected exception" );
         retn = -1;
     }
-    return 0;
+    return( 0 );
 }

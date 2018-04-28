@@ -180,7 +180,7 @@ static SYMBOL segEmitLabel(         // EMIT SEGMENT LABEL
         seg->lab_gened = true;
         _markUsed( seg, true );
     }
-    return label;
+    return( label );
 }
 
 
@@ -206,7 +206,7 @@ static PC_SEGMENT *segIdLookup( // LOOKUP SEGMENT FOR ID
             break;
         }
     } RingIterEnd( curr );
-    return retn;
+    return( retn );
 }
 
 
@@ -235,7 +235,7 @@ static PC_SEGMENT *segNameLookup( // LOOKUP SEGMENT FOR NAME
             break;
         }
     } RingIterEnd( curr );
-    return retn;
+    return( retn );
 }
 
 
@@ -593,7 +593,7 @@ static PC_SEGMENT *segmentDefine(// SEGMENT: DEFINE IF REQUIRED
         }
 #endif
     }
-    return curr;
+    return( curr );
 }
 
 
@@ -809,7 +809,7 @@ fe_seg_id SegmentAddSym(        // SEGMENT: ADD SYMBOL TO SPECIFIED SEGMENT
             }
         }
     }
-    return id;
+    return( id );
 }
 
 
@@ -839,7 +839,7 @@ fe_seg_id SegmentAddComdatData( // ADD SEGMENT FOR A COMDAT DATA SYMBOL
         }
     }
     seg = segmentAlloc( name, NULL, SEG_NULL, attrs, SA_IN_DGROUP );
-    return seg->seg_id;
+    return( seg->seg_id );
 }
 #endif
 
@@ -879,14 +879,14 @@ static SYMBOL segDefineLabel(   // DEFINE LABEL FOR SEGMENT, IF REQ'D
         seg->label = label;
         _markUsed( seg, true );
     }
-    return label;
+    return( label );
 }
 
 
 SYMBOL SegmentLabelSym(         // GET LABEL IN SEGMENT
     fe_seg_id seg_id )          // - segment id
 {
-    return segDefineLabel( segIdLookup( seg_id ) );
+    return( segDefineLabel( segIdLookup( seg_id ) ) );
 }
 
 
@@ -900,7 +900,7 @@ SYMBOL SegmentLabelGen(         // GENERATE SEGMENT LABEL IF REQ'D
     segmentCgDefine( seg );
     segDefineLabel( seg );
     label = segEmitLabel( seg );
-    return label;
+    return( label );
 }
 
 
@@ -914,7 +914,7 @@ SYMBOL SegmentLabelStackReset(  // RESET STACK-SEGMENT LABEL
     lab = stk->label;
     stk->label = NULL;
     stk->lab_gened = false;
-    return lab;
+    return( lab );
 }
 
 #if _INTEL_CPU
@@ -963,10 +963,10 @@ fe_seg_id SegmentFindNamed(     // FIND SEGMENT ENTRY FOR NAME
     PC_SEGMENT *segmt;          // - defined segment
 
     if( 0 == strcmp( segname, "_STACK" ) ) {
-        return SEG_STACK;
+        return( SEG_STACK );
     }
     if( 0 == strcmp( segname, "_CODE" ) ) {
-        return SEG_CODE;
+        return( SEG_CODE );
     }
     segmt = segNameLookup( segname );
     if( segmt == NULL ) {
@@ -985,7 +985,7 @@ fe_seg_id SegmentFindNamed(     // FIND SEGMENT ENTRY FOR NAME
         }
     }
     _markUsed( segmt, true );
-    return segmt->seg_id;
+    return( segmt->seg_id );
 }
 
 
@@ -999,7 +999,7 @@ fe_seg_id SegmentFindBased(     // FIND SEGMENT ID FOR TF1_BASED_STRING
     base_mod = BasedType( expr_type );
     string = base_mod->u.m.base;
     segname = string->string;
-    return SegmentFindNamed( segname );
+    return( SegmentFindNamed( segname ) );
 }
 
 
@@ -1007,14 +1007,14 @@ static PC_SEGMENT *segmentAllocRom(    // ALLOCATE R/O DATA SEGMENT
     char *name,                 // - name
     fe_seg_id segid )           // - segment id
 {
-    return segmentAlloc( name, NULL, segid, SGAT_DATA_CON2, SA_IN_DGROUP );
+    return( segmentAlloc( name, NULL, segid, SGAT_DATA_CON2, SA_IN_DGROUP ) );
 }
 
 static PC_SEGMENT *segmentAllocRW(    // ALLOCATE R/W DATA SEGMENT
     char *name,                 // - name
     fe_seg_id segid )           // - segment id
 {
-    return segmentAlloc( name, NULL, segid, SGAT_DATA_RW, SA_IN_DGROUP );
+    return( segmentAlloc( name, NULL, segid, SGAT_DATA_RW, SA_IN_DGROUP ) );
 }
 
 
@@ -1180,7 +1180,7 @@ static fe_seg_id nextZmSegment( // GET NEXT CODE SEGMENT FOR -zm
         segid = code_def_seg.pcseg->seg_id;
         SegmentMarkUsed( segid );
     }
-    return segid;
+    return( segid );
 }
 
 bool SegmentIfBasedOK( SYMBOL func )
@@ -1236,7 +1236,7 @@ fe_seg_id SegmentForDefinedFunc(// GET SEGMENT FOR A DEFINED FUNCTION
             code_def_seg.ds_used = true;
         }
     }
-    return segid;
+    return( segid );
 }
 
 
@@ -1372,7 +1372,7 @@ void* SegmentBoundReg(          // GET REGISTER BOUND TO SEGMENT
     } else {
         retn = &seg->binding;
     }
-    return retn;
+    return( retn );
 }
 #endif
 

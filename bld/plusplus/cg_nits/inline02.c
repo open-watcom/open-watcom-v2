@@ -22,18 +22,18 @@ inline Point::Point(const long a, const long b)
     ;
 }
 
-inline Point operator+(const Point a, const Point b){
-    return Point(a.x+b.x, a.y+b.y);
+inline Point operator+(const Point a, const Point b) {
+    return( Point(a.x+b.x, a.y+b.y) );
 }
 
-inline Point operator/(const Point a, const long b){
-    return Point(a.x/b, a.y/b);
+inline Point operator/(const Point a, const long b) {
+    return( Point(a.x/b, a.y/b) );
 }
 
-Point foo(Point a, Point b){
-    return (a+b)/2;
+Point foo(Point a, Point b) {
+    return( (a+b)/2 );
 }
 
-Point bar(Point a, Point b){
-    return Point((a.x+b.x)/2, (a.y+b.y)/2);
+Point bar(Point a, Point b) {
+    return( Point((a.x+b.x)/2, (a.y+b.y)/2) );
 }
