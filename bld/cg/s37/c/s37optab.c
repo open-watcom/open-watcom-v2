@@ -30,7 +30,6 @@
 
 
 #include "_cgstd.h"
-#include "targsys.h"
 #include "typclass.h"
 #include "opcodes.h"
 #include "tables.h"

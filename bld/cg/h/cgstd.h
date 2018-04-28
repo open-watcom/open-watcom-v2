@@ -50,7 +50,7 @@
     typedef void            *pointer;
     typedef float           real;
     typedef double          reallong;
-    // typedef long double          realreallong;
+//    typedef long double     realreallong;
 
 #endif
 

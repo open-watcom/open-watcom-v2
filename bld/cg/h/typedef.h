@@ -29,11 +29,13 @@
 *
 ****************************************************************************/
 
-#ifndef TYPEDEF_H
-#define TYPEDEF_H
+
+#ifndef TYPEDEF_H_INCLUDED
+#define TYPEDEF_H_INCLUDED
 
 #include "targsys.h"
 #include "cgdefs.h"
+
 
 #if _TARGET & _TARG_IAPX86
     typedef signed_16     type_length;

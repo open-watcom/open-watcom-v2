@@ -33,8 +33,8 @@
 
 #include "cgstd.h"
 #include "watcom.h"
-#include "cgapi.h"
 #include "typedef.h"
+#include "cgapi.h"
 
 
 #define _IsPowerOfTwo( x )              ( ( (x) & ( 1 - (x) ) ) == (x) )

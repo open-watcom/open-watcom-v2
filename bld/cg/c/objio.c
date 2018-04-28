@@ -33,7 +33,6 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <stdio.h>
-#include "cgdefs.h"
 #include "cgmem.h"
 #include "_cg.h"
 #include "cgaux.h"

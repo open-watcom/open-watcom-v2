@@ -32,7 +32,6 @@
 
 
 #include "_cgstd.h"
-#include "targsys.h"
 #include "opcodes.h"
 #include "dmpinc.h"
 #include "dumpio.h"

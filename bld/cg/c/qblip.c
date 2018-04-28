@@ -32,7 +32,6 @@
 
 
 #include "_cgstd.h"
-#include "targsys.h"
 #include "typclass.h"
 #include "hwreg.h"
 #include "bitset.h"

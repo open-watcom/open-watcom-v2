@@ -78,7 +78,6 @@ essentially no worst case performance scenario.
     #include <sys/seginfo.h>
 #endif
 #include "_cg.h"
-#include "cgdefs.h"
 #include "utils.h"
 #include "onexit.h"
 #include "feprotos.h"
