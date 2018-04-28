@@ -566,7 +566,7 @@ CGIOBUFF *CgioBuffReadICUntilOpcode(       // READ A RECORD UNTIL OPCODE IS FOUN
 CGIOBUFF *CgioBuffReadICMask(   // READ A RECORD UNTIL OPCODE IN SET IS FOUND
     CGIOBUFF *ctl,              // - buffer control
     CGINTER **ins,              // - cursor to update
-    unsigned mask )             // - control mask for opcodes
+    icop_mask mask )            // - control mask for opcodes
 {
     CGINTER *curr;
     CGINTEROP opcode;
@@ -592,13 +592,13 @@ CGIOBUFF *CgioBuffReadICMask(   // READ A RECORD UNTIL OPCODE IN SET IS FOUND
 CGIOBUFF *CgioBuffReadICMaskCount(      // READ A RECORD UNTIL OPCODE IN SET IS FOUND
     CGIOBUFF *ctl,              // - buffer control
     CGINTER **ins,              // - cursor to update
-    unsigned mask,              // - control mask for opcodes to return
-    unsigned count_mask,        // - control mask for opcodes to count
+    icop_mask mask,             // - control mask for opcodes to return
+    icop_mask count_mask,       // - control mask for opcodes to count
     unsigned *count )           // - counter to update
 {
     CGINTEROP opcode;
     unsigned extra;
-    unsigned op_mask;
+    icop_mask op_mask;
     CGINTER *curr;
 
     extra = 0;

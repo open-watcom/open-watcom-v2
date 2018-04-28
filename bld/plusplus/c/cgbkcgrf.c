@@ -109,7 +109,7 @@ static VFT_DEFN *vft_defs;          // ring of vftable defns
 static carve_t carve_vft;           // carver for vft definitions
 static CALLGRAPH* call_graph;       // call graph information
 static unsigned max_inline_depth;   // maximum depth of inlining
-static unsigned oe_size;            // size for inlining static functions
+static unsigned oe_size = 0;        // size for inlining static functions
 
 static struct {
     unsigned    inline_recursion:1; // true ==> inline recursion allowed
@@ -215,7 +215,7 @@ static TCF cgbackFuncType(      // DETERMINE TYPE OF FUNCTION
         retn = TCF_OTHER_FUNC;
     } else if( SymIsInline( sym ) ) {
         retn = TCF_INLINE;
-    } else if( oe_size != 0 ) {
+    } else if( oe_size > 0 ) {
         retn = TCF_STATIC;
     } else if( SymIsRegularStaticFunc( sym ) ) {
         retn = TCF_STATIC;
@@ -532,6 +532,8 @@ static void scanFunctionBody(   // SCAN FUNCTION FOR CALLS
         // scanning for case IC_* patterns.
         // ICMASK BEGIN CALLGRAPH (do not remove)
         switch( ins->opcode ) {
+        case IC_EOF :
+            break;
         case IC_DTOR_DLT_BEG :
 //          CgioReadICUntilOpcode( sc.file_ctl, IC_DTOR_DLT_END );
             continue;
@@ -742,8 +744,6 @@ static void scanFunctionBody(   // SCAN FUNCTION FOR CALLS
             pvft->location = CgioLastRead( sc.file_ctl );
             CgioReadICUntilOpcode( sc.file_ctl, IC_INIT_DONE );
           } continue;
-        case IC_EOF :
-            break;
         default:
             DbgNever();
         }
@@ -810,6 +810,8 @@ static void scanVftDefn(        // SCAN VFT DEFINITION
         // scanning for case IC_* patterns.
         // ICMASK BEGIN VFT_SCAN (do not remove)
         switch( ins->opcode ) {
+        case IC_EOF:
+            break;
         case IC_INIT_DONE:
             break;
         case IC_DATA_PTR_SYM:

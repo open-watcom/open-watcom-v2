@@ -506,39 +506,36 @@ static void brinfWriteFileContents  // WRITE OUT BROWSE INFORMATION CONTENTS
     type_ops = CMemAlloc( num_type_ops * sizeof( *type_ops ) );
 
     for( ; ; ) {
-    // The following comment is a trigger for the ICMASK program to start
-    // scanning for case IC_* patterns.
-    // ICMASK BEGIN BRINFO (do not remove)
-        unsigned not_used;
+        unsigned dummy;
 
-        ins = CgioReadICMaskCount( virtual_file
-                                 , ICOPM_BRINFO
-                                 , 0
-                                 , &not_used );
+        ins = CgioReadICMaskCount( virtual_file, ICOPM_BRINFO, ICOPM_NULL, &dummy );
+        // The following comment is a trigger for the ICMASK program to start
+        // scanning for case IC_* patterns.
+        // ICMASK BEGIN BRINFO (do not remove)
         switch( ins->opcode ) {
+        case IC_EOF :               // END OF FILE
+            break;
         case IC_BR_NO_OP:           // NO OPERATION
-                                    // - no parameter
-            continue;
+            continue;               // - no parameter
         case IC_BR_REFTO_FILE :     // SET REFERENCE SOURCE FILE
-                                    // - SRCFILE
+          {                         // - SRCFILE
             locn_ref.src_file = ins->value.pvalue;
-            continue;
+          } continue;
         case IC_BR_REFTO_LINE :     // SET REFERENCE LINE
-                                    // - line #
+          {                         // - line #
             locn_ref.line = ins->value.uvalue;
-            continue;
+          } continue;
         case IC_BR_REFTO_COL :      // SET REFERENCE COLUMN
-                                    // - column #
+          {                         // - column #
             locn_ref.column = ins->value.uvalue;
-            continue;
+          } continue;
         case IC_BR_REFTO_LINECOL :  // SET REFERENCE LINE, COLUMN
-                                    // - line #
+          {                         // - line + col #
             locn_ref.line = ins->value.uvalue >> 8;
             locn_ref.column = ins->value.uvalue & 0xFF;
-            continue;
+          } continue;
         case IC_BR_SCOPE_OPN :      // SCOPE: OPEN
-                                    // - scope
-          {
+          {                         // - scope
             SCOPE           scope = ins->value.pvalue;
             uint_32         owner;
             BRI_ScopeType   flags;
@@ -606,8 +603,7 @@ static void brinfWriteFileContents  // WRITE OUT BROWSE INFORMATION CONTENTS
             }
           } continue;
         case IC_BR_SCOPE_CLS :      // SCOPE: CLOSE
-                                    // - scope
-          {
+          {                         // - scope
             SCOPE   scope = ins->value.pvalue;
 
             BRIEndScope( bri_handle );
@@ -616,8 +612,7 @@ static void brinfWriteFileContents  // WRITE OUT BROWSE INFORMATION CONTENTS
             }
           } continue;
         case IC_BR_SRC_BEG :        // START OF SOURCE FILE INCLUSION
-                                    // - full file name
-          {
+          {                         // - full file name
             SRCDEP* sd = ins->value.pvalue;
             char const* name = BrinfDepSrcFname( sd );
             /* To ensure that each file is identified correctly
@@ -630,12 +625,10 @@ static void brinfWriteFileContents  // WRITE OUT BROWSE INFORMATION CONTENTS
             BRIEndFile( bri_handle );
             continue;
         case IC_BR_INC_SRC :        // SOURCE-FILE INCLUSION
-                                    // - name as coded
-            continue;
+            continue;               // - name as coded
 #if 0
         case IC_BR_REF_LOC :        // REFERENCE LOCATION
-                                    // - token location of reference
-          {
+          {                         // - token location of reference
             locn_ref = ins->value.pvalue;
           } continue;
 #endif
@@ -657,7 +650,6 @@ static void brinfWriteFileContents  // WRITE OUT BROWSE INFORMATION CONTENTS
             case IC_BR_REF_EVAL: ref_type = BRI_RT_Enum; break;
             case IC_BR_REF_EVAR: ref_type = BRI_RT_Enum; break;
             case IC_BR_REF_TYPE: ref_type = BRI_RT_TypeOf; break;
-            DbgDefault( "bad opcode" );
             }
 
             target = (uint_32)ins->value.pvalue;
@@ -676,8 +668,7 @@ static void brinfWriteFileContents  // WRITE OUT BROWSE INFORMATION CONTENTS
 
           } continue;
         case IC_BR_DCL_CLASS :      // DECLARE: CLASS
-                                    // - class type
-          {
+          {                         // - class type
             TYPE    cltype = ins->value.pvalue;
             TOKEN_LOCN* cllocn = LocnForClass( cltype );
 
@@ -693,8 +684,7 @@ static void brinfWriteFileContents  // WRITE OUT BROWSE INFORMATION CONTENTS
             }
           } continue;
         case IC_BR_DCL_TDEF :       // DECLARE: TYPEDEF
-                                    // - class type
-          {
+          {                         // - class type
             SYMBOL td = ins->value.pvalue;
             BRI_SymbolID sym_id;
             TYPE cltype = td->sym_type;
@@ -713,8 +703,7 @@ static void brinfWriteFileContents  // WRITE OUT BROWSE INFORMATION CONTENTS
             }
           } continue;
         case IC_BR_DCL_VAR :        // DECLARE: VARIABLE
-                                    // - variable symbol
-          {
+          {                         // - variable symbol
             SYMBOL sym = ins->value.pvalue;
             BRI_SymbolID sym_id;
             BRI_TypeID  type_id;
@@ -758,12 +747,11 @@ static void brinfWriteFileContents  // WRITE OUT BROWSE INFORMATION CONTENTS
             }
           } continue;
         case IC_BR_REF_UMACRO:      // REFERENCE: UNDEFINED MACRO
-                                    // - saved MACVALUE
+          {                         // - saved MACVALUE
             processMacroDefness( ins->value.pvalue, BRI_GT_RefUndef );
-            continue;
+          } continue;
         case IC_BR_DCL_MACRO :      // DECLARE: MACRO
-                                    // - saved MACVALUE
-          {
+          {                         // - saved MACVALUE
             const MACVALUE      *mptr = ins->value.pvalue;
             const char          *string = BrinfMacValueName( mptr );
             unsigned            num_parms = BrinfMacValueParmCount( mptr );
@@ -791,18 +779,15 @@ static void brinfWriteFileContents  // WRITE OUT BROWSE INFORMATION CONTENTS
                        , defn );
           } continue;
         case IC_BR_REF_MACRO :      // REFERENCE: MACRO VALUE
-                                    // - saved MACVALUE
+          {                         // - saved MACVALUE
             processMacroValue( ins->value.pvalue, BRI_GT_RefValue );
-            continue;
+          } continue;
         case IC_BR_PCH :            // PCH FILE REFERENCE
-                                    // - full file name
-          {
+          {                         // - full file name
             char    *fname = ins->value.pvalue;
 
             BRIAddPCHInclude( bri_handle, addStringLower( (BRI_StringID)fname, fname ) );
           } continue;
-        case IC_EOF :               // END OF FILE
-            break;
         default:                    // DEFAULT -- AN ERROR
             DbgNever();
         }

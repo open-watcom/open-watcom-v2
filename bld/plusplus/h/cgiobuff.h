@@ -33,6 +33,7 @@
 #define __CGIOBUFF_H__
 
 #include "iosupp.h"
+#include "icopmask.h"
 
 #define CGIO_CRIPPLE_LIMIT      5000
 
@@ -102,13 +103,13 @@ CGIOBUFF *CgioBuffReadICUntilOpcode(       // READ A RECORD UNTIL OPCODE IS FOUN
 CGIOBUFF *CgioBuffReadICMask(   // READ A RECORD UNTIL OPCODE IN SET IS FOUND
     CGIOBUFF *ctl,              // - buffer control
     CGINTER **ins,              // - cursor to update
-    unsigned mask )             // - control mask for opcodes
+    icop_mask mask )            // - control mask for opcodes
 ;
 CGIOBUFF *CgioBuffReadICMaskCount(      // READ A RECORD UNTIL OPCODE IN SET IS FOUND
     CGIOBUFF *ctl,              // - buffer control
     CGINTER **ins,              // - cursor to update
-    unsigned mask,              // - control mask for opcodes to return
-    unsigned count_mask,        // - control mask for opcodes to count
+    icop_mask mask,             // - control mask for opcodes to return
+    icop_mask count_mask,       // - control mask for opcodes to count
     unsigned *count )           // - counter to update
 ;
 void CgioBuffWrClose(           // RELEASE BUFFER AFTER WRITING

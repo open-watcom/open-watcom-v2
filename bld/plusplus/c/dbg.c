@@ -249,7 +249,7 @@ const char *DbgIcOpcode(        // GET IC OPCODE
     }
 }
 
-enum                            // types of opcodes
+typedef enum                    // types of opcodes
 {   DBG_OPCODE_NUL              // - no operand
 ,   DBG_OPCODE_BIN              // - binary #
 ,   DBG_OPCODE_STR              // - string
@@ -258,9 +258,9 @@ enum                            // types of opcodes
 ,   DBG_OPCODE_SCP              // - scope
 ,   DBG_OPCODE_TYP              // - type
 ,   DBG_OPCODE_SRC              // - source file
-};
+} dbg_opcodes;
 
-static const uint_8 optypes[] = {
+static const dbg_opcodes optypes[] = {
     #define IC( code, type, mask ) DBG_OPCODE_##type
     #include "ic.h"
     #undef IC
@@ -270,20 +270,14 @@ void DumpCgFront(               // DUMP GENERATED CODE
     const char *prefix,         // - name added to print line
     DISK_ADDR disk_blk,         // - disk block
     DISK_OFFSET offset,         // - disk offset
-    void *instruction )         // - intermediate code
+    CGINTER *ins )              // - intermediate code
 {
-    CGINTER *ins;               // - instruction
-    const char *opcode;         // - opcode
+    const char *opcode_name;    // - opcode
     unsigned uvalue;            // - value with opcode
     VBUF vbuf;
 
-    ins = instruction;
-    opcode = DbgIcOpcode( ins->opcode );
-    if( ins->opcode == IC_EOF ) {
-        uvalue = 0;
-    } else {
-        uvalue = ins->value.uvalue;
-    }
+    opcode_name = DbgIcOpcode( ins->opcode );
+    uvalue = ins->value.uvalue;
     switch( optypes[ins->opcode] ) {
     case DBG_OPCODE_SYM :
         printf(                 F_NAME
@@ -293,7 +287,7 @@ void DumpCgFront(               // DUMP GENERATED CODE
                 " "             F_NAME F_EOL
               , prefix
               , disk_blk, offset
-              , opcode
+              , opcode_name
               , uvalue
               , DbgSymNameFull( ins->value.pvalue, &vbuf ) );
         VbufFree( &vbuf );
@@ -308,7 +302,7 @@ void DumpCgFront(               // DUMP GENERATED CODE
                 " %s<id>%s" F_EOL
               , prefix
               , disk_blk, offset
-              , opcode
+              , opcode_name
               , uvalue
               , VbufString( &fmt_prefix )
               , VbufString( &fmt_suffix ) );
@@ -321,7 +315,7 @@ void DumpCgFront(               // DUMP GENERATED CODE
                 " "             F_INSTR F_EOL
               , prefix
               , disk_blk, offset
-              , opcode );
+              , opcode_name );
         break;
     case DBG_OPCODE_SRC :
       {
@@ -331,7 +325,7 @@ void DumpCgFront(               // DUMP GENERATED CODE
                 " "             F_NAME F_EOL
               , prefix
               , disk_blk, offset
-              , opcode
+              , opcode_name
               , SrcFileFullName( ins->value.pvalue ) );
       } break;
     case DBG_OPCODE_SCP :
@@ -341,7 +335,7 @@ void DumpCgFront(               // DUMP GENERATED CODE
                 " "             "scope: " F_HEX F_EOL
               , prefix
               , disk_blk, offset
-              , opcode
+              , opcode_name
               , uvalue );
         break;
     case DBG_OPCODE_STR :
@@ -356,7 +350,7 @@ void DumpCgFront(               // DUMP GENERATED CODE
                     " "             F_NAME F_EOL
                   , prefix
                   , disk_blk, offset
-                  , opcode
+                  , opcode_name
                   , DbgOperator( ins->value.uvalue ) );
             break;
         case IC_DBG_LINE :
@@ -366,7 +360,7 @@ void DumpCgFront(               // DUMP GENERATED CODE
                     " "             F_DECIMAL F_EOL F_EOL
                   , prefix
                   , disk_blk, offset
-                  , opcode
+                  , opcode_name
                   , uvalue );
             break;
         default :
@@ -376,7 +370,7 @@ void DumpCgFront(               // DUMP GENERATED CODE
                     " "             F_HEX F_EOL
                   , prefix
                   , disk_blk, offset
-                  , opcode
+                  , opcode_name
                   , uvalue );
             break;
         }

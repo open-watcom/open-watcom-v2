@@ -107,7 +107,7 @@ void DumpCgFront(               // DUMP GENERATED CODE
     const char *prefix,         // - name added to print line
     DISK_ADDR disk_blk,         // - disk block
     DISK_OFFSET offset,         // - disk offset
-    void *instruction )         // - intermediate code
+    CGINTER *instruction )      // - intermediate code
 ;
 void DumpClassInfo(             // DUMP CLASSINFO
     CLASSINFO *ci )             // - class information

@@ -139,12 +139,12 @@ CGINTER *CgioReadICUntilOpcode( // READ IC RECORD UNTIL OPCODE IS FOUND
 ;
 CGINTER *CgioReadICMask(        // READ IC RECORD UNTIL OPCODE IN SET IS FOUND
     CGFILE *ctl,                // - control for the file
-    unsigned mask )             // - control mask for opcodes
+    icop_mask mask )            // - control mask for opcodes
 ;
 CGINTER *CgioReadICMaskCount(   // READ IC RECORD UNTIL OPCODE IN SET IS FOUND
     CGFILE *ctl,                // - control for the file
-    unsigned mask,              // - control mask for opcodes to return
-    unsigned count_mask,        // - control mask for opcodes to count
+    icop_mask mask,             // - control mask for opcodes to return
+    icop_mask count_mask,       // - control mask for opcodes to count
     unsigned *count )           // - counter to update
 ;
 void CgioThunkAddrTaken(        // INDICATE ADDR TAKEN OF THUNK BY GEN'ED CODE

@@ -1327,15 +1327,12 @@ static void dwarfProcessFunction( CGFILE *file_ctl )
     column = 0;
     for( ;; ) {
         ins = CgioReadICMask( file_ctl, ICOPM_DWARF );
-        if( ins->opcode == IC_EOF )
-            break;
         ins_value = ins->value;
         // The following comment is a trigger for the ICMASK program to start
         // scanning for case IC_* patterns.
         // ICMASK BEGIN DWARF (do not remove)
         switch( ins->opcode ) {
         case IC_EOF :                     // TERMINATING IC FOR ICMASK PROGRAM
-            DbgNever();
             break;
 //
 //          SYMBOL REFERENCES
@@ -1348,36 +1345,36 @@ static void dwarfProcessFunction( CGFILE *file_ctl )
                     DWReference( Client, line, column, dh );
                 }
             }
-            break;
+            continue;
 //
 //          PROCEDURE DECLARATIONS
 //
         case IC_FUNCTION_ARGS :           // DEFINE FUNCTION ARG.S
             ScopeWalkOrderedSymbols( ins_value.pvalue, &dwarf_define_parm );
-            break;
+            continue;
         case IC_BLOCK_OPEN :              // OPEN BLOCK SCOPE (LIVE CODE)
             if( ins_value.pvalue != NULL ) {
                 DWBeginLexicalBlock( Client, NULL, NULL );
 //              ScopeWalkSymbols( ins_value.pvalue, &dwarf_block_open );
                 ScopeWalkOrderedSymbols( ins_value.pvalue, &dwarf_block_open );
             }
-            break;
+            continue;
         case IC_BLOCK_DEAD :              // OPEN BLOCK SCOPE (DEAD CODE)
             if( ins_value.pvalue != NULL ) {
                 DWBeginLexicalBlock( Client, NULL, NULL );
 //              ScopeWalkSymbols( ins_value.pvalue, &dwarf_block_open );
                 ScopeWalkOrderedSymbols( ins_value.pvalue, &dwarf_block_open );
             }
-            break;
+            continue;
         case IC_BLOCK_END :               // CLOSE BLOCK SCOPE
             DWEndLexicalBlock( Client );
-            break;
+            continue;
 //
 //          DEBUGGING -- for program
 //
         case IC_DBG_LINE :                // SET LINE NUMBER
             line = ins_value.uvalue;
-            break;
+            continue;
 //
 //          EXCEPTION HANDLING
 //
@@ -1386,13 +1383,13 @@ static void dwarfProcessFunction( CGFILE *file_ctl )
             if( dh != 0 ) {
                 DWReference( Client, line, column, dh );
             }
-            break;
+            continue;
         case IC_CATCH_VAR :               // SET TRY_VAR FOR CATCH
             dh = dwarfSymbol( ins_value.pvalue, DC_DEFAULT );
             if( dh != 0 ) {
                 DWReference( Client, line, column, dh );
             }
-            break;
+            continue;
         case IC_CATCH :                   // SET TYPE OF A CATCH
             if( ins_value.pvalue != 0 ) {
                 dh = dwarfType( ins_value.pvalue, DC_DEFAULT );
@@ -1400,7 +1397,7 @@ static void dwarfProcessFunction( CGFILE *file_ctl )
                     DWReference( Client, line, column, dh );
                 }
             }
-            break;
+            continue;
         case IC_EXCEPT_SPEC :             // FUNCTION EXCEPTION SPEC.
             if( ins_value.pvalue != NULL ) { // not throw()
                 dh = dwarfType( ins_value.pvalue, DC_DEFAULT );
@@ -1408,17 +1405,18 @@ static void dwarfProcessFunction( CGFILE *file_ctl )
                     DWReference( Client, line, column, dh );
                 }
             }
-            break;
+            continue;
         case IC_THROW_RO_BLK :            // SET THROW R/O BLOCK
             dh = dwarfType( ins_value.pvalue, DC_DEFAULT );
             if( dh != 0 ) {
                 DWReference( Client, line, column, dh );
             }
-            break;
+            continue;
         default:
             DbgNever();
         }
         // ICMASK END (do not remove)
+        break;
     }
     CgioCloseInputFile( file_ctl );
 }

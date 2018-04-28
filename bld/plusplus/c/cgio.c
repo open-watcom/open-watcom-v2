@@ -379,7 +379,7 @@ CGINTER *CgioReadICUntilOpcode( // READ IC RECORD UNTIL OPCODE IS FOUND
 
 CGINTER *CgioReadICMask(        // READ IC RECORD UNTIL OPCODE IN SET IS FOUND
     CGFILE *ctl,                // - control for the file
-    unsigned mask )             // - control mask for opcodes
+    icop_mask mask )            // - control mask for opcodes
 {
     DbgAssert( ctl->cursor != NULL );
     ctl->buffer = CgioBuffReadICMask( ctl->buffer, &ctl->cursor, mask );
@@ -389,8 +389,8 @@ CGINTER *CgioReadICMask(        // READ IC RECORD UNTIL OPCODE IN SET IS FOUND
 
 CGINTER *CgioReadICMaskCount(   // READ IC RECORD UNTIL OPCODE IN SET IS FOUND
     CGFILE *ctl,                // - control for the file
-    unsigned mask,              // - control mask for opcodes to return
-    unsigned count_mask,        // - control mask for opcodes to count
+    icop_mask mask,             // - control mask for opcodes to return
+    icop_mask count_mask,       // - control mask for opcodes to count
     unsigned *count )           // - counter to update
 {
     DbgAssert( ctl->cursor != NULL );
@@ -728,7 +728,6 @@ pch_status PCHWriteCGFiles( void )
 
 pch_status PCHReadCGFiles( void )
 {
-    CGINTEROP opcode;
     CGFILE *curr;
     CGINTER last;
     auto cvinit_t data;
@@ -740,35 +739,27 @@ pch_status PCHReadCGFiles( void )
         curr->opt_retn = SymbolPCHRead();
         curr->u.flags = PCHReadUInt();
         for(;;) {
+            last = CgioBuffPCHRead( &(curr->buffer) );
             // The following comment is a trigger for the ICMASK program to
             // start scanning for case IC_* patterns.
             // ICMASK BEGIN PCHREAD (do not remove)
-            /* fake case labels for ICMASK program (do not remove)
-                case IC_PCH_STOP:
-                case IC_ZAP1_REF:
-                case IC_ZAP2_REF:
-                case IC_EOF:
-            */
-            // ICMASK END (do not remove)
-            last = CgioBuffPCHRead( &(curr->buffer) );
-            opcode = last.opcode;
-            if( opcode == IC_PCH_STOP )
-                break;
-            if( opcode == IC_EOF ) {
-                DbgAssert( ICOpTypes[opcode] == ICOT_NUL );
+            switch( last.opcode ) {
+            case IC_EOF:
                 // this writes the IC_EOF into the buffer
                 CgioCloseOutputFile( curr );
                 break;
-            }
-            switch( opcode ) {
             case IC_ZAP1_REF:
                 ModuleAdjustZap1( curr );
-                break;
+                continue;
             case IC_ZAP2_REF:
                 ModuleAdjustZap2( curr, last.value.pvalue );
+                continue;
+            case IC_PCH_STOP:
                 break;
             DbgDefault( "unexpected IC opcode during PCH read" );
             }
+            // ICMASK END (do not remove)
+            break;
         }
     }
     return( PCHCB_OK );

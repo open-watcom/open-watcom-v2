@@ -1428,7 +1428,7 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
     try_se = NULL;
     catch_se = NULL;
 
-for( ;; ) {
+    for( ;; ) {
         ins = CgioReadIC( file_ctl );
         if( ins->opcode == IC_EOF )
             break;
