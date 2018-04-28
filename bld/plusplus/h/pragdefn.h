@@ -33,6 +33,7 @@
 #define __PRAGDEFN_H_
 
 #define BY_CPP_FRONT_END
+#include "cgstd.h"
 #include "cgaux.h"
 #include "memmgr.h"
 #include "callinfo.h"

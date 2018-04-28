@@ -31,7 +31,7 @@
 
 
 #define _LBit_DEFINE_BITNEXT
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "coderep.h"
 #include "zoiks.h"
 #include "makeins.h"

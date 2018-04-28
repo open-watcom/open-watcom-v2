@@ -31,10 +31,13 @@
 
 
 #define BY_C_FRONT_END
+#include "watcom.h"
+#include "cgstd.h"
 #include "cgaux.h"
 #include "cmemmgr.h"
 #include "strsave.h"
 #include "callinfo.h"
+
 
 #define IS_KEYWORD(t)           (t >= FIRST_KEYWORD && t <= LAST_KEYWORD)
 #define IS_ID_OR_KEYWORD(t)     (t == T_ID || t >= FIRST_KEYWORD && t <= LAST_KEYWORD)

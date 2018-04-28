@@ -33,7 +33,6 @@
 #include "cg.h"
 #include "cgdefs.h"
 #include "cgswitch.h"
-#include "standard.h"
 #include "cgprotos.h"
 #include "feprotos.h"
 #include "cgen.h"

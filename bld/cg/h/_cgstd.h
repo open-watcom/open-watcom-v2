@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2018-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,3 +32,15 @@
 
 
 #include "cgstd.h"
+#include "watcom.h"
+#include "cgapi.h"
+#include "typedef.h"
+
+
+#define _IsPowerOfTwo( x )              ( ( (x) & ( 1 - (x) ) ) == (x) )
+
+#ifdef __AXP__
+#define _AlignmentCheck( ptr, size )    assert( (((unsigned)ptr) & ((size)-1)) == 0 )
+#else
+#define _AlignmentCheck( ptr, size )    {}
+#endif

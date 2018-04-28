@@ -32,7 +32,7 @@
 
 
 #define GB_DEFINE_GBITNEXT
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "coderep.h"
 #include "data.h"
 #include "cgsrtlst.h"

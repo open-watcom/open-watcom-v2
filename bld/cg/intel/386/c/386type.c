@@ -30,8 +30,7 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
-#include "typedef.h"
+#include "_cgstd.h"
 #include "types.h"
 #include "model.h"
 

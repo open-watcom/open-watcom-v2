@@ -33,9 +33,8 @@
 
 // (jww) 93/12/13 -- add initialization of type aliases
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include <stdarg.h>
-#include "typedef.h"
 #include "_cg.h"
 #include "bckdef.h"
 #include "typclass.h"

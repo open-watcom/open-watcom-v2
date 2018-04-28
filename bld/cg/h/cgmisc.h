@@ -33,7 +33,7 @@
 #ifndef _CG_MISC_INCLUDED
 #define _CG_MISC_INCLUDED
 
-#include "cgstd.h"
+#include "cgapi.h"
 
 extern bool _CGAPI TBreak( void );
 extern void _CGAPI CauseTBreak( void );

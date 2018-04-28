@@ -31,9 +31,8 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include <stdarg.h>
-#include "typedef.h"
 #include "_cg.h"
 #include "bckdef.h"
 #include "typclass.h"

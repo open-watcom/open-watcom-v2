@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "rscconst.h"
 
 void FactorInt32( signed_32 val, signed_16 *high, signed_16 *extra, signed_16 *low )

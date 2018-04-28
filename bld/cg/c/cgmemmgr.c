@@ -60,7 +60,7 @@ essentially no worst case performance scenario.
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include <stdlib.h>
 #include <stdio.h>
 #if defined( _M_IX86 ) && defined( __WATCOMC__ )

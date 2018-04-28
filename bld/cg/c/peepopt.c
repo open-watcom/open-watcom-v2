@@ -34,7 +34,7 @@
 /* - collapse adjacent integral ADD,SUB operations */
 /* - collapse adjacent integral MUL operations */
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "coderep.h"
 #include "indvars.h"
 #include "score.h"

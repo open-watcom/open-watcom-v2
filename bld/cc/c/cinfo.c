@@ -33,7 +33,7 @@
 #include "cg.h"
 #include "cgdefs.h"
 #include "cgswitch.h"
-#include "standard.h"
+#include "cgstd.h"
 #include "cgaux.h"
 #include "langenv.h"
 #include "cgprotos.h"

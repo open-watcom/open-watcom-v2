@@ -29,8 +29,9 @@
 ****************************************************************************/
 
 
-#include "cg.h"
+#include "cgstd.h"
 #include <stddef.h>
+#include "cg.h"
 #include "cgaux.h"
 
 /* only for long_double */

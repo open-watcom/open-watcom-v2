@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "optwif.h"
 #include "model.h"
 #include "inslist.h"

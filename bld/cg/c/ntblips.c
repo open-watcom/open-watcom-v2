@@ -31,7 +31,7 @@
 ****************************************************************************/
 
 
-#include "cgstd.h"
+#include "_cgstd.h"
 #include "zoiks.h"
 #include "coderep.h"
 #include "onexit.h"

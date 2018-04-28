@@ -31,7 +31,6 @@
 ****************************************************************************/
 
 
-#include "typedef.h"
 #include "cgmem.h"
 #include "_cg.h"
 #include "bckdef.h"

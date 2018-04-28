@@ -33,8 +33,7 @@
 
 // 93/12/20 (jww) force re-compile
 
-#include "cgstd.h"
-#include "typedef.h"
+#include "_cgstd.h"
 #include "_cg.h"
 #include "bckdef.h"
 #include "typclass.h"
