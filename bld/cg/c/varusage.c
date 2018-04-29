@@ -36,6 +36,7 @@
 #include "hwreg.h"
 #include "data.h"
 #include "namelist.h"
+#include "varusage.h"
 
 
 static  void    Use( name *op, block *blk, var_usage usage )
