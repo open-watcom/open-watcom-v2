@@ -1319,8 +1319,9 @@ static void warnPointerZero(    // WARN IF POINTER COMPARISON TO 0 IS CONST
     }
 }
 
-static int numSize( type_id id ) {     // NUMSIZE - number of bits
+static int numSize( type_id id )    // NUMSIZE - number of bits
 // return 0 not a num, else number of bits | SIGN_BIT if signed
+{
     int     size;
 
     size = 0;

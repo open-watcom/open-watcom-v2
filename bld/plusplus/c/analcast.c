@@ -2357,9 +2357,7 @@ PTREE CastStatic                // STATIC_CAST< TYPE >( EXPR )
             }
             break;
         case 5 : // func -> ptr
-            ConvCtlTypeInit( &ctl
-                           , &ctl.src
-                           , MakePointerTo( ctl.src.orig ) );
+            ConvCtlTypeInit( &ctl, &ctl.src, MakePointerTo( ctl.src.orig ) );
             /* fall through */
         case 11 : // ptr -> ptr
             ConvCtlAnalysePoints( &ctl );

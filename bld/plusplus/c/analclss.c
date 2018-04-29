@@ -153,7 +153,7 @@ static void returnThis(         // RETURN "this" value
     PTREE expr;
 
     expr = PTreeThis();
-    if( ! SymIsDtor( rtn ) ) {
+    if( !SymIsDtor( rtn ) ) {
         expr = PTreeUnary( CO_INDIRECT, expr );
     }
     expr = AnalyseReturnExpr( rtn , expr );

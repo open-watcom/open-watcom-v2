@@ -902,8 +902,7 @@ static void updateTemplatePartialOrdering( TEMPLATE_INFO *tinfo,
     } RingIterEnd( curr_spec )
 }
 
-static TEMPLATE_SPECIALIZATION *mergeClassTemplates( TEMPLATE_DATA *data,
-                                                     SYMBOL old_sym )
+static TEMPLATE_SPECIALIZATION *mergeClassTemplates( TEMPLATE_DATA *data, SYMBOL old_sym )
 {
     DECL_INFO *args;
     TEMPLATE_INFO *tinfo;
@@ -2344,8 +2343,7 @@ static TYPE instantiateClass( TEMPLATE_INFO *tinfo, PTREE parms,
         SetCurrScope( spec_parm_scope );
     }
     inst_scope = ScopeBegin( SCOPE_TEMPLATE_INST );
-    curr_instantiation = newClassInstantiation( tspec, unbound_type,
-                                                inst_scope, false );
+    curr_instantiation = newClassInstantiation( tspec, unbound_type, inst_scope, false );
     if( locn != NULL ) {
         curr_instantiation->locn = *locn;
         curr_instantiation->locn_set = true;
@@ -2433,11 +2431,10 @@ findTemplateClassSpecialization( TEMPLATE_INFO *tinfo, PTREE parms, SCOPE *parm_
 
             BindExplicitTemplateArguments( parm_scope1, NULL );
 
-            bound = BindGenericTypes( parm_scope1, spec_list,
-                                      parms, false, 0 );
+            bound = BindGenericTypes( parm_scope1, spec_list, parms, false, 0 );
             if( bound ) {
 #ifndef NDEBUG
-                if( PragDbgToggle.templ_spec && ( tinfo->nr_specs > 1 )) {
+                if( PragDbgToggle.templ_spec && ( tinfo->nr_specs > 1 ) ) {
                     VBUF vbuf;
 
                     FormatPTreeList( spec_list, &vbuf );

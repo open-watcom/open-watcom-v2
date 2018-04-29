@@ -340,7 +340,7 @@ void DumpObjectModelEnum(       // DUMP OBJECT MODEL: ENUM
     VBUF buffer;                // - printing buffer
     char buf[16];               // - buffer
     int numb;                   // - a numeric value
-    const char *name = NULL;    // - name to be printed
+    const char *name;           // - name to be printed
     bool sign;                  // - true ==> signed enum
     unsigned mask;              // - used to mask to true size
     unsigned val;               // - value as unsigned
@@ -355,6 +355,7 @@ void DumpObjectModelEnum(       // DUMP OBJECT MODEL: ENUM
     } else {
         VbufConcStr( &buffer, NameStr( sym->name->name ) );
     }
+    name = "???";
     sign = false;
     switch( TypedefModifierRemove( base->of ) -> id ) {
     case TYP_CHAR :

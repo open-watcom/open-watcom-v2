@@ -2020,8 +2020,7 @@ static bool nodeMakesTemporary( // CHECK IF NODE PRODUCES A TEMPORARY
             TYPE ret_type;
             node = NodeFuncForCall( node );
             ret_type = TypeFunctionCalled( node->type );
-            DbgVerify( ret_type != NULL
-                     , "nodeMakesTemporary -- not function type" );
+            DbgVerify( ret_type != NULL, "nodeMakesTemporary -- not function type" );
             ret_type = ret_type->of;
             if( NULL == TypeReference( ret_type ) ) {
                 ok = true;

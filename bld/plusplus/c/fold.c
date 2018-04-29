@@ -1343,11 +1343,12 @@ PTREE FoldBinary( PTREE expr )
 
     cannot be directly folded into ( false ) by eliding the function call.
     */
-    if ( foldable( op1 ) ) {
+    if( foldable( op1 ) ) {
         bool has_lfolded = false;
         expr = FoldBinaryLeft( &has_lfolded, expr, op1, op2, has_decoration );
-        if( has_lfolded )
+        if( has_lfolded ) {
             return( expr );
+        }
     }
 
     if( !foldable( op2 ) )

@@ -193,9 +193,7 @@ static cg_name genCtorFlagClr(  // CLEAR CTOR FLAGGING
     if( DtmTabular( fctl ) ) {
         cfs = CarveAlloc( carve_ctor_flag );
         cfs->se = se;
-        expr = CgComma( ctorFlagSet( fctl, O_AND, &cfs->ph_clr )
-                      , expr
-                      , type );
+        expr = CgComma( ctorFlagSet( fctl, O_AND, &cfs->ph_clr ), expr, type );
         expr = CgCallBackRight( expr, &callBackCtorFlag, cfs, type );
     }
     return( expr );

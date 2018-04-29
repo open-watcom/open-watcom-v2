@@ -158,8 +158,8 @@ static CNV_RETN validateAddrOfObj( // VALIDATE &class::item OBJECT
 
     mp_obj = membPtrObject( mp );
     ad_obj = PTreeOpLeft( expr )->type;
-    if( FunctionDeclarationType( mp_obj ) &&
-        FunctionDeclarationType( ad_obj ) ) {
+    if( FunctionDeclarationType( mp_obj ) != NULL &&
+        FunctionDeclarationType( ad_obj ) != NULL ) {
         /* wait until overload to check types */
         retn = CNV_OK;
     } else {
@@ -1073,7 +1073,7 @@ static PTREE doDereference(     // GENERATE DE-REFERENCING CODE
     expr = NodeBinary( CO_CALL_EXEC_IND, func, expr );
     expr->type = type_mp->of;
     expr->flags |= PTF_LVALUE;
-    if( FunctionDeclarationType( type_mp->of ) ) {
+    if( FunctionDeclarationType( type_mp->of ) != NULL ) {
         expr->flags |= PTF_CALLED_ONLY;
     }
     *r_rhs = NodeReplace( *r_rhs, expr );

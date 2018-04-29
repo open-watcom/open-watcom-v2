@@ -347,7 +347,7 @@ static TYPE canonicalPtrType(   // GET CANONICAL PTR TYPE
     test = PointerTypeEquivalent( type );
     if( test == NULL ) {
         type = canonicalBaseType( type );
-    } else if( FunctionDeclarationType( test ) ) {
+    } else if( NULL != FunctionDeclarationType( test ) ) {
         type = MakePointerTo( canonicalBaseType( test ) );
     } else {
         type = MakePointerTo( canonicalBaseType( test->of ) );

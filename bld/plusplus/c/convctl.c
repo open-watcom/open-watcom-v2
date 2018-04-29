@@ -502,7 +502,7 @@ void ConvCtlInit                // INITIALIZE CONVCTL
                     if( ! ctl->src.reference )
                         break;
                     ref_type = TypeReference( ctl->src.unmod );
-                    if( FunctionDeclarationType( ref_type ) ) {
+                    if( FunctionDeclarationType( ref_type ) != NULL ) {
                         ctl->expr->u.subtree[1]->type = MakePointerTo( ref_type );
                         ctl->expr->u.subtree[1]->flags &= ~PTF_LVALUE;
                     } else {
