@@ -46,12 +46,13 @@
 #include "namelist.h"
 #include "makeblk.h"
 #include "typemap.h"
+#include "temps.h"
 #include "feprotos.h"
+
 
 static    pointer       *AddrNameFrl;
 
 extern  name            *BGNewTemp(type_def*);
-extern  void            AllocALocal(name*);
 extern  void            BGDone(an);
 
 static  void    CopyAddr( an src, an dst )
@@ -65,8 +66,8 @@ static  void    CopyAddr( an src, an dst )
 }
 
 
-extern  an      NewAddrName( void )
-/*********************************/
+an      NewAddrName( void )
+/*************************/
 {
     an  addr;
 
@@ -85,8 +86,8 @@ extern  an      NewAddrName( void )
 }
 
 
-extern  an      NewBoolNode( void )
-/*********************************/
+an      NewBoolNode( void )
+/*************************/
 {
     an  addr;
 
@@ -98,8 +99,8 @@ extern  an      NewBoolNode( void )
 }
 
 
-extern  an      MakeTypeTempAddr( name *op, type_def *tipe )
-/**********************************************************/
+an      MakeTypeTempAddr( name *op, type_def *tipe )
+/**************************************************/
 {
     an          addr;
 
@@ -110,29 +111,29 @@ extern  an      MakeTypeTempAddr( name *op, type_def *tipe )
     return( addr );
 }
 
-extern  an      MakeTempAddr( name *op )
-/**************************************/
+an      MakeTempAddr( name *op )
+/******************************/
 {
     return( MakeTypeTempAddr( op, TypeAddress( TY_NEAR_POINTER ) ) );
 }
 
-extern  void    InitMakeAddr( void )
-/**********************************/
+void    InitMakeAddr( void )
+/**************************/
 {
     InitFrl( &AddrNameFrl );
     AddrList = NULL;
 }
 
 
-extern  name    *GenIns( an addr )
-/********************************/
+name    *GenIns( an addr )
+/************************/
 {
     return( GetValue( addr, NULL ) );
 }
 
 
-extern  void    AddrFree( an node )
-/*********************************/
+void    AddrFree( an node )
+/*************************/
 {
     an  *owner;
 
@@ -153,8 +154,8 @@ extern  void    AddrFree( an node )
 }
 
 
-extern  void    InsToAddr( an addr )
-/**********************************/
+void    InsToAddr( an addr )
+/**************************/
 {
     an          new;
     instruction *ins;
@@ -172,8 +173,8 @@ extern  void    InsToAddr( an addr )
 }
 
 
-extern  void    NamesCrossBlocks( void )
-/**************************************/
+void    NamesCrossBlocks( void )
+/******************************/
 {
     an          addr;
     an          new;
@@ -210,8 +211,8 @@ extern  void    NamesCrossBlocks( void )
 }
 
 
-extern  bool    AddrFrlFree( void )
-/*********************************/
+bool    AddrFrlFree( void )
+/*************************/
 {
     return( FrlFreeAll( &AddrNameFrl, sizeof( address_name ) ) );
 }
@@ -241,8 +242,8 @@ static  name    *Display( cg_sym_handle symbol, level_depth level )
 }
 
 
-extern  an      MakeGets( an dst, an src, type_def *tipe )
-/********************************************************/
+an      MakeGets( an dst, an src, type_def *tipe )
+/************************************************/
 {
     name                *dst_name;
     name                *src_name;
@@ -281,15 +282,15 @@ extern  an      MakeGets( an dst, an src, type_def *tipe )
 }
 
 
-extern  an      MakeConst( float_handle cf, type_def *tipe )
-/**********************************************************/
+an      MakeConst( float_handle cf, type_def *tipe )
+/**************************************************/
 {
     return( AddrName( AllocConst( cf ), tipe ) );
 }
 
 
-extern  an      MakePoints( an name, type_def *tipe )
-/***************************************************/
+an      MakePoints( an name, type_def *tipe )
+/*******************************************/
 {
     an  new;
 
@@ -298,8 +299,8 @@ extern  an      MakePoints( an name, type_def *tipe )
     return( new );
 }
 
-extern  an      RegName( hw_reg_set reg, type_def *tipe )
-/*******************************************************/
+an      RegName( hw_reg_set reg, type_def *tipe )
+/***********************************************/
 {
     an  addr;
 
@@ -310,8 +311,8 @@ extern  an      RegName( hw_reg_set reg, type_def *tipe )
     return( addr );
 }
 
-extern  an      InsName( instruction *ins, type_def *tipe )
-/*********************************************************/
+an      InsName( instruction *ins, type_def *tipe )
+/*************************************************/
 {
     an  addr;
 
@@ -322,8 +323,8 @@ extern  an      InsName( instruction *ins, type_def *tipe )
     return( addr );
 }
 
-extern  name    *LoadTemp( name *temp, type_class_def class )
-/***********************************************************/
+name    *LoadTemp( name *temp, type_class_def class )
+/***************************************************/
 {
     instruction *ins;
 
@@ -344,8 +345,8 @@ static  name    *Temporary( name *temp, type_def *tipe )
 }
 
 
-extern  an      AddrEval( an addr )
-/*********************************/
+an      AddrEval( an addr )
+/*************************/
 {
     an  new;
 
@@ -355,8 +356,8 @@ extern  an      AddrEval( an addr )
 }
 
 
-extern  void    MoveAddress(  an src,  an  dest )
-/***********************************************/
+void    MoveAddress(  an src,  an  dest )
+/***************************************/
 {
     dest->format = src->format;
     dest->class = src->class;
@@ -366,8 +367,8 @@ extern  void    MoveAddress(  an src,  an  dest )
 }
 
 
-extern  void    Convert( an addr, type_class_def class )
-/******************************************************/
+void    Convert( an addr, type_class_def class )
+/**********************************************/
 {
     instruction *ins;
 
@@ -386,8 +387,8 @@ extern  void    Convert( an addr, type_class_def class )
 }
 
 
-extern  bool    PointLess( an l_addr, an r_addr )
-/***********************************************/
+bool    PointLess( an l_addr, an r_addr )
+/***************************************/
 {
     if( l_addr->class != CL_POINTER && r_addr->class != CL_POINTER )
         return( false );
@@ -397,8 +398,8 @@ extern  bool    PointLess( an l_addr, an r_addr )
 }
 
 
-extern  an      AddrToIns( an addr )
-/**********************************/
+an      AddrToIns( an addr )
+/**************************/
 {
     instruction *ins;
     an          new;
@@ -417,8 +418,8 @@ extern  an      AddrToIns( an addr )
 }
 
 
-extern  an      AddrDuplicate( an node )
-/**************************************/
+an      AddrDuplicate( an node )
+/******************************/
 {
     an          new;
     name        *op;
@@ -430,8 +431,8 @@ extern  an      AddrDuplicate( an node )
     return( new );
 }
 
-extern  an      AddrCopy( an node )
-/*********************************/
+an      AddrCopy( an node )
+/*************************/
 {
     an  new;
 
@@ -442,16 +443,16 @@ extern  an      AddrCopy( an node )
 }
 
 
-extern  an      AddrSave( an node )
-/*********************************/
+an      AddrSave( an node )
+/*************************/
 {
     InsToAddr( node );
     return( node );
 }
 
 
-extern  void    AddrDemote( an node )
-/***********************************/
+void    AddrDemote( an node )
+/***************************/
 {
     node->flags |= FL_ADDR_DEMOTED;
     if( node->format == NF_INS ) {
@@ -460,8 +461,8 @@ extern  void    AddrDemote( an node )
 }
 
 
-extern  name    *MaybeTemp( name *op, type_class_def kind )
-/*********************************************************/
+name    *MaybeTemp( name *op, type_class_def kind )
+/*************************************************/
 {
     if( op == NULL ) {
         op = AllocTemp( kind );
@@ -470,8 +471,8 @@ extern  name    *MaybeTemp( name *op, type_class_def kind )
 }
 
 
-extern  void    CheckPointer( an addr )
-/*************************************/
+void    CheckPointer( an addr )
+/*****************************/
 {
     InsToAddr( addr );
     if( addr->format == NF_NAME && ( addr->tipe->attr & TYPE_POINTER ) ) {
@@ -484,8 +485,8 @@ extern  void    CheckPointer( an addr )
 }
 
 
-extern  void    FixCodePtr( an addr )
-/***********************************/
+void    FixCodePtr( an addr )
+/***************************/
 {
     if( addr->format == NF_INS ) {
         addr->u.i.ins->ins_flags |= INS_CODE_POINTER;
@@ -493,8 +494,8 @@ extern  void    FixCodePtr( an addr )
 }
 
 
-extern  bool    NeedPtrConvert( an addr, type_def * tipe )
-/********************************************************/
+bool    NeedPtrConvert( an addr, type_def * tipe )
+/************************************************/
 {
     if( addr->format != NF_ADDR )
         return( true );
@@ -511,8 +512,8 @@ extern  bool    NeedPtrConvert( an addr, type_def * tipe )
 }
 
 
-extern  name    *LoadAddress( name *op, name *suggest, type_def *type_ptr )
-/*************************************************************************/
+name    *LoadAddress( name *op, name *suggest, type_def *type_ptr )
+/*****************************************************************/
 {
     name                *new;
     type_class_def      class;
@@ -544,8 +545,8 @@ extern  name    *LoadAddress( name *op, name *suggest, type_def *type_ptr )
 }
 
 
-extern  an      MakeAddrName( cg_class class, cg_sym_handle sym, type_def *tipe )
-/****************************************************************************/
+an      MakeAddrName( cg_class class, cg_sym_handle sym, type_def *tipe )
+/***********************************************************************/
 {
     an          addr;
     fe_attr     attr;

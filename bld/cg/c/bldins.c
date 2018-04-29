@@ -50,6 +50,7 @@
 #include "rgtbl.h"
 #include "typemap.h"
 #include "generate.h"
+#include "types.h"
 #include "feprotos.h"
 
 

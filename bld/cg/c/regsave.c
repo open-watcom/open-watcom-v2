@@ -37,6 +37,7 @@
 #include "model.h"
 #include "savings.h"
 #include "namelist.h"
+#include "regsave.h"
 
 
 extern  void            CalcLoadStore(conflict_node*);
@@ -44,9 +45,9 @@ extern  void            CalcLoadStore(conflict_node*);
 savings         Save;
 
 
-extern  void    AdjTimeSize( uint *time, uint *size ) {
-/*****************************************************/
-
+void    AdjTimeSize( uint *time, uint *size )
+/*******************************************/
+{
     /*   Adjust size to be between 0 and TOTAL_WEIGHT*/
 
     if( *size > 100 ) {
@@ -58,9 +59,9 @@ extern  void    AdjTimeSize( uint *time, uint *size ) {
 }
 
 
-extern  void    SetLoopCost( uint time ) {
-/****************************************/
-
+void    SetLoopCost( uint time )
+/******************************/
+{
     save_def    loop_weight;
     int         i;
 
@@ -80,9 +81,9 @@ extern  void    SetLoopCost( uint time ) {
 }
 
 
-extern  void    SetCost( save_def *array, save_def cost ) {
-/*********************************************************/
-
+void    SetCost( save_def *array, save_def cost )
+/***********************************************/
+{
     save_def    cost2;
 
     cost2 = cost;
@@ -106,9 +107,9 @@ extern  void    SetCost( save_def *array, save_def cost ) {
 }
 
 
-extern  save_def        Weight( save_def value, block *blk ) {
-/************************************************************/
-
+save_def        Weight( save_def value, block *blk )
+/**************************************************/
+{
     if( blk->depth < MAX_LOOP ) {
         value *= Save.loop_weight[blk->depth];
     } else {
@@ -118,11 +119,10 @@ extern  save_def        Weight( save_def value, block *blk ) {
 }
 
 
-extern  void    CalcSavings( conflict_node *conf ) {
-/**************************************************/
-
+void    CalcSavings( conflict_node *conf )
+/****************************************/
 /* NB: <regsave> relies on the fact that "conf" is a parm to this routine*/
-
+{
     save_def            block_save;
     save_def            block_cost;
     save_def            cost;

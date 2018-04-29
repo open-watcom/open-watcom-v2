@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,7 +47,7 @@ typedef enum {
 extern  bool            FoldIntoIndex( instruction * );
 extern  void            UpdateLive( instruction *, instruction * );
 
-static  bool    InsIsCandidate( instruction *ins ) 
+static  bool    InsIsCandidate( instruction *ins )
 /************************************************/
 {
     name    *reg;
@@ -67,7 +67,7 @@ static  bool    InsIsCandidate( instruction *ins )
 }
 
 
-void    BuildIndex( void ) 
+void    BuildIndex( void )
 /********************************/
 {
     block       *blk;

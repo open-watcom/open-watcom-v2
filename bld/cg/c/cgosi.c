@@ -39,10 +39,12 @@
 #include "blips.h"
 #include "feprotos.h"
 
+
 extern  bool            *_BreakFlagPtr;
-static  int             TicCount;
+
 bool                    BlipsOn;
 
+static  int             TicCount;
 
 bool TBreak( void )
 /*****************/

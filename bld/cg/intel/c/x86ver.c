@@ -36,9 +36,8 @@
 #include "data.h"
 #include "rgtbl.h"
 #include "fixindex.h"
+#include "verify.h"
 
-
-extern  bool            OtherVerify(vertype,instruction*,name*,name*,name*);
 
 //extern  hw_reg_set      Low16Reg( hw_reg_set );
 //extern  type_class_def  RegClass(hw_reg_set);

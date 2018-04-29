@@ -80,6 +80,7 @@ essentially no worst case performance scenario.
 #include "_cg.h"
 #include "utils.h"
 #include "onexit.h"
+#include "memsydep.h"
 #include "feprotos.h"
 
 #ifdef __DOS__
@@ -333,7 +334,7 @@ static  void    CalcMemSize( void )
     }
 }
 
-static  void    MemInit( void )
+static  void    memInit( void )
 /*****************************/
 {
     if( !Initialized ) {
@@ -425,14 +426,14 @@ static pointer  GetFromBlk( size_t amount )
 }
 
 
-extern pointer  MemAlloc( size_t amount )
-/***************************************/
+pointer  MemAlloc( size_t amount )
+/********************************/
 {
     char        *chunk;
     int         mem_class;
 
     if( !Initialized )
-        MemInit();
+        memInit();
     if( amount == 0 )
         return( NULL );
     amount = _RoundUp( amount + TAG_SIZE, MEM_WORD_SIZE );
@@ -452,14 +453,14 @@ extern pointer  MemAlloc( size_t amount )
 }
 
 
-extern void     MemFree( char *block )
-/************************************/
+void     MemFree( pointer p )
+/***************************/
 {
     frl     *free;
     int     mem_class;
     tag     length;
 
-    free   = (frl *)( block - TAG_SIZE );
+    free   = (frl *)( (char *)p - TAG_SIZE );
     assert( free->length & ALLOCATED );
     free->length &= ~ALLOCATED;
     length = free->length;
@@ -467,7 +468,7 @@ extern void     MemFree( char *block )
         blk_hdr     *header;
         mem_blk     *blk;
 
-        header = (blk_hdr *)( block - sizeof( blk_hdr ) );
+        header = (blk_hdr *)( (char *)p - sizeof( blk_hdr ) );
         blk    = header->block;
         blk->free += header->size + sizeof( blk_hdr );
         blk->size += header->size + sizeof( blk_hdr );
@@ -482,28 +483,28 @@ extern void     MemFree( char *block )
     }
 }
 
-extern void     MemCoalesce( void )
-/*********************************/
+void     MemCoalesce( void )
+/**************************/
 {
     return;
 }
 
 
-extern pointer_int      MemInUse( void )
-/**************************************/
+pointer_int      MemInUse( void )
+/*******************************/
 {
     if( !Initialized )
-        MemInit();
+        memInit();
     return( AllocSize );
 }
 
 
-extern pointer_int      MemSize( void )
-/*************************************/
+pointer_int      MemSize( void )
+/******************************/
 {
     switch( Initialized ) {
     case 0:
-        MemInit();
+        memInit();
 #if defined( __QNX__ )
         /* fall through */
     case 1:
@@ -568,8 +569,8 @@ static  void MemToSys( mem_blk *what )
 }
 
 
-extern void MemFini( void )
-/*************************/
+void MemFini( void )
+/******************/
 {
     mem_blk     *curr;
     mem_blk     *next;

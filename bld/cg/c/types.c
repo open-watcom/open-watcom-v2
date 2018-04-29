@@ -33,6 +33,7 @@
 #include "coderep.h"
 #include "cgmem.h"
 #include "data.h"
+#include "types.h"
 
 typedef enum {
         TYPE_DEFINITION,
@@ -57,6 +58,18 @@ typedef struct type_list {
 
 extern    void          TargTypeInit(void);
 
+extern type_def TNearCP;
+extern type_def TLongCP;
+extern type_def THugeCP;
+extern type_def TNearP;
+extern type_def TLongP;
+extern type_def THugeP;
+
+type_def *PTInteger;
+type_def *PTUnsigned;
+type_def *PTPointer;
+type_def *PTCodePointer;
+
 static    type_list     *TypeList;
 
 
@@ -71,12 +84,6 @@ static type_def TUInt4 = {  TY_UINT_4,       4,      0 };
 static type_def TInt4  = {  TY_INT_4,        4,      TYPE_SIGNED };
 static type_def TUInt8 = {  TY_UINT_8,       8,      0 };
 static type_def TInt8  = {  TY_INT_8,        8,      TYPE_SIGNED };
-extern type_def TNearCP;
-extern type_def TLongCP;
-extern type_def THugeCP;
-extern type_def TNearP;
-extern type_def TLongP;
-extern type_def THugeP;
 static type_def TSingle     = {  TY_SINGLE,       4,      TYPE_SIGNED + TYPE_FLOAT };
 static type_def TDouble     = {  TY_DOUBLE,       8,      TYPE_SIGNED + TYPE_FLOAT };
 static type_def TLongDouble = {  TY_LONG_DOUBLE,  10,     TYPE_SIGNED + TYPE_FLOAT };
@@ -84,17 +91,12 @@ static type_def TBool       = {  TY_BOOLEAN,      0,      0 };
 static type_def TNull       = {  TY_DEFAULT,      0,      0 };
 static type_def TPascal     = {  TY_PROC_PARM,    4,      0 };
 
-type_def *PTInteger;
-type_def *PTUnsigned;
-type_def *PTPointer;
-type_def *PTCodePointer;
-
-extern  type_def        *TypeAddress( cg_type tipe ) {
-/*****************************************************
+type_def        *TypeAddress( cg_type tipe )
+/*******************************************
     given a type refno, "tipe" which is known to the front end, return a
     pointer to the appropriate "type_def".
 */
-
+{
     type_list   *list;
 
     switch( tipe ) {
@@ -162,11 +164,11 @@ extern  type_def        *TypeAddress( cg_type tipe ) {
 }
 
 
-extern  type_length     TypeLength( cg_type tipe ) {
-/***************************************************
+type_length     TypeLength( cg_type tipe )
+/*****************************************
     Return the size of a given type "tipe".
 */
-
+{
     type_def    *t;
 
     t = TypeAddress( tipe );
@@ -174,10 +176,11 @@ extern  type_length     TypeLength( cg_type tipe ) {
 }
 
 
-extern  type_def        *TypeAlias( cg_type define, cg_type existing ) {
-/***********************************************************************
+type_def        *TypeAlias( cg_type define, cg_type existing )
+/*************************************************************
     cause refno "define" to become an alias for existing type "existing"
 */
+{
     type_def    *t;
     type_list   *list;
 
@@ -194,11 +197,12 @@ extern  type_def        *TypeAlias( cg_type define, cg_type existing ) {
 }
 
 
-extern  type_def        *TypeDef( cg_type refno, type_length length, type_length align ) {
-/*****************************************************************************************
+type_def        *TypeDef( cg_type refno, type_length length, type_length align )
+/*******************************************************************************
     Define a structure/array type which will have handle "refno".  The
     type will occupy "length" bytes of storage.
 */
+{
     type_list   *list;
 
     /* unused parameters */ (void)align;
@@ -217,10 +221,11 @@ extern  type_def        *TypeDef( cg_type refno, type_length length, type_length
 }
 
 
-extern  void    TypeFini() {
-/***************************
+void    TypeFini( void )
+/***********************
     Finish up the typeing stuff
 */
+{
     type_list   *type;
     type_list   *next;
 
@@ -230,8 +235,8 @@ extern  void    TypeFini() {
     }
 }
 
-extern  void    TypeInit( void )
-/******************************/
+void    TypeInit( void )
+/**********************/
 {
     TypeList = NULL;
 

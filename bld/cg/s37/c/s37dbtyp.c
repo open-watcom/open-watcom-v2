@@ -39,13 +39,14 @@
 #include "offset.h"
 #include "s37bead.h"
 #include "s37dbg.h"
+#include "types.h"
 
 typedef int handle;
 #include "s37dbtyp.def"
 
+
 extern uint            Length(const char*);
 extern byte           *Copy(void*,void*,uint);
-extern type_def       *TypeAddress(cg_type);
 extern char           *DbgFmtInt( char *, offset );
 extern char           *DbgFmtStr( char *, char *, id_len );
 extern void            PutStream(handle ,byte *,uint );

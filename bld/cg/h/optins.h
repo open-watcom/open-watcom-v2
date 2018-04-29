@@ -31,18 +31,6 @@
 ****************************************************************************/
 
 
-#include "_cgstd.h"
-#include "_cg.h"
-#include "hwreg.h"
-#include "typclass.h"
-#include "addrname.h"
-#include "bckdef.h"
-#include "blocknum.h"
-#include "name.h"
-#include "i87data.h"
-
-
-name            *FPStatWord;
-name            *Parm8087[MAX_8087_REG + 1];
-bool            Used87;
-int             Max87Stk;
+extern ins_entry    *Untangle( ins_entry *instr );
+extern void         OptPush( void );
+extern void         OptPull( void );

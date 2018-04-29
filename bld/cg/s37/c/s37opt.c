@@ -33,12 +33,13 @@
 #include "_cgstd.h"
 #include "coderep.h"
 #include "makeins.h"
+#include "varusage.h"
+
 
 extern  void            PrefixIns(instruction*,instruction*);
 extern  void            SuffixIns(instruction*,instruction*);
 extern  name            *AllocTemp(type_class_def);
 extern  name            *AllocIntConst(int);
-extern  void            FindReferences(void);
 
 extern  block           *HeadBlock;
 extern  name            *Names[];

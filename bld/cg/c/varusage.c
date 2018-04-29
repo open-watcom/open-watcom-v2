@@ -289,8 +289,8 @@ static void TransferOneTempFlag( name *t )
 }
 
 
-extern  void    TransferTempFlags( void )
-/****************************************
+void    TransferTempFlags( void )
+/********************************
     Run through the program and for each variable reference, transfer
     the usage flags from each variable to all of its aliases.  (if we
     use the address of T1, we're effectively using the address of T1+1
@@ -424,8 +424,8 @@ static  void    SearchDefUse( void )
 }
 
 
-extern  void    FindReferences( void )
-/*************************************
+void    FindReferences( void )
+/*****************************
     Traverse the blocks an allocate a data_flow_def for each one if it
     is needed.  Then calculate which variables are USE_WITHIN_BLOCK,
     USE_IN_OTHER_BLOCK, DEF_IN_BLOCK and turn on their bits in the

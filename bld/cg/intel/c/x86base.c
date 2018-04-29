@@ -37,6 +37,7 @@
 #include "cgsrtlst.h"
 #include "namelist.h"
 #include "x86base.h"
+#include "temps.h"
 
 
 #define MAX_SHORT_NEG   127
@@ -54,9 +55,6 @@
 
 static  int             CalcBaseSave( type_length bp, name *temp );
 static  void            SortTemps(void);
-
-extern  void            CountTempRefs(void);
-
 
 static  void    setTempLocations( void )
 /**************************************/

@@ -71,37 +71,30 @@
 #include "scmain.h"
 #include "generate.h"
 #include "inline.h"
+#include "cse.h"
+#include "dataflo.h"
+#include "flograph.h"
+#include "multiply.h"
+#include "splitvar.h"
+#include "temps.h"
+#include "varusage.h"
 #include "feprotos.h"
 
 
-extern  void            AssignTemps( void );
-extern  void            AssgnMoreTemps( block_num );
-extern  bool            CommonSex( bool );
-extern  void            MakeFlowGraph( void );
-extern  void            FindReferences( void );
 extern  bool            SplitConflicts( void );
 extern  void            RegTreeInit( void );
 extern  void            OptCloseMoves( void );
 extern  void            Conditions( void );
-extern  void            MakeConflicts( void );
 extern  void            MakeLiveInfo( void );
 extern  void            LiveInfoUpdate( void );
 extern  void            FixIndex( void );
 extern  void            FixSegments( void );
 extern  void            FixMemRefs( void );
 extern  void            MergeIndex( void );
-extern  void            AllocALocal( name * );
-extern  void            ParmPropagate( void );
-extern  void            InitStackMap( void );
-extern  void            FiniStackMap( void );
-extern  void            SplitVars( void );
-extern  void            AssignOtherLocals( void );
 extern  bool            CreateBreak( void );
 extern  void            FixBreak( void );
 extern  void            RemoveBreak( void );
 extern  instruction     *NeedIndex( instruction * );
-extern  void            SetInOut( block * );
-extern  void            MulToShiftAdd( void );
 extern  bool            TailRecursion( void );
 
 static  bool            abortCG;

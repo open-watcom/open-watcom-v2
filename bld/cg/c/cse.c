@@ -55,6 +55,9 @@
 #include "treefold.h"
 #include "fixindex.h"
 #include "generate.h"
+#include "flograph.h"
+#include "cse.h"
+#include "varusage.h"
 #include "feprotos.h"
 
 
@@ -79,8 +82,6 @@ typedef enum {
 } who_dies;
 
 extern float_handle     CnvCFToType(float_handle,type_def*);
-extern void             MakeFlowGraph(void);
-extern void             FindReferences(void);
 
 /* forward declarations */
 static void             TreeBits( block *root );
@@ -258,8 +259,8 @@ static  bool    StretchEdges( void )
 }
 
 
-extern  bool    PropRegsOne( void )
-/*********************************/
+bool    PropRegsOne( void )
+/*************************/
 /*
  * We can't propagate registers very far, but one instruction is safe.
  * This is specially for the case when we have a(b(x)). We'll generate
@@ -420,8 +421,8 @@ static  void    TreeBits( block *root )
 }
 
 
-extern  void    SetCSEBits( instruction *ins, instruction *new_ins )
-/*******************************************************************
+void    SetCSEBits( instruction *ins, instruction *new_ins )
+/***********************************************************
     set the ancestor bits of "new_ins" to be the same as "ins".
 */
 {
@@ -1566,8 +1567,8 @@ static  bool    DoPropagateMoves( void )
     return( change );
 }
 
-extern  bool    PropagateMoves( void )
-/*************************************
+bool    PropagateMoves( void )
+/*****************************
     Do copy propagation.
 */
 {
@@ -1583,7 +1584,7 @@ extern  bool    PropagateMoves( void )
 }
 
 
-extern  bool    CommonSex( bool leave_indvars_alone )
+bool    CommonSex( bool leave_indvars_alone )
 /****************************************************
     Do COMMON SubEXpression and related optimizations.
 */

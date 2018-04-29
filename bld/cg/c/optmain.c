@@ -39,11 +39,9 @@
 #include "optmain.h"
 #include "optutil.h"
 #include "optmkins.h"
+#include "optins.h"
+#include "memsydep.h"
 
-
-extern  void            OptPull( void );
-extern  void            OptPush( void );
-extern  pointer_int     MemInUse( void );
 
 static  void    PullQueue( void )
 /*******************************/

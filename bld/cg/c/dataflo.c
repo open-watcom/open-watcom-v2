@@ -38,15 +38,14 @@
 #include "cgsrtlst.h"
 #include "namelist.h"
 #include "conflict.h"
+#include "dataflo.h"
+#include "regsave.h"
+#include "varusage.h"
 #include "feprotos.h"
 
 
-extern  void            FindReferences( void );
-extern  save_def        Weight( save_def value, block *blk );
-
 static  void            PropagateConflicts( void );
 static  void            LiveAnalysis( block *tail, global_bit_set memory_bits );
-extern  void            SetInOut( block *blk );
 
 static  bool            MoreUseInOtherTemps;
 
@@ -200,8 +199,8 @@ static  void    CheckGlobals( void )
 }
 
 
-extern  void    MakeConflicts( void )
-/***********************************/
+void    MakeConflicts( void )
+/***************************/
 {
     global_bit_set     bit;
 
@@ -217,8 +216,8 @@ extern  void    MakeConflicts( void )
 }
 
 
-extern  bool    MoreConflicts( void )
-/***********************************/
+bool    MoreConflicts( void )
+/***************************/
 {
     global_bit_set     bit;
 
@@ -254,8 +253,8 @@ static  void    PropagateConflicts( void )
 }
 
 
-extern  void    SetInOut( block *blk )
-/************************************/
+void    SetInOut( block *blk )
+/****************************/
 {
     if( BlockByBlock ) {
         blk->dataflow->in  = blk->dataflow->use;

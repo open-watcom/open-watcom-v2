@@ -39,6 +39,7 @@
 #include "namelist.h"
 #include "tree.h"
 #include "treefold.h"
+#include "verify.h"
 
 
 extern  opcode_entry    DoNop[];
@@ -168,14 +169,14 @@ static  bool    Op2Pow2( instruction *ins ) {
     return( true );
 }
 
-extern  bool    OtherVerify( vertype kind, instruction *ins,
-                             name *op1, name *op2, name *result ) {
-/******************************************************************
+bool    OtherVerify( vertype kind, instruction *ins,
+                        name *op1, name *op2, name *result )
+/***********************************************************
     verify a if "kind" is true about instruction "ins" whose operands
     are "op1", "op2", "result".  This the target independant code.  We
     want to know these things for the 8086, 386 and 370 compilers.
 */
-
+{
     switch( kind ) {
     case V_NO:
         /* This can get called if it's an optimization reduction that's

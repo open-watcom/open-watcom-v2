@@ -74,7 +74,7 @@ static dep_list_block   *CurrDepBlock;
 static block            *SBlock;
 
 
-extern  bool    SchedFrlFree( void )
+bool    SchedFrlFree( void )
 /***********************************
     Free the instruction schedulers dependancy link lists.
 */
@@ -427,8 +427,8 @@ static bool ImplicitDependancy( instruction *imp, instruction *ins )
 }
 
 
-extern bool InsOrderDependant( instruction *ins_i, instruction *ins_j )
-/*********************************************************************/
+bool InsOrderDependant( instruction *ins_i, instruction *ins_j )
+/**************************************************************/
 {
     if( ins_j->head.opcode == OP_NOP && ins_j->result == NULL && !DoesSomething( ins_j ) )
         return( true );
@@ -645,7 +645,7 @@ static void AnnointDag( void )
     }
 }
 
-extern int StallCost( instruction *ins, instruction *top )
+static int StallCost( instruction *ins, instruction *top )
 /*********************************************************
     If instruction 'ins' were placed before instruction 'top', how long
     would instructions following 'ins' have to wait before they could

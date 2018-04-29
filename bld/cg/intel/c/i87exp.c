@@ -47,13 +47,13 @@
 #include "inssegs.h"
 #include "fixindex.h"
 #include "revcond.h"
+#include "temps.h"
 #include "feprotos.h"
 
 
 extern  opcode_entry    DoNop[];
 
 extern  int             Count87Regs(hw_reg_set);
-extern  void            AllocALocal(name*);
 extern  void            InitFPStkReq( void );
 
 /* forward declarations */

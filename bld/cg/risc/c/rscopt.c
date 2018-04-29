@@ -37,9 +37,8 @@
 #include "namelist.h"
 #include "insutil.h"
 #include "generate.h"
+#include "varusage.h"
 
-
-extern  void            FindReferences(void);
 
 #if 0
 static bool WorthAConversion( name *temp )

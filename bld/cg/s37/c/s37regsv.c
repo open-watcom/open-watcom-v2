@@ -37,6 +37,7 @@
 #include "model.h"
 #include "savings.h"
 #include "procdef.h"
+#include "regsave.h"
 
 #include "s37regsv.def"
 
@@ -44,9 +45,6 @@ extern  savings         Save;
 extern  hw_reg_set      GivenRegisters;
 extern  bool            BlockByBlock;
 
-extern  void            SetCost(save_def*,save_def);
-extern  void            SetLoopCost(uint);
-extern  void            AdjTimeSize(uint*,uint*);
 extern  hw_reg_set      MustSaveRegs();
 
 #define COST( s, t ) ( ( (s)*size + (t)*time ) / TOTAL_WEIGHT )

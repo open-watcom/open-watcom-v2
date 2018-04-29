@@ -72,16 +72,17 @@ extern  void            Find(char *,pointer *,pointer );
 
 
 
-extern  void    DGAlign( uint algn ) {
-//====================================
-
+void    DGAlign( uint algn )
+//==========================
+{
     Action( "DGAlign( %d )%n", algn );
     Locs[CurSeg] += (Locs[CurSeg] + algn - 1) % algn;
     Put("        align to %d byte boundry (%d)%n", algn, Locs[CurSeg] );
 }
-extern  uint    DGSeek( unsigned_32 where ) {
-//====================================
 
+uint    DGSeek( unsigned_32 where )
+//=================================
+{
     unsigned_32 old;
 
     Action( "DGSeek( %l )", where );
@@ -91,23 +92,26 @@ extern  uint    DGSeek( unsigned_32 where ) {
     Action( " -> %l%n", old );
     return( old );
 }
-extern  void    DGUBytes( unsigned_32 len ) {
-//===========================================
 
+void    DGUBytes( unsigned_32 len )
+//=================================
+{
     Action( "DGUBytes( %l )%n", len );
     Put("        %l B(?)%n", len );
     Locs[CurSeg] += len;
 }
-extern  void    DGIBytes( unsigned_32 len, byte pat ) {
-//=============================================
 
+void    DGIBytes( unsigned_32 len, byte pat )
+//===========================================
+{
     Action( "DGIBytes( %l, %h )%n", len, pat );
     Put("        %d B(%h)%n", len, pat );
     Locs[CurSeg] += len;
 }
-extern  void    DGLabel( b *bk ) {
-//================================
 
+void    DGLabel( b *bk )
+//======================
+{
     Action( "DGLabel" );
     Action( "( %s = %s )%n", Label( bk->lp ), Name( bk->s ) );
     DDefLabel( bk->lp );
@@ -116,12 +120,14 @@ extern  void    DGLabel( b *bk ) {
     bk->loc = Locs[CurSeg];
     Put(":%n");
 }
-extern  unsigned_32     DGTell() {
-//========================
 
+unsigned_32     DGTell( void )
+//============================
+{
     Action( "DGTell() -> %l%n", Locs[CurSeg] );
     return( Locs[CurSeg] );
 }
+
 extern  unsigned_32     DGBackTell( b *bk ) {
 //===================================
 

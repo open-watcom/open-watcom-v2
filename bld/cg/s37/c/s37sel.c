@@ -39,6 +39,8 @@
 #include "seldef.h"
 #include "makeins.h"
 #include "s37sel.def"
+#include "types.h"
+
 
 extern  void            HWIntGen(offset,int);
 extern  void            HWLTblGen(void *);
@@ -63,7 +65,6 @@ extern  void            CodeLabel(label_handle,unsigned);
 extern  unsigned        DepthAlign(unsigned);
 extern  seg_id          AskBackSeg(void);
 extern  seg_id          SetOP(seg_id);
-extern  type_def        *TypeAddress(cg_type);
 extern  name            *LoadTemp(name*,type_class_def);
 extern  int             SelCompare(signed_32,signed_32);
 extern  void            AddIns(instruction*);

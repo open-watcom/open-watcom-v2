@@ -132,18 +132,18 @@ static  bool    DemoteTree( tn name, type_def *tipe, bool just_test ) {
 }
 
 
-extern  void    TGDemote( tn name, type_def *tipe ) {
-/***************************************************/
-
+void    TGDemote( tn name, type_def *tipe )
+/*****************************************/
+{
     if( DemoteTree( name, tipe, true ) ) {
         DemoteTree( name, tipe, false );
     }
 }
 
 
-extern  tn      FoldCnvRnd( cg_op op, tn name, type_def *to_tipe ) {
-/***************************************************************/
-
+tn      FoldCnvRnd( cg_op op, tn name, type_def *to_tipe )
+/********************************************************/
+{
     tn              new;
     float_handle    cf;
     float_handle    junk;

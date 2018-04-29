@@ -31,18 +31,8 @@
 ****************************************************************************/
 
 
-#include "_cgstd.h"
-#include "_cg.h"
-#include "hwreg.h"
-#include "typclass.h"
-#include "addrname.h"
-#include "bckdef.h"
-#include "blocknum.h"
-#include "name.h"
-#include "i87data.h"
-
-
-name            *FPStatWord;
-name            *Parm8087[MAX_8087_REG + 1];
-bool            Used87;
-int             Max87Stk;
+extern void         AdjTimeSize( uint *time, uint *size );
+extern void         SetLoopCost( uint time );
+extern void         SetCost( save_def *array, save_def cost );
+extern save_def     Weight( save_def value, block *blk );
+extern void         CalcSavings( conflict_node *conf );

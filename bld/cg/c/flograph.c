@@ -39,6 +39,7 @@
 #include "data.h"
 #include "makeblk.h"
 #include "insutil.h"
+#include "flograph.h"
 
 
 extern  bool            FloodForward( block *, bool (*)( block *, void * ), void * );
@@ -516,8 +517,8 @@ static  bool    Degenerate( void )
     return( false );
 }
 
-extern  void    MakeFlowGraph( void )
-/***********************************/
+void    MakeFlowGraph( void )
+/***************************/
 {
     Irreducable();
     if( CurrProc->state.attr & ROUTINE_WANTS_DEBUGGING ) {

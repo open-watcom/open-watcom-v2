@@ -42,6 +42,8 @@
 #include "insdead.h"
 #include "namelist.h"
 #include "optab.h"
+#include "temps.h"
+#include "varusage.h"
 #include "feprotos.h"
 
 
@@ -57,8 +59,6 @@ typedef struct stack_entry {
         type_length             location;
         type_length             size;
 } stack_entry;
-
-extern  void            TransferTempFlags(void);
 
 static    stack_entry   *StackMap;
 
@@ -84,8 +84,8 @@ static  void    StackEntry( stack_temp *st_temp, name *temp )
 }
 
 
-extern  void    InitStackMap( void )
-/**********************************/
+void    InitStackMap( void )
+/**************************/
 {
     StackMap = NULL;
 }
@@ -333,8 +333,8 @@ static  instruction     *FindOnlyIns( name *name, bool *any_references )
 }
 
 
-extern  void    PropLocal( name *temp )
-/*************************************/
+void    PropLocal( name *temp )
+/*****************************/
 {
     name        *scan;
 
@@ -478,8 +478,8 @@ static  void    CalcNumberOfUses( void )
 }
 
 
-extern  void    AssignOtherLocals( void )
-/***************************************/
+void    AssignOtherLocals( void )
+/*******************************/
 {
     name        *temp;
     name        **owner;
@@ -538,8 +538,8 @@ static void PropAParm( name *temp )
 }
 
 
-extern  void    ParmPropagate( void )
-/***********************************/
+void    ParmPropagate( void )
+/***************************/
 {
     instruction *ins;
     block       *blk;
@@ -558,8 +558,8 @@ extern  void    ParmPropagate( void )
 }
 
 
-extern  void    AllocALocal( name *name )
-/***************************************/
+void    AllocALocal( name *name )
+/*******************************/
 {
     name = DeAlias( name );
     if( (name->v.usage & HAS_MEMORY) == 0 ) {
@@ -592,8 +592,8 @@ static void AssgnATemp( name *temp, block_num curr_id )
 }
 
 
-extern  void    FiniStackMap( void )
-/**********************************/
+void    FiniStackMap( void )
+/**************************/
 {
     stack_entry *next1;
     stack_temp  *other;
@@ -622,8 +622,8 @@ extern  void    FiniStackMap( void )
 }
 
 
-extern  void    AssgnMoreTemps( block_num curr_id )
-/*************************************************/
+void    AssgnMoreTemps( block_num curr_id )
+/*****************************************/
 /* run the block list. It's faster if we're using /od */
 {
     instruction *ins;
@@ -649,8 +649,8 @@ extern  void    AssgnMoreTemps( block_num curr_id )
 }
 
 
-extern  void            CountTempRefs( void )
-/*******************************************/
+void            CountTempRefs( void )
+/***********************************/
 {
     block               *blk;
     instruction         *ins;
@@ -677,8 +677,8 @@ extern  void            CountTempRefs( void )
 }
 
 
-extern  void    AssignTemps( void )
-/*********************************/
+void    AssignTemps( void )
+/*************************/
 /*   Parameters on stack have already been assigned locations*/
 {
     TransferTempFlags();        /* make sure whole structure goes in mem*/

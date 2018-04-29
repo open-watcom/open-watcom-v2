@@ -31,7 +31,7 @@
 
 
 extern type_class_def   Unsigned[];
-extern type_class_def   Signed[]; 
+extern type_class_def   Signed[];
 extern type_class_def   DoubleClass[];
 extern type_class_def   HalfClass[];
 
@@ -88,3 +88,4 @@ extern instruction      *rMAKESUB( instruction *ins );
 extern instruction      *rCMPTRUE( instruction *ins );
 extern instruction      *rCMPFALSE( instruction *ins );
 extern instruction      *rOP1RESTEMP( instruction *ins );
+extern instruction      *rFIXSHIFT( instruction * );

@@ -36,11 +36,13 @@
 #include "cfloat.h"
 #include "cgmem.h"
 #include "makeins.h"
+#include "temps.h"
+#include "varusage.h"
+
 #include "s37temps.def"
 
+
 extern  void            *SortList(void*,unsigned int,bool(*)(void*,void*));
-extern  void            CountTempRefs(void);
-extern  void            PropLocal(name*);
 extern  name            *AllocAddrConst(name*,int,constant_class,type_class_def);
 extern  cfloat          *CFCnvU32F(unsigned_32);
 extern  name            *SAllocIndex(name*,name*,type_length,type_class_def,type_length);
@@ -50,7 +52,6 @@ extern  void            PrefixIns(instruction*,instruction*);
 extern  name            *ScaleIndex(name*,name*,type_length,type_class_def,type_length,int,i_flags);
 extern  name            *AllocRegName(hw_reg_set);
 extern  hw_reg_set      DisplayReg(void);
-extern  void            FindReferences();
 extern  void            DoNothing( instruction* );
 
 extern  proc_def        *CurrProc;

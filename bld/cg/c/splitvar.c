@@ -39,11 +39,10 @@
 #include "regalloc.h"
 #include "insdead.h"
 #include "conflict.h"
+#include "dataflo.h"
+#include "varusage.h"
+#include "splitvar.h"
 
-
-extern  void            FindReferences( void );
-extern  void            MakeConflicts( void );
-extern  bool            MoreConflicts( void );
 
 static  block_num       Instance;
 static  global_bit_set  Id;
@@ -82,8 +81,8 @@ static  void    NotVisited( void )
 }
 
 
-extern  bool    RepOp( name **pop, name *of, name *with )
-/*******************************************************/
+bool    RepOp( name **pop, name *of, name *with )
+/***********************************************/
 {
     name        *op;
     name        *base;
@@ -217,8 +216,8 @@ static  void *MarkInstance( block *blk )
 }
 
 
-extern  void    SplitVars( void )
-/*******************************/
+ void    SplitVars( void )
+/************************/
 /* For each variable, find out if it can be split into two separate variables.*/
 /* This often happens when programmers re-use variables rather than defining*/
 /* a new one.*/

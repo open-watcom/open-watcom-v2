@@ -32,11 +32,11 @@
 
 #include "_cgstd.h"
 #include "coderep.h"
+#include "data.h"
 #include "cgauxinf.h"
 #include "system.h"
 #include "cgmem.h"
 #include "zoiks.h"
-#include "data.h"
 #include "rtrtn.h"
 #include "x86objd.h"
 #include "utils.h"

@@ -57,7 +57,6 @@ extern  name            *ST(int);
 extern  int             FPRegNum(name *);
 extern  int             Count87Regs(hw_reg_set);
 extern  int             FPStkReq( instruction * );
-extern  bool            InsOrderDependant( instruction *, instruction * );
 
 /* forward declarations */
 static  void            PushStack( instruction *ins );

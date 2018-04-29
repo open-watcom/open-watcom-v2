@@ -38,10 +38,10 @@
 #include "targetin.h"
 #include "namelist.h"
 #include "optab.h"
+#include "temps.h"
 
 
 extern  bool            UnChangeable(instruction*);
-extern  void            PropLocal(name*);
 
 extern  savings         Save;
 

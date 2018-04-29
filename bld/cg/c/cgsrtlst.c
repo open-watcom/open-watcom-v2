@@ -166,10 +166,9 @@ static  void            ShellSort( void **array, unsigned length,
 }
 
 
-extern  void            *SortList( void *list, unsigned next_offset,
-                                  bool (*before)(void *,void *) ) {
-/****************************************************************/
-
+void *SortList( void *list, unsigned next_offset, bool (*before)(void *,void *) )
+/*******************************************************************************/
+{
     void                *list2;
     unsigned            length;
     mem_out_action      old_memout;

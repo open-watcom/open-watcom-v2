@@ -47,13 +47,13 @@
 #include "optab.h"
 #include "inssegs.h"
 #include "fixindex.h"
+#include "cse.h"
 #include "feprotos.h"
 
 
 extern name             *TGetName(tn);
 extern tn               TName(name*,type_def*);
 extern bool             NeedConvert(type_def*,type_def*);
-extern void             SetCSEBits(instruction *,instruction *);
 
 bool     IsTrickyPointerConv( instruction *ins )
 /******************************************************

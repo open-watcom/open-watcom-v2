@@ -37,6 +37,7 @@
 #include "namelist.h"
 #include "insutil.h"
 #include "utils.h"
+#include "multiply.h"
 
 
 extern  int             SubCost(void);
@@ -232,8 +233,8 @@ static  instruction     *CheckMul( instruction *ins )
 }
 
 
-extern  void    MulToShiftAdd( void )
-/***********************************/
+void    MulToShiftAdd( void )
+/***************************/
 {
     block       *blk;
     instruction *ins;

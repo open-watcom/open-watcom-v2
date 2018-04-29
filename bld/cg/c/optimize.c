@@ -42,12 +42,12 @@
 #include "insdead.h"
 #include "score.h"
 #include "conflict.h"
+#include "cse.h"
+#include "dataflo.h"
+#include "varusage.h"
 #include "optimize.h"
 
 
-extern  bool            PropagateMoves(void);
-extern  void            FindReferences(void);
-extern  void            MakeConflicts(void);
 extern  void            MakeLiveInfo(void);
 
 typedef enum {

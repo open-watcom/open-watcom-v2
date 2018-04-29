@@ -48,10 +48,10 @@
 #include "optimize.h"
 #include "fixindex.h"
 #include "generate.h"
+#include "inssched.h"
 
 
 extern  void            UpdateLive(instruction*,instruction*);
-extern  bool            InsOrderDependant( instruction *, instruction * );
 
 static  bool            PreferSize;
 

@@ -31,18 +31,12 @@
 ****************************************************************************/
 
 
-#include "_cgstd.h"
-#include "_cg.h"
-#include "hwreg.h"
-#include "typclass.h"
-#include "addrname.h"
-#include "bckdef.h"
-#include "blocknum.h"
-#include "name.h"
-#include "i87data.h"
-
-
-name            *FPStatWord;
-name            *Parm8087[MAX_8087_REG + 1];
-bool            Used87;
-int             Max87Stk;
+extern void     InitStackMap( void );
+extern void     PropLocal( name *temp );
+extern void     AssignOtherLocals( void );
+extern void     ParmPropagate( void );
+extern void     AllocALocal( name *name );
+extern void     FiniStackMap( void );
+extern void     AssgnMoreTemps( block_num curr_id );
+extern void     CountTempRefs( void );
+extern void     AssignTemps( void );

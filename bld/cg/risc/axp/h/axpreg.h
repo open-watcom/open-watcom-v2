@@ -48,7 +48,7 @@
     have to give each register a unique name to correspond to each of the
     data types which can be held within it.
 */
-                                                                                                                                                                                                                                 
+
 /* low bytes of the integer registers - byte 0 */
 HW_DEFINE_SIMPLE( HW_B0,     0x00000001U, 0x00000000U, 0x00000000U, 0x00000000U, 0x00000000U );
 HW_DEFINE_SIMPLE( HW_B1,     0x00000002U, 0x00000000U, 0x00000000U, 0x00000000U, 0x00000000U );

@@ -42,6 +42,8 @@
 #include "optmkins.h"
 #include "makeins.h"
 #include "conflict.h"
+#include "inssched.h"
+#include "memsydep.h"
 #include "feprotos.h"
 
 
@@ -55,9 +57,6 @@ extern  bool            RegTreeFrlFree( void );
 extern  bool            ScoreFrlFree( void );
 extern  bool            RegTreeFrlFree( void );
 extern  bool            AddrFrlFree( void );
-extern  bool            SchedFrlFree( void );
-extern  pointer_int     MemInUse( void );
-extern  pointer_int     MemSize( void );
 extern  bool            TreeFrlFree( void );
 
 

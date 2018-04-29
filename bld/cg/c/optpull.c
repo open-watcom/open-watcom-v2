@@ -41,14 +41,15 @@
 #include "objout.h"
 #include "optutil.h"
 #include "optmkins.h"
+#include "optins.h"
+#include "optpull.h"
+#include "optpush.h"
 
 
-extern  void            JmpToRet( ins_entry *, ins_entry * );
-extern  ins_entry       *Untangle( ins_entry * );
 extern  void            ChgLblRef( ins_entry *, label_handle );
 
-extern  bool    FindShort( ins_entry *ins, ins_entry *end )
-/*********************************************************/
+bool    FindShort( ins_entry *ins, ins_entry *end )
+/*************************************************/
 {
     for( ; ins != NULL && ins != end; ins = NextIns( ins ) ) {
         if( _Class( ins ) == OC_LABEL ) {
@@ -89,8 +90,8 @@ static  void    DoCloneCode( ins_entry *jmp, ins_entry *hoist )
 
 #define MAX_CLONE_SIZE  40
 
-extern  void    CloneCode( label_handle lbl )
-/*****************************************
+void    CloneCode( label_handle lbl )
+/************************************
     consider:
 
         JMP L1
@@ -150,8 +151,8 @@ extern  void    CloneCode( label_handle lbl )
 }
 
 
-extern  ins_entry       *IsolatedCode( ins_entry *instr )
-/*******************************************************/
+ins_entry       *IsolatedCode( ins_entry *instr )
+/***********************************************/
 {
     ins_entry   *next;
 
@@ -177,8 +178,8 @@ extern  ins_entry       *IsolatedCode( ins_entry *instr )
 }
 
 
-extern  bool    StraightenCode( ins_entry *jump )
-/***********************************************/
+bool    StraightenCode( ins_entry *jump )
+/***************************************/
 {
     ins_entry   *next;
     ins_entry   *insert;
@@ -247,8 +248,8 @@ extern  bool    StraightenCode( ins_entry *jump )
 }
 
 
-extern  void    CheckStraightenCode( ins_entry  *lbl_ins )
-/********************************************************/
+void    CheckStraightenCode( ins_entry  *lbl_ins )
+/************************************************/
 {
     label_handle    lbl;
     ins_entry       *jmp;
@@ -268,8 +269,8 @@ extern  void    CheckStraightenCode( ins_entry  *lbl_ins )
 }
 
 
-extern  void    CallRet( ins_entry *instr )
-/*****************************************/
+void    CallRet( ins_entry *instr )
+/*********************************/
 {
     ins_entry   *lbl;
 
@@ -287,8 +288,8 @@ extern  void    CallRet( ins_entry *instr )
 }
 
 
-extern  void    JmpRet( ins_entry *instr )
-/****************************************/
+void    JmpRet( ins_entry *instr )
+/********************************/
 {
     ins_entry   *ret;
 

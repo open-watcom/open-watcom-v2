@@ -41,6 +41,7 @@
 #include "memlimit.h"
 #include "onexit.h"
 #include "dumpio.h"
+#include "memmgt.h"
 
 
 /*  memory tracking levels */
@@ -80,8 +81,8 @@ static void Prt( void *handle, const char *buff, size_t len )
 static          uint    Chunks;
 #endif
 
-extern  void    CGMemInit( void )
-/*******************************/
+void    CGMemInit( void )
+/***********************/
 {
     _SysReInit();
     MemOut = MO_FATAL;
@@ -96,8 +97,8 @@ extern  void    CGMemInit( void )
     CalcMemLimit();
 }
 
-extern  void    CGMemFini( void )
-/*******************************/
+void    CGMemFini( void )
+/***********************/
 {
 #if _MEMORY_TRACKING & _FULL_TRACKING
     char        buff[80];
@@ -115,8 +116,8 @@ extern  void    CGMemFini( void )
 }
 
 
-extern  mem_out_action    SetMemOut( mem_out_action what )
-/********************************************************/
+mem_out_action    SetMemOut( mem_out_action what )
+/************************************************/
 {
     mem_out_action      old;
 
@@ -125,8 +126,8 @@ extern  mem_out_action    SetMemOut( mem_out_action what )
     return( old );
 }
 
-extern  pointer CGAlloc( size_t size )
-/************************************/
+pointer CGAlloc( size_t size )
+/****************************/
 {
     pointer     chunk;
 
@@ -157,8 +158,8 @@ extern  pointer CGAlloc( size_t size )
 }
 
 
-extern  void    CGFree( pointer chunk )
-/*************************************/
+void    CGFree( pointer chunk )
+/*****************************/
 {
 #if _MEMORY_TRACKING & _CHUNK_TRACKING
     --Chunks;
@@ -172,8 +173,8 @@ extern  void    CGFree( pointer chunk )
 
 
 #if _MEMORY_TRACKING & _FULL_TRACKING
-extern  void    DumpMem( void )
-/*****************************/
+void    DumpMem( void )
+/*********************/
 {
     _trmem_prt_usage( Handle );
 }

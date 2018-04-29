@@ -50,6 +50,7 @@
 #include "inssegs.h"
 #include "bldcall.h"
 #include "fixindex.h"
+#include "inssched.h"
 
 
 extern int          FPRegNum(name*);
@@ -67,7 +68,6 @@ extern void         UpdateLive(instruction*,instruction*);
 extern void         PrefFXCH(instruction*,int);
 extern void         Wait8087( void );
 extern void         ReverseFPGen(instruction*);
-extern bool         InsOrderDependant(instruction*,instruction*);
 extern int          FPStkReq(instruction*);
 extern bool         FPResultNotNeeded(instruction*);
 

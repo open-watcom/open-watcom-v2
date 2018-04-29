@@ -42,3 +42,7 @@ typedef struct common_block {
         struct lbl_tie          *lbl_add;
         int                     saved;
 } common_block;
+
+extern bool    ComTail( ins_entry *list, ins_entry *ins );
+extern bool    ComCode( ins_entry *jmp );
+extern void    TraceCommon( ins_entry *lbl_ins );

@@ -57,6 +57,7 @@
 #include "optimize.h"
 #include "tree.h"
 #include "treefold.h"
+#include "splitvar.h"
 #include "feprotos.h"
 #include "revcond.h"
 
@@ -76,7 +77,6 @@ typedef struct block_list {
     struct block_list       *next;
 } block_list;
 
-extern bool             RepOp(name **,name *,name *);
 extern void             ConstToTemp(block *,block *,block *(*)(block *));
 
 block                   *Head;

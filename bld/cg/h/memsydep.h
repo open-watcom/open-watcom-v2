@@ -29,13 +29,15 @@
 ****************************************************************************/
 
 
-extern pointer  MemAlloc( size_t );
-extern void     MemFree( pointer );
-extern void     MemInit( void );
-extern void     MemFini( void );
-extern void     MemCoalesce( void );
+extern pointer          MemAlloc( size_t );
+extern void             MemFree( pointer );
+extern void             MemInit( void );
+extern void             MemFini( void );
+extern void             MemCoalesce( void );
+extern pointer_int      MemInUse( void );
+extern pointer_int      MemSize( void );
 
-#define _SysAlloc        MemAlloc
-#define _SysFree         MemFree
-#define _SysInit         MemInit
-#define _SysReInit       MemCoalesce
+#define _SysAlloc       MemAlloc
+#define _SysFree        MemFree
+#define _SysInit        MemInit
+#define _SysReInit      MemCoalesce

@@ -147,8 +147,8 @@ static  void            FreeUnVisitedTemps( void )
 }
 
 
-extern  bool            VolatileIns(instruction *ins)
-/****************************************************
+bool    VolatileIns( instruction *ins )
+/********************************************
     Does the instruction access/define a volatile variable?
     This is a utility routine for any module to use.
 */
@@ -169,7 +169,7 @@ extern  bool            VolatileIns(instruction *ins)
 }
 
 
-extern  bool            SideEffect(instruction* ins)
+bool    SideEffect( instruction *ins )
 /***************************************************
     Is an instruction a side effect instruction, such as one
     that changes the 8087 stack or a SUB with a following SBB.
@@ -379,24 +379,24 @@ static bool DoInsDead( bool just_the_loop, bool in_regalloc )
 }
 
 
-extern  bool    InsDead( void )
-/******************************
+bool    InsDead( void )
+/**********************
     Remove any dead or useless instructions in the program we can find.
 */
 {
     return( DoInsDead( false, false ) );
 }
 
-extern  bool    RegInsDead( void )
-/*********************************
+bool    RegInsDead( void )
+/*************************
     Remove any dead or useless instructions in the program we can find.
 */
 {
     return( DoInsDead( false, true ) );
 }
 
-extern  bool    LoopInsDead( void )
-/*********************************/
+bool    LoopInsDead( void )
+/*************************/
 {
     return( DoInsDead( true, false ) );
 }

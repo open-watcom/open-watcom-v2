@@ -36,10 +36,9 @@
 #include "data.h"
 #include "split.h"
 #include "namelist.h"
+#include "verify.h"
 #include "feprotos.h"
 
-
-extern  bool    OtherVerify( vertype, instruction *, name *, name *, name * );
 
 static  bool    ByteConst( name *operand )
 /****************************************/

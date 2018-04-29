@@ -32,14 +32,14 @@
 
 
 #include "_cgstd.h"
+#include <stdio.h>
+#include <stdarg.h>
+#include <stdlib.h>
 #include "coderep.h"
 #include "procdef.h"
 #include "model.h"
 #include "zoiks.h"
 #include "cgaux.h"
-#include <stdio.h>
-#include <stdarg.h>
-#include <stdlib.h>
 #include "dw.h"
 #include "axpregn.h"
 #include "dwarf.h"

@@ -76,7 +76,6 @@ extern  instruction     *SplitLoadAddr(instruction*);
 extern  void            UpdateLive(instruction*,instruction*);
 extern  opcode_entry    *GetMoveNoCCEntry( void );
 
-extern  instruction     *rFIXSHIFT(instruction *);
 extern  instruction     *rDOCVT(instruction*);
 extern  instruction     *rMAKEFNEG(instruction*);
 extern  instruction     *rSPLITCMP(instruction*);

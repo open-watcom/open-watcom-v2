@@ -46,6 +46,7 @@
 #include "stubdata.h"
 #include "feprotos.h"
 
+
 extern  int             TempId;
 
 extern  void            DumpTree(n *);

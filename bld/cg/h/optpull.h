@@ -31,18 +31,10 @@
 ****************************************************************************/
 
 
-#include "_cgstd.h"
-#include "_cg.h"
-#include "hwreg.h"
-#include "typclass.h"
-#include "addrname.h"
-#include "bckdef.h"
-#include "blocknum.h"
-#include "name.h"
-#include "i87data.h"
-
-
-name            *FPStatWord;
-name            *Parm8087[MAX_8087_REG + 1];
-bool            Used87;
-int             Max87Stk;
+extern bool         FindShort( ins_entry *ins, ins_entry *end );
+extern void         CloneCode( label_handle lbl );
+extern ins_entry    *IsolatedCode( ins_entry *instr );
+extern bool         StraightenCode( ins_entry *jump );
+extern void         CheckStraightenCode( ins_entry *lbl_ins );
+extern void         CallRet( ins_entry *instr );
+extern void         JmpRet( ins_entry *instr );
