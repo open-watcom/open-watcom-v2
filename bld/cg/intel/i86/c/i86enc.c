@@ -48,27 +48,11 @@
 #include "namelist.h"
 #include "tree.h"
 #include "treefold.h"
+#include "x86segs.h"
+#include "x86enc.h"
 
-
-extern  void            LayRegAC( hw_reg_set );
-extern  void            LayOpword( gen_opcode );
-extern  hw_reg_set      CalcSegment( cg_sym_handle, cg_class );
-extern  void            AddByte( byte );
-extern  void            LayRMRegOp( name * );
-extern  void            LayOpbyte( gen_opcode );
-extern  void            LayRegRM( hw_reg_set );
-extern  void            GenSeg( hw_reg_set );
-extern  void            LayW( type_class_def );
-extern  void            AddWCons( name *, type_class_def );
-extern  void            AddSData( signed_32, type_class_def );
-extern  void            AddWData( signed_32, type_class_def );
-extern  void            AddToTemp( byte );
-extern  type_class_def  OpndSize( hw_reg_set );
-extern  void            LayReg( hw_reg_set );
-extern  void            GCondFwait( void );
 
 /* forward declarations */
-extern  void            DoRelocConst( name *op, type_class_def kind );
 static  void            SetOff( name *op, int val );
 
 extern  zero_page_scheme        ZPageType;
@@ -164,8 +148,8 @@ static  byte    DoDisp( name *op, hw_reg_set regs )
 }
 
 
-extern  void    DoRepOp( instruction *ins )
-/*****************************************/
+void    DoRepOp( instruction *ins )
+/*********************************/
 {
     int size;
 
@@ -202,8 +186,8 @@ extern  void    DoRepOp( instruction *ins )
 }
 
 
-extern  void    Do4CXShift( instruction *ins, void (*rtn)(instruction *) )
-/************************************************************************/
+void    Do4CXShift( instruction *ins, void (*rtn)(instruction *) )
+/****************************************************************/
 {
     hw_reg_set  hreg;
     hw_reg_set  lreg;
@@ -284,8 +268,8 @@ extern  void    Do4CXShift( instruction *ins, void (*rtn)(instruction *) )
 }
 
 
-extern  void    LayLeaRegOp( instruction *ins )
-/*********************************************/
+void    LayLeaRegOp( instruction *ins )
+/*************************************/
 {
     name        *left;
     name        *right;
@@ -315,8 +299,8 @@ static  void    CheckSize( void )
 }
 
 
-extern  void    DoMAddr( name *op )
-/*********************************/
+void    DoMAddr( name *op )
+/*************************/
 {
     ILen += 2;
     if( op->n.class == N_CONSTANT ) {
@@ -327,8 +311,8 @@ extern  void    DoMAddr( name *op )
 }
 
 
-extern  byte    DoMDisp( name *op, bool alt_encoding )
-/****************************************************/
+byte    DoMDisp( name *op, bool alt_encoding )
+/********************************************/
 {
     hw_reg_set          regs;
     zero_page_scheme    zptype;
@@ -365,8 +349,8 @@ extern  byte    DoMDisp( name *op, bool alt_encoding )
 }
 
 
-extern  void    LayModRM( name *op )
-/**********************************/
+void    LayModRM( name *op )
+/**************************/
 {
     hw_reg_set  regs;
     name        *base;
@@ -437,8 +421,8 @@ extern  void    LayModRM( name *op )
 }
 
 
-extern  void    DoRelocConst( name *op, type_class_def kind )
-/***********************************************************/
+void    DoRelocConst( name *op, type_class_def kind )
+/***************************************************/
 {
     /* unused parameters */ (void)kind;
 
@@ -457,8 +441,8 @@ extern  void    DoRelocConst( name *op, type_class_def kind )
 }
 
 
-extern  void    Do4Shift( instruction *ins )
-/******************************************/
+void    Do4Shift( instruction *ins )
+/**********************************/
 {
     name        *op;
 
@@ -486,8 +470,8 @@ extern  void    Do4Shift( instruction *ins )
 }
 
 
-extern  void    Do4RShift( instruction *ins )
-/*******************************************/
+void    Do4RShift( instruction *ins )
+/***********************************/
 {
     hw_reg_set  regs;
 
@@ -511,8 +495,8 @@ extern  void    Do4RShift( instruction *ins )
 }
 
 
-extern  void    Gen4RNeg( instruction *ins )
-/******************************************/
+void    Gen4RNeg( instruction *ins )
+/**********************************/
 {
     hw_reg_set  regs;
 
@@ -532,8 +516,8 @@ extern  void    Gen4RNeg( instruction *ins )
 }
 
 
-extern  void    Gen4Neg( instruction *ins )
-/*****************************************/
+void    Gen4Neg( instruction *ins )
+/*********************************/
 {
     name        *res;
 
@@ -557,8 +541,8 @@ extern  void    Gen4Neg( instruction *ins )
 }
 
 
-extern  void    By2Div( instruction *ins )
-/****************************************/
+void    By2Div( instruction *ins )
+/********************************/
 {
     switch( ins->type_class ) {
     case I1:
@@ -580,8 +564,8 @@ extern  void    By2Div( instruction *ins )
 }
 
 
-extern void Pow2Div286( instruction *ins )
-/****************************************/
+void Pow2Div286( instruction *ins )
+/*********************************/
 {
     int         log2;
 
@@ -616,8 +600,8 @@ extern void Pow2Div286( instruction *ins )
 }
 
 
-extern  void    Pow2Div( instruction *ins )
-/*****************************************/
+void    Pow2Div( instruction *ins )
+/*********************************/
 {
     int         log2;
 
@@ -665,8 +649,8 @@ static  void    SetOff( name *op, int val )
     }
 }
 
-extern  void    GenUnkLea( pointer value )
-/****************************************/
+void    GenUnkLea( pointer value )
+/********************************/
 {
     LayOpword( M_LEA );
     OpndSize( HW_SP );
@@ -677,8 +661,8 @@ extern  void    GenUnkLea( pointer value )
     Inst[RMR] |= DoIndex( HW_BP );
 }
 
-extern  void    GenLeaSP( int offset )
-/**************************************
+void    GenLeaSP( int offset )
+/*****************************
     LEA         sp,offset[bp]
 */
 {
@@ -691,8 +675,8 @@ extern  void    GenLeaSP( int offset )
     _Emit;
 }
 
-extern  void    GFstp10( type_length where )
-/******************************************/
+void    GFstp10( type_length where )
+/**********************************/
 {
     GCondFwait();
     LayOpword( 0x3edb );
@@ -701,8 +685,8 @@ extern  void    GFstp10( type_length where )
 }
 
 
-extern  void    GFld10( type_length where )
-/*****************************************/
+void    GFld10( type_length where )
+/*********************************/
 {
     GCondFwait();
     LayOpword( 0x2edb );

@@ -149,14 +149,12 @@ static cg_name ctorFlagSet(     // SET/RESET CTOR FLAG
     cg_op opcode,               // - set/reset opcode
     patch_handle* a_ph )        // - addr[ patch_handle ]
 {
-    unsigned offset;            // - offset of flag byte
-    unsigned mask;              // - mask for byte
-    cg_name op_flg;             // - expression for code-gen
+    cg_name         op_flg;                         // - expression for code-gen
+    unsigned        idx = FnCtlCondFlagCtor( fctl );// - offset of flag byte
+    size_t          bit_offs = BITARR_OFFS( idx );  // - offset for byte
+//    unsigned char   bit_mask = BITARR_MASK( idx );  // - mask for byte
 
-    mask = FnCtlCondFlagCtor( fctl );
-    offset = mask / 8;
-    mask &= 7;
-    op_flg = CgSymbolPlusOffset( FstabRw(), offset + CgbkInfo.size_rw_base );
+    op_flg = CgSymbolPlusOffset( FstabRw(), bit_offs + CgbkInfo.size_rw_base );
     *a_ph = BEPatch();
     op_flg = CGLVPreGets( opcode
                         , op_flg
@@ -167,14 +165,16 @@ static cg_name ctorFlagSet(     // SET/RESET CTOR FLAG
 
 
 static void callBackCtorFlag(   // CALL-BACK FOR CTOR-FLAG AFTER CTORING
-    void* data )                // - patch entry
+    void *data )                // - patch entry
 {
-    CTOR_FLAG_SET* cfs = data;  // - patch entry
+    CTOR_FLAG_SET *cfs = data;  // - patch entry
 
     if( ctorTestReqd( FstabActualPosn(), cfs->se ) ) {
-        FN_CTL* fctl = FnCtlTop();
-        unsigned mask = 1 << ( FnCtlCondFlagCtor( fctl ) & 7 );
-        BEPatchInteger( cfs->ph_clr, 255 - mask );
+        FN_CTL *fctl = FnCtlTop();
+        unsigned idx = FnCtlCondFlagCtor( fctl );
+//        size_t bit_offs = BITARR_OFFS( idx );
+        unsigned char bit_mask = BITARR_MASK( idx );
+        BEPatchInteger( cfs->ph_clr, NOT_BITARR_MASK( bit_mask ) );
     } else {
         BEPatchInteger( cfs->ph_clr, -1 );
     }

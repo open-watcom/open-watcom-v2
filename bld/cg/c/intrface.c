@@ -74,7 +74,6 @@ extern  void            InitWeights(uint);
 extern  void            TInit(void);
 extern  void            SillyMemLimit(void);
 extern  void            TFini(void);
-extern  void            BGFiniLabel(label_handle);
 extern  void            BGProcDecl(cg_sym_handle,type_def*);
 extern  an              TGen(tn,type_def*);
 extern  an              BGSave(an);

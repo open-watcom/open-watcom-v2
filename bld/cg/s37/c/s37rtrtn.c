@@ -44,7 +44,7 @@
 extern  name            *AllocRegName(hw_reg_set);
 extern  name            *AllocMemory(pointer,type_length,cg_class,type_class_def);
 extern  name            *AllocIntConst(int);
-extern  name            *AddrConst(name*,segment_id,constant_class);
+//extern  name            *AddrConst(name*,segment_id,constant_class);
 extern  name            *AllocIndex(name*,name*,type_length,type_class_def);
 extern  label_handle    RTLabel(int);
 extern  void            AddIns(instruction*);

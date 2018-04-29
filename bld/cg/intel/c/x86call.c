@@ -50,14 +50,12 @@
 #include "insutil.h"
 #include "typemap.h"
 #include "bldcall.h"
+#include "bldins.h"
+#include "x86segs.h"
 #include "cgprotos.h"
 
 
-extern  name            *AddrConst(name*,segment_id,constant_class);
-extern  name            *NearSegment(void);
 extern  type_def        *QParmType(cg_sym_handle,cg_sym_handle,type_def*);
-extern  name            *BGNewTemp( type_def *tipe );
-extern  void            BGDone( an );
 
 static  void    AddCall( instruction *ins, cn call );
 

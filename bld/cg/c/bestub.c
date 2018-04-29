@@ -38,6 +38,8 @@
 #include "cfloat.h"
 #include "dbbit.h"
 #include "symdbg.h"
+#include "bldins.h"
+
 
 typedef union hdl_type {
         bck_info        *b;

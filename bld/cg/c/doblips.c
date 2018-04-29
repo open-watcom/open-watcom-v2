@@ -36,6 +36,7 @@
 #include "onexit.h"
 #include "qtimer.h"
 #include "blips.h"
+#include "envvar.h"
 #include "feprotos.h"
 
 #define Version         "WATCOM Code Generator --------"
@@ -46,8 +47,6 @@ extern  int             OSCall(void);
 #else
  static void OSCall(void){}
 #endif
-
-extern  bool            GetEnvVar(const char *,char *,int);
 
 static uint             LastBlipCount;
 static uint             NextTickCount;

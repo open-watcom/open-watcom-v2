@@ -62,28 +62,12 @@
 #include "split.h"
 #include "namelist.h"
 #include "fixindex.h"
+#include "x86segs.h"
+#include "x86enc.h"
 #include "feprotos.h"
 
 
-extern  hw_reg_set      CalcSegment(cg_sym_handle,cg_class);
-extern  void            DoRepOp( instruction *ins );
-extern  void            Do4CXShift(instruction *,void (*)(instruction*) );
 extern  void            LayLeaOp(instruction*);
-extern  void            LayModRM(name*);
-extern  byte            DoMDisp(name*,bool);
-extern  void            DoMAddr(name*);
-extern  void            DoRelocConst(name*,type_class_def);
-extern  void            Do4Shift(instruction*);
-extern  void            Do4RShift(instruction*);
-extern  void            Gen4RNeg(instruction*);
-extern  void            Gen4Neg(instruction*);
-extern  void            Pow2Div(instruction*);
-extern  void            By2Div(instruction*);
-#if _TARGET & _TARG_IAPX86
-extern  void            Pow2Div286(instruction*);
-#endif
-extern  void            LayLeaRegOp(instruction*);
-extern  void            GenUnkLea(pointer);
 extern  name            *IntEquivalent(name*);
 extern  void            AdjustStackDepth(instruction*);
 extern  void            AdjustStackDepthDirect(int adjust);
@@ -91,23 +75,11 @@ extern  void            AdjustStackDepthDirect(int adjust);
 //extern  hw_reg_set      FullReg(hw_reg_set);
 extern  bool            BaseIsSP(name*);
 extern  type_length     TmpLoc(name*,name*);
-extern  void            AddWData(signed_32,type_class_def );
-extern  void            LayOpbyte( gen_opcode op );
-extern  void            LayOpword( gen_opcode op );
-extern  void            LayW( type_class_def class );
-extern  void            GenSeg( hw_reg_set regs );
-extern  void            GenLoadDS(void);
-extern  void            LayRMRegOp( name *r );
-extern  void            AddWCons( name *op, type_class_def kind );
-extern  void            LayReg( hw_reg_set r );
-extern  void            GCondFwait(void);
-extern  void            GFldz(void);
-extern  void            AddSData( signed_32 value, type_class_def kind );
-extern  void            GFwait(void);
-extern  void            GCondFwait(void);
-extern  void            GFldM( pointer what );
 
 extern  pccode_def      PCCodeTable[];
+#if _TARGET & _TARG_80386
+extern  type_length     StackDepth;
+#endif
 
         template        Temp;           /* template for oc_entries */
         byte            Inst[INSSIZE];  /* template for instructions */
@@ -156,13 +128,13 @@ hw_reg_set FPRegs[] = {
 
 /* routines that maintain instruction buffers*/
 
-extern  void    Format( oc_class class ) {
-/*****************************************
+void    Format( oc_class class )
+/*******************************
     Get Temp and Inst ready to accept instructions.  Each instruction is
     formatted into Inst, transferred into Temp (as an opcode_entry) and
     then dumped into the peephole optimizer.
 */
-
+{
     FPPatchType = FPP_NONE;
     Temp.hdr.class = class;
     Temp.hdr.objlen = 0;
@@ -172,19 +144,19 @@ extern  void    Format( oc_class class ) {
     IEsc = 0;
 }
 
-extern  void    ReFormat( oc_class class ) {
-/*******************************************
+void    ReFormat( oc_class class )
+/*********************************
     Change the class of Temp
 */
-
+{
     Temp.hdr.class = class;
 }
 
-extern  void    AddByte( byte b ) {
-/**********************************
+void    AddByte( byte b )
+/************************
     Add a byte to Inst[]
 */
-
+{
     if( b == ESC ) {
         Inst[ICur++] = b;
     }
@@ -192,11 +164,11 @@ extern  void    AddByte( byte b ) {
     ILen++;
 }
 
-extern  void    AddToTemp( byte b ) {
-/************************************
+void    AddToTemp( byte b )
+/********************************
     Add a byte to the end of Temp
 */
-
+{
     if( b == ESC ) {
         Temp.data[Temp.hdr.reclen++ - offsetof( template, data )] = b;
     }
@@ -204,11 +176,11 @@ extern  void    AddToTemp( byte b ) {
     Temp.hdr.objlen++;
 }
 
-extern  void    InsertByte( byte b ) {
+void    InsertByte( byte b )
 /*************************************
     Insert a byte into the beginning of Temp. It may not be ESC!
 */
-
+{
     int         i;
     byte        *src;
     byte        *dst;
@@ -224,37 +196,37 @@ extern  void    InsertByte( byte b ) {
 }
 
 
-extern  void    EmitByte( byte b ) {
-/***********************************
+void    EmitByte( byte b )
+/**************************
     Plop a byte into Inst[]
 */
-
+{
     Inst[ICur++] = b;
 }
 
-extern  void    EmitPtr( pointer p ) {
-/*************************************
+void    EmitPtr( pointer p )
+/*****************************
     Plop a pointer into Inst[]
 */
-
+{
     *(pointer *)(Inst + ICur) = p;
     ICur += sizeof( pointer );
 }
 
-extern  void    EmitSegId( segment_id seg ) {
-/********************************************
+void    EmitSegId( segment_id seg )
+/**********************************
     Plop a segment_id into Inst[]
 */
-
+{
     *(segment_id *)(Inst + ICur) = seg;
     ICur += sizeof( segment_id );
 }
 
-extern  void    EmitOffset( offset i ) {
+void    EmitOffset( offset i )
 /***************************************
     Plop an "offset" int Inst[] (a machine word)
 */
-
+{
     *(offset *)(Inst + ICur) = i;
     ICur += sizeof( offset );
 }
@@ -280,22 +252,22 @@ static  void    TransferIns( void ) {
     Temp.hdr.objlen += ILen;
 }
 
-extern  void    EjectInst( void ) {
+void    EjectInst( void )
 /**********************************
     Dump the current instruction into the peephole optimizer
 */
-
+{
     TransferIns();
     ICur = 0;
     ILen = 0;
     IEsc = 0;
 }
 
-extern  void    Finalize( void ) {
+void    Finalize( void )
 /*********************************
     Invoked by macro _Emit. Spits Temp into the peephole optimizer
 */
-
+{
     EjectInst();
     if( FPPatchType != FPP_NONE ) {
         DoFunnyRef( FPPatchType );
@@ -682,10 +654,6 @@ static  void    DoP5RegisterDivide( instruction *ins ) {
     GenKillLabel( lbl_2 );
 }
 
-#if _TARGET & _TARG_80386
-    extern type_length StackDepth;
-#endif
-
 static  void    DoP5MemoryDivide( instruction *ins ) {
 /****************************************************/
 
@@ -929,22 +897,22 @@ static  void    SetCC(void) {
 
 /* Lay Routines*/
 
-extern  void    LayOpbyte( gen_opcode op ) {
-/*******************************************
+void    LayOpbyte( gen_opcode op )
+/**********************************
     Add a one byte opcode to Inst[]
 */
-
+{
     Inst[KEY] = op & 0xff;
     ICur = 1;
     ILen = 1;
     IEsc = 1;
 }
 
-extern  void    LayOpword( gen_opcode op ) {
-/*******************************************
+void    LayOpword( gen_opcode op )
+/*********************************
     Add a 2 byte opcode to Inst[]
 */
-
+{
     Inst[KEY] = op & 0xff;
     Inst[RMR] = (op >> 8) & 0xff;
     ICur = 2;
@@ -952,9 +920,9 @@ extern  void    LayOpword( gen_opcode op ) {
     IEsc = 2;
 }
 
-extern  void    LayW( type_class_def class ) {
-/********************************************/
-
+void    LayW( type_class_def class )
+/**********************************/
+{
     switch( class ) {
     case U2: case I2: case U4: case I4: case FS:
         Inst[KEY] |= B_KEY_W;       /* turn on the W bit*/
@@ -972,27 +940,27 @@ static  void    LayRegOp( name *r ) {
     Inst[RMR] |= RegTrans( r->r.reg ) << S_RMR_REG;
 }
 
-extern  void    LayReg( hw_reg_set r ) {
+void    LayReg( hw_reg_set r )
 /***************************************
     Add the register op to the instruction
 */
-
+{
     Inst[RMR] |= RegTrans( r ) << S_RMR_REG;
 }
 
-extern  void    LayRMRegOp( name *r ) {
+void    LayRMRegOp( name *r )
 /**************************************
     Add the register op to a MOD/RM instruction
 */
-
+{
     Inst[RMR] |= ( RegTrans( r->r.reg ) << S_RMR_RM ) + RMR_MOD_REG;
 }
 
-extern  void    LayRegRM( hw_reg_set r ) {
+void    LayRegRM( hw_reg_set r )
 /**************************************
     Add the register op to a MOD/RM instruction
 */
-
+{
     Inst[RMR] |= ( RegTrans( r ) << S_RMR_RM ) + RMR_MOD_REG;
 }
 
@@ -1004,11 +972,11 @@ static  void    LayACRegOp( name *r ) {
     Inst[KEY] |= RegTrans( r->r.reg ) << S_KEY_REG;
 }
 
-extern  void    LayRegAC( hw_reg_set r ) {
+void    LayRegAC( hw_reg_set r )
 /*****************************************
     Add the other register op to a REG/AX (Accumulator) operation
 */
-
+{
     Inst[KEY] |= RegTrans( r ) << S_KEY_REG;
 }
 
@@ -1020,12 +988,12 @@ static  void    LaySROp( name *r ) {
     Inst[RMR] |= SegTrans( r->r.reg ) << S_RMR_SR;
 }
 
-extern  void    GenSeg( hw_reg_set regs ) {
+void    GenSeg( hw_reg_set regs )
 /******************************************
     Generate a segment override if we need one. regs if the full address.
     For example, if regs is DS:BP, we need an override. SS:BP wouldn't
 */
-
+{
     hw_reg_set  segreg;
     int         i;
 
@@ -1065,12 +1033,12 @@ extern  void    GenSeg( hw_reg_set regs ) {
     }
 }
 
-extern  type_class_def  OpndSize( hw_reg_set reg ) {
+type_class_def  OpndSize( hw_reg_set reg )
 /***************************************************
     Generate an operand size prefix if we need it and return the
     type_class of the register "reg"
 */
-
+{
     if( HW_COvlap( reg, HW_SEGS ) )
         return( U2 );
 #if _TARGET & _TARG_IAPX86
@@ -1119,13 +1087,12 @@ static  void    PopSeg( hw_reg_set reg ) {
 }
 
 
-extern  void    QuickSave( hw_reg_set reg, opcode_defs op ) {
-/************************************************************
+void    QuickSave( hw_reg_set reg, opcode_defs op )
+/**************************************************
     PUSH/POP    reg     - based on "op"
+    assume register is valid for PUSH/POP
 */
-
-/* assume register is valid for PUSH/POP*/
-
+{
     _Code;
     if( HW_COvlap( reg, HW_SEGS ) ) {
         if( op == OP_PUSH ) {
@@ -1145,11 +1112,11 @@ extern  void    QuickSave( hw_reg_set reg, opcode_defs op ) {
 }
 
 
-extern  void    GenRegXor( hw_reg_set src, hw_reg_set dst ) {
-/************************************************************
+void    GenRegXor( hw_reg_set src, hw_reg_set dst )
+/**************************************************
     XOR         dst,src
 */
-
+{
     _Code;
     LayOpword( M_XORRR | B_KEY_W );
     OpndSize( src );
@@ -1159,11 +1126,11 @@ extern  void    GenRegXor( hw_reg_set src, hw_reg_set dst ) {
 }
 
 
-extern  void    GenRegNeg( hw_reg_set src ) {
-/********************************************
+void    GenRegNeg( hw_reg_set src )
+/**********************************
     NEG         src
 */
-
+{
     _Code;
     LayOpword( M_NEGR | B_KEY_W );
     OpndSize( src );
@@ -1172,11 +1139,11 @@ extern  void    GenRegNeg( hw_reg_set src ) {
 }
 
 
-extern  void    GenRegMove( hw_reg_set src, hw_reg_set dst ) {
-/*************************************************************
+void    GenRegMove( hw_reg_set src, hw_reg_set dst )
+/***************************************************
     MOV         dst,src
 */
-
+{
     _Code;
     LayOpword( M_MOVRR | B_KEY_W );
     OpndSize( src );
@@ -1240,9 +1207,9 @@ static  void    AddSWCons( opcode_defs op, name *opnd, type_class_def class ) {
 }
 
 
-extern  void    AddWData( signed_32 value, type_class_def kind ) {
-/****************************************************************/
-
+void    AddWData( signed_32 value, type_class_def kind )
+/******************************************************/
+{
     AddByte( value );
     if( kind == U1 || kind == I1 )
         return;
@@ -1256,11 +1223,11 @@ extern  void    AddWData( signed_32 value, type_class_def kind ) {
     AddByte( value );
 }
 
-extern  void    AddWCons( name *op, type_class_def kind ) {
-/**********************************************************
+void    AddWCons( name *op, type_class_def kind )
+/************************************************
     Add a WORD constant to Inst[]
 */
-
+{
     if( op->c.const_type == CONS_ABSOLUTE ) {
         AddWData( op->c.lo.int_value, kind );
     } else  {
@@ -1278,11 +1245,11 @@ extern  void    AddWCons( name *op, type_class_def kind ) {
     }
 }
 
-extern  void    AddSData( signed_32 value, type_class_def kind ) {
+void    AddSData( signed_32 value, type_class_def kind )
 /*****************************************************************
     Add a constant (signed_32) to Inst[], with possible sign extension
 */
-
+{
     if( ( kind == U2 || kind == I2 )
         && ( ( value & 0xff80 ) == 0xff80
           || ( value & 0xff80 ) == 0 ) ) {
@@ -1335,29 +1302,29 @@ static  void    GenRegOp( hw_reg_set dst, type_length value, gen_opcode op )
 }
 
 
-extern  void    GenRegAdd( hw_reg_set dst, type_length value ) {
-/***************************************************************
+void    GenRegAdd( hw_reg_set dst, type_length value )
+/*****************************************************
     ADD dst,value
 */
-
+{
     GenRegOp( dst, value, M_ADDRC );
 }
 
 
-extern  void    GenRegSub( hw_reg_set dst, type_length value ) {
-/***************************************************************
+void    GenRegSub( hw_reg_set dst, type_length value )
+/*****************************************************
     SUB         dst,value
 */
-
+{
     GenRegOp( dst, value, M_SUBRC );
 }
 
 
-extern  void    GenRegAnd( hw_reg_set dst, type_length value ) {
-/***************************************************************
+void    GenRegAnd( hw_reg_set dst, type_length value )
+/*****************************************************
     SUB         dst,value
 */
-
+{
     GenRegOp( dst, value, M_ANDRC );
 }
 
@@ -1373,11 +1340,11 @@ static  void    GFld1( void ) {
 }
 
 
-extern  void    GFldMorC( name *what ) {
+void    GFldMorC( name *what )
 /***************************************
     FLD         what, where what is either 0,1,or a memory location
 */
-
+{
     if( what->n.class == N_MEMORY || what->n.class == N_TEMP ) {
         GFldM( what );
     } else if( what->c.lo.int_value == 0 ) {
@@ -1387,11 +1354,11 @@ extern  void    GFldMorC( name *what ) {
     }
 }
 
-extern  void    GFldM( pointer what ) {
+void    GFldM( pointer what )
 /**************************************
     FLD         tbyte ptr what
 */
-
+{
     GCondFwait();
     LayOpword( 0x00d9 );
     LayMF( what );
@@ -1400,11 +1367,11 @@ extern  void    GFldM( pointer what ) {
 }
 
 
-extern  void    GFstpM( pointer what ) {
-/***************************************
+void    GFstpM( pointer what )
+/*****************************
     FSTP        tbyte ptr what
 */
-
+{
     GCondFwait();
     LayOpword( 0x18d9 );
     LayMF( what );
@@ -1413,11 +1380,11 @@ extern  void    GFstpM( pointer what ) {
 }
 
 
-extern  void    GFstp( int i ) {
-/*******************************
+void    GFstp( int i )
+/*********************
     FSTP        ST(i)
 */
-
+{
     GCondFwait();
     LayOpword( 0xd8dd );
     Inst[RMR] |= i;
@@ -1425,11 +1392,11 @@ extern  void    GFstp( int i ) {
 }
 
 
-extern  void    GFxch( int i ) {
-/*******************************
+void    GFxch( int i )
+/*********************
     FXCH        ST(i)
 */
-
+{
     GCondFwait();
     LayOpword( 0xc8d9 );
     Inst[RMR] |= i;
@@ -1437,22 +1404,22 @@ extern  void    GFxch( int i ) {
 }
 
 
-extern  void    GFldz( void ) {
-/******************************
+void    GFldz( void )
+/********************
     FLDZ
 */
-
+{
     GCondFwait();
     LayOpword( 0xeed9 );
     _Emit;
 }
 
 
-extern  void    GFld( int i ) {
-/******************************
+void    GFld( int i )
+/********************
     FLD         ST(i)
 */
-
+{
     GCondFwait();
     LayOpword( 0xc0d9 );
     Inst[RMR] |= i;
@@ -1460,11 +1427,11 @@ extern  void    GFld( int i ) {
 }
 
 
-extern  void    GCondFwait( void ) {
-/***********************************
+void    GCondFwait( void )
+/**********************************
     FWAIT, but only if we need one
 */
-
+{
     _Code;
     Used87 = true;
 #if _TARGET & _TARG_IAPX86
@@ -1479,11 +1446,11 @@ extern  void    GCondFwait( void ) {
 }
 
 
-extern  void    GFwait( void ) {
-/*******************************
+void    GFwait( void )
+/*********************
     FWAIT
 */
-
+{
     if( _CPULevel( CPU_386 ) )
         return;
     _Code;
@@ -1497,41 +1464,41 @@ extern  void    GFwait( void ) {
    _Emit;
 }
 
-extern  void    Gpusha( void ) {
-/*******************************
+void    Gpusha( void )
+/*********************
     PUSHA{d}
 */
-
+{
     _Code;
     LayOpbyte( 0x60 );
    _Emit;
 }
 
-extern  void    Gpopa( void ) {
-/******************************
+void    Gpopa( void )
+/********************
     POPA{d}
 */
-
+{
     _Code;
     LayOpbyte( 0x61 );
    _Emit;
 }
 
-extern  void    Gcld( void ) {
-/*****************************
+void    Gcld( void )
+/*******************
     CLD
 */
-
+{
     _Code;
     LayOpbyte( 0xfc );
    _Emit;
 }
 
-extern  void    GenLeave( void ) {
-/*********************************
+void    GenLeave( void )
+/***********************
     LEAVE
 */
-
+{
     _Code;
     LayOpbyte( 0xc9 );
     OpndSize( HW_BP );
@@ -1539,11 +1506,11 @@ extern  void    GenLeave( void ) {
 }
 
 
-extern  void    GenTouchStack( bool sp_might_point_at_something ) {
-/******************************************************************
+void    GenTouchStack( bool sp_might_point_at_something )
+/********************************************************
     MOV         [esp],eax
 */
-
+{
 #if _TARGET & _TARG_IAPX86
     /* unused parameters */ (void)sp_might_point_at_something;
 #else
@@ -1561,11 +1528,11 @@ extern  void    GenTouchStack( bool sp_might_point_at_something ) {
 }
 
 
-extern  void    GenEnter(  int size,  int level  ) {
-/***************************************************
+void    GenEnter( int size, int level )
+/**************************************
     ENTER       size,level
 */
-
+{
     _Code;
     LayOpbyte( 0xc8 );
     OpndSize( HW_BP );
@@ -1576,11 +1543,11 @@ extern  void    GenEnter(  int size,  int level  ) {
 
 
 
-extern  void    GenPushOffset( byte offset ) {
-/*********************************************
+void    GenPushOffset( byte offset )
+/***********************************
     PUSH        word ptr offset[BP]
 */
-
+{
     _Code;
     LayOpword( M_PUSHATBP );
     AddWData( offset, I1 );
@@ -1588,11 +1555,11 @@ extern  void    GenPushOffset( byte offset ) {
 }
 
 
-extern  void    GenUnkSub( hw_reg_set dst, pointer value ) {
-/***********************************************************
+void    GenUnkSub( hw_reg_set dst, pointer value )
+/*************************************************
     SUB         dst,??? - to be patched later
 */
-
+{
     _Code;
     LayOpword( M_SUBRC | B_KEY_W );
     OpndSize( dst );
@@ -1603,10 +1570,11 @@ extern  void    GenUnkSub( hw_reg_set dst, pointer value ) {
 }
 
 
-extern  void    GenUnkMov( hw_reg_set dst, pointer value ) {
-/***********************************************************
+void    GenUnkMov( hw_reg_set dst, pointer value )
+/*************************************************
     MOV         dst,??? - to be patched
 */
+{
     /* unused parameters */ (void)dst;
 
     _Code;
@@ -1618,11 +1586,11 @@ extern  void    GenUnkMov( hw_reg_set dst, pointer value ) {
 }
 
 
-extern  void    GenUnkEnter( pointer value, int level ) {
-/********************************************************
+void    GenUnkEnter( pointer value, int level )
+/**********************************************
     ENTER       ??,level - to be patched later
 */
-
+{
     _Code;
     LayOpbyte( 0xc8 );
     DoAbsPatch( value, 2 );
@@ -1631,9 +1599,9 @@ extern  void    GenUnkEnter( pointer value, int level ) {
     _Emit;
 }
 
-extern  void    GenWindowsProlog( void ) {
-/****************************************/
-
+void    GenWindowsProlog( void )
+/******************************/
+{
     _Code;
     if( _IsTargetModel( SMART_WINDOWS ) ) {
         LayOpbyte( 0x8c ); AddByte( 0xd0 ); /*  mov     ax, ss  */
@@ -1652,11 +1620,11 @@ extern  void    GenWindowsProlog( void ) {
     _Emit;
 }
 
-extern  void    GenCypWindowsProlog( void ) {
-/********************************************
+void    GenCypWindowsProlog( void )
+/************************************
     Generate a "cheap" windows prolog
 */
-
+{
     _Code;
     if( !_CPULevel( CPU_386 ) ) {
         LayOpbyte( 0x45 );              /*      inc     bp      */
@@ -1666,9 +1634,9 @@ extern  void    GenCypWindowsProlog( void ) {
     _Emit;
 }
 
-extern  void    GenWindowsEpilog( void ) {
-/****************************************/
-
+void    GenWindowsEpilog( void )
+/******************************/
+{
     _Code;
     LayOpbyte( 0x1f );                  /*      pop     ds      */
     AddByte( 0x5d );                    /*      pop     bp      */
@@ -1678,11 +1646,11 @@ extern  void    GenWindowsEpilog( void ) {
     _Emit;
 }
 
-extern  void    GenCypWindowsEpilog( void ) {
-/********************************************
+void    GenCypWindowsEpilog( void )
+/************************************
     Generate a "cheap" windows epilog
 */
-
+{
     _Code;
     LayOpbyte( 0x5d );                  /*      pop     bp      */
     if( !_CPULevel( CPU_386 ) ) {
@@ -1692,9 +1660,9 @@ extern  void    GenCypWindowsEpilog( void ) {
 }
 
 
-extern  void    GenRdosdevProlog( void ) {
-/****************************************/
-
+void    GenRdosdevProlog( void )
+/******************************/
+{
     _Code;
     LayOpbyte( 0x1e );             /*      push    ds        */
     _Emit;
@@ -1723,9 +1691,9 @@ extern  void    GenRdosdevProlog( void ) {
     _Emit;
 }
 
-extern  void    GenRdosdevEpilog( void ) {
-/****************************************/
-
+void    GenRdosdevEpilog( void )
+/******************************/
+{
     _Code;
     LayOpbyte( 0xf );              /*      pop     gs      */
     AddByte( 0xa9 );
@@ -1745,8 +1713,8 @@ extern  void    GenRdosdevEpilog( void ) {
     _Emit;
 }
 
-extern  void    GenLoadDS( void )
-/*******************************/
+void    GenLoadDS( void )
+/***********************/
 {
     _Code;
     LayOpbyte( 0xb8 );                  /*      mov     ax,DGROUP */

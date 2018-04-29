@@ -51,11 +51,10 @@
 #include "bldcall.h"
 #include "fixindex.h"
 #include "inssched.h"
+#include "bldins.h"
 
 
 extern int          FPRegNum(name*);
-extern void         BGDone(an);
-extern name         *BGNewTemp(type_def*);
 extern void         ToRFld(instruction*);
 extern void         ToRFstp(instruction*);
 extern void         NoPop(instruction*);

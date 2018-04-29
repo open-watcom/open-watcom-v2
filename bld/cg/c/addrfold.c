@@ -47,9 +47,8 @@
 #include "namelist.h"
 #include "makeblk.h"
 #include "typemap.h"
+#include "bldins.h"
 
-
-extern  void            BGDone(an);
 
 static  void    LoadTempInt( an addr );
 
@@ -147,9 +146,9 @@ static  byte    Idx[] = {
         5         /* CL_TEMP_OFFSET */
 };
 
-extern  name    *Points( an addr, type_def *tipe ) {
-/**************************************************/
-
+name    *Points( an addr, type_def *tipe )
+/****************************************/
+{
     type_class_def      class;
     type_length         size;
     name                *result;
@@ -240,9 +239,9 @@ extern  name    *Points( an addr, type_def *tipe ) {
 }
 
 
-extern  an      AddrName( name *op, type_def *tipe ) {
-/******************************************************/
-
+an      AddrName( name *op, type_def *tipe )
+/******************************************/
+{
     an  addr;
 
     addr = NewAddrName();
@@ -326,9 +325,9 @@ static  void    AddIndex( an addr, name *index, name *addend ) {
 }
 
 
-extern  bool    CypAddrPlus( an l_addr, an r_addr, type_def *tipe ) {
-/*******************************************************************/
-
+bool    CypAddrPlus( an l_addr, an r_addr, type_def *tipe )
+/*********************************************************/
+{
     mode_action action;
 
     if( tipe->refno == TY_HUGE_POINTER )
@@ -376,11 +375,11 @@ static        bool    AddToTypeLength( type_length x, type_length y ) {
 }
 
 
-extern  an      AddrPlus( an l_addr, an r_addr, type_def *tipe ) {
-/****************************************************************/
+an      AddrPlus( an l_addr, an r_addr, type_def *tipe )
+/******************************************************/
 
 /*       Returns NULL if code needs to be generated*/
-
+{
     mode_action action;
     an          addr;
 
@@ -523,9 +522,9 @@ static  bool    ShiftConst( an r_addr ) {
 }
 
 
-extern  bool    CypAddrShift( an l_addr, an r_addr, type_def *tipe ) {
-/********************************************************************/
-
+bool    CypAddrShift( an l_addr, an r_addr, type_def *tipe )
+/**********************************************************/
+{
     /* unused parameters */ (void)tipe;
 
     CheckPointer( l_addr );
@@ -558,11 +557,11 @@ static  bool    ShiftToTypeLength( type_length x, unsigned_16 y ) {
 }
 
 
-extern  an      AddrShift( an l_addr, an r_addr, type_def *tipe ) {
-/*****************************************************************/
+an      AddrShift( an l_addr, an r_addr, type_def *tipe )
+/*******************************************************/
 
 /*       Returns NULL if code needs to be generated*/
-
+{
     instruction         *ins;
     signed_16           rv;
     an                  addr;
@@ -596,9 +595,9 @@ extern  an      AddrShift( an l_addr, an r_addr, type_def *tipe ) {
 }
 
 
-extern  name    *GetValue( an addr, name *suggest ) {
-/***************************************************/
-
+name    *GetValue( an addr, name *suggest )
+/*****************************************/
+{
     name        *op = NULL;
     instruction *ins;
 
@@ -660,9 +659,9 @@ extern  name    *GetValue( an addr, name *suggest ) {
 }
 
 
-extern  name    *AddrToName( an addr ) {
-/**************************************/
-
+name    *AddrToName( an addr )
+/****************************/
+{
     name        *op;
 
     op = NULL;

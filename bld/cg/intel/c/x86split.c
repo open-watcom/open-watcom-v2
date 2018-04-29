@@ -52,6 +52,7 @@
 #include "revcond.h"
 #include "conflict.h"
 #include "x86split.h"
+#include "x86segs.h"
 
 
 extern  instruction     *ByteShift(instruction*);
@@ -70,8 +71,6 @@ extern  instruction     *SplitMove(instruction*);
 extern  instruction     *SplitOp(instruction*);
 extern  instruction     *SplitFDPush(instruction*);
 extern  name            *Addressable(name*,type_class_def);
-extern  name            *NearSegment(void);
-extern  name            *SegName(name*);
 extern  instruction     *SplitLoadAddr(instruction*);
 extern  void            UpdateLive(instruction*,instruction*);
 extern  opcode_entry    *GetMoveNoCCEntry( void );

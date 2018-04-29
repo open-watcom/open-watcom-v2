@@ -48,12 +48,12 @@
 #include "inssegs.h"
 #include "fixindex.h"
 #include "cse.h"
+#include "bldins.h"
 #include "feprotos.h"
 
 
 extern name             *TGetName(tn);
 extern tn               TName(name*,type_def*);
-extern bool             NeedConvert(type_def*,type_def*);
 
 bool     IsTrickyPointerConv( instruction *ins )
 /******************************************************

@@ -81,6 +81,7 @@ essentially no worst case performance scenario.
 #include "utils.h"
 #include "onexit.h"
 #include "memsydep.h"
+#include "envvar.h"
 #include "feprotos.h"
 
 #ifdef __DOS__
@@ -122,9 +123,6 @@ extern      short   __psp;
 #endif
 
 typedef pointer_int     tag;
-
-extern bool     GetEnvVar( char *, char *, int );
-
 
 #define _1K             1024L
 #define _4K             (4 * _1K)

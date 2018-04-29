@@ -43,15 +43,13 @@
 #include "fixindex.h"
 #include "conflict.h"
 #include "x86data.h"
+#include "x86segs.h"
 #include "feprotos.h"
 
 
 extern  opcode_entry    String[];
 
-extern  bool            SegOver(name*);
 extern  name            *Addressable(name*,type_class_def);
-extern  name            *GetSegment(name*);
-extern  name            *NearSegment(void);
 extern  void            NoMemIndex(instruction*);
 extern  void            ExpandThreadDataRef(instruction*);
 

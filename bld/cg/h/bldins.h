@@ -50,7 +50,6 @@ extern  void    BGGenCtrl( cg_op op, an expr, label_handle lbl, bool gen );
 extern  void    BGBigLabel( back_handle bck );
 extern  void    BGBigGoto( label_handle lbl, level_depth level );
 extern  unsigned_32 BGUnrollCount( unsigned_32 unroll_count );
-extern  unsigned_32 BGUnrollCount( unsigned_32 unroll_count );
 extern  an      BGUnary( cg_op op, an left, type_def *tipe );
 extern  an      BGBinary( cg_op op, an left, an rite, type_def *tipe, bool fold_addr );
 extern  an      BGOpGets( cg_op op, an left, an rite, type_def *tipe, type_def *optipe );

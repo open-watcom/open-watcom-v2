@@ -76,6 +76,10 @@
     #define FNAMECMPSTR      stricmp     /* for case insensitive file systems */
 #endif
 
+#define BITARR_OFFS(x)      ((x) / 8)
+#define BITARR_MASK(x)      (1 << ((x) & 7))
+#define NOT_BITARR_MASK(x)  (255 - (x))
+
 typedef struct idname {
     struct idname       *next;
     uint_16             xhash;

@@ -1683,20 +1683,20 @@ void *ParseCurrQualification( void )
 
 static p_action normalYYAction( YYTOKENTYPE t, PARSE_STACK *state, YYACTIONTYPE *pa )
 {
-    YYACTIONTYPE *ssp;
-    YYTOKENTYPE lhs;
-    YYACTIONTYPE top_state;
-    unsigned bit_index;
-    YYACTIONTYPE raw_action;
-    YYACTIONTYPE rule;
-    unsigned mask;
+    YYACTIONTYPE    *ssp;
+    YYTOKENTYPE     lhs;
+    YYACTIONTYPE    top_state;
+    size_t          bit_offs;
+    YYACTIONTYPE    raw_action;
+    YYACTIONTYPE    rule;
+    unsigned char   bit_mask;
 
     ssp = state->ssp;
     top_state = ssp[0];
-    bit_index = ( t >> 3 );
-    mask = 1 << ( t & 0x07 );
+    bit_offs = BITARR_OFFS( t );
+    bit_mask = BITARR_MASK( t );
     for( ;; ) {
-        if( yybitcheck[bit_index + yybitbase[top_state]] & mask ) {
+        if( yybitcheck[bit_offs + yybitbase[top_state]] & bit_mask ) {
             raw_action = yyactiontab[t + yyactionbasetab[top_state]];
             if( (raw_action & RAW_REDUCTION) == 0 ) {
                 /* we have a shift */

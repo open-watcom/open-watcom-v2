@@ -42,6 +42,7 @@
 #include "procdef.h"
 #include "zoiks.h"
 #include "cgaux.h"
+#include "targetin.h"
 
 #include "s37enc.def"
 #ifndef NXDEBUG

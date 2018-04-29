@@ -35,14 +35,13 @@
 #include "data.h"
 #include "object.h"
 #include "fixindex.h"
+#include "x86segs.h"
+#include "pccode.h"
+#include "x86enc.h"
+
 
 zero_page_scheme        ZPageType;
 
-extern  void            QuickSave( hw_reg_set, opcode_defs );
-extern  void            GenRegMove( hw_reg_set, hw_reg_set );
-extern  void            GenRegXor( hw_reg_set, hw_reg_set );
-extern  void            GenRegNeg( hw_reg_set );
-extern  bool            SegIsSS( name * );
 extern  bool            CanZapBP( void );
 
 /* forward declarations */

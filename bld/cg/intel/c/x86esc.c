@@ -50,14 +50,11 @@
 #include "x86obj.h"
 #include "x86esc.h"
 #include "encode.h"
+#include "pccode.h"
+#include "x86enc.h"
 #include "feprotos.h"
 
 
-extern  void            EmitOffset(offset);
-extern  void            EmitPtr(pointer);
-extern  void            EmitByte(byte);
-extern  void            EmitSegId(segment_id);
-extern  void            InsertByte(byte);
 extern bool             UseImportForm(fe_attr);
 
 static void             DoRelocRef( cg_sym_handle sym, cg_class class, segment_id seg, offset val, escape_class kind );

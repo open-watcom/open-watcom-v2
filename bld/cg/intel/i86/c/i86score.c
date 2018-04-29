@@ -37,9 +37,8 @@
 #include "makeins.h"
 #include "namelist.h"
 #include "rgtbl.h"
+#include "x86segs.h"
 
-
-extern  name            *NearSegment( void );
 
 extern  score_reg       **ScoreList;
 

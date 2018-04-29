@@ -72,7 +72,6 @@ extern  void            TNZapParms(void);
 extern  void            PushInSameBlock(instruction*);
 extern  void            TRAddParm(instruction*,instruction*);
 extern  void            TRDeclareParm(instruction*);
-extern  bool            SegIsCS( name * );
 
 extern  bool            BlipsOn;
 

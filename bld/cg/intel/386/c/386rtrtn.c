@@ -46,11 +46,10 @@
 #include "rtcall.h"
 #include "inssegs.h"
 #include "conflict.h"
+#include "x86segs.h"
 
 
 extern  void            UpdateLive( instruction *, instruction * );
-extern  bool            SegIsSS( name * );
-extern  name            *AddrConst( name *, int, constant_class );
 
 /*
  * If you add a new routine, let John know as the debugger recognizes

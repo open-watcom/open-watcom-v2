@@ -40,7 +40,11 @@
 #include "rtclass.h"
 #include "zoiks.h"
 #include "makeins.h"
+#include "bldins.h"
+#include "makeaddr.h"
+
 #include "s37call.def"
+
 
 extern    type_def              *TypeNone;
 extern    type_class_def        ClassPointer;
@@ -49,12 +53,9 @@ extern  type_length             TypeClassSize[];
 
 extern  name            *AllocRegName(hw_reg_set);
 extern  name            *AllocTemp(type_class_def);
-extern  temp_name       *BGNewTemp(type_def*);
 extern  type_def        *QParmType(type_def*);
 extern  name            *AllocUserTemp(pointer,type_class_def);
-extern  void            BGDone(an);
 extern  an              MakeTempAddr(name*,type_def*);
-extern  an              MakeAddrName(cg_class,sym_handle,type_def*);
 extern  hw_reg_set      ParmReg(type_class_def,parm_state*);
 extern  type_length     ParmMem(type_def*,parm_state*);
 extern  hw_reg_set      ActualParmReg(hw_reg_set);

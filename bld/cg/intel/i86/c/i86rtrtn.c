@@ -52,12 +52,10 @@
 #include "fixindex.h"
 #include "conflict.h"
 #include "x86data.h"
+#include "x86segs.h"
 
 
 extern  void            UpdateLive( instruction *, instruction * );
-extern  bool            SegIsSS( name * );
-extern  name            *GetSegment( name * );
-extern  name            *AddrConst( name *, int, constant_class );
 
 /*
  * If you add a new routine, let John know as the debugger recognizes

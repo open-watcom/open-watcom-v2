@@ -41,6 +41,7 @@
 #include "memlimit.h"
 #include "onexit.h"
 #include "dumpio.h"
+#include "envvar.h"
 #include "memmgt.h"
 
 
@@ -54,9 +55,6 @@
 #else
     #define _MEMORY_TRACKING _CHUNK_TRACKING
 #endif
-
-extern  bool            GetEnvVar(char *,char *,int);
-
 
 static          mem_out_action  MemOut;
 

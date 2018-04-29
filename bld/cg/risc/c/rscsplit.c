@@ -93,8 +93,9 @@ extern  instruction     *rMOVELOW( instruction * );
 extern  opcode_entry    *OpcodeTable( table_def );
 
 extern  void            UpdateLive( instruction *, instruction * );
-
+#if 0
 extern  name            *AddrConst( name *, int, constant_class );
+#endif
 
 instruction *(* ReduceTab[])() = {
     #define _R_( x, f )     f

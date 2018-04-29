@@ -155,7 +155,7 @@ static void callBackEnd(        // CALL-BACK: end of condition block
     if( posn == cond->posn_true
      && posn == cond->posn_false ) {
         cond->mask_set = 0;
-        cond->mask_clr = 0xFF;
+        cond->mask_clr = NOT_BITARR_MASK( 0 );
         BlkPosnTempBegSet( posn );
     } else {
 #else
@@ -196,7 +196,7 @@ static void callBackNewCtorEnd( // CALL-BACK: end of new ctor
     if( cond->posn_true == FstabActualPosn() ) {
         FstabRemove();
         cond->mask_set = 0;
-        cond->mask_clr = 0xFF;
+        cond->mask_clr = NOT_BITARR_MASK( 0 );
     }
     callBackFini( cond );
 };
@@ -210,7 +210,7 @@ void CondInfoPush(              // PUSH COND_INFO STACK
     stk->handle_set = NULL;
     stk->handle_clr = NULL;
     stk->mask_set = 0;
-    stk->mask_clr = 0xFF;
+    stk->mask_clr = NOT_BITARR_MASK( 0 );
     stk->posn_last = 0;
     stk->posn_true = 0;
     stk->posn_false = 0;
@@ -240,8 +240,8 @@ void CondInfoSetup(             // SETUP UP CONDITIONAL INFORMATION
 
     /* unused parameters */ (void)fctl;
 
-    flag_offset = index >> 3;
-    cond->mask = 0x01 << ( index & 7 );
+    flag_offset = BITARR_OFFS( index );
+    cond->mask = BITARR_MASK( index );
     cond->sym = FstabRw();
     if( cond->sym == NULL ) {
         cond->sym = dtor_cond_sym;
@@ -267,7 +267,7 @@ static cg_name condSet(         // SET/RESET FLAG
         op_mask = CGInteger( cond.mask, TY_UINT_1 );
         op_flg = CGLVPreGets( O_OR, op_flg, op_mask, TY_UINT_1 );
     } else {
-        op_mask = CGInteger( 0xFF - cond.mask, TY_UINT_1 );
+        op_mask = CGInteger( NOT_BITARR_MASK( cond.mask ), TY_UINT_1 );
         op_flg = CGLVPreGets( O_AND, op_flg, op_mask, TY_UINT_1 );
     }
     return( op_flg );
@@ -294,7 +294,7 @@ void CondInfoSetFlag(           // SET FLAG FOR CONDITIONAL DTOR BLOCK
         stk->handle_set = patch;
         opcode = O_OR;
     } else {
-        stk->mask_clr = 0xFF - cond.mask;
+        stk->mask_clr = NOT_BITARR_MASK( cond.mask );
         stk->handle_clr = patch;
         opcode = O_AND;
     }

@@ -37,9 +37,8 @@
 #include "namelist.h"
 #include "object.h"
 #include "rgtbl.h"
+#include "x86segs.h"
 
-
-extern  bool            SegIsCS( name * );
 
 zero_page_scheme        ZPageType;
 

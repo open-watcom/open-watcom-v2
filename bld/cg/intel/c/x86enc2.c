@@ -54,26 +54,18 @@
 #include "i87data.h"
 #include "x86esc.h"
 #include "x86obj.h"
-#include "x86enc2.h"
 #include "rgtbl.h"
 #include "split.h"
 #include "namelist.h"
+#include "x86enc.h"
+#include "x86enc2.h"
 #include "feprotos.h"
 
 
 extern  void            EjectInst( void );
-extern  void            LayRegAC(hw_reg_set);
 extern  void            LayOpbyte(gen_opcode);
 extern  void            Format(oc_class);
-extern  void            LayRegRM(hw_reg_set);
-extern  void            LayRMRegOp(name*);
-extern  void            LayModRM(name*);
-extern  void            LayOpword(gen_opcode);
-extern  void            ReFormat(oc_class);
 extern  void            Finalize( void );
-extern  void            AddByte(byte);
-extern  void            AddToTemp(byte);
-extern  void            EmitOffset(offset);
 
 static  void            JumpReg( instruction *ins, name *reg_name );
 static  void            Pushf(void);

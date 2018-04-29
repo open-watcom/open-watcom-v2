@@ -48,6 +48,7 @@
 #include "optimize.h"
 #include "overlap.h"
 #include "x86split.h"
+#include "x86segs.h"
 
 
 typedef struct eight_byte_name {
@@ -59,8 +60,6 @@ typedef struct eight_byte_name {
 
 extern  name            *IntEquivalent( name * );
 extern  void            UpdateLive( instruction *, instruction * );
-extern  name            *AddrConst( name *, int, constant_class );
-extern  name            *SegName( name * );
 
 /*forward declaration*/
 static  void            Split8Name( instruction *ins, name *tosplit, eight_byte_name *out );

@@ -55,40 +55,13 @@
 #include "optab.h"
 #include "rgtbl.h"
 #include "x86base.h"
+#include "pccode.h"
+#include "x86enc.h"
 #include "feprotos.h"
 
 
-extern  void        GenLeaSP(long);
-extern  void        Gcld( void );
-extern  void        GenLeave( void );
-extern  void        GenWindowsProlog( void );
-extern  void        GenCypWindowsProlog( void );
-extern  void        GenWindowsEpilog( void );
-extern  void        GenCypWindowsEpilog( void );
-extern  void        GenRdosdevProlog( void );
-extern  void        GenRdosdevEpilog( void );
-extern  void        GenEnter(int,level_depth);
-extern  void        GenUnkEnter(pointer,level_depth);
-extern  void        GenRegAnd(hw_reg_set,type_length);
-extern  void        GenRegSub(hw_reg_set,type_length);
-extern  void        GenUnkSub(hw_reg_set,pointer);
 extern  void        AdjustPushLocal(name*);
-extern  void        GenRegAdd(hw_reg_set,type_length);
-extern  void        GenRegMove(hw_reg_set,hw_reg_set);
-extern  void        GenPushOffset(byte);
 extern  void        RelocParms( void );
-extern  void        GenUnkPush(pointer);
-extern  void        GenPushC(signed_32);
-extern  void        GenUnkMov(hw_reg_set,pointer);
-extern  void        QuickSave(hw_reg_set,opcode_defs);
-extern  void        Gpusha( void );
-extern  void        Gpopa( void );
-extern  void        GFstpM(pointer);
-extern  void        GenTouchStack( bool );
-extern  void        GenLoadDS(void);
-extern  label_handle GenFar16Thunk( label_handle, unsigned_16, bool );
-extern  void        GenP5ProfilingProlog( label_handle );
-extern  void        GenP5ProfilingEpilog( label_handle );
 extern  bool        SymIsExported( cg_sym_handle );
 
 /* forward declarations */

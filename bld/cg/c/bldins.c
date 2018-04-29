@@ -57,27 +57,27 @@
 static  type_def        *LastCmpType;
 static  unsigned_32     UnrollValue = 0;
 
-extern  an      BGVarargsBasePtr( type_def *tipe ) {
-/**************************************************/
-
+an      BGVarargsBasePtr( type_def *tipe )
+/****************************************/
+{
     an                  addr;
 
     addr = RegName( VarargsHomePtr(), tipe );
     return( addr );
 }
 
-extern  an      BGStackValue( type_def *tipe ) {
-/**********************************************/
-
+an      BGStackValue( type_def *tipe )
+/************************************/
+{
     an                  addr;
 
     addr = RegName( StackReg(), tipe );
     return( addr );
 }
 
-extern  an      BGInteger( signed_32 value, type_def *tipe ) {
-/***********************************************************/
-
+an      BGInteger( signed_32 value, type_def *tipe )
+/**************************************************/
+{
     float_handle    cf;
 
     if( tipe->attr & TYPE_SIGNED ) {
@@ -88,9 +88,9 @@ extern  an      BGInteger( signed_32 value, type_def *tipe ) {
     return( MakeConst( cf, tipe ) );
 }
 
-extern  an      BGInt64( signed_64 value, type_def *tipe ) {
-/***********************************************************/
-
+an      BGInt64( signed_64 value, type_def *tipe )
+/************************************************/
+{
     name   *cname;
 
     if( tipe->attr & TYPE_SIGNED ) {
@@ -101,31 +101,31 @@ extern  an      BGInt64( signed_64 value, type_def *tipe ) {
     return( AddrName( cname, tipe ) );
 }
 
-extern  an  BGFloat( const char *value, type_def *tipe ) {
-/********************************************************/
-
+an  BGFloat( const char *value, type_def *tipe )
+/**********************************************/
+{
     return( MakeConst( CFCnvSF( value ), tipe ) );
 }
 
 
-extern  an      BGName( cg_class cl, pointer sym, type_def *tipe ) {
-/*******************************************************************/
-
+an      BGName( cg_class cl, pointer sym, type_def *tipe )
+/********************************************************/
+{
     return( MakeAddrName( cl, sym, tipe ) );
 }
 
 
-extern  an      BGTempName( name *temp, type_def *tipe ) {
-/*************************************************************/
-
+an      BGTempName( name *temp, type_def *tipe )
+/**********************************************/
+{
     temp->v.usage |= USE_IN_ANOTHER_BLOCK;
     return( MakeTypeTempAddr( temp, tipe ) );
 }
 
 
-extern  bool    FiniLabel( label_handle lbl, block *blk ) {
-/*********************************************************/
-
+bool    FiniLabel( label_handle lbl, block *blk )
+/***********************************************/
+{
     block_num   i;
 
     for( i = blk->targets; i-- > 0; ) {
@@ -141,9 +141,9 @@ extern  bool    FiniLabel( label_handle lbl, block *blk ) {
     return( false );
 }
 
-extern  void    BGFiniLabel( label_handle lbl ) {
-/***********************************************/
-
+void    BGFiniLabel( label_handle lbl )
+/*************************************/
+{
     block       *blk;
 
     if( HaveCurrBlock && FiniLabel( lbl, CurrBlock ) )
@@ -157,9 +157,9 @@ extern  void    BGFiniLabel( label_handle lbl ) {
 }
 
 
-extern  bool    NeedConvert( type_def *from, type_def *to ) {
-/*********************************************************/
-
+bool    NeedConvert( type_def *from, type_def *to )
+/*************************************************/
+{
     if( from == to )
         return( false );
     if( from->attr & TYPE_FLOAT )
@@ -204,9 +204,9 @@ static  an      CnvRnd( an name, type_def *tipe, cg_op op ) {
 }
 
 
-extern  name        *BGNewTemp( type_def *tipe ) {
-/************************************************/
-
+name        *BGNewTemp( type_def *tipe )
+/**************************************/
+{
     name        *temp;
 
     temp = AllocTemp( TypeClass( tipe ) );
@@ -217,9 +217,9 @@ extern  name        *BGNewTemp( type_def *tipe ) {
 }
 
 
-extern  name        *BGGlobalTemp( type_def *tipe ) {
-/***************************************************/
-
+name        *BGGlobalTemp( type_def *tipe )
+/*****************************************/
+{
     name        *temp;
 
     temp = BGNewTemp( tipe );
@@ -252,9 +252,9 @@ static  an      FlowOut( an node, type_def *tipe ) {
 }
 
 
-extern  an      Arithmetic( an name, type_def *tipe ) {
-/*****************************************************/
-
+an      Arithmetic( an name, type_def *tipe )
+/*******************************************/
+{
     if( name->format == NF_BOOL ) {
         if( (tipe->attr & TYPE_FLOAT) != 0 || ( tipe->length > TypeInteger->length ) ) {
             name = FlowOut( name, TypeInteger );
@@ -266,9 +266,9 @@ extern  an      Arithmetic( an name, type_def *tipe ) {
     return( name );
 }
 
-extern  an      BGCompare( cg_op op, an left, an rite, label_handle entry, type_def *tipe ) {
-/*******************************************************************************************/
-
+an      BGCompare( cg_op op, an left, an rite, label_handle entry, type_def *tipe )
+/*********************************************************************************/
+{
     an                  new;
     instruction         *ins;
     name                *newleft;
@@ -295,9 +295,9 @@ extern  an      BGCompare( cg_op op, an left, an rite, label_handle entry, type_
 
 
 
-extern  an      Boolean( an node, label_handle entry ) {
-/******************************************************/
-
+an      Boolean( an node, label_handle entry )
+/********************************************/
+{
     if( node->format != NF_BOOL ) {
         node = BGCompare( O_NE, node, BGInteger( 0, node->tipe ), entry, node->tipe );
     }
@@ -305,16 +305,16 @@ extern  an      Boolean( an node, label_handle entry ) {
 }
 
 
-extern  label_handle BGGetEntry( void ) {
-/***************************************/
-
+label_handle BGGetEntry( void )
+/*****************************/
+{
     return( CurrBlock->label );
 }
 
 
-extern  void    BG3WayControl( an node, label_handle lt, label_handle eq, label_handle gt ) {
-/*******************************************************************************************/
-
+void    BG3WayControl( an node, label_handle lt, label_handle eq, label_handle gt )
+/*********************************************************************************/
+{
     instruction         *ins;
     name                *op;
     label_handle        lbl;
@@ -356,16 +356,16 @@ extern  void    BG3WayControl( an node, label_handle lt, label_handle eq, label_
 }
 
 
-extern  void    BGControl( cg_op op, an expr, label_handle lbl ) {
-/****************************************************************/
-
+void    BGControl( cg_op op, an expr, label_handle lbl )
+/******************************************************/
+{
     BGGenCtrl( op, expr, lbl, false );
 }
 
 
-extern  void    BGGenCtrl( cg_op op, an expr, label_handle lbl, bool gen ) {
-/**************************************************************************/
-
+void    BGGenCtrl( cg_op op, an expr, label_handle lbl, bool gen )
+/****************************************************************/
+{
     switch( op ) {
     case O_LABEL:
         if( HaveCurrBlock ) {
@@ -436,9 +436,9 @@ extern  void    BGGenCtrl( cg_op op, an expr, label_handle lbl, bool gen ) {
 }
 
 
-extern  void    BGBigLabel( back_handle bck ) {
-/*********************************************/
-
+void    BGBigLabel( back_handle bck )
+/***********************************/
+{
     if( HaveCurrBlock ) {
         GenBlock( BLK_JUMP, 1 );  /* block with 1 target*/
         AddTarget( bck->lbl, false );
@@ -451,8 +451,8 @@ extern  void    BGBigLabel( back_handle bck ) {
 }
 
 
-extern  void    BGBigGoto( label_handle lbl, level_depth level )
-/**************************************************************/
+void    BGBigGoto( label_handle lbl, level_depth level )
+/******************************************************/
 {
     GenBlock( BLK_BIG_JUMP, 1 ); // No longer supported!
     AddTarget( lbl, false );
@@ -462,9 +462,9 @@ extern  void    BGBigGoto( label_handle lbl, level_depth level )
 }
 
 
-extern  unsigned_32 BGUnrollCount( unsigned_32 unroll_count ) {
-/*************************************************************/
-
+unsigned_32 BGUnrollCount( unsigned_32 unroll_count )
+/***************************************************/
+{
     unsigned_32         old_value;
 
     old_value = UnrollValue;
@@ -473,9 +473,9 @@ extern  unsigned_32 BGUnrollCount( unsigned_32 unroll_count ) {
 }
 
 
-extern  an      BGUnary( cg_op op, an left, type_def *tipe ) {
-/*************************************************************/
-
+an      BGUnary( cg_op op, an left, type_def *tipe )
+/**************************************************/
+{
     an          new;
 
     new = NULL;
@@ -531,10 +531,9 @@ static  an      CheckType( an op, type_def *tipe ) {
 }
 
 
-extern  an      BGBinary( cg_op op, an left,
-                          an rite, type_def *tipe, bool fold_addr ) {
-/*******************************************************************/
-
+an      BGBinary( cg_op op, an left, an rite, type_def *tipe, bool fold_addr )
+/****************************************************************************/
+{
     an          result;
     instruction *ins;
 
@@ -580,10 +579,9 @@ extern  an      BGBinary( cg_op op, an left,
 
 
 
-extern  an      BGOpGets( cg_op op, an left, an rite,
-                          type_def *tipe, type_def *optipe ) {
-/************************************************************/
-
+an      BGOpGets( cg_op op, an left, an rite, type_def *tipe, type_def *optipe )
+/******************************************************************************/
+{
     an                  result;
     an                  leftp;
     name                *temp;
@@ -617,9 +615,9 @@ extern  an      BGOpGets( cg_op op, an left, an rite,
 }
 
 
-extern  an      BGConvert( an left, type_def *tipe ) {
-/****************************************************/
-
+an      BGConvert( an left, type_def *tipe )
+/******************************************/
+{
     an          new;
     type_attr   left_attr;
 
@@ -632,9 +630,9 @@ extern  an      BGConvert( an left, type_def *tipe ) {
 }
 
 
-extern  an      BGFlow( cg_op op, an left, an rite ) {
-/****************************************************/
-
+an      BGFlow( cg_op op, an left, an rite )
+/******************************************/
+{
     an                  new = NULL;
     label_handle        *temp;
 
@@ -677,9 +675,9 @@ extern  an      BGFlow( cg_op op, an left, an rite ) {
 }
 
 
-extern  an      BGAssign( an dst, an src, type_def *tipe ) {
-/**********************************************************/
-
+an      BGAssign( an dst, an src, type_def *tipe )
+/************************************************/
+{
     an          res;
 
     res = MakeGets( dst, src, tipe );
@@ -688,23 +686,23 @@ extern  an      BGAssign( an dst, an src, type_def *tipe ) {
 }
 
 
-extern  an      BGCopy( an node ) {
-/**************************************/
-
+an      BGCopy( an node )
+/***********************/
+{
     return( AddrCopy( node ) );
 }
 
 
-extern  an      BGDuplicate( an node ) {
-/**************************************/
-
+an      BGDuplicate( an node )
+/****************************/
+{
     return( AddrDuplicate( node ) );
 }
 
 
-extern  void    BGDone( an node ) {
-/*********************************/
-
+void    BGDone( an node )
+/***********************/
+{
     if( node->format == NF_BOOL ) {
         FlowOff( node );
     }
@@ -712,25 +710,25 @@ extern  void    BGDone( an node ) {
 }
 
 
-extern  void    BGTrash( an node ) {
-/***************************/
-
+void    BGTrash( an node )
+/************************/
+{
     BGDone( node );
 }
 
 
-extern  void    FlowOff( an name ) {
-/**********************************/
-
+void    FlowOff( an name )
+/************************/
+{
     *(name->u.b.t) = CurrBlock->label;
     *(name->u.b.f) = CurrBlock->label;
     NamesCrossBlocks();
 }
 
 
-extern  void    BGStartBlock( void ) {
-/************************************/
-
+void    BGStartBlock( void )
+/**************************/
+{
     label_handle    lbl;
 
     if( _MemLow ) { /* break the block here and generate code*/

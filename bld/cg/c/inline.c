@@ -43,6 +43,7 @@
 #include "namelist.h"
 #include "typemap.h"
 #include "inline.h"
+#include "bldins.h"
 #include "feprotos.h"
 
 
@@ -58,11 +59,6 @@ typedef struct inline_stack {
         type_def                *tipe;
         an                      addr;
 } inline_stack;
-
-extern  name            *BGNewTemp(type_def*);
-extern  void            BGDone(an);
-extern  an              BGCopy(an);
-extern  an              BGAssign(an,an,type_def*);
 
 static inline_stack     *InlineStack = NULL; // fix this!
 

@@ -51,6 +51,7 @@
 #include "x86enc2.h"
 #include "encode.h"
 #include "makeblk.h"
+#include "bldins.h"
 
 
 #define MIN_JUMPS       4            /* to make it worth while for jum*/
@@ -73,10 +74,7 @@
 #define MAX_COST        0x7FFFFFFFL
 #define MAX_IN_RANGE    (MAX_COST/1000) /* so no overflow */
 
-extern  an              BGDuplicate(an);
 extern  an              TreeGen(tn);
-extern  void            BGDone(an);
-extern  an              BGInteger( signed_32, type_def * );
 
 /* forward declarations */
 static  void    GenValuesBackward( select_list *list, signed_32 hi,

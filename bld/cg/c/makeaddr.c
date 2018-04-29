@@ -47,13 +47,11 @@
 #include "makeblk.h"
 #include "typemap.h"
 #include "temps.h"
+#include "bldins.h"
 #include "feprotos.h"
 
 
 static    pointer       *AddrNameFrl;
-
-extern  name            *BGNewTemp(type_def*);
-extern  void            BGDone(an);
 
 static  void    CopyAddr( an src, an dst )
 /****************************************/
