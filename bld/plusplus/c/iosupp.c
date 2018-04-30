@@ -531,10 +531,35 @@ static bool openSrcPath(        // ATTEMPT TO OPEN FILE (PATH TO BE PREPENDED)
     return( ok );
 }
 
+static bool try_open_file( struct path_descr *fd, struct path_descr *fa, const char *path, const char **exts, src_file_type typ )
+{
+    bool    ok;
+
+    ok = openSrcPath( path, exts, fd, typ );
+    if( ok ) {
+        return( ok );
+    }
+    if( fa != NULL ) {
+        ok = openSrcPath( path, exts, fa, typ );
+        if( ok ) {
+            return( ok );
+        }
+    }
+    if( CompFlags.check_truncated_fnames && strlen( fd->fnm ) > 8 ) {
+        char save_chr = fd->fnm[8];
+        fd->fnm[8] = '\0';
+        ok = openSrcPath( path, exts, fd, typ );
+        if( ok ) {
+            return( ok );
+        }
+        fd->fnm[8] = save_chr;
+    }
+    return( ok );
+}
 
 static bool doIoSuppOpenSrc(    // OPEN A SOURCE FILE (PRIMARY,HEADER)
     struct path_descr *fd,      // - descriptor for file name
-    struct path_descr *fa,      // - descriptor for alias file name
+    struct path_descr *fai,     // - descriptor for alias file name
     src_file_type typ )         // - type of search path to use
 {
     const char  **paths;        // - optional paths to prepend
@@ -549,11 +574,12 @@ static bool doIoSuppOpenSrc(    // OPEN A SOURCE FILE (PRIMARY,HEADER)
     char prevpth[_MAX_PATH];    // - buffer for previous path
     bool alias_abs;
     bool alias_check;
+    struct path_descr *fa;
 
     alias_abs = false;
     alias_check = false;
     ok = false;
-    paths = NULL;
+    fa = NULL;
     switch( typ ) {
     case FT_SRC:
         exts = extsSrc;
@@ -573,7 +599,12 @@ static bool doIoSuppOpenSrc(    // OPEN A SOURCE FILE (PRIMARY,HEADER)
         if( ok )
             break;
         if( !CompFlags.ignore_default_dirs && !IS_DIR_SEP( fd->dir[0] ) ) {
-            paths = pathSrc;
+            for( paths = pathSrc; (path = *paths) != NULL; ++paths ) {
+                ok = openSrcPath( path, exts, fd, typ );
+                if( ok ) {
+                    break;
+                }
+            }
         }
         break;
     case FT_HEADER:
@@ -581,18 +612,19 @@ static bool doIoSuppOpenSrc(    // OPEN A SOURCE FILE (PRIMARY,HEADER)
     case FT_HEADER_PRE:
     case FT_LIBRARY:
         exts = extsHdr;
-        alias_abs = fa != NULL && ( fa->drv[0] != '\0' || IS_DIR_SEP( fa->dir[0] ) );
+        alias_abs = ( fai != NULL && ( fai->drv[0] != '\0' || IS_DIR_SEP( fai->dir[0] ) ) );
         // have to look for absolute paths
         if( fd->drv[0] != '\0' || IS_DIR_SEP( fd->dir[0] ) ) {
-            ok = openSrcPath( "", exts, fd, typ );
-            if( !ok && alias_abs ) {
-                ok = openSrcPath( "", exts, fa, typ );
-            }
+            if( alias_abs )
+                fa = fai;
             alias_abs = false;
+            ok = try_open_file( fd, fa, "", exts, typ );
             break;
         }
         /* if alias contains abs path then check it after last check for regular name */
-        alias_check = fa != NULL && fa->drv[0] == '\0' && !IS_DIR_SEP( fa->dir[0] );
+        alias_check = ( fai != NULL && fai->drv[0] == '\0' && !IS_DIR_SEP( fai->dir[0] ) );
+        if( alias_check )
+            fa = fai;
         if( typ != FT_LIBRARY && !IS_DIR_SEP( fd->dir[0] ) ) {
             if( CompFlags.ignore_default_dirs ) {
                 bufpth[0] = '\0';
@@ -601,28 +633,16 @@ static bool doIoSuppOpenSrc(    // OPEN A SOURCE FILE (PRIMARY,HEADER)
                     splitFileName( SrcFileName( curr ), &idescr );
                     _makepath( bufpth, idescr.drv, idescr.dir, NULL, NULL );
                 }
-                ok = openSrcPath( bufpth, exts, fd, typ );
+                ok = try_open_file( fd, fa, bufpth, exts, typ );
                 if( ok ) {
                     break;
-                }
-                if( alias_check ) {
-                    ok = openSrcPath( bufpth, exts, fa, typ );
-                    if( ok ) {
-                        break;
-                    }
                 }
             } else {
                 if( !CompFlags.ignore_current_dir ) {
                     // check for current directory
-                    ok = openSrcPath( "", exts, fd, typ );
+                    ok = try_open_file( fd, fa, "", exts, typ );
                     if( ok ) {
                         break;
-                    }
-                    if( alias_check ) {
-                        ok = openSrcPath( "", exts, fa, typ );
-                        if( ok ) {
-                            break;
-                        }
                     }
                 }
                 /* check directories of currently included files */
@@ -634,15 +654,9 @@ static bool doIoSuppOpenSrc(    // OPEN A SOURCE FILE (PRIMARY,HEADER)
                     _makepath( bufpth, idescr.drv, idescr.dir, NULL, NULL );
                     /*optimization: don't try and open if in previously checked dir*/
                     if( strcmp( bufpth, prevpth ) != 0 ) {
-                        ok = openSrcPath( bufpth, exts, fd, typ );
+                        ok = try_open_file( fd, fa, bufpth, exts, typ );
                         if( ok ) {
                             break;
-                        }
-                        if( alias_check ) {
-                            ok = openSrcPath( bufpth, exts, fa, typ );
-                            if( ok ) {
-                                break;
-                            }
                         }
                     }
                     curr = SrcFileIncluded( curr, &dummy );
@@ -658,22 +672,24 @@ static bool doIoSuppOpenSrc(    // OPEN A SOURCE FILE (PRIMARY,HEADER)
             HFileListNext( bufpth );
             if( *bufpth == '\0' )
                 break;
-            ok = openSrcPath( bufpth, exts, fd, typ );
+            ok = try_open_file( fd, fa, bufpth, exts, typ );
             if( ok ) {
                 break;
-            }
-            if( alias_check ) {
-                ok = openSrcPath( bufpth, exts, fa, typ );
-                if( ok ) {
-                    break;
-                }
             }
         }
         if( ok ) {
             break;
         }
         if( typ != FT_LIBRARY && !CompFlags.ignore_default_dirs && !IS_DIR_SEP( fd->dir[0] ) ) {
-            paths = pathHdr;
+            for( paths = pathHdr; (path = *paths) != NULL; ++paths ) {
+                ok = try_open_file( fd, fa, path, exts, typ );
+                if( ok ) {
+                    break;
+                }
+            }
+        }
+        if( alias_abs ) {
+            ok = openSrcPath( "", exts, fai, typ );
         }
         break;
     case FT_CMD:
@@ -682,29 +698,17 @@ static bool doIoSuppOpenSrc(    // OPEN A SOURCE FILE (PRIMARY,HEADER)
         if( ok )
             break;
         if( !IS_DIR_SEP( fd->dir[0] ) ) {
-            paths = pathCmd;
-        }
-        break;
-    default:
-        exts = NULL;
-        break;
-    }
-    if( paths != NULL ) {
-        for( ; (path = *paths) != NULL; ++paths ) {
-            ok = openSrcPath( path, exts, fd, typ );
-            if( ok ) {
-                break;
-            }
-            if( alias_check ) {
-                ok = openSrcPath( path, exts, fa, typ );
+            for( paths = pathCmd; (path = *paths) != NULL; ++paths ) {
+                ok = openSrcPath( path, exts, fd, typ );
                 if( ok ) {
                     break;
                 }
             }
         }
-    }
-    if( !ok && alias_abs ) {
-        ok = openSrcPath( "", exts, fa, typ );
+        break;
+    default:
+        exts = NULL;
+        break;
     }
     if( ok ) {
         switch( typ ) {
