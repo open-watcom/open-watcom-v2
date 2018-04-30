@@ -34,21 +34,19 @@
 #include "coderep.h"
 #include "zoiks.h"
 #include "data.h"
-#include "x87.h"
 #include "makeins.h"
 #include "namelist.h"
 #include "redefby.h"
 #include "regalloc.h"
-#include "i87data.h"
+#include "fpu.h"
+#include "x87.h"
 #include "insutil.h"
 #include "rgtbl.h"
 #include "inssegs.h"
 #include "fixindex.h"
 #include "conflict.h"
+#include "liveinfo.h"
 
-
-extern  void            LiveInfoUpdate(void);
-extern  void            UpdateLive(instruction*,instruction*);
 
 /* forward declarations */
 static  void            CnvOperand( instruction *ins );
@@ -58,14 +56,13 @@ static  void            StackShortLivedTemps( void );
 static  void            FSinCos( void );
 static  void            CnvResult( instruction *ins );
 static  void            FindSinCos( instruction *ins, opcode_defs next_op );
-extern  int             Count87Regs( hw_reg_set regs );
 static  void            FPConvert( void );
 
-extern  void    FPRegAlloc( void ) {
+void    FPRegAlloc( void )
 /*****************************
     Allocate registers comprising the "stack" portion of the 8087.
 */
-
+{
     if( _FPULevel( FPU_87 ) ) {
         if( _FPULevel( FPU_387 ) ) {
             FSinCos();
@@ -132,9 +129,9 @@ static byte StackReq387[LAST_IFUNC - FIRST_IFUNC + 1] = {
         2         /* OP_TANH */
 };
 
-extern  void    InitFPStkReq( void ) {
-/******************************/
-
+void    FPInitStkReq( void )
+/**************************/
+{
     if( _IsTargetModel( I_MATH_INLINE ) ) {
         StackReq387[OP_SIN - FIRST_IFUNC] = 0;
         StackReq387[OP_COS - FIRST_IFUNC] = 0;
@@ -142,9 +139,9 @@ extern  void    InitFPStkReq( void ) {
 }
 
 
-extern  int     FPStkReq( instruction *ins ) {
-/********************************************/
-
+int     FPStkReq( instruction *ins )
+/**********************************/
+{
     if( !_OpIsIFunc( ins->head.opcode ) )
         return( 0 );
     if( _FPULevel( FPU_387 ) ) {
@@ -518,11 +515,11 @@ static  void    CnvResult( instruction *ins ) {
 }
 
 
-extern  int     Count87Regs( hw_reg_set regs ) {
+int     Count87Regs( hw_reg_set regs )
 /***********************************************
     Count the number of 8087 registers named in hw_reg_set "regs".
 */
-
+{
     int         count;
     int         i;
 
@@ -540,9 +537,9 @@ extern  int     Count87Regs( hw_reg_set regs ) {
 }
 
 
-extern  bool    FPStackIns( instruction *ins ) {
-/**********************************************/
-
+bool    FPStackIns( instruction *ins )
+/************************************/
+{
     if( !_FPULevel( FPU_87 ) )
         return( false );
     if( _OpIsCall( ins->head.opcode ) )
@@ -553,13 +550,13 @@ extern  bool    FPStackIns( instruction *ins ) {
 }
 
 
-extern  bool    FPSideEffect( instruction *ins ) {
+bool    FPSideEffect( instruction *ins )
 /*************************************************
     Return true if instruction "ins" is an instruction that has a side
     effect, namely pushes or pops the 8087 stack.
 
 */
-
+{
     opcnt       i;
     bool        has_fp_reg;
 
@@ -714,11 +711,11 @@ static  void    NoStackAcrossCalls( void ) {
 }
 
 
-extern  type_class_def  FPInsClass( instruction *ins ) {
+type_class_def  FPInsClass( instruction *ins )
 /*******************************************************
     Return FD if the instruction will use the 8087.
 */
-
+{
     if( !_FPULevel( FPU_87 ) )
         return( XX );
     if( !_Is87Ins( ins ) )
@@ -727,11 +724,11 @@ extern  type_class_def  FPInsClass( instruction *ins ) {
 }
 
 
-extern  void    FPSetStack( name *name ) {
+void    FPSetStack( name *name )
 /*****************************************
     Turn on the CAN_STACK attribute in "name" if its ok to do so.
 */
-
+{
     if( name->n.class != N_TEMP )
         return;
     if( name->v.usage & USE_IN_ANOTHER_BLOCK )
@@ -742,11 +739,11 @@ extern  void    FPSetStack( name *name ) {
 }
 
 
-extern  bool    FPIsStack( name *name ) {
+bool    FPIsStack( name *name )
 /****************************************
     return true if "name" is a stackable temp.
 */
-
+{
     if( name->n.class != N_TEMP )
         return( false );
     if( ( name->t.temp_flags & CAN_STACK ) == 0 )
@@ -755,35 +752,35 @@ extern  bool    FPIsStack( name *name ) {
 }
 
 
-extern  bool    FPStackOp( name *name ) {
+bool    FPStackOp( name *name )
 /****************************************
     return true if "name" is a stackable temp.
 */
-
+{
     if( !_FPULevel( FPU_87 ) )
         return( false );
     return( FPIsStack( name ) );
 }
 
 
-extern  void    FPNotStack( name *name ) {
+void    FPNotStack( name *name )
 /*****************************************
     Turn off the CAN_STACK attribute of "name".  This is done whenever
     an instruction is moved during an optimization, since it could cause
     the value to be not at top of stack at the reference.
 */
-
+{
     if( name->n.class == N_TEMP ) {
         name->t.temp_flags &= ~CAN_STACK;
     }
 }
 
 
-extern  bool    FPIsConvert( instruction *ins ) {
+bool    FPIsConvert( instruction *ins )
 /************************************************
     return true if "ins" is a converstion that could be handled by the 8087.
 */
-
+{
     type_class_def      op_class;
     type_class_def      res_class;
 

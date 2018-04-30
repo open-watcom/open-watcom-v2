@@ -34,18 +34,19 @@
 #include "coderep.h"
 #include "cgmem.h"
 #include "data.h"
+#include "freelist.h"
 
 
-extern  void    InitFrl( pointer **head ) {
-/*****************************************/
-
+void    InitFrl( pointer **head )
+/*******************************/
+{
     *head = NULL;
 }
 
 
-extern  pointer AllocFrl( pointer **head, size_t size ) {
-/****************************************************/
-
+pointer AllocFrl( pointer **head, size_t size )
+/*********************************************/
+{
     pointer     new;
 
     if( *head == NULL ) {
@@ -63,9 +64,9 @@ extern  pointer AllocFrl( pointer **head, size_t size ) {
 }
 
 
-extern  void    FrlFreeSize( pointer **head, pointer *what, size_t size ) {
-/**********************************************************************/
-
+void    FrlFreeSize( pointer **head, pointer *what, size_t size )
+/***************************************************************/
+{
 #ifndef NDEBUG
     memset( what, 0xdf, size );
 #endif
@@ -75,9 +76,9 @@ extern  void    FrlFreeSize( pointer **head, pointer *what, size_t size ) {
 }
 
 
-extern  bool    FrlFreeAll( pointer **head, size_t size ) {
-/******************************************************/
-
+bool    FrlFreeAll( pointer **head, size_t size )
+/***********************************************/
+{
     pointer     *next;
 
     if( *head == NULL )

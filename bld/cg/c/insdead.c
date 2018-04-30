@@ -33,7 +33,7 @@
 #include "_cgstd.h"
 #include "coderep.h"
 #include "data.h"
-#include "x87.h"
+#include "fpu.h"
 #include "makeins.h"
 #include "redefby.h"
 #include "insdead.h"

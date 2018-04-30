@@ -36,7 +36,7 @@
 #include "zoiks.h"
 #include "freelist.h"
 #include "cfloat.h"
-#include "cgaux.h"
+#include "cgauxinf.h"
 #include "data.h"
 
 #include "addrfold.h"
@@ -59,9 +59,9 @@
 #include "types.h"
 #include "i64.h"
 #include "utils.h"
-#include "cgauxinf.h"
 #include "blips.h"
 #include "typemap.h"
+#include "bgcall.h"
 
 #include "feprotos.h"
 #include "cgprotos.h"

@@ -36,7 +36,7 @@
 #include "data.h"
 #include "types.h"
 #include "addrcnst.h"
-#include "x87.h"
+#include "fpu.h"
 #include "makeins.h"
 #include "foldins.h"
 #include "rtrtn.h"
@@ -78,6 +78,7 @@
 #include "splitvar.h"
 #include "temps.h"
 #include "varusage.h"
+#include "liveinfo.h"
 #include "feprotos.h"
 
 
@@ -85,8 +86,6 @@ extern  bool            SplitConflicts( void );
 extern  void            RegTreeInit( void );
 extern  void            OptCloseMoves( void );
 extern  void            Conditions( void );
-extern  void            MakeLiveInfo( void );
-extern  void            LiveInfoUpdate( void );
 extern  void            FixIndex( void );
 extern  void            FixSegments( void );
 extern  void            FixMemRefs( void );
@@ -110,7 +109,7 @@ void    InitCG( void )
     HeadBlock = NULL;
     BlockByBlock = false;
     abortCG = false;
-    InitFP();/* must be before InitRegTbl */
+    FPInit();/* must be before InitRegTbl */
     InitRegTbl();
     ScoreInit();
     InitQueue();

@@ -60,8 +60,8 @@ static  name    *DisplayField( level_depth level )
 }
 
 
-extern  name    *MakeDisplay( name *op, level_depth level )
-/*********************************************************/
+name    *MakeDisplay( name *op, level_depth level )
+/*************************************************/
 {
     name        *temp;
     name        *reg;
@@ -74,8 +74,8 @@ extern  name    *MakeDisplay( name *op, level_depth level )
 }
 
 
-extern  void    BigGoto( level_depth level )
-/******************************************/
+void    BigGoto( level_depth level )
+/**********************************/
 {
     name        *reg;
 
@@ -86,8 +86,8 @@ extern  void    BigGoto( level_depth level )
 }
 
 
-extern  void    BigLabel( void )
-/******************************/
+void    BigLabel( void )
+/**********************/
 {
     instruction *ins;
     name        *bp;
@@ -107,9 +107,9 @@ extern  void    BigLabel( void )
     AddIns( ins );
 }
 
-extern  bool    AskIsFrameIndex( name *op ) {
-/*********************************************/
-
+bool    AskIsFrameIndex( name *op )
+/*********************************/
+{
     name        *bp;
 
     bp = AllocRegName( DisplayReg() );
@@ -117,8 +117,8 @@ extern  bool    AskIsFrameIndex( name *op ) {
 }
 
 
-extern  abspatch_handle *NextFramePatch( void )
-/*********************************************/
+abspatch_handle *NextFramePatch( void )
+/*************************************/
 {
     frame_patch *temp;
 
@@ -129,9 +129,9 @@ extern  abspatch_handle *NextFramePatch( void )
 }
 
 
-extern  void    PatchBigLabels( offset lc ) {
-/*******************************************/
-
+void    PatchBigLabels( offset lc )
+/*********************************/
+{
     frame_patch *frame;
     frame_patch *next;
 
@@ -145,9 +145,9 @@ extern  void    PatchBigLabels( offset lc ) {
 
 
 
-extern  an      PassProcParm( an rtn ) {
-/**************************************/
-
+an      PassProcParm( an rtn )
+/****************************/
+{
     name        *op;
     name        *reg;
 
@@ -164,9 +164,9 @@ extern  an      PassProcParm( an rtn ) {
 }
 
 
-extern  void    SaveDisplay( opcode_defs op ) {
-/*********************************************/
-
+void    SaveDisplay( opcode_defs op )
+/***********************************/
+{
     name        *reg;
 
     reg = AllocRegName( DisplayReg() );
@@ -174,9 +174,9 @@ extern  void    SaveDisplay( opcode_defs op ) {
 }
 
 
-extern  void    SetDisplay( name *temp ) {
-/****************************************/
-
+void    SetDisplay( name *temp )
+/******************************/
+{
     name        *reg;
 
     reg = AllocRegName( DisplayReg() );

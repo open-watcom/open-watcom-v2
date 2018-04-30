@@ -38,9 +38,9 @@
 #include "data.h"
 #include "namelist.h"
 #include "insutil.h"
+#include "liveinfo.h"
 
 
-extern  void            UpdateLive( instruction *, instruction * );
 extern  name            *TrimConst( name *, type_class_def );
 
 

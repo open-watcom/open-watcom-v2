@@ -47,13 +47,13 @@
 #include "typemap.h"
 #include "bldcall.h"
 #include "parmreg.h"
+#include "parm.h"
+#include "bgcall.h"
 
 
-extern  type_def        *QParmType( cg_sym_handle, cg_sym_handle, type_def * );
-
-extern  an      BGCall( cn call, bool use_return, bool in_line ) {
-/****************************************************************/
-
+an      BGCall( cn call, bool use_return, bool in_line )
+/******************************************************/
+{
     instruction         *call_ins;
     instruction         *conv_ins;
     call_state          *state;
@@ -101,9 +101,9 @@ extern  an      BGCall( cn call, bool use_return, bool in_line ) {
 }
 
 
-extern  void    BGProcDecl( cg_sym_handle sym, type_def *tipe ) {
-/************************************************************/
-
+void    BGProcDecl( cg_sym_handle sym, type_def *tipe )
+/*****************************************************/
+{
     type_class_def      class;
     name                *temp;
     hw_reg_set          reg;
@@ -123,8 +123,8 @@ extern  void    BGProcDecl( cg_sym_handle sym, type_def *tipe ) {
 }
 
 
-extern  type_def    *PassParmType( cg_sym_handle func, type_def* tipe, call_class class )
-/***************************************************************************************/
+type_def    *PassParmType( cg_sym_handle func, type_def* tipe, call_class class )
+/*******************************************************************************/
 {
     /* unused parameters */ (void)class;
 
@@ -132,12 +132,12 @@ extern  type_def    *PassParmType( cg_sym_handle func, type_def* tipe, call_clas
     return( tipe );
 }
 
-extern  instruction *   PushOneParm( instruction *ins, name *curr,
+instruction    *PushOneParm( instruction *ins, name *curr,
                                      type_class_def class,
                                      type_length offset,
-                                     call_state *state ) {
-/**************************************************************/
-
+                                     call_state *state )
+/********************************************************/
+{
     instruction *new;
     name        *dst;
     name        *stack_reg;
@@ -151,9 +151,9 @@ extern  instruction *   PushOneParm( instruction *ins, name *curr,
     return( new );
 }
 
-extern  name    *StReturn( an retval, type_def *tipe, instruction **pins ) {
-/**************************************************************************/
-
+name    *StReturn( an retval, type_def *tipe, instruction **pins )
+/****************************************************************/
+{
     name        *index;
 
     /* unused parameters */ (void)retval; (void)pins;
@@ -162,28 +162,29 @@ extern  name    *StReturn( an retval, type_def *tipe, instruction **pins ) {
     return( index );
 }
 
-extern  void    InitTargProc() {
-/******************************/
+void    InitTargProc( void )
+/**************************/
+{
     CurrProc->targ.debug = NULL;
     CurrProc->targ.base_is_fp = false;
 }
 
 
-extern  void    SaveToTargProc() {
-/********************************/
-
+void    SaveToTargProc( void )
+/****************************/
+{
     CurrProc->targ.max_stack = MaxStack;
 }
 
 
-extern  void    RestoreFromTargProc() {
+void    RestoreFromTargProc( void )
 /*************************************/
-
+{
     MaxStack = CurrProc->targ.max_stack;
 }
 
-extern  reg_set_index   CallIPossible( instruction *ins )
-/*********************************************************/
+reg_set_index   CallIPossible( instruction *ins )
+/***********************************************/
 {
     /* unused parameters */ (void)ins;
 

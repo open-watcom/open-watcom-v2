@@ -38,10 +38,11 @@
 #include "blips.h"
 #include "insdead.h"
 #include "optab.h"
+#include "confldef.h"
+#include "liveinfo.h"
 
 
 extern  bool            UnChangeable(instruction*);
-extern  void            UpdateLive(instruction*,instruction*);
 
 void    FreeJunk( block *blk )
 /*************************************

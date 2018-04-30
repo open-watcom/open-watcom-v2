@@ -36,11 +36,11 @@
 #include "zoiks.h"
 #include "makeins.h"
 #include "data.h"
-#include "x87.h"
 #include "namelist.h"
 #include "redefby.h"
 #include "makeblk.h"
-#include "i87data.h"
+#include "fpu.h"
+#include "x87.h"
 #include "expand.h"
 #include "split.h"
 #include "insutil.h"
@@ -52,23 +52,8 @@
 #include "fixindex.h"
 #include "inssched.h"
 #include "bldins.h"
+#include "liveinfo.h"
 
-
-extern int          FPRegNum(name*);
-extern void         ToRFld(instruction*);
-extern void         ToRFstp(instruction*);
-extern void         NoPop(instruction*);
-extern void         NoPopBin(instruction*);
-extern void         NoPopRBin(instruction*);
-extern void         ToPopBin(instruction*);
-extern void         NoMemBin(instruction*);
-extern name         *ST(int);
-extern void         UpdateLive(instruction*,instruction*);
-extern void         PrefFXCH(instruction*,int);
-extern void         Wait8087( void );
-extern void         ReverseFPGen(instruction*);
-extern int          FPStkReq(instruction*);
-extern bool         FPResultNotNeeded(instruction*);
 
 void    FPParms( void )
 /**************************
@@ -839,8 +824,8 @@ void    FPOptimize( void )
     }
 }
 
-bool    DivIsADog( type_class_def class )
-/***************************************/
+bool    FPDivIsADog( type_class_def class )
+/*****************************************/
 {
 
     return( _FPULevel( FPU_87 ) && _IsFloating( class ) );

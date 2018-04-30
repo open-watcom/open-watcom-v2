@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -24,20 +25,12 @@
 *
 *  ========================================================================
 *
-* Description:  Prototypes for i86call.c
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
-extern an               BGCall( cn call, bool use_return, bool in_line );
-extern void             BGProcDecl( cg_sym_handle sym, type_def *tipe );
-extern name             *StReturn( an retval, type_def *tipe, instruction **pins );
-extern reg_set_index    CallIPossible( instruction *ins );
-extern void             InitTargProc( void );
-extern void             SaveToTargProc( void );
-extern void             RestoreFromTargProc( void );
-extern void             PushInSameBlock( instruction *ins );
-extern instruction      *PushOneParm( instruction *ins, name *curr, type_class_def class, type_length offset, call_state *state );
-extern void             PreCall( cn call );
-extern void             PostCall( cn call );
-extern type_def         *PassParmType( cg_sym_handle func, type_def *tipe, call_class class );
+extern hw_reg_set   ParmInLineReg( parm_state *state );
+extern type_length  ParmMem( type_length length, type_length alignment, call_state *state );
+extern type_def     *QParmType( cg_sym_handle func, cg_sym_handle parm, type_def *tipe );

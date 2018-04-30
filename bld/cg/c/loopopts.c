@@ -39,7 +39,7 @@
 #include "zoiks.h"
 #include "i64.h"
 #include "data.h"
-#include "x87.h"
+#include "fpu.h"
 #include "makeins.h"
 #include "utils.h"
 #include "namelist.h"
@@ -58,6 +58,7 @@
 #include "tree.h"
 #include "treefold.h"
 #include "splitvar.h"
+#include "cachecon.h"
 #include "feprotos.h"
 #include "revcond.h"
 
@@ -76,8 +77,6 @@ typedef struct block_list {
     block                   *blk;
     struct block_list       *next;
 } block_list;
-
-extern void             ConstToTemp(block *,block *,block *(*)(block *));
 
 block                   *Head;
 block                   *PreHead;

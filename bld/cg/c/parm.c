@@ -37,12 +37,13 @@
 #include "data.h"
 #include "types.h"
 #include "rgtbl.h"
+#include "parm.h"
 #include "feprotos.h"
 
 
-extern  hw_reg_set      ParmInLineReg( parm_state *state ) {
-/**********************************************************/
-
+hw_reg_set      ParmInLineReg( parm_state *state )
+/************************************************/
+{
     hw_reg_set  regs;
 
     regs = *state->curr_entry;
@@ -54,9 +55,9 @@ extern  hw_reg_set      ParmInLineReg( parm_state *state ) {
     return( regs );
 }
 
-extern type_length      ParmMem( type_length length, type_length alignment, call_state *state ) {
-/***********************************************************************************************/
-
+type_length      ParmMem( type_length length, type_length alignment, call_state *state )
+/**************************************************************************************/
+{
     type_length     offset;
     type_length     word_size;
 
@@ -78,8 +79,8 @@ extern type_length      ParmMem( type_length length, type_length alignment, call
     return( offset );
 }
 
-extern  type_def        *QParmType( cg_sym_handle func, cg_sym_handle parm, type_def *tipe ) {
-/**************************************************************************************/
-
+type_def        *QParmType( cg_sym_handle func, cg_sym_handle parm, type_def *tipe )
+/**********************************************************************************/
+{
     return( TypeAddress( FEParmType( func, parm, tipe->refno ) ) );
 }

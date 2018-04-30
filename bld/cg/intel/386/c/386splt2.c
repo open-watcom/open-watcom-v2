@@ -51,10 +51,10 @@
 #include "x86split.h"
 #include "overlap.h"
 #include "x86segs.h"
+#include "liveinfo.h"
 
 
 extern  name            *IntEquivalent( name * );
-extern  void            UpdateLive( instruction *, instruction * );
 extern  name            *OpAdjusted( name *, int, type_class_def );
 extern  name            *Int64Equivalent( name * );
 

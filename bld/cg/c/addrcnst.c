@@ -40,9 +40,9 @@
 #include "insutil.h"
 
 
-extern  void    MakeMovAddrConsts( void ) {
-/*****************************************/
-
+void    MakeMovAddrConsts( void )
+/*******************************/
+{
     block       *blk;
     instruction *ins;
     name        *op;
@@ -63,9 +63,9 @@ extern  void    MakeMovAddrConsts( void ) {
 }
 
 
-extern  void    KillMovAddrConsts( void ) {
-/*****************************************/
-
+void    KillMovAddrConsts( void )
+/*******************************/
+{
     block               *blk;
     instruction         *ins;
     instruction         *new_ins;

@@ -36,27 +36,18 @@
 #include "cgmem.h"
 #include "i87sched.h"
 #include "data.h"
-#include "x87.h"
 #include "edge.h"
 #include "redefby.h"
 #include "cgsrtlst.h"
 #include "indvars.h"
 #include "loopopts.h"
-#include "i87data.h"
+#include "fpu.h"
+#include "x87.h"
 #include "namelist.h"
 #include "optab.h"
 #include "fixindex.h"
 #include "revcond.h"
 
-
-extern  instruction     *PrefFXCH( instruction *ins, int i );
-extern  instruction     *SuffFXCH( instruction *ins, int i );
-extern  instruction     *PrefFLDOp(instruction *,operand_type ,name *);
-extern  instruction     *SuffFSTPRes(instruction *,name *,result_type );
-extern  name            *ST(int);
-extern  int             FPRegNum(name *);
-extern  int             Count87Regs(hw_reg_set);
-extern  int             FPStkReq( instruction * );
 
 /* forward declarations */
 static  void            PushStack( instruction *ins );
@@ -117,23 +108,22 @@ temp_entry      *TempList;
 
 #define FP_INS_INTRODUCED       INS_VISITED // this must stick!
 
-extern  bool    FPInsIntroduced( instruction *ins ) {
-/****************************************************
-
+bool    FPInsIntroduced( instruction *ins )
+/******************************************
     Used by the scheduler. We want to make sure that introduced instructions
     stay put.
 */
-
+{
     return( ( ins->ins_flags & FP_INS_INTRODUCED ) != 0 );
 }
 
 
-extern  bool    FPFreeIns( instruction *ins ) {
+bool    FPFreeIns( instruction *ins )
 /**********************************************
-
     Return true if "ins" is going to be vaporized by the cacheing
     algorithm in FPPostSched.
 */
+{
     temp_entry  *temp;
 
     for( temp = TempList; temp != NULL; temp = temp->next ) {
@@ -151,7 +141,7 @@ extern  bool    FPFreeIns( instruction *ins ) {
     return( false );
 }
 
-extern  int     FPStkOver( instruction *ins, int stk_depth )
+int     FPStkOver( instruction *ins, int stk_depth )
 /***********************************************************
 
     Return >= 0 if scheduling "ins" could get us into a spot that
@@ -189,7 +179,7 @@ static  int     InsMaxDepth( instruction *ins )
 }
 
 
-extern  void    FPCalcStk( instruction *ins, int *pdepth )
+void    FPCalcStk( instruction *ins, int *pdepth )
 /*********************************************************
 
     Set pdepth to the stack level before "ins" executes.  Also,
@@ -212,12 +202,13 @@ extern  void    FPCalcStk( instruction *ins, int *pdepth )
     *pdepth += affect;
 }
 
-extern  int     FPStackExit( block *blk ) {
+int     FPStackExit( block *blk )
 /******************************************
     Return the depth of the FPU stack upon exit from this
     block. This is the stk_exit from the last FPU
     instruction in the block.
 */
+{
     instruction *curr;
 
     for( curr = blk->ins.hd.prev; curr->head.opcode != OP_BLOCK; curr = curr->head.prev ) {
@@ -752,9 +743,9 @@ static  bool Better( void *t1, void *t2 ) {
 
 
 
-extern  void    InitTempEntries( block *blk ) {
-/***************************************/
-
+static void    InitTempEntries( block *blk )
+/************************************************/
+{
     instruction *ins;
     opcnt       i;
 
@@ -773,9 +764,9 @@ extern  void    InitTempEntries( block *blk ) {
 }
 
 
-extern  void    FiniTempEntries( void ) {
-/***************************/
-
+static void    FiniTempEntries( void )
+/************************************/
+{
     temp_entry  *temp;
     temp_entry  *next;
 
@@ -939,9 +930,9 @@ static  void    CacheTemps( block *blk ) {
 
 #define SEQ_INIT_VALUE  0xff
 
-extern  void    FPPreSched( block *blk ) {
-/****************************************/
-
+void    FPPreSched( block *blk )
+/******************************/
+{
     temp_entry  *temp;
     instruction *ins;
     int         i;
@@ -1080,9 +1071,9 @@ static  void    ReOrderForCall( instruction *ins ) {
 }
 
 
-extern  void    FPPostSched( block *blk ) {
-/*****************************************/
-
+void    FPPostSched( block *blk )
+/*******************************/
+{
     fp_attr     attr;
     instruction *ins;
     instruction *next;

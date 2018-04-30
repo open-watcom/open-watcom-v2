@@ -46,12 +46,12 @@
 #include "typemap.h"
 #include "bldcall.h"
 #include "parmreg.h"
+#include "parm.h"
+#include "bgcall.h"
 
 
-extern  type_def        *QParmType( cg_sym_handle, cg_sym_handle, type_def * );
-
-extern an BGCall( cn call, bool use_return, bool in_line )
-/********************************************************/
+an BGCall( cn call, bool use_return, bool in_line )
+/*************************************************/
 {
     instruction         *call_ins;
     instruction         *conv_ins;
@@ -100,8 +100,8 @@ extern an BGCall( cn call, bool use_return, bool in_line )
 }
 
 
-extern void BGProcDecl( cg_sym_handle sym, type_def *tipe )
-/******************************************************/
+void BGProcDecl( cg_sym_handle sym, type_def *tipe )
+/**************************************************/
 {
     type_class_def      class;
     name                *temp;
@@ -130,8 +130,8 @@ extern void BGProcDecl( cg_sym_handle sym, type_def *tipe )
 }
 
 
-extern type_def *PassParmType( cg_sym_handle func, type_def* tipe, call_class class )
-/********************************************************************************/
+type_def *PassParmType( cg_sym_handle func, type_def* tipe, call_class class )
+/****************************************************************************/
 {
     /* unused parameters */ (void)class;
 
@@ -140,11 +140,11 @@ extern type_def *PassParmType( cg_sym_handle func, type_def* tipe, call_class cl
 }
 
 
-extern instruction *PushOneParm( instruction *ins, name *curr,
+instruction *PushOneParm( instruction *ins, name *curr,
                                  type_class_def class,
                                  type_length offset,
                                  call_state *state )
-/************************************************************/
+/*****************************************************/
 {
     instruction *new;
     name        *dst;
@@ -160,8 +160,8 @@ extern instruction *PushOneParm( instruction *ins, name *curr,
 }
 
 
-extern name *StReturn( an retval, type_def *tipe, instruction **pins )
-/********************************************************************/
+name *StReturn( an retval, type_def *tipe, instruction **pins )
+/*************************************************************/
 {
     name        *index;
 
@@ -172,8 +172,8 @@ extern name *StReturn( an retval, type_def *tipe, instruction **pins )
 }
 
 
-extern void InitTargProc( void )
-/******************************/
+void InitTargProc( void )
+/***********************/
 {
     CurrProc->targ.debug = NULL;
     // For d1+ or higher, force accesses to locals to go through $fp since frame
@@ -186,21 +186,21 @@ extern void InitTargProc( void )
 }
 
 
-extern void SaveToTargProc( void )
-/********************************/
+void SaveToTargProc( void )
+/*************************/
 {
     CurrProc->targ.max_stack = MaxStack;
 }
 
 
-extern void RestoreFromTargProc( void )
-/*************************************/
+void RestoreFromTargProc( void )
+/******************************/
 {
     MaxStack = CurrProc->targ.max_stack;
 }
 
-extern reg_set_index CallIPossible( instruction *ins )
-/****************************************************/
+reg_set_index CallIPossible( instruction *ins )
+/*********************************************/
 {
     /* unused parameters */ (void)ins;
 

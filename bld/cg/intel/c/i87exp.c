@@ -36,11 +36,11 @@
 #include "cfloat.h"
 #include "cgaux.h"
 #include "data.h"
-#include "x87.h"
 #include "makeins.h"
 #include "namelist.h"
 #include "nullprop.h"
-#include "i87data.h"
+#include "fpu.h"
+#include "x87.h"
 #include "rgtbl.h"
 #include "insutil.h"
 #include "optab.h"
@@ -52,9 +52,6 @@
 
 
 extern  opcode_entry    DoNop[];
-
-extern  int             Count87Regs(hw_reg_set);
-extern  void            InitFPStkReq( void );
 
 /* forward declarations */
 static  void            ExpCompare( instruction *ins,
@@ -233,9 +230,9 @@ static  opcode_entry *GenTab( instruction *ins, opcode_entry *array ) {
 }
 
 
-extern  bool    FPStackReg( name *reg_name ) {
-/********************************************/
-
+bool    FPStackReg( name *reg_name )
+/**********************************/
+{
     int         reg_num;
 
     reg_num = FPRegNum( reg_name );
@@ -247,12 +244,12 @@ extern  bool    FPStackReg( name *reg_name ) {
 }
 
 
-extern  int     FPRegNum( name *reg_name ) {
-/*******************************************
+int     FPRegNum( name *reg_name )
+/*********************************
     given a name, return the 8087 register number (0-7) or -1 if
     it isn't an 8087 register
 */
-
+{
     hw_reg_set  tmp;
 
     if( reg_name == NULL )
@@ -280,18 +277,17 @@ extern  int     FPRegNum( name *reg_name ) {
     return( -1 );
 }
 
-extern  name    *ST( int num ) {
+name    *ST( int num )
 /*******************************
     return an N_REGISTER for ST(num)
 */
-
+{
     return( AllocRegName( FPRegs[num] ) );
 }
 
-extern  instruction     *PrefFLDOp( instruction *ins,
-                                    operand_type op, name *opnd ) {
-/*****************************************************************/
-
+instruction *PrefFLDOp( instruction *ins, operand_type op, name *opnd )
+/*********************************************************************/
+{
     instruction *new_ins = NULL;
 
     switch( op ) {
@@ -338,17 +334,16 @@ static  void    PrefixFLDOp( instruction *ins, operand_type op, opcnt i )
 }
 
 
-extern  bool            FPResultNotNeeded( instruction *ins ) {
-/*************************************************************/
-
+bool            FPResultNotNeeded( instruction *ins )
+/***************************************************/
+{
     return( ins->u.gen_table == MFST2 );
 }
 
 
-extern  instruction     *SuffFSTPRes( instruction *ins,
-                                      name *opnd, result_type res ) {
-/*******************************************************************/
-
+instruction *SuffFSTPRes( instruction *ins, name *opnd, result_type res )
+/***********************************************************************/
+{
     instruction *new_ins;
 
     new_ins = MakeUnary( OP_MOV, ST0, opnd, FD );
@@ -384,9 +379,9 @@ static  instruction     *SuffixFSTPRes( instruction *ins ) {
     return( new_ins );
 }
 
-extern  instruction     *SuffFXCH( instruction *ins, int i ) {
-/************************************************************/
-
+instruction     *SuffFXCH( instruction *ins, int i )
+/**************************************************/
+{
     instruction *new_ins;
 
     new_ins = MakeUnary( OP_MOV, ST0, ST(i), FD );
@@ -396,11 +391,11 @@ extern  instruction     *SuffFXCH( instruction *ins, int i ) {
     return( new_ins );
 }
 
-extern  instruction     *PrefFXCH( instruction *ins, int i ) {
-/*************************************************************
+instruction     *PrefFXCH( instruction *ins, int i )
+/***************************************************
     Prefix an instruction "ins" with an FXCH ST(i)
 */
-
+{
     instruction *new_ins;
 
     new_ins = MakeUnary( OP_MOV, ST0, ST(i), FD );
@@ -1092,12 +1087,12 @@ static  void    ExpCompare ( instruction *ins,
 }
 
 
-extern  void    NoPopRBin( instruction *ins ) {
+void    NoPopRBin( instruction *ins )
 /*********************************************
     Turn a binary floating point instruction into its equivalent version
     that does not pop the stack. For example FMULP ST(1),ST  -> FMUL ST(1),ST
 */
-
+{
     if( G( ins ) == G_RRFBINP ) {
         ins->u.gen_table = GenTab( ins, RRFBIND );
         ins->stk_exit++;
@@ -1108,12 +1103,12 @@ extern  void    NoPopRBin( instruction *ins ) {
 }
 
 
-extern  void    NoPopBin( instruction *ins ) {
+void    NoPopBin( instruction *ins )
 /*********************************************
     Turn a binary floating point instruction into its equivalent version
     that does not pop the stack. For example FMULP ST(1),ST  -> FMUL X
 */
-
+{
     if( G( ins ) == G_RRFBINP ) {
         if( ins->operands[0]->n.class == N_REGISTER ) {
             ins->u.gen_table = GenTab( ins, RRFBIN );
@@ -1132,12 +1127,12 @@ extern  void    NoPopBin( instruction *ins ) {
 }
 
 
-extern  void    ToPopBin( instruction *ins ) {
-/*********************************************
+void    ToPopBin( instruction *ins )
+/***********************************
     Turn a binary floating point instruction into its equivalent version
     that pops the stack. For example FSUB ST,ST(1) -> FSUBRP ST(1),ST
 */
-
+{
     if( G( ins ) == G_RRFBIN ) {
         ins->u.gen_table = GenTab( ins, RNFBINP );
         ins->stk_exit--;
@@ -1148,12 +1143,12 @@ extern  void    ToPopBin( instruction *ins ) {
 }
 
 
-extern  void    ReverseFPGen( instruction *ins ) {
+void    ReverseFPGen( instruction *ins )
 /*********************************************
     Turn a binary floating point instruction into its reverse instruction
     For example FSUB ST(1)  -> FSUBR ST(1)
 */
-
+{
     switch( G( ins ) ) {
     case G_RRFBIN:
         ins->u.gen_table = GenTab( ins, RNFBIN );
@@ -1177,29 +1172,29 @@ extern  void    ReverseFPGen( instruction *ins ) {
 }
 
 
-extern  void    ToRFld( instruction *ins ) {
-/**********************************************
+void    ToRFld( instruction *ins )
+/**********************************
     Turn an FLD x into an FLD ST(i)
 */
-
+{
     ins->u.gen_table = RFLD;
 }
 
 
-extern  void    ToRFstp( instruction *ins ) {
-/**********************************************
+void    ToRFstp( instruction *ins )
+/**********************************
     Turn an FLD x into an FLD ST(i)
 */
-
+{
     ins->u.gen_table = RFST;
 }
 
 
-extern  void    NoPop( instruction *ins ) {
-/******************************************
+void    NoPop( instruction *ins )
+/*************************************
     Turn an FSTP instruction into FST.
 */
-
+{
     if( G( ins ) == G_MFST ) {
         ins->u.gen_table = MFSTNP;
         ins->stk_exit++;
@@ -1210,10 +1205,11 @@ extern  void    NoPop( instruction *ins ) {
 }
 
 
-extern  void    NoMemBin( instruction *ins ) {
-/*********************************************
+void    NoMemBin( instruction *ins )
+/**************************************
     FADD x  ==>  FADD ST(0) for example
 */
+{
     if( G( ins ) == G_MRFBIN ) {
         ins->u.gen_table = GenTab( ins, RRFBIN );
     } else if( G( ins ) == G_MNFBIN ) {
@@ -1222,11 +1218,11 @@ extern  void    NoMemBin( instruction *ins ) {
 }
 
 
-extern  instruction     *MakeWait( void ) {
+instruction     *MakeWait( void )
 /************************************
     Create an "instruction" that will generate an FWAIT.
 */
-
+{
     instruction *new_ins;
 
     new_ins = MakeUnary( OP_MOV, ST0, ST0, FD );
@@ -1234,21 +1230,21 @@ extern  instruction     *MakeWait( void ) {
     return( new_ins );
 }
 
-extern  void    InitFP( void ) {
-/*************************
+void    FPInit( void )
+/*********************
     Initialize.
 */
-
+{
     Max87Stk = (int)(pointer_int)FEAuxInfo( NULL, STACK_SIZE_8087 );
     if( Max87Stk > 8 )
         Max87Stk = 8;
     if( Max87Stk < 4 )
         Max87Stk = 4;
     Used87 = false;
-    InitFPStkReq();
+    FPInitStkReq();
 }
 
-extern  void    FPExpand( void ) {
+void    FPExpand( void )
 /**************************
     Expand the 8087 instructions.  The instructions so far
     have been assigned registers, with ST(1) ..  ST(Max87Stk) being the
@@ -1257,7 +1253,7 @@ extern  void    FPExpand( void ) {
     ST(0) is special and always means the current top of stack
 
 */
-
+{
     if( _FPULevel( FPU_87 ) ) {
         ST0 = ST( 0 );
         ST1 = ST( 1 );

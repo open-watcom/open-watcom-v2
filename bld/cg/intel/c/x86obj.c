@@ -786,7 +786,7 @@ void DoEmptyQueue( void )
     TellUnreachLabels();
 }
 
-static  void    InitFPPatches( void )
+static  void    FPInitPatches( void )
 /***********************************/
 {
     int i;
@@ -1007,7 +1007,7 @@ void    ObjInit( void )
     array_control       *tgroup_def;
     void                *depend;
 
-    InitFPPatches();
+    FPInitPatches();
     CodeSize = 0;
     DataSize = 0;
     CurrFNo = 0;

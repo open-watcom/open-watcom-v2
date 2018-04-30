@@ -46,11 +46,12 @@
 #include "fixindex.h"
 #include "generate.h"
 #include "conflict.h"
+#include "cgaux.h"
+#include "bgcall.h"
 
 
 extern  bool            DoVerify(vertype,instruction*);
 extern  void            MarkCallI(instruction);
-extern  reg_set_index   CallIPossible(instruction*);
 
 static instruction  *DoReduce( instruction *ins, opcode_entry *try, bool has_index )
 /**********************************************************************************/

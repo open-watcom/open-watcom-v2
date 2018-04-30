@@ -36,6 +36,7 @@
 #include "rgtbl.h"
 #include "sib.h"
 #include "generate.h"
+#include "liveinfo.h"
 
 
 typedef enum {
@@ -45,7 +46,6 @@ typedef enum {
 } mod_info;
 
 extern  bool            FoldIntoIndex( instruction * );
-extern  void            UpdateLive( instruction *, instruction * );
 
 static  bool    InsIsCandidate( instruction *ins )
 /************************************************/

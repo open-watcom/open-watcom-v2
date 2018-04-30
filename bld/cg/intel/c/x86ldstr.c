@@ -49,9 +49,8 @@
 #include "fixindex.h"
 #include "generate.h"
 #include "inssched.h"
+#include "liveinfo.h"
 
-
-extern  void            UpdateLive(instruction*,instruction*);
 
 static  bool            PreferSize;
 

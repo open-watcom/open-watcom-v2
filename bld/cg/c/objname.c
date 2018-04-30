@@ -286,9 +286,9 @@ void    DoOutObjectName( cg_sym_handle sym,
     outputter( buffer, data );
 }
 
-extern bool SymIsExported( cg_sym_handle sym ) {
-/*******************************************/
-
+bool SymIsExported( cg_sym_handle sym )
+/*************************************/
+{
     bool        exported;
 
     exported = false;

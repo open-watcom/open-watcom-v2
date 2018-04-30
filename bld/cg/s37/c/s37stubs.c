@@ -33,7 +33,7 @@
 #include "coderep.h"
 #include "regset.h"
 #include "addrname.h"
-#include "x87.h"
+#include "fpu.h"
 
 
 /* KLUDGEY crud for segment register */
@@ -189,7 +189,7 @@ extern  bool    FPStackOp( name *name ) {
     return( false );
 }
 
-extern  void    InitFP() {
+extern  void    FPInit( void ) {
 /**********************************************/
 }
 
@@ -324,7 +324,7 @@ extern  void    LdStCompress()
 {
 }
 
-extern  bool    DivIsADog( type_class_def class )
+extern  bool    FPDivIsADog( type_class_def class )
 /***********************************************/
 {
     class=class;

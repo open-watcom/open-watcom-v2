@@ -38,9 +38,7 @@
 #include "data.h"
 #include "namelist.h"
 #include "insutil.h"
-
-
-extern  void            UpdateLive(instruction*,instruction*);
+#include "liveinfo.h"
 
 
 static  opcode_entry    ctable_FSTOD[] = {

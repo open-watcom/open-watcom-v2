@@ -49,6 +49,8 @@
 #include "overlap.h"
 #include "x86split.h"
 #include "x86segs.h"
+#include "confldef.h"
+#include "liveinfo.h"
 
 
 typedef struct eight_byte_name {
@@ -59,13 +61,12 @@ typedef struct eight_byte_name {
 } eight_byte_name;
 
 extern  name            *IntEquivalent( name * );
-extern  void            UpdateLive( instruction *, instruction * );
 
 /*forward declaration*/
 static  void            Split8Name( instruction *ins, name *tosplit, eight_byte_name *out );
 
-extern  name    *LowPart( name *tosplit, type_class_def class )
-/*************************************************************/
+name    *LowPart( name *tosplit, type_class_def class )
+/*****************************************************/
 {
     name                *new = NULL;
     name                *new_cons;
@@ -137,8 +138,8 @@ extern  name    *LowPart( name *tosplit, type_class_def class )
 }
 
 
-extern  name    *HighPart( name *tosplit, type_class_def class )
-/**************************************************************/
+name    *HighPart( name *tosplit, type_class_def class )
+/******************************************************/
 {
     name                *new = NULL;
     name                *new_cons;
@@ -215,22 +216,22 @@ extern  name    *HighPart( name *tosplit, type_class_def class )
 }
 
 
-extern  name    *OffsetPart( name *tosplit )
-/******************************************/
+name    *OffsetPart( name *tosplit )
+/**********************************/
 {
     return( LowPart( tosplit, U2 ) );
 }
 
 
-extern  name    *SegmentPart( name *tosplit )
-/*******************************************/
+name    *SegmentPart( name *tosplit )
+/***********************************/
 {
     return( HighPart( tosplit, U2 ) );
 }
 
 
-extern  instruction     *SplitUnary( instruction *ins )
-/*****************************************************/
+instruction     *SplitUnary( instruction *ins )
+/*********************************************/
 {
     instruction *new_ins;
     name        *high_res;
@@ -276,8 +277,8 @@ static  instruction     *SplitOverlapped( instruction *ins, opcnt op )
     return( move );
 }
 
-extern  instruction     *rMOVE8LOW( instruction *ins )
-/****************************************************/
+instruction     *rMOVE8LOW( instruction *ins )
+/********************************************/
 /*   Move low 4 bytes of 8 byte thingy */
 {
     instruction         *lo_ins;
@@ -298,9 +299,9 @@ extern  instruction     *rMOVE8LOW( instruction *ins )
     return( lo_ins );
 }
 
-extern  instruction     *rSPLIT8( instruction *ins )
-/**************************************************/
-/*   Used to split 8 byte push, pop and move*/
+instruction     *rSPLIT8( instruction *ins )
+/*******************************************/
+/* Used to split 8 byte push, pop and move */
 {
     opcode_defs         op;
     instruction         *lo_ins;
@@ -345,8 +346,8 @@ extern  instruction     *rSPLIT8( instruction *ins )
     return( first_ins );
 }
 
-extern  instruction     *rSPLIT8BIN( instruction *ins )
-/*****************************************************/
+instruction     *rSPLIT8BIN( instruction *ins )
+/*********************************************/
 /*   Used to split 8 byte binary operations (ADD,SUB,Logicals) */
 {
     opcode_defs         op;
@@ -408,8 +409,8 @@ extern  instruction     *rSPLIT8BIN( instruction *ins )
     return( lo_ins );
 }
 
-extern  instruction     *rSPLIT8NEG( instruction *ins )
-/*****************************************************/
+instruction     *rSPLIT8NEG( instruction *ins )
+/*********************************************/
 /*   Used to split 8 byte negate */
 {
     instruction         *new;
@@ -424,8 +425,8 @@ extern  instruction     *rSPLIT8NEG( instruction *ins )
     return( new );
 }
 
-extern  instruction     *rSPLIT8TST( instruction *ins )
-/*****************************************************/
+instruction     *rSPLIT8TST( instruction *ins )
+/*********************************************/
 /*   Used to split 8 byte test */
 {
     eight_byte_name     left;
@@ -468,8 +469,8 @@ extern  instruction     *rSPLIT8TST( instruction *ins )
     return( hi_ins );
 }
 
-extern  instruction     *rSPLIT8CMP( instruction *ins )
-/*****************************************************/
+instruction     *rSPLIT8CMP( instruction *ins )
+/*********************************************/
 /*   Used to split 8 byte compare */
 {
     eight_byte_name     left;
@@ -564,8 +565,8 @@ extern  instruction     *rSPLIT8CMP( instruction *ins )
 }
 
 
-extern  instruction     *rCLRHI_D( instruction *ins )
-/***************************************************/
+instruction     *rCLRHI_D( instruction *ins )
+/*******************************************/
 /*   Clear the high dword of an 8 byte thingy (zero extend) */
 {
     eight_byte_name     result;
@@ -595,8 +596,8 @@ extern  instruction     *rCLRHI_D( instruction *ins )
 }
 
 
-extern  instruction     *rCDQ( instruction *ins )
-/***********************************************/
+instruction     *rCDQ( instruction *ins )
+/***************************************/
 /*   Sign extend a 4 byte thingy to an 8 byte thingy */
 {
     eight_byte_name     result;
@@ -739,8 +740,8 @@ static  void    Split8Name( instruction *ins, name *tosplit, eight_byte_name *ou
 }
 
 
-extern  instruction     *rCYPSHIFT( instruction *ins )
-/****************************************************/
+instruction     *rCYPSHIFT( instruction *ins )
+/********************************************/
 {
     instruction *ins1;
     instruction *ins2;
@@ -781,8 +782,8 @@ extern  instruction     *rCYPSHIFT( instruction *ins )
 }
 
 
-extern  instruction     *rBYTESHIFT( instruction *ins )
-/*****************************************************/
+instruction     *rBYTESHIFT( instruction *ins )
+/*********************************************/
 {
     instruction *ins1;
     instruction *ins2;
@@ -823,8 +824,8 @@ extern  instruction     *rBYTESHIFT( instruction *ins )
     return( ins1 );
 }
 
-extern instruction      *rLOADLONGADDR( instruction *ins )
-/********************************************************/
+instruction      *rLOADLONGADDR( instruction *ins )
+/*************************************************/
 {
     instruction         *new_ins;
     name                *name1;
@@ -852,8 +853,8 @@ extern instruction      *rLOADLONGADDR( instruction *ins )
 }
 
 
-extern  instruction     *rHIGHCMP( instruction *ins )
-/***************************************************/
+instruction     *rHIGHCMP( instruction *ins )
+/*******************************************/
 {
     name                *name1;
 
@@ -875,8 +876,8 @@ extern  instruction     *rHIGHCMP( instruction *ins )
 }
 
 
-extern instruction      *rMAKEU4( instruction *ins )
-/**************************************************/
+instruction      *rMAKEU4( instruction *ins )
+/*******************************************/
 {
     instruction         *new_ins;
     instruction         *ins2;
@@ -895,16 +896,16 @@ extern instruction      *rMAKEU4( instruction *ins )
     return( new_ins );
 }
 
-extern  instruction     *rSPLITPUSH( instruction *ins )
-/*****************************************************/
+instruction     *rSPLITPUSH( instruction *ins )
+/*********************************************/
 /* NOT NEEDED */
 {
     return( ins );
 }
 
 
-extern  instruction     *rEXT_PUSH1( instruction *ins )
-/*****************************************************/
+instruction     *rEXT_PUSH1( instruction *ins )
+/*********************************************/
 {
     name        *temp;
     instruction *new_ins;
@@ -919,16 +920,16 @@ extern  instruction     *rEXT_PUSH1( instruction *ins )
 }
 
 
-extern  instruction     *rEXT_PUSH2( instruction *ins )
-/*****************************************************/
+instruction     *rEXT_PUSH2( instruction *ins )
+/*********************************************/
 /* NOT NEEDED */
 {
     return( ins );
 }
 
 
-extern  instruction     *rINTCOMP( instruction *ins )
-/***************************************************/
+instruction     *rINTCOMP( instruction *ins )
+/*******************************************/
 {
     name                *left;
     name                *rite;
@@ -1010,5 +1011,5 @@ extern  instruction     *rINTCOMP( instruction *ins )
     return( high );
 }
 
-extern  instruction     *rCONVERT_UP( instruction *ins ) { return( ins ); }
-extern  instruction     *rCYP_SEX( instruction *ins ) { return( ins ); }
+instruction     *rCONVERT_UP( instruction *ins ) { return( ins ); }
+instruction     *rCYP_SEX( instruction *ins ) { return( ins ); }

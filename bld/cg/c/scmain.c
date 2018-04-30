@@ -42,11 +42,10 @@
 #include "nullprop.h"
 #include "generate.h"
 #include "scmain.h"
+#include "liveinfo.h"
 
 
-extern  void            MakeLiveInfo(void);
 extern  mem_out_action  SetMemOut(mem_out_action);
-extern  void            UpdateLive(instruction*,instruction*);
 
 
 void    ScoreInit( void )

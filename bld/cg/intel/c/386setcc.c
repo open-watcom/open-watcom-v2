@@ -41,6 +41,7 @@
 #include "blktrim.h"
 #include "expand.h"
 #include "revcond.h"
+#include "generate.h"
 
 
 static  instruction     *SetToConst( block *blk, signed_64 *pcons ) {
@@ -188,9 +189,9 @@ static  bool    FindFlowOut( block *blk ) {
     return( true );
 }
 
-extern  bool    SetOnCondition( void ) {
-/********************************/
-
+bool    SetOnCondition( void )
+/****************************/
+{
     block       *blk;
     bool        change;
 
@@ -205,9 +206,9 @@ extern  bool    SetOnCondition( void ) {
     return( change );
 }
 
-extern  reg_set_index   SpecialPossible( instruction *ins ) {
-/***********************************************************/
-
+reg_set_index   SpecialPossible( instruction *ins )
+/*************************************************/
+{
     if( ins->result == NULL )
         return( RL_ );
     if( _OpIsCondition( ins->head.opcode ) )

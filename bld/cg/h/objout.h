@@ -65,6 +65,7 @@ extern char         GetMemModel( void );
 extern void         ChkDbgSegSize( offset max, bool typing );
 extern bool         AskSegNear( segment_id id );
 extern void         DoOutObjectName( cg_sym_handle sym, void (*outputter)( const char *, void * ), void *data, import_type kind );
+extern bool         SymIsExported( cg_sym_handle sym );
 extern void         DoEmptyQueue( void );
 extern void         DoAlignment( int len );
 extern bool         CodeHasAbsPatch( oc_entry *code );

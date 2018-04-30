@@ -36,9 +36,9 @@
 #include "insutil.h"
 #include "optab.h"
 #include "optimize.h"
+#include "fpu.h"
+#include "x87.h"
 
-
-extern  instruction     *MakeWait(void);
 
 static  bool    OpsCollide( name *op_87, name *op_86 ) {
 /****************************************************/
@@ -109,9 +109,9 @@ static  bool    NeedWait( name *op, name *res, instruction *ins_86 ) {
 }
 
 
-extern  void    Wait8087( void ) {
-/**************************/
-
+void    Wait8087( void )
+/**********************/
+{
     block       *blk;
     instruction *ins;
     instruction *last_non_fpins = NULL;

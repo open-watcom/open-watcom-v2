@@ -54,6 +54,8 @@
 #include "dataflo.h"
 #include "regsave.h"
 #include "varusage.h"
+#include "liveinfo.h"
+#include "cachecon.h"
 
 
 enum allocation_state {
@@ -62,17 +64,12 @@ enum allocation_state {
     ALLOC_CONST_TEMP
 };
 
-extern  void            NowDead(name *,conflict_node *,name_set *,block *);
 extern  void            BurnRegTree(reg_tree *);
 extern  void            BuildNameTree(conflict_node *);
 extern  void            BurnNameTree(reg_tree *);
 extern  bool            WorthProlog(conflict_node *,hw_reg_set);
-extern  void            NowAlive(name *,conflict_node *,name_set *,block *);
 extern  void            BuildRegTree(conflict_node *);
-extern  void            LiveInfoUpdate(void);
-extern  void            MakeLiveInfo(void);
 extern  void            AddSegment(instruction *);
-extern  void            MemConstTemp(conflict_node *);
 extern  void            ConstSavings(void);
 
 

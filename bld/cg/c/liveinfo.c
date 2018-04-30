@@ -40,6 +40,7 @@
 #include "insutil.h"
 #include "fixindex.h"
 #include "conflict.h"
+#include "liveinfo.h"
 
 
 static  void            GlobalConflictsFirst( void )
@@ -175,9 +176,8 @@ static  void    AssignBit( conflict_node *conf, block *blk )
 }
 
 
-extern  void    NowAlive( name *opnd, conflict_node *conf,
-                          name_set *alive, block *blk )
-/********************************************************/
+void    NowAlive( name *opnd, conflict_node *conf, name_set *alive, block *blk )
+/******************************************************************************/
 {
     if( opnd->n.class == N_REGISTER ) {
         HW_TurnOn( alive->regs, opnd->r.reg );
@@ -194,9 +194,8 @@ extern  void    NowAlive( name *opnd, conflict_node *conf,
 }
 
 
-extern  void    NowDead( name *opnd, conflict_node *conf,
-                         name_set *alive, block *blk )
-/*******************************************************/
+void    NowDead( name *opnd, conflict_node *conf, name_set *alive, block *blk )
+/*****************************************************************************/
 {
     if( opnd->n.class == N_REGISTER ) {
         HW_TurnOff( alive->regs, opnd->r.reg );
@@ -342,8 +341,8 @@ static  void    FlowConflicts( instruction *first,
 }
 
 
-extern  void    MakeLiveInfo( void )
-/**********************************/
+void    MakeLiveInfo( void )
+/**************************/
 {
     block               *blk;
     conflict_node       *first_global;
@@ -367,8 +366,8 @@ extern  void    MakeLiveInfo( void )
 }
 
 
-extern  void    LiveInfoUpdate( void )
-/************************************/
+void    LiveInfoUpdate( void )
+/****************************/
 {
     block       *blk;
 
@@ -380,9 +379,9 @@ extern  void    LiveInfoUpdate( void )
 }
 
 
-extern  void    UpdateLive( instruction *first, instruction *last )
-/*****************************************************************/
-/* update the live information from 'first'.prev to 'last'.next inclusive*/
+void    UpdateLive( instruction *first, instruction *last )
+/*********************************************************/
+/* update the live information from 'first'.prev to 'last'.next inclusive */
 {
     instruction *ins;
 

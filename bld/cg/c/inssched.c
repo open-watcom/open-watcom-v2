@@ -40,7 +40,7 @@
 #include "inssched.h"
 #include "zoiks.h"
 #include "data.h"
-#include "x87.h"
+#include "fpu.h"
 #include "stack.h"
 #include "redefby.h"
 #include "rgtbl.h"

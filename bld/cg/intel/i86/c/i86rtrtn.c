@@ -53,9 +53,8 @@
 #include "conflict.h"
 #include "x86data.h"
 #include "x86segs.h"
+#include "liveinfo.h"
 
-
-extern  void            UpdateLive( instruction *, instruction * );
 
 /*
  * If you add a new routine, let John know as the debugger recognizes

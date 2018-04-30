@@ -39,14 +39,13 @@
 #include "tree.h"
 #include "cfloat.h"
 #include "zoiks.h"
-#include "cgaux.h"
+#include "cgauxinf.h"
 #include "data.h"
 #include "types.h"
 #include "bldins.h"
 #include "utils.h"
 #include "objout.h"
 #include "treeprot.h"
-#include "cgauxinf.h"
 #include "makeaddr.h"
 #include "patch.h"
 #include "dbsyms.h"
@@ -62,6 +61,7 @@
 #include "inline.h"
 #include "memout.h"
 #include "memmgt.h"
+#include "bgcall.h"
 #include "feprotos.h"
 #include "cgprotos.h"
 
@@ -74,7 +74,6 @@ extern  void            InitWeights(uint);
 extern  void            TInit(void);
 extern  void            SillyMemLimit(void);
 extern  void            TFini(void);
-extern  void            BGProcDecl(cg_sym_handle,type_def*);
 extern  an              TGen(tn,type_def*);
 extern  an              BGSave(an);
 

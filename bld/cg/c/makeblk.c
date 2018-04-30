@@ -46,12 +46,9 @@
 #include "makeblk.h"
 #include "typemap.h"
 #include "blktrim.h"
+#include "bgcall.h"
 #include "feprotos.h"
 
-
-extern  void            SaveToTargProc(void);
-extern  void            RestoreFromTargProc(void);
-extern  void            InitTargProc(void);
 
 block   *MakeBlock( label_handle label, block_num edges )
 /*******************************************************/

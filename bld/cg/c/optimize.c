@@ -34,7 +34,7 @@
 #include "coderep.h"
 #include "zoiks.h"
 #include "data.h"
-#include "x87.h"
+#include "fpu.h"
 #include "makeins.h"
 #include "redefby.h"
 #include "regalloc.h"
@@ -46,9 +46,8 @@
 #include "dataflo.h"
 #include "varusage.h"
 #include "optimize.h"
+#include "liveinfo.h"
 
-
-extern  void            MakeLiveInfo(void);
 
 typedef enum {
     MOVEABLE        = 0x01,

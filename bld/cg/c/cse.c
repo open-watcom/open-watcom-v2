@@ -36,7 +36,7 @@
 #include "tree.h"
 #include "cfloat.h"
 #include "data.h"
-#include "x87.h"
+#include "fpu.h"
 #include "makeins.h"
 #include "foldins.h"
 #include "utils.h"
@@ -800,7 +800,7 @@ static  bool    ProcessDivide( instruction *ins1, instruction *ins2 )
 
     if( ins1->type_class != ins2->type_class )
         return( false );
-    if( !DivIsADog( ins1->type_class ) )
+    if( !FPDivIsADog( ins1->type_class ) )
         return( false );
     if( ins1->operands[1] != ins2->operands[1] )
         return( false );

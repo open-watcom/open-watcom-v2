@@ -44,6 +44,7 @@
 #include "split.h"
 #include "insutil.h"
 #include "optab.h"
+#include "cachecon.h"
 
 
 static  block           *Head;
@@ -162,13 +163,13 @@ static  bool    ReplaceConst( name *cons, name *temp, type_class_def tmp_class )
 }
 
 
-extern  void    ConstToTemp( block *pre, block *head, block*(*next)(block*) ) {
-/******************************************************************************
+void    ConstToTemp( block *pre, block *head, block*(*next)(block*) )
+/********************************************************************
 
     Turn constant referneces into temp references so that they can
     get register allocated.
 */
-
+{
     name                *cons;
     name                *temp;
     type_class_def      class;
@@ -190,15 +191,15 @@ extern  void    ConstToTemp( block *pre, block *head, block*(*next)(block*) ) {
     }
 }
 
-extern  void            MemConstTemp( conflict_node *conf ) {
-/************************************************************
+void            MemConstTemp( conflict_node *conf )
+/**************************************************
 
     We've decided to put a CONST_TEMP into memory. Go through the
     instruction list and change all occurences back into the original
     constant reference. Also, do the same for any other CONST_TEMP
     temporaries whose only purpose is to define this one.
 */
-
+{
     block               *blk;
     instruction         *ins;
     opcnt               i;

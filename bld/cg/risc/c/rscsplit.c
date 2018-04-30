@@ -48,6 +48,7 @@
 #include "optab.h"
 #include "optimize.h"
 #include "objout.h"
+#include "liveinfo.h"
 
 
 extern  instruction     *rDOCVT(instruction*);
@@ -92,7 +93,6 @@ extern  instruction     *rMOVELOW( instruction * );
 
 extern  opcode_entry    *OpcodeTable( table_def );
 
-extern  void            UpdateLive( instruction *, instruction * );
 #if 0
 extern  name            *AddrConst( name *, int, constant_class );
 #endif

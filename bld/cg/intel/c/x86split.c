@@ -53,6 +53,7 @@
 #include "conflict.h"
 #include "x86split.h"
 #include "x86segs.h"
+#include "liveinfo.h"
 
 
 extern  instruction     *ByteShift(instruction*);
@@ -72,7 +73,6 @@ extern  instruction     *SplitOp(instruction*);
 extern  instruction     *SplitFDPush(instruction*);
 extern  name            *Addressable(name*,type_class_def);
 extern  instruction     *SplitLoadAddr(instruction*);
-extern  void            UpdateLive(instruction*,instruction*);
 extern  opcode_entry    *GetMoveNoCCEntry( void );
 
 extern  instruction     *rDOCVT(instruction*);

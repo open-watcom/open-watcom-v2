@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -21,8 +22,7 @@
 *    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR
 *    NON-INFRINGEMENT. Please see the License for the specific language
 *    governing rights and limitations under the License.
-*
-*  ========================================================================
+**  ========================================================================
 *
 * Description:  Prototypes specific to x87 FPU regsiter allocation. These
 *               functions are called from generic code and must be stubbed
@@ -31,34 +31,35 @@
 ****************************************************************************/
 
 
+#include "i87data.h"
+
 /* i87exp.c*/
-extern  void            FPExpand( void );
-extern  bool            FPStackReg( name * );
-extern  void            InitFP( void );
+extern int              FPRegNum( name *reg_name );
+extern name             *ST( int num );
+extern instruction      *PrefFLDOp( instruction *ins, operand_type op, name *opnd );
+extern bool             FPResultNotNeeded( instruction *ins );
+extern instruction      *SuffFSTPRes( instruction *ins, name *opnd, result_type res );
+extern instruction      *SuffFXCH( instruction *ins, int i );
+extern instruction      *PrefFXCH( instruction *ins, int i );
+extern void             NoPopRBin( instruction *ins );
+extern void             NoPopBin( instruction *ins );
+extern void             ToPopBin( instruction *ins );
+extern void             ReverseFPGen( instruction *ins );
+extern void             ToRFld( instruction *ins );
+extern void             ToRFstp( instruction *ins );
+extern void             NoPop( instruction *ins );
+extern void             NoMemBin( instruction *ins );
+extern instruction      *MakeWait( void );
 
 /* i87opt.c */
-extern  void            FPOptimize( void );
-extern  void            FPParms( void );
-extern  void            FPPushParms( pn, call_state * );
 
 /* i87reg.c */
-extern  type_class_def  FPInsClass( instruction * );
-extern  bool            FPIsConvert( instruction * );
-extern  bool            FPIsStack( name * );
-extern  void            FPNotStack( name * );
-extern  void            FPRegAlloc( void );
-extern  void            FPSetStack( name * );
-extern  bool            FPSideEffect( instruction * );
-extern  bool            FPStackIns( instruction * );
-extern  bool            FPStackOp( name * );
+extern void             FPInitStkReq( void );
+extern int              FPStkReq( instruction *ins );
+extern int              Count87Regs( hw_reg_set regs );
 
 /* i87sched.c */
-extern  void            FPCalcStk( instruction *, int * );
-extern  bool            FPFreeIns( instruction * );
-extern  bool            FPInsIntroduced( instruction * );
-extern  void            FPPostSched( block * );
-extern  void            FPPreSched( block * );
-extern  int             FPStackExit( block * );
-extern  int             FPStkOver( instruction *, int );
+extern bool             FPInsIntroduced( instruction * );
 
-extern  bool    DivIsADog( type_class_def class );
+/* i87wait.c */
+extern void             Wait8087( void );

@@ -43,9 +43,8 @@
 #include "optab.h"
 #include "inssegs.h"
 #include "generate.h"
+#include "liveinfo.h"
 
-
-extern  void            UpdateLive(instruction*,instruction*);
 
 #if _TARGET & _TARG_AXP
     #define _ParmReg( x )       FirstReg( x )

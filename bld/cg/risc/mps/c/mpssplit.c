@@ -41,9 +41,9 @@
 #include "rgtbl.h"
 #include "split.h"
 #include "insutil.h"
+#include "liveinfo.h"
 
 
-extern  void            UpdateLive( instruction *, instruction * );
 extern  name            *OffsetMem( name *, type_length, type_class_def );
 
 extern  opcode_entry    *OpcodeTable( table_def );

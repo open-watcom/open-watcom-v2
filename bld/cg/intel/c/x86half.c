@@ -48,10 +48,11 @@
 #include "x86split.h"
 #include "overlap.h"
 #include "x86segs.h"
+#include "confldef.h"
+#include "liveinfo.h"
 
 
 extern  name            *IntEquivalent(name*);
-extern  void            UpdateLive(instruction*,instruction*);
 
 bool    IndexOverlaps( instruction *ins, opcnt i )
 /************************************************/

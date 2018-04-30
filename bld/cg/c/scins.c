@@ -35,7 +35,7 @@
 #include "score.h"
 #include "makeins.h"
 #include "data.h"
-#include "x87.h"
+#include "fpu.h"
 #include "rgtbl.h"
 #include "expand.h"
 #include "namelist.h"

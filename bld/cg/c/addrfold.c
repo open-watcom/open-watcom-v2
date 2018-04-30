@@ -40,7 +40,7 @@
 #include "zoiks.h"
 #include "freelist.h"
 #include "cfloat.h"
-#include "x87.h"
+#include "fpu.h"
 #include "makeins.h"
 #include "makeaddr.h"
 #include "addrfold.h"

@@ -41,9 +41,10 @@
 #include "rgtbl.h"
 #include "expand.h"
 #include "insutil.h"
+#include "confldef.h"
+#include "liveinfo.h"
 
 
-extern  void            UpdateLive(instruction*,instruction*);
 extern  bool            UnChangeable(instruction*);
 
 

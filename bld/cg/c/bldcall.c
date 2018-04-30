@@ -42,7 +42,7 @@
 #include "bldins.h"
 #include "makeaddr.h"
 #include "bgcall.h"
-#include "x87.h"
+#include "fpu.h"
 #include "dbsyms.h"
 #include "blips.h"
 #include "redefby.h"
@@ -59,21 +59,14 @@
 #include "bldcall.h"
 #include "parmreg.h"
 #include "generate.h"
+#include "parm.h"
 #include "feprotos.h"
 
 
-extern  type_def        *QParmType(cg_sym_handle,cg_sym_handle,type_def*);
-extern  type_length     ParmMem(type_length,type_length,call_state*);
-extern  hw_reg_set      ParmInLineReg(parm_state*);
 extern  void            UpdateReturn(call_state*,type_def*,type_class_def,aux_handle);
-extern  name            *StReturn(an,type_def*,instruction**);
-extern  instruction     *PushOneParm(instruction*,name*,type_class_def,type_length,call_state*);
 extern  void            TNZapParms(void);
-extern  void            PushInSameBlock(instruction*);
 extern  void            TRAddParm(instruction*,instruction*);
 extern  void            TRDeclareParm(instruction*);
-
-extern  bool            BlipsOn;
 
 type_class_def  AddCallBlock( cg_sym_handle sym, type_def *tipe )
 /*********************************************************************

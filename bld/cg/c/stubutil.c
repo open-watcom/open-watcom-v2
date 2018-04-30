@@ -52,7 +52,6 @@
 
 
 extern  void            BECloseFiles();
-extern  void            exit(int);
 extern  void            Action(char * str, ... );
 
 

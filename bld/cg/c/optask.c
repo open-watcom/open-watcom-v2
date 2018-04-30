@@ -68,8 +68,8 @@ static  label_handle DoAskForLabel( cg_sym_handle sym )
 }
 
 
-extern  label_handle AskForNewLabel( void )
-/*****************************************/
+label_handle AskForNewLabel( void )
+/*********************************/
 {
     label_handle    new;
 
@@ -94,8 +94,8 @@ label_handle AskForRTLabel( rt_class rtindex )
 }
 
 
-extern  label_handle AskForLabel( cg_sym_handle sym )
-/************************************************/
+label_handle AskForLabel( cg_sym_handle sym )
+/*******************************************/
 {
     label_handle    new;
     fe_attr         attr;
@@ -112,8 +112,8 @@ extern  label_handle AskForLabel( cg_sym_handle sym )
 }
 
 
-extern  bool    AskIfReachedLabel( label_handle lbl )
-/************************************************/
+bool    AskIfReachedLabel( label_handle lbl )
+/*******************************************/
 {
   optbegin
     _ValidLbl( lbl );
@@ -121,8 +121,8 @@ extern  bool    AskIfReachedLabel( label_handle lbl )
 }
 
 
-extern  bool    AskIfRTLabel( label_handle lbl )
-/*******************************************/
+bool    AskIfRTLabel( label_handle lbl )
+/**************************************/
 {
   optbegin
     _ValidLbl( lbl );
@@ -130,8 +130,8 @@ extern  bool    AskIfRTLabel( label_handle lbl )
 }
 
 
-extern  bool    AskIfUniqueLabel( label_handle lbl )
-/***********************************************/
+bool    AskIfUniqueLabel( label_handle lbl )
+/******************************************/
 {
   optbegin
     _ValidLbl( lbl );
@@ -139,8 +139,8 @@ extern  bool    AskIfUniqueLabel( label_handle lbl )
 }
 
 
-extern  bool    AskIfCommonLabel( label_handle lbl )
-/***********************************************/
+bool    AskIfCommonLabel( label_handle lbl )
+/******************************************/
 {
   optbegin
     _ValidLbl( lbl );
@@ -148,8 +148,8 @@ extern  bool    AskIfCommonLabel( label_handle lbl )
 }
 
 
-extern  offset  AskAddress( label_handle lbl )
-/*****************************************/
+offset  AskAddress( label_handle lbl )
+/************************************/
 {
   optbegin
     _ValidLbl( lbl );
@@ -157,8 +157,8 @@ extern  offset  AskAddress( label_handle lbl )
 }
 
 
-extern  pointer AskLblPatch( label_handle lbl )
-/******************************************/
+pointer AskLblPatch( label_handle lbl )
+/*************************************/
 {
   optbegin
     _ValidLbl( lbl );
@@ -169,8 +169,8 @@ extern  pointer AskLblPatch( label_handle lbl )
 }
 
 
-extern  cg_sym_handle   AskForLblSym( label_handle lbl )
-/***************************************************/
+cg_sym_handle   AskForLblSym( label_handle lbl )
+/**********************************************/
 {
   optbegin
     _ValidLbl( lbl );

@@ -53,9 +53,9 @@
 #include "bldins.h"
 #include "x86segs.h"
 #include "cgprotos.h"
+#include "parm.h"
+#include "bgcall.h"
 
-
-extern  type_def        *QParmType(cg_sym_handle,cg_sym_handle,type_def*);
 
 static  void    AddCall( instruction *ins, cn call );
 
@@ -134,9 +134,9 @@ static  void    Far16Parms( cn call ) {
 #endif
 
 
-extern  an      BGCall( cn call, bool use_return, bool in_line ) {
-/****************************************************************/
-
+an      BGCall( cn call, bool use_return, bool in_line )
+/******************************************************/
+{
     instruction         *call_ins;
     call_state          *state;
     name                *ret_ptr = NULL;
@@ -261,9 +261,9 @@ extern  an      BGCall( cn call, bool use_return, bool in_line ) {
 }
 
 
-extern  void    BGProcDecl( cg_sym_handle sym, type_def *tipe ) {
-/************************************************************/
-
+void    BGProcDecl( cg_sym_handle sym, type_def *tipe )
+/*****************************************************/
+{
     hw_reg_set          reg;
     name                *temp;
     type_class_def      class;
@@ -301,9 +301,9 @@ extern  void    BGProcDecl( cg_sym_handle sym, type_def *tipe ) {
 }
 
 
-extern  name    *StReturn( an retval, type_def *tipe, instruction **pins ) {
-/**************************************************************************/
-
+name    *StReturn( an retval, type_def *tipe, instruction **pins )
+/****************************************************************/
+{
     name        *retp;
     name        *ptr;
     name        *off;
@@ -356,10 +356,9 @@ static  void    AddCall( instruction *ins, cn call ) {
 }
 
 
-extern  reg_set_index   CallIPossible( instruction *ins ) {
-/*********************************************************/
-
-
+reg_set_index   CallIPossible( instruction *ins )
+/***********************************************/
+{
      if( ins->operands[CALL_OP_ADDR]->n.name_class == CP )
         return( RL_ );
      if( ins->operands[CALL_OP_ADDR]->n.name_class == PT )
@@ -372,9 +371,9 @@ extern  reg_set_index   CallIPossible( instruction *ins ) {
 }
 
 
-extern  void    InitTargProc( void ) {
-/******************************/
-
+void    InitTargProc( void )
+/**************************/
+{
     CurrProc->targ.stack_check = NULL;
     CurrProc->targ.push_local_size = 0;
     CurrProc->targ.debug = NULL;
@@ -387,23 +386,23 @@ extern  void    InitTargProc( void ) {
 }
 
 
-extern  void    SaveToTargProc( void ) {
-/********************************/
-
+void    SaveToTargProc( void )
+/****************************/
+{
     CurrProc->targ.max_stack = MaxStack;
 }
 
 
-extern  void    RestoreFromTargProc( void ) {
-/*************************************/
-
+void    RestoreFromTargProc( void )
+/*********************************/
+{
     MaxStack = CurrProc->targ.max_stack;
 }
 
 
-extern  void    PushInSameBlock( instruction *ins ) {
-/***************************************************/
-
+void    PushInSameBlock( instruction *ins )
+/*****************************************/
+{
 #if ( _TARGET & _TARG_IAPX86 )
     /* unused parameters */ (void)ins;
 #else
@@ -417,12 +416,12 @@ extern  void    PushInSameBlock( instruction *ins ) {
 }
 
 
-extern  instruction *   PushOneParm( instruction *ins, name *curr,
-                                     type_class_def class,
-                                     type_length offset,
-                                     call_state *state ) {
-/**************************************************************/
-
+instruction *   PushOneParm( instruction *ins, name *curr,
+                                type_class_def class,
+                                type_length offset,
+                                call_state *state )
+/********************************************************/
+{
     instruction *new;
 //    int         size;
 
@@ -441,22 +440,22 @@ extern  instruction *   PushOneParm( instruction *ins, name *curr,
 }
 
 
-extern  void    PreCall( cn call ) {
-/**********************************/
-
+void    PreCall( cn call )
+/************************/
+{
     /* unused parameters */ (void)call;
 }
 
 
-extern  void    PostCall( cn call ) {
-/***********************************/
-
+void    PostCall( cn call )
+/*************************/
+{
     /* unused parameters */ (void)call;
 }
 
-extern  type_def        *PassParmType( cg_sym_handle func, type_def* tipe, call_class class ) {
-/******************************************************************************************/
-
+type_def    *PassParmType( cg_sym_handle func, type_def* tipe, call_class class )
+/*******************************************************************************/
+{
     if( class & FAR16_CALL )
         return( tipe );
     return( QParmType( func, NULL, tipe ) );

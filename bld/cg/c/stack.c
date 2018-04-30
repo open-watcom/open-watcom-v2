@@ -105,6 +105,7 @@ void    *SafeRecurseCG( func_sr rtn, void *arg )
 static uint_32  oldValue;
 const char *errString = "Stack hit!";
 
+extern void _stashit( void );
 #pragma aux _stashit modify exact [] = \
         "push   eax" \
         "mov    eax,oldValue" \
@@ -113,6 +114,7 @@ const char *errString = "Stack hit!";
         "mov    oldValue,eax" \
         "pop    eax";
 
+extern void _restoreit( void );
 #pragma aux _restoreit modify exact [] = \
         "push   eax" \
         "mov    eax,oldValue" \
@@ -126,17 +128,16 @@ const char *errString = "Stack hit!";
         "mov    oldValue,eax" \
         "pop    eax";
 
-extern void _stashit( void );
-extern void _restoreit( void );
-
 #pragma aux __PRO "*";
 #pragma aux __EPI "*";
 
-void __PRO( void ) {
+void __PRO( void )
+{
     _stashit();
 }
 
-void __EPI( void ) {
+void __EPI( void )
+{
     _restoreit();
 }
 
