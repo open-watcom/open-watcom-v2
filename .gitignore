@@ -44,6 +44,7 @@
 *.int
 *.lbc
 *.lib
+!*.lib/
 *.lk1
 *.lnk
 *.lo[1-9]
