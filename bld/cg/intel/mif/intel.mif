@@ -18,6 +18,7 @@ intel_objs = &
     x86mul.obj &
     x86obj.obj &
     x86opcod.obj &
+    x86parm.obj &
     x86proc.obj &
     x86reg.obj &
     x86regsv.obj &
@@ -36,7 +37,6 @@ intel_objs = &
     i87table.obj &
     i87wait.obj &
     dostimet.obj &
-    parmreg.obj &
     wvsyms.obj &
     wvtypes.obj
 

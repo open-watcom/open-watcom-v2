@@ -36,3 +36,5 @@
 #define LAST_SCALAR_PARM_REG    10
 
 #define FP_SCRATCH_REG          13
+
+extern void     InitPPCParmState( call_state *state );

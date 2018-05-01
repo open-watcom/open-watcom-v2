@@ -25,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  PowerPC parameter passing processing.
+* Description:  Select registers used for passing an arguments.
 *
 ****************************************************************************/
 
@@ -73,16 +73,16 @@ static  hw_reg_set      scalarRegs[] = {
 };
 
 
-extern  void            InitPPCParmState( call_state *state ) {
-/*************************************************************/
-
+void    InitPPCParmState( call_state *state )
+/*******************************************/
+{
     state->parm.gr = FIRST_SCALAR_PARM_REG;
     state->parm.fr = FIRST_FLOAT_PARM_REG;
 }
 
-extern  type_length     ParmAlignment( type_def *tipe ) {
-/*******************************************************/
-
+type_length     ParmAlignment( type_def *tipe )
+/*********************************************/
+{
     type_class_def      class;
 
     class = TypeClass( tipe );
@@ -98,23 +98,23 @@ extern  type_length     ParmAlignment( type_def *tipe ) {
     return( 4 );
 }
 
-static  hw_reg_set      floatRegSet( int index ) {
-/************************************************/
-
+static  hw_reg_set      floatRegSet( int index )
+/**********************************************/
+{
     assert( index >= FIRST_FLOAT_PARM_REG && index <= LAST_FLOAT_PARM_REG );
     return( floatRegs[index - FIRST_FLOAT_PARM_REG] );
 }
 
-static  hw_reg_set      scalarRegSet( int index ) {
-/*************************************************/
-
+static  hw_reg_set      scalarRegSet( int index )
+/***********************************************/
+{
     assert( index >= FIRST_SCALAR_PARM_REG && index <= LAST_SCALAR_PARM_REG );
     return( scalarRegs[index - FIRST_SCALAR_PARM_REG] );
 }
 
-extern  hw_reg_set      ParmReg( type_class_def class, type_length len, type_length alignment, call_state *state ) {
-/******************************************************************************************************************/
-
+hw_reg_set      ParmReg( type_class_def class, type_length len, type_length alignment, call_state *state )
+/********************************************************************************************************/
+{
     hw_reg_set          parm;
 
     /* unused parameters */ (void)len;

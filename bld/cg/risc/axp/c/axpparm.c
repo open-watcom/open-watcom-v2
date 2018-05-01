@@ -36,16 +36,11 @@
 #include "types.h"
 #include "regset.h"
 #include "zoiks.h"
+#include "cgaux.h"
 #include "rgtbl.h"
-#include "typemap.h"
 #include "parmreg.h"
 #include "feprotos.h"
 
-
-/* This is just like the generic version in parmreg.c with the important exception
- * that we always update state->parm.offset. This is so that we'd get the right
- * home locations on the stack for arguments passed in registers.
- */
 
 type_length     ParmAlignment( type_def *tipe )
 /*********************************************/
@@ -71,29 +66,17 @@ hw_reg_set      ParmReg( type_class_def class, type_length len, type_length alig
         }
         return( HW_EMPTY );
     }
-    while( !HW_CEqual( *state->parm.curr_entry, HW_EMPTY ) ) {
-        reg_set = possible;
-        for( ;; ) {
+    for( ; !HW_CEqual( *state->parm.curr_entry, HW_EMPTY ); state->parm.curr_entry++ ) {
+        for( reg_set = possible; !HW_CEqual( *reg_set, HW_EMPTY ); ++reg_set ) {
             regs = *reg_set;
-            if( HW_CEqual( regs, HW_EMPTY ) )
-                break;
             if( !HW_Ovlap( regs, state->parm.used ) ) {
                 if( HW_Subset( *state->parm.curr_entry, regs ) ) {
                     HW_TurnOn( state->parm.used, regs );
                     HW_TurnOn( state->parm.used, ParmRegConflicts( regs ) );
-                    if( _IsFloating( class ) || _IsI64( class ) ) {
-                        state->parm.offset += _RoundUp( len, REG_SIZE );
-                    } else {
-                        // Note that structs (class XX) end up here - additional
-                        // registers for struct may be allocated later
-                        state->parm.offset += REG_SIZE;
-                    }
                     return( regs );
                 }
             }
-            ++reg_set;
         }
-        state->parm.curr_entry ++;
     }
     return( HW_EMPTY );
 }

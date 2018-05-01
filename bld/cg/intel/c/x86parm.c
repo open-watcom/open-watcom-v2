@@ -78,12 +78,10 @@ hw_reg_set      ParmReg( type_class_def class, type_length len, type_length alig
             }
         }
     }
-#if _TARGET & ( _TARG_80386 | _TARG_IAPX86 )
     /* Optionally consider registers again for the next argument, even if
      * this one could not be passed in regsiters. Required for __fastcall.
      */
     if( state->attr & ROUTINE_PREFER_REGS )
         state->parm.curr_entry = state->parm.table;
-#endif
     return( HW_EMPTY );
 }

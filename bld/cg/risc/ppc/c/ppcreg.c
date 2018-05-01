@@ -40,10 +40,10 @@
 #include "typemap.h"
 #include "makeblk.h"
 #include "bldcall.h"
+#include "ppcparm.h"
 #include "feprotos.h"
 
 
-extern  void            InitPPCParmState( call_state * );
 extern  void            UpdateReturn( call_state *, type_def *, type_class_def, aux_handle );
 
 
