@@ -51,13 +51,12 @@
 #include "rscobj.h"
 #include "split.h"
 #include "namelist.h"
+#include "ppclbl.h"
 #include "dumpio.h"
 #include "dumpins.h"
 #include "dumptab.h"
 #include "feprotos.h"
 
-
-extern label_handle     GetWeirdPPCDotDotLabel( label_handle );
 
 #define _NameReg( op )                  ( (op)->r.arch_index )
 #define _IsSigned( type )               ( Unsigned[type] != type )

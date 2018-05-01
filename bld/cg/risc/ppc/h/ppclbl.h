@@ -30,29 +30,4 @@
 ****************************************************************************/
 
 
-#include "_cgstd.h"
-#include "coderep.h"
-#include "regset.h"
-#include "addrname.h"
-#include "ppclbl.h"
-
-
-label_handle GetWeirdPPCDotDotLabel( label_handle lbl )
-/*****************************************************/
-{
-    label_handle    new;
-
-    if( _TstStatus( lbl, HAS_PPC_ALIAS ) ) {
-        return( lbl->ppc_alt_name );
-    }
-    if( AskIfRTLabel( lbl ) ) {
-        new = AskForRTLabel( SYM2RTIDX( lbl->lbl.sym ) );
-    } else {
-        new = AskForLabel( lbl->lbl.sym );
-    }
-    new->ppc_alt_name = lbl;
-    lbl->ppc_alt_name = new;
-    _SetStatus( lbl, HAS_PPC_ALIAS );
-    _SetStatus( new, WEIRD_PPC_ALIAS );
-    return( new );
-}
+extern label_handle     GetWeirdPPCDotDotLabel( label_handle lbl );
