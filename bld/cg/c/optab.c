@@ -43,20 +43,21 @@ const opcode_entry  *CodeTable( instruction *ins )
 /************************************************/
 {
     int         idx;
+    table_def   opcode_idx;
 
     idx = ins->head.opcode;
     idx *= ( XX + 1 );
     idx += ins->type_class;
-    idx = OpTable[idx];
-    if( idx == BAD ) {
+    opcode_idx = OpTable[idx];
+    if( opcode_idx == BAD ) {
         _Zoiks( ZOIKS_052 );
     }
 #if _TARGET & _TARG_RISC
-    if( idx == NYI ) {
+    if( opcode_idx == NYI ) {
         _Zoiks( ZOIKS_091 );
     }
 #endif
-    return( OpcodeTable( idx ) );
+    return( OpcodeTable( opcode_idx ) );
 }
 
 

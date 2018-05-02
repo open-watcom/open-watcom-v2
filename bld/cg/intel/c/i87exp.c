@@ -52,16 +52,6 @@
 #include "feprotos.h"
 
 
-/* forward declarations */
-static  void            ExpCompare( instruction *ins,
-                                    operand_type op1, operand_type op2 );
-static  void            ExpBinary( instruction *ins,
-                                   operand_type op1, operand_type op2 );
-static  void            ExpBinFunc( instruction *ins,
-                                    operand_type op1, operand_type op2 );
-static  void            RevOtherCond( block *blk, instruction *ins );
-
-
 //NYI: probably need more opcode entries for more resolution with func. units
 static const opcode_entry    FNOP[1] = {
 /*           op1   op2   res   eq      verify          reg           gen             fu  */
@@ -661,6 +651,259 @@ static  instruction     *ExpPush( instruction *ins, operand_type op ) {
 
 
 
+
+#define _OPS( op1, op2 ) ( op1 + op2*OP_NONE )
+
+static  void    ExpBinFunc( instruction *ins,
+                            operand_type op1, operand_type op2 ) {
+/****************************************************************
+    Expand a floating point binary math instructon "ins", like pow,
+    atan2, etc using classifications "op1" and "op2".
+*/
+    switch( _OPS( op1, op2 ) ) {
+    case _OPS( OP_STK1, OP_STK1 ):
+    case _OPS( OP_MEM , OP_STK1 ):
+    case _OPS( OP_CONS, OP_STK1 ):
+    case _OPS( OP_STK1, OP_MEM  ):
+    case _OPS( OP_STK1, OP_CONS ):
+    case _OPS( OP_CONS, OP_CONS ):
+        _Zoiks( ZOIKS_010 );
+        break;
+    case _OPS( OP_STK0, OP_MEM  ):
+    case _OPS( OP_STK0, OP_CONS ):
+        PrefixFLDOp( ins, op2, 1 );
+        PrefFXCH( ins, 1 );
+        break;
+    case _OPS( OP_STK1, OP_STK0 ):
+        PrefFXCH( ins, 1 );
+        break;
+    case _OPS( OP_STK0, OP_STK0 ):
+    case _OPS( OP_MEM , OP_STK0 ):
+    case _OPS( OP_CONS, OP_STK0 ):
+        PrefixFLDOp( ins, op1, 0 );
+        break;
+    case _OPS( OP_STK0, OP_STK1 ):
+        break;
+    case _OPS( OP_MEM , OP_MEM  ):
+    case _OPS( OP_CONS, OP_MEM  ):
+    case _OPS( OP_MEM , OP_CONS ):
+        PrefixFLDOp( ins, op2, 1 );
+        PrefixFLDOp( ins, op1, 0 );
+        break;
+    default:
+        _Zoiks( ZOIKS_011 );
+        break;
+    }
+    ins->u.gen_table = IFUNC;
+}
+
+
+static  void    ExchangeOps( instruction *ins ) {
+/***********************************************/
+
+    name        *op1;
+    name        *op2;
+
+    op1 = ins->operands[0];
+    op2 = ins->operands[1];
+    ins->operands[0] = op2;
+    ins->operands[1] = op1;
+}
+
+
+static  void    ExpBinary( instruction *ins,
+                           operand_type op1, operand_type op2 ) {
+/****************************************************************
+    Expand a floating point binary instructon "ins" using
+    classifications "op1" and "op2".
+*/
+
+  /* expand a binary floating point instruction. op1 is the implied locn.*/
+
+    switch( _OPS( op1, op2 ) ) {
+    case _OPS( OP_STK1, OP_STK1 ):
+    case _OPS( OP_MEM , OP_STK1 ):
+    case _OPS( OP_CONS, OP_STK1 ):
+    case _OPS( OP_STK1, OP_MEM  ):
+    case _OPS( OP_STK1, OP_CONS ):
+    case _OPS( OP_CONS, OP_CONS ):
+/*   case 0,6,7,8,9,11,16,21,24:*/
+        _Zoiks( ZOIKS_010 );
+        break;
+    case _OPS( OP_STK0, OP_STK0 ):
+        ins->u.gen_table = GenTab( ins, RNFBIN );
+        break;
+    case _OPS( OP_STK1, OP_STK0 ):
+        ins->u.gen_table = GenTab( ins, RNFBINP );
+        break;
+    case _OPS( OP_MEM , OP_STK0 ):
+        ins->u.gen_table = GenTab( ins, MRFBIN );
+        break;
+    case _OPS( OP_CONS, OP_STK0 ):
+        PrefixFLDOp( ins, op1, 0 );
+        ins->u.gen_table = GenTab( ins, RRFBINP );
+        ins->operands[0] = ST1;
+        break;
+    case _OPS( OP_STK0, OP_STK1 ):
+        ins->u.gen_table = GenTab( ins, RRFBINP );
+        ExchangeOps( ins );
+        break;
+    case _OPS( OP_STK0, OP_MEM  ):
+        ins->u.gen_table = GenTab( ins, MNFBIN );
+        ExchangeOps( ins );
+        break;
+    case _OPS( OP_MEM , OP_MEM  ):
+    case _OPS( OP_CONS, OP_MEM  ):
+        PrefixFLDOp( ins, op1, 0 );
+        ins->u.gen_table = GenTab( ins, MNFBIN );
+        ExchangeOps( ins );
+        break;
+    case _OPS( OP_STK0, OP_CONS ):
+        PrefixFLDOp( ins, op2, 1 );
+        ins->u.gen_table = GenTab( ins, RNFBINP );
+        ins->operands[0] = ST1;
+        ins->operands[1] = ST0;
+        break;
+    case _OPS( OP_MEM , OP_CONS ):
+        PrefixFLDOp( ins, op2, 1 );
+        ins->u.gen_table = GenTab( ins, MRFBIN );
+        break;
+    default:
+        _Zoiks( ZOIKS_011 );
+        break;
+    }
+}
+
+
+
+static  void    RevOtherCond( block *blk, instruction *ins ) {
+/*************************************************************
+    Run through block "blk" and its successors, continuing until we hit
+    an instruction that changes the condition codes, or uses a previous
+    set of condition codes.  When we hit and instruction that uses
+    previous codes, reverse it since we changed the compare instruction
+    up in RevFPCond.
+*/
+
+    block_num   i;
+    block       *target;
+
+    _MarkBlkVisited( blk );
+    for( ;; ) {
+        ins = ins->head.next;
+        if( ins->head.opcode == OP_BLOCK ) {
+            for( i = blk->targets; i-- > 0; ) {
+                target = blk->edge[i].destination.u.blk;
+                if( !_IsBlkVisited( target ) ) {
+                    RevOtherCond( target, (instruction *)&target->ins );
+                }
+            }
+            break;
+        }
+        if( ( ins->u.gen_table->op_type & MASK_CC ) != PRESERVE )
+            break;
+        if( _OpIsCondition( ins->head.opcode ) && IsNop( ins->table ) ) { /* used cond codes of original ins */
+            RevCond( ins );
+            ins->table = FNOP;
+            ins->u.gen_table = FNOP;
+        }
+    }
+}
+
+
+static  void    RevFPCond( instruction *ins ) {
+/**********************************************
+    Reverse the sense of a floating point comarison (condition).  For
+    example, if we're trying to generate OP_COMPARE_GREATER  X, ST(0),
+    we would use FCOM X, and then flip the the comparison to
+    OP_COMPARE_LESS.  Since condition code scoreboarding has already
+    been done, we have to also go to any subsequent basic blocks and
+    flip any comparisons that rely on this comparison to set condition
+    codes as well.
+*/
+
+    instruction         *other;
+
+    _MarkBlkAllUnVisited();
+    for( other = ins; other->head.opcode != OP_BLOCK; ) {
+        other = other->head.next;
+    }
+    RevOtherCond( _BLOCK( other ), ins );
+    RevCond( ins );
+}
+
+
+static  void    ExpCompare ( instruction *ins,
+                             operand_type op1, operand_type op2 ) {
+/******************************************************************
+    Expand a floating point comparison using classifications "op1" and
+    "op2".
+*/
+
+
+    if( !_CPULevel( CPU_386 ) ) {
+        if( FPStatWord == NULL && ( !_CPULevel(CPU_286) || _IsEmulation() ) ) {
+            FPStatWord = AllocTemp( U2 );
+            FPStatWord->v.usage |= VAR_VOLATILE | USE_ADDRESS; /* so that it really gets allocd */
+            AllocALocal( FPStatWord );
+        }
+    }
+    switch( _OPS( op1, op2 ) ) {
+    case _OPS( OP_STK1, OP_STK1 ):
+    case _OPS( OP_MEM , OP_STK1 ):
+    case _OPS( OP_CONS, OP_STK1 ):
+    case _OPS( OP_STK1, OP_MEM  ):
+    case _OPS( OP_STK1, OP_CONS ):
+    case _OPS( OP_CONS, OP_CONS ):
+/*   case 0,6,7,8,9,11,16,21,24:*/
+        _Zoiks( ZOIKS_012 );
+        break;
+    case _OPS( OP_STK0, OP_STK0 ):
+        ins->u.gen_table = RCOMP;
+        break;
+    case _OPS( OP_STK1, OP_STK0 ):
+        ins->u.gen_table = FCOMPP;
+        RevFPCond( ins );
+        break;
+    case _OPS( OP_MEM , OP_STK0 ):
+        ins->u.gen_table = MCOMP;
+        RevFPCond( ins );
+        break;
+    case _OPS( OP_CONS, OP_STK0 ):
+        PrefixFLDOp( ins, op1, 0 );
+        ins->u.gen_table = FCOMPP;
+        break;
+    case _OPS( OP_STK0, OP_STK1 ):
+        ins->u.gen_table = FCOMPP;
+        break;
+    case _OPS( OP_STK0, OP_MEM  ):
+        ins->u.gen_table = MCOMP;
+        ExchangeOps( ins );
+        break;
+    case _OPS( OP_MEM , OP_MEM  ):
+    case _OPS( OP_CONS, OP_MEM  ):
+        PrefixFLDOp( ins, op1, 0 );
+        ins->u.gen_table = MCOMP;
+        ExchangeOps( ins );
+        break;
+    case _OPS( OP_STK0, OP_CONS ):
+        PrefixFLDOp( ins, op2, 1 );
+        ins->u.gen_table = FCOMPP;
+        RevFPCond( ins );
+        break;
+    case _OPS( OP_MEM , OP_CONS ):
+        PrefixFLDOp( ins, op2, 1 );
+        ins->u.gen_table = MCOMP;
+        RevFPCond( ins );
+        break;
+    default:
+        _Zoiks( ZOIKS_013 );
+        break;
+    }
+}
+
+
+
 static  instruction     *ExpandFPIns( instruction *ins, operand_type op1,
                                       operand_type op2, result_type res ) {
 /**************************************************************************
@@ -827,259 +1070,6 @@ static  void    Expand( void ) {
                 }
             }
         }
-    }
-}
-
-
-
-
-#define _OPS( op1, op2 ) ( op1 + op2*OP_NONE )
-
-static  void    ExpBinFunc( instruction *ins,
-                            operand_type op1, operand_type op2 ) {
-/****************************************************************
-    Expand a floating point binary math instructon "ins", like pow,
-    atan2, etc using classifications "op1" and "op2".
-*/
-    switch( _OPS( op1, op2 ) ) {
-    case _OPS( OP_STK1, OP_STK1 ):
-    case _OPS( OP_MEM , OP_STK1 ):
-    case _OPS( OP_CONS, OP_STK1 ):
-    case _OPS( OP_STK1, OP_MEM  ):
-    case _OPS( OP_STK1, OP_CONS ):
-    case _OPS( OP_CONS, OP_CONS ):
-        _Zoiks( ZOIKS_010 );
-        break;
-    case _OPS( OP_STK0, OP_MEM  ):
-    case _OPS( OP_STK0, OP_CONS ):
-        PrefixFLDOp( ins, op2, 1 );
-        PrefFXCH( ins, 1 );
-        break;
-    case _OPS( OP_STK1, OP_STK0 ):
-        PrefFXCH( ins, 1 );
-        break;
-    case _OPS( OP_STK0, OP_STK0 ):
-    case _OPS( OP_MEM , OP_STK0 ):
-    case _OPS( OP_CONS, OP_STK0 ):
-        PrefixFLDOp( ins, op1, 0 );
-        break;
-    case _OPS( OP_STK0, OP_STK1 ):
-        break;
-    case _OPS( OP_MEM , OP_MEM  ):
-    case _OPS( OP_CONS, OP_MEM  ):
-    case _OPS( OP_MEM , OP_CONS ):
-        PrefixFLDOp( ins, op2, 1 );
-        PrefixFLDOp( ins, op1, 0 );
-        break;
-    default:
-        _Zoiks( ZOIKS_011 );
-        break;
-    }
-    ins->u.gen_table = IFUNC;
-}
-
-
-static  void    ExchangeOps( instruction *ins ) {
-/***********************************************/
-
-    name        *op1;
-    name        *op2;
-
-    op1 = ins->operands[0];
-    op2 = ins->operands[1];
-    ins->operands[0] = op2;
-    ins->operands[1] = op1;
-}
-
-
-static  void    ExpBinary( instruction *ins,
-                           operand_type op1, operand_type op2 ) {
-/****************************************************************
-    Expand a floating point binary instructon "ins" using
-    classifications "op1" and "op2".
-*/
-
-  /* expand a binary floating point instruction. op1 is the implied locn.*/
-
-    switch( _OPS( op1, op2 ) ) {
-    case _OPS( OP_STK1, OP_STK1 ):
-    case _OPS( OP_MEM , OP_STK1 ):
-    case _OPS( OP_CONS, OP_STK1 ):
-    case _OPS( OP_STK1, OP_MEM  ):
-    case _OPS( OP_STK1, OP_CONS ):
-    case _OPS( OP_CONS, OP_CONS ):
-/*   case 0,6,7,8,9,11,16,21,24:*/
-        _Zoiks( ZOIKS_010 );
-        break;
-    case _OPS( OP_STK0, OP_STK0 ):
-        ins->u.gen_table = GenTab( ins, RNFBIN );
-        break;
-    case _OPS( OP_STK1, OP_STK0 ):
-        ins->u.gen_table = GenTab( ins, RNFBINP );
-        break;
-    case _OPS( OP_MEM , OP_STK0 ):
-        ins->u.gen_table = GenTab( ins, MRFBIN );
-        break;
-    case _OPS( OP_CONS, OP_STK0 ):
-        PrefixFLDOp( ins, op1, 0 );
-        ins->u.gen_table = GenTab( ins, RRFBINP );
-        ins->operands[0] = ST1;
-        break;
-    case _OPS( OP_STK0, OP_STK1 ):
-        ins->u.gen_table = GenTab( ins, RRFBINP );
-        ExchangeOps( ins );
-        break;
-    case _OPS( OP_STK0, OP_MEM  ):
-        ins->u.gen_table = GenTab( ins, MNFBIN );
-        ExchangeOps( ins );
-        break;
-    case _OPS( OP_MEM , OP_MEM  ):
-    case _OPS( OP_CONS, OP_MEM  ):
-        PrefixFLDOp( ins, op1, 0 );
-        ins->u.gen_table = GenTab( ins, MNFBIN );
-        ExchangeOps( ins );
-        break;
-    case _OPS( OP_STK0, OP_CONS ):
-        PrefixFLDOp( ins, op2, 1 );
-        ins->u.gen_table = GenTab( ins, RNFBINP );
-        ins->operands[0] = ST1;
-        ins->operands[1] = ST0;
-        break;
-    case _OPS( OP_MEM , OP_CONS ):
-        PrefixFLDOp( ins, op2, 1 );
-        ins->u.gen_table = GenTab( ins, MRFBIN );
-        break;
-    default:
-        _Zoiks( ZOIKS_011 );
-        break;
-    }
-}
-
-
-static  void    RevFPCond( instruction *ins ) {
-/**********************************************
-    Reverse the sense of a floating point comarison (condition).  For
-    example, if we're trying to generate OP_COMPARE_GREATER  X, ST(0),
-    we would use FCOM X, and then flip the the comparison to
-    OP_COMPARE_LESS.  Since condition code scoreboarding has already
-    been done, we have to also go to any subsequent basic blocks and
-    flip any comparisons that rely on this comparison to set condition
-    codes as well.
-*/
-
-    instruction         *other;
-
-    _MarkBlkAllUnVisited();
-    for( other = ins; other->head.opcode != OP_BLOCK; ) {
-        other = other->head.next;
-    }
-    RevOtherCond( _BLOCK( other ), ins );
-    RevCond( ins );
-}
-
-
-
-static  void    RevOtherCond( block *blk, instruction *ins ) {
-/*************************************************************
-    Run through block "blk" and its successors, continuing until we hit
-    an instruction that changes the condition codes, or uses a previous
-    set of condition codes.  When we hit and instruction that uses
-    previous codes, reverse it since we changed the compare instruction
-    up in RevFPCond.
-*/
-
-    block_num   i;
-    block       *target;
-
-    _MarkBlkVisited( blk );
-    for( ;; ) {
-        ins = ins->head.next;
-        if( ins->head.opcode == OP_BLOCK ) {
-            for( i = blk->targets; i-- > 0; ) {
-                target = blk->edge[i].destination.u.blk;
-                if( !_IsBlkVisited( target ) ) {
-                    RevOtherCond( target, (instruction *)&target->ins );
-                }
-            }
-            break;
-        }
-        if( ( ins->u.gen_table->op_type & MASK_CC ) != PRESERVE )
-            break;
-        if( _OpIsCondition( ins->head.opcode ) && IsNop( ins->table ) ) { /* used cond codes of original ins */
-            RevCond( ins );
-            ins->table = FNOP;
-            ins->u.gen_table = FNOP;
-        }
-    }
-}
-
-
-static  void    ExpCompare ( instruction *ins,
-                             operand_type op1, operand_type op2 ) {
-/******************************************************************
-    Expand a floating point comparison using classifications "op1" and
-    "op2".
-*/
-
-
-    if( !_CPULevel( CPU_386 ) ) {
-        if( FPStatWord == NULL && ( !_CPULevel(CPU_286) || _IsEmulation() ) ) {
-            FPStatWord = AllocTemp( U2 );
-            FPStatWord->v.usage |= VAR_VOLATILE | USE_ADDRESS; /* so that it really gets allocd */
-            AllocALocal( FPStatWord );
-        }
-    }
-    switch( _OPS( op1, op2 ) ) {
-    case _OPS( OP_STK1, OP_STK1 ):
-    case _OPS( OP_MEM , OP_STK1 ):
-    case _OPS( OP_CONS, OP_STK1 ):
-    case _OPS( OP_STK1, OP_MEM  ):
-    case _OPS( OP_STK1, OP_CONS ):
-    case _OPS( OP_CONS, OP_CONS ):
-/*   case 0,6,7,8,9,11,16,21,24:*/
-        _Zoiks( ZOIKS_012 );
-        break;
-    case _OPS( OP_STK0, OP_STK0 ):
-        ins->u.gen_table = RCOMP;
-        break;
-    case _OPS( OP_STK1, OP_STK0 ):
-        ins->u.gen_table = FCOMPP;
-        RevFPCond( ins );
-        break;
-    case _OPS( OP_MEM , OP_STK0 ):
-        ins->u.gen_table = MCOMP;
-        RevFPCond( ins );
-        break;
-    case _OPS( OP_CONS, OP_STK0 ):
-        PrefixFLDOp( ins, op1, 0 );
-        ins->u.gen_table = FCOMPP;
-        break;
-    case _OPS( OP_STK0, OP_STK1 ):
-        ins->u.gen_table = FCOMPP;
-        break;
-    case _OPS( OP_STK0, OP_MEM  ):
-        ins->u.gen_table = MCOMP;
-        ExchangeOps( ins );
-        break;
-    case _OPS( OP_MEM , OP_MEM  ):
-    case _OPS( OP_CONS, OP_MEM  ):
-        PrefixFLDOp( ins, op1, 0 );
-        ins->u.gen_table = MCOMP;
-        ExchangeOps( ins );
-        break;
-    case _OPS( OP_STK0, OP_CONS ):
-        PrefixFLDOp( ins, op2, 1 );
-        ins->u.gen_table = FCOMPP;
-        RevFPCond( ins );
-        break;
-    case _OPS( OP_MEM , OP_CONS ):
-        PrefixFLDOp( ins, op2, 1 );
-        ins->u.gen_table = MCOMP;
-        RevFPCond( ins );
-        break;
-    default:
-        _Zoiks( ZOIKS_013 );
-        break;
     }
 }
 

@@ -244,7 +244,7 @@ _OE( _Bin(   ANY,  ANY,  ANY,  NONE ), V_NO,           RG_,          G_UNKNOWN, 
 };
 
 
-opcode_entry    SubExt[] = {
+static const opcode_entry    SubExt[] = {
 /**************************/
 /* instructions that we can generate*/
 /* NOTE: SBB does NOT set conditions right in all cases*/
@@ -1043,7 +1043,7 @@ _OE( _Side(  ANY,  ANY ),              V_NO,           RG_,          R_MAKESTRCM
 };
 
 
-opcode_entry    String[] = {
+static const opcode_entry    String[] = {
 /**************************/
 /*           op1   op2                 verify          reg           gen             fu  */
 _OE( _Side(  ANY,  ANY ),              V_NO,           RG_,          G_REPOP,        FU_ALU1 ),
