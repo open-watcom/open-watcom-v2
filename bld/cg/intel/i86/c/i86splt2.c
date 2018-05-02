@@ -1013,3 +1013,47 @@ instruction     *rINTCOMP( instruction *ins )
 
 instruction     *rCONVERT_UP( instruction *ins ) { return( ins ); }
 instruction     *rCYP_SEX( instruction *ins ) { return( ins ); }
+
+instruction     *rMAKEU2( instruction *ins )
+/******************************************/
+{
+    instruction *new_ins;
+    instruction *ins2;
+    name        *temp = NULL;
+
+    if( IndexOverlaps( ins, 0 ) || IndexOverlaps( ins, 1 ) ) {
+        ChangeType( ins, U2 );
+        if( ins->result != NULL ) {
+            new_ins = MakeMove( HighPart( ins->operands[0], U2 ), AllocTemp( U2 ), U2 );
+            temp = HighPart( ins->result, U2 );
+            ins->result = LowPart( ins->result, U2 );
+            DupSegOp( ins, new_ins, 0 );
+            PrefixIns( ins, new_ins );
+        } else {
+            new_ins = ins;
+        }
+        ins->operands[0] = LowPart( ins->operands[0], U2 );
+        if( ins->operands[1]->n.name_class == U4 || ins->operands[1]->n.name_class == I4 ) {
+            ins->operands[1] = LowPart( ins->operands[1], U2 );
+        }
+        if( ins->result != NULL ) {
+            ins2 = MakeMove( new_ins->result, temp, U2 );
+            DupSegRes( ins, ins2 );
+            SuffixIns( ins, ins2 );
+        }
+    } else {
+        ChangeType( ins, U2 );
+        if( ins->result != NULL ) {
+            new_ins = MakeMove( HighPart( ins->operands[0], U2 ), HighPart( ins->result, U2 ), U2 );
+            ins->result = LowPart( ins->result, U2 );
+            DupSegOp( ins, new_ins, 0 );
+            DupSegRes( ins, new_ins );
+            PrefixIns( ins, new_ins );
+        } else {
+            new_ins = ins;
+        }
+        ins->operands[0] = LowPart( ins->operands[0], U2 );
+        ins->operands[1] = LowPart( ins->operands[1], U2 );
+    }
+    return( new_ins );
+}

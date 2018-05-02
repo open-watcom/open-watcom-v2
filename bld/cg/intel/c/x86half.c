@@ -192,53 +192,6 @@ extern  instruction     *rSPLITMOVE( instruction *ins ) {
     return( new_ins );
 }
 
-
-#if _TARGET & _TARG_IAPX86
-extern  instruction     *rMAKEU2( instruction *ins ) {
-/***************************************************/
-
-    instruction *new_ins;
-    instruction *ins2;
-    name        *temp = NULL;
-
-    if( IndexOverlaps( ins, 0 ) || IndexOverlaps( ins, 1 ) ) {
-        ChangeType( ins, WORD );
-        if( ins->result != NULL ) {
-            new_ins = MakeMove( HighPart( ins->operands[0], WORD ), AllocTemp( WORD ), WORD );
-            temp = HighPart( ins->result, WORD );
-            ins->result = LowPart( ins->result, WORD );
-            DupSegOp( ins, new_ins, 0 );
-            PrefixIns( ins, new_ins );
-        } else {
-            new_ins = ins;
-        }
-        ins->operands[0] = LowPart( ins->operands[0], WORD );
-        if( ins->operands[1]->n.name_class == LONG_WORD || ins->operands[1]->n.name_class == LONG_WORD_S ) {
-            ins->operands[1] = LowPart( ins->operands[1], WORD );
-        }
-        if( ins->result != NULL ) {
-            ins2 = MakeMove( new_ins->result, temp, WORD );
-            DupSegRes( ins, ins2 );
-            SuffixIns( ins, ins2 );
-        }
-    } else {
-        ChangeType( ins, WORD );
-        if( ins->result != NULL ) {
-            new_ins = MakeMove( HighPart( ins->operands[0], WORD ), HighPart( ins->result, WORD ), WORD );
-            ins->result = LowPart( ins->result, WORD );
-            DupSegOp( ins, new_ins, 0 );
-            DupSegRes( ins, new_ins );
-            PrefixIns( ins, new_ins );
-        } else {
-            new_ins = ins;
-        }
-        ins->operands[0] = LowPart( ins->operands[0], WORD );
-        ins->operands[1] = LowPart( ins->operands[1], WORD );
-    }
-    return( new_ins );
-}
-#endif
-
 extern  instruction     *rSPLITNEG( instruction *ins ) {
 /******************************************************/
 
