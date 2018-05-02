@@ -32,7 +32,7 @@
 
 #include "_cgstd.h"
 #include "coderep.h"
-#include "tables.h"
+#include "tabledef.h"
 #include "system.h"
 #include "zoiks.h"
 #include "cfloat.h"

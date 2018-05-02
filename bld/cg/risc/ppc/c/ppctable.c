@@ -34,7 +34,7 @@
 #include "coderep.h"
 #include "regset.h"
 #include "model.h"
-#include "tables.h"
+#include "tabledef.h"
 
 opcode_entry    StubUnary[] = {
 /*************************/

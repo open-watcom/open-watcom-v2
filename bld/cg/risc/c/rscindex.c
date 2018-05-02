@@ -33,7 +33,7 @@
 
 #include "_cgstd.h"
 #include "coderep.h"
-#include "tables.h"
+#include "tabledef.h"
 #include "data.h"
 #include "makeins.h"
 #include "namelist.h"

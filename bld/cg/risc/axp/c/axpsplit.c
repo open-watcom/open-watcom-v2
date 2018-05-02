@@ -32,7 +32,7 @@
 
 #include "_cgstd.h"
 #include "coderep.h"
-#include "tables.h"
+#include "tabledef.h"
 #include "zoiks.h"
 #include "data.h"
 #include "makeins.h"

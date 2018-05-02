@@ -33,7 +33,7 @@
 #include "_cgstd.h"
 #include "typclass.h"
 #include "opcodes.h"
-#include "tables.h"
+#include "tabledef.h"
 
 #define         _____   NO
 #define         __X__   BAD
