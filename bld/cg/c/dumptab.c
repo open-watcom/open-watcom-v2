@@ -117,14 +117,14 @@ static  void    PrtOps( operand_types ops ) {
     DumpChar( ')' );
 }
 
-void    DumpGen( opcode_entry *try )
-/**********************************/
+void    DumpGen( const opcode_entry *try )
+/****************************************/
 {
     DumpPadString( GenTab[try->generate], 15 );
 }
 
-void    DumpTab( opcode_entry *try )
-/**********************************/
+void    DumpTab( const opcode_entry *try )
+/****************************************/
 {
     vertype     verify;
 

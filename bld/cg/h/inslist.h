@@ -103,9 +103,9 @@ typedef struct ins_header {
 
 typedef struct instruction {
         struct ins_header       head;
-        opcode_entry            *table;
+        const opcode_entry      *table;
         union {
-            opcode_entry        *gen_table;     /*  do not merge this one! */
+            const opcode_entry  *gen_table;     /*  do not merge this one! */
         } u;
         union {
             struct instruction  *parm_list;

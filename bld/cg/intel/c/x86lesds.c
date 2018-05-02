@@ -41,7 +41,7 @@
 #include "generate.h"
 
 
-static opcode_entry LDSES[1] = {
+static const opcode_entry LDSES[1] = {
 /*           op1   op2   res   eq      verify          reg           gen             fu  */
 _OE(                           NO_CC,  V_NO,           RG_,          G_LDSES,        FU_NO )
 };
@@ -354,13 +354,13 @@ extern  void    OptSegs( void )
                       short a, b, c; a &= 0x01; b &= 0x0f; c = (a|b) & 0xff;)
                    but produces longer code if it is not. Remerge them here.
                 */
-                if( 
+                if(
                  /* is next of the form "and byte, imm" ? */
                     ( next->head.opcode == OP_AND )
                  && ( next->type_class == I1 || next->type_class == U1 )
                  && ( next->result->n.class == N_REGISTER )
                  && ( next->operands[0] == next->result )
-                 && ( next->operands[1]->n.class == N_CONSTANT ) 
+                 && ( next->operands[1]->n.class == N_CONSTANT )
 
                  /* is ins of the form "xor byte, byte" ? */
                  && ( ins->head.opcode == OP_XOR )

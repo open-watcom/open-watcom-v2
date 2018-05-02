@@ -352,7 +352,7 @@ void    FPPushParms( pn parm, call_state *state )
     }
 }
 
-static  opcode_entry    FSINCOS[] = {
+static const opcode_entry    FSINCOS[] = {
 /*           op1   op2   res   eq      verify          reg           gen             fu  */
 _OE(                         PRESERVE, V_NO,           RG_,          G_FSINCOS,      FU_TRIG )
 };

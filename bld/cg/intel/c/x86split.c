@@ -54,6 +54,7 @@
 #include "x86split.h"
 #include "x86segs.h"
 #include "liveinfo.h"
+#include "x86table.h"
 
 
 extern  instruction     *ByteShift(instruction*);
@@ -73,7 +74,6 @@ extern  instruction     *SplitOp(instruction*);
 extern  instruction     *SplitFDPush(instruction*);
 extern  name            *Addressable(name*,type_class_def);
 extern  instruction     *SplitLoadAddr(instruction*);
-extern  opcode_entry    *GetMoveNoCCEntry( void );
 
 extern  instruction     *rDOCVT(instruction*);
 extern  instruction     *rMAKEFNEG(instruction*);
@@ -114,8 +114,6 @@ extern  instruction     *rCMPCP( instruction * );
 extern  instruction     *rMOVPTI8( instruction * );
 extern  instruction     *rMOVI8PT( instruction * );
 
-extern  opcode_entry    String[];
-
 instruction *(*ReduceTab[])( instruction * ) = {
     #define _R_( x, f )     f
     #include "r.h"
@@ -126,7 +124,7 @@ instruction *(*ReduceTab[])( instruction * ) = {
 extern  bool    UnChangeable( instruction *ins ) {
 /************************************************/
 
-    return( ins->table == String );
+    return( IsString( ins->table ) );
 }
 
 extern instruction      *rSAVEFACE( instruction *ins ) {
@@ -518,7 +516,7 @@ static  instruction     *LoadStringOps( instruction *ins,
     }
     HW_CTurnOn( new_op1, hw( DS_SI ) );
     HW_CTurnOn( new_op1, hw( ES_DI ) );
-    ins->table = String;
+    ins->table = GetString();
     ins->head.state = INS_NEEDS_WORK;
     *op1 = FakeIndex( ins->operands[0], new_op1 );
     ins->operands[1] = ins->operands[0];

@@ -32,7 +32,6 @@
 
 #include "_cgstd.h"
 #include "coderep.h"
-#include "tabledef.h"
 #include "zoiks.h"
 #include "makeins.h"
 #include "data.h"
@@ -42,11 +41,10 @@
 #include "split.h"
 #include "insutil.h"
 #include "liveinfo.h"
+#include "opctable.h"
 
 
 extern  name            *OffsetMem( name *, type_length, type_class_def );
-
-extern  opcode_entry    *OpcodeTable( table_def );
 
 extern  instruction *rMOVEXX_8( instruction *ins )
 /************************************************/

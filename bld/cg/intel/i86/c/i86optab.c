@@ -33,11 +33,11 @@
 #include "_cgstd.h"
 #include "typclass.h"
 #include "opcodes.h"
-#include "tabledef.h"
+#include "optable.h"
+
 
 #define         _____   NO
 #define         __X__   BAD
-
 
 table_def OpTable[(XX + 1) * (LAST_OP - FIRST_OP + 1)] = {
 /*********************************************************

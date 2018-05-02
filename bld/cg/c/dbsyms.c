@@ -61,7 +61,7 @@
 cue_ctl     LineInfo;
 fname_ctl   DBFiles;
 
-static opcode_entry     DbgInfo[] = {
+static const opcode_entry     DbgInfo[] = {
 /*           op1   op2   res   eq      verify          reg           gen             fu  */
 _OE( _None(                         ), V_NO,           RG_,          G_DEBUG,        FU_NO )
 };

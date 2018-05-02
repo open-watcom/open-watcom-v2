@@ -49,7 +49,7 @@ static  bool    CheckIns( instruction **pins ) {
 /**********************************************/
 
     bool                ok;
-    opcode_entry        *try;
+    const opcode_entry  *try;
     instruction         *ins;
     bool                dummy;
     opcnt               i;

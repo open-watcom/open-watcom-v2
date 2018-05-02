@@ -2,7 +2,8 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2018 The Open Watcom Contributors. All Rights Reserved.
+*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -30,5 +31,6 @@
 ****************************************************************************/
 
 
-extern void     DumpGen( const opcode_entry *try );
-extern void     DumpTab( const opcode_entry *try );
+extern const opcode_entry   *GetMoveNoCCEntry( void );
+extern bool                 IsString( const opcode_entry *e );
+extern const opcode_entry   *GetString( void );

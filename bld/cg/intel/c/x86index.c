@@ -44,10 +44,9 @@
 #include "conflict.h"
 #include "x86data.h"
 #include "x86segs.h"
+#include "x86table.h"
 #include "feprotos.h"
 
-
-extern  opcode_entry    String[];
 
 extern  name            *Addressable(name*,type_class_def);
 extern  void            NoMemIndex(instruction*);
@@ -121,7 +120,7 @@ bool    IndexOkay( instruction *ins, name *index ) {
         is_temp_index = false;
     }
     name = index->i.index;
-    if( ins->table == String )
+    if( IsString( ins->table ) )
         return( true );
     if( name->n.class == N_REGISTER ) {
         return( IsIndexReg( name->r.reg, name->n.name_class, is_temp_index ) );

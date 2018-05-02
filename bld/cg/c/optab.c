@@ -33,18 +33,14 @@
 
 #include "_cgstd.h"
 #include "coderep.h"
-#include "tabledef.h"
+#include "opctable.h"
 #include "zoiks.h"
 #include "optab.h"
 #include "feprotos.h"
 
-extern  opcode_entry*   OpcodeTable(table_def);
 
-
-extern table_def OpTable[];
-
-opcode_entry    *CodeTable( instruction *ins )
-/********************************************/
+const opcode_entry  *CodeTable( instruction *ins )
+/************************************************/
 {
     int         idx;
 

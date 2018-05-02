@@ -116,7 +116,7 @@ extern void    ScoreMakeEqual( score *sc, name *op1, name *op2 );
 extern bool    ScoreMove( score *sc, instruction *ins );
 extern bool    ScoreLA( score *sc, instruction *ins );
 extern void    ScZeroCheck( score *sc, instruction *ins );
-extern opcode_entry     *ResetGenEntry( instruction *ins );
+extern const opcode_entry   *ResetGenEntry( instruction *ins );
 
 // scregs.c
 extern void    RegInsert( score *sc, int dst_idx, int src_idx );

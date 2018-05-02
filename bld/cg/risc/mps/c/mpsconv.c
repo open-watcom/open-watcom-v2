@@ -44,7 +44,7 @@
 extern  name            *TrimConst( name *, type_class_def );
 
 
-static  opcode_entry    ctable_FDTOS[] = {
+static const opcode_entry    ctable_FDTOS[] = {
 /****************************************/
 /*        from  to    eq       verify        reg           gen             fu  */
 _OE( _Un( R,    R,   NONE ),   V_NO,         RG_FLOAT,     G_CVTTS,        FU_NO ),
@@ -55,7 +55,7 @@ _OE( _Un( ANY,  ANY, NONE ),   V_NO,         RG_FLOAT_NEED,G_UNKNOWN,      FU_NO
 _OE( _Un( ANY,  ANY, NONE ),   V_NO,         RG_,          G_UNKNOWN,      FU_NO ),
 };
 
-static  opcode_entry    ctable_FSTOD[] = {
+static const opcode_entry    ctable_FSTOD[] = {
 /****************************************/
 /*        from  to    eq       verify        reg           gen             fu  */
 _OE( _Un( R,    R,   NONE ),   V_NO,         RG_FLOAT,     G_MOVE_FP,      FU_NO ),
@@ -66,7 +66,7 @@ _OE( _Un( ANY,  ANY, NONE ),   V_NO,         RG_FLOAT_NEED,G_UNKNOWN,      FU_NO
 _OE( _Un( ANY,  ANY, NONE ),   V_NO,         RG_,          G_UNKNOWN,      FU_NO ),
 };
 
-static  opcode_entry    ctable_FI8TOD[] = {
+static const opcode_entry    ctable_FI8TOD[] = {
 /*****************************************/
 /*        from  to    eq       verify        reg           gen             fu  */
 _OE( _Un( M,    R,   NONE ),   V_NO,         RG_FLOAT,     G_MI8TOFREG,    FU_NO ),
@@ -79,7 +79,7 @@ _OE( _Un( ANY,  ANY, NONE ),   V_NO,         RG_,          G_UNKNOWN,      FU_NO
 
 #define ctable_FI8TOS   ctable_FI8TOD
 
-static  opcode_entry    ctable_FDTOI8[] = {
+static const opcode_entry    ctable_FDTOI8[] = {
 /*****************************************/
 /*        from  to    eq       verify        reg           gen             fu  */
 _OE( _Un( R,    M,   NONE ),   V_NO,         RG_FLOAT,     G_FREGTOMI8,    FU_NO ),
@@ -90,7 +90,7 @@ _OE( _Un( ANY,  ANY, NONE ),   V_NO,         RG_FLOAT_NEED,G_UNKNOWN,      FU_NO
 _OE( _Un( ANY,  ANY, NONE ),   V_NO,         RG_,          G_UNKNOWN,      FU_NO ),
 };
 
-static  opcode_entry    ctable_FDTOI4[] = {
+static const opcode_entry    ctable_FDTOI4[] = {
 /*****************************************/
 /*        from  to    eq       verify        reg           gen             fu  */
 _OE( _Un( R,    M,   NONE ),   V_NO,         RG_FLOAT,     G_FREGTOMI8,    FU_NO ),
@@ -102,7 +102,7 @@ _OE( _Un( ANY,  ANY, NONE ),   V_NO,         RG_,          G_UNKNOWN,      FU_NO
 };
 
 #define CONVERT_ROUTINE( x, gen, reg )                                               \
-static  opcode_entry    ctable_##x[] = {                                             \
+static const opcode_entry    ctable_##x[] = {                                             \
 /**************************************/                                             \
 /*        from  to    eq       verify        reg           gen             fu  */    \
 _OE( _Un( R,    R,    NONE ),  V_NO,         RG_##reg,     gen,            FU_ALU ), \
@@ -132,19 +132,19 @@ CONVERT_ROUTINE( C4TO2, G_MOVE, DW );
 CONVERT_ROUTINE( C4TO1, G_MOVE, DB );
 CONVERT_ROUTINE( C2TO1, G_MOVE, WB );
 
-static opcode_entry ctable_C8TO4[] = {
+static const opcode_entry ctable_C8TO4[] = {
 /************************************/
 /*        from  to    eq       verify        reg           gen             fu  */
 _OE( _Un( ANY,  ANY,  NONE ),  V_NO,         RG_,          R_MOVELOW,      FU_NO ),
 };
 
-static opcode_entry ctable_S4TO8[] = {
+static const opcode_entry ctable_S4TO8[] = {
 /************************************/
 /*        from  to    eq       verify        reg           gen             fu  */
 _OE( _Un( ANY,  ANY,  NONE ),  V_NO,         RG_,          R_SEX_4TO8,     FU_NO ),
 };
 
-static opcode_entry ctable_Z4TO8[] = {
+static const opcode_entry ctable_Z4TO8[] = {
 /************************************/
 /*        from  to    eq       verify        reg           gen             fu  */
 _OE( _Un( ANY,  ANY,  NONE ),  V_NO,         RG_,          R_CLRHI_4,      FU_NO ),
@@ -187,7 +187,7 @@ typedef enum {
     BAD
 } conv_method;
 
-static opcode_entry     *CvtAddr[] = {
+static const opcode_entry     *CvtAddr[] = {
     #define _C_( a )    ctable_##a,
     CONVERSIONS
     #undef _C_

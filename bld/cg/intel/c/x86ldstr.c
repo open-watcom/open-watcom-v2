@@ -208,7 +208,7 @@ static  instruction     *MakeGeneratable( instruction *ins )
     optmization reductions to work through.
 */
 {
-    opcode_entry        *tbl;
+    const opcode_entry  *tbl;
     instruction         *next;
     instruction         *prev;
 

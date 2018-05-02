@@ -92,7 +92,7 @@ static  bool    CanChange( instruction **pins,
 /**********************************************************************/
 
     instruction         *ins;
-    opcode_entry        *try;
+    const opcode_entry  *try;
     opcnt               i;
     name                *opnd;
     bool                temp_index;

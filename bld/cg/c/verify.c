@@ -39,10 +39,9 @@
 #include "namelist.h"
 #include "tree.h"
 #include "treefold.h"
+#include "opctable.h"
 #include "verify.h"
 
-
-extern  opcode_entry    DoNop[];
 
 static  bool    SameLocation( name *n1, name *n2 )
 /************************************************/
@@ -75,7 +74,7 @@ static  bool    NextCmp( instruction *ins )
     next = ins->head.next;
     if( !_OpIsCondition( next->head.opcode ) )
         return( false );
-    if( next->table == DoNop )
+    if( IsNop( next->table ) )
         return( true );
     if( next->u.gen_table == NULL )
         return( false );

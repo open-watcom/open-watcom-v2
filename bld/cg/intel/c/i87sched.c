@@ -59,39 +59,39 @@ static  void            GetToTopOfStack( instruction *ins, int virtual_reg );
 static  void            PopVirtualStack( instruction *ins );
 
 
-static  opcode_entry    RFST[1] = {
+static const opcode_entry    RFST[1] = {
 /*           op1   op2   res   eq      verify          reg           gen             fu  */
 _OE(                         PRESERVE, V_NO,           RG_,          G_RFST,         FU_NO )
 };
-static  opcode_entry    RFSTNP[1] = {
+static const opcode_entry    RFSTNP[1] = {
 /*           op1   op2   res   eq      verify          reg           gen             fu  */
 _OE(                         PRESERVE, V_NO,           RG_,          G_RFSTNP,       FU_NO )
 };
-static  opcode_entry    RFLD[1] = {
+static const opcode_entry    RFLD[1] = {
 /*           op1   op2   res   eq      verify          reg           gen             fu  */
 _OE(                         PRESERVE, V_NO,           RG_,          G_RFLD,         FU_NO )
 };
-static  opcode_entry    RCOMP[1] = {
+static const opcode_entry    RCOMP[1] = {
 /*           op1   op2   res   eq      verify          reg           gen             fu  */
 _OE(                         PRESERVE, V_NO,           RG_,          G_RCOMP,        FU_NO )
 };
-static  opcode_entry    FCOMPP[1] = {
+static const opcode_entry    FCOMPP[1] = {
 /*           op1   op2   res   eq      verify          reg           gen             fu  */
 _OE(                         PRESERVE, V_NO,           RG_,          G_FCOMPP,       FU_NO )
 };
-static  opcode_entry    RRFBIN[1] = {
+static const opcode_entry    RRFBIN[1] = {
 /*           op1   op2   res   eq      verify          reg           gen             fu  */
 _OE(                         PRESERVE, V_NO,           RG_,          G_RRFBIN,       FU_NO )
 };
-static  opcode_entry    RNFBIN[1] = {
+static const opcode_entry    RNFBIN[1] = {
 /*           op1   op2   res   eq      verify          reg           gen             fu  */
 _OE(                         PRESERVE, V_NO,           RG_,          G_RNFBIN,       FU_NO )
 };
-static  opcode_entry    RRFBINP[1] = {
+static const opcode_entry    RRFBINP[1] = {
 /*           op1   op2   res   eq      verify          reg           gen             fu  */
 _OE(                         PRESERVE, V_NO,           RG_,          G_RRFBINP,      FU_NO )
 };
-static  opcode_entry    RNFBINP[1] = {
+static const opcode_entry    RNFBINP[1] = {
 /*           op1   op2   res   eq      verify          reg           gen             fu  */
 _OE(                         PRESERVE, V_NO,           RG_,          G_RNFBINP,      FU_NO )
 };
@@ -278,7 +278,7 @@ static  fp_attr FPAttr( instruction *ins ) {
 }
 
 
-static  opcode_entry    *RegAction( instruction *ins ) {
+static const opcode_entry    *RegAction( instruction *ins ) {
 /*****************************************************/
 
     switch( G( ins ) ) {

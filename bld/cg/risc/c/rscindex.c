@@ -33,7 +33,6 @@
 
 #include "_cgstd.h"
 #include "coderep.h"
-#include "tabledef.h"
 #include "data.h"
 #include "makeins.h"
 #include "namelist.h"
@@ -43,9 +42,6 @@
 #include "fixindex.h"
 #include "conflict.h"
 #include "feprotos.h"
-
-
-extern  opcode_entry    String[];
 
 
 bool    IndexOkay( instruction *ins, name *index ) {

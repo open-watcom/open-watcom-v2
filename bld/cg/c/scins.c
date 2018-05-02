@@ -44,10 +44,10 @@
 #include "fixindex.h"
 
 
-opcode_entry    *ResetGenEntry( instruction *ins )
-/************************************************/
+const opcode_entry  *ResetGenEntry( instruction *ins )
+/****************************************************/
 {
-    opcode_entry        *try;
+    const opcode_entry  *try;
     bool                dummy;
 
     try = FindGenEntry( ins, &dummy );
@@ -82,9 +82,9 @@ bool    ChangeIns( instruction *ins, name *to, name **op, change_type flags )
     second form did not.
 */
 {
-    opcode_entry        *try;
-    opcode_entry        *table;
-    opcode_entry        *gen_table;
+    const opcode_entry  *try;
+    const opcode_entry  *table;
+    const opcode_entry  *gen_table;
     name                *save_result;
     name                *old_op;
     opcnt               i;

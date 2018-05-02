@@ -48,10 +48,9 @@
 #include "fixindex.h"
 #include "revcond.h"
 #include "temps.h"
+#include "opctable.h"
 #include "feprotos.h"
 
-
-extern  opcode_entry    DoNop[];
 
 /* forward declarations */
 static  void            ExpCompare( instruction *ins,
@@ -60,154 +59,153 @@ static  void            ExpBinary( instruction *ins,
                                    operand_type op1, operand_type op2 );
 static  void            ExpBinFunc( instruction *ins,
                                     operand_type op1, operand_type op2 );
-extern  int             FPRegNum( name *reg_name );
 static  void            RevOtherCond( block *blk, instruction *ins );
 
 
 //NYI: probably need more opcode entries for more resolution with func. units
-static  opcode_entry    FNOP[1] = {
+static const opcode_entry    FNOP[1] = {
 /*           op1   op2   res   eq      verify          reg           gen             fu  */
 _OE(                          SETS_CC, V_NO,           RG_,          G_NO,           FU_FOP )
 };
 
 
-static opcode_entry    RRFBIN[]  = {
+static const opcode_entry    RRFBIN[]  = {
 /*           op1   op2   res   eq      verify          reg           gen             fu  */
 _OE(                         PRESERVE, V_NO,           RG_,          G_RRFBIN,       FU_FADD ),
 _OE(                         PRESERVE, V_NO,           RG_,          G_RRFBIN,       FU_FMUL ),
 _OE(                         PRESERVE, V_NO,           RG_,          G_RRFBIN,       FU_FDIV ),
 };
-static opcode_entry    RNFBIN[]  = {
+static const opcode_entry    RNFBIN[]  = {
 /*           op1   op2   res   eq      verify          reg           gen             fu  */
 _OE(                         PRESERVE, V_NO,           RG_,          G_RNFBIN,       FU_FADD ),
 _OE(                         PRESERVE, V_NO,           RG_,          G_RNFBIN,       FU_FMUL ),
 _OE(                         PRESERVE, V_NO,           RG_,          G_RNFBIN,       FU_FDIV ),
 };
-static opcode_entry    RRFBINP[] = {
+static const opcode_entry    RRFBINP[] = {
 /*           op1   op2   res   eq      verify          reg           gen             fu  */
 _OE(                         PRESERVE, V_NO,           RG_,          G_RRFBINP,      FU_FADD ),
 _OE(                         PRESERVE, V_NO,           RG_,          G_RRFBINP,      FU_FMUL ),
 _OE(                         PRESERVE, V_NO,           RG_,          G_RRFBINP,      FU_FDIV ),
 };
-static opcode_entry    RNFBINP[] = {
+static const opcode_entry    RNFBINP[] = {
 /*           op1   op2   res   eq      verify          reg           gen             fu  */
 _OE(                         PRESERVE, V_NO,           RG_,          G_RNFBINP,      FU_FADD ),
 _OE(                         PRESERVE, V_NO,           RG_,          G_RNFBINP,      FU_FMUL ),
 _OE(                         PRESERVE, V_NO,           RG_,          G_RNFBINP,      FU_FDIV ),
 };
-static opcode_entry    RRFBIND[] = {
+static const opcode_entry    RRFBIND[] = {
 /*           op1   op2   res   eq      verify          reg           gen             fu  */
 _OE(                         PRESERVE, V_NO,           RG_,          G_RRFBIND,      FU_FADD ),
 _OE(                         PRESERVE, V_NO,           RG_,          G_RRFBIND,      FU_FMUL ),
 _OE(                         PRESERVE, V_NO,           RG_,          G_RRFBIND,      FU_FDIV ),
 };
-static opcode_entry    RNFBIND[] = {
+static const opcode_entry    RNFBIND[] = {
 /*           op1   op2   res   eq      verify          reg           gen             fu  */
 _OE(                         PRESERVE, V_NO,           RG_,          G_RNFBIND,      FU_FADD ),
 _OE(                         PRESERVE, V_NO,           RG_,          G_RNFBIND,      FU_FMUL ),
 _OE(                         PRESERVE, V_NO,           RG_,          G_RNFBIND,      FU_FDIV ),
 };
-static opcode_entry    MRFBIN[]  = {
+static const opcode_entry    MRFBIN[]  = {
 /*           op1   op2   res   eq      verify          reg           gen             fu  */
 _OE(                         PRESERVE, V_NO,           RG_,          G_MRFBIN,       FU_FADD ),
 _OE(                         PRESERVE, V_NO,           RG_,          G_MRFBIN,       FU_FMUL ),
 _OE(                         PRESERVE, V_NO,           RG_,          G_MRFBIN,       FU_FDIV ),
 };
-static opcode_entry    MNFBIN[]  = {
+static const opcode_entry    MNFBIN[]  = {
 /*           op1   op2   res   eq      verify          reg           gen             fu  */
 _OE(                         PRESERVE, V_NO,           RG_,          G_MNFBIN,       FU_FADD ),
 _OE(                         PRESERVE, V_NO,           RG_,          G_MNFBIN,       FU_FMUL ),
 _OE(                         PRESERVE, V_NO,           RG_,          G_MNFBIN,       FU_FDIV ),
 };
 
-static  opcode_entry    MFLD[1] = {
+static const opcode_entry    MFLD[1] = {
 /*           op1   op2   res   eq      verify          reg           gen             fu  */
 _OE(                         PRESERVE, V_NO,           RG_,          G_MFLD,         FU_FOP )
 };
-static  opcode_entry    RFLD[1] = {
+static const opcode_entry    RFLD[1] = {
 /*           op1   op2   res   eq      verify          reg           gen             fu  */
 _OE(                         PRESERVE, V_NO,           RG_,          G_RFLD,         FU_FOP )
 };
-static  opcode_entry    MFST[1] = {
+static const opcode_entry    MFST[1] = {
 /*           op1   op2   res   eq      verify          reg           gen             fu  */
 _OE(                         PRESERVE, V_NO,           RG_,          G_MFST,         FU_FOP )
 };
 #if _TARGET & _TARG_80386
-static  opcode_entry    MFSTRND[1] = {
+static const opcode_entry    MFSTRND[1] = {
 /*           op1   op2   res   eq      verify          reg           gen             fu  */
 _OE(                         PRESERVE, V_NO,           RG_,          G_MFSTRND,      FU_FOP )
 };
 #endif
-static  opcode_entry    MFST2[1] = {
+static const opcode_entry    MFST2[1] = {
 /*           op1   op2   res   eq      verify          reg           gen             fu  */
 _OE(                         PRESERVE, V_NO,           RG_,          G_MFST,         FU_FOP )
 };
-static  opcode_entry    RFST[1] = {
+static const opcode_entry    RFST[1] = {
 /*           op1   op2   res   eq      verify          reg           gen             fu  */
 _OE(                         PRESERVE, V_NO,           RG_,          G_RFST,         FU_FOP )
 };
-static  opcode_entry    FCHS[1] = {
+static const opcode_entry    FCHS[1] = {
 /*           op1   op2   res   eq      verify          reg           gen             fu  */
 _OE(                         PRESERVE, V_NO,           RG_,          G_FCHS,         FU_FOP )
 };
-static  opcode_entry    FMATH[1] = {
+static const opcode_entry    FMATH[1] = {
 /*           op1   op2   res   eq      verify          reg           gen             fu  */
 _OE(                         PRESERVE, V_NO,           RG_,          G_FMATH,        FU_TRIG )
 };
-static  opcode_entry    IFUNC[1] = {
+static const opcode_entry    IFUNC[1] = {
 /*           op1   op2   res   eq      verify          reg           gen             fu  */
 _OE(                            NO_CC, V_NO,           RG_,          G_IFUNC,        FU_TRIG )
 };
-static  opcode_entry    FCHOP[1] = {
+static const opcode_entry    FCHOP[1] = {
 /*           op1   op2   res   eq      verify          reg           gen             fu  */
 _OE(                         PRESERVE, V_NO,           RG_,          G_FCHOP,        FU_FOP )
 };
-static  opcode_entry    FLDZ[1] = {
+static const opcode_entry    FLDZ[1] = {
 /*           op1   op2   res   eq      verify          reg           gen             fu  */
 _OE(                         PRESERVE, V_NO,           RG_,          G_FLDZ,         FU_FOP )
 };
-static  opcode_entry    FLD1[1] = {
+static const opcode_entry    FLD1[1] = {
 /*           op1   op2   res   eq      verify          reg           gen             fu  */
 _OE(                         PRESERVE, V_NO,           RG_,          G_FLD1,         FU_FOP )
 };
-static  opcode_entry    FCOMPP[1] = {
+static const opcode_entry    FCOMPP[1] = {
 /*           op1   op2   res   eq      verify          reg           gen             fu  */
 _OE(                          SETS_CC, V_NO,           RG_,          G_FCOMPP,       FU_FOP )
 };
-static  opcode_entry    MCOMP[1] = {
+static const opcode_entry    MCOMP[1] = {
 /*           op1   op2   res   eq      verify          reg           gen             fu  */
 _OE(                          SETS_CC, V_NO,           RG_,          G_MCOMP,        FU_FOP )
 };
-static  opcode_entry    RCOMP[1] = {
+static const opcode_entry    RCOMP[1] = {
 /*           op1   op2   res   eq      verify          reg           gen             fu  */
 _OE(                          SETS_CC, V_NO,           RG_,          G_RCOMP,        FU_FOP )
 };
-static  opcode_entry    MFSTNP[1] = {
+static const opcode_entry    MFSTNP[1] = {
 /*           op1   op2   res   eq      verify          reg           gen             fu  */
 _OE(                         PRESERVE, V_NO,           RG_,          G_MFSTNP,       FU_FOP )
 };
-static  opcode_entry    RFSTNP[1] = {
+static const opcode_entry    RFSTNP[1] = {
 /*           op1   op2   res   eq      verify          reg           gen             fu  */
 _OE(                         PRESERVE, V_NO,           RG_,          G_RFSTNP,       FU_FOP )
 };
-static  opcode_entry    FWAIT[1] = {
+static const opcode_entry    FWAIT[1] = {
 /*           op1   op2   res   eq      verify          reg           gen             fu  */
 _OE(                         PRESERVE, V_NO,           RG_,          G_FWAIT,        FU_FOP )
 };//NYI:??
-static  opcode_entry    FXCH[1] = {
+static const opcode_entry    FXCH[1] = {
 /*           op1   op2   res   eq      verify          reg           gen             fu  */
 _OE(                         PRESERVE, V_NO,           RG_,          G_FXCH,         FU_FOP )
 };
-static  opcode_entry    RC[1]   = {
+static const opcode_entry    RC[1]   = {
 /*           op1   op2   res   eq      verify          reg           gen             fu  */
 _OE(                         PRESERVE, V_NO,           RG_,          G_RC,           FU_FOP )
 };
 #if _TARGET & _TARG_IAPX86
-static  opcode_entry    RR1[1]  = {
+static const opcode_entry    RR1[1]  = {
 /*           op1   op2   res   eq      verify          reg           gen             fu  */
 _OE(                         PRESERVE, V_NO,           RG_,          G_RR1,          FU_FOP )
 };
-static  opcode_entry    WORDR1[1] = {
+static const opcode_entry    WORDR1[1] = {
 /*           op1   op2   res   eq      verify          reg           gen             fu  */
 _OE(                         PRESERVE, V_NO,           RG_,          G_WORDR1,       FU_FOP )
 };
@@ -216,9 +214,9 @@ _OE(                         PRESERVE, V_NO,           RG_,          G_WORDR1,  
 static  name    *ST0;
 static  name    *ST1;
 
-static  opcode_entry *GenTab( instruction *ins, opcode_entry *array ) {
-/*********************************************************************/
-
+static const opcode_entry *GenTab( instruction *ins, const opcode_entry *array )
+/******************************************************************************/
+{
     switch( ins->head.opcode ) {
     case OP_DIV:
         return( array + 2 );
@@ -440,7 +438,7 @@ static    int     WantsChop( instruction *ins ) {
 
 static  instruction     *ExpUnary( instruction *ins,
                                     operand_type src, result_type res,
-                                    opcode_entry *table ) {
+                                    const opcode_entry *table ) {
 /************************************************************************
     Expand a unary instruction "ins" using classifications "src" and "res"
 */
@@ -1007,8 +1005,7 @@ static  void    RevOtherCond( block *blk, instruction *ins ) {
         }
         if( ( ins->u.gen_table->op_type & MASK_CC ) != PRESERVE )
             break;
-        if( _OpIsCondition( ins->head.opcode )
-          && ins->table == DoNop ) { /* used cond codes of original ins */
+        if( _OpIsCondition( ins->head.opcode ) && IsNop( ins->table ) ) { /* used cond codes of original ins */
             RevCond( ins );
             ins->table = FNOP;
             ins->u.gen_table = FNOP;

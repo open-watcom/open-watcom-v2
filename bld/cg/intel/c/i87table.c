@@ -33,16 +33,17 @@
 #include "coderep.h"
 #include "model.h"
 #include "regset.h"
+#include "i87table.h"
 
 
-opcode_entry    Move87L[] = {
+const opcode_entry    Move87L[] = {
 /*           from  to    eq            verify          reg           gen             fu  */
 _OE( _UnPP(  R|M|U,R|M|U,EQ_R1 ),      V_NO,           RG_,          G_NO,           FU_NO ),
 _OE( _UnPP(  ANY,  ANY,  NONE ),       V_NO,           RG_8087_NEED, G_UNKNOWN,      FU_NO ),
 _OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_,          G_UNKNOWN,      FU_NO ),
 };
 
-opcode_entry    Move87D[] = {
+const opcode_entry    Move87D[] = {
 /***********************************/
 /*           from  to    eq            verify          reg           gen             fu  */
 _OE( _UnPP(  R|M|U,R|M|U,EQ_R1 ),      V_NO,           RG_,          G_NO,           FU_NO ),
@@ -75,7 +76,7 @@ _OE( _UnPP(  ANY,  ANY,  NONE ),       V_NO,           RG_8087_NEED, G_UNKNOWN, 
 _OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_,          G_UNKNOWN,      FU_NO ),
 };
 
-opcode_entry    Move87S[] = {
+const opcode_entry    Move87S[] = {
 /***********************************/
 /*           from  to    eq            verify          reg           gen             fu  */
 _OE( _UnPP(  R|M|U,R|M|U,EQ_R1 ),      V_NO,           RG_,          G_NO,           FU_NO ),
@@ -107,7 +108,7 @@ _OE( _UnPP(  ANY,  ANY,  NONE ),       V_NO,           RG_8087_NEED, G_UNKNOWN, 
 _OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_,          G_UNKNOWN,      FU_NO ),
 };
 
-opcode_entry    Un87[] = {
+const opcode_entry    Un87[] = {
 /***************************/
 /*           from  to    eq            verify          reg           gen             fu  */
 _OE( _UnPP(  M,    M,    EQ_R1 ),      V_NEGATE,       RG_8087_ZAP_ACC,R_FLIPSIGN,   FU_NO ),
@@ -118,7 +119,7 @@ _OE( _UnPP(  ANY,  ANY,  NONE ),       V_NO,           RG_8087,      G_UNKNOWN, 
 _OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_,          G_UNKNOWN,      FU_NO ),
 };
 
-opcode_entry    Un87Func[] = {
+const opcode_entry    Un87Func[] = {
 /****************************/
 /*           from  to    eq            verify          reg           gen             fu  */
 _OE( _Un(    C,    ANY,  NONE ),       V_OP1ZERO,      RG_8087_ZAP_ACC,G_UNKNOWN,    FU_NO ),
@@ -128,7 +129,7 @@ _OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_8087_ZAP_ACC,G_UNKNOWN
 _OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_,          G_UNKNOWN,      FU_NO ),
 };
 
-opcode_entry    Push87S[] = {
+const opcode_entry    Push87S[] = {
 /*****************************/
 /*           from  to    eq            verify          reg           gen             fu  */
 #if _TARGET & _TARG_IAPX86
@@ -142,7 +143,7 @@ _OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_8087,      G_UNKNOWN, 
 _OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_,          G_UNKNOWN,      FU_NO ),
 };
 
-opcode_entry    Push87D[] = {
+const opcode_entry    Push87D[] = {
 /*****************************/
 /*           from  to    eq            verify          reg           gen             fu  */
 #if _TARGET & _TARG_IAPX86
@@ -154,7 +155,7 @@ _OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_8087,      G_UNKNOWN, 
 _OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_,          G_UNKNOWN,      FU_NO ),
 };
 
-opcode_entry    Bin87[] = {
+const opcode_entry    Bin87[] = {
 /***************************/
 /*           op1   op2   res   eq      verify          reg           gen             fu  */
 _OE( _BinPP( C,    R|M|U,ANY,  NONE ), V_OP1ONE,       RG_8087,      G_UNKNOWN,      FU_NO ),
@@ -167,7 +168,7 @@ _OE( _BinPP( ANY,  ANY,  ANY,  NONE ), V_NO,           RG_8087,      G_UNKNOWN, 
 _OE( _Bin(   ANY,  ANY,  ANY,  NONE ), V_NO,           RG_,          G_UNKNOWN,      FU_NO ),
 };
 
-opcode_entry    Bin87Func[] = {
+const opcode_entry    Bin87Func[] = {
 /*****************************/
 /*           op1   op2   res   eq      verify          reg           gen             fu  */
 _OE( _Bin(   C,    R|M|U,ANY,  NONE ), V_OP1ONE,       RG_8087_ZAP_ACC,G_UNKNOWN,    FU_NO ),
@@ -180,7 +181,7 @@ _OE( _Bin(   ANY,  ANY,  ANY,  NONE ), V_NO,           RG_8087_ZAP_ACC,G_UNKNOWN
 _OE( _Bin(   ANY,  ANY,  ANY,  NONE ), V_NO,           RG_,          G_UNKNOWN,      FU_NO ),
 };
 
-opcode_entry    Cmp87[] = {
+const opcode_entry    Cmp87[] = {
 /***************************/
 /*           op1   op2                 verify          reg           gen             fu  */
 _OE( _SidCC( C,    ANY  ),             V_OP1ONE,       RG_8087_ZAP_ACC,G_UNKNOWN,    FU_NO ),

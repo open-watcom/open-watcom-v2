@@ -32,7 +32,6 @@
 
 #include "_cgstd.h"
 #include "coderep.h"
-#include "tabledef.h"
 #include "system.h"
 #include "zoiks.h"
 #include "cfloat.h"
@@ -49,6 +48,7 @@
 #include "optimize.h"
 #include "objout.h"
 #include "liveinfo.h"
+#include "opctable.h"
 
 
 extern  instruction     *rDOCVT(instruction*);
@@ -90,8 +90,6 @@ extern instruction      *rSPLITUNARY( instruction * );
 extern  instruction     *rSEX_4TO8( instruction * );
 extern  instruction     *rCLRHI_4( instruction * );
 extern  instruction     *rMOVELOW( instruction * );
-
-extern  opcode_entry    *OpcodeTable( table_def );
 
 #if 0
 extern  name            *AddrConst( name *, int, constant_class );
