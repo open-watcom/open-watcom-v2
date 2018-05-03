@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,9 +50,8 @@
 #include "x86segs.h"
 #include "confldef.h"
 #include "liveinfo.h"
+#include "_x86half.h"
 
-
-extern  name            *IntEquivalent(name*);
 
 bool    IndexOverlaps( instruction *ins, opcnt i )
 /************************************************/
@@ -79,9 +78,9 @@ bool    IndexOverlaps( instruction *ins, opcnt i )
 #endif
 
 
-extern  instruction     *rSPLITOP( instruction *ins ) {
-/****************************************************/
-
+instruction     *rSPLITOP( instruction *ins )
+/*******************************************/
+{
     instruction *new_ins;
     instruction *ins2;
     name        *temp;
@@ -150,9 +149,9 @@ extern  instruction     *rSPLITOP( instruction *ins ) {
 }
 
 
-extern  instruction     *rSPLITMOVE( instruction *ins ) {
-/******************************************************/
-
+instruction     *rSPLITMOVE( instruction *ins )
+/*********************************************/
+{
     instruction *new_ins;
     instruction *ins2;
     name        *temp;
@@ -192,9 +191,10 @@ extern  instruction     *rSPLITMOVE( instruction *ins ) {
     return( new_ins );
 }
 
-extern  instruction     *rSPLITNEG( instruction *ins ) {
-/******************************************************/
 
+instruction     *rSPLITNEG( instruction *ins )
+/********************************************/
+{
     name        *hi_res;
     name        *lo_res;
     name        *hi_src;
@@ -224,9 +224,9 @@ extern  instruction     *rSPLITNEG( instruction *ins ) {
     return( hi_ins );
 }
 
-extern  instruction     *rSPLITCMP( instruction *ins ) {
-/*********************************************************/
-
+instruction     *rSPLITCMP( instruction *ins )
+/********************************************/
+{
     name                *left;
     name                *right;
     instruction         *low = NULL;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -105,9 +105,10 @@ static  uint    SignedSizeClass64( signed_64 val ) {
     return( class );
 }
 
-extern  void    WVSrcCueLoc( void  ) {
-/***************************************/
+void    WVSrcCueLoc( void  )
+/**************************/
 // Leave a dword to be back patched with the offset of line info
+{
     temp_buff   temp;
 
     BuffStart( &temp, WT_NAME + NAME_CUEINFO );
@@ -116,18 +117,19 @@ extern  void    WVSrcCueLoc( void  ) {
     EndType( false );
 }
 
-extern  void    WVTypesEof( void ) {
-/***************************************/
+void    WVTypesEof( void )
+/************************/
 // Leave Eof indicator for types
+{
     temp_buff   temp;
 
     BuffStart( &temp, WT_NAME + NAME_EOF );
     EndType( false );
 }
 
-extern  dbg_type        WVFtnType( const char *name, dbg_ftn_type tipe ) {
-/************************************************************************/
-
+dbg_type        WVFtnType( const char *name, dbg_ftn_type tipe )
+/**************************************************************/
+{
     temp_buff   temp;
 
     NewType( &temp, WT_NAME + NAME_SCALAR );
@@ -138,9 +140,9 @@ extern  dbg_type        WVFtnType( const char *name, dbg_ftn_type tipe ) {
 }
 
 
-extern  dbg_type        WVScalar( const char *name, cg_type tipe ) {
-/******************************************************************/
-
+dbg_type        WVScalar( const char *name, cg_type tipe )
+/********************************************************/
+{
     temp_buff   temp;
 
     NewType( &temp, WT_NAME + NAME_SCALAR );
@@ -151,9 +153,9 @@ extern  dbg_type        WVScalar( const char *name, cg_type tipe ) {
 }
 
 
-extern  dbg_type        WVScope( const char *name ) {
-/***************************************************/
-
+dbg_type        WVScope( const char *name )
+/*****************************************/
+{
     temp_buff   temp;
 
     NewType( &temp, WT_NAME + NAME_SCOPE );
@@ -163,8 +165,8 @@ extern  dbg_type        WVScope( const char *name ) {
 }
 
 
-extern  void    WVDumpName( dbg_name name, dbg_type tipe )
-/********************************************************/
+void    WVDumpName( dbg_name name, dbg_type tipe )
+/************************************************/
 {
     temp_buff   temp;
 
@@ -182,8 +184,8 @@ extern  void    WVDumpName( dbg_name name, dbg_type tipe )
     EndType( true );
 }
 
-extern void WVBackRefType( dbg_name name, dbg_type tipe )
-/*******************************************************/
+void WVBackRefType( dbg_name name, dbg_type tipe )
+/************************************************/
 {
     offset      here;
     segment_id  old;
@@ -196,9 +198,9 @@ extern void WVBackRefType( dbg_name name, dbg_type tipe )
     SetOP( old );
 }
 
-extern  dbg_type        WVCharBlock( unsigned_32 len ) {
-/******************************************************/
-
+dbg_type        WVCharBlock( unsigned_32 len )
+/********************************************/
+{
     temp_buff   temp;
     int         class;
 
@@ -209,10 +211,9 @@ extern  dbg_type        WVCharBlock( unsigned_32 len ) {
     return( TypeIdx );
 }
 
-extern  dbg_type        WVIndCharBlock( back_handle len, cg_type len_type,
-                                        int off ) {
-/************************************************************************/
-
+dbg_type    WVIndCharBlock( back_handle len, cg_type len_type, int off )
+/**********************************************************************/
+{
     temp_buff   temp;
 
     NewType( &temp, WT_CHAR_BLOCK + NAME_CHAR_IND );
@@ -222,9 +223,9 @@ extern  dbg_type        WVIndCharBlock( back_handle len, cg_type len_type,
     return( TypeIdx );
 }
 
-extern  dbg_type        WVLocCharBlock( dbg_loc loc, cg_type len_type ) {
-/***********************************************************************/
-
+dbg_type        WVLocCharBlock( dbg_loc loc, cg_type len_type )
+/*************************************************************/
+{
     temp_buff   temp;
 
     NewType( &temp, WT_CHAR_BLOCK + NAME_CHAR_LOC );
@@ -235,11 +236,9 @@ extern  dbg_type        WVLocCharBlock( dbg_loc loc, cg_type len_type ) {
 }
 
 
-extern  dbg_type        WVFtnArray( back_handle dims, cg_type lo_bound_tipe,
-                                    cg_type num_elts_tipe, int off,
-                                    dbg_type base ) {
-/***************************************************************************/
-
+dbg_type    WVFtnArray( back_handle dims, cg_type lo_bound_tipe, cg_type num_elts_tipe, int off, dbg_type base )
+/**************************************************************************************************************/
+{
     temp_buff   temp;
 
     NewType( &temp, WT_ARRAY + FORTRAN_TYPE );
@@ -252,9 +251,9 @@ extern  dbg_type        WVFtnArray( back_handle dims, cg_type lo_bound_tipe,
 }
 
 
-extern  dbg_type        WVArray( dbg_type idx, dbg_type base ) {
-/**************************************************************/
-
+dbg_type        WVArray( dbg_type idx, dbg_type base )
+/****************************************************/
+{
     temp_buff   temp;
 
     NewType( &temp, WT_ARRAY + ARRAY_TYPE );
@@ -265,9 +264,9 @@ extern  dbg_type        WVArray( dbg_type idx, dbg_type base ) {
 }
 
 
-extern  dbg_type        WVIntArray( unsigned_32 hi, dbg_type base ) {
-/*******************************************************************/
-
+dbg_type        WVIntArray( unsigned_32 hi, dbg_type base )
+/*********************************************************/
+{
     uint        class;
     temp_buff   temp;
 
@@ -279,10 +278,9 @@ extern  dbg_type        WVIntArray( unsigned_32 hi, dbg_type base ) {
     return( TypeIdx );
 }
 
-extern  dbg_type        WVSubRange( signed_32 lo, signed_32 hi,
-                                    dbg_type base ) {
-/***************************************************/
-
+dbg_type        WVSubRange( signed_32 lo, signed_32 hi, dbg_type base )
+/*********************************************************************/
+{
     uint        class_lo;
     uint        class_hi;
     temp_buff   temp;
@@ -299,6 +297,7 @@ extern  dbg_type        WVSubRange( signed_32 lo, signed_32 hi,
     EndType( true );
     return( TypeIdx );
 }
+
 #if 0
 static  void    ReverseDims( dbg_array ar )
 /*****************************************/
@@ -319,8 +318,9 @@ static  void    ReverseDims( dbg_array ar )
     ar->list = head;
 }
 #endif
-extern  dbg_type    WVEndArray( dbg_array ar )
-/********************************************/
+
+dbg_type    WVEndArray( dbg_array ar )
+/************************************/
 {
     dim_any   *dim;
     dbg_type  ret = 0;
@@ -373,22 +373,21 @@ static  dbg_type        DbgPtr( cg_type ptr_type, dbg_type base, int adjust,
 }
 
 
-extern  dbg_type        WVDereference( cg_type ptr_type, dbg_type base ) {
-/************************************************************************/
-
+dbg_type        WVDereference( cg_type ptr_type, dbg_type base )
+/**************************************************************/
+{
     return( DbgPtr( ptr_type, base, DEREF_NEAR - POINTER_NEAR, NULL ) );
 }
 
-extern  dbg_type        WVPtr( cg_type ptr_type, dbg_type base ) {
-/****************************************************************/
-
+dbg_type        WVPtr( cg_type ptr_type, dbg_type base )
+/******************************************************/
+{
     return( DbgPtr( ptr_type, base, 0, NULL ) );
 }
 
-extern  dbg_type        WVBasedPtr( cg_type ptr_type, dbg_type base,
-                                        dbg_loc loc_segment ) {
-/****************************************************************/
-
+dbg_type        WVBasedPtr( cg_type ptr_type, dbg_type base, dbg_loc loc_segment )
+/********************************************************************************/
+{
     return( DbgPtr( ptr_type, base, 0, loc_segment ) );
 }
 
@@ -442,8 +441,8 @@ static  void    SortFields( dbg_struct st )
 }
 
 
-extern  dbg_type        WVEndStruct( dbg_struct st )
-/**************************************************/
+dbg_type        WVEndStruct( dbg_struct st )
+/******************************************/
 {
     field_any   *field;
     uint        class;
@@ -516,8 +515,8 @@ extern  dbg_type        WVEndStruct( dbg_struct st )
 }
 
 
-extern  dbg_type        WVEndEnum( dbg_enum en )
-/**********************************************/
+dbg_type        WVEndEnum( dbg_enum en )
+/**************************************/
 {
     const_entry *cons;
     uint        class;
@@ -550,8 +549,8 @@ extern  dbg_type        WVEndEnum( dbg_enum en )
 }
 
 
-extern  dbg_type        WVEndProc( dbg_proc pr )
-/**********************************************/
+dbg_type        WVEndProc( dbg_proc pr )
+/**************************************/
 {
     parm_entry  *parm;
     temp_buff   temp;
@@ -619,10 +618,11 @@ static void DmpFileInfo( void ){
     }
 }
 
-extern void WVDmpCueInfo( long_offset where ){
-/**************************************************/
+void WVDmpCueInfo( long_offset where )
+/************************************/
 // Assume here is offset from first dbgtype segment to here
 // and we are in our segement for writing
+{
     cue_ctl    *ctl;
     cue_blk    *blk;
     cue_state  *curr;

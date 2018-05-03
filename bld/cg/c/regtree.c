@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,6 +38,7 @@
 #include "zoiks.h"
 #include "rgtbl.h"
 #include "conflict.h"
+#include "regtree.h"
 
 
 static  pointer         *RegFrl;
@@ -102,8 +103,8 @@ static  void    FreeRegSet( hw_reg_set *regs )
 }
 
 
-extern  bool    RegTreeFrlFree( void )
-/************************************/
+bool    RegTreeFrlFree( void )
+/****************************/
 {
     bool        freed;
 
@@ -279,8 +280,8 @@ static  reg_tree        *BuildTree( name *alias, name *master,
 }
 
 
-extern  void    BurnRegTree( reg_tree *tree )
-/*******************************************/
+void    BurnRegTree( reg_tree *tree )
+/***********************************/
 {
     if( tree != NULL ) {
         BurnRegTree( tree->lo );
@@ -464,23 +465,23 @@ static  bool    Intersect( reg_tree *tree )
 }
 
 
-extern  void    BurnNameTree( reg_tree *tree )
-/********************************************/
+void    BurnNameTree( reg_tree *tree )
+/************************************/
 {
     BurnRegTree( tree );
 }
 
 
-extern  void    RegTreeInit( void )
-/*********************************/
+void    RegTreeInit( void )
+/*************************/
 {
     InitFrl( &RegFrl );
     InitFrl( &TreeFrl );
 }
 
 
-extern  void    BuildNameTree( conflict_node *conf )
-/**************************************************/
+void    BuildNameTree( conflict_node *conf )
+/******************************************/
 {
     name        *temp;
     reg_tree    *tree;
@@ -499,8 +500,8 @@ extern  void    BuildNameTree( conflict_node *conf )
 }
 
 
-extern  void    BuildRegTree( conflict_node *conf )
-/*************************************************/
+void    BuildRegTree( conflict_node *conf )
+/*****************************************/
 {
     name        *temp;
     reg_tree    *tree;

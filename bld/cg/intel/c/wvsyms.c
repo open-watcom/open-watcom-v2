@@ -44,12 +44,12 @@
 #include "objio.h"
 #include "x86dbsup.h"
 #include "dbsupp.h"
+#include "wvtypes.h"
+#include "x86objd.h"
+#include "x86obj.h"
 #include "feprotos.h"
 #include "cgprotos.h"
 
-
-extern  void            SetUpObj(bool);
-extern  void            WVSrcCueLoc( void  );
 
 /* forward declarations */
 static  void            DumpDbgBlkStart( dbg_block *blk, offset lc );
@@ -59,34 +59,34 @@ static  void            DumpDbgBlk( dbg_block *blk, offset lc );
 
 static  offset          CodeOffset;
 
-extern  void    WVInitDbgInfo( void )
-/***********************************/
+void    WVInitDbgInfo( void )
+/***************************/
 {
     TypeIdx   = 0;
     DbgLocals = 0;
     DbgTypes  = 0;
 }
 
-extern  void    WVObjInitDbgInfo( void )
-/**************************************/
+void    WVObjInitDbgInfo( void )
+/******************************/
 // Called right after define seg's in Obj
 {
     WVSrcCueLoc();
 }
 
-extern  void    WVFiniDbgInfo( void )
-/***********************************/
+void    WVFiniDbgInfo( void )
+/***************************/
 {
 }
 
-extern  void    WVObjFiniDbgInfo( void )
-/**************************************/
+void    WVObjFiniDbgInfo( void )
+/******************************/
 {
 }
 
-extern  void    WVGenStatic( cg_sym_handle sym, dbg_loc loc ) {
-/*******************************************************************/
-
+void    WVGenStatic( cg_sym_handle sym, dbg_loc loc )
+/***************************************************/
+{
     temp_buff   temp;
     dbg_type    tipe;
 
@@ -103,10 +103,9 @@ extern  void    WVGenStatic( cg_sym_handle sym, dbg_loc loc ) {
     BuffEnd( DbgLocals );
 }
 
-extern  void    WVSetBase( void ) {
-/****************************/
-
-
+void    WVSetBase( void )
+/***********************/
+{
     temp_buff   temp;
     back_handle bck;
 
@@ -123,8 +122,9 @@ extern  void    WVSetBase( void ) {
     }
 }
 
-extern  void    WVObjectPtr(  cg_type ptr_type ) {
-/**********************************************/
+void    WVObjectPtr(  cg_type ptr_type )
+/**************************************/
+{
     switch( TypeAddress( ptr_type )->refno ) {
     case TY_NEAR_POINTER:
     case TY_NEAR_CODE_PTR:
@@ -148,10 +148,9 @@ extern  void    WVObjectPtr(  cg_type ptr_type ) {
 
 
 
-extern  void    WVBlkEnd( dbg_block *blk, offset lc ) {
-/****************************************************/
-
-
+void    WVBlkEnd( dbg_block *blk, offset lc )
+/*******************************************/
+{
     temp_buff   temp;
 
     BuffStart( &temp, SYM_CODE + CODE_BLOCK );
@@ -161,10 +160,9 @@ extern  void    WVBlkEnd( dbg_block *blk, offset lc ) {
 }
 
 
-extern  void    WVRtnEnd( dbg_rtn *rtn, offset lc ) {
-/****************************************************/
-
-
+void    WVRtnEnd( dbg_rtn *rtn, offset lc )
+/*****************************************/
+{
     uint                count;
     dbg_local           *parm;
     dbg_local           *junk;

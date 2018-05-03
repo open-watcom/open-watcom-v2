@@ -52,6 +52,7 @@
 #include "dbsyms.h"
 #include "dfsyms.h"
 #include "x86data.h"
+#include "dwarfsup.h"
 #include "cgprotos.h"
 
 
@@ -73,8 +74,8 @@ static struct dbg_seg_names DwarfSegNames[DW_DEBUG_MAX] = {
 };
 
 
-extern  void    DFDefSegs( void )
-/*******************************/
+void    DFDefSegs( void )
+/***********************/
 {
     if( _IsModel( DBG_LOCALS | DBG_TYPES ) ) {
         dw_sectnum  i;
@@ -163,9 +164,9 @@ static dw_regs  DFRegMap( hw_reg_set hw_reg )
     return( DW_REG_MAX );
 }
 
-extern  void   DFOutReg( dw_loc_id locid, name *reg ) {
-/***********************************************/
-
+void   DFOutReg( dw_loc_id locid, name *reg )
+/*******************************************/
+{
     hw_reg_set  hw_reg;
     hw_reg_set  hw_low;
     dw_regs     regnum;
@@ -203,8 +204,8 @@ extern  void   DFOutReg( dw_loc_id locid, name *reg ) {
     }
 }
 
-extern  void   DFOutRegInd( dw_loc_id locid, name *reg )
-/******************************************************/
+void   DFOutRegInd( dw_loc_id locid, name *reg )
+/**********************************************/
 {
     dw_regs     regnum;
 
@@ -212,7 +213,7 @@ extern  void   DFOutRegInd( dw_loc_id locid, name *reg )
     DWLocOp( Client, locid, DW_LOC_breg, regnum, 0 );
 }
 
-extern uint DFStkReg( void )
+uint DFStkReg( void )
 {
     dw_regs    ret;
     hw_reg_set stk;
@@ -222,7 +223,7 @@ extern uint DFStkReg( void )
     return( ret );
 }
 
-extern uint DFDisplayReg( void )
+uint DFDisplayReg( void )
 {
     dw_regs    ret;
     hw_reg_set dsp;
@@ -233,8 +234,9 @@ extern uint DFDisplayReg( void )
 }
 
 #define ABBREV_NAME  "___DFABBREV"
-extern void DFAbbrevRef( void ){
-/******************************/
+void DFAbbrevRef( void )
+/**********************/
+{
     back_handle bck;
 
     bck =  BENewBack( NULL );
@@ -242,7 +244,8 @@ extern void DFAbbrevRef( void ){
     BEFreeBack( bck );
 }
 
-extern void DFAbbrevDef( void ){
-/******************************/
+void DFAbbrevDef( void )
+/**********************/
+{
     OutBckExport( ABBREV_NAME, true );
 }

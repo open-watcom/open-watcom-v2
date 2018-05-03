@@ -79,22 +79,12 @@
 #include "temps.h"
 #include "varusage.h"
 #include "liveinfo.h"
+#include "regtree.h"
+#include "breakrtn.h"
+#include "condcode.h"
+#include "trecurse.h"
 #include "feprotos.h"
 
-
-extern  bool            SplitConflicts( void );
-extern  void            RegTreeInit( void );
-extern  void            OptCloseMoves( void );
-extern  void            Conditions( void );
-extern  void            FixIndex( void );
-extern  void            FixSegments( void );
-extern  void            FixMemRefs( void );
-extern  void            MergeIndex( void );
-extern  bool            CreateBreak( void );
-extern  void            FixBreak( void );
-extern  void            RemoveBreak( void );
-extern  instruction     *NeedIndex( instruction * );
-extern  bool            TailRecursion( void );
 
 static  bool            abortCG;
 

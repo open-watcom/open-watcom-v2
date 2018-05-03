@@ -64,7 +64,6 @@
 #include "feprotos.h"
 
 
-extern  bool            BaseIsSP( name * );
 extern  segment_id      AskCode16Seg( void );
 
 /* forward declarations */

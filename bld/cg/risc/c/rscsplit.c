@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,47 +49,9 @@
 #include "objout.h"
 #include "liveinfo.h"
 #include "opctable.h"
-
-
-extern  instruction     *rDOCVT(instruction*);
-extern  instruction     *rPUSHTOMOV(instruction*);
-extern  instruction     *rPOPTOMOV(instruction*);
-extern  instruction     *rCONSTLOAD(instruction*);
-extern  instruction     *rSIMPCMP(instruction*);
-extern  instruction     *rDOSET(instruction*);
-extern  instruction     *rDOLOAD(instruction*);
-extern  instruction     *rDOSTORE(instruction*);
-extern  instruction     *rOP1CMEM(instruction*);
-extern  instruction     *rOP2CMEM(instruction*);
-extern  instruction     *rDOTEST(instruction*);
-extern  instruction     *rCHANGETYPE(instruction*);
-extern  instruction     *rMOVEXX(instruction*);
-extern  instruction     *rBIN2INT(instruction*);
-extern  instruction     *rBIN2QUAD(instruction*);
-extern  instruction     *rSHR(instruction*);
-extern  instruction     *rLOAD_1(instruction*);
-extern  instruction     *rLOAD_2(instruction*);
-extern  instruction     *rLOAD_2U(instruction*);
-extern  instruction     *rLOAD_4U(instruction*);
-extern  instruction     *rLOAD_8U(instruction*);
-extern  instruction     *rSTORE_1(instruction*);
-extern  instruction     *rSTORE_2(instruction*);
-extern  instruction     *rSTORE_2U(instruction*);
-extern  instruction     *rSTORE_4U(instruction*);
-extern  instruction     *rSTORE_8U(instruction*);
-extern  instruction     *rMOVEXX_8(instruction*);
-extern  instruction     *rMOVEXX_4(instruction*);
-extern  instruction     *rMOD2DIV(instruction*);
-extern  instruction     *rALLOCA(instruction*);
-extern  instruction     *rM_SIMPCMP( instruction * );
-extern  instruction     *rSPLITOP( instruction * );
-extern  instruction     *rSPLITMOVE( instruction * );
-extern  instruction     *rSPLITCMP( instruction * );
-extern  instruction     *rSPLITNEG( instruction * );
-extern instruction      *rSPLITUNARY( instruction * );
-extern  instruction     *rSEX_4TO8( instruction * );
-extern  instruction     *rCLRHI_4( instruction * );
-extern  instruction     *rMOVELOW( instruction * );
+#include "rscsplit.h"
+#include "_split.h"
+#include "_rscsplit.h"
 
 #if 0
 extern  name            *AddrConst( name *, int, constant_class );
@@ -129,9 +91,9 @@ static instruction      *PromoteOperand( instruction *ins ) {
     return( NULL );
 }
 
-extern  instruction     *rDOSET( instruction *ins ) {
-/***************************************************/
-
+instruction     *rDOSET( instruction *ins )
+/*****************************************/
+{
     instruction         *new;
 
     switch( ins->head.opcode ) {
@@ -170,7 +132,7 @@ extern  instruction     *rDOSET( instruction *ins ) {
     return( ins );
 }
 
-extern instruction      *rSIMPCMP( instruction *ins )
+instruction      *rSIMPCMP( instruction *ins )
 /****************************************************
 * Simplify a comparison instruction for a platform that can't perform
 * arbitrary reg/reg comparisons.
@@ -233,9 +195,9 @@ extern instruction      *rSIMPCMP( instruction *ins )
     return( new );
 }
 
-extern instruction      *rDOTEST( instruction *ins ) {
-/****************************************************/
-
+instruction      *rDOTEST( instruction *ins )
+/*******************************************/
+{
     instruction         *first;
     instruction         *last;
     name                *temp;
@@ -263,9 +225,9 @@ extern instruction      *rDOTEST( instruction *ins ) {
     return( first );
 }
 
-extern instruction      *rPUSHTOMOV( instruction *ins ) {
-/*******************************************************/
-
+instruction      *rPUSHTOMOV( instruction *ins )
+/**********************************************/
+{
     instruction         *new_ins;
     instruction         *first_ins;
     instruction         *prom_ins;
@@ -287,9 +249,9 @@ extern instruction      *rPUSHTOMOV( instruction *ins ) {
     return( first_ins );
 }
 
-extern instruction      *rPOPTOMOV( instruction *ins ) {
-/******************************************************/
-
+instruction      *rPOPTOMOV( instruction *ins )
+/*********************************************/
+{
     instruction         *new_ins;
     instruction         *first_ins;
     instruction         *prom_ins;
@@ -332,23 +294,23 @@ static  instruction     *LoadFPConst( instruction *ins, name **constant ) {
     return( first_ins );
 }
 
-extern  instruction     *rOP1CMEM( instruction *ins ) {
-/*****************************************************/
-
+instruction     *rOP1CMEM( instruction *ins )
+/*******************************************/
+{
     ins = LoadFPConst( ins, &ins->operands[0] );
     return( ins );
 }
 
-extern  instruction     *rOP2CMEM( instruction *ins ) {
-/*****************************************************/
-
+instruction     *rOP2CMEM( instruction *ins )
+/*******************************************/
+{
     ins = LoadFPConst( ins, &ins->operands[1] );
     return( ins );
 }
 
-extern  instruction     *rCHANGETYPE( instruction *ins ) {
-/********************************************************/
-
+instruction     *rCHANGETYPE( instruction *ins )
+/**********************************************/
+{
     type_class_def              new;
 
     assert( ins->type_class == XX );
@@ -394,9 +356,9 @@ static void     UseAddress( name *op ) {
     }
 }
 
-extern  instruction     *rMOVEXX( instruction *ins ) {
-/****************************************************/
-
+instruction     *rMOVEXX( instruction *ins )
+/******************************************/
+{
     instruction         *first_ins;
     instruction         *new_ins;
     name                *len;
@@ -449,9 +411,9 @@ extern  instruction     *rMOVEXX( instruction *ins ) {
     return( first_ins );
 }
 
-extern  name            *TrimConst( name *c, type_class_def tipe ) {
-/******************************************************************/
-
+name        *TrimConst( name *c, type_class_def tipe )
+/****************************************************/
+{
     signed_32           value;
 
     switch( tipe ) {
@@ -530,9 +492,9 @@ static  instruction     *doPromote( instruction *ins, type_class_def tipe ) {
     return( ins );
 }
 
-extern  instruction     *rBIN2INT( instruction *ins ) {
-/*****************************************************/
-
+instruction     *rBIN2INT( instruction *ins )
+/*******************************************/
+{
     type_class_def      new;
 
     new = I4;
@@ -542,9 +504,9 @@ extern  instruction     *rBIN2INT( instruction *ins ) {
     return( doPromote( ins, new ) );
 }
 
-extern  instruction     *rBIN2QUAD( instruction *ins ) {
-/******************************************************/
-
+instruction     *rBIN2QUAD( instruction *ins )
+/********************************************/
+{
     type_class_def      new;
 
     new = I8;
@@ -555,15 +517,15 @@ extern  instruction     *rBIN2QUAD( instruction *ins ) {
     return( doPromote( ins, new ) );
 }
 
-extern  bool    UnChangeable( instruction *ins )
-/**********************************************/
+bool    UnChangeable( instruction *ins )
+/**************************************/
 {
     /* unused parameters */ (void)ins;
 
     return( false );
 }
 
-extern  name    *Int64Equivalent( name *name )
+name    *Int64Equivalent( name *name )
 /*********************************************
 * Return a U64 equivalent of a double value
 */
@@ -574,7 +536,7 @@ extern  name    *Int64Equivalent( name *name )
     return( AllocU64Const( *(unsigned_32 *)( defn->value + 0 ), *(unsigned_32 *)( defn->value + 2 ) ) );
 }
 
-extern  name    *LowPart( name *tosplit, type_class_def class )
+name    *LowPart( name *tosplit, type_class_def class )
 /**************************************************************
 * Return the low (of type 'class') part of name 'tosplit'
 * Note: There may not be any need to support splitting to
@@ -656,7 +618,7 @@ extern  name    *LowPart( name *tosplit, type_class_def class )
     return( new );
 }
 
-extern  name    *HighPart( name *tosplit, type_class_def class )
+name    *HighPart( name *tosplit, type_class_def class )
 /***************************************************************
 * Return the high (of type 'class') part of name 'tosplit'
 * Note: There may not be any need to support splitting to
@@ -739,9 +701,9 @@ extern  name    *HighPart( name *tosplit, type_class_def class )
     return( new );
 }
 
-extern  name    *OffsetMem( name *mem, type_length offset, type_class_def tipe ) {
-/********************************************************************************/
-
+name    *OffsetMem( name *mem, type_length offset, type_class_def tipe )
+/**********************************************************************/
+{
     name                *new_mem;
 
     if( mem->n.class == N_INDEXED ) {
@@ -755,9 +717,9 @@ extern  name    *OffsetMem( name *mem, type_length offset, type_class_def tipe )
     return( new_mem );
 }
 
-extern  instruction     *rSHR( instruction *ins ) {
-/*************************************************/
-
+instruction     *rSHR( instruction *ins )
+/***************************************/
+{
     type_class_def      target_type;
     name                *temp_1;
     name                *temp_2;
@@ -793,9 +755,9 @@ extern  instruction     *rSHR( instruction *ins ) {
     return( first_ins );
 }
 
-extern  instruction     *rMOVEXX_4( instruction *ins ) {
-/******************************************************/
-
+instruction     *rMOVEXX_4( instruction *ins )
+/********************************************/
+{
     name        *temp;
     name        *src;
     name        *dst;
@@ -891,232 +853,7 @@ extern  instruction     *rMOVEXX_4( instruction *ins ) {
 }
 
 
-static  void  CnvOpToInt( instruction * ins, opcnt op )
-/*****************************************************/
-{
-    name        *name1;
-
-    switch( ins->type_class ) {
-#if 0
-    case FS:
-        name1 = ins->operands[op];
-        if( name1->n.class == N_CONSTANT ) {
-            ins->operands[op] = IntEquivalent( name1 );
-        }
-        break;
-#endif
-    // this is for the I8 stuff - can't tell what to do in
-    // HighPart and LowPart if we don't get rid on constant
-    // here
-    case FD:
-        name1 = ins->operands[op];
-        if( name1->n.class == N_CONSTANT ) {
-            ins->operands[op] = Int64Equivalent( name1 );
-        }
-        break;
-    default:
-        break;
-    }
-}
-
-
-static bool IndexOverlaps( instruction *ins, opcnt i )
-/****************************************************/
-{
-    if( ins->operands[i]->n.class != N_INDEXED )
-        return( false );
-    if( SameThing( ins->operands[i]->i.index, ins->result ) )
-        return( true );
-    return( false );
-}
-
-/* Note: This could be used for 128-bit types implemented on top of
- * 64-bit regs or anything along those lines.
- */
-#define WORD                U4
-#define LONG_WORD           U8
-#define HIGH_WORD( x )      ((x)->c.hi.uint_value)
-
-/* NB: The following routines are clones of their Intel counterparts
- * with all segment related junk stripped off.
- */
-
-extern  instruction     *rSPLITOP( instruction *ins )
-/****************************************************
-* Split a multi-word operation instruction.
-*/
-{
-    instruction *new_ins;
-    instruction *ins2;
-    name        *temp;
-
-    if( IndexOverlaps( ins, 0 ) || IndexOverlaps( ins, 1 ) ) {
-        temp = AllocTemp( LONG_WORD );
-        HalfType( ins );
-        new_ins = MakeBinary( ins->head.opcode,
-                        LowPart( ins->operands[0], WORD ),
-                        LowPart( ins->operands[1], WORD ),
-                        LowPart( temp,             WORD ),
-                        WORD );
-        ins2 = MakeBinary( ins->head.opcode,
-                        HighPart( ins->operands[0], WORD ),
-                        HighPart( ins->operands[1], WORD ),
-                        HighPart( temp,             WORD ),
-                        WORD );
-        if( ins->head.opcode == OP_ADD ) {
-            ins2->head.opcode = OP_EXT_ADD;
-        } else if( ins->head.opcode == OP_SUB ) {
-            ins2->head.opcode = OP_EXT_SUB;
-        }
-        ins2->table = CodeTable( ins2 );
-        new_ins->table = ins2->table;
-        ins->operands[0] = temp;
-        ins->operands[1] = temp;
-        PrefixIns( ins, new_ins );
-        PrefixIns( ins, ins2 );
-        ins2 = MakeMove( LowPart( temp, WORD ), LowPart( ins->result, WORD ), WORD );
-        PrefixIns( ins, ins2 );
-        ins2 = MakeMove( HighPart( temp, WORD ),
-                          HighPart( ins->result, WORD ), WORD );
-        ReplIns( ins, ins2 );
-    } else {
-        HalfType( ins );
-        new_ins = MakeBinary( ins->head.opcode,
-                        LowPart( ins->operands[0], ins->type_class ),
-                        LowPart( ins->operands[1], ins->type_class ),
-                        LowPart( ins->result,      ins->type_class ),
-                        ins->type_class );
-        ins->operands[0] = HighPart( ins->operands[0], ins->type_class );
-        ins->operands[1] = HighPart( ins->operands[1], ins->type_class );
-        ins->result = HighPart( ins->result, ins->type_class );
-        if( ins->head.opcode == OP_ADD ) {
-            ins->head.opcode = OP_EXT_ADD;
-        } else if( ins->head.opcode == OP_SUB ) {
-            ins->head.opcode = OP_EXT_SUB;
-        }
-        ins->table = CodeTable( ins );
-        new_ins->table = ins->table;
-
-        PrefixIns( ins, new_ins );
-    }
-    new_ins->ins_flags |= INS_CC_USED;
-    return( new_ins );
-}
-
-
-extern instruction *rSPLITMOVE( instruction *ins )
-/*************************************************
-* Split a multi-word move instruction.
-*/
-{
-    instruction     *new_ins;
-    instruction     *ins2;
-    name            *temp;
-
-    CnvOpToInt( ins, 0 );
-    if( IndexOverlaps( ins, 0 ) ) {
-        temp = AllocTemp( LONG_WORD );
-        new_ins = MakeMove( LowPart( ins->operands[0], WORD ),
-                             LowPart( temp, WORD ), WORD );
-        ins2 = MakeMove( HighPart( ins->operands[0], WORD ),
-                             HighPart( temp, WORD ), WORD );
-        ins->operands[0] = temp;
-        PrefixIns( ins, new_ins );
-        PrefixIns( ins, ins2 );
-        ins2 = MakeMove( LowPart( temp, WORD ), LowPart( ins->result, WORD ), WORD );
-        PrefixIns( ins, ins2 );
-        ins2 = MakeMove( HighPart( temp, WORD ),
-                          HighPart( ins->result, WORD ), WORD );
-        ReplIns( ins, ins2 );
-    } else {
-        HalfType( ins );
-        new_ins = MakeMove( LowPart( ins->operands[0], ins->type_class ),
-                             LowPart( ins->result, ins->type_class ),
-                             ins->type_class );
-        ins->operands[0] = HighPart( ins->operands[0], ins->type_class );
-        ins->result = HighPart( ins->result, ins->type_class );
-        if( new_ins->result->n.class == N_REGISTER
-         && ins->operands[0]->n.class == N_REGISTER
-         && HW_Ovlap( new_ins->result->r.reg, ins->operands[0]->r.reg ) ) {
-            SuffixIns( ins, new_ins );
-            new_ins = ins;
-        } else {
-            PrefixIns( ins, new_ins );
-        }
-    }
-    return( new_ins );
-}
-
-
-extern  instruction     *rSPLITNEG( instruction *ins )
-/*****************************************************
-* Split a multi-word negate instruction.
-*/
-{
-    name            *hi_res;
-    name            *lo_res;
-    name            *hi_src;
-    name            *lo_src;
-    instruction     *hi_ins;
-    instruction     *lo_ins;
-    instruction     *subtract;
-
-    HalfType( ins );
-    hi_res = HighPart( ins->result, ins->type_class );
-    hi_src = HighPart( ins->operands[0], ins->type_class );
-    lo_res = LowPart( ins->result, ins->type_class );
-    lo_src = LowPart( ins->operands[0], ins->type_class );
-    hi_ins = MakeUnary( OP_NEGATE, hi_src, hi_res, ins->type_class );
-    lo_ins = MakeUnary( OP_NEGATE, lo_src, lo_res, ins->type_class );
-    lo_ins->ins_flags |= INS_CC_USED;
-    subtract = MakeBinary( OP_EXT_SUB, hi_res, AllocIntConst( 0 ), hi_res,
-                            ins->type_class );
-    PrefixIns( ins, hi_ins );
-    ins->operands[0] = ins->result;
-    ins->operands[1] = AllocIntConst( 0 );
-    PrefixIns( ins, lo_ins );
-    ReplIns( ins, subtract );
-    UpdateLive( hi_ins, subtract );
-    return( hi_ins );
-}
-
-
-extern instruction      *rSPLITUNARY( instruction *ins )
-/*******************************************************
-* Split a multi-word unary operation. Only valid for ops
-* which can be split into two independent operations on
-* constituent types (e.g. bitwise complement).
-*/
-{
-    instruction         *new_ins;
-    name                *high_res;
-    name                *low_res;
-
-    CnvOpToInt( ins, 0 );
-    HalfType( ins );
-    if( ins->result == NULL ) {
-        high_res = NULL;
-        low_res = NULL;
-    } else {
-        high_res = HighPart( ins->result, ins->type_class );
-        low_res  = LowPart( ins->result, ins->type_class );
-    }
-    new_ins = MakeUnary( ins->head.opcode,
-                         LowPart( ins->operands[0], ins->type_class ),
-                         low_res, ins->type_class );
-    ins->operands[0] = HighPart( ins->operands[0],ins->type_class );
-    ins->result = high_res;
-    if( ins->head.opcode == OP_PUSH ) {
-        SuffixIns( ins, new_ins );
-        new_ins = ins;
-    } else {
-        PrefixIns( ins, new_ins );
-    }
-    return( new_ins );
-}
-
-
-extern  instruction     *rCLRHI_4( instruction *ins )
+instruction     *rCLRHI_4( instruction *ins )
 /****************************************************
 * Clear the high 32 bits of a 64-bit name
 */
@@ -1138,7 +875,7 @@ extern  instruction     *rCLRHI_4( instruction *ins )
 }
 
 
-extern  instruction     *rSEX_4TO8( instruction *ins )
+instruction     *rSEX_4TO8( instruction *ins )
 /*****************************************************
 * Sign-extend a 32-bit name to 64-bit
 */
@@ -1161,146 +898,7 @@ extern  instruction     *rSEX_4TO8( instruction *ins )
 }
 
 
-extern  instruction     *rSPLITCMP( instruction *ins )
-/*****************************************************
-* Split a multi-word comparison instruction
-*/
-{
-    name                *left;
-    name                *right;
-    instruction         *low = NULL;
-    instruction         *high = NULL;
-    instruction         *not_equal = NULL;
-    type_class_def      high_class;
-    type_class_def      low_class;
-    byte                true_idx;
-    byte                false_idx;
-
-    high_class = HalfClass[ins->type_class];
-    low_class  = Unsigned[high_class];
-    left = ins->operands[0];
-    right = ins->operands[1];
-    true_idx = _TrueIndex( ins );
-    false_idx = _FalseIndex( ins );
-    switch( ins->head.opcode ) {
-    case OP_BIT_TEST_TRUE:
-        high = MakeCondition( ins->head.opcode,
-                        HighPart( left, high_class ),
-                        HighPart( right, high_class ),
-                        true_idx, NO_JUMP,
-                        WORD );
-        low = MakeCondition( ins->head.opcode,
-                        LowPart( left, low_class ),
-                        LowPart( right, low_class ),
-                        true_idx, false_idx,
-                        WORD );
-        not_equal = NULL;
-        break;
-    case OP_BIT_TEST_FALSE:
-        high = MakeCondition( OP_BIT_TEST_TRUE,
-                        HighPart( left, high_class ),
-                        HighPart( right, high_class ),
-                        false_idx, NO_JUMP,
-                        WORD );
-        low = MakeCondition( ins->head.opcode,
-                        LowPart( left, low_class ),
-                        LowPart( right, low_class ),
-                        true_idx, false_idx,
-                        WORD );
-        not_equal = NULL;
-        break;
-    case OP_CMP_EQUAL:
-        high = MakeCondition( OP_CMP_NOT_EQUAL,
-                        HighPart( left, high_class ),
-                        HighPart( right, high_class ),
-                        false_idx, NO_JUMP,
-                        WORD );
-        low = MakeCondition( ins->head.opcode,
-                        LowPart( left, low_class ),
-                        LowPart( right, low_class ),
-                        true_idx, false_idx,
-                        WORD );
-        not_equal = NULL;
-        break;
-    case OP_CMP_NOT_EQUAL:
-        high = MakeCondition( OP_CMP_NOT_EQUAL,
-                        HighPart( left, high_class ),
-                        HighPart( right, high_class ),
-                        true_idx, NO_JUMP,
-                        WORD );
-        low = MakeCondition( ins->head.opcode,
-                        LowPart( left, low_class ),
-                        LowPart( right, low_class ),
-                        true_idx, false_idx,
-                        WORD );
-        not_equal = NULL;
-        break;
-    case OP_CMP_LESS:
-    case OP_CMP_LESS_EQUAL:
-        not_equal = MakeCondition( OP_CMP_NOT_EQUAL,
-                        HighPart( left, high_class ),
-                        HighPart( right, high_class ),
-                        false_idx, NO_JUMP,
-                        high_class );
-        if( high_class == WORD
-         && right->n.class == N_CONSTANT
-         && right->c.const_type == CONS_ABSOLUTE
-         && HIGH_WORD( right ) == 0 ) {
-            high = NULL;
-        } else {
-            high = MakeCondition( OP_CMP_LESS,
-                        not_equal->operands[0], not_equal->operands[1],
-                        true_idx, NO_JUMP,
-                        high_class );
-        }
-        low = MakeCondition( ins->head.opcode,
-                        LowPart( left, low_class ),
-                        LowPart( right, low_class ),
-                        true_idx, false_idx,
-                        low_class );
-        break;
-    case OP_CMP_GREATER_EQUAL:
-    case OP_CMP_GREATER:
-        not_equal = MakeCondition( OP_CMP_NOT_EQUAL,
-                        HighPart( left, high_class ),
-                        HighPart( right, high_class ),
-                        false_idx, NO_JUMP,
-                        high_class );
-        if( high_class == WORD
-         && right->n.class == N_CONSTANT
-         && right->c.const_type == CONS_ABSOLUTE
-         && HIGH_WORD( right ) == 0 ) {
-            _SetBlockIndex( not_equal, true_idx, NO_JUMP );
-            high = NULL;
-        } else {
-            high = MakeCondition( OP_CMP_GREATER,
-                        not_equal->operands[0], not_equal->operands[1],
-                        true_idx, NO_JUMP,
-                        high_class );
-        }
-        low = MakeCondition( ins->head.opcode,
-                        LowPart( left, low_class ),
-                        LowPart( right, low_class ),
-                        true_idx, false_idx,
-                        low_class );
-        break;
-    default:
-        break;
-    }
-    if( high != NULL ) {
-        PrefixIns( ins, high );
-    } else {
-        high = not_equal;              /* for return value */
-    }
-    if( not_equal != NULL ) {
-        PrefixIns( ins, not_equal );
-    }
-    ReplIns( ins, low );
-    return( high );
-}
-
-
-extern instruction      *rMOVELOW( instruction *ins )
+instruction      *rMOVELOW( instruction *ins )
 /****************************************************
 * Move low part of a name, in other words chop off the
 * high part (e.g. convert U8==>U4)

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,10 +52,12 @@
 #include "conflict.h"
 #include "cse.h"
 #include "dataflo.h"
+#include "savings.h"
 #include "regsave.h"
 #include "varusage.h"
 #include "liveinfo.h"
 #include "cachecon.h"
+#include "regtree.h"
 
 
 enum allocation_state {
@@ -63,15 +65,6 @@ enum allocation_state {
     ALLOC_BITS,
     ALLOC_CONST_TEMP
 };
-
-extern  void            BurnRegTree(reg_tree *);
-extern  void            BuildNameTree(conflict_node *);
-extern  void            BurnNameTree(reg_tree *);
-extern  bool            WorthProlog(conflict_node *,hw_reg_set);
-extern  void            BuildRegTree(conflict_node *);
-extern  void            AddSegment(instruction *);
-extern  void            ConstSavings(void);
-
 
 static  bool    ContainedIn( name *name1, name *name2 ) {
 /********************************************************

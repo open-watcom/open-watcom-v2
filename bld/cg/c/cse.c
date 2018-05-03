@@ -81,8 +81,6 @@ typedef enum {
         RESULT_DIES
 } who_dies;
 
-extern float_handle     CnvCFToType(float_handle,type_def*);
-
 /* forward declarations */
 static void             TreeBits( block *root );
 static void             DeleteFromList( instruction **owner, instruction *ins, instruction *new );

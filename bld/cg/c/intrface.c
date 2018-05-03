@@ -62,6 +62,8 @@
 #include "memout.h"
 #include "memmgt.h"
 #include "bgcall.h"
+#include "savings.h"
+#include "regsave.h"
 #include "feprotos.h"
 #include "cgprotos.h"
 
@@ -70,12 +72,6 @@
 #include <stdlib.h>
 #endif
 
-extern  void            InitWeights(uint);
-extern  void            TInit(void);
-extern  void            SillyMemLimit(void);
-extern  void            TFini(void);
-extern  an              TGen(tn,type_def*);
-extern  an              BGSave(an);
 
 #ifdef QNX_FLAKEY
 unsigned        OrigModel;

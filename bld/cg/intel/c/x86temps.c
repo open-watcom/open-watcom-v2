@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,11 +39,10 @@
 #include "namelist.h"
 #include "optab.h"
 #include "temps.h"
+#include "split.h"
+#include "regsave.h"
+#include "x86temps.h"
 
-
-extern  bool            UnChangeable(instruction*);
-
-extern  savings         Save;
 
 static  void    AssignPushLocals( void );
 
@@ -119,7 +118,7 @@ static  void    AssignPushLocals( void ) {
 }
 
 
-extern  void    AdjustPushLocal( name *temp ) {
+void    AdjustPushLocal( name *temp )
 /**********************************************
     Adjust the location field of a push local, and all its aliases.
     Before this routine is called, the location field just contains
@@ -128,7 +127,7 @@ extern  void    AdjustPushLocal( name *temp ) {
     which is set by I86PROC.C, and cannot be known until we know just
     what kind of prolog we're generating.
 */
-
+{
     name        *scan;
 
     if( (temp->t.temp_flags & PUSH_LOCAL) == 0 ) { /* if not already adjusted*/
@@ -153,13 +152,13 @@ void    SetTempLocation( name *temp, type_length size )
 }
 
 
-extern  void    RelocParms( void ) {
+void    RelocParms( void )
 /*****************************
     Relocate parameter locations based on what type of prolog we generated,
     how many registers were pushed on the stack, and all that other stuff
     figured out by GenProlog
 */
-
+{
     name        *name;
 
     for( name = Names[N_TEMP]; name != NULL; name = name->n.next_name ) {

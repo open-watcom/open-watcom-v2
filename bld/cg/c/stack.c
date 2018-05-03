@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,6 +40,8 @@
 #include "memout.h"
 #include "cypfunc.h"
 #include "onexit.h"
+#include "memmgt.h"
+
 
 extern char __near      *bp( void );
 #pragma aux bp = 0x89 0xe8 value [eax];
@@ -51,8 +54,6 @@ extern void             setsp( void __near * );
 
 extern void             setbp( void __near * );
 #pragma aux setbp = 0x89 0xc5 parm [eax];
-
-extern  mem_out_action  SetMemOut(mem_out_action);
 
 void    *SafeRecurseCG( func_sr rtn, void *arg )
 /**********************************************/

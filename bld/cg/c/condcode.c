@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,6 +39,7 @@
 #include "insdead.h"
 #include "optab.h"
 #include "overlap.h"
+#include "condcode.h"
 
 
 typedef enum {          /* in order of increasing amount of information */
@@ -347,7 +348,7 @@ static  void    FlowConditions( void )
 }
 
 
-extern  void    Conditions( void )
+void    Conditions( void )
 /*********************************
     Traverse the basic blocks and determine if there are any compare
     instructions that we can eliminate, since the condition codes are

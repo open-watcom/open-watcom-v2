@@ -37,9 +37,8 @@
 #include "model.h"
 #include "stack.h"
 #include "nullprop.h"
+#include "flood.h"
 
-
-typedef bool (*flood_func)( block *, void * );
 
 typedef struct stupid_struct_so_I_can_use_safe_recurse {
     block       *blk;
@@ -69,7 +68,7 @@ static void *doFloodForward( flood_parms *fp )
     return NULL;
 }
 
-extern void FloodForward( block *blk, flood_func func, void *parm )
+void FloodForward( block *blk, flood_func func, void *parm )
 {
     flood_parms parms;
 
@@ -100,7 +99,7 @@ static void *doFloodBackward( flood_parms *fp )
     return NULL;
 }
 
-extern void FloodBackwards( block *start, flood_func func, void *parm )
+void FloodBackwards( block *start, flood_func func, void *parm )
 /************************************************************************
     Flood backwards in the flow graph, calling the given function for each
     block as it is visited

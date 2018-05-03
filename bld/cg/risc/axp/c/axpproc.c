@@ -52,8 +52,6 @@
 #include "feprotos.h"
 
 
-extern  void            EmitFuncStart( label_handle cg_linenum );
-
 static  void    calcUsedRegs( void )
 /**********************************/
 {

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,13 +40,12 @@
 #include "makeblk.h"
 #include "insutil.h"
 #include "flograph.h"
+#include "flood.h"
 
 
-extern  bool            FloodForward( block *, bool (*)( block *, void * ), void * );
+static void             NewInterval( block *blk, level_depth level );
 
-static  void            NewInterval( block *blk, level_depth level );
-
-static    interval_def  *Intervals;
+static interval_def     *Intervals;
 
 
 static  void    Irreducable( void )

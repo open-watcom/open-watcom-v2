@@ -75,8 +75,8 @@ static dw_regs  DFRegMapN( name *reg )
 }
 
 
-extern  void    DFOutReg( dw_loc_id locid, name *reg )
-/****************************************************/
+void    DFOutReg( dw_loc_id locid, name *reg )
+/********************************************/
 {
     dw_regs     regnum;
 
@@ -85,8 +85,8 @@ extern  void    DFOutReg( dw_loc_id locid, name *reg )
 }
 
 
-extern  void    DFOutRegInd( dw_loc_id locid, name *reg )
-/*******************************************************/
+void    DFOutRegInd( dw_loc_id locid, name *reg )
+/***********************************************/
 {
     dw_regs     regnum;
 
@@ -95,8 +95,8 @@ extern  void    DFOutRegInd( dw_loc_id locid, name *reg )
 }
 
 
-extern uint     DFStkReg( void )
-/******************************/
+uint     DFStkReg( void )
+/***********************/
 {
     return( DFRegMap( StackReg() ) );
 }

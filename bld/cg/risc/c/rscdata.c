@@ -43,8 +43,6 @@
 #include "feprotos.h"
 
 
-extern  void            TellOptimizerByPassed( void );
-
 void    DataAlign( unsigned_32 align )
 /************************************/
 {

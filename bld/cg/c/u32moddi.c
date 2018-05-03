@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,10 +32,12 @@
 
 
 #include "_cgstd.h"
+#include "u32moddi.h"
 
-extern  unsigned_32     U32ModDiv( unsigned_32 *x, unsigned_32 y ) {
-/******************************************************************/
 
+unsigned_32     U32ModDiv( unsigned_32 *x, unsigned_32 y )
+/********************************************************/
+{
     unsigned_32 rem;
 
     rem = *x % y;

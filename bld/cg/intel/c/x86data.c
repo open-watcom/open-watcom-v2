@@ -52,8 +52,6 @@
 #include "feprotos.h"
 
 
-extern  bool            UseImportForm( fe_attr );
-
 static  void            DoLblPtr( label_handle lbl, segment_id seg, fix_class class, offset plus );
 
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -60,7 +60,7 @@ patch *BGNewPatch( void )
     return( p );
 }
 
-extern  an      TNPatch( tn node )
+an      TNPatch( tn node )
 {
     patch               *p;
     an                  addr;
@@ -76,14 +76,16 @@ extern  an      TNPatch( tn node )
     return( addr );
 }
 
-extern  cg_name BGPatchNode( patch *hdl, type_def *tipe ) {
+cg_name BGPatchNode( patch *hdl, type_def *tipe )
+{
     hdl->patched = true;
     hdl->in_tree = true;
     hdl->u.node = TGPatch( hdl, tipe );
     return( hdl->u.node );
 }
 
-extern  void    BGPatchInteger( patch *hdl, signed_32 value ) {
+void    BGPatchInteger( patch *hdl, signed_32 value )
+{
     tn                  node;
     name                *c;
 
@@ -100,6 +102,7 @@ extern  void    BGPatchInteger( patch *hdl, signed_32 value ) {
     }
 }
 
-extern  void    BGFiniPatch( patch *hdl ) {
+void    BGFiniPatch( patch *hdl )
+{
     CGFree( hdl );
 }

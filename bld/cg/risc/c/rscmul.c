@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,9 +33,11 @@
 #include "_cgstd.h"
 #include "coderep.h"
 #include "data.h"
+#include "multiply.h"
 
-extern  int     MulCost( unsigned_32 num )
-/****************************************/
+
+int     MulCost( unsigned_32 num )
+/********************************/
 {
     /* unused parameters */ (void)num;
 
@@ -43,20 +46,20 @@ extern  int     MulCost( unsigned_32 num )
     return( 5 );
 }
 
-extern  int     AddCost( void )
-/*****************************/
+int     AddCost( void )
+/*********************/
 {
     return( 1 );
 }
 
-extern  int     SubCost( void )
-/*****************************/
+int     SubCost( void )
+/*********************/
 {
     return( AddCost() );
 }
 
-extern  int     ShiftCost( int count )
-/************************************/
+int     ShiftCost( int count )
+/****************************/
 {
     /* unused parameters */ (void)count;
 

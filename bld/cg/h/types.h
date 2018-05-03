@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,9 +30,22 @@
 ****************************************************************************/
 
 
-extern  void            TypeInit( void );
-extern  type_def        *TypeAddress( cg_type tipe );
-extern  type_length     TypeLength( cg_type tipe );
-extern  type_def        *TypeAlias( cg_type define, cg_type existing );
-extern  type_def        *TypeDef( cg_type refno, type_length length, type_length align );
-extern  void            TypeFini( void );
+extern type_def     TNearCP;
+extern type_def     TLongCP;
+extern type_def     THugeCP;
+extern type_def     TNearP;
+extern type_def     TLongP;
+extern type_def     THugeP;
+
+extern type_def     *PTInteger;
+extern type_def     *PTUnsigned;
+extern type_def     *PTPointer;
+extern type_def     *PTCodePointer;
+
+extern void         TypeInit( void );
+extern type_def     *TypeAddress( cg_type tipe );
+extern type_length  TypeLength( cg_type tipe );
+extern type_def     *TypeAlias( cg_type define, cg_type existing );
+extern type_def     *TypeDef( cg_type refno, type_length length, type_length align );
+extern void         TypeFini( void );
+extern void         TargTypeInit( void );

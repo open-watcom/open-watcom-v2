@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -104,8 +104,8 @@ static  bool    (*OverlapTable[N_INDEXED + 1][N_INDEXED + 1])( name *, name * ) 
 /* N_REGISTER   */   {  ovNo,   ovNo,   ovNo,   ovReg,  ovUses },
 /* N_INDEX      */   {  ovNo,   ovNo,   ovNo,   ovNo,   ovIndex } };
 
-extern  bool    Overlaps( name *result, name *op )
-/************************************************/
+bool    Overlaps( name *result, name *op )
+/****************************************/
 {
     if( result == NULL || op == NULL )
         return( false );
@@ -114,7 +114,7 @@ extern  bool    Overlaps( name *result, name *op )
     return( OverlapTable[result->n.class][op->n.class]( result, op ) );
 }
 
-extern  bool    CondOverlaps( name *result, name *ccop )
+bool    CondOverlaps( name *result, name *ccop )
 /*******************************************************
     returns true if modifying "result" could cause "ccop"
     to be modified as well.

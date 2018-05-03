@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,9 +41,9 @@
 #include "blktrim.h"
 #include "expand.h"
 #include "revcond.h"
+#include "generate.h"
+#include "_split.h"
 
-
-extern  void            RemoveBlock( block * );
 
 /* This code looks for a sequence like the following:
  *
@@ -239,8 +239,8 @@ static  bool    FindFlowOut( block *blk )
 }
 
 
-extern  bool    SetOnCondition( void )
-/************************************/
+bool    SetOnCondition( void )
+/****************************/
 {
     block       *blk;
     bool        change;
@@ -255,8 +255,8 @@ extern  bool    SetOnCondition( void )
 }
 
 
-extern  reg_set_index   SpecialPossible( instruction *ins )
-/*********************************************************/
+reg_set_index   SpecialPossible( instruction *ins )
+/*************************************************/
 {
     if( ins->result == NULL )
         return( RL_ );

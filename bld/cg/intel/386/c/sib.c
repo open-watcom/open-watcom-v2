@@ -45,8 +45,6 @@ typedef enum {
     MODIFIES_REG        = 2,
 } mod_info;
 
-extern  bool            FoldIntoIndex( instruction * );
-
 static  bool    InsIsCandidate( instruction *ins )
 /************************************************/
 {

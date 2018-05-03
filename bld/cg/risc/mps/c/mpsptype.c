@@ -25,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  Mapping of cg to CPU specific types for MIPS.
+* Description:  MIPS architecture type mapping functions
 *
 ****************************************************************************/
 
@@ -34,9 +34,11 @@
 #include "coderep.h"
 #include "procdef.h"
 #include "zoiks.h"
+#include "maptypes.h"
 
-extern type_class_def MapIntReturn( cg_type type )
-/************************************************/
+
+type_class_def MapIntReturn( cg_type type )
+/*****************************************/
 {
     switch( type ) {
     case TY_INT_1:
@@ -58,7 +60,7 @@ extern type_class_def MapIntReturn( cg_type type )
 }
 
 
-extern type_class_def MapPointer( cg_type type )
+type_class_def MapPointer( cg_type type )
 /***********************************************
     return the internal type associated with
     pointer type given. This varies depending upon
@@ -79,7 +81,7 @@ extern type_class_def MapPointer( cg_type type )
 }
 
 
-extern  type_class_def  MapFloat( cg_type type, call_attributes attr )
+type_class_def  MapFloat( cg_type type, call_attributes attr )
 /*********************************************************************
     called by the return value generator to decide whether to treat
     floating point return values as floats or structs.
@@ -93,7 +95,7 @@ extern  type_class_def  MapFloat( cg_type type, call_attributes attr )
 }
 
 
-extern  type_class_def MapStruct( type_length length, call_attributes attr )
+type_class_def MapStruct( type_length length, call_attributes attr )
 /***************************************************************************
     called by the return value generator to decide whether to treat
     1/2/4 byte struct return values as ints or structs.

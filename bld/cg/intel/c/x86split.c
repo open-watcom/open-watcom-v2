@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,7 +44,6 @@
 #include "regalloc.h"
 #include "x86obj.h"
 #include "split.h"
-#include "x86splt2.h"
 #include "insutil.h"
 #include "rtcall.h"
 #include "inssegs.h"
@@ -55,64 +54,13 @@
 #include "x86segs.h"
 #include "liveinfo.h"
 #include "x86table.h"
+#include "x86rtrn.h"
+#include "_split.h"
+#include "_x86split.h"
+#include "_x86splt2.h"
+#include "_x86rtrn.h"
+#include "_x86half.h"
 
-
-extern  instruction     *ByteShift(instruction*);
-extern  instruction     *CheapShift(instruction*);
-extern  instruction     *ClrHighDbl(instruction*);
-extern  instruction     *ExtPush1(instruction*);
-extern  instruction     *ExtPush2(instruction*);
-extern  instruction     *HighCmp(instruction*);
-extern  instruction     *MakeFNeg(instruction*);
-extern  instruction     *MakeU2(instruction*);
-extern  instruction     *MakeU4(instruction*);
-extern  instruction     *Split4Neg(instruction*);
-extern  instruction     *SplitCPPush(instruction*);
-extern  instruction     *SplitCompare(instruction*);
-extern  instruction     *SplitMove(instruction*);
-extern  instruction     *SplitOp(instruction*);
-extern  instruction     *SplitFDPush(instruction*);
-extern  name            *Addressable(name*,type_class_def);
-extern  instruction     *SplitLoadAddr(instruction*);
-
-extern  instruction     *rDOCVT(instruction*);
-extern  instruction     *rMAKEFNEG(instruction*);
-extern  instruction     *rSPLITCMP(instruction*);
-extern  instruction     *rSPLITMOVE(instruction*);
-extern  instruction     *rSPLITOP(instruction*);
-extern  instruction     *rSPLITNEG(instruction*);
-extern  instruction     *rFLIPSIGN(instruction*);
-extern  instruction     *rTEMP2CONST(instruction*);
-extern  instruction     *rSAVEFACE(instruction*);
-extern  instruction     *rMULSAVEFACE(instruction*);
-extern  instruction     *rDOLONGPUSH( instruction * );
-extern  instruction     *rOP1CMEM( instruction * );
-extern  instruction     *rOP2CMEM( instruction * );
-extern  instruction     *rFSCONSCMP( instruction * );
-extern  instruction     *rHIGHLOWMOVE( instruction * );
-extern  instruction     *rMAKECYPMUL( instruction * );
-extern  instruction     *rMAKESTRCMP( instruction * );
-extern  instruction     *rMAKESTRMOVE( instruction * );
-extern  instruction     *rMOVELOW( instruction * );
-extern  instruction     *rMOVOP1MEM( instruction * );
-extern  instruction     *rOP2CL( instruction * );
-extern  instruction     *rOP2CX( instruction * );
-extern  instruction     *rSPLITUNARY( instruction * );
-extern  instruction     *rMULREGISTER( instruction * );
-extern  instruction     *rDIVREGISTER( instruction * );
-extern  instruction     *rCPSUB( instruction * );
-extern  instruction     *rPTSUB( instruction * );
-extern  instruction     *rU_TEST( instruction * );
-extern  instruction     *rEXTPT( instruction * );
-extern  instruction     *rMAYBSTRMOVE( instruction * );
-extern  instruction     *rSEG_SEG( instruction * );
-extern  instruction     *rCHPPT( instruction * );
-extern  instruction     *rMOVRESMEM( instruction * );
-extern  instruction     *rMAKEU4CONS( instruction * );
-extern  instruction     *rEXT_PUSHC( instruction * );
-extern  instruction     *rCMPCP( instruction * );
-extern  instruction     *rMOVPTI8( instruction * );
-extern  instruction     *rMOVI8PT( instruction * );
 
 instruction *(*ReduceTab[])( instruction * ) = {
     #define _R_( x, f )     f
@@ -121,15 +69,15 @@ instruction *(*ReduceTab[])( instruction * ) = {
 };
 
 
-extern  bool    UnChangeable( instruction *ins ) {
-/************************************************/
-
+bool    UnChangeable( instruction *ins )
+/**************************************/
+{
     return( IsString( ins->table ) );
 }
 
-extern instruction      *rSAVEFACE( instruction *ins ) {
-/******************************************************/
-
+instruction      *rSAVEFACE( instruction *ins )
+/*********************************************/
+{
     instruction         *new_ins;
 
     // we have a EDX:EAX op 1 or DX:AX op 1 here which the constant
@@ -139,9 +87,9 @@ extern instruction      *rSAVEFACE( instruction *ins ) {
     return( new_ins );
 }
 
-extern instruction      *rMULSAVEFACE( instruction *ins ) {
-/*********************************************************/
-
+instruction      *rMULSAVEFACE( instruction *ins )
+/************************************************/
+{
     instruction         *new_ins;
 
     // we have a r1 mul 1 -> DX:AX here which the constant
@@ -151,18 +99,17 @@ extern instruction      *rMULSAVEFACE( instruction *ins ) {
     return( new_ins );
 }
 
-extern instruction      *rMAKECYPMUL( instruction *ins ) {
-/*******************************************************/
-
-
+instruction      *rMAKECYPMUL( instruction *ins )
+/***********************************************/
+{
     HalfType( ins );
     return( ins );
 }
 
 
-extern instruction      *rSEG_SEG( instruction *ins ) {
-/****************************************************/
-
+instruction      *rSEG_SEG( instruction *ins )
+/********************************************/
+{
     instruction         *new_ins;
     name                *name1;
 
@@ -177,9 +124,9 @@ extern instruction      *rSEG_SEG( instruction *ins ) {
 }
 
 
-extern instruction      *rOP2CL( instruction *ins ) {
-/**************************************************/
-
+instruction      *rOP2CL( instruction *ins )
+/******************************************/
+{
     instruction         *new_ins;
     name                *name1;
 
@@ -193,9 +140,9 @@ extern instruction      *rOP2CL( instruction *ins ) {
 }
 
 
-extern instruction      *rOP2CX( instruction *ins ) {
-/**************************************************/
-
+instruction      *rOP2CX( instruction *ins )
+/******************************************/
+{
     instruction         *new_ins;
     name                *name1;
 
@@ -209,9 +156,9 @@ extern instruction      *rOP2CX( instruction *ins ) {
 }
 
 
-extern instruction      *rMULREGISTER( instruction *ins ) {
-/********************************************************/
-
+instruction      *rMULREGISTER( instruction *ins )
+/************************************************/
+{
     instruction         *new_ins;
     instruction         *ins2;
     name                *name1;
@@ -233,9 +180,9 @@ extern instruction      *rMULREGISTER( instruction *ins ) {
 }
 
 
-extern instruction      *rDIVREGISTER( instruction *ins ) {
-/********************************************************/
-
+instruction      *rDIVREGISTER( instruction *ins )
+/************************************************/
+{
     instruction         *new_ins;
     instruction         *ins2;
     name                *name1;
@@ -257,27 +204,27 @@ extern instruction      *rDIVREGISTER( instruction *ins ) {
     return( new_ins );
 }
 
-extern  name    *IntEquivalent( name *name ) {
-/********************************************/
-
+name    *IntEquivalent( name *name )
+/**********************************/
+{
     constant_defn       *defn;
 
     defn = GetFloat( name, FS );
     return( AllocConst( CFCnvU32F( _TargetBigInt( *(unsigned_32 *)( defn->value + 0 ) ) ) ) );
 }
 
-extern  name    *Int64Equivalent( name *name ) {
-/**********************************************/
-
+name    *Int64Equivalent( name *name )
+/************************************/
+{
     constant_defn       *defn;
 
     defn = GetFloat( name, FD );
     return( AllocU64Const( *(unsigned_32 *)( defn->value + 0 ), *(unsigned_32 *)( defn->value + 2 ) ) );
 }
 
-extern instruction      *rFSCONSCMP( instruction *ins ) {
-/******************************************************/
-
+instruction      *rFSCONSCMP( instruction *ins )
+/**********************************************/
+{
     name                *name1;
 
     name1 = ins->operands[1];
@@ -293,9 +240,9 @@ extern instruction      *rFSCONSCMP( instruction *ins ) {
 }
 
 
-extern instruction      *rHIGHLOWMOVE( instruction *ins ) {
-/********************************************************/
-
+instruction      *rHIGHLOWMOVE( instruction *ins )
+/************************************************/
+{
     instruction         *new_ins;
 
 /* for moving constants such as 0xabcdabcd*/
@@ -540,23 +487,23 @@ static  instruction     *LoadStringOps( instruction *ins,
 }
 
 
-extern instruction      *rMAKESTRCMP( instruction *ins ) {
-/*******************************************************/
-
+instruction      *rMAKESTRCMP( instruction *ins )
+/***********************************************/
+{
     return( LoadStringOps( ins, &ins->operands[0], &ins->operands[1] ) );
 }
 
 
-extern instruction      *rMAKESTRMOVE( instruction *ins ) {
-/********************************************************/
-
+instruction      *rMAKESTRMOVE( instruction *ins )
+/************************************************/
+{
     return( LoadStringOps( ins, &ins->operands[0], &ins->result ) );
 }
 
 
-extern instruction      *rMAYBSTRMOVE( instruction *ins ) {
-/********************************************************/
-
+instruction      *rMAYBSTRMOVE( instruction *ins )
+/************************************************/
+{
     if( CanLoadStringOps( ins ) ) {
         return( LoadStringOps( ins, &ins->operands[0], &ins->result ) );
     } else {
@@ -565,20 +512,19 @@ extern instruction      *rMAYBSTRMOVE( instruction *ins ) {
 }
 
 
-extern instruction      *rEXT_PUSHC( instruction *ins ) {
-/******************************************************/
-
+instruction      *rEXT_PUSHC( instruction *ins )
+/**********************************************/
+{
     CnvOpToInt( ins, 0 );
     ChangeType( ins, WD );
     return( ins );
 }
 
 
-extern instruction      *rMOVELOW( instruction *ins ) {
-/****************************************************/
-
-
+instruction      *rMOVELOW( instruction *ins )
+/********************************************/
 /* e.g. convert U2==>U1*/
+{
     ins->head.opcode = OP_MOV;
     ins->operands[0] = LowPart( ins->operands[0], ins->type_class );
     ins->table = NULL;
@@ -586,9 +532,9 @@ extern instruction      *rMOVELOW( instruction *ins ) {
 }
 
 
-extern instruction      *rSPLITUNARY( instruction *ins ) {
-/*******************************************************/
-
+instruction      *rSPLITUNARY( instruction *ins )
+/***********************************************/
+{
     instruction         *new_ins;
 
     CnvOpToInt( ins, 0 );
@@ -597,9 +543,9 @@ extern instruction      *rSPLITUNARY( instruction *ins ) {
 }
 
 
-extern instruction      *rMOVRESMEM( instruction *ins ) {
-/******************************************************/
-
+instruction      *rMOVRESMEM( instruction *ins )
+/**********************************************/
+{
     instruction         *new_ins;
     name                *name_flt;
     name                *name_int;
@@ -621,9 +567,9 @@ extern instruction      *rMOVRESMEM( instruction *ins ) {
 }
 
 
-extern instruction      *rMOVOP1MEM( instruction *ins ) {
-/******************************************************/
-
+instruction      *rMOVOP1MEM( instruction *ins )
+/**********************************************/
+{
     instruction         *new_ins;
     name                *name_flt;
     name                *name_int;
@@ -645,27 +591,25 @@ extern instruction      *rMOVOP1MEM( instruction *ins ) {
 }
 
 
-extern instruction      *rOP1CMEM( instruction *ins ) {
-/*********************************************************/
-
-
+instruction      *rOP1CMEM( instruction *ins )
+/********************************************/
+{
     ins->operands[0] = Addressable( ins->operands[0], ins->type_class );
     return( ins );
 }
 
 
-extern instruction      *rOP2CMEM( instruction *ins ) {
-/*********************************************************/
-
-
+instruction      *rOP2CMEM( instruction *ins )
+/********************************************/
+{
     ins->operands[1] = Addressable( ins->operands[1], ins->type_class );
     return( ins );
 }
 
 
-extern instruction      *rU_TEST( instruction *ins ) {
-/***************************************************/
-
+instruction      *rU_TEST( instruction *ins )
+/*******************************************/
+{
     instruction         *new_ins;
     instruction         *ins2;
     name                *name1;
@@ -686,9 +630,9 @@ extern instruction      *rU_TEST( instruction *ins ) {
 }
 
 
-extern instruction      *rCPSUB( instruction *ins ) {
-/**************************************************/
-
+instruction      *rCPSUB( instruction *ins )
+/******************************************/
+{
     instruction         *new_ins;
 
     new_ins = MakeBinary( OP_SUB, OffsetPart( ins->operands[0] ),
@@ -700,9 +644,9 @@ extern instruction      *rCPSUB( instruction *ins ) {
 }
 
 
-extern instruction      *rPTSUB( instruction *ins ) {
-/**************************************************/
-
+instruction      *rPTSUB( instruction *ins )
+/******************************************/
+{
     instruction         *new_ins;
 
     ChangeType( ins, PT );
@@ -711,9 +655,9 @@ extern instruction      *rPTSUB( instruction *ins ) {
 }
 
 
-extern instruction      *rEXTPT( instruction *ins ) {
-/**************************************************/
-
+instruction      *rEXTPT( instruction *ins )
+/******************************************/
+{
     instruction         *new_ins;
     name                *name1;
 
@@ -733,18 +677,18 @@ extern instruction      *rEXTPT( instruction *ins ) {
 }
 
 
-extern  instruction     *rMAKEU4CONS( instruction *ins ) {
-/*******************************************************/
-
+instruction     *rMAKEU4CONS( instruction *ins )
+/**********************************************/
+{
     ChangeType( ins, U4 );
     ins->operands[0] = IntEquivalent( ins->operands[0] );
     return( ins );
 }
 
 
-extern instruction      *rCHPPT( instruction *ins ) {
-/**************************************************/
-
+instruction      *rCHPPT( instruction *ins )
+/******************************************/
+{
     ins->head.opcode = OP_MOV;
     ChangeType( ins, WD );
     ins->operands[0] = OffsetPart( ins->operands[0] );
@@ -754,8 +698,8 @@ extern instruction      *rCHPPT( instruction *ins ) {
 
 /* NB: The following two routines are intended for 386 only */
 
-extern instruction      *rMOVPTI8( instruction *ins )
-/***************************************************/
+instruction      *rMOVPTI8( instruction *ins )
+/********************************************/
 {
     instruction         *new_ins;
     instruction         *ins2;
@@ -768,8 +712,8 @@ extern instruction      *rMOVPTI8( instruction *ins )
     return( new_ins );
 }
 
-extern instruction      *rMOVI8PT( instruction *ins )
-/***************************************************/
+instruction      *rMOVI8PT( instruction *ins )
+/********************************************/
 {
     instruction         *new_ins;
     instruction         *ins2;
@@ -783,10 +727,9 @@ extern instruction      *rMOVI8PT( instruction *ins )
 }
 
 
-extern  void    CheckCC( instruction *ins, instruction *new_ins ) {
-/*****************************************************************/
-
-
+void    CheckCC( instruction *ins, instruction *new_ins )
+/*******************************************************/
+{
     if( ins->head.opcode == OP_EXT_ADD || ins->head.opcode == OP_EXT_SUB ) {
         new_ins->table = GetMoveNoCCEntry(); /* ensure it doesn't set the condition codes */
         new_ins->ins_flags |= INS_CC_USED;
@@ -843,9 +786,9 @@ static  instruction     *SplitPush( instruction *ins, type_length size ) {
 }
 
 
-extern  instruction     *rDOLONGPUSH( instruction *ins ) {
-/*****************************************************/
-
+instruction     *rDOLONGPUSH( instruction *ins )
+/**********************************************/
+{
     name        *sp;
     name        *at_sp;
     name        *temp;
@@ -888,13 +831,14 @@ extern  instruction     *rDOLONGPUSH( instruction *ins ) {
 }
 
 
-extern  name    *OpAdjusted( name *op, int bias, type_class_def type ) {
+name    *OpAdjusted( name *op, int bias, type_class_def type )
 /*********************************************************************
 
     Return a new op of type 'type' which is offset from the old op by the
     amount specified by 'bias'.
 
 */
+{
     name        *new_op = NULL;
 
     switch( op->n.class ) {
@@ -919,9 +863,9 @@ extern  name    *OpAdjusted( name *op, int bias, type_class_def type ) {
 }
 
 
-extern  instruction     *rFLIPSIGN( instruction *ins ) {
-/******************************************************/
-
+instruction     *rFLIPSIGN( instruction *ins )
+/********************************************/
+{
     instruction         *new;
     name                *new_op;
 
@@ -933,9 +877,9 @@ extern  instruction     *rFLIPSIGN( instruction *ins ) {
 }
 
 
-extern  instruction     *rTEMP2CONST( instruction *ins ) {
-/********************************************************/
-
+instruction     *rTEMP2CONST( instruction *ins )
+/**********************************************/
+{
     opcnt       i;
     name        *op;
     instruction *new;
@@ -960,8 +904,8 @@ extern  instruction     *rTEMP2CONST( instruction *ins ) {
 }
 
 
-extern  void            CnvOpToInt( instruction * ins, opcnt op )
-/***************************************************************/
+void            CnvOpToInt( instruction * ins, opcnt op )
+/*******************************************************/
 {
     name                *name1;
 
@@ -989,8 +933,8 @@ extern  void            CnvOpToInt( instruction * ins, opcnt op )
 }
 
 
-extern  instruction     *rCMPCP( instruction *ins )
-/*************************************************/
+instruction     *rCMPCP( instruction *ins )
+/*****************************************/
 {
     assert( ins->type_class == CP );
     assert( ins->operands[1]->n.class == N_CONSTANT );

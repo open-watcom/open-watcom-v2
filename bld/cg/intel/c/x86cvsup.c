@@ -45,8 +45,9 @@
 #include "x86obj.h"
 
 
-extern  void    CVDefSegs( void ){
-/**************************/
+void    CVDefSegs( void )
+/***********************/
+{
     if( _IsModel( DBG_LOCALS ) ) {
         CVSyms = DbgSegDef( "$$SYMBOLS", "DEBSYM", SEG_COMB_PRIVATE+SEG_USE_32 );
     }

@@ -30,4 +30,9 @@
 ****************************************************************************/
 
 
-extern void    MulToShiftAdd( void );
+extern int      SubCost( void );
+extern int      AddCost( void );
+extern int      MulCost( unsigned_32 );
+extern int      ShiftCost( int );
+
+extern void     MulToShiftAdd( void );

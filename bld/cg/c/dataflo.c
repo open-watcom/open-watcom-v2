@@ -39,6 +39,7 @@
 #include "namelist.h"
 #include "conflict.h"
 #include "dataflo.h"
+#include "savings.h"
 #include "regsave.h"
 #include "varusage.h"
 #include "feprotos.h"

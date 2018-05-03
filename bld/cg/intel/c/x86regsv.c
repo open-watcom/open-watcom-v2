@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,24 +40,20 @@
 #include "regsave.h"
 
 
-extern  savings         Save;
-
 static  save_def        MaxConstSave;
 
 #define COST( s, t ) ( ( (s)*size + (t)*time ) / TOTAL_WEIGHT )
 #define _NEXTCON( c ) (*(conflict_node**)&((c)->tree))
 
-extern  void    InitWeights( uint size ) {
+void    InitWeights( uint size )
 /*****************************************
     Set up a structure describing the savings/costs involved
     with operations like loads, stores, saving a memory reference, etc.
     "size" is the importance of code size (vs. speed) expressed
     as a percentage between 0 and 100.
 */
-
-
+{
     uint        time;
-
 
     AdjTimeSize( &time, &size );
     SetLoopCost( time );
@@ -96,13 +93,13 @@ extern  void    InitWeights( uint size ) {
 }
 
 
-extern  bool    WorthProlog( conflict_node *conf, hw_reg_set reg ) {
+bool    WorthProlog( conflict_node *conf, hw_reg_set reg )
 /*******************************************************************
     decide if the savings associated with giving conflict "conf"
     is worth the cost incurred by generating a prolog to
     save and restore register "reg"
 */
-
+{
     save_def            cost;
     save_def            savings;
     hw_reg_set          must_save;
@@ -132,7 +129,7 @@ extern  bool    WorthProlog( conflict_node *conf, hw_reg_set reg ) {
 }
 
 
-extern  void            ConstSavings( void ) {
+void        ConstSavings( void )
 /**************************************
 
     Ensure constants are cached last by making sure that all
@@ -141,7 +138,7 @@ extern  void            ConstSavings( void ) {
     that all "outer" loop constant temporary conflicts inherit the
     savings of any inner conflict that they define.
 */
-
+{
     conflict_node       *conf;
     conflict_node       *other;
     block               *blk;

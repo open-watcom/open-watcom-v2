@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -128,9 +129,9 @@ static  bool    ScoreStomp( score_info *x, score_info *y ) {
     return( false );
 }
 
-extern  bool    ScoreLookup( score *p, score_info *info ) {
-/*********************************************************/
-
+bool    ScoreLookup( score *p, score_info *info )
+/***********************************************/
+{
     score_list  *curr;
 
     if( info->class == N_VOLATILE )
@@ -147,9 +148,9 @@ extern  bool    ScoreLookup( score *p, score_info *info ) {
 }
 
 
-extern  bool    ScoreEqual( score *p, int index, score_info *info ) {
-/*******************************************************************/
-
+bool    ScoreEqual( score *p, int index, score_info *info )
+/*********************************************************/
+{
     if( ScoreLookup( &p[index], info ) )
         return( true );
     if( _IsModel( SUPER_OPTIMAL ) ) {
@@ -232,10 +233,9 @@ static  void    ScoreAdd( score *p, int i, score_info *info ) {
 }
 
 
-extern  void    ScoreAssign( score *p, int index, score_info *info ) {
-/********************************************************************/
-
-
+void    ScoreAssign( score *p, int index, score_info *info )
+/**********************************************************/
+{
     ScoreAdd( p, index, info );
     if( _IsModel( SUPER_OPTIMAL ) ) {
         score_reg   *entry;
@@ -265,9 +265,9 @@ extern  void    ScoreAssign( score *p, int index, score_info *info ) {
 }
 
 
-extern  void    ScoreInfo( score_info *info, name *op ) {
-/*********************************************************/
-
+void    ScoreInfo( score_info *info, name *op )
+/*********************************************/
+{
     if( op->n.class == N_INDEXED
      && op->i.index_flags ==( X_FAKE_BASE | X_BASE_IS_INDEX) ) {
         op = op->i.base; /* track memory location */
@@ -335,9 +335,9 @@ extern  void    ScoreInfo( score_info *info, name *op ) {
 }
 
 
-extern  bool    ScoreLAInfo( score_info *info, name *op ) {
-/*********************************************************/
-
+bool    ScoreLAInfo( score_info *info, name *op )
+/***********************************************/
+{
     switch( op->n.class ) {
     case N_TEMP:
     case N_MEMORY:
@@ -353,10 +353,9 @@ extern  bool    ScoreLAInfo( score_info *info, name *op ) {
 }
 
 
-extern  void    ScoreKillInfo( score *scoreboard, name *op,
-                               score_info *info, hw_reg_set except ) {
-/********************************************************************/
-
+void    ScoreKillInfo( score *scoreboard, name *op, score_info *info, hw_reg_set except )
+/***************************************************************************************/
+{
     score_list  *curr;
     score_list  **owner;
     score_reg   *entry;

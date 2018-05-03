@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,21 +44,16 @@
 #include "conflict.h"
 #include "inssched.h"
 #include "memsydep.h"
+#include "regtree.h"
+#include "score.h"
+#include "makeaddr.h"
+#include "tree.h"
+#include "treeprot.h"
 #include "feprotos.h"
 
 
 static    pointer_int   MemLimit;
 static    bool          IckyWicky;
-
-extern    pointer       MemStart;
-extern    pointer       MemFinish;
-
-extern  bool            RegTreeFrlFree( void );
-extern  bool            ScoreFrlFree( void );
-extern  bool            RegTreeFrlFree( void );
-extern  bool            AddrFrlFree( void );
-extern  bool            TreeFrlFree( void );
-
 
 static  bool    FlushSomeOpt( pointer_int size )
 /**********************************************/

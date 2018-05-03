@@ -64,31 +64,19 @@
 #include "fixindex.h"
 #include "x86segs.h"
 #include "x86enc.h"
+#include "x86split.h"
+#include "x86opcod.h"
 #include "feprotos.h"
 
 
-extern  void            LayLeaOp(instruction*);
-extern  name            *IntEquivalent(name*);
-extern  void            AdjustStackDepth(instruction*);
-extern  void            AdjustStackDepthDirect(int adjust);
+template            Temp;           /* template for oc_entries */
+byte                Inst[INSSIZE];  /* template for instructions */
+byte                ILen;           /* length of object instruction */
+fp_patches          FPPatchType;
 
-//extern  hw_reg_set      FullReg(hw_reg_set);
-extern  bool            BaseIsSP(name*);
-extern  type_length     TmpLoc(name*,name*);
-
-extern  pccode_def      PCCodeTable[];
-#if _TARGET & _TARG_80386
-extern  type_length     StackDepth;
-#endif
-
-        template        Temp;           /* template for oc_entries */
-        byte            Inst[INSSIZE];  /* template for instructions */
-
-static  byte            ICur;           /* cursor for writing into Inst */
-static  byte            IEsc;           /* number of initial bytes that must be */
-                                        /* checked for escapes when copied into Temp */
-        byte            ILen;           /* length of object instruction */
-        fp_patches      FPPatchType;
+static  byte        ICur;           /* cursor for writing into Inst */
+static  byte        IEsc;           /* number of initial bytes that must be */
+                                    /* checked for escapes when copied into Temp */
 
 static  hw_reg_set RegTab[] = {
 #define REGS 24

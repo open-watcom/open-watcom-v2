@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,13 +42,13 @@
 #include "split.h"
 #include "insutil.h"
 #include "liveinfo.h"
+#include "rscsplit.h"
+#include "_rscsplit.h"
 
 
-extern  name            *OffsetMem( name *, type_length, type_class_def );
-
-extern  instruction     *rLOAD_1( instruction *ins ) {
-/****************************************************/
-
+instruction     *rLOAD_1( instruction *ins )
+/******************************************/
+{
     name                *temp_1;
     name                *temp_2;
     instruction         *new_ins;
@@ -77,9 +77,9 @@ extern  instruction     *rLOAD_1( instruction *ins ) {
     return( first_ins );
 }
 
-extern  instruction     *rSTORE_1( instruction *ins ) {
-/*****************************************************/
-
+instruction     *rSTORE_1( instruction *ins )
+/*******************************************/
+{
     name                *temp_1;
     name                *temp_2;
     name                *temp_3;
@@ -122,9 +122,9 @@ extern  instruction     *rSTORE_1( instruction *ins ) {
     return( first_ins );
 }
 
-extern  instruction     *rLOAD_2( instruction *ins ) {
-/****************************************************/
-
+instruction     *rLOAD_2( instruction *ins )
+/******************************************/
+{
     instruction         *first_ins;
     instruction         *new_ins;
     name                *temp;
@@ -155,9 +155,9 @@ extern  instruction     *rLOAD_2( instruction *ins ) {
     return( first_ins );
 }
 
-extern  instruction     *rLOAD_2U( instruction *ins ) {
-/*****************************************************/
-
+instruction     *rLOAD_2U( instruction *ins )
+/*******************************************/
+{
     name                *mem;
     name                *new_mem;
     name                *result;
@@ -189,9 +189,9 @@ extern  instruction     *rLOAD_2U( instruction *ins ) {
     return( first_ins );
 }
 
-extern  instruction     *rSTORE_2( instruction *ins ) {
-/*****************************************************/
-
+instruction     *rSTORE_2( instruction *ins )
+/*******************************************/
+{
     name                *temp_1;
     name                *temp_2;
     name                *addr;
@@ -234,9 +234,9 @@ extern  instruction     *rSTORE_2( instruction *ins ) {
     return( first_ins );
 }
 
-extern  instruction     *rSTORE_2U( instruction *ins ) {
-/******************************************************/
-
+instruction     *rSTORE_2U( instruction *ins )
+/********************************************/
+{
     name                *mem;
     name                *new_mem;
     name                *result;
@@ -285,9 +285,9 @@ extern  instruction     *rSTORE_2U( instruction *ins ) {
     return( first_ins );
 }
 
-extern  instruction     *rLOAD_4U( instruction *ins ) {
-/*****************************************************/
-
+instruction     *rLOAD_4U( instruction *ins )
+/*******************************************/
+{
     instruction         *first_ins;
     instruction         *new_ins;
     name                *mem_1;
@@ -319,9 +319,9 @@ extern  instruction     *rLOAD_4U( instruction *ins ) {
     return( first_ins );
 }
 
-extern  instruction     *rSTORE_4U( instruction *ins ) {
-/******************************************************/
-
+instruction     *rSTORE_4U( instruction *ins )
+/********************************************/
+{
     instruction         *first_ins;
     instruction         *new_ins;
     name                *high;
@@ -369,23 +369,23 @@ extern  instruction     *rSTORE_4U( instruction *ins ) {
     return( first_ins );
 }
 
-extern  instruction     *rLOAD_8U( instruction *ins ) {
-/*****************************************************/
-
+instruction     *rLOAD_8U( instruction *ins )
+/*******************************************/
+{
     _Zoiks( ZOIKS_091 );
     return( ins );
 }
 
-extern  instruction     *rSTORE_8U( instruction *ins ) {
-/******************************************************/
-
+instruction     *rSTORE_8U( instruction *ins )
+/********************************************/
+{
     _Zoiks( ZOIKS_091 );
     return( ins );
 }
 
-extern  instruction     *rMOVEXX_8( instruction *ins ) {
-/******************************************************/
-
+instruction     *rMOVEXX_8( instruction *ins )
+/********************************************/
+{
     name        *bit_mask;
     name        *temp;
     name        *temp_2;
@@ -483,8 +483,9 @@ extern  instruction     *rMOVEXX_8( instruction *ins ) {
 }
 
 #if 0
-extern instruction      *rCONSTLOAD( instruction *ins ) {
-/*******************************************************/
+instruction      *rCONSTLOAD( instruction *ins )
+/**********************************************/
+{
     signed_16           high;
     signed_16           low;
     signed_16           extra;
@@ -498,9 +499,9 @@ extern instruction      *rCONSTLOAD( instruction *ins ) {
     // the ldah rn,extra(rn) instruction
 }
 #else
-extern instruction      *rCONSTLOAD( instruction *ins ) {
-/*******************************************************/
-
+instruction      *rCONSTLOAD( instruction *ins )
+/**********************************************/
+{
     instruction         *new_ins;
     instruction         *first_ins;
     name                *high_part;
@@ -609,9 +610,9 @@ static void CopyStack( instruction *ins, name *alloc_size, type_length arg_size 
     CheapCall( ins, RT_STK_COPY, p1, p2 );
 }
 
-extern instruction *rALLOCA( instruction *ins ) {
-/***********************************************/
-
+instruction *rALLOCA( instruction *ins )
+/**************************************/
+{
     name                *sreg;
     name                *amount;
     name                *real_amount;

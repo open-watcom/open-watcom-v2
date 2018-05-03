@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,4 +52,5 @@ extern  dbg_type        WVEndEnum( dbg_enum en );
 extern  dbg_type        WVEndProc( dbg_proc pr );
 extern  void            WVTypesEof( void );
 extern  void            WVDmpCueInfo( long_offset where );
+extern  void            WVSrcCueLoc( void  );
 #endif

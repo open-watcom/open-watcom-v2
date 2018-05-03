@@ -39,6 +39,7 @@
 #include "rtrtn.h"
 #include "namelist.h"
 #include "insutil.h"
+#include "x86tls.h"
 
 
 static  name    *RTMemRef( rt_class rtindex )
@@ -228,7 +229,7 @@ static  void    ExpandTlsOp( instruction *ins, name **pop )
     }
 }
 
-extern  void    ExpandThreadDataRef( instruction *ins )
+void    ExpandThreadDataRef( instruction *ins )
 /******************************************************
     Expand any references to thread-local data into the
     appropriate magical sequence of instructions.  Note

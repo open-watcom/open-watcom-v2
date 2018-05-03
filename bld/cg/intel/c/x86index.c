@@ -45,12 +45,10 @@
 #include "x86data.h"
 #include "x86segs.h"
 #include "x86table.h"
+#include "x86rtrn.h"
+#include "x86tls.h"
 #include "feprotos.h"
 
-
-extern  name            *Addressable(name*,type_class_def);
-extern  void            NoMemIndex(instruction*);
-extern  void            ExpandThreadDataRef(instruction*);
 
 static  void            Merge( name **pname, instruction *ins );
 static  void            PropSegments(void);

@@ -62,11 +62,6 @@
 #include "feprotos.h"
 
 
-extern  void            EjectInst( void );
-extern  void            LayOpbyte(gen_opcode);
-extern  void            Format(oc_class);
-extern  void            Finalize( void );
-
 static  void            JumpReg( instruction *ins, name *reg_name );
 static  void            Pushf(void);
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,8 +41,8 @@
 #include "rgtbl.h"
 
 
-extern  pointer ScAlloc( size_t size )
-/************************************/
+pointer ScAlloc( size_t size )
+/****************************/
 {
     pointer     chunk;
 
@@ -50,16 +50,16 @@ extern  pointer ScAlloc( size_t size )
     return( chunk );
 }
 
-extern  void    ScFree( pointer chunk )
-/*************************************/
+void    ScFree( pointer chunk )
+/*****************************/
 {
     if( chunk != NULL ) {
         CGFree( chunk );
     }
 }
 
-extern  void    ScoreCalcList( void )
-/***********************************/
+void    ScoreCalcList( void )
+/***************************/
 {
     score_reg   *curr;
     name        *reg_name;
@@ -138,8 +138,8 @@ extern  void    ScoreCalcList( void )
 }
 
 
-extern  void    ScoreClear( score *p )
-/************************************/
+void    ScoreClear( score *p )
+/****************************/
 {
     int         i;
     list_head   *list_heads;
@@ -159,15 +159,15 @@ extern  void    ScoreClear( score *p )
 }
 
 
-extern  void    FreeScListEntry( score_list *list )
-/*************************************************/
+void    FreeScListEntry( score_list *list )
+/*****************************************/
 {
     FrlFreeSize( &ScListFrl, (pointer *)list, sizeof( score_list ) );
 }
 
 
-extern  void    ScoreFreeList( score *p )
-/***************************************/
+void    ScoreFreeList( score *p )
+/*******************************/
 {
     score_list  *curr;
     score_list  *next;
@@ -182,8 +182,8 @@ extern  void    ScoreFreeList( score *p )
 }
 
 
-extern  void    FreeScoreBoard( score *p )
-/****************************************/
+void    FreeScoreBoard( score *p )
+/********************************/
 {
     int         i;
     list_head   *list_heads;
@@ -210,8 +210,8 @@ extern  void    FreeScoreBoard( score *p )
 }
 
 
-extern  void    MemChanged( score *p, bool statics_too )
-/******************************************************/
+void    MemChanged( score *p, bool statics_too )
+/**********************************************/
 {
     int         i;
     score_list  **owner;
@@ -263,8 +263,8 @@ extern  void    MemChanged( score *p, bool statics_too )
 }
 
 
-extern  score_list      *NewScListEntry( void )
-/*********************************************/
+score_list      *NewScListEntry( void )
+/*************************************/
 {
     score_list  *list;
 
@@ -273,8 +273,8 @@ extern  score_list      *NewScListEntry( void )
 }
 
 
-extern  bool    ScoreFrlFree( void )
-/**********************************/
+bool    ScoreFrlFree( void )
+/**************************/
 {
     return( FrlFreeAll( &ScListFrl, sizeof( score_list ) ) );
 }

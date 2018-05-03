@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,9 +39,9 @@
 #include "namelist.h"
 #include "insutil.h"
 #include "liveinfo.h"
+#include "rscsplit.h"
+#include "_split.h"
 
-
-extern  name            *TrimConst( name *, type_class_def );
 
 #define BITS_IN_WORD    64
 
@@ -218,11 +218,11 @@ static  conv_method      AskHow( type_class_def fr, type_class_def to ) {
     return( CvtTable[fr + to * XX] );
 }
 
-extern  bool    CvtOk( type_class_def fr, type_class_def to ) {
+bool    CvtOk( type_class_def fr, type_class_def to )
 /**************************************************************
     return true if a conversion from "fr" to "to" can be done
 */
-
+{
     if( fr == XX )
         return( false );
     if( to == XX )
@@ -248,9 +248,9 @@ static instruction *doConversion( instruction *ins, type_class_def class )
     return( new_ins );
 }
 
-extern  instruction     *rDOCVT( instruction *ins ) {
-/***************************************************/
-
+instruction     *rDOCVT( instruction *ins )
+/*****************************************/
+{
     name        *src;
     name        *dst;
     instruction *new_ins;

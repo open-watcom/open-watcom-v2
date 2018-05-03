@@ -44,9 +44,6 @@
 #include "feprotos.h"
 
 
-extern  void            UpdateReturn( call_state *, type_def *, type_class_def, aux_handle );
-
-
 hw_reg_set SavedRegs( void )
 /**************************/
 {

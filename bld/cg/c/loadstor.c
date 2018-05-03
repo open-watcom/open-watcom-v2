@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,6 +37,7 @@
 #include "redefby.h"
 #include "nullprop.h"
 #include "conflict.h"
+#include "loadstor.h"
 
 
 /* block flag usage                                                 */
@@ -278,8 +280,8 @@ static  void    CalculateLoadStore( conflict_node *conf )
 }
 
 
-extern  void    CalcLoadStore( conflict_node *conf )
-/***************************************************
+void    CalcLoadStore( conflict_node *conf )
+/*******************************************
     see below
 */
 {

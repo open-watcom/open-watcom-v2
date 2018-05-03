@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,9 +49,8 @@
 #include "optab.h"
 #include "blktrim.h"
 #include "generate.h"
+#include "memmgt.h"
 
-
-extern  mem_out_action  SetMemOut(mem_out_action);
 
 #define DEPS_IN_BLOCK    20
 

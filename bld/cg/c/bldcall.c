@@ -60,13 +60,12 @@
 #include "parmreg.h"
 #include "generate.h"
 #include "parm.h"
+#include "trecurse.h"
+#include "bldcall.h"
+#include "tree.h"
+#include "treeprot.h"
 #include "feprotos.h"
 
-
-extern  void            UpdateReturn(call_state*,type_def*,type_class_def,aux_handle);
-extern  void            TNZapParms(void);
-extern  void            TRAddParm(instruction*,instruction*);
-extern  void            TRDeclareParm(instruction*);
 
 type_class_def  AddCallBlock( cg_sym_handle sym, type_def *tipe )
 /*********************************************************************

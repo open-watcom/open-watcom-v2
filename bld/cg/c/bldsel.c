@@ -49,7 +49,6 @@
 
 
 /* forward declarations */
-extern  void    BGSelRange( sel_handle s_node, signed_32 lo, signed_32 hi, label_handle label );
 static  void    ScanBlock( tbl_control *table, an node, type_class_def class, label_handle other );
 static  void    SelectBlock( tbl_control *table, an node, label_handle other );
 

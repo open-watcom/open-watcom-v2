@@ -53,8 +53,6 @@
 /* BLK_BLOCK_VISITED is used in the sense of placed                 */
 /*                                                                  */
 
-extern  void            Zoiks( int );
-
 static  source_line_number      DumpLineNum( source_line_number n,
                                              source_line_number last,
                                              bool label_line ) {
@@ -436,11 +434,11 @@ typedef struct flood_info {
     block       *dominator;
 } flood_info;
 
-typedef flood_decision (*flood_func)( block *, flood_info * );
+typedef flood_decision (*flood_down_func)( block *, flood_info * );
 
-static  void    FloodDown( block *from, flood_func func, void *parm ) {
-/*********************************************************************/
-
+static  void    FloodDown( block *from, flood_down_func func, void *parm )
+/************************************************************************/
+{
     void                *stack;
     block               *dest;
     flood_decision      decision;

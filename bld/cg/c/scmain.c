@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,9 +44,7 @@
 #include "generate.h"
 #include "scmain.h"
 #include "liveinfo.h"
-
-
-extern  mem_out_action  SetMemOut(mem_out_action);
+#include "memmgt.h"
 
 
 void    ScoreInit( void )

@@ -39,7 +39,7 @@
 #include "feprotos.h"
 
 
-extern  pointer FindAuxInfo( name *name, aux_class request )
+pointer FindAuxInfo( name *name, aux_class request )
 {
     if( name == NULL ) {
         /* return default aux info */

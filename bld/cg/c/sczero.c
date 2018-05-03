@@ -133,9 +133,9 @@ static  instruction     *MakeClear( name *res, type_class_def class ) {
 }
 
 
-extern  bool    ScoreZero( score *sc, instruction **pins ) {
-/***********************************************************/
-
+bool    ScoreZero( score *sc, instruction **pins )
+/************************************************/
+{
     instruction         *ins;
     bool                change;
     type_class_def      class;

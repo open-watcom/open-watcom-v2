@@ -57,12 +57,9 @@
 #include "x86base.h"
 #include "pccode.h"
 #include "x86enc.h"
+#include "x86temps.h"
 #include "feprotos.h"
 
-
-extern  void        AdjustPushLocal(name*);
-extern  void        RelocParms( void );
-extern  bool        SymIsExported( cg_sym_handle );
 
 /* forward declarations */
 static  void        MoveParms( void );
@@ -124,9 +121,9 @@ hw_reg_set   PushRegs[] = {
     HW_D( HW_EMPTY )
 };
 
-extern  bool    CanZapBP( void ) {
-/**************************/
-
+bool    CanZapBP( void )
+/**********************/
+{
     return( !CHAIN_FRAME );
 }
 
@@ -710,8 +707,8 @@ void    InitStackDepth( block *blk )
 }
 
 
-extern  void        AdjustStackDepth( instruction *ins )
-/******************************************************/
+void        AdjustStackDepth( instruction *ins )
+/**********************************************/
 {
     name        *op;
     type_length adjust;
@@ -758,15 +755,16 @@ extern  void        AdjustStackDepth( instruction *ins )
     }
 }
 
-extern void     AdjustStackDepthDirect( int adjust ) {
-/************************************************************/
+void     AdjustStackDepthDirect( int adjust )
+/*******************************************/
+{
     StackDepth += adjust;
 }
 
 
-extern  bool    BaseIsSP( name *op ) {
-/************************************/
-
+bool    BaseIsSP( name *op )
+/**************************/
+{
     if( !CurrProc->targ.sp_frame )
         return( false );
     if( CurrProc->targ.sp_align && ( op->t.temp_flags & STACK_PARM ) ) {

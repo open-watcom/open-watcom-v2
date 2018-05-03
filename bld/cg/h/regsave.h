@@ -31,8 +31,14 @@
 ****************************************************************************/
 
 
+extern savings      Save;
+
 extern void         AdjTimeSize( uint *time, uint *size );
 extern void         SetLoopCost( uint time );
 extern void         SetCost( save_def *array, save_def cost );
 extern save_def     Weight( save_def value, block *blk );
 extern void         CalcSavings( conflict_node *conf );
+
+extern void         InitWeights( uint size );
+extern bool         WorthProlog( conflict_node *conf, hw_reg_set reg );
+extern void         ConstSavings( void );

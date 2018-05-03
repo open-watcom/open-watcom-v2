@@ -33,12 +33,13 @@
 #include "_cgstd.h"
 #include "coderep.h"
 #include "zoiks.h"
+#include "blips.h"
 #include "feprotos.h"
 
-extern  bool            WantZoiks2( void );
+
+#define MAX_ZOIKS_40    0x1000
 
 static  int             Zoiks40 = { 0 };
-#define MAX_ZOIKS_40    0x1000
 
 void    Zoiks( int msg )
 /***********************

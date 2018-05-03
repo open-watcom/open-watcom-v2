@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -65,9 +66,9 @@ static  void    RegDelete( score *sc, int index ) {
 }
 #endif
 
-extern  void    RegInsert( score *sc, int dst_idx, int src_idx ) {
-/****************************************************************/
-
+void    RegInsert( score *sc, int dst_idx, int src_idx )
+/******************************************************/
+{
     score       *dst;
     score       *src;
     score       *next;
@@ -106,9 +107,9 @@ extern  void    RegInsert( score *sc, int dst_idx, int src_idx ) {
 }
 
 
-extern  bool    RegsEqual( score *sc, int i1, int i2 ) {
-/******************************************************/
-
+bool    RegsEqual( score *sc, int i1, int i2 )
+/********************************************/
+{
     return( sc[i1].list == sc[i2].list );
 }
 
@@ -174,9 +175,9 @@ static  void    MergeUp( score *sc, int dst_idx, int src_idx ) {
 }
 
 
-extern  void    RegKill( score *scoreboard, hw_reg_set regs ) {
-/*************************************************************/
-
+void    RegKill( score *scoreboard, hw_reg_set regs )
+/***************************************************/
+{
     score_reg   *entry;
     score_list  *curr_list;
     score_list  **owner;
@@ -220,13 +221,12 @@ extern  void    RegKill( score *scoreboard, hw_reg_set regs ) {
 }
 
 
-extern  void    RegAdd( score *sc, int dst_idx, int src_idx ) {
+void    RegAdd( score *sc, int dst_idx, int src_idx )
 /*************************************************************/
-
 /* NB: it is important that dst_idx has just become equal to src_idx*/
 /*     NOT vice-versa. Ie: we just did a  MOV R(src_idx) ==> R(dst_idx)*/
 /*     or equivalent*/
-
+{
     if( ScoreList[dst_idx]->size != ScoreList[src_idx]->size )
         return;
     if( !ScAddOk( ScoreList[dst_idx]->reg, ScoreList[src_idx]->reg ) )

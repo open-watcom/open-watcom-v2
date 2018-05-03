@@ -49,11 +49,9 @@
 #include "fixindex.h"
 #include "cse.h"
 #include "bldins.h"
+#include "treeprot.h"
 #include "feprotos.h"
 
-
-extern name             *TGetName(tn);
-extern tn               TName(name*,type_def*);
 
 bool     IsTrickyPointerConv( instruction *ins )
 /******************************************************

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,3 +46,4 @@ extern  void            BGZapBase( name *base, type_def *tipe );
 extern  void            BGReturn( an retval, type_def *tipe );
 extern  bool            AssgnParms( cn call, bool in_line );
 extern  hw_reg_set      CallZap( call_state *state );
+extern  void            UpdateReturn( call_state *, type_def *, type_class_def, aux_handle );

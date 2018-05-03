@@ -43,18 +43,16 @@
 #include "bldins.h"
 #include "utils.h"
 #include "namelist.h"
+#include "u32moddi.h"
 #include "feprotos.h"
+
+
+#define HasBigConst( t )       ( ( (t)->attr & TYPE_FLOAT ) || (t)->length == 8 )
 
 typedef union i32 {
     signed_32   s;
     unsigned_32 u;
 } i32;
-
-extern  an              TreeGen(tn);
-extern  unsigned_32     U32ModDiv(unsigned_32*,unsigned_32);
-extern  void            BurnTree(tn);
-
-#define HasBigConst( t )       ( ( (t)->attr & TYPE_FLOAT ) || (t)->length == 8 )
 
 static cg_op RevOpcode[] = {
     O_EQ,    /* O_EQ*/

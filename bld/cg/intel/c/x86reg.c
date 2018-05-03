@@ -44,9 +44,6 @@
 #include "feprotos.h"
 
 
-/* forward declaration */
-extern  void            UpdateReturn( call_state *state, type_def *tipe, type_class_def class, aux_handle aux );
-
 #define _NPX( x ) (((x) & ROUTINE_NO_8087_RETURNS) == 0)
 
 type_class_def  CallState( aux_handle aux, type_def *tipe, call_state *state )

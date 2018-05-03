@@ -49,8 +49,9 @@
 static  section_def         *CVSymMain;
 static  owl_section_handle  owlCVSym; //.debug$s for non-comdats .text
 
-extern  void    CVDefSegs( void ){
-/**************************/
+void    CVDefSegs( void )
+/***********************/
+{
     if( _IsModel( DBG_LOCALS ) ) {
         CVSyms = DbgSegDef( ".debug$S"  );
         CVSymMain = FindSection( CVSyms );
@@ -61,15 +62,17 @@ extern  void    CVDefSegs( void ){
     }
 }
 
-extern void  CVDefSymNormal( void ){
-/**********************************/
+void  CVDefSymNormal( void )
+/**************************/
+{
     if( _IsModel( DBG_LOCALS ) ) {
         CVSymMain->owl_handle = owlCVSym;
     }
 }
 
-extern void  CVDefSymComdat( owl_section_handle depof ){
-/**********************************/
+void  CVDefSymComdat( owl_section_handle depof )
+/**********************************************/
+{
     if( _IsModel( DBG_LOCALS ) ) {
         CVSymMain->owl_handle = DbgSectDefComdat( ".debug$S" );
         OWLComdatDep( CVSymMain->owl_handle, depof );

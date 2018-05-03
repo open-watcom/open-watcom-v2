@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,6 +48,9 @@
 #include "conflict.h"
 #include "x86segs.h"
 #include "liveinfo.h"
+#include "x86rtrn.h"
+#include "bldselco.h"
+#include "_x86rtrn.h"
 
 
 /*
@@ -151,7 +154,7 @@ bool    RTLeaveOp2( instruction *ins )
 }
 
 
-extern  name    *ScanCall( tbl_control *table, name *value, type_class_def class )
+name    *ScanCall( tbl_control *table, name *value, type_class_def class )
 /*********************************************************************************
     generates a fake call to a runtime routine that looks up "value" in a table
     and jumps to the appropriate case, using either a pointer or index
@@ -237,7 +240,7 @@ extern  name    *ScanCall( tbl_control *table, name *value, type_class_def class
 }
 
 
-extern  name    *Addressable( name *cons, type_class_def class )
+name    *Addressable( name *cons, type_class_def class )
 /***************************************************************
     make sure a floating point constant is addressable (dropped
     it into memory if it isnt)
@@ -249,7 +252,7 @@ extern  name    *Addressable( name *cons, type_class_def class )
 }
 
 
-extern  pointer BEAuxInfo( pointer hdl, aux_class request )
+pointer BEAuxInfo( pointer hdl, aux_class request )
 /**********************************************************
     see ScanCall for explanation
 */
@@ -294,7 +297,7 @@ extern  pointer BEAuxInfo( pointer hdl, aux_class request )
     }
 }
 
-extern  instruction     *rMAKEFNEG( instruction *ins )
+instruction     *rMAKEFNEG( instruction *ins )
 /*****************************************************
     this is intentionally a stub for the 386.
 */

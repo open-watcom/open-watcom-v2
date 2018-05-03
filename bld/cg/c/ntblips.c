@@ -95,9 +95,9 @@ void    FiniBlip() {
 #endif
 }
 
-bool    WantZoiks2() {
-/********************/
-
+bool    WantZoiks2( void )
+/************************/
+{
     return( false );
 }
 

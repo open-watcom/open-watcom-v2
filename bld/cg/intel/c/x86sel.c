@@ -74,8 +74,6 @@
 #define MAX_COST        0x7FFFFFFFL
 #define MAX_IN_RANGE    (MAX_COST/1000) /* so no overflow */
 
-extern  an              TreeGen(tn);
-
 /* forward declarations */
 static  void    GenValuesBackward( select_list *list, signed_32 hi,
                                    signed_32 lo, signed_32 to_sub,

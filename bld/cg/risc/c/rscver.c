@@ -37,6 +37,7 @@
 #include "split.h"
 #include "namelist.h"
 #include "verify.h"
+#include "targetin.h"
 #include "feprotos.h"
 
 
@@ -172,8 +173,8 @@ static  bool    Aligned( name *op, type_length align, type_class_def tipe )
     return( false );
 }
 
-extern  bool    DoVerify( vertype kind, instruction *ins )
-/********************************************************/
+bool    DoVerify( vertype kind, instruction *ins )
+/************************************************/
 {
     name                *op;
 

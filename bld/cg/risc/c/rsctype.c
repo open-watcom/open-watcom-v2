@@ -44,14 +44,9 @@ type_def TNearP = {  TY_NEAR_POINTER, 4,      TYPE_POINTER };
 type_def THugeP = {  TY_NEAR_POINTER, 4,      TYPE_POINTER };
 type_def TLongP = {  TY_NEAR_POINTER, 4,      TYPE_POINTER };
 
-extern type_def *PTInteger;
-extern type_def *PTUnsigned;
-extern type_def *PTPointer;
-extern type_def *PTCodePointer;
-
-extern  void    TargTypeInit() {
+void    TargTypeInit( void )
 /**************************/
-
+{
     TypeAlias( TY_UNSIGNED, TY_UINT_4 );
     TypeAlias( TY_INTEGER, TY_INT_4 );
     TypeAlias( TY_CODE_PTR, TY_NEAR_CODE_PTR );
