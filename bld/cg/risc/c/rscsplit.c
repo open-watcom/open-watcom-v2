@@ -411,8 +411,8 @@ instruction     *rMOVEXX( instruction *ins )
     return( first_ins );
 }
 
-name        *TrimConst( name *c, type_class_def tipe )
-/****************************************************/
+name    *TrimConst( name *c, type_class_def tipe )
+/************************************************/
 {
     signed_32           value;
 
@@ -854,7 +854,7 @@ instruction     *rMOVEXX_4( instruction *ins )
 
 
 instruction     *rCLRHI_4( instruction *ins )
-/****************************************************
+/********************************************
 * Clear the high 32 bits of a 64-bit name
 */
 {
@@ -876,7 +876,7 @@ instruction     *rCLRHI_4( instruction *ins )
 
 
 instruction     *rSEX_4TO8( instruction *ins )
-/*****************************************************
+/*********************************************
 * Sign-extend a 32-bit name to 64-bit
 */
 {

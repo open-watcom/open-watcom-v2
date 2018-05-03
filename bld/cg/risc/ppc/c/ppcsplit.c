@@ -251,7 +251,7 @@ instruction *rSPLITMOVE( instruction *ins )
 
 
 instruction     *rSPLITNEG( instruction *ins )
-/*****************************************************
+/*********************************************
 * Split a multi-word negate instruction.
 */
 {
@@ -319,7 +319,7 @@ instruction      *rSPLITUNARY( instruction *ins )
 
 
 instruction     *rSPLITCMP( instruction *ins )
-/*****************************************************
+/*********************************************
 * Split a multi-word comparison instruction
 */
 {

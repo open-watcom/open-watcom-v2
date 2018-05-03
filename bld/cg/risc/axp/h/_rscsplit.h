@@ -30,16 +30,16 @@
 ****************************************************************************/
 
 
-extern  instruction     *rLOAD_1( instruction * );
-extern  instruction     *rSTORE_1( instruction * );
-extern  instruction     *rLOAD_2( instruction * );
-extern  instruction     *rLOAD_2U( instruction * );
-extern  instruction     *rSTORE_2( instruction * );
-extern  instruction     *rSTORE_2U( instruction * );
-extern  instruction     *rLOAD_4U( instruction * );
-extern  instruction     *rSTORE_4U( instruction * );
-extern  instruction     *rLOAD_8U( instruction * );
-extern  instruction     *rSTORE_8U( instruction * );
-extern  instruction     *rMOVEXX_8( instruction * );
-extern  instruction     *rCONSTLOAD( instruction * );
-extern  instruction     *rALLOCA( instruction * );
+extern instruction      *rLOAD_1( instruction * );
+extern instruction      *rSTORE_1( instruction * );
+extern instruction      *rLOAD_2( instruction * );
+extern instruction      *rLOAD_2U( instruction * );
+extern instruction      *rSTORE_2( instruction * );
+extern instruction      *rSTORE_2U( instruction * );
+extern instruction      *rLOAD_4U( instruction * );
+extern instruction      *rSTORE_4U( instruction * );
+extern instruction      *rLOAD_8U( instruction * );
+extern instruction      *rSTORE_8U( instruction * );
+extern instruction      *rMOVEXX_8( instruction * );
+extern instruction      *rCONSTLOAD( instruction * );
+extern instruction      *rALLOCA( instruction * );
