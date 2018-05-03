@@ -45,13 +45,10 @@
 #include "dbsupp.h"
 
 
+#define MAX_TYPE_SIZE   (1024 * 16)
+
 static  void            NewType( temp_buff *temp, uint ty_def );
 static  void            EndType( bool check_too_big );
-
-extern  cue_ctl         LineInfo;
-extern  fname_ctl       DBFiles;
-
-#define MAX_TYPE_SIZE   (1024 * 16)
 
 static dbg_patch        CueInfoOffset;
 
@@ -278,8 +275,8 @@ dbg_type        WVIntArray( unsigned_32 hi, dbg_type base )
     return( TypeIdx );
 }
 
-dbg_type        WVSubRange( signed_32 lo, signed_32 hi, dbg_type base )
-/*********************************************************************/
+dbg_type    WVSubRange( signed_32 lo, signed_32 hi, dbg_type base )
+/*****************************************************************/
 {
     uint        class_lo;
     uint        class_hi;
@@ -385,8 +382,8 @@ dbg_type        WVPtr( cg_type ptr_type, dbg_type base )
     return( DbgPtr( ptr_type, base, 0, NULL ) );
 }
 
-dbg_type        WVBasedPtr( cg_type ptr_type, dbg_type base, dbg_loc loc_segment )
-/********************************************************************************/
+dbg_type    WVBasedPtr( cg_type ptr_type, dbg_type base, dbg_loc loc_segment )
+/****************************************************************************/
 {
     return( DbgPtr( ptr_type, base, 0, loc_segment ) );
 }

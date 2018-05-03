@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,9 +34,10 @@
 #include "coderep.h"
 #include "model.h"
 #include "encode.h"
+#include "x86nopli.h"
 
 
-static byte NopList1[] = {
+static const byte   NopList1[] = {
     6,
     0x8d,0x80,0x00,0x00,0x00,0x00,  // lea     eax,+00000000H[eax]
     0x8d,0x40,0x00,                 // lea     eax,+00H[eax]
@@ -46,7 +48,7 @@ static byte NopList1[] = {
     0x90                            // nop
 };
 
-static byte NopList2[] = {
+static const byte   NopList2[] = {
     6,
     0x8d,0x92,0x00,0x00,0x00,0x00,  // lea     edx,+00000000H[edx]
     0x8d,0x52,0x00,                 // lea     edx,+00H[edx]
@@ -57,9 +59,9 @@ static byte NopList2[] = {
     0x90                            // nop
 };
 
-byte *NopLists[] = { NopList1, NopList2 };
+const byte * const  NopLists[2] = { NopList1, NopList2 };
 
-static  byte    InsSize[6][OC_DEST_FAR + 1] = {
+static const byte   InsSize[6][OC_DEST_FAR + 1] = {
 /*      OC_DEST_SHORT   OC_DEST_NEAR    OC_DEST_CHEAP   OC_DEST_FAR */
 {       0,              6,              7,              8 },    /* CALL,16 */
 {       0,              5,              6,              7 },    /* CALL,32 */

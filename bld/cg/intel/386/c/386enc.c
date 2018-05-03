@@ -64,14 +64,6 @@
 #include "feprotos.h"
 
 
-extern  segment_id      AskCode16Seg( void );
-
-/* forward declarations */
-static  void            Add32Displacement( signed_32 val );
-static  void            LayIdxModRM( name *op );
-
-static  void            doProfilingCode( char *fe_name, label_handle *data, bool prolog );
-
 #define RMR_MOD_IND     0x80
 #define RMR_MOD_DIR     5
 #define RMR_MOD_SIB     4
@@ -80,6 +72,11 @@ static  void            doProfilingCode( char *fe_name, label_handle *data, bool
 #define D8      (1 << S_RMR_MOD)
 #define D32     (2 << S_RMR_MOD)
 
+/* forward declarations */
+static  void            Add32Displacement( signed_32 val );
+static  void            LayIdxModRM( name *op );
+
+static  void            doProfilingCode( char *fe_name, label_handle *data, bool prolog );
 
 static void OpndSizeIf( bool if_32 )
 /**********************************/

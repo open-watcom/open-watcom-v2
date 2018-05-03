@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -69,6 +70,9 @@ typedef struct {
     fname_lst   *lst;
     short       count;
 } fname_ctl;
+
+extern cue_ctl      LineInfo;
+extern fname_ctl    DBFiles;
 
 extern  char        *SrcFNoFind( uint fno );
 extern  bool        CueFind( cue_idx cue, cue_state *ret );

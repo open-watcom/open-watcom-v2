@@ -47,7 +47,7 @@
 
 
 static  name    *FindPiece( hw_reg_set opnd, hw_reg_set frm, hw_reg_set to )
-/*****************************************************************************
+/***************************************************************************
     Find the right piece "to_piece" of "to" such that "x" is to "to" as "opnd"
     is to "frm". Eg: for 386, if opnd = AH, frm = EAX, to = EDX, then x = DH
 */

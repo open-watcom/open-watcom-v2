@@ -52,14 +52,13 @@
 #include "encode.h"
 #include "pccode.h"
 #include "x86enc.h"
+#include "x86nopli.h"
 #include "feprotos.h"
 
 
-extern byte             *NopLists[];
-
-static void             DoRelocRef( cg_sym_handle sym, cg_class class, segment_id seg, offset val, escape_class kind );
-static  void            OutShortDisp( label_handle lbl );
-static  void            OutCodeDisp( label_handle lbl, fix_class f, bool rel, oc_class class );
+static void     DoRelocRef( cg_sym_handle sym, cg_class class, segment_id seg, offset val, escape_class kind );
+static void     OutShortDisp( label_handle lbl );
+static void     OutCodeDisp( label_handle lbl, fix_class f, bool rel, oc_class class );
 
 /* Grammar of Escapes :*/
 /**/
@@ -231,7 +230,7 @@ void    DoLblRef( label_handle lbl, segment_id seg,
     }
 }
 
-static void SendBytes( const void *ptr, unsigned len )
+static void SendBytes( const byte *ptr, unsigned len )
 /****************************************************/
 {
     if( len != 0 ) {
@@ -264,7 +263,7 @@ static  void    DumpSavedDebug( void )
 void DoAlignment( int len )
 /*************************/
 {
-    byte                *ptr;
+    const byte          *ptr;
     int                 nop;
     int                 i;
     unsigned            save_line;

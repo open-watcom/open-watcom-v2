@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,17 +35,18 @@
 #include "model.h"
 #include "inslist.h"
 #include "encode.h"
+#include "x86nopli.h"
 
 
-static byte NopList[] = {
+static const byte   NopList[] = {
     2,                  /* objlen of first NOP pattern */
     0x89, 0xc0,         /* MOV AX,AX */
     0xfc                /* CLD */
 };
 
-byte *NopLists[] = { NopList, NopList };
+const byte * const  NopLists[2] = { NopList, NopList };
 
-static  byte    InsSize[4][OC_DEST_FAR + 1] = {
+static const byte   InsSize[4][OC_DEST_FAR + 1] = {
 /*      OC_DEST_SHORT   OC_DEST_NEAR    OC_DEST_CHEAP   OC_DEST_FAR */
 {       0,              3,              4,              5 },    /* CALL */
 {       2,              3,              0,              5 },    /* JMP */

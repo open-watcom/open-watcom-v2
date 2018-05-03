@@ -222,7 +222,7 @@ void    RegKill( score *scoreboard, hw_reg_set regs )
 
 
 void    RegAdd( score *sc, int dst_idx, int src_idx )
-/*************************************************************/
+/***************************************************/
 /* NB: it is important that dst_idx has just become equal to src_idx*/
 /*     NOT vice-versa. Ie: we just did a  MOV R(src_idx) ==> R(dst_idx)*/
 /*     or equivalent*/

@@ -53,8 +53,8 @@ static  edge_list       *BranchOuts;
 static  block           *Tail = { NULL };
 static  bool            HaveBreak = { false };
 
-static  void            FreeBranchOuts( void )
-/********************************************/
+static void     FreeBranchOuts( void )
+/************************************/
 {
     edge_list   *next;
     edge_list   *curr;
@@ -66,8 +66,8 @@ static  void            FreeBranchOuts( void )
 }
 
 
-bool            CreateBreak( void )
-/*********************************/
+bool    CreateBreak( void )
+/*************************/
 {
     block       *blk;
     block       *break_blk;
@@ -250,8 +250,8 @@ bool            CreateBreak( void )
 }
 
 
-void            RemoveBreak( void )
-/*********************************/
+void    RemoveBreak( void )
+/*************************/
 {
     HeadBlock = Break;
     CurrBlock = Curr;
@@ -262,8 +262,8 @@ void            RemoveBreak( void )
 }
 
 
-void            FixBreak( void )
-/******************************/
+void    FixBreak( void )
+/**********************/
 {
     block       *blk;
     edge_list   *exit_edge;
@@ -282,14 +282,14 @@ void            FixBreak( void )
     FreeBranchOuts();
 }
 
-block           *TailBlocks( void )
-/*********************************/
+block   *TailBlocks( void )
+/*************************/
 {
     return( Tail );
 }
 
-bool            BreakExists( void )
-/*********************************/
+bool    BreakExists( void )
+/*************************/
 {
     return( HaveBreak );
 }

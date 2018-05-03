@@ -72,17 +72,18 @@ static void OpndSizeIf( void )
     }
 }
 
-static  hw_reg_set IndexTab[] = {
 #define INDICES 8
 #define BP_INDEX 6
-        HW_D_2( HW_BX, HW_SI ),
-        HW_D_2( HW_BX, HW_DI ),
-        HW_D_2( HW_BP, HW_SI ),
-        HW_D_2( HW_BP, HW_DI ),
-        HW_D_1( HW_SI ),
-        HW_D_1( HW_DI ),
-        HW_D_1( HW_BP ),
-        HW_D_1( HW_BX ) };
+static  hw_reg_set IndexTab[] = {
+    HW_D_2( HW_BX, HW_SI ),
+    HW_D_2( HW_BX, HW_DI ),
+    HW_D_2( HW_BP, HW_SI ),
+    HW_D_2( HW_BP, HW_DI ),
+    HW_D_1( HW_SI ),
+    HW_D_1( HW_DI ),
+    HW_D_1( HW_BP ),
+    HW_D_1( HW_BX )
+};
 
 static  byte    DoIndex( hw_reg_set regs )
 /****************************************/

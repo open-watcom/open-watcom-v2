@@ -191,7 +191,7 @@ tn  TGBitMask( tn left, byte start, byte len, type_def *tipe )
 
 
 tn  TGNode( tn_class class, cg_op op, tn left, tn rite, type_def *tipe )
-/*********************************************
+/***********************************************************************
     create a general node
 */
 {
@@ -749,7 +749,7 @@ static  tn  BinFold( cg_op op, tn left, tn rite, type_def *tipe )
 
 
 tn  TGBinary( cg_op op, tn left, tn rite, type_def *tipe )
-/*****************************************************************
+/*********************************************************
     build a binary operator tree node
 */
 {
@@ -769,7 +769,7 @@ tn  TGBinary( cg_op op, tn left, tn rite, type_def *tipe )
 
 
 tn  TGUnary( cg_op op, tn left, type_def *tipe )
-/*******************************************************
+/***********************************************
     build a unary operator tree node
 */
 {
@@ -878,7 +878,7 @@ tn  TGInitCall( tn left, type_def *tipe, cg_sym_handle sym )
 
 
 tn  TGAddParm( tn to, tn parm, type_def *tipe )
-/******************************************************
+/**********************************************
     see TGInitCall ^
 */
 {
@@ -907,7 +907,7 @@ tn  TGAddParm( tn to, tn parm, type_def *tipe )
 
 
 tn  TGCall( tn what )
-/****************************
+/********************
     see TGInitCall ^
 */
 {
@@ -916,7 +916,7 @@ tn  TGCall( tn what )
 
 
 tn  TGIndex( tn left, tn rite, type_def *tipe, type_def *ptipe )
-/***********************************************************************
+/******************************************************************
     return a tree for &left[rite].  "ptipe" is the pointer type of
     "left".  "tipe" is the type of the object pointed to by "left".
     Resulting node is a pointer node.
@@ -940,7 +940,7 @@ tn  TGIndex( tn left, tn rite, type_def *tipe, type_def *ptipe )
 
 
 tn  DoTGAssign( tn dst, tn src, type_def *tipe, tn_class class )
-/***********************************************************************
+/***************************************************************
     build dst = src
 */
 {
@@ -962,7 +962,7 @@ tn  DoTGAssign( tn dst, tn src, type_def *tipe, tn_class class )
 
 
 tn  TGAssign( tn dst, tn src, type_def *tipe )
-/*****************************************************
+/*********************************************
     build dst = src
 */
 {
@@ -971,7 +971,7 @@ tn  TGAssign( tn dst, tn src, type_def *tipe )
 
 
 tn  TGLVAssign( tn dst, tn src, type_def *tipe )
-/*******************************************************
+/***********************************************
     build dst = src
 */
 {
@@ -1039,7 +1039,7 @@ tn  TGReLeaf( an addr )
 
 
 tn  TGTmpLeaf( an addr )
-/*******************************
+/***********************
 */
 {
     name    *base;
@@ -1060,7 +1060,7 @@ tn  TGConst( float_handle cons, type_def *tipe )
 
 
 tn  TName( name *name, type_def *tipe )
-/**********************************************
+/**************************************
     return a leaf node for "name"
 */
 {
@@ -1189,7 +1189,7 @@ tn  DoTGPreGets( cg_op op, tn left, tn rite, type_def *tipe,
 
 
 tn  TGPreGets( cg_op op, tn left, tn rite, type_def *tipe )
-/******************************************************************
+/**********************************************************
 */
 {
     return( DoTGPreGets( op, left, rite, tipe, TN_PRE_GETS, TN_ASSIGN ) );
@@ -1197,7 +1197,7 @@ tn  TGPreGets( cg_op op, tn left, tn rite, type_def *tipe )
 
 
 tn  TGLVPreGets( cg_op op, tn left, tn rite, type_def *tipe )
-/********************************************************************
+/************************************************************
 */
 {
     return( DoTGPreGets( op, left, rite, tipe, TN_LV_PRE_GETS, TN_LV_ASSIGN ) );
@@ -1218,7 +1218,7 @@ tn  TGPostGets( cg_op op, tn left, tn rite, type_def *tipe )
 
 
 cg_type TGType( tn node )
-/********************************
+/************************
 */
 {
     return( node->tipe->refno );
@@ -1226,7 +1226,7 @@ cg_type TGType( tn node )
 
 
 tn  TGPatch( patch *hdl, type_def *tipe )
-/************************************************
+/****************************************
     create a patch node for "hdl"
 */
 {
@@ -2395,7 +2395,7 @@ static  an  TNCall( tn what, bool ignore_return )
 
 
 void    TNZapParms( void )
-/********************************/
+/************************/
 {
     tn      next;
     tn      scan;
@@ -2417,7 +2417,7 @@ bool    TGIsAddress( void )
 }
 
 tn  TGQuestion( tn sel, tn left, tn rite, type_def *tipe )
-/*****************************************************************
+/*********************************************************
     sel ? left : rite
 */
 {
@@ -2491,14 +2491,14 @@ void    TInit( void )
 
 
 bool    TreeFrlFree( void )
-/*********************************/
+/*************************/
 {
     return( FrlFreeAll( &TreeFrl, sizeof( tree_node ) ) );
 }
 
 
 void    TFini( void )
-/***************************/
+/*******************/
 {
     TreeFrlFree();
 }

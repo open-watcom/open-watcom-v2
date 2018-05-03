@@ -55,42 +55,42 @@ extern  void            BECloseFiles();
 extern  void            Action(char * str, ... );
 
 
-extern  char    *EnvVar( char *env ) {
-//====================================
-
+char    *EnvVar( char *env )
+//==========================
+{
     return( getenv( env ) );
 }
 
 
-extern  int     FStdOut() {
-//=========================
-
+int     FStdOut( void )
+//=====================
+{
     return( 1 );
 }
 
 
-extern  int     FCreate( char *file ) {
-//=====================================
-
+int     FCreate( char *file )
+//===========================
+{
     return( creat( file, 0 ) );
 }
 
-extern  void    FShut( int io ) {
-//================================
-
+void    FShut( int io )
+//=====================
+{
     close( io );
 }
 
 
-extern  void    FPut( int io, char *str, int len ) {
-//==================================================
-
+void    FPut( int io, char *str, int len )
+//========================================
+{
     write( io, str, len );
 }
 
-extern  char    *DoIToHS( char * buff, int buff_len, int i ) {
-//=============================================================
-
+char    *DoIToHS( char * buff, int buff_len, int i )
+//==================================================
+{
     char        *hexdigits;
     int         length;
 
@@ -108,9 +108,9 @@ extern  char    *DoIToHS( char * buff, int buff_len, int i ) {
     return( buff );
 }
 
-extern  char    *DoIToS( char * buff, int buff_len, signed_32 i ) {
-//=================================================================
-
+char    *DoIToS( char * buff, int buff_len, signed_32 i )
+//=======================================================
+{
     char        *p;
     bool        neg;
 
@@ -134,8 +134,8 @@ extern  char    *DoIToS( char * buff, int buff_len, signed_32 i ) {
     return( p );
 }
 
-extern  void    PutFmt( int out, const char *str, va_list list ) {
-
+void    PutFmt( int out, const char *str, va_list list )
+{
     char        *str2;
     char        buff[80];
     char        c;
@@ -208,8 +208,8 @@ extern  void    PutFmt( int out, const char *str, va_list list ) {
 }
 
 
-extern  void    Code(char * str, ... ) {
-
+void    Code(char * str, ... )
+{
     va_list     list;
     int         old;
 
@@ -220,8 +220,8 @@ extern  void    Code(char * str, ... ) {
     va_end( list );
 }
 
-extern  void    Put(char * str, ... ) {
-
+void    Put(char * str, ... )
+{
     va_list     list;
 
     va_start( list, str );
@@ -229,8 +229,8 @@ extern  void    Put(char * str, ... ) {
     va_end( list );
 }
 
-extern  void    Action(char * str, ... ) {
-
+void    Action(char * str, ... )
+{
     va_list     list;
 
     va_start( list, str );
@@ -238,8 +238,8 @@ extern  void    Action(char * str, ... ) {
     va_end( list );
 }
 
-extern  void    TypDbg(char * str, ... ) {
-
+void    TypDbg(char * str, ... )
+{
     va_list     list;
 
     va_start( list, str );
@@ -247,8 +247,8 @@ extern  void    TypDbg(char * str, ... ) {
     va_end( list );
 }
 
-extern  void    SymDbg(char * str, ... ) {
-
+void    SymDbg(char * str, ... )
+{
     va_list     list;
 
     va_start( list, str );
@@ -256,14 +256,15 @@ extern  void    SymDbg(char * str, ... ) {
     va_end( list );
 }
 
-extern  void    PutError( int out, const char *str, va_list list ) {
-
+void    PutError( int out, const char *str, va_list list )
+{
     FPut( out, "\nError! ", 8 );
     PutFmt( out, str, list );
     FPut( out, "\n", 1 );
 }
-extern  void    CGError(const char *str, ... ) {
 
+void    CGError(const char *str, ... )
+{
     va_list     list;
     int         old;
 
@@ -284,9 +285,9 @@ extern  void    CGError(const char *str, ... ) {
     exit( 2010 );
 }
 
-extern  char    *Name( pointer sym ) {
-//====================================
-
+char    *Name( pointer sym )
+//==========================
+{
     static char buff[256];
     char        hexbuf[20];
     char        *end,*hex;
@@ -297,9 +298,9 @@ extern  char    *Name( pointer sym ) {
     return( buff );
 }
 
-extern  char    *FtnTipe( dbg_ftn_type tipe ) {
-//=============================================
-
+char    *FtnTipe( dbg_ftn_type tipe )
+//===================================
+{
     switch( tipe ) {
     case T_DBG_COMPLEX: return( "T_DBG_COMPLEX" );
     case T_DBG_DCOMPLEX: return( "T_DBG_DCOMPLEX" );
@@ -308,15 +309,15 @@ extern  char    *FtnTipe( dbg_ftn_type tipe ) {
     return( NULL );
 }
 
-extern  char    *LToS( signed_32 i ) {
-//====================================
-
+char    *LToS( signed_32 i )
+//==========================
+{
     return( DoIToS( UBuff, UBUFF_LEN, i ) );
 }
 
-extern  char    *Tipe( cg_type tipe ) {
-//=====================================
-
+char    *Tipe( cg_type tipe )
+//===========================
+{
     char        *res;
     type_def    *t;
 
@@ -332,9 +333,10 @@ extern  char    *Tipe( cg_type tipe ) {
     }
     return( res );
 }
-extern  char    *Label( l *lb ) {
-//===============================
 
+char    *Label( l *lb )
+//=====================
+{
     char *res;
 
     VerLabel( lb );
@@ -342,16 +344,18 @@ extern  char    *Label( l *lb ) {
     *--res = 'L';
     return( res );
 }
-extern  void    VDefLabel( l *lb ) {
-//==================================
 
+void    VDefLabel( l *lb )
+//========================
+{
     if( ( lb->cref && !lb->cdef ) || ( lb->dref && !( lb->ddef||lb->idef) ) ) {
         CGError( "Label %s used but not defined\n", Label(lb) );
     }
 }
-extern  void    CRefLabel( l *lb ) {
-//=================================
 
+void    CRefLabel( l *lb )
+//========================
+{
     if( lb->cdef != NULL && lb->cdef != InProc ) {
         CGError( "Referencing label %s outside its procedure\n", Label(lb) );
     }
@@ -363,9 +367,10 @@ extern  void    CRefLabel( l *lb ) {
     }
     lb->cref = InProc;
 }
-extern  void    CDefLabel( l *lb ) {
-//=================================
 
+void    CDefLabel( l *lb )
+//========================
+{
     if( lb->cref != NULL && lb->cref != InProc ) {
         CGError( "Referencing label %s outside its procedure\n", Label(lb) );
     }
@@ -377,17 +382,19 @@ extern  void    CDefLabel( l *lb ) {
     }
     lb->cdef = InProc;
 }
-extern  void    DRefLabel( l *lb ) {
-//=================================
 
+void    DRefLabel( l *lb )
+//========================
+{
     if( lb->cdef || lb->cref ) {
         CGError( "Using label %s in both code and data\n", Label(lb) );
     }
     lb->dref = 1;
 }
-extern  void    DDefLabel( l *lb ) {
-//=================================
 
+void    DDefLabel( l *lb )
+//========================
+{
     if( lb->cdef || lb->cref ) {
         CGError( "Using label %s in both code and data\n", Label(lb) );
     }
@@ -396,17 +403,19 @@ extern  void    DDefLabel( l *lb ) {
     }
     lb->ddef = 1;
 }
-extern  void    DDefILabel( l *lb ) {
-//=================================
 
+void    DDefILabel( l *lb )
+//=========================
+{
     if( lb->cdef || lb->cref ) {
         CGError( "Using label %s in both code and data\n", Label(lb) );
     }
     lb->idef = 1;
 }
-extern  char    *Op( cg_op op ) {
-//===============================
 
+char    *Op( cg_op op )
+//=====================
+{
     char        *res;
     if( op >= STUB_MAX_OP ) {
         CGError( "Illegal operator" );
@@ -415,9 +424,10 @@ extern  char    *Op( cg_op op ) {
     }
     return( res );
 }
-extern  n       *NewNode( nclass c, cg_type t ) {
-//===============================================
 
+n       *NewNode( nclass c, cg_type t )
+//=====================================
+{
     n   *nd;
     nd = CGAlloc( sizeof( n ) );
     nd->c = c;

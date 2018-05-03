@@ -37,20 +37,20 @@
 #include "dumptab.h"
 
 
-static char *opRegTab[] = {
+static const char *opRegTab[] = {
     #define RG( a,b,c,d,e,f ) #f
     #include "rg.h"
     #undef RG
 };
 
-static char * VerTab[] = {
+static const char * VerTab[] = {
     #define _V_( x ) #x
     #include "v.h"
     #undef _V_
     ""
 };
 
-static char * GenTab[] = {
+static const char * GenTab[] = {
     #define _G_( x ) #x
     #include "g.h"
     #undef _G_

@@ -833,10 +833,8 @@ instruction     *rDOLONGPUSH( instruction *ins )
 
 name    *OpAdjusted( name *op, int bias, type_class_def type )
 /*********************************************************************
-
     Return a new op of type 'type' which is offset from the old op by the
     amount specified by 'bias'.
-
 */
 {
     name        *new_op = NULL;
@@ -904,8 +902,8 @@ instruction     *rTEMP2CONST( instruction *ins )
 }
 
 
-void            CnvOpToInt( instruction * ins, opcnt op )
-/*******************************************************/
+void    CnvOpToInt( instruction * ins, opcnt op )
+/***********************************************/
 {
     name                *name1;
 

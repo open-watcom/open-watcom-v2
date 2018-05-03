@@ -298,7 +298,7 @@ pointer BEAuxInfo( pointer hdl, aux_class request )
 }
 
 instruction     *rMAKEFNEG( instruction *ins )
-/*****************************************************
+/*********************************************
     this is intentionally a stub for the 386.
 */
 {

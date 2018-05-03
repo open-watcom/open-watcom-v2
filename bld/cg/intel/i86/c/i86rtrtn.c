@@ -534,7 +534,7 @@ instruction     *rMAKEFNEG( instruction *ins )
 
 
 pointer BEAuxInfo( pointer hdl, aux_class request )
-/**********************************************************
+/**************************************************
     see ScanCall for explanation
 */
 {
