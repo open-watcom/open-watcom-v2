@@ -58,7 +58,7 @@
 #include "targetin.h"
 #include "cgsrtlst.h"
 #include "optmain.h"
-#include "dwarfsup.h"
+#include "dfsupp.h"
 #if _TARGET & _TARG_PPC
 #include "ppclbl.h"
 #endif

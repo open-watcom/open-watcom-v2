@@ -47,7 +47,7 @@
 #include "rscobj.h"
 #include "dbsyms.h"
 #include "dfsyms.h"
-#include "dwarfsup.h"
+#include "dfsupp.h"
 #include "cgprotos.h"
 
 
@@ -82,7 +82,6 @@ void    DFDefSegs( void )
     }
 }
 
-#define ABBREV_NAME  "___DFABBREV"
 void DFAbbrevRef( void )
 /**********************/
 {

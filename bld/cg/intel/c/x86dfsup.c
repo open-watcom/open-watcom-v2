@@ -52,7 +52,6 @@
 #include "dbsyms.h"
 #include "dfsyms.h"
 #include "x86data.h"
-#include "dwarfsup.h"
 #include "cgprotos.h"
 
 
@@ -233,7 +232,6 @@ uint DFDisplayReg( void )
     return( ret );
 }
 
-#define ABBREV_NAME  "___DFABBREV"
 void DFAbbrevRef( void )
 /**********************/
 {

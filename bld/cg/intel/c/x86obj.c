@@ -46,7 +46,7 @@
 #include "cvsyms.h"
 #include "dw.h"
 #include "dfsyms.h"
-#include "dwarfsup.h"
+#include "dfsupp.h"
 #include "wvsyms.h"
 #include "wvtypes.h"
 #include "objio.h"
