@@ -40,13 +40,69 @@
 #include "pccode.h"
 #include "x86enc.h"
 #include "x86proc.h"
+#include "x86opseg.h"
 
 
 zero_page_scheme        ZPageType;
 
-/* forward declarations */
-static  int     Overs( name *op );
-static  int     CountSegOvers( void );
+static  int     Overs( name *op )
+/********************************
+    return the number of SS: overrides associated with "op" (0 or 1)
+*/
+{
+    name        *base;
+    name        *index;
+
+    if( op->n.class == N_MEMORY ) {
+        if( SegIsSS( op ) )
+            return( 1 );
+        return( 0 );
+    } else if( op->n.class == N_INDEXED ) {
+        base = op->i.base;
+        if( !HasTrueBase( op ) )
+            return( 0 );
+        if( base->n.class != N_MEMORY )
+            return( 0 );
+        if( !SegIsSS( base ) )
+            return( 0 );
+        index = op->i.index;
+        if( HW_CEqual( index->r.reg, HW_BX ) )
+            return( 0 );
+        if( ZPageType == ZP_USES_SI )
+            return( 0 );
+        if( ZPageType == ZP_USES_DI )
+            return( 0 );
+        return( 1 );
+    }
+    return( 0 );
+}
+
+static  int     CountSegOvers( void )
+/************************************
+    Count the number of SS: overrides in the routine.
+*/
+{
+    block       *blk;
+    instruction *ins;
+    opcnt       i;
+    int         overs;
+
+    overs = 0;
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
+        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+            if( OpcodeNumOperands( ins ) == ins->num_operands && ( ZPageType == ZP_USES_DS
+               || ( G( ins ) != G_MOVAM && G( ins ) != G_MOVMA ) ) ) {
+                for( i = OpcodeNumOperands( ins ); i-- > 0; ) {
+                    overs += Overs( ins->operands[i] );
+                }
+                if( ins->result != NULL ) {
+                    overs += Overs( ins->result );
+                }
+            }
+        }
+    }
+    return( overs );
+}
 
 void    InitZeroPage( void )
 /***************************
@@ -123,64 +179,4 @@ void    FiniZeroPage( void )
         break;
     }
     ZPageType = ZP_USES_SS;
-}
-
-static  int     CountSegOvers( void )
-/************************************
-    Count the number of SS: overrides in the routine.
-*/
-{
-    block       *blk;
-    instruction *ins;
-    opcnt       i;
-    int         overs;
-
-    overs = 0;
-    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
-            if( OpcodeNumOperands( ins ) == ins->num_operands && ( ZPageType == ZP_USES_DS
-               || ( G( ins ) != G_MOVAM && G( ins ) != G_MOVMA ) ) ) {
-                for( i = OpcodeNumOperands( ins ); i-- > 0; ) {
-                    overs += Overs( ins->operands[i] );
-                }
-                if( ins->result != NULL ) {
-                    overs += Overs( ins->result );
-                }
-            }
-        }
-    }
-    return( overs );
-}
-
-
-static  int     Overs( name *op )
-/********************************
-    return the number of SS: overrides associated with "op" (0 or 1)
-*/
-{
-    name        *base;
-    name        *index;
-
-    if( op->n.class == N_MEMORY ) {
-        if( SegIsSS( op ) )
-            return( 1 );
-        return( 0 );
-    } else if( op->n.class == N_INDEXED ) {
-        base = op->i.base;
-        if( !HasTrueBase( op ) )
-            return( 0 );
-        if( base->n.class != N_MEMORY )
-            return( 0 );
-        if( !SegIsSS( base ) )
-            return( 0 );
-        index = op->i.index;
-        if( HW_CEqual( index->r.reg, HW_BX ) )
-            return( 0 );
-        if( ZPageType == ZP_USES_SI )
-            return( 0 );
-        if( ZPageType == ZP_USES_DI )
-            return( 0 );
-        return( 1 );
-    }
-    return( 0 );
 }

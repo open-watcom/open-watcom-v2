@@ -48,34 +48,6 @@
 #include "liveinfo.h"
 
 
-/* forward declarations */
-static  void            CnvOperand( instruction *ins );
-static  void            FPAlloc( void );
-static  void            NoStackAcrossCalls( void );
-static  void            StackShortLivedTemps( void );
-static  void            FSinCos( void );
-static  void            CnvResult( instruction *ins );
-static  void            FindSinCos( instruction *ins, opcode_defs next_op );
-static  void            FPConvert( void );
-
-void    FPRegAlloc( void )
-/*****************************
-    Allocate registers comprising the "stack" portion of the 8087.
-*/
-{
-    if( _FPULevel( FPU_87 ) ) {
-        if( _FPULevel( FPU_387 ) ) {
-            FSinCos();
-        }
-        StackShortLivedTemps();
-        NoStackAcrossCalls();
-        FPAlloc();
-    }
-}
-
-
-
-
 static byte StackReq8087[LAST_IFUNC - FIRST_IFUNC + 1] = {
 /*********************************************************
     how much stack over and above the parm
@@ -128,28 +100,6 @@ static byte StackReq387[LAST_IFUNC - FIRST_IFUNC + 1] = {
         2,        /* OP_SINH */
         2         /* OP_TANH */
 };
-
-void    FPInitStkReq( void )
-/**************************/
-{
-    if( _IsTargetModel( I_MATH_INLINE ) ) {
-        StackReq387[OP_SIN - FIRST_IFUNC] = 0;
-        StackReq387[OP_COS - FIRST_IFUNC] = 0;
-    }
-}
-
-
-int     FPStkReq( instruction *ins )
-/**********************************/
-{
-    if( !_OpIsIFunc( ins->head.opcode ) )
-        return( 0 );
-    if( _FPULevel( FPU_387 ) ) {
-        return( StackReq387[ins->head.opcode - FIRST_IFUNC] );
-    } else {
-        return( StackReq8087[ins->head.opcode - FIRST_IFUNC] );
-    }
-}
 
 
 static  bool    MathOpsBlowStack( conflict_node *conf, int stk_level ) {
@@ -269,118 +219,6 @@ static  void    SetStackLevel( instruction *ins, int *stk_level ) {
     if( (ins->flags.call_flags & CALL_IGNORES_RETURN) == 0 )
         return;
     --*stk_level;
-}
-
-
-static  void    FPAlloc( void ) {
-/**************************
-   Pre allocate 8087 registers to temporarys that lend themselves
-   to a stack architecture.  ST(0) is reserved as the floating top
-   of stack pointer.  Notice that by not "assigning" ST(0), we
-   give FPExpand one register on the 8087 stack to play with if it
-   needs to FLD a memory location or a constant or something.  We
-   also set stk_entry, stk_exit to indicate the affect that each
-   instruction has on the 8087 stack.  stk_extra indicates how much
-   stack over and above stk_entry gets used.
-
-
-*/
-    block               *blk;
-    instruction         *ins;
-    int                 stk_level;
-    int                 sequence;
-    bool                need_live_update;
-    name                *name;
-    instruction         *new_ins;
-
-    HW_CTurnOn( CurrProc->state.unalterable, HW_FLTS );
-    FPStatWord = NULL;
-    stk_level = 0;
-    need_live_update = false;
-    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        ins = blk->ins.hd.next;
-        if( ins->head.opcode == OP_BLOCK )
-            continue;
-        ins->stk_entry = stk_level;
-        SetStackLevel( ins, &stk_level );
-        sequence = 0;
-        for( ;; ) {
-            /*
-             * if we have an ins which looks like "cnv FS FD t1 -> t1" we need to
-             * split it up so that we can give it a register, since rDOCVT is so lame
-             */
-            for( ;; ) { // not really a loop - forgive me
-                if( ins->head.opcode != OP_CONVERT )
-                    break;
-                if( !( ( ins->type_class == FS && ins->base_type_class == FD ) ||
-                      ( ins->type_class == FD && ins->base_type_class == FS ) ) )
-                    break;
-                if( ins->operands[0]->n.class == N_REGISTER )
-                    break;
-                if( ins->operands[0]->n.class == N_TEMP && ( ins->operands[0]->t.temp_flags & CAN_STACK ) )
-                    break;
-                name = AllocTemp( ins->base_type_class );
-                name->t.temp_flags |= CAN_STACK;
-                new_ins = MakeMove( ins->operands[0], name, ins->base_type_class );
-                ins->operands[0] = name;
-                MoveSegOp( ins, new_ins, 0 );
-                PrefixIns( ins, new_ins );
-                ins = new_ins;
-                break;
-            }
-            /* check the result ... if it's top of stack, bump up stack level*/
-            if( AssignFPResult( blk, ins, &stk_level ) ) {
-                need_live_update = true;
-            }
-            ins->sequence = sequence;
-            ins->stk_exit = stk_level;
-            // ins->s.stk_extra = FPStkReq( ins ); // BBB - Mar 22, 1994
-            if(  _FPULevel( FPU_586 ) &&
-                stk_level == 0 ) ++sequence; // NYI - overflow?
-            ins = ins->head.next;
-            if( ins->head.opcode == OP_BLOCK )
-                break;
-            ins->stk_entry = stk_level;
-            SetStackLevel( ins, &stk_level );
-            AssignFPOps( ins, &stk_level );
-        }
-        if( _IsBlkAttr( blk, BLK_RETURN ) && stk_level == 1 ) {
-            stk_level = 0;
-        }
-        if( stk_level != 0 ) {
-            _Zoiks( ZOIKS_074 );
-        }
-    }
-    if( need_live_update ) {
-        LiveInfoUpdate();
-    }
-    FPConvert();
-}
-
-
-static  void    FPConvert( void ) {
-/****************************
-    Make sure all operands of _IsFloating() instructions are a type that
-    may be used in an FLD or FST instruction.
-
-*/
-
-
-    block       *blk;
-    instruction *ins;
-    instruction *next;
-
-    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = next ) {
-            next = ins->head.next;
-            if( ins->head.opcode == OP_CONVERT ) {
-                if( _Is87Ins( ins ) ) {
-                    CnvOperand( ins );
-                    CnvResult( ins );
-                }
-            }
-        }
-    }
 }
 
 
@@ -515,81 +353,115 @@ static  void    CnvResult( instruction *ins ) {
 }
 
 
-int     Count87Regs( hw_reg_set regs )
-/***********************************************
-    Count the number of 8087 registers named in hw_reg_set "regs".
-*/
-{
-    int         count;
-    int         i;
-
-    i = 0;
-    count = 0;
-    for(;;) {
-        if( HW_Ovlap( FPRegs[i], regs ) ) {
-            ++count;
-        }
-        if( i == 7 )
-            break;
-        ++i;
-    }
-    return( count );
-}
-
-
-bool    FPStackIns( instruction *ins )
-/************************************/
-{
-    if( !_FPULevel( FPU_87 ) )
-        return( false );
-    if( _OpIsCall( ins->head.opcode ) )
-        return( true );
-    if( _Is87Ins( ins ) )
-        return( true );
-    return( false );
-}
-
-
-bool    FPSideEffect( instruction *ins )
-/*************************************************
-    Return true if instruction "ins" is an instruction that has a side
-    effect, namely pushes or pops the 8087 stack.
+static  void    FPConvert( void ) {
+/****************************
+    Make sure all operands of _IsFloating() instructions are a type that
+    may be used in an FLD or FST instruction.
 
 */
-{
-    opcnt       i;
-    bool        has_fp_reg;
 
-    if( !_FPULevel( FPU_87 ) )
-        return( false );
-    /* calls require a clean stack */
-    if( _OpIsCall( ins->head.opcode ) )
-        return( true );
-    if( !_Is87Ins( ins ) )
-        return( false );
-    has_fp_reg = false;
-    for( i = ins->num_operands; i-- > 0; ) {
-        if( ins->operands[i]->n.class == N_REGISTER ) {
-            if( HW_COvlap( ins->operands[i]->r.reg, HW_FLTS ) ) {
-                has_fp_reg = true;
+
+    block       *blk;
+    instruction *ins;
+    instruction *next;
+
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
+        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = next ) {
+            next = ins->head.next;
+            if( ins->head.opcode == OP_CONVERT ) {
+                if( _Is87Ins( ins ) ) {
+                    CnvOperand( ins );
+                    CnvResult( ins );
+                }
             }
         }
     }
-    if( ins->result != NULL ) {
-        if( ins->result->n.class == N_REGISTER ) {
-            if( HW_COvlap( ins->result->r.reg, HW_FLTS ) ) {
-                has_fp_reg = true;
+}
+
+
+static  void    FPAlloc( void ) {
+/**************************
+   Pre allocate 8087 registers to temporarys that lend themselves
+   to a stack architecture.  ST(0) is reserved as the floating top
+   of stack pointer.  Notice that by not "assigning" ST(0), we
+   give FPExpand one register on the 8087 stack to play with if it
+   needs to FLD a memory location or a constant or something.  We
+   also set stk_entry, stk_exit to indicate the affect that each
+   instruction has on the 8087 stack.  stk_extra indicates how much
+   stack over and above stk_entry gets used.
+
+
+*/
+    block               *blk;
+    instruction         *ins;
+    int                 stk_level;
+    int                 sequence;
+    bool                need_live_update;
+    name                *name;
+    instruction         *new_ins;
+
+    HW_CTurnOn( CurrProc->state.unalterable, HW_FLTS );
+    FPStatWord = NULL;
+    stk_level = 0;
+    need_live_update = false;
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
+        ins = blk->ins.hd.next;
+        if( ins->head.opcode == OP_BLOCK )
+            continue;
+        ins->stk_entry = stk_level;
+        SetStackLevel( ins, &stk_level );
+        sequence = 0;
+        for( ;; ) {
+            /*
+             * if we have an ins which looks like "cnv FS FD t1 -> t1" we need to
+             * split it up so that we can give it a register, since rDOCVT is so lame
+             */
+            for( ;; ) { // not really a loop - forgive me
+                if( ins->head.opcode != OP_CONVERT )
+                    break;
+                if( !( ( ins->type_class == FS && ins->base_type_class == FD ) ||
+                      ( ins->type_class == FD && ins->base_type_class == FS ) ) )
+                    break;
+                if( ins->operands[0]->n.class == N_REGISTER )
+                    break;
+                if( ins->operands[0]->n.class == N_TEMP && ( ins->operands[0]->t.temp_flags & CAN_STACK ) )
+                    break;
+                name = AllocTemp( ins->base_type_class );
+                name->t.temp_flags |= CAN_STACK;
+                new_ins = MakeMove( ins->operands[0], name, ins->base_type_class );
+                ins->operands[0] = name;
+                MoveSegOp( ins, new_ins, 0 );
+                PrefixIns( ins, new_ins );
+                ins = new_ins;
+                break;
             }
+            /* check the result ... if it's top of stack, bump up stack level*/
+            if( AssignFPResult( blk, ins, &stk_level ) ) {
+                need_live_update = true;
+            }
+            ins->sequence = sequence;
+            ins->stk_exit = stk_level;
+            // ins->s.stk_extra = FPStkReq( ins ); // BBB - Mar 22, 1994
+            if(  _FPULevel( FPU_586 ) &&
+                stk_level == 0 ) ++sequence; // NYI - overflow?
+            ins = ins->head.next;
+            if( ins->head.opcode == OP_BLOCK )
+                break;
+            ins->stk_entry = stk_level;
+            SetStackLevel( ins, &stk_level );
+            AssignFPOps( ins, &stk_level );
+        }
+        if( _IsBlkAttr( blk, BLK_RETURN ) && stk_level == 1 ) {
+            stk_level = 0;
+        }
+        if( stk_level != 0 ) {
+            _Zoiks( ZOIKS_074 );
         }
     }
-    if( has_fp_reg ) {
-        if( ins->ins_flags & INS_PARAMETER )
-            return( true );
-        if( ins->stk_entry != ins->stk_exit ) {
-            return( true );
-        }
+    if( need_live_update ) {
+        LiveInfoUpdate();
     }
-    return( false );
+    FPConvert();
 }
 
 
@@ -710,6 +582,164 @@ static  void    NoStackAcrossCalls( void ) {
     }
 }
 
+static  void   FindSinCos( instruction *ins, opcode_defs next_op ) {
+/*****************************************************************/
+
+    instruction *next;
+    instruction *new_ins;
+    name        *temp;
+
+    for( next = ins->head.next; ; next = next->head.next ) {
+        if( next->head.opcode == OP_BLOCK )
+            return;
+        if( _IsReDefinedBy( next, ins->operands[0] ) )
+            return;
+        if( next->head.opcode == next_op ) {
+            if( next->operands[0] == ins->operands[0] && next->type_class == ins->type_class ) {
+                break;
+            }
+        }
+    }
+    temp = AllocTemp( ins->type_class );
+    new_ins = MakeUnary( next_op, ins->operands[0], temp, ins->type_class );
+    next->head.opcode = OP_MOV;
+    next->operands[0] = temp;
+    SuffixIns( ins, new_ins );
+    UpdateLive( ins, next );
+}
+
+static  void    FSinCos( void ) {
+/*************************/
+
+    block       *blk;
+    instruction *ins;
+
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
+        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+            if( ins->head.opcode == OP_SIN ) {
+                FindSinCos( ins, OP_COS );
+            } else if( ins->head.opcode == OP_COS ) {
+                FindSinCos( ins, OP_SIN );
+            }
+        }
+    }
+}
+
+void    FPRegAlloc( void )
+/*****************************
+    Allocate registers comprising the "stack" portion of the 8087.
+*/
+{
+    if( _FPULevel( FPU_87 ) ) {
+        if( _FPULevel( FPU_387 ) ) {
+            FSinCos();
+        }
+        StackShortLivedTemps();
+        NoStackAcrossCalls();
+        FPAlloc();
+    }
+}
+
+void    FPInitStkReq( void )
+/**************************/
+{
+    if( _IsTargetModel( I_MATH_INLINE ) ) {
+        StackReq387[OP_SIN - FIRST_IFUNC] = 0;
+        StackReq387[OP_COS - FIRST_IFUNC] = 0;
+    }
+}
+
+
+int     FPStkReq( instruction *ins )
+/**********************************/
+{
+    if( !_OpIsIFunc( ins->head.opcode ) )
+        return( 0 );
+    if( _FPULevel( FPU_387 ) ) {
+        return( StackReq387[ins->head.opcode - FIRST_IFUNC] );
+    } else {
+        return( StackReq8087[ins->head.opcode - FIRST_IFUNC] );
+    }
+}
+
+
+int     Count87Regs( hw_reg_set regs )
+/***********************************************
+    Count the number of 8087 registers named in hw_reg_set "regs".
+*/
+{
+    int         count;
+    int         i;
+
+    i = 0;
+    count = 0;
+    for(;;) {
+        if( HW_Ovlap( FPRegs[i], regs ) ) {
+            ++count;
+        }
+        if( i == 7 )
+            break;
+        ++i;
+    }
+    return( count );
+}
+
+
+bool    FPStackIns( instruction *ins )
+/************************************/
+{
+    if( !_FPULevel( FPU_87 ) )
+        return( false );
+    if( _OpIsCall( ins->head.opcode ) )
+        return( true );
+    if( _Is87Ins( ins ) )
+        return( true );
+    return( false );
+}
+
+
+bool    FPSideEffect( instruction *ins )
+/*************************************************
+    Return true if instruction "ins" is an instruction that has a side
+    effect, namely pushes or pops the 8087 stack.
+
+*/
+{
+    opcnt       i;
+    bool        has_fp_reg;
+
+    if( !_FPULevel( FPU_87 ) )
+        return( false );
+    /* calls require a clean stack */
+    if( _OpIsCall( ins->head.opcode ) )
+        return( true );
+    if( !_Is87Ins( ins ) )
+        return( false );
+    has_fp_reg = false;
+    for( i = ins->num_operands; i-- > 0; ) {
+        if( ins->operands[i]->n.class == N_REGISTER ) {
+            if( HW_COvlap( ins->operands[i]->r.reg, HW_FLTS ) ) {
+                has_fp_reg = true;
+            }
+        }
+    }
+    if( ins->result != NULL ) {
+        if( ins->result->n.class == N_REGISTER ) {
+            if( HW_COvlap( ins->result->r.reg, HW_FLTS ) ) {
+                has_fp_reg = true;
+            }
+        }
+    }
+    if( has_fp_reg ) {
+        if( ins->ins_flags & INS_PARAMETER )
+            return( true );
+        if( ins->stk_entry != ins->stk_exit ) {
+            return( true );
+        }
+    }
+    return( false );
+}
+
 
 type_class_def  FPInsClass( instruction *ins )
 /*******************************************************
@@ -795,47 +825,4 @@ bool    FPIsConvert( instruction *ins )
     if( _Is87Ins( ins ) )
         return( true );
     return( false );
-}
-
-static  void    FSinCos( void ) {
-/*************************/
-
-    block       *blk;
-    instruction *ins;
-
-    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
-            if( ins->head.opcode == OP_SIN ) {
-                FindSinCos( ins, OP_COS );
-            } else if( ins->head.opcode == OP_COS ) {
-                FindSinCos( ins, OP_SIN );
-            }
-        }
-    }
-}
-
-static  void   FindSinCos( instruction *ins, opcode_defs next_op ) {
-/*****************************************************************/
-
-    instruction *next;
-    instruction *new_ins;
-    name        *temp;
-
-    for( next = ins->head.next; ; next = next->head.next ) {
-        if( next->head.opcode == OP_BLOCK )
-            return;
-        if( _IsReDefinedBy( next, ins->operands[0] ) )
-            return;
-        if( next->head.opcode == next_op ) {
-            if( next->operands[0] == ins->operands[0] && next->type_class == ins->type_class ) {
-                break;
-            }
-        }
-    }
-    temp = AllocTemp( ins->type_class );
-    new_ins = MakeUnary( next_op, ins->operands[0], temp, ins->type_class );
-    next->head.opcode = OP_MOV;
-    next->operands[0] = temp;
-    SuffixIns( ins, new_ins );
-    UpdateLive( ins, next );
 }

@@ -48,10 +48,6 @@
 #include "generate.h"
 
 
-/* forward declarations */
-static  void    ScanBlock( tbl_control *table, an node, type_class_def class, label_handle other );
-static  void    SelectBlock( tbl_control *table, an node, label_handle other );
-
 static  select_list *NewCase( signed_32 lo, signed_32 hi, label_handle label )
 /****************************************************************************/
 {
@@ -249,6 +245,45 @@ static  type_def        *UnSignedIntTipe( type_def *tipe )
     return( NULL );
 }
 
+static  void    ScanBlock( tbl_control *table, an node, type_class_def class, label_handle other )
+/************************************************************************************************/
+{
+    uint                i;
+    uint                targets;
+    name                *value;
+
+    value = GenIns( node );
+    MkSelOp( ScanCall( table, value, class ), class );
+    i = 0;
+    targets = 0;
+    for( ;; ) {
+        if( table->cases[i] != other ) {
+            ++targets;
+        }
+        if( ++i == table->size ) {
+            break;
+        }
+    }
+    if( other != NULL ) {
+        ++targets;
+    }
+    GenBlock( BLK_SELECT, targets );
+    i = 0;
+    for( ;; ) {
+        if( table->cases[i] != other ) {
+            AddTarget( table->cases[i], false );
+        }
+        if( ++i == table->size ) {
+            break;
+        }
+    }
+    if( other != NULL ) {
+        AddTarget( other, false );
+    }
+    Generate( false );
+    EnLink( AskForNewLabel(), true );
+}
+
 
 static  an      GenScanTable( an node, sel_handle s_node, type_def *tipe )
 /************************************************************************/
@@ -270,6 +305,44 @@ static  an      GenScanTable( an node, sel_handle s_node, type_def *tipe )
     ScanBlock( MakeScanTab( s_node->list, s_node->upper, s_node->other_wise, value_type, real_type ),
                node, (type_class_def)value_type, s_node->other_wise );
     return( node );
+}
+
+
+static  void    SelectBlock( tbl_control *table, an node, label_handle other )
+/****************************************************************************/
+{
+    uint                i;
+    uint                targets;
+
+    MkSelOp( SelIdx( table, node ), U2 );
+    i = 0;
+    targets = 0;
+    for(;;) {
+        if( table->cases[i] != other ) {
+            ++targets;
+        }
+        if( ++i == table->size ) {
+            break;
+        }
+    }
+    if( other != NULL ) {
+        ++targets;
+    }
+    GenBlock( BLK_SELECT, targets );
+    i = 0;
+    for(;;) {
+        if( table->cases[i] != other ) {
+            AddTarget( table->cases[i], false );
+        }
+        if( ++i == table->size ) {
+            break;
+        }
+    }
+    if( other != NULL ) {
+        AddTarget( other, false );
+    }
+    Generate( false );
+    EnLink( AskForNewLabel(), true );
 }
 
 
@@ -436,83 +509,6 @@ signed_32       NumValues( select_list *list, signed_32 hi )
         cases += list->high - list->low + 1;
     }
     return( cases );
-}
-
-static  void    ScanBlock( tbl_control *table, an node, type_class_def class, label_handle other )
-/************************************************************************************************/
-{
-    uint                i;
-    uint                targets;
-    name                *value;
-
-    value = GenIns( node );
-    MkSelOp( ScanCall( table, value, class ), class );
-    i = 0;
-    targets = 0;
-    for( ;; ) {
-        if( table->cases[i] != other ) {
-            ++targets;
-        }
-        if( ++i == table->size ) {
-            break;
-        }
-    }
-    if( other != NULL ) {
-        ++targets;
-    }
-    GenBlock( BLK_SELECT, targets );
-    i = 0;
-    for( ;; ) {
-        if( table->cases[i] != other ) {
-            AddTarget( table->cases[i], false );
-        }
-        if( ++i == table->size ) {
-            break;
-        }
-    }
-    if( other != NULL ) {
-        AddTarget( other, false );
-    }
-    Generate( false );
-    EnLink( AskForNewLabel(), true );
-}
-
-
-static  void    SelectBlock( tbl_control *table, an node, label_handle other )
-/****************************************************************************/
-{
-    uint                i;
-    uint                targets;
-
-    MkSelOp( SelIdx( table, node ), U2 );
-    i = 0;
-    targets = 0;
-    for(;;) {
-        if( table->cases[i] != other ) {
-            ++targets;
-        }
-        if( ++i == table->size ) {
-            break;
-        }
-    }
-    if( other != NULL ) {
-        ++targets;
-    }
-    GenBlock( BLK_SELECT, targets );
-    i = 0;
-    for(;;) {
-        if( table->cases[i] != other ) {
-            AddTarget( table->cases[i], false );
-        }
-        if( ++i == table->size ) {
-            break;
-        }
-    }
-    if( other != NULL ) {
-        AddTarget( other, false );
-    }
-    Generate( false );
-    EnLink( AskForNewLabel(), true );
 }
 
 

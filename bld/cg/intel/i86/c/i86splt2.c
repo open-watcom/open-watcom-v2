@@ -60,9 +60,6 @@ typedef struct eight_byte_name {
         union name     *high;
 } eight_byte_name;
 
-/*forward declaration*/
-static  void            Split8Name( instruction *ins, name *tosplit, eight_byte_name *out );
-
 name    *LowPart( name *tosplit, type_class_def class )
 /*****************************************************/
 {
@@ -273,6 +270,98 @@ static  instruction     *SplitOverlapped( instruction *ins, opcnt op )
     PrefixIns( ins, move );
     UpdateLive( move, ins );
     return( move );
+}
+
+
+static  void    Split8Name( instruction *ins, name *tosplit, eight_byte_name *out )
+/*********************************************************************************/
+{
+    type_length         offset;
+    cg_sym_handle       symbol;
+    constant_defn       *floatval;
+    cg_class            cg;
+    eight_byte_name     konst;
+
+    out->low      = NULL;
+    out->mid_low  = NULL;
+    out->mid_high = NULL;
+    out->high     = NULL;
+
+    if( tosplit == NULL )
+        return;
+    switch( tosplit->n.class ) {
+    case N_REGISTER:
+        out->low      = AllocRegName( HW_DX );
+        out->mid_low  = AllocRegName( HW_CX );
+        out->mid_high = AllocRegName( HW_BX );
+        out->high     = AllocRegName( HW_AX );
+        break;
+    case N_INDEXED:
+        offset = tosplit->i.constant;
+        out->low      = ScaleIndex( tosplit->i.index,
+                        tosplit->i.base, offset, I2, 0, tosplit->i.scale,
+                        tosplit->i.index_flags );
+        out->mid_low  = ScaleIndex( tosplit->i.index,
+                        tosplit->i.base, offset + 2, I2, 0, tosplit->i.scale,
+                        tosplit->i.index_flags );
+        out->mid_high = ScaleIndex( tosplit->i.index,
+                        tosplit->i.base, offset + 4, I2, 0, tosplit->i.scale,
+                        tosplit->i.index_flags );
+        out->high     = ScaleIndex( tosplit->i.index,
+                        tosplit->i.base, offset + 6, I2, 0, tosplit->i.scale,
+                        tosplit->i.index_flags );
+        break;
+    case N_TEMP:
+        out->low      = TempOffset( tosplit, 0, I2 );
+        out->mid_low  = TempOffset( tosplit, 2, I2 );
+        out->mid_high = TempOffset( tosplit, 4, I2 );
+        out->high     = TempOffset( tosplit, 6, I2 );
+        if( tosplit->t.temp_flags & CONST_TEMP ) {
+            Split8Name( ins, tosplit->v.symbol, &konst );
+            out->low->v.symbol          = konst.low;
+            out->mid_low->v.symbol      = konst.mid_low;
+            out->mid_high->v.symbol     = konst.mid_high;
+            out->high->v.symbol         = konst.high;
+        }
+        break;
+    case N_MEMORY:
+        symbol = tosplit->v.symbol;
+        cg = tosplit->m.memory_type;
+        offset = tosplit->v.offset;
+        out->low      = AllocMemory( symbol, offset, cg, I2 );
+        out->mid_low  = AllocMemory( symbol, offset + 2, cg, I2 );
+        out->mid_high = AllocMemory( symbol, offset + 4, cg, I2 );
+        out->high     = AllocMemory( symbol, offset + 6, cg, I2 );
+        out->low->v.usage      = tosplit->v.usage;
+        out->mid_low->v.usage  = tosplit->v.usage;
+        out->mid_high->v.usage = tosplit->v.usage;
+        out->high->v.usage     = tosplit->v.usage;
+        break;
+    case N_CONSTANT:
+        switch( ins->type_class ) {
+        case I8:
+        case U8:
+            out->low      = AllocIntConst( _TargetShort( tosplit->c.lo.uint_value & 0xffff ) );
+            out->mid_low  = AllocIntConst( _TargetShort( tosplit->c.lo.uint_value >> 16 ) );
+            out->mid_high = AllocIntConst( _TargetShort( tosplit->c.hi.uint_value & 0xffff ) );
+            out->high     = AllocIntConst( _TargetShort( tosplit->c.hi.uint_value >> 16 ) );
+            break;
+        case FD:
+            floatval = GetFloat( tosplit, FD );
+            out->low      = AllocIntConst( _TargetShort( floatval->value[0] ) );
+            out->mid_low  = AllocIntConst( _TargetShort( floatval->value[1] ) );
+            out->mid_high = AllocIntConst( _TargetShort( floatval->value[2] ) );
+            out->high     = AllocIntConst( _TargetShort( floatval->value[3] ) );
+            break;
+        default:
+            Zoiks( ZOIKS_136 );
+            break;
+        }
+        break;
+    default:
+        Zoiks( ZOIKS_135 );
+        break;
+    }
 }
 
 instruction     *rMOVE8LOW( instruction *ins )
@@ -643,98 +732,6 @@ static  name    *High8Part( instruction *ins, name *temp )
 
     Split8Name( ins, temp, &expand );
     return( expand.high );
-}
-
-
-static  void    Split8Name( instruction *ins, name *tosplit, eight_byte_name *out )
-/*********************************************************************************/
-{
-    type_length         offset;
-    cg_sym_handle       symbol;
-    constant_defn       *floatval;
-    cg_class            cg;
-    eight_byte_name     konst;
-
-    out->low      = NULL;
-    out->mid_low  = NULL;
-    out->mid_high = NULL;
-    out->high     = NULL;
-
-    if( tosplit == NULL )
-        return;
-    switch( tosplit->n.class ) {
-    case N_REGISTER:
-        out->low      = AllocRegName( HW_DX );
-        out->mid_low  = AllocRegName( HW_CX );
-        out->mid_high = AllocRegName( HW_BX );
-        out->high     = AllocRegName( HW_AX );
-        break;
-    case N_INDEXED:
-        offset = tosplit->i.constant;
-        out->low      = ScaleIndex( tosplit->i.index,
-                        tosplit->i.base, offset, I2, 0, tosplit->i.scale,
-                        tosplit->i.index_flags );
-        out->mid_low  = ScaleIndex( tosplit->i.index,
-                        tosplit->i.base, offset + 2, I2, 0, tosplit->i.scale,
-                        tosplit->i.index_flags );
-        out->mid_high = ScaleIndex( tosplit->i.index,
-                        tosplit->i.base, offset + 4, I2, 0, tosplit->i.scale,
-                        tosplit->i.index_flags );
-        out->high     = ScaleIndex( tosplit->i.index,
-                        tosplit->i.base, offset + 6, I2, 0, tosplit->i.scale,
-                        tosplit->i.index_flags );
-        break;
-    case N_TEMP:
-        out->low      = TempOffset( tosplit, 0, I2 );
-        out->mid_low  = TempOffset( tosplit, 2, I2 );
-        out->mid_high = TempOffset( tosplit, 4, I2 );
-        out->high     = TempOffset( tosplit, 6, I2 );
-        if( tosplit->t.temp_flags & CONST_TEMP ) {
-            Split8Name( ins, tosplit->v.symbol, &konst );
-            out->low->v.symbol          = konst.low;
-            out->mid_low->v.symbol      = konst.mid_low;
-            out->mid_high->v.symbol     = konst.mid_high;
-            out->high->v.symbol         = konst.high;
-        }
-        break;
-    case N_MEMORY:
-        symbol = tosplit->v.symbol;
-        cg = tosplit->m.memory_type;
-        offset = tosplit->v.offset;
-        out->low      = AllocMemory( symbol, offset, cg, I2 );
-        out->mid_low  = AllocMemory( symbol, offset + 2, cg, I2 );
-        out->mid_high = AllocMemory( symbol, offset + 4, cg, I2 );
-        out->high     = AllocMemory( symbol, offset + 6, cg, I2 );
-        out->low->v.usage      = tosplit->v.usage;
-        out->mid_low->v.usage  = tosplit->v.usage;
-        out->mid_high->v.usage = tosplit->v.usage;
-        out->high->v.usage     = tosplit->v.usage;
-        break;
-    case N_CONSTANT:
-        switch( ins->type_class ) {
-        case I8:
-        case U8:
-            out->low      = AllocIntConst( _TargetShort( tosplit->c.lo.uint_value & 0xffff ) );
-            out->mid_low  = AllocIntConst( _TargetShort( tosplit->c.lo.uint_value >> 16 ) );
-            out->mid_high = AllocIntConst( _TargetShort( tosplit->c.hi.uint_value & 0xffff ) );
-            out->high     = AllocIntConst( _TargetShort( tosplit->c.hi.uint_value >> 16 ) );
-            break;
-        case FD:
-            floatval = GetFloat( tosplit, FD );
-            out->low      = AllocIntConst( _TargetShort( floatval->value[0] ) );
-            out->mid_low  = AllocIntConst( _TargetShort( floatval->value[1] ) );
-            out->mid_high = AllocIntConst( _TargetShort( floatval->value[2] ) );
-            out->high     = AllocIntConst( _TargetShort( floatval->value[3] ) );
-            break;
-        default:
-            Zoiks( ZOIKS_136 );
-            break;
-        }
-        break;
-    default:
-        Zoiks( ZOIKS_135 );
-        break;
-    }
 }
 
 

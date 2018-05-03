@@ -74,14 +74,6 @@
 #define MAX_COST        0x7FFFFFFFL
 #define MAX_IN_RANGE    (MAX_COST/1000) /* so no overflow */
 
-/* forward declarations */
-static  void    GenValuesBackward( select_list *list, signed_32 hi,
-                                   signed_32 lo, signed_32 to_sub,
-                                   cg_type tipe );
-static  void    GenValuesForward( select_list *list, signed_32 hi,
-                                  signed_32 lo, signed_32 to_sub,
-                                  cg_type tipe );
-
 
 static cost_val Balance( signed_32 size, signed_32 time )
 /*******************************************************/
@@ -212,72 +204,6 @@ cost_val IfCost( sel_handle s_node, int entries )
     return( cost );
 }
 
-
-tbl_control     *MakeScanTab( select_list *list, signed_32 hi,
-                                      label_handle other, cg_type tipe,
-                                      cg_type real_tipe )
-/*********************************************************************/
-{
-    tbl_control         *table;
-    label_handle        *tab_ptr;
-    unsigned_32         cases;
-    signed_32           lo;
-    signed_32           to_sub;
-    segment_id          old;
-    select_list         *scan;
-    signed_32           curr;
-
-    cases = NumValues( list, hi );
-    lo = list->low;
-    table = CGAlloc( sizeof( tbl_control ) + (cases-1) * sizeof( label_handle ) );
-    table->size = cases;
-    old = SetOP( AskCodeSeg() );
-    table->value_lbl = AskForNewLabel();
-    CodeLabel( table->value_lbl, TypeAddress( TY_NEAR_CODE_PTR )->length );
-    GenSelEntry( true );
-    table->lbl = AskForNewLabel();
-    if( tipe != real_tipe ) {
-        to_sub = lo;
-    } else {
-        to_sub = 0;
-    }
-    if( other == NULL ) {
-        other = table->cases[0];  /* no otherwise? he bakes!*/
-    }
-    if( tipe == TY_WORD ) {
-        GenValuesForward( list, hi, lo, to_sub, tipe );
-    } else {
-        GenValuesBackward( list, hi, lo, to_sub, tipe );
-    }
-    GenSelEntry( false );
-    CodeLabel( table->lbl, 0 );
-    tab_ptr = &table->cases[0];
-    curr = lo;
-    scan = list;
-    if( tipe != TY_WORD ) {
-        GenCodePtr( other );
-    }
-    for(;;) {
-        *tab_ptr = scan->label;
-        GenCodePtr( *tab_ptr );
-        ++tab_ptr;
-        if( SelCompare( curr, hi ) >= 0 )
-            break;
-        if( SelCompare( curr, scan->high ) >= 0 ) {
-            scan = scan->next;
-            curr = scan->low;
-        } else {
-            ++curr;
-        }
-    }
-    if( tipe == TY_WORD ) {
-        GenCodePtr( other );
-    }
-    SetOP( old );
-    return( table );
-}
-
-
 static  void    GenValuesForward( select_list *list, signed_32 hi,
                                   signed_32 lo, signed_32 to_sub,
                                   cg_type tipe )
@@ -346,6 +272,71 @@ static  void    GenValuesBackward( select_list *list, signed_32 hi,
             --curr;
         }
     }
+}
+
+
+tbl_control     *MakeScanTab( select_list *list, signed_32 hi,
+                                      label_handle other, cg_type tipe,
+                                      cg_type real_tipe )
+/*********************************************************************/
+{
+    tbl_control         *table;
+    label_handle        *tab_ptr;
+    unsigned_32         cases;
+    signed_32           lo;
+    signed_32           to_sub;
+    segment_id          old;
+    select_list         *scan;
+    signed_32           curr;
+
+    cases = NumValues( list, hi );
+    lo = list->low;
+    table = CGAlloc( sizeof( tbl_control ) + (cases-1) * sizeof( label_handle ) );
+    table->size = cases;
+    old = SetOP( AskCodeSeg() );
+    table->value_lbl = AskForNewLabel();
+    CodeLabel( table->value_lbl, TypeAddress( TY_NEAR_CODE_PTR )->length );
+    GenSelEntry( true );
+    table->lbl = AskForNewLabel();
+    if( tipe != real_tipe ) {
+        to_sub = lo;
+    } else {
+        to_sub = 0;
+    }
+    if( other == NULL ) {
+        other = table->cases[0];  /* no otherwise? he bakes!*/
+    }
+    if( tipe == TY_WORD ) {
+        GenValuesForward( list, hi, lo, to_sub, tipe );
+    } else {
+        GenValuesBackward( list, hi, lo, to_sub, tipe );
+    }
+    GenSelEntry( false );
+    CodeLabel( table->lbl, 0 );
+    tab_ptr = &table->cases[0];
+    curr = lo;
+    scan = list;
+    if( tipe != TY_WORD ) {
+        GenCodePtr( other );
+    }
+    for(;;) {
+        *tab_ptr = scan->label;
+        GenCodePtr( *tab_ptr );
+        ++tab_ptr;
+        if( SelCompare( curr, hi ) >= 0 )
+            break;
+        if( SelCompare( curr, scan->high ) >= 0 ) {
+            scan = scan->next;
+            curr = scan->low;
+        } else {
+            ++curr;
+        }
+    }
+    if( tipe == TY_WORD ) {
+        GenCodePtr( other );
+    }
+    SetOP( old );
+    return( table );
 }
 
 tbl_control     *MakeJmpTab( select_list *list, signed_32 lo,

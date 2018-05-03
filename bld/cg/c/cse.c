@@ -81,11 +81,6 @@ typedef enum {
         RESULT_DIES
 } who_dies;
 
-/* forward declarations */
-static void             TreeBits( block *root );
-static void             DeleteFromList( instruction **owner, instruction *ins, instruction *new );
-static void             CleanTableEntries( block *root );
-
 static instruction      *ExprHeads[LAST_CSE_OP + 1];
 static bool             LeaveIndVars;
 
@@ -319,49 +314,6 @@ bool    PropRegsOne( void )
 }
 
 
-static  void    FindPartition( void )
-/************************************
-    Partition the flow graph into trees, with root indicated by
-    BLK_BLOCK_VISITED.  Nodes of the tree (except root) may have only one
-    input edge.  These are the partitions in which dataflow is easy to
-    deal with since there is no merging of information.
-*/
-{
-    block       *blk;
-    block       *oth;
-    block       *temp;
-    block_edge  *edge;
-    block_num   i;
-
-    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        if( _IsBlkAttr( blk, BLK_BIG_LABEL ) || blk->inputs != 1 ) {
-            _MarkBlkVisited( blk );
-        }
-        blk->u.partition = blk;
-        _BLKBITS( blk ) = EMPTY;
-    }
-    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        edge = &blk->edge[0];
-        for( i = blk->targets; i > 0; --i ) {
-            if( edge->flags & DEST_IS_BLOCK ) {
-                oth = edge->destination.u.blk;
-                if( !_IsBlkVisited( oth ) && oth->inputs == 1 ) {
-                    temp = oth->u.partition;
-                    oth->u.partition = blk->u.partition;
-                    blk->u.partition = temp;
-                }
-            }
-            ++edge;
-        }
-    }
-    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        if( _IsBlkVisited( blk ) ) {
-            TreeBits( blk );
-        }
-    }
-}
-
-
 static  void    TreeBits( block *root )
 /**************************************
     Label the partition (tree) with bits such that block A is the
@@ -414,6 +366,49 @@ static  void    TreeBits( block *root )
         }
         if( blk == root ) {
             break;
+        }
+    }
+}
+
+
+static  void    FindPartition( void )
+/************************************
+    Partition the flow graph into trees, with root indicated by
+    BLK_BLOCK_VISITED.  Nodes of the tree (except root) may have only one
+    input edge.  These are the partitions in which dataflow is easy to
+    deal with since there is no merging of information.
+*/
+{
+    block       *blk;
+    block       *oth;
+    block       *temp;
+    block_edge  *edge;
+    block_num   i;
+
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
+        if( _IsBlkAttr( blk, BLK_BIG_LABEL ) || blk->inputs != 1 ) {
+            _MarkBlkVisited( blk );
+        }
+        blk->u.partition = blk;
+        _BLKBITS( blk ) = EMPTY;
+    }
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
+        edge = &blk->edge[0];
+        for( i = blk->targets; i > 0; --i ) {
+            if( edge->flags & DEST_IS_BLOCK ) {
+                oth = edge->destination.u.blk;
+                if( !_IsBlkVisited( oth ) && oth->inputs == 1 ) {
+                    temp = oth->u.partition;
+                    oth->u.partition = blk->u.partition;
+                    blk->u.partition = temp;
+                }
+            }
+            ++edge;
+        }
+    }
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
+        if( _IsBlkVisited( blk ) ) {
+            TreeBits( blk );
         }
     }
 }
@@ -832,6 +827,19 @@ static  bool    ProcessDivide( instruction *ins1, instruction *ins2 )
     return( false );
 }
 
+
+static  void    DeleteFromList( instruction **owner,
+                                instruction *ins, instruction *new )
+/*******************************************************************
+    pull an instruction of a "like" opcode list.
+*/
+{
+    while( *owner != ins ) {
+        owner = &_INSLINK( *owner );
+    }
+    *owner = new;
+}
+
 static  bool    DoOneOpcode( opcode_defs opcode )
 /************************************************
     Here we check all instructions with opcode "opcode" against all
@@ -929,6 +937,27 @@ static  bool    DoDivides( void )
 }
 
 
+static  void    CleanTableEntries( block *root )
+/***********************************************
+    Clean up the _INSLINK and _PARTITION fields in partition "root"
+*/
+{
+    instruction *ins;
+    block       *blk;
+
+    blk = root;
+    for( ;; ) {
+        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+            _INSLINK( ins ) = NULL;
+        }
+        blk = blk->u.partition;
+        if( blk == root ) {
+            break;
+        }
+    }
+}
+
+
 static  bool    DoArithOps( block *root )
 /****************************************
     Given a partition whose root is "root", do common subexpressions and
@@ -1006,19 +1035,6 @@ static  bool    PropagateExprs( void )
         }
     }
     return( change );
-}
-
-
-static  void    DeleteFromList( instruction **owner,
-                                instruction *ins, instruction *new )
-/*******************************************************************
-    pull an instruction of a "like" opcode list.
-*/
-{
-    while( *owner != ins ) {
-        owner = &_INSLINK( *owner );
-    }
-    *owner = new;
 }
 
 
@@ -1307,27 +1323,6 @@ static  void    CleanMoves( block *root )
         }
     }
     CleanTableEntries( root );
-}
-
-
-static  void    CleanTableEntries( block *root )
-/***********************************************
-    Clean up the _INSLINK and _PARTITION fields in partition "root"
-*/
-{
-    instruction *ins;
-    block       *blk;
-
-    blk = root;
-    for( ;; ) {
-        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
-            _INSLINK( ins ) = NULL;
-        }
-        blk = blk->u.partition;
-        if( blk == root ) {
-            break;
-        }
-    }
 }
 
 

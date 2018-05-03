@@ -25,12 +25,10 @@
 *
 *  ========================================================================
 *
-* Description:  These are the assembler codes for the instructions listed
-*               in g.h
-*               NB. If you add instructions to this list, then you *must*
-*               also change g.h to match - these tables match those enums
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
-extern pccode_def       PCCodeTable[];
+extern zero_page_scheme ZPageType;

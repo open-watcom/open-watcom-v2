@@ -50,12 +50,8 @@
 #include "treefold.h"
 #include "x86segs.h"
 #include "x86enc.h"
+#include "x86opseg.h"
 
-
-/* forward declarations */
-static  void            SetOff( name *op, int val );
-
-extern  zero_page_scheme        ZPageType;
 
 #define RMR_MOD_DIR     6
 #define RMR_MOD_IND     0x80
@@ -63,14 +59,6 @@ extern  zero_page_scheme        ZPageType;
 #define D0      (0 << S_RMR_MOD)
 #define D8      (1 << S_RMR_MOD)
 #define D16     (2 << S_RMR_MOD)
-
-static void OpndSizeIf( void )
-/****************************/
-{
-    if( _IsTargetModel( USE_32 ) ) {
-        AddToTemp( M_OPND_SIZE );
-    }
-}
 
 #define INDICES 8
 #define BP_INDEX 6
@@ -84,6 +72,14 @@ static  hw_reg_set IndexTab[] = {
     HW_D_1( HW_BP ),
     HW_D_1( HW_BX )
 };
+
+static void OpndSizeIf( void )
+/****************************/
+{
+    if( _IsTargetModel( USE_32 ) ) {
+        AddToTemp( M_OPND_SIZE );
+    }
+}
 
 static  byte    DoIndex( hw_reg_set regs )
 /****************************************/
@@ -441,6 +437,19 @@ void    DoRelocConst( name *op, type_class_def kind )
     }
 }
 
+static  void    SetOff( name *op, int val )
+/*****************************************/
+{
+    if( op->n.class == N_INDEXED ) {
+        op->i.constant += val;
+    } else if( op->n.class == N_TEMP ) {
+        op = DeAlias( op );
+        op->t.location += val;
+    } else { /* N_MEMORY*/
+        op->v.offset += val;
+    }
+}
+
 
 void    Do4Shift( instruction *ins )
 /**********************************/
@@ -634,19 +643,6 @@ void    Pow2Div( instruction *ins )
         break;
     default:
         break;
-    }
-}
-
-static  void    SetOff( name *op, int val )
-/*****************************************/
-{
-    if( op->n.class == N_INDEXED ) {
-        op->i.constant += val;
-    } else if( op->n.class == N_TEMP ) {
-        op = DeAlias( op );
-        op->t.location += val;
-    } else { /* N_MEMORY*/
-        op->v.offset += val;
     }
 }
 

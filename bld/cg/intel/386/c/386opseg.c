@@ -38,6 +38,7 @@
 #include "object.h"
 #include "rgtbl.h"
 #include "x86segs.h"
+#include "x86opseg.h"
 
 
 zero_page_scheme        ZPageType;

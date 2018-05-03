@@ -51,13 +51,75 @@
 #include "cgprotos.h"
 
 
-/* forward declarations */
-static  void            DumpDbgBlkStart( dbg_block *blk, offset lc );
-static  void            DumpParentPtr( dbg_block *blk );
-static  void            DumpLocals( dbg_local *local );
-static  void            DumpDbgBlk( dbg_block *blk, offset lc );
-
 static  offset          CodeOffset;
+
+static  void    DumpDbgBlkStart( dbg_block *blk, offset lc ) {
+/************************************************************/
+
+    block_patch *bpatch;
+    offset      off;
+    segment_id  old;
+
+    old = SetOP( UNDEFSEG );
+    while( blk->patches != NULL ) {
+        bpatch = blk->patches;
+        blk->patches = bpatch->link;
+        SetOP( bpatch->patch.segment );
+        off = AskLocation();
+        SetLocation( bpatch->patch.offset );
+        DataShort( off );
+        SetLocation( off );
+        CGFree( bpatch );
+    }
+    SetOP( old );
+    BuffOffset( blk->start - CodeOffset );
+    BuffOffset( lc - blk->start );
+}
+
+
+static  void    DumpParentPtr( dbg_block *blk ) {
+/***********************************************/
+
+    block_patch *bpatch;
+
+    blk = blk->parent;
+    if( blk == NULL ) {
+        BuffWord( 0 );
+   } else {
+        bpatch = CGAlloc( sizeof( block_patch ) );
+        bpatch->link = blk->patches;
+        blk->patches = bpatch;
+        BuffForward( &bpatch->patch );
+    }
+}
+
+static  void    DumpDbgBlk( dbg_block *blk, offset lc ) {
+/*******************************************************/
+
+    DumpDbgBlkStart( blk, lc );
+    DumpParentPtr( blk );
+}
+
+static  void    DumpLocals( dbg_local *local ) {
+/*************************************************/
+
+
+    dbg_local   *junk;
+    temp_buff   temp;
+    dbg_type    tipe;
+
+    while( local != NULL ) {
+        tipe = FEDbgType( local->sym );
+        BuffStart( &temp, SYM_VARIABLE + VAR_LOCAL );
+        LocDump( local->loc );
+        BuffIndex( (uint) tipe );
+        BuffWSLString( FEName( local->sym ) );
+        BuffEnd( DbgLocals );
+        junk = local;
+        local = local->link;
+        CGFree( junk );
+    }
+}
 
 void    WVInitDbgInfo( void )
 /***************************/
@@ -226,73 +288,4 @@ void    WVRtnEnd( dbg_rtn *rtn, offset lc )
     BuffWSLString( FEName( AskForLblSym( CurrProc->label ) ) );
     BuffEnd( DbgLocals );
     DumpLocals( rtn->blk->locals );
-}
-
-
-static  void    DumpDbgBlkStart( dbg_block *blk, offset lc ) {
-/************************************************************/
-
-    block_patch *bpatch;
-    offset      off;
-    segment_id  old;
-
-    old = SetOP( UNDEFSEG );
-    while( blk->patches != NULL ) {
-        bpatch = blk->patches;
-        blk->patches = bpatch->link;
-        SetOP( bpatch->patch.segment );
-        off = AskLocation();
-        SetLocation( bpatch->patch.offset );
-        DataShort( off );
-        SetLocation( off );
-        CGFree( bpatch );
-    }
-    SetOP( old );
-    BuffOffset( blk->start - CodeOffset );
-    BuffOffset( lc - blk->start );
-}
-
-
-static  void    DumpParentPtr( dbg_block *blk ) {
-/***********************************************/
-
-    block_patch *bpatch;
-
-    blk = blk->parent;
-    if( blk == NULL ) {
-        BuffWord( 0 );
-   } else {
-        bpatch = CGAlloc( sizeof( block_patch ) );
-        bpatch->link = blk->patches;
-        blk->patches = bpatch;
-        BuffForward( &bpatch->patch );
-    }
-}
-
-static  void    DumpDbgBlk( dbg_block *blk, offset lc ) {
-/*******************************************************/
-
-    DumpDbgBlkStart( blk, lc );
-    DumpParentPtr( blk );
-}
-
-static  void    DumpLocals( dbg_local *local ) {
-/*************************************************/
-
-
-    dbg_local   *junk;
-    temp_buff   temp;
-    dbg_type    tipe;
-
-    while( local != NULL ) {
-        tipe = FEDbgType( local->sym );
-        BuffStart( &temp, SYM_VARIABLE + VAR_LOCAL );
-        LocDump( local->loc );
-        BuffIndex( (uint) tipe );
-        BuffWSLString( FEName( local->sym ) );
-        BuffEnd( DbgLocals );
-        junk = local;
-        local = local->link;
-        CGFree( junk );
-    }
 }
