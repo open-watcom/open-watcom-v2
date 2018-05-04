@@ -357,6 +357,16 @@ static char * parse_OS2( char *tz, struct tm *time1, struct tm *time2,
     return( tz );
 }
 
+static void fix_dst_end( void )
+/*****************************/
+{
+    /* convert rule to be in terms of Standard Time */
+    /* rather than Daylight Time */
+    __end_dst.tm_hour -= _RWD_dst_adjust / 3600;
+    __end_dst.tm_min -= ( _RWD_dst_adjust / 60 ) % 60;
+    __end_dst.tm_sec -= _RWD_dst_adjust % 60;
+}
+
 void __parse_tz( char * tz )
 /**************************/
 {
@@ -383,11 +393,7 @@ void __parse_tz( char * tz )
         tz = parse_rule( tz + 1, &__start_dst );
     if( *tz == ',' ) {
         tz = parse_rule( tz + 1, &__end_dst );
-        /* convert rule to be in terms of Standard Time */
-        /* rather than Daylight Time */
-        __end_dst.tm_hour -= _RWD_dst_adjust / 3600;
-        __end_dst.tm_min -= ( _RWD_dst_adjust / 60 ) % 60;
-        __end_dst.tm_sec -= _RWD_dst_adjust % 60;
+        fix_dst_end();
     }
 
     if( tzFlag.format_TZ < 2 && *tz != '\0' ) { /* not yet sure about tz format*/
@@ -404,11 +410,7 @@ void __parse_tz( char * tz )
             if( *tz == '\0' ) {
                 tzFlag.format_TZ = 1; /* correct OS/2 format */
                 _RWD_dst_adjust = _RWD_timezone - dayzone;
-                /* convert rule to be in terms of Standard Time */
-                /* rather than Daylight Time */
-                __end_dst.tm_hour -= _RWD_dst_adjust / 3600;
-                __end_dst.tm_min -= ( _RWD_dst_adjust / 60 ) % 60;
-                __end_dst.tm_sec -= _RWD_dst_adjust % 60;
+                fix_dst_end();
             }
         }
     }
@@ -499,6 +501,8 @@ static int tryOSTimeZone( const char *tz )
             __end_dst.tm_wday = st->wDayOfWeek;     // 0-6
             __end_dst.tm_yday = 0;                  // 0-365 -> 0-365
             __end_dst.tm_isdst= 0;
+
+            fix_dst_end();
             break;
 
         default:
