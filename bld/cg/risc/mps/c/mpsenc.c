@@ -59,8 +59,6 @@
 #include "feprotos.h"
 
 
-extern void             GenIType( uint_8 opcode, uint_8 rt, uint_8 rs, signed_16 immed );
-
 #define _NameReg( op )                  ( (op)->r.arch_index )
 
 #define _IsSigned( type )               ( Unsigned[type] != type )
