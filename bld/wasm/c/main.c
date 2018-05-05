@@ -811,8 +811,8 @@ static char *CollectEnvOrFileName( char *str )
     return( str );
 }
 
-static char *ReadIndirectFile( void )
-/***********************************/
+static char *ReadIndirectFile( char *name )
+/*****************************************/
 {
     char        *env;
     char        *str;
@@ -821,7 +821,7 @@ static char *ReadIndirectFile( void )
     char        ch;
 
     env = NULL;
-    handle = open( ParamBuf, O_RDONLY | O_BINARY );
+    handle = open( name, O_RDONLY | O_BINARY );
     if( handle != -1 ) {
         len = filelength( handle );
         env = AsmAlloc( len + 1 );
@@ -963,25 +963,27 @@ static int ProcOptions( char *str, int *level )
         while( *str == ' ' || *str == '\t' )
             ++str;
         if( *str == '@' && *level < MAX_NESTING ) {
-            save[(*level)++] = CollectEnvOrFileName( str + 1 );
             buffers[*level] = NULL;
+            save[*level] = CollectEnvOrFileName( str + 1 );
             str = getenv( ParamBuf );
-            if( str == NULL ) {
-                str = ReadIndirectFile();
-                buffers[*level] = str;
+            if( str != NULL ) {
+                str = AsmStrDup( str );
+            } else {
+                str = ReadIndirectFile( ParamBuf );
             }
-            if( str != NULL )
+            if( str != NULL ) {
+                buffers[(*level)++] = str;
                 continue;
-            str = save[--(*level)];
+            }
+            str = save[*level];
         }
         if( *str == '\0' ) {
             if( *level == 0 )
                 break;
-            if( buffers[*level] != NULL ) {
-                AsmFree( buffers[*level] );
-                buffers[*level] = NULL;
-            }
-            str = save[--(*level)];
+            --(*level);
+            AsmFree( buffers[*level] );
+            buffers[*level] = NULL;
+            str = save[*level];
             continue;
         }
         if( *str == '-' || *str == SwitchChar ) {
