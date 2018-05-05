@@ -626,8 +626,10 @@ token_idx ExpandMacro( token_idx tok_count )
         } else if( lineis( line, "local" ) ) {
             if( nesting_depth == 0 ) {
                 AsmScan( line );
-                if( macro_local() )
+                if( macro_local() ) {
+                    AsmFree( line );
                     return( INVALID_IDX );
+                }
                 AsmFree( line );
                 continue;
             }

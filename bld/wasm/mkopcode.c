@@ -75,7 +75,8 @@ static void make_inst_hash_tables( unsigned int count, sword *Words )
 
     index_table = calloc( count, sizeof( *index_table ) );
     pos_table = calloc( count, sizeof( *pos_table ) );
-    for( pos = 0, i = 0; i < count; i++ ) {
+    pos = 0;
+    for( i = 0; i < count; i++ ) {
         // create indexes for hash item lists
         name = Words[i].word;
         for( p = &inst_table[hashpjw( name )]; *p; p = &index_table[*p - 1] ) {
@@ -93,7 +94,7 @@ static void make_inst_hash_tables( unsigned int count, sword *Words )
                 break;
             }
         }
-        if( AsmOpTable[pos] != i || pos >= size ) {
+        if( pos >= size || AsmOpTable[pos] != i ) {
             printf( "Wrong data in asminsd.h. position=%d, index=%d\n", pos, i );
             exit( 1 );
         }
