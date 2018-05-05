@@ -1176,7 +1176,7 @@ CNV_RETN MembPtrReint(          // REINTERPRET A MEMBER POINTER
 {
     CNV_RETN retn;              // - return: CNV_...
     PTREE expr;                 // - conversion expression
-    unsigned classification;    // - operand classification
+    MP_TYPE classification;     // - operand classification
 
     classification = classifyMpExpr( a_expr );
     expr = *a_expr;
@@ -1218,7 +1218,7 @@ CNV_RETN MembPtrConvert(        // CONVERT A MEMBER POINTER
     PTREE expr;                 // - conversion expression
     bool safe;                  // - true ==> only safe conversion allowed
     bool init;                  // - true ==> an initialization or assignment
-    unsigned classification;    // - operand classification
+    MP_TYPE classification;     // - operand classification
 
     switch( reqd_cnv ) {
     case CNV_INIT :
@@ -1240,10 +1240,10 @@ CNV_RETN MembPtrConvert(        // CONVERT A MEMBER POINTER
     classification = classifyMpExpr( a_expr );
     expr = *a_expr;
     ConversionTypesSet( expr->type, tgt_type );
+    retn = CNV_ERR;
     switch( classification ) {
     case MP_INVALID :
         PTreeErrorExpr( expr, ERR_MEMB_PTR_OPERAND );
-        retn = CNV_ERR;
         break;
     case MP_MEMB_FN :
       { SYMBOL sym;             // - symbol for node
@@ -1260,12 +1260,9 @@ CNV_RETN MembPtrConvert(        // CONVERT A MEMBER POINTER
             *a_expr = expr;
             if( expr->op == PT_ERROR ) {
                 PTreeErrorNode( expr );
-                retn = CNV_ERR;
             } else {
                 retn = CNV_OK;
             }
-        } else {
-            retn = CNV_ERR;
         }
         break;
     case MP_ZERO :
@@ -1283,13 +1280,9 @@ CNV_RETN MembPtrConvert(        // CONVERT A MEMBER POINTER
           || CNV_OK == validateMpObjs( expr, true, expr->type, tgt_type ) ) {
             expr = convertMembPtrExpr( expr, tgt_type, safe, init );
             *a_expr = expr;
-            if( expr->op == PT_ERROR ) {
-                retn = CNV_ERR;
-            } else {
+            if( expr->op != PT_ERROR ) {
                 retn = CNV_OK;
             }
-        } else {
-            retn = CNV_ERR;
         }
         break;
     }

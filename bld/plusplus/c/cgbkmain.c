@@ -1352,48 +1352,45 @@ static FN_CTL* emit_virtual_file(   // EMIT A VIRTUAL FILE
     SRCFILE         current_src;    // - current source file
     SYMBOL          vf_exact_ind;   // - exact function for indirect virt. call
     unsigned        ic_sp;          // - IC parm stack pointer
-    CGVALUE ic_parms[IC_PARM_STACK_SIZE]; // - parm stack for complex ICs
-    SYMBOL dtor_last_reqd;          // - dtor set by IC_SCOPE_CALL_CDTOR
-    DTC_KIND dtor_kind;             // - DTC_... when ctor called
-    label_handle lbl;               // - Label for IC_GOTO_NEAR
+    CGVALUE         ic_parms[IC_PARM_STACK_SIZE]; // - parm stack for complex ICs
+    SYMBOL          dtor_last_reqd; // - dtor set by IC_SCOPE_CALL_CDTOR
+    DTC_KIND        dtor_kind;      // - DTC_... when ctor called
+    label_handle    lbl;            // - Label for IC_GOTO_NEAR
+    static cg_op    cg_opcodes[] ={ // - opcodes for code generator
+        #include "ppopscop.h"
+    };
 
 //
 //  VARIABLE USED BY MAIN LOOP LOCALY IN "case group"
 //     it uses variable in "case group" as "group local variable"
 //
-//
 //  group - PROCEDURE DECLARATIONS
 //
-    cg_name set_expr;               // - expression for set
+    cg_name set_expr;               // - expression for set                     IC_INIT_REF_BEG, IC_INIT_REF_END
 //
 //  group - Virtual Function reference with inlined args
 //
-    bool vf_call;                   // - true ==> virtual call gen'ed
-    target_offset_t vf_offset;      // - offset to virtual function ptr
-    vindex vf_index;                // - index for virtual function
-    target_offset_t vf_adj_this;    // - adjustment for "this" on virt call
-    target_offset_t vf_adj_retn;    // - adjustment for return on virt call
-    SYMBOL vf_this;                 // - this for function (bound ?)
-    cg_name vf_ptr;                 // - pre-computation of vf_ptr
+    bool vf_call;                   // - true ==> virtual call gen'ed           IC_VF_CODED, IC_VIRT_FUNC, IC_SETUP_VFUN,
+    target_offset_t vf_offset;      // - offset to virtual function ptr         IC_VF_OFFSET, IC_SETUP_VFUN
+    vindex vf_index;                // - index for virtual function             IC_VF_INDEX, IC_SETUP_VFUN
+    target_offset_t vf_adj_this;    // - adjustment for "this" on virt call     IC_VF_CODED, IC_VIRT_FUNC, IC_SETUP_VFUN
+    target_offset_t vf_adj_retn;    // - adjustment for return on virt call     IC_VF_CODED, IC_VIRT_FUNC, IC_SETUP_VFUN
+    SYMBOL vf_this;                 // - this for function (bound ?)            IC_VF_THIS, IC_SETUP_VFUN
+    cg_name vf_ptr;                 // - pre-computation of vf_ptr              IC_VF_CODED, IC_VFUN_PTR, IC_SETUP_VFUN
 //
 //  group - Virtual Base reference with inlined args
 //
-    target_offset_t vb_exact;       // - exact for virtual base
-    target_offset_t vb_delta;       // - delta for virtual base
-    target_offset_t vb_offset;      // - offset to virtual base ptr.
-    vindex          vb_index;       // - index for virtual base
+    target_offset_t vb_exact;       // - exact for virtual base                 IC_VB_EXACT, IC_VB_FETCH
+    target_offset_t vb_delta;       // - delta for virtual base                 IC_VB_DELTA, IC_VB_FETCH
+    target_offset_t vb_offset;      // - offset to virtual base ptr.            IC_VB_OFFSET, IC_VB_FETCH
+    vindex          vb_index;       // - index for virtual base                 IC_VB_INDEX, IC_VB_FETCH
 //
 //  group - EXCEPTION HANDLING
 //
-    target_size_t elem_size;        // - size of element
-    SE *se_dlt;                     // - SE entry created
-    SE *try_se;                     // - try SE for catch
-    SE *catch_se;                   // - catch SE
-
-
-    static cg_op cg_opcodes[] ={// - opcodes for code generator
-        #include "ppopscop.h"
-    };
+    target_size_t elem_size;        // - size of element                        IC_DLT_DTOR_SIZE, IC_DLT_DTOR_ARR, IC_DLT_DTOR_ELM
+    SE *se_dlt;                     // - SE entry created                       IC_DLT_DTOR_ARR, IC_DLT_DTOR_ELM, IC_DLT_DTORED
+    SE *try_se;                     // - try SE for catch                       IC_CATCH_VAR, IC_CATCH
+    SE *catch_se;                   // - catch SE                               IC_CATCH, IC_SET_CATCH_STATE
 
     CgioOpenInput( file_ctl );
     fctl = FnCtlPush( handle, file_ctl );
@@ -2790,8 +2787,8 @@ static FN_CTL* emit_virtual_file(   // EMIT A VIRTUAL FILE
             FstabSetSvSe( catch_se );
           } break;
         case IC_SET_TRY_STATE :             // SET TRY STATE
-          { SE* try_se2 = stateTableTryBlk( tryImpl( ins_value.pvalue ) );
-            FstabSetSvSe( try_se2 );
+          { SE* try_se_l = stateTableTryBlk( tryImpl( ins_value.pvalue ) );
+            FstabSetSvSe( try_se_l );
           } break;
         case IC_EXCEPT_SPEC :               // FUNCTION EXCEPTION SPEC.
             if( (fctl->func->flag & SF_NO_LONGJUMP) == 0 ) {

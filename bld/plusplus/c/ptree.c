@@ -1824,6 +1824,15 @@ static void savePTree( void *p, carve_walk_base *d )
     if( s->op == PT_FREE ) {
         return;
     }
+    save_subtree[0] = NULL;
+    save_subtree[1] = NULL;
+    fp_len = 0;
+    save_float = NULL;
+    save_symbol = NULL;
+    save_string = NULL;
+    save_name = NULL;
+    save_next = NULL;
+    save_scope = NULL;
     save_type = s->type;
     s->type = TypeGetIndex( save_type );
     save_decor = s->decor;

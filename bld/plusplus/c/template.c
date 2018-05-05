@@ -1942,7 +1942,8 @@ static PTREE processClassTemplateParms( TEMPLATE_INFO *tinfo, PTREE parms, bool 
         CErr2p( ERR_TOO_MANY_TEMPLATE_PARAMETERS, tinfo );
         something_went_wrong = true;
     } else if( ! something_went_wrong ) {
-        if( ! inside_decl_scope ) {
+        parm_scope = NULL;
+        if( !inside_decl_scope ) {
             parm_scope = ScopeCreate( SCOPE_TEMPLATE_PARM );
             ScopeSetEnclosing( parm_scope, SymScope( tinfo->sym ) );
         }
@@ -1950,7 +1951,6 @@ static PTREE processClassTemplateParms( TEMPLATE_INFO *tinfo, PTREE parms, bool 
 
         list = parms;
         i = 0;
-
         for( i = 0; ; list = list->u.subtree[0] ) {
             arg_type = TypedefRemove( tprimary->type_list[i] );
             if( arg_type->id == TYP_GENERIC ) {

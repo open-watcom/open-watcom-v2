@@ -356,11 +356,11 @@ static dw_handle dwarfDebugMemberFuncDef( CLASSINFO *info, SYMBOL sym )
     } else {
         dl = dwarfDebugStaticLoc( sym );
         dl_seg = NULL;
-    #if _INTEL_CPU
+#if _INTEL_CPU
         if( !IsFlat() ) {
             dl_seg =  dwarfDebugStaticSeg( sym );
         }
-    #endif
+#endif
         dh = DWBeginMemFuncDecl( Client,
                    return_dh,
                    dl_seg,
@@ -368,11 +368,11 @@ static dw_handle dwarfDebugMemberFuncDef( CLASSINFO *info, SYMBOL sym )
                    name,
                    flags );
         DWLocTrash( Client, dl );
-    #if _INTEL_CPU
+#if _INTEL_CPU
         if( dl_seg != NULL ) {
             DWLocTrash( Client, dl_seg );
         }
-    #endif
+#endif
     }
     return( dh );
 }
@@ -552,18 +552,16 @@ static bool dwarfClassInfo( TYPE type )
     stop = ScopeOrderedStart( type->u.c.scope );
     curr = ScopeOrderedNext( stop, NULL );
     while( curr != NULL ) {
+        dh = 0;
         sym_reset( curr );
         if( !IsCppNameInterestingDebug( curr ) ) {
-             dh = 0;
         } else if( !InDebug && (curr->flag2 & SF2_TOKEN_LOCN) == 0 )  {
-             dh = 0;
         } else if( SymIsClassDefinition( curr ) ) {
             dh = dwarfSymbol( curr, DC_DEFINE );
         } else if( SymIsEnumDefinition( curr ) ) {
             dh = dwarfSymbol( curr, DC_DEFINE );
         } else if( SymIsEnumeration( curr ) ) {
             // do nothing, handled by SymIsEnumDefinition
-            dh = 0;
         } else if( SymIsFunction( curr ) ) {
 //          dwarfPumpArgTypes( curr->sym_type );
             if( InDebug ) { /* gen a short defn */
@@ -575,8 +573,8 @@ static bool dwarfClassInfo( TYPE type )
         } else if( SymIsTypedef( curr ) ) {
             dh = dwarfSymbol( curr, DC_DEFINE );
         } else if( SymIsData( curr ) ) {
-            uint            flags;
-            TYPE            pt;
+            uint    flags;
+            TYPE    pt;
 
             if( !InDebug ) {
                 dwarfLocation( curr );
@@ -621,6 +619,7 @@ static bool dwarfClassInfo( TYPE type )
                 if( InDebug ) {
                     dh = 0;   // if debug we don't want to clash with cg_handle
                 }
+                DWLocTrash( Client, dl );
             } else if( SymIsThisDataMember( curr ) ) {
                 TYPE sym_type = curr->sym_type;
                 TYPE btf = TypedefModifierRemoveOnly( sym_type );
@@ -655,13 +654,11 @@ static bool dwarfClassInfo( TYPE type )
                                 CppNameDebug( curr ),
                                 flags );
                 }
+                DWLocTrash( Client, dl );
             }
-            DWLocTrash( Client, dl );
         } else if( curr->id == SC_ACCESS ) {
             // fixme: access modifiers ignored for now
-            dh = 0;
         } else {
-            dh = 0;
             DbgStmt( DumpSymbol( curr ) );
             DbgStmt( CFatal( "dwarf: illegal member" ) );
         }
@@ -883,8 +880,9 @@ static bool dwarfRefSymLoc( dw_loc_id locid, SYMBOL sym ) {
    | offset | seg | on location stack sets offset and seg
    for the based pointer
 */
-static dbg_type dwarfBasedPointerType( TYPE type, uint flags ) {
-/**************************************************************/
+static dbg_type dwarfBasedPointerType( TYPE type, uint flags )
+/************************************************************/
+{
     dw_loc_id       locid;
     dw_loc_handle   dl_seg;
     TYPE            btype;
@@ -1573,12 +1571,12 @@ static dw_handle dwarfData( SYMBOL sym )
 static dw_handle dwarfDebugStatic( SYMBOL sym )
 /*********************************************/
 {
-    dw_handle dh;
-    dw_handle class_dh;
+    dw_handle       dh;
+    dw_handle       class_dh;
     dw_loc_handle   dl;
     dw_loc_handle   dl_seg;
-    uint      flags;
-    char     *name;
+    uint            flags;
+    char            *name;
 
     sym_reset( sym );
 #ifndef NDEBUG

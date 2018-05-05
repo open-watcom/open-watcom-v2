@@ -479,6 +479,7 @@ static void PrecedenceParse( ppvalue *p ) // main precedence parse algorithm
         return;
     }
     CErrCheckpoint( &error_info );
+    prec_operator = 0;
     Pos = 0;
     SrcFileGetTokenLocn( &loc.locn );
     loc.pos = Pos;

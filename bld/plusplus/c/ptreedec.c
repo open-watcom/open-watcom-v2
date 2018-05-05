@@ -901,6 +901,9 @@ static void savePtd( void *p, carve_walk_base *d )
     if( s->base.kind == PTD_PCH_FREE ) {
         return;
     }
+    save_type = NULL;
+    save_sym = NULL;
+    save_tree = NULL;
     save_next = s->base.next;
     s->base.next = PtdGetIndex( save_next );
     switch( s->base.fmt ) {

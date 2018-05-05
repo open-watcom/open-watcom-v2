@@ -74,7 +74,7 @@ static unsigned outFileChecked; // mask for checking output files
                                 // template for work file name
 static char workFile[] = "__wrk0__.tmp";
 
-#define MAX_TMP_PATH (_MAX_PATH - sizeof( workFile ) - 1)
+#define MAX_TMP_PATH (_MAX_PATH - sizeof( workFile ) - 1)       // 1 character for missing path separator
 
 #if defined(__OS2__) || defined(__DOS__) || defined(__NT__) || defined(__RDOS__)
 

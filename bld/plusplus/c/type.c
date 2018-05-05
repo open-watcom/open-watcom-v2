@@ -3506,6 +3506,7 @@ static TYPE adjustModifiers( DECL_SPEC *dspec, TYPE list )
     /* function modifiers must be shuffled to come before the TYP_FUNCTION */
     last_fn_mod = NULL;
     last_fn_type = NULL;
+    last_prev = NULL;
     prev = NULL;
     for( curr = list; curr != NULL; curr = curr->of ) {
         if( curr->id == TYP_FUNCTION ) {
@@ -3696,6 +3697,7 @@ DECL_INFO *FinishDeclarator( DECL_SPEC *dspec, DECL_INFO *dinfo )
     curr_type = adjustModifiers( dspec, curr_type );
     prev_type = dspec->partial;
     curr_type = massageFunctionTypeInDSpec( &prev_type, curr_type );
+    num_args = 0;
     status = scanDeclarator( curr_type, &num_args );
     if( status & SM_CV_FUNCTION_ERROR ) {
         CErr1( ERR_CONST_VOLATILE_IN_A_TYPE );
@@ -3964,6 +3966,7 @@ DECL_INFO *FinishDeclarator( DECL_SPEC *dspec, DECL_INFO *dinfo )
         }
     }
     if( dinfo->id != NULL ) {
+        msg_num = 0;
         flag.diagnose_sym = false;
         if( dspec->stg_class & STG_TYPEDEF ) {
             if( DefaultIntType( prev_type ) != NULL ) {
@@ -9020,6 +9023,14 @@ static void saveType( void *e, carve_walk_base *d )
     if( s->id == TYP_FREE ) {
         return;
     }
+    save_string = NULL;
+    save_pragma = NULL;
+    save_args = NULL;
+    save_base = NULL;
+    save_type = NULL;
+    save_info = NULL;
+    save_scope = NULL;
+    save_sym = NULL;
     save_next = s->next;
     s->next = TypeGetIndex( save_next );
     save_of = s->of;

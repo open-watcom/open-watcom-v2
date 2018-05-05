@@ -1231,6 +1231,7 @@ static CNV_RETN pcPtrConvertSrcTgt(// PTR CONVERT SOURCE TO TARGET
     PTREE bself;                // - expression for based self
     bool is_ref;                // - true ==> is reference
 
+    expr_type = NULL;
     cnv_fun = pcPtrCnv[type_src * 8 + type_tgt];
     if( cnv_fun == 10 ) {
         retn = CNV_OK;
