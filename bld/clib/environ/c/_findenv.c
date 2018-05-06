@@ -82,7 +82,8 @@ static int __F_NAME(findenv,wfindenv)( const CHAR_TYPE *name, int delete_var )
                         }
                     }
 #endif
-                                            /* delete more entries */
+                    envp--;
+                    break;                  /* delete more entries */
                 } else {
                     return( index1 + 1 );   /* return index origin 1 */
                 }
@@ -90,7 +91,7 @@ static int __F_NAME(findenv,wfindenv)( const CHAR_TYPE *name, int delete_var )
 #if defined( __UNIX__ )
             if( _TCSCMP( p1, p2 ) ) {
 #else
-            if( _TCSICMP( p1, p2 ) ) {       /* case independent search */
+            if( _TCSICMP( p1, p2 ) ) {      /* case independent search */
 #endif
                 break;
             }

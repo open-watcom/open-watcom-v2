@@ -91,9 +91,6 @@ int __F_NAME(__setenv,__wsetenv)( const CHAR_TYPE *name, const CHAR_TYPE *newval
 #else
     int     rc;
 
-    if( name == NULL || *name == NULLCHAR ) {
-        return( -1 );
-    }
   #ifdef __WIDECHAR__
     if( _RWD_wenviron == NULL ) {
         __create_wide_environment();
