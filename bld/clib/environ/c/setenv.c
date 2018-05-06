@@ -79,6 +79,11 @@ _WCRTLINK int __F_NAME(setenv,_wsetenv)( const CHAR_TYPE *name, const CHAR_TYPE 
 #endif
     int                 rc;
 
+    if( name == NULL || *name == NULLCHAR || strchr( name, '=' ) != NULL ) {
+        _RWD_errno = EINVAL;
+        return( -1 );
+    }
+
     /*** Ensure variable is deleted if newvalue == "" ***/
 #ifndef __UNIX__
     if( (newvalue != NULL) && (*newvalue == NULLCHAR) ) {
