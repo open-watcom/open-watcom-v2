@@ -79,7 +79,7 @@ _WCRTLINK int __F_NAME(setenv,_wsetenv)( const CHAR_TYPE *name, const CHAR_TYPE 
 #endif
     int                 rc;
 
-    if( name == NULL || *name == NULLCHAR || strchr( name, '=' ) != NULL ) {
+    if( name == NULL || *name == NULLCHAR || __F_NAME(strchr,wcschr)( name, STRING( '=' ) ) != NULL ) {
         _RWD_errno = EINVAL;
         return( -1 );
     }
