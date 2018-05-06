@@ -477,16 +477,16 @@ int PutEnvSafe( ENV_TRACKER *env )
     size_t      len;
 
     p = env->value;
-                                // upper case the name
+                                    // upper case the name
     while( *p != '=' && *p != NULLCHAR ) {
         *p = ctoupper( *p );
         ++p;
     }
-    rc = putenv( env->value );  // put into environment
+    rc = PutEnvExt( env->value );   // put into environment
     if( p[0] == '=' && p[1] == NULLCHAR ) {
-        rc = 0;                 // we are deleting the envvar, ignore errors
+        rc = 0;                     // we are deleting the envvar, ignore errors
     }
-    len = p - env->value + 1;   // len including '='
+    len = p - env->value + 1;       // len including '='
     for( walk = &envList; *walk != NULL; walk = &(*walk)->next ) {
         if( strncmp( (*walk)->value, env->value, len ) == 0 ) {
             break;
@@ -494,13 +494,13 @@ int PutEnvSafe( ENV_TRACKER *env )
     }
     old = *walk;
     if( old != NULL ) {
-        *walk = old->next;      // unlink from chain
+        *walk = old->next;          // unlink from chain
         FreeSafe( old );
     }
-    if( p[1] != NULLCHAR ) {    // we're giving it a new value
-        env->next = envList;    // save the memory since putenv keeps a
-        envList = env;          // pointer to it...
-    } else {                    // we're deleting an old value
+    if( p[1] != NULLCHAR ) {        // we're giving it a new value
+        env->next = envList;        // save the memory since putenv keeps a
+        envList = env;              // pointer to it...
+    } else {                        // we're deleting an old value
         FreeSafe( env );
     }
     return( rc );

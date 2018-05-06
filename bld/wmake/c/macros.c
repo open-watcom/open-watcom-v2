@@ -332,7 +332,7 @@ STATIC const char *GetMacroValueProcess( const char *name )
     makeMacroName( macro, name ); // Does assert( IsMacroName( name ) );
 
     if( *macro == ENVVAR_C ) {
-        env = getenv( macro + 1 );
+        env = GetEnvExt( macro + 1 );
         if( env != NULL ) {
             return( env );
         }
@@ -391,7 +391,7 @@ STATIC const char *GetMacroValueProcess( const char *name )
                 }
             }
         }
-        env = getenv( macro );
+        env = GetEnvExt( macro );
         if( env != NULL ) {
             return( env );
         }
@@ -1254,6 +1254,7 @@ void DefMacro( const char *name )
     bool        unused_value;
     char        *temp;
     char        *EnvVarValue;   /* used for env. variables (full demacro) */
+    char        *EnvOldValue;
     ENV_TRACKER *env;
 #ifdef CLEAN_ENVIRONMENT_VAR
     ELIST       *tempEList;
@@ -1267,49 +1268,38 @@ void DefMacro( const char *name )
 
     unused_value = true;
     EnvVarValue = NULL;
-
-    if( *name == ENVVAR_C || (Glob.compat_nmake && getenv( name ) != NULL ) ) {
-        if( *name != ENVVAR_C ) {
-            unused_value = addMacro( name, value );
+    EnvOldValue = NULL;
+    if( *name != ENVVAR_C ) {
+        unused_value = addMacro( name, value);
+        if( Glob.compat_nmake ) {
+            EnvOldValue = GetEnvExt( name );
         }
+    }
+    if( *name == ENVVAR_C || EnvOldValue != NULL ) {
         UnGetCHR( '\n' );
         InsString( value, false );
         EnvVarValue = DeMacro( TOK_EOL );
         PreGetCHR();  // eat EOL token (used to avoid assertion failure)
-    }
-
-    if( *name == ENVVAR_C ) {
-        /* remember strlen( name ) is one byte larger than we want
-         * because *name == ENVVAR_C, and we'll ignore that byte
-         */
-        assert( EnvVarValue != NULL );
-        env = MallocSafe( sizeof( ENV_TRACKER )
-                + strlen( name ) + strlen( EnvVarValue ) + 1 );
-        FmtStr( env->value, "%s=%s", name + 1, EnvVarValue );
-        PutEnvSafe( env );
-    } else {
-        if( Glob.compat_nmake ) {
-            if( !DoingBuiltIn ) {
-                if( getenv( name ) != NULL ) {
-#ifdef CLEAN_ENVIRONMENT_VAR
-                    tempEList = NewEList();
-                    tempEList->next = OldEnvValues;
-                    tempEList->envVarName = StrDupSafe( name );
-                    tempEList->envOldVal  = getenv( name );
-                    OldEnvValues = tempEList;
-#endif
-                    setenv( name, EnvVarValue, true );
-                } else {
-                    unused_value = addMacro( name, value );
-                }
-            } else {
-                if( getenv( name ) == NULL) {
-                    unused_value = addMacro( name, value);
-                }
-            }
-
+        if( *name == ENVVAR_C ) {
+            /* remember strlen( name ) is one byte larger than we want
+             * because *name == ENVVAR_C, and we'll ignore that byte
+             */
+            env = MallocSafe( sizeof( ENV_TRACKER ) + strlen( name ) + strlen( EnvVarValue ) + 1 );
+            FmtStr( env->value, "%s=%s", name + 1, EnvVarValue );
+            PutEnvSafe( env );
         } else {
-            unused_value = addMacro( name, value );
+            if( !DoingBuiltIn ) {
+#ifdef CLEAN_ENVIRONMENT_VAR
+                tempEList = NewEList();
+                tempEList->next = OldEnvValues;
+                tempEList->envVarName = StrDupSafe( name );
+                tempEList->envOldVal  = StrDupSafe( EnvOldValue );
+                OldEnvValues = tempEList;
+#endif
+                env = MallocSafe( sizeof( ENV_TRACKER ) + strlen( name ) + 1 + strlen( EnvVarValue ) + 1 );
+                FmtStr( env->value, "%s=%s", name, EnvVarValue );
+                PutEnvSafe( env );
+            }
         }
     }
     if( unused_value )
@@ -1353,12 +1343,16 @@ STATIC void restoreEnvironment( void )
     ELIST   *p;
     VECSTR  EnvString;
 
-    for( p = OldEnvValues; p != NULL; p = p->next ) {
+    while( (p = OldEnvValues) != NULL ) {
+        OldEnvValues = p->next;
         EnvString = StartVec();
         WriteVec( EnvString, p->envVarName );
         WriteVec( EnvString, "=" );
         WriteVec( EnvString, p->envOldVal );
-        putenv( FinishVec( EnvString ) );
+        PutEnvExt( FinishVec( EnvString ) );
+        FreeSafe( p->envVarName );
+        FreeSafe( p->envOldVal );
+        FreeSafe( p );
     }
 }
 #endif

@@ -38,6 +38,9 @@
 #if defined( __DOS__ )
     #include <dos.h>
     #include "tinyio.h"
+#elif defined( __OS2__ ) && !defined( _M_I86 )
+    #define INCL_DOSMISC
+    #include <os2.h>
 #endif
 #include "pcobj.h"
 
@@ -405,4 +408,50 @@ void InitSignals( void )
     signal( SIGBREAK, breakHandler );
 #endif
     signal( SIGINT, breakHandler );
+}
+
+#if defined( __OS2__ ) && !defined( _M_I86 )
+#define BEGPATHNAME "BEGINLIBPATH"
+#define ENDPATHNAME "ENDLIBPATH"
+
+static char os2BegLibPath[1024] = "";
+static char os2EndLibPath[1024] = "";
+#endif
+
+char *GetEnvExt( const char *str )
+{
+#if defined( __OS2__ ) && !defined( _M_I86 )
+    if( strcmp( str, BEGPATHNAME ) == 0 ) {
+        if( os2BegLibPath[0] == '\0' ) {
+            if( DosQueryExtLIBPATH( os2BegLibPath, BEGIN_LIBPATH ) ) {
+                return( NULL );
+            }
+        }
+        return( os2BegLibPath );
+    }
+    if( strcmp( str, ENDPATHNAME ) == 0 ) {
+        if( os2EndLibPath[0] == '\0' ) {
+            if( DosQueryExtLIBPATH( os2EndLibPath, END_LIBPATH ) ) {
+                return( NULL );
+            }
+        }
+        return( os2EndLibPath );
+    }
+#endif
+    return( getenv( str ) );
+}
+
+int PutEnvExt( const char *str )
+{
+#if defined( __OS2__ ) && !defined( _M_I86 )
+    if( strncmp( str, BEGPATHNAME "=", sizeof( BEGPATHNAME "=" ) - 1 ) == 0 ) {
+        strcpy( os2BegLibPath, str + sizeof( BEGPATHNAME "=" ) - 1 );
+        return( DosSetExtLIBPATH( os2BegLibPath, BEGIN_LIBPATH ) );
+    }
+    if( strncmp( str, ENDPATHNAME "=", sizeof( ENDPATHNAME "=" ) - 1 ) == 0 ) {
+        strcpy( os2EndLibPath, str + sizeof( ENDPATHNAME "=" ) - 1 );
+        return( DosSetExtLIBPATH( os2EndLibPath, END_LIBPATH ) );
+    }
+#endif
+    return( putenv( str ) );
 }
