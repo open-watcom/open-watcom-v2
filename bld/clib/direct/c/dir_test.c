@@ -40,6 +40,7 @@
 #else
 #include <direct.h>
 #endif
+#include <fnmatch.h>
 
 #ifdef __SW_BW
     #include <wdefwin.h>
@@ -76,6 +77,14 @@
     #define TMPFILEPREFIX       "_TMPFILE"
 #endif
 #endif
+    
+#ifdef __UNIX__
+#define DIRSEP      '/'
+#define DIRSEP_S    "/"
+#else
+#define DIRSEP      '\\'
+#define DIRSEP_S    "\\"
+#endif
 
 #define NUM_OPEN        5
 #ifdef __SW_BW
@@ -96,7 +105,8 @@
 void main( int argc, char *argv[] )
 {
     CHAR_TYPE           *cwd;
-    CHAR_TYPE           buffer[256], buffer2[256];
+    CHAR_TYPE           buffer[256], buffer2[256]; 
+    CHAR_TYPE           pattern[256];
     int                 ctr;
     FILE                *fp;
     _tDIR               *dirp;
@@ -121,13 +131,14 @@ void main( int argc, char *argv[] )
     VERIFY( __F_NAME(strcmp,wcscmp)( buffer, cwd ) == 0 );
     free( cwd );
 #ifdef __UNIX__
+    VERIFY( __F_NAME(mkdir,_wmkdir)( TMPDIR, S_IRWXU ) == 0 );
 #else
     VERIFY( __F_NAME(mkdir,_wmkdir)( TMPDIR ) == 0 );
 #endif
     VERIFY( __F_NAME(chdir,_wchdir)( TMPDIR ) == 0 );
     VERIFY( ( cwd = __F_NAME(getcwd,_wgetcwd)( NULL, 0 ) ) != NULL );
-    if( buffer[__F_NAME(strlen,wcslen)(buffer)-1] != '\\' ) {
-        __F_NAME(strcat,wcscat)( buffer, STRING( "\\" ) );
+    if( buffer[__F_NAME(strlen,wcslen)(buffer)-1] != DIRSEP ) {
+        __F_NAME(strcat,wcscat)( buffer, STRING( DIRSEP_S ) );
     }
     __F_NAME(strcat,wcscat)( buffer, TMPDIR );
     VERIFY( __F_NAME(strcmp,wcscmp)( buffer, cwd ) == 0 );
@@ -147,26 +158,35 @@ void main( int argc, char *argv[] )
         fclose( fp );
     }
 
-    VERIFY( __F_NAME(chdir,_wchdir)( STRING( ".." ) ) == 0 );
-    __F_NAME(strcpy,wcscpy)( buffer, TMPDIR );
-    __F_NAME(strcat,wcscat)( buffer, "\\" );
-    __F_NAME(strcat,wcscat)( buffer, TMPFILEPREFIX );
-    __F_NAME(strcat,wcscat)( buffer, ".*" );
     save_checkbits = checkbits;
 
+    VERIFY( __F_NAME(chdir,_wchdir)( STRING( ".." ) ) == 0 );
+    __F_NAME(strcpy,wcscpy)( buffer, TMPDIR );
+    __F_NAME(strcpy,wcscpy)( pattern, TMPFILEPREFIX );
+    __F_NAME(strcat,wcscat)( pattern, STRING( ".*" ) );
+#ifndef __UNIX__
+    __F_NAME(strcat,wcscat)( buffer, STRING( DIRSEP_S ) );
+    __F_NAME(strcat,wcscat)( buffer, pattern );
+#endif
+    
     /* Open the directory using a wildcard pattern. */
     VERIFY( ( dirp = __F_NAME(opendir,_wopendir)( buffer ) ) != NULL );
 
-    for( ctr = 0;; ++ctr ) {
+    for( ctr = 0; ctr < NUM_OPEN; ) {
         direntp = __F_NAME(readdir,_wreaddir)( dirp );
         if( direntp == NULL )
             break;
+#ifdef __UNIX__
+        if( fnmatch( pattern, direntp->d_name, 0 ) )
+            continue;
+#endif
         __F_NAME(strcpy,wcscpy)( buffer, TMPFILEPREFIX );
         __F_NAME(strcat,wcscat)( buffer, STRING( "." ) );
         __F_NAME(itoa,_witoa)( ctr, buffer2, 10 );
         __F_NAME(strcat,wcscat)( buffer, buffer2 );
         VERIFY( __F_NAME(strcmp,wcscmp)(buffer,direntp->d_name) == 0 );
         checkbits &= ~( 1 << ctr );
+        ++ctr;
     }
 
     VERIFY( checkbits == 0 );   // If not, readdir() didn't report all files
@@ -174,16 +194,21 @@ void main( int argc, char *argv[] )
     __F_NAME(rewinddir,_wrewinddir)( dirp );
     checkbits = save_checkbits;
 
-    for( ctr = 0;; ++ctr ) {
+    for( ctr = 0; ctr < NUM_OPEN; ) {
         direntp = __F_NAME(readdir,_wreaddir)( dirp );
         if( direntp == NULL )
             break;
+#ifdef __UNIX__
+        if( fnmatch( pattern, direntp->d_name, 0 ) )
+            continue;
+#endif
         __F_NAME(strcpy,wcscpy)( buffer, TMPFILEPREFIX );
         __F_NAME(strcat,wcscat)( buffer, STRING( "." ) );
         __F_NAME(itoa,_witoa)( ctr, buffer2, 10 );
         __F_NAME(strcat,wcscat)( buffer, buffer2 );
         VERIFY( __F_NAME(strcmp,wcscmp)(buffer,direntp->d_name) == 0 );
         checkbits &= ~( 1 << ctr );
+        ++ctr;
     }
 
     VERIFY( checkbits == 0 );   // If not, readdir() didn't report all files
@@ -231,10 +256,10 @@ void main( int argc, char *argv[] )
     VERIFY( __F_NAME(chdir,_wchdir)( TMPDIR ) != 0 );
     printf( "Tests completed (%s).\n", strlwr( argv[0] ) );
 
-    #ifdef __SW_BW
-        fprintf( stderr, "Tests completed (%s).\n", strlwr( argv[0] ) );
-        fclose( my_stdout );
-        _dwShutDown();
-    #endif
+#ifdef __SW_BW
+    fprintf( stderr, "Tests completed (%s).\n", strlwr( argv[0] ) );
+    fclose( my_stdout );
+    _dwShutDown();
+#endif
     exit( 0 );
 }
