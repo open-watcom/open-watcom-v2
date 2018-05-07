@@ -392,12 +392,8 @@ static void memberWalkWithData( // WALK MEMBERS IN CTOR ORDER
     SYMBOL curr;
     SYMBOL stop;
 
-    curr = NULL;
     stop = ScopeOrderedStart( scope );
-    for(;;) {
-        curr = ScopeOrderedNext( stop, curr );
-        if( curr == NULL )
-            break;
+    for( curr = NULL; (curr = ScopeOrderedNext( stop, curr )) != NULL; ) {
         (*memb_rtn)( curr, data );
     }
 }

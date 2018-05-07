@@ -7397,12 +7397,8 @@ static bool markAllUnused( SCOPE scope, void (*diag)( SYMBOL ) )
 
     DbgAssert( ScopeType( scope, SCOPE_TEMPLATE_DECL ) );
     all_flags = TF1_USED;
-    curr = NULL;
     stop = ScopeOrderedStart( scope );
-    for(;;) {
-        curr = ScopeOrderedNext( stop, curr );
-        if( curr == NULL )
-            break;
+    for( curr = NULL; (curr = ScopeOrderedNext( stop, curr )) != NULL; ) {
         generic_type = TypedefRemove( curr->sym_type );
         DbgAssert( curr->id == SC_TYPEDEF && generic_type->id == TYP_GENERIC );
         curr_flags = generic_type->flag;
@@ -7565,12 +7561,8 @@ static void checkTemplateClass( PSTK_CTL *stk, TYPE class_type )
     if( parm_scope == NULL ) {
         return;
     }
-    curr = NULL;
     stop = ScopeOrderedStart( parm_scope );
-    for(;;) {
-        curr = ScopeOrderedNext( stop, curr );
-        if( curr == NULL )
-            break;
+    for( curr = NULL; (curr = ScopeOrderedNext( stop, curr )) != NULL; ) {
         if( curr->id == SC_TYPEDEF ) {
             PstkPush( stk, curr->sym_type );
         }
@@ -7670,11 +7662,7 @@ static void clearGenericBindings( PSTK_CTL *stk, SCOPE decl_scope )
 
     if( decl_scope != NULL ) {
         stop = ScopeOrderedStart( decl_scope );
-        curr = NULL;
-        for(;;) {
-            curr = ScopeOrderedNext( stop, curr );
-            if( curr == NULL )
-                break;
+        for( curr = NULL; (curr = ScopeOrderedNext( stop, curr )) != NULL; ) {
             if( curr->sym_type->id == TYP_TYPEDEF ) {
                 bound_type = curr->sym_type->of;
                 if( bound_type->id == TYP_GENERIC ) {
@@ -7738,16 +7726,14 @@ static bool compareClassTypes( TYPE b_type, TYPE u_type,
     if( b_parm_scope == NULL || u_parm_scope == NULL ) {
         return( true );
     }
-    b_curr = NULL;
-    u_curr = NULL;
     b_stop = ScopeOrderedStart( b_parm_scope );
     u_stop = ScopeOrderedStart( u_parm_scope );
-    for(;;) {
+    b_curr = NULL;
+    u_curr = NULL;
+    for( ;; ) {
         b_curr = ScopeOrderedNext( b_stop, b_curr );
         u_curr = ScopeOrderedNext( u_stop, u_curr );
-        if( b_curr == NULL )
-            break;
-        if( u_curr == NULL )
+        if( b_curr == NULL || u_curr == NULL )
             break;
         if( b_curr->id == SC_TYPEDEF ) {
             PstkPush( &(data->without_generic),
@@ -8303,13 +8289,7 @@ int BindExplicitTemplateArguments( SCOPE parm_scope, PTREE templ_args )
 
     node = templ_args;
     stop = ScopeOrderedStart( decl_scope );
-    curr = NULL;
-    for(;;) {
-        curr = ScopeOrderedNext( stop, curr );
-        if( curr == NULL ) {
-            break;
-        }
-
+    for( curr = NULL; (curr = ScopeOrderedNext( stop, curr )) != NULL; ) {
         name = curr->name->name;
         if( ( node != NULL ) && ( node->u.subtree[1] != NULL ) ) {
             // inject an explicitly specified parameter
@@ -8387,12 +8367,7 @@ bool BindGenericTypes( SCOPE parm_scope, PTREE parms, PTREE args,
         result = true;
 
         stop = ScopeOrderedStart( parm_scope );
-        curr = NULL;
-        for(;;) {
-            curr = ScopeOrderedNext( stop, curr );
-            if( curr == NULL )
-                break;
-
+        for( curr = NULL; (curr = ScopeOrderedNext( stop, curr )) != NULL; ) {
             if( ( curr->sym_type->id == TYP_TYPEDEF )
              && ( curr->sym_type->of->id == TYP_GENERIC ) ) {
                 if( curr->sym_type->of->of == NULL ) {

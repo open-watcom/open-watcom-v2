@@ -726,14 +726,10 @@ static void appendScopeMangling(// APPEND CLASS SCOPES
             }
             break;
         case SCOPE_TEMPLATE_PARM:
-            curr = NULL;
+            appendChar( IN_CLASS_DELIM );
+            appendChar( IN_CLASS_DELIM );
             stop = ScopeOrderedStart( scope );
-            appendChar( IN_CLASS_DELIM );
-            appendChar( IN_CLASS_DELIM );
-            for(;;) {
-                curr = ScopeOrderedNext( stop, curr );
-                if( curr == NULL )
-                    break;
+            for( curr = NULL; (curr = ScopeOrderedNext( stop, curr )) != NULL; ) {
                 appendTemplateParm( curr );
             }
             break;

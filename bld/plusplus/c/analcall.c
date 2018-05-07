@@ -533,13 +533,7 @@ static PTREE transformVaStart   // TRANSFORM TO CO_VASTART OPCODE
         }
     }
     stop = ScopeOrderedStart( caller_arg_scope );
-    curr = NULL;
-    for( ;; ) {
-        curr = ScopeOrderedNext( stop, curr );
-        if( curr == NULL ) {
-            PTreeErrorExpr( expr, ERR_INVALID_VASTART_SYMBOL );
-            return( expr );
-        }
+    for( curr = NULL; (curr = ScopeOrderedNext( stop, curr )) != NULL; ) {
         if( ObjModelArgument( curr->sym_type ) == OMR_CLASS_REF ) {
             arg_size = TARGET_PACKING;
         } else {
@@ -551,7 +545,7 @@ static PTREE transformVaStart   // TRANSFORM TO CO_VASTART OPCODE
             break;
         }
     }
-    if( ScopeOrderedNext( stop, curr ) != NULL ) {
+    if( curr == NULL || ScopeOrderedNext( stop, curr ) != NULL ) {
         PTreeErrorExpr( expr, ERR_INVALID_VASTART_SYMBOL );
         return( expr );
     }

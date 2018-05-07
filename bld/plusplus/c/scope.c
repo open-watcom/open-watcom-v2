@@ -1558,13 +1558,13 @@ void ScopeWalkDataMembers( SCOPE scope, void (*rtn)(SYMBOL, void *), void *data 
 /*********************************************************************************/
 {
     SYMBOL stop;                // - first symbol for scope
-    SYMBOL next;                // - next symbol in scope
+    SYMBOL curr;                // - next symbol in scope
 
     stop = ScopeOrderedStart( scope );
     if( stop != NULL ) {
-        for( next = NULL; (next = ScopeOrderedNext( stop, next )) != NULL; ) {
-            if( SymIsThisDataMember( next ) ) {
-                (*rtn)( next, data );
+        for( curr = NULL; (curr = ScopeOrderedNext( stop, curr )) != NULL; ) {
+            if( SymIsThisDataMember( curr ) ) {
+                (*rtn)( curr, data );
             }
         }
     }
@@ -6833,16 +6833,14 @@ SYMBOL ScopeFunctionInProgress( void )
 SYMBOL ScopeFuncParm( unsigned parm_no )
 /**************************************/
 {
-    SYMBOL stopper;
+    SYMBOL stop;
     SYMBOL sym;
 
-    stopper = ScopeOrderedStart( findFunctionScope( GetCurrScope() ) );
-    for( sym = NULL; ; --parm_no ) {
-        sym = ScopeOrderedNext( stopper, sym );
-        if( parm_no == 0 ) {
-            break;
-        }
-    }
+    stop = ScopeOrderedStart( findFunctionScope( GetCurrScope() ) );
+    sym = NULL;
+    do {
+        sym = ScopeOrderedNext( stop, sym );
+    } while( parm_no-- > 0 );
     return( sym );
 }
 

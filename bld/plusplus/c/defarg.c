@@ -279,13 +279,8 @@ bool AddDefaultArgs(            // ADD DEFAULT ARGUMENTS, AS REQ'D
             }
             defarg_temps = defarg_info->u.type.scope;
             if( defarg_temps != NULL && defarg_temps->ordered != NULL ) {
-                curr = NULL;
                 stop = ScopeOrderedStart( defarg_temps );
-                for(;;) {
-                    curr = ScopeOrderedNext( stop, curr );
-                    if( curr == NULL )
-                        break;
-
+                for( curr = NULL; (curr = ScopeOrderedNext( stop, curr )) != NULL; ) {
                     // build reloc-list
                     // that is, list of: [curr, dest]
                     // pass this list to copyRtn so that all references

@@ -186,23 +186,19 @@ static PTREE thunkArgList(      // BUILD THUNK ARGUMENT LIST
     NAME ret_name;              // - name of return value symbol
     PTREE expr;                 // - argument expression
     PTREE list;                 // - arg. list under construction
-    SYMBOL stopper;             // - stopping value
-    SYMBOL sym;                 // - current symbol
+    SYMBOL stop;                // - stopping value
+    SYMBOL curr;                // - current symbol
     unsigned count;             // - # in list
     OMR arg_model;              // - argument calling convention model
     TYPE arg_type;              // - unmodified argument type from symbol
 
     ret_name = CppSpecialName( SPECIAL_NAME_RETURN_VALUE );
-    stopper = ScopeOrderedStart( scope );
-    sym = NULL;
     list = NULL;
-    for(;;) {
-        sym = ScopeOrderedNext( stopper, sym );
-        if( sym == NULL )
-            break;
-        if( sym->name->name != ret_name ) {
-            arg_type = TypedefModifierRemoveOnly( sym->sym_type );
-            expr = MakeNodeSymbol( sym );
+    stop = ScopeOrderedStart( scope );
+    for( curr = NULL; (curr = ScopeOrderedNext( stop, curr )) != NULL; ) {
+        if( curr->name->name != ret_name ) {
+            arg_type = TypedefModifierRemoveOnly( curr->sym_type );
+            expr = MakeNodeSymbol( curr );
             expr = NodeFetchReference( expr );
             arg_model = ObjModelArgument( TypeReferenced( arg_type ) );
             if( TypeReference( arg_type ) == NULL && arg_model != OMR_CLASS_REF ) {

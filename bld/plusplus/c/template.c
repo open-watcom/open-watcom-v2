@@ -737,14 +737,10 @@ static TEMPLATE_SPECIALIZATION *findMatchingTemplateSpecialization(
     }
 
     if( currentTemplate->args != NULL ) {
-        curr = NULL;
         stop = ScopeOrderedStart( currentTemplate->decl_scope );
-        for( ;; ) {
-            curr = ScopeOrderedNext( stop, curr );
-            if( curr == NULL )
-                break;
+        for( curr = NULL; (curr = ScopeOrderedNext( stop, curr )) != NULL; ) {
             if( ( curr->sym_type->id == TYP_TYPEDEF )
-             && ( curr->sym_type->of->id == TYP_GENERIC ) ) {
+              && ( curr->sym_type->of->id == TYP_GENERIC ) ) {
                 /* TODO: check for unused symbol */
             } else {
                 /* TODO: check for unused symbol */
@@ -937,9 +933,8 @@ static TEMPLATE_SPECIALIZATION *mergeClassTemplates( TEMPLATE_DATA *data, SYMBOL
 
         /* TODO: factor out, see fakeUpTemplateParms */
         parms = NULL;
-        curr = NULL;
         stop = ScopeOrderedStart( parm_scope );
-        while( (curr = ScopeOrderedNext( stop, curr )) != NULL ) {
+        for( curr = NULL; (curr = ScopeOrderedNext( stop, curr )) != NULL; ) {
             parm = NULL;
             switch( curr->id ) {
             case SC_TYPEDEF:
@@ -1110,12 +1105,8 @@ static void copyWithNewNames( SCOPE old_scope, NAME *names )
     SYMBOL stop;
     SYMBOL sym;
 
-    curr = NULL;
     stop = ScopeOrderedStart( old_scope );
-    for(;;) {
-        curr = ScopeOrderedNext( stop, curr );
-        if( curr == NULL )
-            break;
+    for( curr = NULL; (curr = ScopeOrderedNext( stop, curr )) != NULL; ) {
         sym = dupTemplateParm( curr );
         sym = ScopeInsert( GetCurrScope(), sym, *names );
         ++names;
@@ -1351,8 +1342,7 @@ void TemplateFunctionAttachDefn( DECL_INFO *dinfo )
             parm_stop = ScopeOrderedStart( fn_inst->parm_scope );
             decl_curr = NULL;
             parm_curr = NULL;
-
-            for(;;) {
+            for( ;; ) {
                 decl_curr = ScopeOrderedNext( decl_stop, decl_curr );
                 parm_curr = ScopeOrderedNext( parm_stop, parm_curr );
                 if( ( parm_curr == NULL ) || ( decl_curr == NULL ) )
@@ -1632,32 +1622,31 @@ SYMBOL TemplateFunctionGenerate( SYMBOL sym, arg_list *args,
 
         inst_sym = SymDefaultBase( fn_inst->bound_sym );
 
-        if( TypeCompareExclude( fn_type, inst_sym->sym_type,
-                                TC1_NOT_ENUM_CHAR ) ) {
-            SYMBOL curr1 = NULL, curr2 = NULL;
-            SYMBOL stop1, stop2;
+        if( TypeCompareExclude( fn_type, inst_sym->sym_type, TC1_NOT_ENUM_CHAR ) ) {
+            SYMBOL curr1;
+            SYMBOL curr2;
+            SYMBOL stop1;
+            SYMBOL stop2;
 
             // also need to check parameter scopes
             stop1 = ScopeOrderedStart( parm_scope );
             stop2 = ScopeOrderedStart( fn_inst->parm_scope );
-
-            for(;;) {
+            curr1 = NULL;
+            curr2 = NULL;
+            for( ;; ) {
                 curr1 = ScopeOrderedNext( stop1, curr1 );
                 curr2 = ScopeOrderedNext( stop2, curr2 );
-
                 if( ( curr1 == NULL ) || ( curr2 == NULL ) ) {
                     if( ( curr1 == NULL ) && ( curr2 == NULL ) ) {
                         // alread instantiated
                         generated_fn = fn_inst->bound_sym;
                     }
-
                     break;
                 }
 
                 if( ( curr1->id == SC_TYPEDEF )
                  && ( curr2->id == SC_TYPEDEF ) ) {
-                    if( TypeCompareExclude( curr1->sym_type, curr2->sym_type,
-                                            TC1_NULL ) ) {
+                    if( TypeCompareExclude( curr1->sym_type, curr2->sym_type, TC1_NULL ) ) {
                         continue;
                     }
                 } else if( ( curr1->id == SC_STATIC )
@@ -1666,12 +1655,11 @@ SYMBOL TemplateFunctionGenerate( SYMBOL sym, arg_list *args,
                         continue;
                     }
                 } else if( ( curr1->id == SC_ADDRESS_ALIAS )
-                        && (curr2->id == SC_ADDRESS_ALIAS ) ) {
+                        && ( curr2->id == SC_ADDRESS_ALIAS ) ) {
                     if( curr1->u.alias == curr2->u.alias ) {
                         continue;
                     }
                 }
-
                 break;
             }
         }
@@ -2171,23 +2159,18 @@ static bool sameParms( SCOPE parm_scope, PTREE parms )
     PTREE list;
     PTREE parm;
 
-    list = parms;
-    curr = NULL;
     stop = ScopeOrderedStart( parm_scope );
-    for(;;) {
-        if( list == NULL ) {
-            DbgAssert( ScopeOrderedNext( stop, curr ) == NULL );
-            return( true );
-        }
-        curr = ScopeOrderedNext( stop, curr );
-        if( curr == NULL )
-            break;
+    curr = NULL;
+    for( list = parms; list != NULL; list = list->u.subtree[0] ) {
+        if( (curr = ScopeOrderedNext( stop, curr )) == NULL )
+            return( false );
         parm = list->u.subtree[1];
-        if( parmsDifferent( curr, parm ) )
-            break;
-        list = list->u.subtree[0];
+        if( parmsDifferent( curr, parm ) ) {
+            return( false );
+        }
     }
-    return( false );
+    DbgAssert( ScopeOrderedNext( stop, curr ) == NULL );
+    return( true );
 }
 
 static SCOPE findInstScope( TEMPLATE_SPECIALIZATION *tspec, PTREE parms,
@@ -2665,12 +2648,8 @@ static PTREE fakeUpTemplateParms( SCOPE parm_scope, arg_list *type_args )
 
     curr_type_arg = type_args ? type_args->type_list : NULL;
     parms = NULL;
-    curr = NULL;
     stop = ScopeOrderedStart( parm_scope );
-    for(;;) {
-        curr = ScopeOrderedNext( stop, curr );
-        if( curr == NULL )
-            break;
+    for( curr = NULL; (curr = ScopeOrderedNext( stop, curr )) != NULL; ) {
         if( curr->id == SC_TYPEDEF ) {
             if( curr_type_arg ) {
                 parm = PTreeType( BindTemplateClass( *curr_type_arg, NULL, false ) );
@@ -2860,12 +2839,8 @@ static bool sameParmArgNames( SCOPE parm_scope, NAME *arg_names )
     SYMBOL curr;
     SYMBOL stop;
 
-    curr = NULL;
     stop = ScopeOrderedStart( parm_scope );
-    for(;;) {
-        curr = ScopeOrderedNext( stop, curr );
-        if( curr == NULL )
-            break;
+    for( curr = NULL; (curr = ScopeOrderedNext( stop, curr )) != NULL; ) {
         if( curr->name->name != *arg_names ) {
             return( false );
         }
@@ -3426,16 +3401,14 @@ bool TemplateUnboundSame( TYPE ub1, TYPE ub2 )
     if( ub1_parm_scope == NULL || ub2_parm_scope == NULL ) {
         return( false );
     }
-    ub1_curr = NULL;
-    ub2_curr = NULL;
     ub1_stop = ScopeOrderedStart( ub1_parm_scope );
     ub2_stop = ScopeOrderedStart( ub2_parm_scope );
-    for(;;) {
+    ub1_curr = NULL;
+    ub2_curr = NULL;
+    for( ;; ) {
         ub1_curr = ScopeOrderedNext( ub1_stop, ub1_curr );
         ub2_curr = ScopeOrderedNext( ub2_stop, ub2_curr );
-        if( ub1_curr == NULL )
-            break;
-        if( ub2_curr == NULL )
+        if( ub1_curr == NULL || ub2_curr == NULL )
             break;
         DbgAssert( ub1_curr->id == ub2_curr->id );
         if( ub1_curr->id != SC_TYPEDEF ) {

@@ -451,12 +451,10 @@ static bool dwarfClassInfo( TYPE type )
         if( !ScopeType( scope, SCOPE_TEMPLATE_PARM ) )
             break;
         stop = ScopeOrderedStart( scope );
-        curr = ScopeOrderedNext( stop, NULL );
-        while( curr != NULL ) {
+        for( curr = NULL; (curr = ScopeOrderedNext( stop, curr )) != NULL; ) {
             if( SymIsTypedef( curr ) ) {
                 dwarfTypedef( curr->sym_type, DC_DEFINE | DC_FAKE );
             }
-            curr = ScopeOrderedNext( stop, curr );
         }
         break;
     }
@@ -527,11 +525,7 @@ static bool dwarfClassInfo( TYPE type )
         DWLocOp0( Client, locid, DW_LOC_plus );
         dl = DWLocFini( Client, locid );
         dh = dwarfType( pvb_FieldType, DC_DEFAULT );/* CppName no reentrant */
-        dh = DWAddField( Client,
-                         dh,
-                         dl,
-                         "__vbptr",
-                         DW_FLAG_ARTIFICIAL );
+        DWAddField( Client, dh, dl, "__vbptr", DW_FLAG_ARTIFICIAL );
         DWLocTrash( Client, dl );
     }
     if( info->has_vfptr ) {
@@ -540,18 +534,13 @@ static bool dwarfClassInfo( TYPE type )
         DWLocOp0( Client, locid, DW_LOC_plus );
         dl = DWLocFini( Client, locid );
         dh = dwarfType( pvf_FieldType, DC_DEFAULT );/* CppName no reentrant */
-        dh = DWAddField( Client,
-                         dh,
-                         dl,
-                         "__vfptr",
-                         DW_FLAG_ARTIFICIAL );
+        DWAddField( Client, dh, dl, "__vfptr", DW_FLAG_ARTIFICIAL );
         DWLocTrash( Client, dl );
     }
 
     // define all the fields
     stop = ScopeOrderedStart( type->u.c.scope );
-    curr = ScopeOrderedNext( stop, NULL );
-    while( curr != NULL ) {
+    for( curr = NULL; (curr = ScopeOrderedNext( stop, curr )) != NULL; ) {
         dh = 0;
         sym_reset( curr );
         if( !IsCppNameInterestingDebug( curr ) ) {
@@ -666,7 +655,6 @@ static bool dwarfClassInfo( TYPE type )
             sym_reset( curr );
             sym_update( curr, SF2_DW_HANDLE_DEF, dh );
         }
-        curr = ScopeOrderedNext( stop, curr );
     }
     return( check_friends );
 }
@@ -1746,14 +1734,12 @@ static void dwarfEmitSymbolScope( SCOPE scope )
     SYMBOL curr;
 
     stop = ScopeOrderedStart( scope );
-    curr = ScopeOrderedNext( stop, NULL );
-    while( curr != NULL ) {
+    for( curr = NULL; (curr = ScopeOrderedNext( stop, curr )) != NULL; ) {
         // skip over enum's because they are handled by
         // the typedef that precedes the enum symbols
         if( !SymIsEnumeration( curr ) ) {
             (void)dwarfSymbol( curr, DC_DEFINE );
         }
-        curr = ScopeOrderedNext( stop, curr );
     }
     dwarfForwardFollowup();
 }
@@ -1862,12 +1848,10 @@ static int dwarfTempScope(  SCOPE scope )
     SYMBOL curr;
 
     stop = ScopeOrderedStart( scope );
-    curr = ScopeOrderedNext( stop, NULL );
-    while( curr != NULL ) {
+    for( curr = NULL; (curr = ScopeOrderedNext( stop, curr )) != NULL; ) {
         if( SymIsTypedef( curr ) ) {
             dwarfSymbol(  curr, DC_DEFINE );
         }
-        curr = ScopeOrderedNext( stop, curr );
     }
     return( true );
 }
@@ -1917,8 +1901,7 @@ static void dwarfDebugSymbol( SCOPE scope )
     SYMBOL curr;
 
     stop = ScopeOrderedStart( scope );
-    curr = ScopeOrderedNext( stop, NULL );
-    while( curr != NULL ) {
+    for( curr = NULL; (curr = ScopeOrderedNext( stop, curr )) != NULL; ) {
         if(  SymIsClassTemplateModel( curr ) ) {
             WalkTemplateInst( curr, &dwarfTempScope );
         } else if( ! SymIsFunctionTemplateModel( curr ) &&
@@ -1936,7 +1919,6 @@ static void dwarfDebugSymbol( SCOPE scope )
                 dwarfNameSpace(  curr );
             }
         }
-        curr = ScopeOrderedNext( stop, curr );
     }
 }
 
@@ -1948,8 +1930,7 @@ static int dwarfUsedTempScope( SCOPE scope ) {
     TYPE   type;
 
     stop = ScopeOrderedStart( scope );
-    curr = ScopeOrderedNext( stop, NULL );
-    while( curr != NULL ) {
+    for( curr = NULL; (curr = ScopeOrderedNext( stop, curr )) != NULL; ) {
         if( SymIsTypedef( curr ) ) {
             type = curr->sym_type;
             if( ! _typeHasForwardDwarfHandle( type ) ) {
@@ -1963,7 +1944,6 @@ static int dwarfUsedTempScope( SCOPE scope ) {
                 }
             }
         }
-        curr = ScopeOrderedNext( stop, curr );
     }
     return( true );
 }
@@ -1996,8 +1976,7 @@ static bool dwarfUsedTypeSymbol( SCOPE scope )
     for(;;) {
         change = false;
         stop = ScopeOrderedStart( scope );
-        curr = ScopeOrderedNext( stop, NULL );
-        while( curr != NULL ) {
+        for( curr = NULL; (curr = ScopeOrderedNext( stop, curr )) != NULL; ) {
             if(  SymIsClassTemplateModel( curr ) ) {
                 if( !WalkTemplateInst( curr, &dwarfUsedTempScope ) ) {
                     change = true;
@@ -2026,7 +2005,6 @@ static bool dwarfUsedTypeSymbol( SCOPE scope )
                     change = true;
                 }
             }
-            curr = ScopeOrderedNext( stop, curr );
         }
         if( !change )
             break;
@@ -2058,8 +2036,7 @@ static void dwarfPreUsedSymbol( SCOPE scope )
     SYMBOL curr;
 
     stop = ScopeOrderedStart( scope );
-    curr = ScopeOrderedNext( stop, NULL );
-    while( curr != NULL ) {
+    for( curr = NULL; (curr = ScopeOrderedNext( stop, curr )) != NULL; ) {
         if( !SymIsFunctionTemplateModel( curr ) &&
             ( curr->flag & (SF_INITIALIZED ) ) &&
             SymIsData( curr ) &&
@@ -2081,7 +2058,6 @@ static void dwarfPreUsedSymbol( SCOPE scope )
                 dwarfPreUsedNameSpace(  curr );
             }
         }
-        curr = ScopeOrderedNext( stop, curr );
     }
 }
 

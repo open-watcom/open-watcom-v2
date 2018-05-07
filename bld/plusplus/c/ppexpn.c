@@ -486,6 +486,7 @@ static void PrecedenceParse( ppvalue *p ) // main precedence parse algorithm
     PushOperator( T_START, &loc, Prec[T_START] ); // problem because T_START is not a ppvalue
     Pos++;
     CheckToken( T_START ); // check for initial unary + or -
+    prec_operator = 0;
     done = false;
     while( !done ) {
         if( IS_OPERAND( CurToken ) ) {

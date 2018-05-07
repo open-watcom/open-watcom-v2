@@ -620,16 +620,19 @@ static void processSym( FNOV_CONTROL control, FNOV_INFO* info, SYMBOL sym )
             sym_type = sym->sym_type;
         } else {
             // have to compare template parameters for function templates
-            SYMBOL old_curr = NULL, new_curr = NULL;
-            SYMBOL old_stop, new_stop;
+            SYMBOL old_curr;
+            SYMBOL new_curr;
+            SYMBOL old_stop;
+            SYMBOL new_stop;
 
             // check that template parameters match
             old_stop = ScopeOrderedStart( fntempl->decl_scope );
             new_stop = ScopeOrderedStart( GetCurrScope() );
-            for(;;) {
+            old_curr = NULL;
+            new_curr = NULL;
+            for( ;; ) {
                 old_curr = ScopeOrderedNext( old_stop, old_curr );
                 new_curr = ScopeOrderedNext( new_stop, new_curr );
-
                 if( ( old_curr == NULL ) || ( new_curr == NULL ) ) {
                     break;
                 }

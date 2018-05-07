@@ -144,14 +144,10 @@ void CgDeclParms(               // DEFINE ARGS FOR CURRENT FN IN CORRECT ORDER
 
     fn_type = FunctionDeclarationType( fctl->func->sym_type );
     VstkOpen( &sym_stack, sizeof( SYMBOL ), 16 );
-    stop = ScopeOrderedStart( scope );
     ret_name = CppSpecialName( SPECIAL_NAME_RETURN_VALUE );
     ret_sym = NULL;
-    curr = NULL;
-    for(;;) {
-        curr = ScopeOrderedNext( stop, curr );
-        if( curr == NULL )
-            break;
+    stop = ScopeOrderedStart( scope );
+    for( curr = NULL; (curr = ScopeOrderedNext( stop, curr )) != NULL; ) {
         if( ( curr->name != NULL ) && ( ret_name == curr->name->name ) ) {
             ret_sym = curr;
         } else {

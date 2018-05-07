@@ -3058,11 +3058,7 @@ void ClassMakeUniqueName( TYPE class_type, NAME signature )
     }
     stop = ScopeOrderedStart( class_type->u.c.scope );
     count = 0;
-    curr = NULL;
-    for(;;) {
-        curr = ScopeOrderedNext( stop, curr );
-        if( curr == NULL )
-            break;
+    for( curr = NULL; (curr = ScopeOrderedNext( stop, curr )) != NULL; ) {
         ++count;
         hash <<= 8;
         hash += count;
@@ -3146,11 +3142,7 @@ static void promoteMembers( TYPE class_type, SYMBOL owner )
         problems = true;
     }
     stop = ScopeOrderedStart( scope );
-    curr = NULL;
-    for(;;) {
-        curr = ScopeOrderedNext( stop, curr );
-        if( curr == NULL )
-            break;
+    for( curr = NULL; (curr = ScopeOrderedNext( stop, curr )) != NULL; ) {
         if( curr->flag & SF_PRIVATE ) {
             CErr2p( ERR_UNION_PRIVATE_MEMBER, curr );
             problems = true;
@@ -3185,13 +3177,9 @@ static void promoteMembers( TYPE class_type, SYMBOL owner )
     }
     /* weird start/next loop is necessary because 'curr' SYMBOL is modified */
     stop = ScopeOrderedStart( scope );
-    curr = ScopeOrderedNext( stop, NULL );
-    for(;;) {
-        if( curr == NULL )
-            break;
+    for( curr = ScopeOrderedNext( stop, NULL ); curr != NULL; curr = next ) {
         next = ScopeOrderedNext( stop, curr );
         doPromotion( curr->name );
-        curr = next;
     }
     /* simple way to make sure scope is cleared out */
     ScopeBurn( scope );

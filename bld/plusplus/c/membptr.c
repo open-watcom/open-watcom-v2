@@ -569,6 +569,7 @@ static bool analyseMembPtr(     // ANALYSE MEMBER-PTR OPERANDS
     bool check_safety;          // - check if safe req'd
     msg_status_t status;        // - status for warning
 
+    cnv = CNV_ERR;
     check_safety = false;
     switch( TypeCommonDerivation( ScopeClass( inf->derived )
                                 , ScopeClass( inf->base ) ) ) {
@@ -1178,6 +1179,7 @@ CNV_RETN MembPtrReint(          // REINTERPRET A MEMBER POINTER
     PTREE expr;                 // - conversion expression
     MP_TYPE classification;     // - operand classification
 
+    retn = CNV_ERR;
     classification = classifyMpExpr( a_expr );
     expr = *a_expr;
     switch( classification ) {
@@ -1237,6 +1239,7 @@ CNV_RETN MembPtrConvert(        // CONVERT A MEMBER POINTER
         init = false;
         break;
     }
+    retn = CNV_ERR;
     classification = classifyMpExpr( a_expr );
     expr = *a_expr;
     ConversionTypesSet( expr->type, tgt_type );

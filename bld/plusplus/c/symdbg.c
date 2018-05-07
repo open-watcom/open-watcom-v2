@@ -201,8 +201,7 @@ static dbg_type symWVDebugClassType( TYPE type )
     // define all the members
     // first data members
     stop = ScopeOrderedStart( root->u.c.scope );
-    curr = ScopeOrderedNext( stop, NULL );
-    while( curr != NULL ) {
+    for( curr = NULL; (curr = ScopeOrderedNext( stop, curr )) != NULL; ) {
         if( SymIsClassMember( curr ) &&
             SymIsData( curr ) &&
             !SymIsEnumeration( curr ) &&
@@ -251,7 +250,6 @@ static dbg_type symWVDebugClassType( TYPE type )
                            SymbolicDebugType( curr->sym_type, SD_DEFAULT ) );
             DBLocFini( dl );
         }
-        curr = ScopeOrderedNext( stop, curr );
     }
     if( info->has_vbptr ) {
         dl = DBLocInit();
@@ -276,8 +274,7 @@ static dbg_type symWVDebugClassType( TYPE type )
 
     // now function members
     stop = ScopeOrderedStart( root->u.c.scope );
-    curr = ScopeOrderedNext( stop, NULL );
-    while( curr != NULL ) {
+    for( curr = NULL; (curr = ScopeOrderedNext( stop, curr )) != NULL; ) {
         if( SymIsClassMember( curr ) &&
             !SymIsData( curr ) &&
             IsCppNameInterestingDebug( curr ) ) {
@@ -322,7 +319,6 @@ static dbg_type symWVDebugClassType( TYPE type )
                 DBLocFini( dl );
             }
         }
-        curr = ScopeOrderedNext( stop, curr );
     }
 
     // define all the direct non-virtual bases
@@ -499,8 +495,7 @@ static dbg_type symCVDebugClassType( TYPE type )
     }
     // first data members
     stop = ScopeOrderedStart( root->u.c.scope );
-    curr = ScopeOrderedNext( stop, NULL );
-    while( curr != NULL ) {
+    for( curr = NULL; (curr = ScopeOrderedNext( stop, curr )) != NULL; ) {
         if( SymIsClassDefinition( curr )||SymIsEnumDefinition( curr ) ) {
             DBNested( true );
             DBAddNestedType( ds,
@@ -570,15 +565,13 @@ static dbg_type symCVDebugClassType( TYPE type )
                            SymbolicDebugType( curr->sym_type, SD_DEFAULT ) );
             DBLocFini( dl );
         }
-        curr = ScopeOrderedNext( stop, curr );
     }
     if( info->has_vfptr ) {
         DBAddVFuncInfo(ds, info->vf_offset, info->last_vfn, CgTypeOutput( pvf_FieldType ) );
     }
     // now function members
     stop = ScopeOrderedStart( root->u.c.scope );
-    curr = ScopeOrderedNext( stop, NULL );
-    while( curr != NULL ) {
+    for( curr = NULL; (curr = ScopeOrderedNext( stop, curr )) != NULL; ) {
         if( SymIsClassMember( curr ) &&
             !SymIsData( curr ) &&
             IsCppNameInterestingDebug( curr ) ) {
@@ -620,7 +613,6 @@ static dbg_type symCVDebugClassType( TYPE type )
                 DBLocFini( dl );
             }
         }
-        curr = ScopeOrderedNext( stop, curr );
     }
     dt = DBEndStruct( ds );
     info->dbg_no_vbases = dt;
@@ -1113,8 +1105,7 @@ static void symbolicDebugSymbol( void )
     SYMBOL curr;
 
     stop = ScopeOrderedStart( GetFileScope() );
-    curr = ScopeOrderedNext( stop, NULL );
-    while( curr != NULL ) {
+    for( curr = NULL; (curr = ScopeOrderedNext( stop, curr )) != NULL; ) {
         if( ! SymIsFunctionTemplateModel( curr ) &&
             ! SymIsClassTemplateModel( curr ) &&
             ( curr->flag & (SF_INITIALIZED | SF_REFERENCED) ) &&
@@ -1124,13 +1115,12 @@ static void symbolicDebugSymbol( void )
             IsCppNameInterestingDebug( curr ) ) {
             SymbolicDebugGenSymbol( curr, false, false );
             DbgAddrTaken( curr );
-        }else if( GenSwitches & DBG_CV ) {
+        } else if( GenSwitches & DBG_CV ) {
             if( SymIsTypedef( curr ) ) {
                 DBTypeDef( CppNameDebug( curr ) ,
                       SymbolicDebugType( curr->sym_type, SD_DEFAULT ) );
             }
         }
-        curr = ScopeOrderedNext( stop, curr );
     }
 }
 
