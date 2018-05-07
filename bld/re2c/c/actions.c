@@ -53,8 +53,9 @@ static void Symbol_init( Symbol *r, const SubStr *str )
 
 static Symbol *Symbol_new( const SubStr *str )
 {
-    Symbol *r = malloc( sizeof( Symbol ) );
+    Symbol *r;
 
+    r = malloc( sizeof( Symbol ) );
     Symbol_init( r, str );
     return( r );
 }
@@ -62,6 +63,7 @@ static Symbol *Symbol_new( const SubStr *str )
 Symbol *Symbol_find( SubStr str )
 {
     Symbol *sym;
+
     for( sym = first; sym != NULL; sym = sym->next ) {
         if( SubStr_eq( &sym->name, &str ) ) {
             return( sym );
@@ -72,8 +74,9 @@ Symbol *Symbol_find( SubStr str )
 
 static Range *Range_new( uint l, uint u )
 {
-    Range   *r = malloc( sizeof( Range ) );
+    Range   *r;
 
+    r = malloc( sizeof( Range ) );
     r->next = NULL;
     r->lb = l;
     r->ub = u;
@@ -87,8 +90,10 @@ static Range *Range_new_copy( Range *r )
 
 static Range *doUnion( Range *r1, Range *r2 )
 {
-    Range   *r, **rP = &r;
+    Range   *r;
+    Range   **rP;
 
+    rP = &r;
     for( ;; ) {
         Range *s;
         if( r1->lb <= r2->lb ) {
@@ -136,8 +141,11 @@ static Range *doUnion( Range *r1, Range *r2 )
 
 static Range *doDiff( Range *r1, Range *r2 )
 {
-    Range   *r, *s, **rP = &r;
+    Range   *r;
+    Range   *s;
+    Range   **rP;
 
+    rP = &r;
     for( ; r1 != NULL ; r1 = r1->next ) {
         uint lb = r1->lb;
         for( ; r2 != NULL && r2->ub <= r1->lb; r2 = r2->next ) ;
@@ -196,8 +204,10 @@ static uchar unescape( SubStr *s )
 
 static Range *getRange( SubStr *s )
 {
-    uchar lb = unescape( s ), ub;
+    uchar lb;
+    uchar ub;
 
+    lb = unescape( s );
     if( s->len < 2 || *s->str != '-' ) {
         ub = lb;
     } else {
@@ -230,10 +240,12 @@ static void Range_out( FILE *o, const Range *r )
 
 static uint AltOp_fixedLength( RegExp *r )
 {
-    uint l1 = RegExp_fixedLength( r->u.AltOp.exp1 );
-    /* XXX? Should be exp2? */
-    uint l2 = RegExp_fixedLength( r->u.AltOp.exp1 );
+    uint l1;
+    uint l2;
 
+    l1 = RegExp_fixedLength( r->u.AltOp.exp1 );
+    /* XXX? Should be exp2? */
+    l2 = RegExp_fixedLength( r->u.AltOp.exp2 );
     if( l1 != l2 || l1 == ~0u )
         return( ~0u );
     return( l1 );
@@ -241,7 +253,8 @@ static uint AltOp_fixedLength( RegExp *r )
 
 static uint CatOp_fixedLength( RegExp *r )
 {
-    uint l1, l2;
+    uint l1;
+    uint l2;
 
     if( (l1 = RegExp_fixedLength( r->u.CatOp.exp1 )) != ~0u ) {
         if( (l2 = RegExp_fixedLength( r->u.CatOp.exp2 )) != ~0u ) {
@@ -441,8 +454,9 @@ static void RegExp_display( RegExp *re, FILE *o )
 
 static RegExp *RegExp_new_MatchOp( Range *m )
 {
-    RegExp  *r = malloc( sizeof( RegExp ) );
+    RegExp  *r;
 
+    r = malloc( sizeof( RegExp ) );
     r->type = MATCHOP;
     r->u.MatchOp.match = m;
     return( r );
@@ -450,8 +464,9 @@ static RegExp *RegExp_new_MatchOp( Range *m )
 
 static RegExp *RegExp_new_AltOp( RegExp *e1, RegExp *e2 )
 {
-    RegExp  *r = malloc( sizeof( RegExp ) );
+    RegExp  *r;
 
+    r = malloc( sizeof( RegExp ) );
     r->type = ALTOP;
     r->u.AltOp.exp1 = e1;
     r->u.AltOp.exp2 = e2;
@@ -460,8 +475,9 @@ static RegExp *RegExp_new_AltOp( RegExp *e1, RegExp *e2 )
 
 RegExp *RegExp_new_RuleOp( RegExp *e, RegExp *c, Token *t, uint a )
 {
-    RegExp *r = malloc( sizeof( RegExp ) );
+    RegExp  *r;
 
+    r = malloc( sizeof( RegExp ) );
     r->type = RULEOP;
     r->u.RuleOp.exp = e;
     r->u.RuleOp.ctx = c;
@@ -473,16 +489,18 @@ RegExp *RegExp_new_RuleOp( RegExp *e, RegExp *c, Token *t, uint a )
 
 RegExp *RegExp_new_NullOp( void )
 {
-    RegExp  *r = malloc( sizeof( RegExp ) );
+    RegExp  *r;
 
+    r = malloc( sizeof( RegExp ) );
     r->type = NULLOP;
     return( r );
 }
 
 RegExp *RegExp_new_CatOp( RegExp *e1, RegExp *e2 )
 {
-    RegExp  *r = malloc( sizeof( RegExp ) );
+    RegExp  *r;
 
+    r = malloc( sizeof( RegExp ) );
     r->type = CATOP;
     r->u.CatOp.exp1 = e1;
     r->u.CatOp.exp2 = e2;
@@ -491,8 +509,9 @@ RegExp *RegExp_new_CatOp( RegExp *e1, RegExp *e2 )
 
 RegExp *RegExp_new_CloseOp( RegExp *e )
 {
-    RegExp  *r = malloc( sizeof( RegExp ) );
+    RegExp  *r;
 
+    r = malloc( sizeof( RegExp ) );
     r->type = CLOSEOP;
     r->u.CloseOp.exp = e;
     return( r );
@@ -514,7 +533,8 @@ static RegExp *RegExp_isA( RegExp *r, RegExpType t )
 
 RegExp *mkDiff( RegExp *e1, RegExp *e2 )
 {
-    RegExp  *m1, *m2;
+    RegExp  *m1;
+    RegExp  *m2;
     Range   *r;
 
     m1 = RegExp_isA( e1, MATCHOP );
@@ -539,7 +559,8 @@ static RegExp *doAlt( RegExp *e1, RegExp *e2 )
 RegExp *mkAlt( RegExp *e1, RegExp *e2 )
 {
     RegExp  *a;
-    RegExp  *m1, *m2;
+    RegExp  *m1;
+    RegExp  *m2;
 
     if( (a = RegExp_isA( e1, ALTOP )) != NULL ) {
         if( (m1 = RegExp_isA( a->u.AltOp.exp1, MATCHOP )) != NULL ) {
@@ -609,7 +630,7 @@ static void optimize( Ins *i )
                     i->i.link = follow;
                 }
             }
-            return;
+            break;
         } else {
             ++i;
         }
@@ -632,8 +653,9 @@ static void AltOp_compile( RegExp *re, Char *rep, Ins *i )
 static void RegExp_compile( RegExp *re, Char *rep, Ins *i )
 {
     Ins     *jumppoint;
-    int     st = 0;
+    int     st;
 
+    st = 0;
     switch( re->type ) {
     case NULLOP:
         break;
@@ -691,7 +713,8 @@ void genCode( FILE *o, RegExp *re )
     CharSet     cs;
     uint        j;
     Char        rep[NCHARS];
-    Ins         *ins, *eoi;
+    Ins         *ins;
+    Ins         *eoi;
     DFA         *dfa;
 
     memset( &cs, 0, sizeof( cs ) );
@@ -743,8 +766,9 @@ void genCode( FILE *o, RegExp *re )
 
 Action *Action_new_Match( State *s )
 {
-    Action  *a = malloc( sizeof( Action ) );
+    Action  *a;
 
+    a = malloc( sizeof( Action ) );
     a->type = MATCHACT;
     a->state = s;
     s->action = a;
@@ -753,8 +777,9 @@ Action *Action_new_Match( State *s )
 
 Action *Action_new_Enter( State *s, uint l )
 {
-    Action  *a = malloc( sizeof( Action ) );
+    Action  *a;
 
+    a = malloc( sizeof( Action ) );
     a->type = ENTERACT;
     a->state = s;
     a->u.Enter.label = l;
@@ -764,8 +789,9 @@ Action *Action_new_Enter( State *s, uint l )
 
 Action *Action_new_Save( State *s, uint i )
 {
-    Action  *a = malloc( sizeof( Action ) );
+    Action  *a;
 
+    a = malloc( sizeof( Action ) );
     a->type = SAVEMATCHACT;
     a->state = s;
     a->u.SaveMatch.selector = i;
@@ -775,8 +801,9 @@ Action *Action_new_Save( State *s, uint i )
 
 Action *Action_new_Move( State *s )
 {
-    Action  *a = malloc( sizeof( Action ) );
+    Action  *a;
 
+    a = malloc( sizeof( Action ) );
     a->type = MOVEACT;
     a->state = s;
     s->action = a;
@@ -785,8 +812,9 @@ Action *Action_new_Move( State *s )
 
 Action *Action_new_Rule( State *s, RegExp *r ) /* RuleOp */
 {
-    Action  *a = malloc( sizeof( Action ) );
+    Action  *a;
 
+    a = malloc( sizeof( Action ) );
     a->type = RULEACT;
     a->state = s;
     a->u.Rule.rule = r;
@@ -796,8 +824,9 @@ Action *Action_new_Rule( State *s, RegExp *r ) /* RuleOp */
 
 Action *Action_new_Accept( State *s, uint n, uint *sv, State **r )
 {
-    Action  *a = malloc( sizeof( Action ) );
+    Action  *a;
 
+    a = malloc( sizeof( Action ) );
     a->type = ACCEPTACT;
     a->state = s;
     a->u.Accept.nRules = n;

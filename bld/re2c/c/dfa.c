@@ -42,10 +42,11 @@ typedef struct GoTo {
     void        *to;
 } GoTo;
 
-State *State_new(void)
+State *State_new( void )
 {
-    State   *s = malloc( sizeof( State ) );
+    State   *s;
 
+    s = malloc( sizeof( State ) );
     s->label = 0;
     s->rule = NULL;
     s->next = NULL;
@@ -60,11 +61,11 @@ State *State_new(void)
     return( s );
 }
 
-static void State_delete(State *s)
+static void State_delete( State *s )
 {
-    if( s->kernel )
+    if( s->kernel != NULL )
         free( s->kernel );
-    if( s->go.span )
+    if( s->go.span != NULL )
         free( s->go.span );
     free( s );
 }
@@ -74,13 +75,14 @@ static Ins **closure( Ins **cP, Ins *i )
     while( !i->i.marked ) {
         i->i.marked = true;
         *(cP++) = i;
-        if(i->i.tag == FORK){
-            cP = closure(cP, i + 1);
-            i = (Ins*) i->i.link;
-        } else if(i->i.tag == GOTO){
-            i = (Ins*) i->i.link;
-        } else
+        if( i->i.tag == FORK ) {
+            cP = closure( cP, i + 1 );
+            i = (Ins *)i->i.link;
+        } else if( i->i.tag == GOTO ) {
+            i = (Ins *)i->i.link;
+        } else {
             break;
+        }
     }
     return cP;
 }
@@ -89,7 +91,7 @@ static State *DFA_findState( DFA *d, Ins **kernel, uint kCount )
 {
     Ins     **cP, **iP, *i;
     State   *s;
-    
+
     kernel[kCount] = NULL;
     cP = kernel;
     for( iP = kernel; (i = *iP) != NULL; ++iP ) {
@@ -130,21 +132,26 @@ static State *DFA_findState( DFA *d, Ins **kernel, uint kCount )
 
 DFA *DFA_new( Ins *ins, uint ni, uint lb, uint ub, Char *rep )
 {
-    DFA     *d = malloc( sizeof( DFA ) );
-    Ins     **work = malloc( ( ni + 1 ) * sizeof( Ins * ) );
-    uint    nc = ub - lb;
-    GoTo    *goTo = malloc( nc * sizeof( GoTo ) );
-    Span    *span = malloc( nc * sizeof( Span ) );
+    DFA     *d;
+    Ins     **work;
+    uint    nc;
+    GoTo    *goTo;
+    Span    *span;
 
+    d = malloc( sizeof( DFA ) );
+    work = malloc( ( ni + 1 ) * sizeof( Ins * ) );
+    nc = ub - lb;
+    goTo = malloc( nc * sizeof( GoTo ) );
+    memset( goTo, 0, nc * sizeof( GoTo ) );
+    span = malloc( nc * sizeof( Span ) );
     d->lbChar = lb;
     d->ubChar = ub;
-    memset( goTo, 0, nc * sizeof( GoTo ) );
     d->tail = &d->head;
     d->head = NULL;
     d->nStates = 0;
     d->toDo = NULL;
     DFA_findState( d, work, closure( work, &ins[0] ) - work );
-    while(d->toDo){
+    while( d->toDo != NULL ) {
         State   *s = d->toDo;
         Ins     **cP, **iP, *i;
         uint    nGoTos = 0;
@@ -172,7 +179,7 @@ DFA *DFA_new( Ins *ins, uint ni, uint lb, uint ub, Char *rep )
             GoTo *go = &goTo[goTo[j].ch - lb];
             i = (Ins*)go->to;
             for( cP = work; i != NULL; i = (Ins *)i->c.link ) {
-                cP = closure(cP, i + i->c.bump);
+                cP = closure( cP, i + i->c.bump );
             }
             go->to = DFA_findState( d, work, cP - work );
         }
@@ -180,7 +187,8 @@ DFA *DFA_new( Ins *ins, uint ni, uint lb, uint ub, Char *rep )
         s->go.nSpans = 0;
         for( j = 0; j < nc; ) {
             State *to = (State *)goTo[rep[j]].to;
-            while( ++j < nc && goTo[rep[j]].to == to ) ;
+            while( ++j < nc && goTo[rep[j]].to == to )
+                ;
             span[s->go.nSpans].ub = lb + j;
             span[s->go.nSpans].to = to;
             s->go.nSpans++;
@@ -207,7 +215,7 @@ void DFA_delete( DFA *d )
 {
     State   *s;
 
-    while( (s = d->head) != NULL ){
+    while( (s = d->head) != NULL ) {
         d->head = s->next;
         State_delete( s );
     }
