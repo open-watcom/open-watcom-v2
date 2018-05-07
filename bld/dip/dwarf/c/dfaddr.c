@@ -226,14 +226,13 @@ static  void AddSortOffset( seg_info *ctl, off_info *new )
     long            diff;
 
     blk = ctl->off.head;
-    rem = ctl->entry.count;
     rem = ctl->entry.count % OFF_PER_BLK;
     if( rem == 0 ) {
         blk_count = OFF_PER_BLK;
     } else {
         blk_count = rem;
     }
-    if( blk == NULL || new->offset > blk->info[blk_count-1].offset ) {
+    if( blk == NULL || new->offset > blk->info[blk_count - 1].offset ) {
         if( rem == 0 ) {    // if higher than high add to first
             blk  = DCAlloc( sizeof( *blk ) );
             blk->next = ctl->off.head;
@@ -248,7 +247,7 @@ static  void AddSortOffset( seg_info *ctl, off_info *new )
         // where new will insert. This means it has to be >= the
         // next block.
         while( (next = blk->next) != NULL ) {
-            if( new->offset >= next->info[OFF_PER_BLK-1].offset )
+            if( new->offset >= next->info[OFF_PER_BLK - 1].offset )
                 break;
             blk = next;
         }
@@ -258,7 +257,7 @@ static  void AddSortOffset( seg_info *ctl, off_info *new )
         cmp.base = &blk->info[0];
         cmp.key = new->offset;
         cmp.hi = blk_count;
-                cmp.last = 0;
+        cmp.last = 0;
         diff = BlkOffSearch( &cmp );
         if( diff == 0 )
             goto exit;
@@ -271,23 +270,21 @@ static  void AddSortOffset( seg_info *ctl, off_info *new )
             next = DCAlloc( sizeof( *next ) );
             next->next = ctl->off.head;
             ctl->off.head = next;
-            next->info[0] = curr->info[OFF_PER_BLK-1];
-            rem = OFF_PER_BLK-1;
+            next->info[0] = curr->info[OFF_PER_BLK - 1];
+            rem = OFF_PER_BLK - 1;
         }
         while( curr != blk ) {  // shuffle free space down to blk
             next = curr->next;
             info = curr->info;
-            memmove( &info[1], &info[0],
-                     rem * sizeof( info[0]) );
-            info[0] = next->info[OFF_PER_BLK-1];
+            memmove( &info[1], &info[0], rem * sizeof( info[0] ) );
+            info[0] = next->info[OFF_PER_BLK - 1];
             curr = next;
             next = curr->next;
-            rem = OFF_PER_BLK-1;
+            rem = OFF_PER_BLK - 1;
         }
         blk_count = cmp.last;
         info = cmp.base; /* set at last compare */
-        memmove( &info[1], &info[0],
-                 (rem-blk_count) * sizeof( *info ) );
+        memmove( &info[1], &info[0], ( rem - blk_count ) * sizeof( *info ) );
     }
     info[0] = *new;
     ++ctl->entry.count;
@@ -334,7 +331,7 @@ static bool CheckInfo( seg_info *ctl )
         next = curr->next;
         info = curr->info;
         if( next != NULL ) {
-            if( info->offset < next->info[OFF_PER_BLK-1].offset ) {
+            if( info->offset < next->info[OFF_PER_BLK - 1].offset ) {
                 goto error;
             }
         }

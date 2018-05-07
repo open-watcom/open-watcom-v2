@@ -59,12 +59,12 @@ static unsigned         TimeStamp;
 dip_status VMInit( imp_image_handle *iih, unsigned long size )
 {
     iih->vm_dir_num = BLOCK_FACTOR( size, DIR_SIZE * VM_PAGE_SIZE );
-    iih->virt = DCAlloc( iih->vm_dir_num * sizeof( iih->virt ) );
+    iih->virt = DCAlloc( iih->vm_dir_num * sizeof( *iih->virt ) );
     if( iih->virt == NULL ) {
         DCStatus( DS_ERR | DS_NO_MEM );
         return( DS_ERR | DS_NO_MEM );
     }
-    memset( iih->virt, 0, iih->vm_dir_num * sizeof( iih->virt ) );
+    memset( iih->virt, 0, iih->vm_dir_num * sizeof( *iih->virt ) );
     return( DS_OK );
 }
 

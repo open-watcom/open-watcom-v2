@@ -762,9 +762,9 @@ dip_status DIPIMPENTRY( SymObjLocation )( imp_image_handle *iih,
             if( dr_type != DRMEM_HDL_NULL ) {
                 DRGetTypeInfo( dr_type, &typeinfo );
                 LocationCreate( ll, LT_INTERNAL, &obj_ptr );
+                base = NilAddr;
                 ds = DCAssignLocation( ll, &tmp, typeinfo.size );
                 if( ds == DS_OK ) {
-                    base = NilAddr;
                     switch( typeinfo.modifier.ptr ) {   /* set segment */
                     case DR_PTR_none:
                     case DR_PTR_near16:
@@ -1441,7 +1441,7 @@ static walk_result DFWalkSymList( imp_image_handle *iih,
     imp_mod_handle      imh;
     walk_result         wr = 0;
     blk_wlk             df;
-    int                 cont = 0;
+    bool                cont;
 
     df.com.iih = iih;
     df.com.d = d;
@@ -1462,7 +1462,7 @@ static walk_result DFWalkSymList( imp_image_handle *iih,
         break;
     case SS_SCOPESYM:
         ish = (imp_sym_handle *)source;
-        WalkSymSymList( &df, &ASym, ish );
+        cont = WalkSymSymList( &df, &ASym, ish );
         if( cont ) {
             df.com.containing = ish->sym;
             WalkModSymList( &df, &ASymCont, ish->imh );
@@ -1745,9 +1745,11 @@ static search_result DoLookupSym( imp_image_handle *iih, symbol_source ss, void 
         break;
     case SS_SCOPESYM:
         ish = (imp_sym_handle *)source;
-        WalkSymSymList( &df, &ASymLookup, ish );
-        df.com.containing = ish->sym;    //check for out of line defn
-        WalkModSymList( &df, ASymContLookup, ish->imh );
+        cont = WalkSymSymList( &df, &ASymLookup, ish );
+        if( cont ) {
+            df.com.containing = ish->sym;    //check for out of line defn
+            WalkModSymList( &df, ASymContLookup, ish->imh );
+        }
         sr = df.lookup.sr;
         break;
     }
