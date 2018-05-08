@@ -501,6 +501,7 @@ static void printOut( const char *string, size_t offset, size_t size )
     /* unused parameters */ (void)offset;
 
     ascii = !IsMasmOutput();
+    item_size = 0;
     string_left = string;
     for( ; string_left < ( string + size ); ) {
         if( !ascii || !printableString( string_left ) || strlen( string_left ) == 0 ) {
