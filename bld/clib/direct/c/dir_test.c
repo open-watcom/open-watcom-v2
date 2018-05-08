@@ -77,7 +77,7 @@
     #define TMPFILEPREFIX       "_TMPFILE"
 #endif
 #endif
-    
+
 #ifdef __UNIX__
 #define DIRSEP      '/'
 #define DIRSEP_S    "/"
@@ -105,7 +105,7 @@
 void main( int argc, char *argv[] )
 {
     CHAR_TYPE           *cwd;
-    CHAR_TYPE           buffer[256], buffer2[256]; 
+    CHAR_TYPE           buffer[256], buffer2[256];
     CHAR_TYPE           pattern[256];
     int                 ctr;
     FILE                *fp;
@@ -168,7 +168,7 @@ void main( int argc, char *argv[] )
     __F_NAME(strcat,wcscat)( buffer, STRING( DIRSEP_S ) );
     __F_NAME(strcat,wcscat)( buffer, pattern );
 #endif
-    
+
     /* Open the directory using a wildcard pattern. */
     VERIFY( ( dirp = __F_NAME(opendir,_wopendir)( buffer ) ) != NULL );
 
@@ -184,9 +184,11 @@ void main( int argc, char *argv[] )
         __F_NAME(strcat,wcscat)( buffer, STRING( "." ) );
         __F_NAME(itoa,_witoa)( ctr, buffer2, 10 );
         __F_NAME(strcat,wcscat)( buffer, buffer2 );
-        VERIFY( __F_NAME(strcmp,wcscmp)(buffer,direntp->d_name) == 0 );
+        if( __F_NAME(strcmp,wcscmp)(buffer,direntp->d_name) != 0 )
+            continue;
         checkbits &= ~( 1 << ctr );
         ++ctr;
+        __F_NAME(rewinddir,_wrewinddir)( dirp );
     }
 
     VERIFY( checkbits == 0 );   // If not, readdir() didn't report all files
@@ -206,9 +208,11 @@ void main( int argc, char *argv[] )
         __F_NAME(strcat,wcscat)( buffer, STRING( "." ) );
         __F_NAME(itoa,_witoa)( ctr, buffer2, 10 );
         __F_NAME(strcat,wcscat)( buffer, buffer2 );
-        VERIFY( __F_NAME(strcmp,wcscmp)(buffer,direntp->d_name) == 0 );
+        if( __F_NAME(strcmp,wcscmp)(buffer,direntp->d_name) != 0 )
+            continue;
         checkbits &= ~( 1 << ctr );
         ++ctr;
+        __F_NAME(rewinddir,_wrewinddir)( dirp );
     }
 
     VERIFY( checkbits == 0 );   // If not, readdir() didn't report all files
@@ -218,22 +222,23 @@ void main( int argc, char *argv[] )
     VERIFY( ( dirp = __F_NAME(opendir,_wopendir)( TMPDIR ) ) != NULL );
     checkbits = save_checkbits;
 
-    ctr = 0;
-    direntp = __F_NAME(readdir,_wreaddir)( dirp );
-    while( direntp ) {
-        /* Skip '.' and '..' entries. */
-        if( direntp->d_name[0] != '.' ) {
-            __F_NAME(strcpy,wcscpy)( buffer, TMPFILEPREFIX );
-            __F_NAME(strcat,wcscat)( buffer, STRING( "." ) );
-            __F_NAME(itoa,_witoa)( ctr, buffer2, 10 );
-            __F_NAME(strcat,wcscat)( buffer, buffer2 );
-            VERIFY( __F_NAME(strcmp,wcscmp)(buffer,direntp->d_name) == 0 );
-            checkbits &= ~( 1 << ctr );
-            ++ctr;
-        }
+    for( ctr = 0; ctr < NUM_OPEN; ) {
         direntp = __F_NAME(readdir,_wreaddir)( dirp );
+        if( direntp == NULL )
+            break;
+        /* Skip '.' and '..' entries. */
+        if( direntp->d_name[0] == '.' )
+            continue;
+        __F_NAME(strcpy,wcscpy)( buffer, TMPFILEPREFIX );
+        __F_NAME(strcat,wcscat)( buffer, STRING( "." ) );
+        __F_NAME(itoa,_witoa)( ctr, buffer2, 10 );
+        __F_NAME(strcat,wcscat)( buffer, buffer2 );
+        if( __F_NAME(strcmp,wcscmp)(buffer,direntp->d_name) != 0 )
+            continue;
+        checkbits &= ~( 1 << ctr );
+        ++ctr;
+        __F_NAME(rewinddir,_wrewinddir)( dirp );
     }
-
     VERIFY( checkbits == 0 );   // If not, readdir() didn't report all files
     VERIFY( __F_NAME(closedir,_wclosedir)( dirp ) == 0 );
 
@@ -263,3 +268,4 @@ void main( int argc, char *argv[] )
 #endif
     exit( 0 );
 }
+
