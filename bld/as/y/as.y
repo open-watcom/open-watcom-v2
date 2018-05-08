@@ -4,22 +4,15 @@
     #include "ytab.h"
     #include "tokens.h"
     #include "asparser.h"
-    
+
     typedef uint_16         YYACTIONBASETYPE;
     typedef uint_16         YYACTIONTYPE;
     typedef uint_16         YYBITBASETYPE;
     typedef uint_8          YYBITTYPE;
     typedef uint_8          YYPLENTYPE;
     typedef uint_16         YYPLHSTYPE;
-    
-    typedef unsigned        YYTOKENTYPE;
 
-#ifdef __WATCOMC__    
-#pragma disable_message( 118 ); // no more unreferenced label warning
-#pragma warning 17 5    // shut off the unreferenced goto warning
-#pragma warning 389 5   // shut off the integral truncated warning
-#pragma warning 373 5   // get rid of defined but not referenced warning
-#endif
+    typedef unsigned        YYTOKENTYPE;
 
     instruction             *AsCurrIns;
 
@@ -150,14 +143,14 @@ statement       : /* nothing */                                 { }
                 | directive                                     { }
                 | instruction                                   { }
                 ;
-                
+
 more_stmts      : /* nothing */                                 { }
                 | T_SEMICOLON label statement more_stmts        { }
                 ;
 
 directive       : dir_name dir_operands                         {
                                                                     bool okay;
-                                                                    
+
                                                                     okay = DirParse( $1 );
                                                                     DirDestroy( $1 );
                                                                     AsCurrDir = NULL;
@@ -167,7 +160,7 @@ directive       : dir_name dir_operands                         {
  
 dir_name        : T_DIRECTIVE                                   { $$ = DirCreate( $1 ); AsCurrDir = $$; }
                 ;
-                
+
 dir_operands    : /* nothing */                                 { }
                 | dir_op dir_op_tail                            { }
                 ;
@@ -222,7 +215,7 @@ num_expr        : num_expr T_TIMES num_expr                     { $$ = ETBinary(
 
 instruction     : opcode operand_list                           { InsEmit( $1 ); InsDestroy( $1 ); AsCurrIns = NULL; }
                 ;
-                
+
 opcode          : T_OPCODE                                      {
                                                                     $$ = InsCreate( $1 );
                                                                     if( AsCurrIns ) InsDestroy( AsCurrIns );
@@ -233,14 +226,14 @@ opcode          : T_OPCODE                                      {
 operand_list    : /* nothing */                                 { }
                 | ins_operand operand_tail                      { }
                 ;
-                
+
 operand_tail    : /* nothing */                                 { }
                 | T_COMMA ins_operand operand_tail              { }
                 ;
-                
+
 ins_operand     : operand                                       { InsAddOperand( AsCurrIns, $1 ); }
                 ;
-                
+
 operand         : expression                                    { $$ = OpImmed( $1 ); }
                 | T_REGISTER                                    { $$ = OpRegister( $1 ); }
                 | mem_reference                                 { $$ = $1; }
@@ -264,7 +257,7 @@ bi_crf          : T_REGISTER                                    { $$ = RegCrfToB
 
 reg_indirect    : T_LEFT_PAREN T_REGISTER T_RIGHT_PAREN         { $$ = $2; }
                 ;
-                
+
 expression      : expression T_TIMES expression                 { $$ = ETBinary( ET_TIMES, $1, $3 ); }
                 | expression T_DIV expression                   { $$ = ETBinary( ET_DIV, $1, $3 ); }
                 | expression T_MOD expression                   { $$ = ETBinary( ET_MOD, $1, $3 ); }
@@ -286,7 +279,7 @@ expression      : expression T_TIMES expression                 { $$ = ETBinary(
                 | T_RELOC_MODIFIER T_NUMLABEL_REF               { $$ = ETNumLabelReloc( $1, $2 ); };
                 | T_NUMLABEL_REF                                { $$ = ETNumLabelReloc( ASM_RELOC_UNSPECIFIED, $1 ); };
                 ;
-                
+
 identifier      : T_IDENTIFIER                                  { $$ = $1; }
 :segment _STANDALONE_
                 | T_DIRECTIVE                                   {   if( !SymIsSectionSymbol( $1 ) ) {

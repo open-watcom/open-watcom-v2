@@ -235,12 +235,6 @@ static void fill( void ) {
 #endif
 }
 
-#ifdef __WATCOMC__
-//#pragma warning 118 5         // This doesn't work!
-#pragma disable_message( 118 );
-#pragma off( unreferenced );    // To get rid of "yyaccept is unreferenced"
-#endif
-
 /*!re2c
 ws      = [ \t]+;
 nl      = "\n";
@@ -475,10 +469,6 @@ empstr                  {
                         }
 */
 }
-
-#ifdef __WATCOMC__
-#pragma on( unreferenced );
-#endif
 
 void yyerror( char *s ) {
 //*************************

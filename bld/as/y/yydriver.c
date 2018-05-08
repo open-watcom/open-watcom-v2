@@ -37,7 +37,9 @@ YYSTYPE yylval;
 
 #define YYABORT         return(true)
 #define YYACCEPT        return(false)
+#ifdef _STANDALONE_
 #define YYERROR         goto yyerrlab
+#endif
 
 #ifdef AS_DEBUG_DUMP
 static void dump_rule( unsigned rule )
@@ -50,7 +52,6 @@ static void dump_rule( unsigned rule )
     if( !_IsOption( DUMP_PARSE_TREE ) ) return;
     #else
     #ifndef MYDEBUG
-    #pragma disable_message( 201 );
     return;
     #endif // !MYDEBUG
     #endif
@@ -69,7 +70,6 @@ static void dump_rule( unsigned rule )
         ++tok;
     }
     putchar( '\n' );
-    #pragma enable_message( 201 );
 }
 #endif
 
@@ -111,7 +111,9 @@ yycheck2:
               switch( yyerrflag ){
                 case 0:
                   yyerror( "syntax error" );
+#ifdef _STANDALONE_
                   yyerrlab:
+#endif
                 case 1:
                 case 2:
                   yyerrflag = 3;
