@@ -272,7 +272,7 @@ static void need( FILE *o, uint n )
 
 static void Action_emit( Action *a, FILE *o )
 {
-    int     i;
+    uint    i;
 
     switch( a->type ) {
     case MATCHACT:
@@ -285,13 +285,6 @@ static void Action_emit( Action *a, FILE *o )
         oline++;
         break;
     case ENTERACT:
-        if( a->state->link != NULL ) {
-            fputs( "\t++YYCURSOR;\n", o);
-        } else {
-            fputs("\tyych = *++YYCURSOR;\n", o);
-        }
-        fprintf(o, "yy%u:\n", a->u.Enter.label);
-        oline += 2;
         if( a->state->link != NULL ) {
             need( o, a->state->depth );
         }
@@ -318,7 +311,6 @@ static void Action_emit( Action *a, FILE *o )
                 if( a->u.Accept.saves[i] != ~0u ) {
                     if( first ) {
                         first = false;
-                        bUsedYYAccept = true;
                         fputs( "\tYYCURSOR = YYMARKER;\n\tswitch(yyaccept){\n", o );
                         oline += 2;
                     }
@@ -505,7 +497,7 @@ static void Go_genGoto( Go *g, FILE *o, State *next )
     if( bFlag ) {
         for( i = 0; i < g->nSpans; ++i ) {
             State *to = g->span[i].to;
-            if( to && to->isBase ) {
+            if( to != NULL && to->isBase ) {
                 BitMap *b = BitMap_find( to );
                 if( b != NULL && matches( b->go, b->on, g, to ) ) {
                     Go go;
@@ -525,7 +517,9 @@ static void Go_genGoto( Go *g, FILE *o, State *next )
 
 static void State_emit( State *s, FILE *o )
 {
-    fprintf( o, "yy%u:", s->label );
+    if( s->referenced ) {
+        fprintf( o, "yy%u: ", s->label );
+    }
     Action_emit( s->action, o );
 }
 
@@ -561,7 +555,7 @@ static uint merge( Span *x0, State *fg, State *bg )
             }
         }
         while( f->ub < b->ub ) {
-            to = f->to == b->to? bg : f->to;
+            to = ( f->to == b->to ) ? bg : f->to;
             if( to == prev ) {
                 --x;
             } else {
@@ -571,7 +565,7 @@ static uint merge( Span *x0, State *fg, State *bg )
             ++x; ++f; --nf;
         }
         while( b->ub < f->ub ) {
-            to = b->to == f->to? bg : f->to;
+            to = ( b->to == f->to ) ? bg : f->to;
             if( to == prev ) {
                 --x;
             } else {
@@ -699,9 +693,24 @@ static void DFA_split( DFA *d, State *s )
     s->go.span[0].to = move;
 }
 
+static void tree_reference( State *s, int isBase )
+{
+    uint    i;
+
+    if( s->referenced == 0 ) {
+        if( isBase == 0 )
+            s->referenced = 1;
+        if( s->action->type == MATCHACT && s->go.nSpans == 1 && s->go.span[0].to->action->type == RULEACT && s->go.span[0].to->go.nSpans == 0 ) {
+        } else {
+            for( i = 0; i < s->go.nSpans; i++ ) {
+                tree_reference( s->go.span[i].to, s->isBase );
+            }
+        }
+    }
+}
+
 void DFA_emit( DFA *d, FILE *o )
 {
-    static uint label = 0;
     State       *s;
     uint        i;
     uint        nRules;
@@ -711,6 +720,7 @@ void DFA_emit( DFA *d, FILE *o )
     State       *accept;
     Span        *span;
 
+    bUsedYYAccept = false;
     DFA_findSCCs( d );
     d->head->link = d->head;
     d->head->depth = maxDist( d->head );
@@ -728,8 +738,6 @@ void DFA_emit( DFA *d, FILE *o )
     // mark backtracking points
     nSaves = 0;
     for( s = d->head; s != NULL; s = s->next ) {
-//        RegExp  *ignore = NULL; /* RuleOp */
-
         if( s->rule != NULL ) {
             for( i = 0; i < s->go.nSpans; ++i ) {
                 if( s->go.span[i].to != NULL && s->go.span[i].to->rule == NULL ) {
@@ -740,7 +748,6 @@ void DFA_emit( DFA *d, FILE *o )
                     continue;
                 }
             }
-//            ignore = s->rule;
         }
     }
 
@@ -756,8 +763,8 @@ void DFA_emit( DFA *d, FILE *o )
             if( rules[s->rule->u.RuleOp.accept] == NULL ) {
                 State *n = State_new();
                 Action_new_Rule( n, s->rule );
-                rules[s->rule->u.RuleOp.accept] = n;
                 DFA_addState( d, &s->next, n );
+                rules[s->rule->u.RuleOp.accept] = n;
             }
             ow = rules[s->rule->u.RuleOp.accept];
         }
@@ -807,6 +814,7 @@ void DFA_emit( DFA *d, FILE *o )
                         s->go.span = malloc( nSpans * sizeof( Span ) );
                         memcpy( s->go.span, span, nSpans * sizeof( Span ) );
                     }
+                    tree_reference( s, 0 );
                     break;
                 }
             }
@@ -814,22 +822,24 @@ void DFA_emit( DFA *d, FILE *o )
     }
     free( span );
 
-    free( d->head->action );
-    d->head->action = NULL;
+    tree_reference( d->head, 0 );
 
-    fputs( "{\n\tYYCTYPE yych;\n\tunsigned int yyaccept;\n", o );
-    oline += 3;
+    free( d->head->action );
+
+    Action_new_Enter( d->head );
+
+    fputs( "{\n\tYYCTYPE yych;\n", o );
+    oline += 2;
+    if( bUsedYYAccept ) {
+        fputs( "\tunsigned int yyaccept;\n", o );
+        oline += 1;
+    }
     if( bFlag ) {
         BitMap_gen( o, d->lbChar, d->ubChar );
     }
 
-    fprintf( o, "\tgoto yy%u;\n", label );
+    fprintf( o, "\tgoto yy%u;\n", d->head->label );
     ++oline;
-    Action_new_Enter( d->head, label++ );
-
-    for( s = d->head; s != NULL; s = s->next ) {
-        s->label = label++;
-    }
 
     for( s = d->head; s != NULL; s = s->next ) {
         State_emit( s, o );

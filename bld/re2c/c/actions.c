@@ -716,6 +716,7 @@ void genCode( FILE *o, RegExp *re )
     Ins         *ins;
     Ins         *eoi;
     DFA         *dfa;
+    static unsigned nstate = 0;
 
     memset( &cs, 0, sizeof( cs ) );
     for( j = 0; j < NCHARS; ++j ) {
@@ -758,8 +759,9 @@ void genCode( FILE *o, RegExp *re )
         }
     }
 
-    dfa = DFA_new( ins, re->size, 0, 256, rep );
+    dfa = DFA_new( ins, re->size, 0, 256, rep, nstate );
     DFA_emit( dfa, o );
+    nstate = dfa->nStates;
     DFA_delete( dfa );
     free( ins );
 }
@@ -775,14 +777,14 @@ Action *Action_new_Match( State *s )
     return( a );
 }
 
-Action *Action_new_Enter( State *s, uint l )
+Action *Action_new_Enter( State *s )
 {
     Action  *a;
 
     a = malloc( sizeof( Action ) );
     a->type = ENTERACT;
     a->state = s;
-    a->u.Enter.label = l;
+    a->u.Enter.label = s->label;
     s->action = a;
     return( a );
 }
@@ -791,6 +793,7 @@ Action *Action_new_Save( State *s, uint i )
 {
     Action  *a;
 
+    bUsedYYAccept = true;
     a = malloc( sizeof( Action ) );
     a->type = SAVEMATCHACT;
     a->state = s;

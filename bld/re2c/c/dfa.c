@@ -37,6 +37,7 @@
 #include "substr.h"
 #include "dfa.h"
 
+
 typedef struct GoTo {
     Char        ch;
     void        *to;
@@ -55,6 +56,7 @@ State *State_new( void )
     s->kCount = 0;
     s->kernel = NULL;
     s->isBase = 0;
+    s->referenced = 0;
     s->action = NULL;
     s->go.nSpans = 0;
     s->go.span = NULL;
@@ -130,7 +132,7 @@ static State *DFA_findState( DFA *d, Ins **kernel, uint kCount )
     return s;
 }
 
-DFA *DFA_new( Ins *ins, uint ni, uint lb, uint ub, Char *rep )
+DFA *DFA_new( Ins *ins, uint ni, uint lb, uint ub, Char *rep, uint nstate )
 {
     DFA     *d;
     Ins     **work;
@@ -148,7 +150,7 @@ DFA *DFA_new( Ins *ins, uint ni, uint lb, uint ub, Char *rep )
     d->ubChar = ub;
     d->tail = &d->head;
     d->head = NULL;
-    d->nStates = 0;
+    d->nStates = nstate;
     d->toDo = NULL;
     DFA_findState( d, work, closure( work, &ins[0] ) - work );
     while( d->toDo != NULL ) {
