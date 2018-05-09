@@ -272,7 +272,7 @@ void WREDDEEnd( void )
     }
 }
 
-bool WREPokeData( HCONV conv, void *data, int size, bool retry )
+bool WREPokeData( HCONV conv, void *data, DWORD size, bool retry )
 {
     DWORD       result;
     UINT        err;
