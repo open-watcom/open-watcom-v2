@@ -275,7 +275,7 @@ static size_t WdeDialogBoxControl2Mem( WdeDialogBoxControl *control,
 }
 
 
-bool WdeDBI2Mem( WdeDialogBoxInfo *info, uint_8 **pdata, uint_32 *psize )
+bool WdeDBI2Mem( WdeDialogBoxInfo *info, uint_8 **pdata, size_t *psize )
 {
     bool                ok;
     size_t              size, memsize;
@@ -335,7 +335,7 @@ bool WdeDBI2Mem( WdeDialogBoxInfo *info, uint_8 **pdata, uint_32 *psize )
     *psize = 0;
     *pdata = NULL;
     if( ok ) {
-        ok = (data - start == memsize);
+        ok = (( data - start ) == memsize);
         if( ok ) {
             *psize = memsize;
             *pdata = start;

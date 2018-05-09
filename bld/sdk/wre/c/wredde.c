@@ -384,8 +384,7 @@ HDDEDATA CALLBACK DdeCallBack( UINT wType, UINT wFmt, HCONV hConv,
         hszpair[0].hszTopic = htopic;
         hszpair[1].hszSvc = (HSZ)NULL;
         hszpair[1].hszTopic = (HSZ)NULL;
-        ret = DdeCreateDataHandle( IdInst, (LPBYTE)&hszpair[0], sizeof( hszpair ),
-                                             0L, 0, CF_TEXT, 0 );
+        ret = DdeCreateDataHandle( IdInst, (LPBYTE)&hszpair[0], (DWORD)sizeof( hszpair ), 0L, 0, CF_TEXT, 0 );
         break;
 
     case XTYP_REQUEST:
@@ -415,7 +414,7 @@ HDDEDATA CALLBACK DdeCallBack( UINT wType, UINT wFmt, HCONV hConv,
         }
         if( data != NULL ) {
             if( ok ) {
-                ret = DdeCreateDataHandle( IdInst, (LPBYTE)data, size, 0, hsz2, wFmt, 0 );
+                ret = DdeCreateDataHandle( IdInst, (LPBYTE)data, (DWORD)size, 0, hsz2, wFmt, 0 );
             }
             WRMemFree( data );
         }

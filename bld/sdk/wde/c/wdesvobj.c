@@ -72,7 +72,7 @@ bool WdeSaveObject( WdeResInfo *rinfo, WdeDialogBoxInfo *dbi,
                     bool save_into, bool get_name )
 {
     void                *rdata;
-    uint_32             size;
+    size_t              size;
     bool                ok;
     WResLangType        lang;
 
