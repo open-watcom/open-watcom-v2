@@ -370,7 +370,7 @@ bool RunDDECommand( int token, const char *str, char *tmp1, vi_rc *result, vlist
         if( data == (HDDEDATA)NULL ) {
             rc = ERR_DDE_FAIL;
         } else {
-            DdeClientTransaction( (LPBYTE)data, -1, hconv, hdl,
+            DdeClientTransaction( (LPBYTE)data, (DWORD)-1L, hconv, hdl,
                                   ClipboardFormat, XTYP_POKE, TIME_OUT, NULL );
         }
         break;
