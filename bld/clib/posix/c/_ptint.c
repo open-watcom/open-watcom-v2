@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2016,2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -317,7 +317,7 @@ int ret;
         
         __ptcatalog_unlock();
     }
-    
+
     return( ret );
 }
 
@@ -353,7 +353,7 @@ void *ret;
             }
             walker = walker->next;
         }
-        
+
         __ptcatalog_unlock();
     }
     
@@ -877,6 +877,9 @@ static void __init_pthread_catalog()
     __ptcatalog_sem = NULL;
 #endif
     __ptcatalog = NULL;
+    
+    /* Register the main thread */
+    __register_thread( );
 }
 
 AXI( __init_pthread_catalog, INIT_PRIORITY_THREAD )
