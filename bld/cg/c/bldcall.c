@@ -296,7 +296,7 @@ name    *DoParmDecl( cg_sym_handle sym, type_def *tipe, hw_reg_set reg ) {
     }
     temp->v.usage |= USE_IN_ANOTHER_BLOCK;
 
-    no_temp = class == XX;
+    no_temp = ( class == XX );
 #if _TARGET & ( _TARG_80386 | _TARG_IAPX86 )
     // The arguments of an interrupt routine coming in on the stack are used
     // for input and output; routine epilog pops them into registers. Handle

@@ -295,8 +295,10 @@ bool UseRepForm( unsigned size )
         switch( size % WORD_SIZE ) {
         case 0: extra = 0;      break;
         case 1: extra = 1;      break;
+#if WORD_SIZE > 2
         case 2: extra = 1;      break;
         case 3: extra = 2;      break;
+#endif
         }
         return( count + extra > MOV_SIZE + 2 );
     }
@@ -399,12 +401,12 @@ static  instruction     *LoadStringOps( instruction *ins,
         load_len = NULL;
         HW_CAsgn( new_op1, HW_EMPTY );
     } else {
-        if( ( (*op1)->n.size & (WORD_SIZE-1) ) == 0
+        if( ( (*op1)->n.size & (WORD_SIZE - 1) ) == 0
           || ( OptForSize <= 50 && ins->head.opcode == OP_MOV ) ) {
-            load_len = MoveConst((*op1)->n.size/WORD_SIZE,AllocRegName(CX),WD);
+            load_len = MoveConst( (*op1)->n.size / WORD_SIZE, AllocRegName( CX ), WD );
             PrefixIns( ins, load_len );
         } else {
-            load_len = MoveConst( (*op1)->n.size, AllocRegName(CX), WD );
+            load_len = MoveConst( (*op1)->n.size, AllocRegName( CX ), WD );
             PrefixIns( ins, load_len );
         }
         new_op1 = CX;
@@ -799,7 +801,7 @@ instruction     *rDOLONGPUSH( instruction *ins )
     hw_reg_set  hw_ss_sp;
 
     size = ins->operands[0]->n.size;
-    if( size <= 4*WORD_SIZE ) {
+    if( size <= 4 * WORD_SIZE ) {
         return( SplitPush( ins, size ) );
     } else {
         HW_CAsgn( hw_ss_sp, HW_SS );
