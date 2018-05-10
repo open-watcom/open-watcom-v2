@@ -232,9 +232,9 @@ If the current version is 4.10, then the value will be 4.
 .el .do begin
 This
 .id unsigned char
-variable contains the major number for the version of DOS executing on
+variable contains the major number for the version of Operating System executing on
 the computer.
-If the current version is 3.20, then the value will be 3.
+By example, if current running DOS version is 3.20, then the value will be 3.
 .do end
 .df _osminor
 .proto stdlib.h
@@ -248,9 +248,9 @@ If the current version is 4.10, then the value will be 10.
 .el .do begin
 This
 .id unsigned char
-variable contains the minor number for the version of DOS executing on
+variable contains the minor number for the version of Operating System executing on
 the computer.
-If the current version is 3.20, then the value will be 20.
+By example, if current running DOS version is 3.20, then the value will be 20.
 .do end
 .if '&machsys' ne 'QNX' .do begin
 .df _osbuild
