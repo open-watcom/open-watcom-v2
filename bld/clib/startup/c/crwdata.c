@@ -52,11 +52,15 @@ _WCRTDATA char              **_Envptr;      // offset part of environment pointe
 #else
 _WCRTDATA char              *_Envptr;       // offset part of environment pointer
 #endif
+#if !defined( __LINUX__ )
 _WCRTDATA unsigned char     _osmajor;       // major OS version number
 _WCRTDATA unsigned char     _osminor;       // minor OS version number
+#endif
+#if defined( __NT__ )
 _WCRTDATA unsigned short    _osbuild;       // operating system build number
 _WCRTDATA unsigned int      _osver;         // operating system build number
 _WCRTDATA unsigned int      _winmajor;      // operating system major version number
 _WCRTDATA unsigned int      _winminor;      // operating system minor version number
 _WCRTDATA unsigned int      _winver;        // operating system version number
+#endif
 _WCRTDATA void (*__FPE_handler)( int );     // f-p exception handler
