@@ -120,6 +120,9 @@ extern unsigned char            _real87;    /* 8087 coprocessor hardware present
     #pragma aux                 _real87 "_*";
 #endif
 extern unsigned char            __uselfn;   /* LFN support available flag */
+#if defined( __LINUX__ )
+extern unsigned char            _osrev;     /* revision number of the Linux kernel version */
+#endif
 
 #define _RWD_ostream            __OpenStreams
 #define _RWD_cstream            __ClosedStreams
@@ -170,6 +173,9 @@ extern unsigned char            __uselfn;   /* LFN support available flag */
         #define _RWD_winmajor   _winmajor
         #define _RWD_winminor   _winminor
         #define _RWD_winver     _winver
+    #endif
+    #if defined( __LINUX__ )
+        #define _RWD_osrev      _osrev
     #endif
 #endif
 #define _RWD_tmpfnext           __tmpfnext

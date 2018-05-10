@@ -113,6 +113,7 @@
 !inject osbdptr.obj                      nt
 !inject osinf086.obj                                                        q16
 !inject osinf386.obj                                                            q32
+!inject osinflnx.obj                                                                            l32 lpc lmp
 !inject osmdptr.obj  d16                                            o16             w16
 !inject osmjptr.obj  d16 d32             nt nta ntp                 o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
 !inject osmnptr.obj  d16 d32             nt nta ntp                 o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
@@ -268,6 +269,7 @@ libentry_postopts =-zld
 maino16_postopts  =-os
 maino32_postopts  =-os
 seterrno_postopts =-os
+osinflnx_postopts =-3
 
 no_truncate_object_code=1
 
