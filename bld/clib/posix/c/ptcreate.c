@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2016,2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -41,7 +41,6 @@
 #include "thread.h"
 #include "extfunc.h"
 
-
 /* By default, allow OpenWatcom's thread library
  * to handle this...
  */
@@ -54,10 +53,10 @@ typedef pthread_fn      __pthread_fn;
 #endif
 
 struct __thread_pass {
+    pthread_t   thread;
+    sem_t       registered;    
     pthread_fn  *start_routine;
     void        *arg;
-    pthread_t   thread;
-    sem_t       registered;
 };
 
 static void __thread_start( void *data )
@@ -72,13 +71,14 @@ static void __thread_start( void *data )
 
     passed->thread = __register_thread();
 
-    start_routine = (__pthread_fn *)passed->start_routine;
+    start_routine = passed->start_routine;
     arg = passed->arg;
 
     /* Lock our running mutex to allow for future joins */
     pthread_mutex_lock( __get_thread_running_mutex( passed->thread ) );
 
     sem_post( &passed->registered );
+    sched_yield();
 
     /* Call the user routine */
     ret = (*start_routine)( arg );
@@ -87,7 +87,7 @@ static void __thread_start( void *data )
      * "join" operations
      */
     pthread_exit( ret );
-    // never return
+    /* never return */
 }
 
 _WCRTLINK int pthread_create( pthread_t *thread, const pthread_attr_t *attr,
@@ -120,11 +120,11 @@ _WCRTLINK int pthread_create( pthread_t *thread, const pthread_attr_t *attr,
         _RWD_errno = ENOMEM;
         return( -1 );
     }
-
+    memset( passed, 0,  sizeof( struct __thread_pass ) );
+    
     passed->start_routine = start_routine;
     passed->arg = arg;
     passed->thread = (pthread_t)-1;
-
     if( stack == NULL && stack_size > 0 ) {
         stack = (char *)malloc( stack_size * sizeof( char * ) );
         if( stack == NULL ) {
@@ -137,7 +137,7 @@ _WCRTLINK int pthread_create( pthread_t *thread, const pthread_attr_t *attr,
     if( sem_init( &passed->registered, 0, 0 ) != 0 ) {
         return( -1 );
     }
-
+    
     ret = _beginthread( __thread_start, NULL, 0, (void *)passed );
 
     /* Wait for registration */
