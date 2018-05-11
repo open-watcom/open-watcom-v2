@@ -8,9 +8,9 @@ mode_t umask( mode_t cmask );
 .el .do begin
 #include <fcntl.h>
 #include <&iohdr>
-int umask( int cmask );
+mode_t umask( mode_t cmask );
 .if &'length(&_func.) ne 0 .do begin
-int _umask( int cmask );
+mode_t _umask( mode_t cmask );
 .ixfunc2 '&OsIo' &_func
 .do end
 .do end
@@ -84,7 +84,7 @@ void main( void )
     mode_t old_mask;
 .do end
 .el .do begin
-    int old_mask;
+    mode_t old_mask;
 .do end
 .exmp break
     /* set mask to create read-only files */

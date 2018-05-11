@@ -7,15 +7,15 @@ int chmod( const char *path, mode_t permission );
 .do end
 .el .do begin
 #include <&iohdr>
-int chmod( const char *path, int permission );
+int chmod( const char *path, mode_t permission );
 .if &'length(&_func.) ne 0 .do begin
-int _chmod( const char *path, int permission );
+int _chmod( const char *path, mode_t permission );
 .ixfunc2 '&FileOp' &_func
 .do end
 .do end
 .ixfunc2 '&FileOp' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
-int _wchmod( const wchar_t *path, int permission );
+int _wchmod( const wchar_t *path, mode_t permission );
 .ixfunc2 '&FileOp' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
