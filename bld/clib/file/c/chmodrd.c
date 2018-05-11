@@ -35,7 +35,7 @@
 #include <direct.h>
 #include <rdos.h>
 
-_WCRTLINK int chmod( const CHAR_TYPE *pathname, int pmode )
+_WCRTLINK int chmod( const CHAR_TYPE *pathname, mode_t pmode )
 {
     int       attr;
 
@@ -48,6 +48,5 @@ _WCRTLINK int chmod( const CHAR_TYPE *pathname, int pmode )
 
     if( RdosSetFileAttribute( pathname, attr ) )
         return( 0 );
-    else
-        return( -1 );
+    return( -1 );
 }

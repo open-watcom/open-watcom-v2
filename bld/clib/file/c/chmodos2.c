@@ -38,7 +38,7 @@
 #include "seterrno.h"
 
 
-_WCRTLINK int __F_NAME(chmod,_wchmod)( const CHAR_TYPE *pathname, int pmode )
+_WCRTLINK int __F_NAME(chmod,_wchmod)( const CHAR_TYPE *pathname, mode_t pmode )
 {
     APIRET      rc;
     OS_UINT     attr;

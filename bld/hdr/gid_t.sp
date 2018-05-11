@@ -16,6 +16,6 @@
  typedef int            gid_t;  /* Used for group IDs               */
  typedef short          mgid_t; /* Used for group in messages       */
 :elsesegment
- typedef unsigned long  gid_t;  /* group identifier */
+ typedef short          gid_t;  /* group identifier */
 :endsegment
 #endif

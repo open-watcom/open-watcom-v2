@@ -16,6 +16,6 @@
  typedef int            uid_t;  /* Used for user IDs                */
  typedef short          muid_t; /* used in messages                 */
 :elsesegment
- typedef unsigned long  uid_t;  /* user identifier */
+ typedef long           uid_t;  /* user identifier */
 :endsegment
 #endif

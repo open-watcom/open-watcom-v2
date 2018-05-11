@@ -128,13 +128,13 @@ typedef unsigned short  sel_t;
 typedef unsigned int    ino_t;  /* i-node # type */
 typedef int             dev_t;  /* device code (drive #) */
 :include off_t.sp
-typedef int             mode_t; /* file mode (attributes) */
+typedef unsigned short  mode_t; /* file mode (attributes) */
 :: The following are not cast in stone - they aren't really used
 :: in any structures or function prototypes
 :include pid_t.sp
 :include uid_t.sp
 :include gid_t.sp
-typedef long long       id_t;   /* pid_t, uid_t or gid_t */
+typedef long            id_t;   /* pid_t, uid_t or gid_t */
 
 #define major(device)           ((int)(((device) >> 8) & 0xFF))
 #define minor(device)           ((int)((device) & 0xff))

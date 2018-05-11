@@ -100,15 +100,15 @@ struct _wfinddatai64_t {
 
 _WCRTLINK extern int  access(const char *__path,int __mode);
 _WCRTLINK extern int  _access(const char *__path,int __mode);
-_WCRTLINK extern int  chmod(const char *__path,int __pmode);
-_WCRTLINK extern int  _chmod(const char *__path,int __pmode);
+_WCRTLINK extern int  chmod(const char *__path,mode_t __pmode);
+_WCRTLINK extern int  _chmod(const char *__path,mode_t __pmode);
 _WCRTLINK extern int  chsize(int __handle,long __size);
 _WCRTLINK extern int  _chsize(int __handle,long __size);
 _WCRTLINK extern int  close(int __handle);
 _WCRTLINK extern int  _close(int __handle);
 _WCRTLINK extern int  _commit(int __handle);
-_WCRTLINK extern int  creat(const char *__path,int __pmode);
-_WCRTLINK extern int  _creat(const char *__path,int __pmode);
+_WCRTLINK extern int  creat(const char *__path,mode_t __pmode);
+_WCRTLINK extern int  _creat(const char *__path,mode_t __pmode);
 _WCRTLINK extern int  dup(int __handle);
 _WCRTLINK extern int  _dup(int __handle);
 _WCRTLINK extern int  dup2(int __handle1,int __handle2);
@@ -148,7 +148,7 @@ _WCRTLINK extern int  unlock(int __handle,unsigned long __offset,
 _WCRTLINK extern int  write(int __handle,const void *__buf,unsigned int __len);
 _WCRTLINK extern int  _write(int __handle,const void *__buf,unsigned int __len);
 _WCRTLINK extern int  _waccess(const wchar_t *__path,int __mode);
-_WCRTLINK extern int  _wchmod( const wchar_t *__path, int __pmode );
+_WCRTLINK extern int  _wchmod( const wchar_t *__path, mode_t __pmode );
 _WCRTLINK extern int  _wunlink(const wchar_t *__path);
 
 _WCRTLINK extern long _findfirst( const char *__filespec,

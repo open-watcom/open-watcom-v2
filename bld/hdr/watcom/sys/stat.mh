@@ -142,14 +142,14 @@ _WCRTLINK extern int     stat64( const char *filename, struct stat64 * __buf );
 struct _stat {
         dev_t   st_dev;         /* disk drive file resides on */
         ino_t   st_ino;         /* this inode's #, not used for DOS */
-        unsigned short st_mode; /* file mode */
+        mode_t  st_mode;        /* file mode */
         short   st_nlink;       /* # of hard links */
 :segment DOS
-        unsigned long  st_uid;  /* user-id, always 'root' */
+        uid_t   st_uid;         /* user-id, always 'root' */
 :elsesegment
         short   st_uid;         /* user-id, always 'root' */
 :endsegment
-        short   st_gid;         /* group-id, always 'root' */
+        gid_t   st_gid;         /* group-id, always 'root' */
         dev_t   st_rdev;        /* should be device type */
                                 /* but same as st_dev for the time being */
         off_t   st_size;        /* total file size */
@@ -172,14 +172,14 @@ struct _stat {
 struct stat {
         dev_t   st_dev;         /* disk drive file resides on */
         ino_t   st_ino;         /* this inode's #, not used for DOS */
-        unsigned short st_mode; /* file mode */
+        mode_t  st_mode;        /* file mode */
         short   st_nlink;       /* # of hard links */
 :segment DOS
-        unsigned long  st_uid;  /* user-id, always 'root' */
+        uid_t   st_uid;         /* user-id, always 'root' */
 :elsesegment
         short   st_uid;         /* user-id, always 'root' */
 :endsegment
-        short   st_gid;         /* group-id, always 'root' */
+        gid_t   st_gid;         /* group-id, always 'root' */
         dev_t   st_rdev;        /* should be device type */
                                 /* but same as st_dev for the time being */
         off_t   st_size;        /* total file size */
@@ -202,14 +202,14 @@ struct stat {
 struct _stati64 {
         dev_t   st_dev;         /* disk drive file resides on */
         ino_t   st_ino;         /* this inode's #, not used for DOS */
-        unsigned short st_mode; /* file mode */
+        mode_t  st_mode;        /* file mode */
         short   st_nlink;       /* # of hard links */
 :segment DOS
-        unsigned long  st_uid;  /* user-id, always 'root' */
+        uid_t   st_uid;         /* user-id, always 'root' */
 :elsesegment
         short   st_uid;         /* user-id, always 'root' */
 :endsegment
-        short   st_gid;         /* group-id, always 'root' */
+        gid_t   st_gid;         /* group-id, always 'root' */
         dev_t   st_rdev;        /* should be device type */
                                 /* but same as st_dev for the time being */
         __int64 st_size;        /* total file size */

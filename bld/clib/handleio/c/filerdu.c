@@ -51,14 +51,14 @@
 #include "qwrite.h"
 #include "_rdos.h"
 
-_WCRTLINK int unlink( const CHAR_TYPE *filename ) 
+_WCRTLINK int unlink( const CHAR_TYPE *filename )
 {
     __ptr_check( filename, 0 );
 
     if( RdosDeleteFile( filename ) )
         return( 0 );
     else
-        return( -1 );  
+        return( -1 );
 }
 
 unsigned __GetIOMode( int handle )
@@ -79,7 +79,7 @@ signed __SetIOMode( int handle, unsigned value )
 _WCRTLINK int creat( const CHAR_TYPE *name, mode_t pmode )
 {
     unsigned mode;
-    
+
     mode = O_CREAT | O_TRUNC;
     if( (pmode & S_IWRITE) && (pmode & S_IREAD) ) {
         mode |= O_RDWR;
@@ -98,7 +98,7 @@ _WCRTLINK int open( const CHAR_TYPE *name, int mode, ... )
 {
     int                 permission;
     va_list             args;
-    
+
     va_start( args, mode );
     permission = va_arg( args, int );
     va_end( args );
@@ -177,8 +177,8 @@ _WCRTLINK int fstat( int handle, struct stat *buf )
     } else {
         res = RdosGetHandleTime( handle, &msb, &lsb );
         if( res >= 0 ) {
-            RdosDecodeMsbTics( msb, 
-                               &tm.tm_year, 
+            RdosDecodeMsbTics( msb,
+                               &tm.tm_year,
                                &tm.tm_mon,
                                &tm.tm_mday,
                                &tm.tm_hour );
@@ -188,13 +188,13 @@ _WCRTLINK int fstat( int handle, struct stat *buf )
                                &tm.tm_sec,
                                &ms,
                                &us );
-                              
+
             tm.tm_year -= 1900;
             tm.tm_mon--;
             tm.tm_isdst = -1;
             tm.tm_wday = -1;
             tm.tm_yday = -1;
-    
+
             buf->st_mtime = mktime( &tm );
             buf->st_atime = buf->st_ctime = buf->st_mtime;
             buf->st_size = filelength( handle );
@@ -239,7 +239,7 @@ _WCRTLINK off_t lseek( int handle, off_t offset, int origin )
     case SEEK_SET:
         RdosSetHandlePos( handle, offset );
         break;
-            
+
     case SEEK_CUR:
         pos = RdosGetHandlePos( handle );
         pos += offset;
@@ -252,8 +252,8 @@ _WCRTLINK off_t lseek( int handle, off_t offset, int origin )
         RdosSetHandlePos( handle, pos );
         break;
     }
-    
-    return( RdosGetHandlePos( handle ) );            
+
+    return( RdosGetHandlePos( handle ) );
 }
 
 _WCRTLINK off_t tell( int handle )

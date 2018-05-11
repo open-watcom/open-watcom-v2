@@ -260,7 +260,7 @@ again_file:
          */
 #ifndef MSDOS
         if( f_use_protection && (phstat->st_mode & (S_ISUID | S_ISGID | S_ISVTX)) ) {
-            if( chmod( /* head->header.name */ xname, (int)phstat->st_mode ) < 0 ) {
+            if( chmod( /* head->header.name */ xname, phstat->st_mode ) < 0 ) {
                 annofile( stderr, tar );
                 perror( /* head->header.name */ xname );
             }

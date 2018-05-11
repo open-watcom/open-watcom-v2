@@ -36,8 +36,8 @@
 #include <dos.h>
 
 
-_WCRTLINK int __F_NAME(chmod,_wchmod)( const CHAR_TYPE *pathname, int pmode )
-/***************************************************************************/
+_WCRTLINK int __F_NAME(chmod,_wchmod)( const CHAR_TYPE *pathname, mode_t pmode )
+/******************************************************************************/
 {
 #ifdef __WIDECHAR__
     char        mbPath[MB_CUR_MAX * _MAX_PATH];
