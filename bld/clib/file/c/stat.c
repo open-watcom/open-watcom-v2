@@ -67,7 +67,7 @@
 
  _WCRTLINK int __F_NAME(_stati64,_wstati64)( CHAR_TYPE const *path, struct _stati64 *buf )
 {
-    struct _stat        buf32;
+    struct stat         buf32;
     int                 rc;
     INT_TYPE            tmp;
 
@@ -125,8 +125,8 @@ static unsigned short at2mode( int attr, char *fname )
     return( mode );
 }
 
-_WCRTLINK int __F_NAME(stat,_wstat)( CHAR_TYPE const *path, struct __F_NAME(stat,_stat) *buf )
-/********************************************************************************************/
+_WCRTLINK int __F_NAME(stat,_wstat)( CHAR_TYPE const *path, struct stat *buf )
+/****************************************************************************/
 {
     struct find_t       fdta;
     const CHAR_TYPE     *ptr;

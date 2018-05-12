@@ -78,7 +78,7 @@ extern long __getfilestamp_sfn( int handle );
 
 _WCRTLINK int _fstati64( int handle, struct _stati64 *buf )
 {
-    struct _stat        buf32;
+    struct stat         buf32;
     int                 rc;
     INT_TYPE            tmp;
 
