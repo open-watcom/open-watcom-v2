@@ -44,6 +44,7 @@
 #include "rtdata.h"
 #include "rterrno.h"
 #include "seterrno.h"
+#include "rtumask.h"
 #include "tinyio.h"
 #include "iomode.h"
 #include "seterrno.h"
@@ -61,7 +62,7 @@ static int __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, unsigned mode,
     unsigned    rwmode;
     int         handle;
     unsigned    attr;
-    int         permission;
+    mode_t      permission;
     unsigned    iomode_flags;
     tiny_ret_t  rc;
     char        dummy;
@@ -209,7 +210,7 @@ static int __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, unsigned mode,
 
 _WCRTLINK int __F_NAME(open,_wopen)( const CHAR_TYPE *name, int mode, ... )
 {
-    int         permission;
+    mode_t      permission;
     va_list     args;
 
     va_start( args, mode );

@@ -160,9 +160,10 @@ char *valloc(unsigned size)
 /*
  * Make a directory.  Compatible with the mkdir() system call on 4.2BSD.
  */
-int mkdir( char *dpath, int dmode )
+int mkdir( char *dpath, mode_t dmode )
 {
         int             cpid, status;
+        mode_t          umaskval;
 
         switch (cpid = fork())
         {
@@ -177,8 +178,8 @@ int mkdir( char *dpath, int dmode )
                  * is going away anyway, we zap its umask. FIXME, this won't suffice
                  * to set SUID, SGID, etc. on this directory.  Does anybody care?
                  */
-                status = umask(0);              /* Get current umask */
-                status = umask(status | (0777 & ~dmode));               /* Set for mkdir */
+                umaskval = umask(0);              /* Get current umask */
+                umaskval = umask(umaskval | (0777 & ~dmode));               /* Set for mkdir */
                 execl("/bin/mkdir", "mkdir", dpath, (char *) 0);
 #ifdef V7
                 exit(-1);

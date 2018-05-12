@@ -34,13 +34,14 @@
 #include <io.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include "rtdata.h"
+#include "rtumask.h"
 
-_WCRTLINK int umask( int permission )
-    {
-        int prev_value;
 
-        prev_value = _RWD_umaskval;
-        _RWD_umaskval = permission & (S_IREAD | S_IWRITE);
-        return( prev_value );
-    }
+_WCRTLINK mode_t umask( mode_t permission )
+{
+    mode_t prev_value;
+
+    prev_value = _RWD_umaskval;
+    _RWD_umaskval = permission & (S_IREAD | S_IWRITE);
+    return( prev_value );
+}

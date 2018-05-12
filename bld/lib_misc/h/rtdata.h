@@ -87,7 +87,6 @@ extern void                 (*__FPE_handler_exit)( void );
 _WCRTDATA extern  int       _cbyte;
 _WCRTDATA extern  int       _cbyte2;
           extern  int       _child;
-          extern  int       __umaskval;
 _WCRTDATA extern  unsigned  _curbrk;
           extern  int       _commode;
   #if defined( __WATCOMC__ ) && defined( _M_IX86 )
@@ -141,7 +140,6 @@ extern unsigned char            _osrev;     /* revision number of the Linux kern
 #define _RWD_FPE_handler_exit   __FPE_handler_exit
 #define _RWD_fmode              _fmode
 #if !defined( __NETWARE__ )
-    #define _RWD_umaskval       __umaskval
     #define _RWD_cbyte          _cbyte
     #define _RWD_cbyte2         _cbyte2
     #define _RWD_child          _child

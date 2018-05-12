@@ -402,7 +402,7 @@ void TestOsHandle( void )
 void TestUnlink( void )
 {
     int                 handle;
-    int                 oldMask;
+    mode_t              oldMask;
     int                 status;
 
     status = unlink( "iotest.tmp" );

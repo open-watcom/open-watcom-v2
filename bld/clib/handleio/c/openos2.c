@@ -48,6 +48,7 @@
 #include "os2fil64.h"
 #include "rtdata.h"
 #include "rterrno.h"
+#include "rtumask.h"
 #include "fileacc.h"
 #include "openmode.h"
 #include "iomode.h"
@@ -62,7 +63,7 @@ static int __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, unsigned mode, uns
     OS_UINT     fileattr, openflag, openmode;
     HFILE       handle;
     unsigned    rwmode;
-    int         perm = S_IREAD | S_IWRITE;
+    mode_t      perm = S_IREAD | S_IWRITE;
     unsigned    iomode_flags;
 #ifdef __WIDECHAR__
     char        mbName[MB_CUR_MAX * _MAX_PATH];     /* single-byte char */
@@ -158,7 +159,7 @@ static int __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, unsigned mode, uns
 
 _WCRTLINK int __F_NAME(open,_wopen)( const CHAR_TYPE *name, int mode, ... )
 {
-    int         permission;
+    mode_t      permission;
     va_list     args;
 
     va_start( args, mode );

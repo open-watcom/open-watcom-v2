@@ -139,8 +139,8 @@ _WCRTLINK extern int  sopen(const char *__path,int __oflag,int __shflag,...);
 _WCRTLINK extern int  _sopen(const char *__path,int __oflag,int __shflag,...);
 _WCRTLINK extern off_t tell(int __handle);
 _WCRTLINK extern off_t _tell(int __handle);
-_WCRTLINK extern int  umask(int __permission);
-_WCRTLINK extern int  _umask(int __permission);
+_WCRTLINK extern mode_t umask( mode_t __permission );
+_WCRTLINK extern mode_t _umask( mode_t __permission );
 _WCRTLINK extern int  unlink(const char *__path);
 _WCRTLINK extern int  _unlink(const char *__path);
 _WCRTLINK extern int  unlock(int __handle,unsigned long __offset,

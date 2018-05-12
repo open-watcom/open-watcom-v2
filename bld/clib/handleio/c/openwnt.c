@@ -41,6 +41,7 @@
 #include <share.h>
 #include <windows.h>
 #include "rtdata.h"
+#include "rtumask.h"
 #include "iomode.h"
 #include "fileacc.h"
 #include "ntext.h"
@@ -53,7 +54,7 @@
 static int __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, unsigned mode, unsigned share, va_list args )
 {
     DWORD               create_disp, exists_disp;
-    int                 perm;
+    mode_t              perm;
     DWORD               os_attr, fileattr;
     DWORD               desired_access, share_mode;
     SECURITY_ATTRIBUTES security;
@@ -155,7 +156,7 @@ static int __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, unsigned mode, uns
 
 _WCRTLINK int __F_NAME(open,_wopen)( const CHAR_TYPE *name, int mode, ... )
 {
-    int         permission;
+    mode_t      permission;
     va_list     args;
 
     va_start( args, mode );
