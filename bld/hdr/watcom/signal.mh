@@ -37,7 +37,7 @@ using std::raise;
 
 :include owrtlink.sp
 
-:segment QNX | LINUX
+:segment LINUX | QNX
 :include systypes.sp
 
 :endsegment
@@ -223,7 +223,7 @@ _WCRTLINK extern int  raise( int __sig );
 _WCRTLINK extern void (_WCCALLBACK *signal( int __sig, void (_WCCALLBACK *__func)(int) ) )(int);
 :include nsstdepi.sp
 
-:segment QNX | LINUX
+:segment LINUX | QNX
 :include extunix.sp
 _WCRTLINK extern int  kill( pid_t __pid, int __signum );
 _WCRTLINK extern int  sigaction( int __signo, const struct sigaction *__act, struct sigaction *__oact );

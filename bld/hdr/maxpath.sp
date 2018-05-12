@@ -4,7 +4,7 @@
 ::
 :segment FILENAME
 ::#ifndef FILENAME_MAX
-:segment QNX | LINUX
+:segment LINUX | QNX
 #define FILENAME_MAX    255
 :elsesegment
 #if defined(__OS2__) || defined(__NT__) || defined(__WATCOM_LFN__) && defined(__DOS__) || defined(__OSI__)
@@ -49,7 +49,7 @@
 :: _MAX_PATH macro
 ::
 #ifndef _MAX_PATH
-:segment QNX | LINUX
+:segment LINUX | QNX
  #define _MAX_PATH    256 /* maximum length of full pathname */
 :elsesegment
  #if defined(__OS2__) || defined(__NT__) || defined(__WATCOM_LFN__) && defined(__DOS__) || defined(__OSI__)

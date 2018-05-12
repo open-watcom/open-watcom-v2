@@ -148,7 +148,7 @@ using std::wscanf;
 
 :include null.sp
 
-:segment QNX | LINUX
+:segment LINUX | QNX
 #define _NFILES         16          /*  minimum guaranteed open files       */
 #define BUFSIZ          4096        /*  Default buffer size                 */
 :elsesegment
@@ -170,7 +170,7 @@ using std::wscanf;
 :remove PATHMAX
 
 :endsegment
-:segment QNX | LINUX
+:segment LINUX | QNX
 #define FOPEN_MAX   _NFILES
 :elsesegment
 :include ext.sp
@@ -181,7 +181,7 @@ using std::wscanf;
 #endif /* extensions disabled */
 :endsegment
 
-:segment QNX | LINUX
+:segment LINUX | QNX
 /* values for _flag field in FILE struct */
 :elsesegment
 /* values for _flag field in FILE struct and _iomode array */
@@ -189,7 +189,7 @@ using std::wscanf;
 
 #define _READ   0x0001  /* file opened for reading */
 #define _WRITE  0x0002  /* file opened for writing */
-:segment QNX | LINUX
+:segment LINUX | QNX
 #define _UNGET  0x0100  /* ungetc has been done */
 :elsesegment
 #define _UNGET  0x0004  /* ungetc has been done */
@@ -198,7 +198,7 @@ using std::wscanf;
 #define _EOF    0x0010  /* EOF has occurred */
 #define _SFERR  0x0020  /* error has occurred on this file */
 #define _APPEND 0x0080  /* file opened for append */
-:segment QNX | LINUX
+:segment LINUX | QNX
 #define _BINARY 0x0000  /* not required for POSIX QNX       */
 #define _IOFBF  0x0000  /*  full buffering                  */
 #define _IOLBF  0x0040  /*  line buffering                  */
@@ -224,7 +224,7 @@ using std::wscanf;
 #define _BYTE_ORIENTED  1               /* byte-oriented stream */
 #define _WIDE_ORIENTED  2               /* wide-oriented stream */
 
-:segment QNX | LINUX
+:segment LINUX | QNX
 :include extunix.sp
 #define L_cuserid   14                  /*  Max length of login names       */
 #define L_ctermid   16                  /*  Max length of terminal names    */
@@ -472,7 +472,7 @@ _WCRTLINK extern char       *input_line( __w_FILE *, char *, int );
 :endsegment
 :include extepi.sp
 
-:segment QNX | LINUX
+:segment LINUX | QNX
 :include extunix.sp
 _WCRTLINK extern char       *ctermid( char * );
 _WCRTLINK extern char       *cuserid( char * );
@@ -531,7 +531,7 @@ _WCRTLINK extern int        pclose( __w_FILE *__stream );
 
 #define TMP_MAX_S   (26*26*26)      /* has to be same as TMP_MAX */
 
-:segment QNX | LINUX
+:segment LINUX | QNX
 #define L_tmpnam_s  255             /* has to be same as L_tmpnam */
 :elsesegment
 #define L_tmpnam_s  13              /* has to be same as L_tmpnam */

@@ -1,4 +1,4 @@
-:segment QNX | LINUX
+:segment LINUX | QNX
 #ifndef MB_LEN_MAX
  #define MB_LEN_MAX     6
 #endif

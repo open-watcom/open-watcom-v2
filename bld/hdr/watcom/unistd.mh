@@ -28,7 +28,7 @@
 :endsegment
 :include null.sp
 
-:segment QNX | LINUX
+:segment LINUX | QNX
 :include access.sp
 
 /* Symbolic constants for the lseek() function */
@@ -275,7 +275,7 @@ _WCRTLINK extern pid_t  waitpid( pid_t __pid, int *__stat_loc, int __options );
 #endif
 
 :endsegment
-:segment QNX | LINUX
+:segment LINUX | QNX
 _WCRTLINK extern pid_t  getpid( void );
 :endsegment
 _WCRTLINK extern int    rmdir( const char *__path );

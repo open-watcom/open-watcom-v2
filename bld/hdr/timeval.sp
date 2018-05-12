@@ -6,7 +6,7 @@ struct timeval {
     long        tv_sec;     /* seconds */
     long        tv_usec;    /* and microseconds */
 };
-:elsesegment QNX | LINUX
+:elsesegment LINUX | QNX
 struct timeval {
     time_t      tv_sec;     /* seconds */
     long        tv_usec;    /* and microseconds */

@@ -110,7 +110,7 @@
                                     /*  zone (not of the TZ variable).      */
 :endsegment
 
-:segment QNX | LINUX
+:segment LINUX | QNX
 :include extunix.sp
 ::
 :: Begin of extension section

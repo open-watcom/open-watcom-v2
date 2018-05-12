@@ -182,7 +182,7 @@ typedef struct flock {
  */
 _WCRTLINK extern int open( const char *__path, int __oflag, ... );
 _WCRTLINK extern int sopen( const char *__path, int __oflag, int __share, ... );
-:segment QNX | LINUX
+:segment LINUX | QNX
 _WCRTLINK extern int creat( const char *__path, mode_t __mode );
 :endsegment
 
@@ -190,7 +190,7 @@ _WCRTLINK extern int creat( const char *__path, mode_t __mode );
 _WCRTLINK extern int _wopen( const wchar_t *, int, ... );
 _WCRTLINK extern int _wsopen( const wchar_t *, int, int, ... );
 _WCRTLINK extern int _wcreat( const wchar_t *, mode_t );
-:segment QNX | LINUX
+:segment LINUX | QNX
 
 _WCRTLINK extern int fcntl( int __fildes, int __cmd, ... );
 :endsegment

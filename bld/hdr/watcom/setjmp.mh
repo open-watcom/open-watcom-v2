@@ -49,7 +49,7 @@ _WCRTLINK _WCNORETURN extern void   longjmp( jmp_buf __env, int __val );
 :endsegment
 #endif
 
-:segment QNX | LINUX
+:segment LINUX | QNX
 :include extunix.sp
 
 :include pshpackl.sp

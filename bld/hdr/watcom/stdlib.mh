@@ -106,7 +106,7 @@ using std::wcstoull;
 
 #define RAND_MAX        32767U
 #define EXIT_SUCCESS    0
-:segment QNX | LINUX
+:segment LINUX | QNX
 #define EXIT_FAILURE    1
 :elsesegment
 #define EXIT_FAILURE    0xFF
@@ -203,7 +203,7 @@ _WCRTLINK extern unsigned long long int strtoull( const char *__nptr, char **__e
 #define atof(p)  strtod(p,(char **)NULL)
 
 :endsegment
-:segment QNX | LINUX
+:segment LINUX | QNX
 :include extunix.sp
 :include _exit.sp
 :include extepi.sp
@@ -378,7 +378,7 @@ _WCRTLINK extern unsigned __int64 _strtoui64( const char *__nptr, char **__endpt
  * _makepath() and _splitpath() functions.  They include space for the '\0'
  * terminator.
  */
-:segment QNX | LINUX
+:segment LINUX | QNX
 #define _MAX_DRIVE      48      /*  maximum length of node name w/ '\0' */
 #define _MAX_NODE    _MAX_DRIVE /*  maximum length of node name w/ '\0' */
 #define _MAX_DIR        256     /*  maximum length of subdirectory      */
@@ -575,7 +575,7 @@ extern  wchar_t **__wargv;      /* vector of wide cmd line args */
 #endif
 :endsegment
 
-:segment QNX | LINUX
+:segment LINUX | QNX
 :include alloca.sp
 
 :endsegment

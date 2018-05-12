@@ -63,7 +63,7 @@ using std::time;
 
 :include owrtlink.sp
 
-:segment QNX | LINUX
+:segment LINUX | QNX
 :include systypes.sp
 
 :endsegment
@@ -87,7 +87,7 @@ using std::time;
 
 :include extepi.sp
 
-:elsesegment QNX | LINUX
+:elsesegment LINUX | QNX
 :include extunix.sp
 
 #define CLK_TCK          1000
@@ -144,7 +144,7 @@ using std::time;
 ::
 :: Begin of extension section
 ::
-:segment QNX | LINUX
+:segment LINUX | QNX
 :include extunix.sp
 
 :include timer_t.sp
@@ -229,7 +229,7 @@ _WCRTLINK extern wchar_t    *__wctime( const __w_time_t *, wchar_t * );
 _WCRTLINK extern wchar_t    *__wasctime( const __w_tm *, wchar_t * );
 :include extepi.sp
 
-:segment QNX | LINUX
+:segment LINUX | QNX
 :include extunix.sp
 
 _WCRTLINK extern int    nanosleep( const struct timespec *rqtp, struct timespec *rmtp );
@@ -268,7 +268,7 @@ _WCRTLINK extern int    qnx_adj_time( long, long, long *, long * );
 :include extepi.sp
 
 :endsegment
-:segment QNX | LINUX
+:segment LINUX | QNX
 :include extunix.sp
 
 :endsegment
@@ -281,7 +281,7 @@ _WCRTLINK extern char   **__get_tzname_ptr( void );
 #endif
 _WCRTDATA extern char * _WCDATA tzname[2];  /*  time zone names */
 
-:segment QNX | LINUX
+:segment LINUX | QNX
 :include extepi.sp
 
 :include ext.sp
@@ -299,7 +299,7 @@ _WCRTLINK extern int    *__get_daylight_ptr( void );
 _WCRTDATA extern long   _WCDATA timezone;   /* # of seconds from GMT */
 _WCRTDATA extern int    _WCDATA daylight;   /* d.s.t. indicator */
 
-:segment QNX | LINUX
+:segment LINUX | QNX
 :include extepi.sp
 
 :endsegment

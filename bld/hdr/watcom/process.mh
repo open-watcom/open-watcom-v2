@@ -14,7 +14,7 @@
 :include lfndos.sp
 
 :endsegment
-:segment QNX | LINUX
+:segment LINUX | QNX
 :include systypes.sp
 
 :endsegment
@@ -31,7 +31,7 @@ _WCRTLINK extern int    execv( const char *__path, const char *const __argv[] );
 _WCRTLINK extern int    execve( const char *__path, const char *const __argv[], const char *const __envp[] );
 _WCRTLINK extern int    execvp( const char *__file, const char *const __argv[] );
 
-:segment QNX | LINUX
+:segment LINUX | QNX
 :include ext.sp
 ::
 :: Begin of extension section
@@ -102,7 +102,7 @@ _WCRTLINK extern int    execvpe( const char *__file, const char *const __argv[],
 _WCRTLINK extern int    _execlpe( const char *__file, const char *__arg0, ... );
 _WCRTLINK extern int    _execvpe( const char *__file, const char *const __argv[], const char *const __envp[] );
 
-:segment QNX | LINUX
+:segment LINUX | QNX
 #ifdef __386__
  _WCRTLINK extern int   _beginthread( void (_WCCALLBACK *__start_address)(void *),
      void *__stack_bottom, unsigned __stack_size, void *__arglist );
@@ -163,13 +163,13 @@ _WCRTLINK extern int    _cwait( int *__status, int __process_id, int __action_co
 
 :include _exit.sp
 
-:segment QNX | LINUX
+:segment LINUX | QNX
 #if !(defined(SYSV) || defined(BSD) || defined(XENIX) || defined(_UNIX_H_INCLUDED))
 :endsegment
 _WCRTLINK extern char   *getcmd( char *__buffer );
 _WCRTLINK extern int    _bgetcmd( char *__buffer, int __len );
 _WCRTLINK extern char   *_cmdname( char *__name );
-:segment QNX | LINUX
+:segment LINUX | QNX
 #endif
 :endsegment
 _WCRTLINK extern int    putenv( const char *__string );
@@ -230,7 +230,7 @@ _WCRTLINK extern int    getpid( void );
 _WCRTLINK extern int    _getpid( void );
 _WCRTLINK extern int    wait( int *__status );
 
-:elsesegment QNX | LINUX
+:elsesegment LINUX | QNX
 _WCRTLINK extern pid_t  getpid( void );
 _WCRTLINK extern pid_t  _getpid( void );
 _WCRTLINK extern pid_t  wait( int *__status );
@@ -240,7 +240,7 @@ _WCRTLINK extern pid_t  wait( int *__status );
 _WCRTLINK extern pid_t  gettid( void );
 
 :endsegment
-:segment QNX | LINUX
+:segment LINUX | QNX
 ::
 :: End of extension section
 ::
