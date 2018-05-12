@@ -132,12 +132,6 @@ _WCRTLINK extern int     stat64( const char *filename, struct stat64 * __buf );
 ::
 :include pshpackl.sp
 
-:segment DOS
-#ifndef _MAX_NAME
-#define _MAX_NAME 13    /* maximum length of file name (with extension) */
-#endif
-:endsegment
-
 :include wchar_t.sp
 struct _stat {
         dev_t   st_dev;         /* disk drive file resides on */

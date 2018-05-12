@@ -395,9 +395,6 @@ _WCRTLINK extern unsigned __int64 _strtoui64( const char *__nptr, char **__endpt
 #define _MAX_DIR    130 /* maximum length of path component */
 #define _MAX_FNAME   9  /* maximum length of file name component */
 #define _MAX_EXT     5  /* maximum length of extension component */
-#ifndef _MAX_NAME
-#define _MAX_NAME    13  /* maximum length of file name (with extension) */
-#endif
 #endif
 :endsegment
 

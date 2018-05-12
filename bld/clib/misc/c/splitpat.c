@@ -48,7 +48,6 @@
   #undef _MAX_DIR
   #undef _MAX_FNAME
   #undef _MAX_EXT
-  #undef _MAX_NAME
 
   #define _MAX_PATH    255 /* maximum length of full pathname */
   #define _MAX_SERVER  48  /* maximum length of server name */
@@ -57,7 +56,6 @@
   #define _MAX_DIR     255 /* maximum length of path component */
   #define _MAX_FNAME   9   /* maximum length of file name component */
   #define _MAX_EXT     5   /* maximum length of extension component */
-  #define _MAX_NAME    13  /* maximum length of file name (with extension) */
 #endif
 
 

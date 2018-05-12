@@ -173,7 +173,6 @@ char *ltoa( long value, char *buffer, int radix )
   #undef _MAX_DIR
   #undef _MAX_FNAME
   #undef _MAX_EXT
-  #undef _MAX_NAME
 
   #define _MAX_PATH    255 /* maximum length of full pathname */
   #define _MAX_SERVER  48  /* maximum length of server name */
@@ -182,7 +181,6 @@ char *ltoa( long value, char *buffer, int radix )
   #define _MAX_DIR     255 /* maximum length of path component */
   #define _MAX_FNAME   9   /* maximum length of file name component */
   #define _MAX_EXT     5   /* maximum length of extension component */
-  #define _MAX_NAME    13  /* maximum length of file name (with extension) */
 #endif
 
 
@@ -1064,7 +1062,7 @@ char *_fullpath( char *buff, const char *path, size_t size )
 
 /****************************************************************************
 *
-* Description:  Implementation of strlwr(). 
+* Description:  Implementation of strlwr().
 *
 ****************************************************************************/
 
@@ -1133,7 +1131,7 @@ int memicmp( const void *in_s1, const void *in_s2, size_t len )
 
 /****************************************************************************
 *
-* Description:  Implementation of tell(). 
+* Description:  Implementation of tell().
 *
 ****************************************************************************/
 
@@ -1242,7 +1240,7 @@ int eof( int handle )         /* determine if at EOF */
 
 #include <mach-o/dyld.h>
 
-/* No procfs on Darwin, have to use special API */ 
+/* No procfs on Darwin, have to use special API */
 
 char *_cmdname( char *name )
 {
@@ -1723,12 +1721,12 @@ static int icase( int ch, int flags )
     }
 }
 
-/* Maximum length of character class name. 
+/* Maximum length of character class name.
  * The longest is currently 'xdigit' (6 chars).
  */
 #define CCL_NAME_MAX    8
 
-/* Note: Using wctype()/iswctype() may seem odd, but that way we can avoid 
+/* Note: Using wctype()/iswctype() may seem odd, but that way we can avoid
  * hardcoded character class lists.
  */
 static int sub_bracket( const char *p, int c )
@@ -1812,12 +1810,12 @@ static const char *cclass_match( const char *patt, int c )
             }
             state = 0;
             break;
-        case 2: 
+        case 2:
             if( *patt == '\\' )
                 ++patt;
             if( lc <= c && c <= *patt )
                 ok = 1;
-            ++patt;     
+            ++patt;
             state = 0;
             break;
         default:
@@ -2022,8 +2020,8 @@ static time_t __NT_filetime_to_timet( const FILETIME *ft )
 {
     ULARGE_INTEGER  ulint;
 
-    ulint.u.LowPart   =   ft->dwLowDateTime; 
-    ulint.u.HighPart  =   ft->dwHighDateTime; 
+    ulint.u.LowPart   =   ft->dwLowDateTime;
+    ulint.u.HighPart  =   ft->dwHighDateTime;
     return( ulint.QuadPart / WINDOWS_TICK - SEC_TO_UNIX_EPOCH );
 }
 
