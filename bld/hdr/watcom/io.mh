@@ -22,8 +22,10 @@
 
 :include pshpackl.sp
 
+/* 
+ *  ISO C types
+ */
 :include time_t.sp
-
 :include wchar_t.sp
 :include maxpath.sp
 

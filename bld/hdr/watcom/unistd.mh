@@ -113,7 +113,6 @@
 /*
  *  POSIX 1003.1 Prototypes
  */
-
 :include pid_t.sp
 :include uid_t.sp
 :include gid_t.sp

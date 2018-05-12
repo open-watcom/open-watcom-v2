@@ -3,12 +3,12 @@
 :: 32-bit machine (pointers are only 32-bit, too), except long longs fit
 :: in registers. The PPC port was only targeted for 32-bit PPC systems,
 :: it's much like a 386."
-/*          char | short | int | long | long long                        */
-/* 16 bit : 8      16      16    32     64     All 16 bit targets.       */
-/* 32 bit : 8      16      32    32     64     386, AXP, PPC, MIPS       */
-/* 64 bit : 8      16      32    64     64     No targets implemented.   */
-
-/* Exact-width types. */
+::
+::           char | short | int | long | long long
+::  16 bit : 8      16      16    32     64        All 16 bit targets
+::  32 bit : 8      16      32    32     64        386, AXP, PPC, MIPS
+::  64 bit : 8      16      32    64     64        No targets implemented
+::
 :: Some of these types are also defined in sys/types.h. However, protection
 :: with the _EXACT_WIDTH_INTS is not needed in cstdint because the types are
 :: declared in namespace std (and thus can't conflict with the global types
@@ -16,12 +16,12 @@
 :: included we want the exact width integer types declared in both namespaces.
 :segment !CNAME
 #ifndef _EXACT_WIDTH_INTS
-#define _EXACT_WIDTH_INTS
+ #define _EXACT_WIDTH_INTS
 :endsegment
-typedef signed char         int8_t;
-typedef unsigned char       uint8_t;
-typedef short               int16_t;
-typedef unsigned short      uint16_t;
+ typedef signed char         int8_t;
+ typedef unsigned char       uint8_t;
+ typedef short               int16_t;
+ typedef unsigned short      uint16_t;
 :segment DOS | QNX
 #ifdef _M_I86
  typedef long               int32_t;
@@ -33,8 +33,8 @@ typedef unsigned short      uint16_t;
 :segment DOS | QNX
 #endif
 :endsegment
-typedef long long           int64_t;
-typedef unsigned long long  uint64_t;
+ typedef long long           int64_t;
+ typedef unsigned long long  uint64_t;
 :segment !CNAME
 #endif /* _EXACT_WIDTH_INTS */
 :endsegment

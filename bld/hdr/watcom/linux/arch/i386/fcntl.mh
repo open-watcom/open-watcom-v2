@@ -4,10 +4,14 @@
 :include crwatcnt.sp
  */
 
+/* 
+ *  POSIX 1003.1 types
+ */
+:include mode_t.sp
+
 /*
  *  File access modes.
  */
-
 #define O_RDONLY    000000  /*  Read-only mode  */
 #define O_WRONLY    000001  /*  Write-only mode */
 #define O_RDWR      000002  /*  Read-Write mode */
@@ -15,13 +19,11 @@
 /*
  *  Mask for file access modes.
  */
-
 #define O_ACCMODE   000003
 
 /*
  *  File status flags used for open() and fcntl().
  */
-
 #define O_NONBLOCK  004000  /*  Non-blocking I/O                */
 #define O_APPEND    002000  /*  Append (writes guaranteed at the end) */
 #define O_NDELAY    O_NONBLOCK
@@ -32,7 +34,6 @@
 /*
  *  oflag values for open()
  */
-
 #define O_CREAT     000100  /*  Opens with file create      */
 #define O_EXCL      000200  /*  Exclusive open          */
 #define O_NOCTTY    000400  /*  Don't assign a controlling terminal */
@@ -46,7 +47,6 @@
 /*
  *  fcntl() requests
  */
-
 #define F_DUPFD     0       /* Duplicate file descriptor   */
 #define F_GETFD     1       /* Get file descriptor flags   */
 #define F_SETFD     2       /* Set file descriptor flags   */
@@ -62,13 +62,11 @@
 /*
  *  File descriptor flags used for fcntl()
  */
-
 #define FD_CLOEXEC  0x01    /*  Close on exec       */
 
 /*
  *  l_type values for record locking with fcntl()
  */
-
 #define F_RDLCK     0       /* Read lock.  */
 #define F_WRLCK     1       /* Write lock.  */
 #define F_UNLCK     2       /* Remove lock.  */
@@ -76,7 +74,6 @@
 /*
  *  flock structure.
  */
-
 typedef struct flock {
     short int   l_type;     /* Type of lock: F_RDLCK, F_WRLCK, or F_UNLCK.  */
     short int   l_whence;   /* Where `l_start' is relative to (like `lseek').  */
@@ -84,4 +81,3 @@ typedef struct flock {
     off_t       l_len;      /* Size of the locked area; zero means until EOF.  */
     pid_t       l_pid;      /* Process holding the lock.  */
 } flock_t;
-
