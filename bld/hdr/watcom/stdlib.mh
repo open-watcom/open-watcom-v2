@@ -594,24 +594,22 @@ _WCRTLINK extern onexit_t     onexit( onexit_t __func );
 typedef void (_WCCALLBACK *constraint_handler_t)( const char * __restrict __msg, void * __restrict __ptr, errno_t __error );
 
 _WCRTLINK extern constraint_handler_t set_constraint_handler_s( constraint_handler_t __handler );
-_WCHANDLER extern void abort_handler_s( const char * __restrict __msg, void * __restrict __ptr, errno_t __error );
-_WCHANDLER extern void ignore_handler_s( const char * __restrict __msg, void * __restrict __ptr, errno_t __error );
+_WCHANDLER extern void      abort_handler_s( const char * __restrict __msg, void * __restrict __ptr, errno_t __error );
+_WCHANDLER extern void      ignore_handler_s( const char * __restrict __msg, void * __restrict __ptr, errno_t __error );
 
-_WCRTLINK extern errno_t getenv_s( size_t * __restrict __len, char * __restrict __value, rsize_t __maxsize, const char * __restrict __name );
+_WCRTLINK extern errno_t    getenv_s( size_t * __restrict __len, char * __restrict __value, rsize_t __maxsize, const char * __restrict __name );
 
-_WCRTLINK extern void    *bsearch_s( const void *__key, const void *__base, rsize_t __nmemb, rsize_t __size,
-                                     int (_WCCALLBACK *__compare)(const void *__x, const void *__y, void *__context), void *__context);
-_WCRTLINK extern errno_t qsort_s( void *__base, rsize_t __nmemb, rsize_t __size,
-                                  int (_WCCALLBACK *__compare)(const void *__x, const void *__y, void *__context), void *__context);
+_WCRTLINK extern void       *bsearch_s( const void *__key, const void *__base, rsize_t __nmemb, rsize_t __size, int (_WCCALLBACK *__compare)(const void *__x, const void *__y, void *__context), void *__context);
+_WCRTLINK extern errno_t    qsort_s( void *__base, rsize_t __nmemb, rsize_t __size, int (_WCCALLBACK *__compare)(const void *__x, const void *__y, void *__context), void *__context);
 
-_WCRTLINK extern errno_t wctomb_s( int * __restrict __status, char * __restrict __s, rsize_t __smax, wchar_t __wc );
-_WCRTLINK extern errno_t mbstowcs_s( size_t * __restrict __retval, wchar_t * __restrict __dst, rsize_t __dstmax, const char * __restrict __src, rsize_t __len );
-_WCRTLINK extern errno_t wcstombs_s( size_t * __restrict __retval, char * __restrict __dst, rsize_t __dstmax, const wchar_t * __restrict __src, rsize_t __len );
+_WCRTLINK extern errno_t    wctomb_s( int * __restrict __status, char * __restrict __s, rsize_t __smax, wchar_t __wc );
+_WCRTLINK extern errno_t    mbstowcs_s( size_t * __restrict __retval, wchar_t * __restrict __dst, rsize_t __dstmax, const char * __restrict __src, rsize_t __len );
+_WCRTLINK extern errno_t    wcstombs_s( size_t * __restrict __retval, char * __restrict __dst, rsize_t __dstmax, const wchar_t * __restrict __src, rsize_t __len );
 
 :include ext.sp
- _WCRTLINK extern errno_t _fwctomb_s( int _WCFAR * __restrict __status, char _WCFAR * __restrict __s, rsize_t __smax, wchar_t __wc );
- _WCRTLINK extern errno_t _fmbstowcs_s( size_t _WCFAR * __restrict __retval, wchar_t _WCFAR * __restrict __dst, rsize_t __dstmax, const char _WCFAR * __restrict __src, rsize_t __len );
- _WCRTLINK extern errno_t _fwcstombs_s( size_t _WCFAR * __restrict __retval, char _WCFAR * __restrict __dst, rsize_t __dstmax, const wchar_t _WCFAR * __restrict __src, rsize_t __len );
+ _WCRTLINK extern errno_t   _fwctomb_s( int _WCFAR * __restrict __status, char _WCFAR * __restrict __s, rsize_t __smax, wchar_t __wc );
+ _WCRTLINK extern errno_t   _fmbstowcs_s( size_t _WCFAR * __restrict __retval, wchar_t _WCFAR * __restrict __dst, rsize_t __dstmax, const char _WCFAR * __restrict __src, rsize_t __len );
+ _WCRTLINK extern errno_t   _fwcstombs_s( size_t _WCFAR * __restrict __retval, char _WCFAR * __restrict __dst, rsize_t __dstmax, const wchar_t _WCFAR * __restrict __src, rsize_t __len );
 
  _WCRTLINK extern errno_t   _get_pgmptr( char ** __p );
 :: Wide character version

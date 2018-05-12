@@ -11,6 +11,8 @@
 
 :include readonly.sp
 
+:include extposix.sp
+
 :include owrtlink.sp
 
 :segment DOS
@@ -39,278 +41,213 @@
 #define _STATBUF_ST_BLKSIZE
 #define _STATBUF_ST_RDEV
 
-:endsegment
-:segment DOS
+:elsesegment DOS
 :include pshpackl.sp
+
+struct stat {
+    dev_t   st_dev;         /* disk drive file resides on */
+    ino_t   st_ino;         /* this inode's #, not used for DOS */
+    mode_t  st_mode;        /* file mode */
+    short   st_nlink;       /* # of hard links */
+    uid_t   st_uid;         /* user-id, always 'root' */
+    gid_t   st_gid;         /* group-id, always 'root' */
+    dev_t   st_rdev;        /* should be device type */
+                            /* but same as st_dev for the time being */
+    off_t   st_size;        /* total file size */
+    time_t  st_atime;       /* should be file last access time */
+    time_t  st_mtime;       /* file last modify time */
+    time_t  st_ctime;       /* should be file last status change time */
+
+    time_t          st_btime;       /* last archived date and time */
+    unsigned long   st_attr;        /* file attributes */
+                                    /* next 4 fields Netware only */
+    unsigned long   st_archivedID;  /* user/object ID that last archived file */
+    unsigned long   st_updatedID;   /* user/object ID that last updated file */
+    unsigned short  st_inheritedRightsMask;
+    unsigned char   st_originatingNameSpace;
+};
+
+:: ISO names (MS)
+:include ext.sp
 
 :include wchar_t.sp
 struct _stat {
-        dev_t   st_dev;         /* disk drive file resides on */
-        ino_t   st_ino;         /* this inode's #, not used for DOS */
-        mode_t  st_mode;        /* file mode */
-        short   st_nlink;       /* # of hard links */
-:segment DOS
-        uid_t   st_uid;         /* user-id, always 'root' */
-:elsesegment
-        short   st_uid;         /* user-id, always 'root' */
-:endsegment
-        gid_t   st_gid;         /* group-id, always 'root' */
-        dev_t   st_rdev;        /* should be device type */
-                                /* but same as st_dev for the time being */
-        off_t   st_size;        /* total file size */
-        time_t  st_atime;       /* should be file last access time */
-        time_t  st_mtime;       /* file last modify time */
-        time_t  st_ctime;       /* should be file last status change time */
-:segment DOS
-        time_t                  st_btime; /* last archived date and time */
-        unsigned long           st_attr;  /* file attributes */
-                                               /* next 4 fields Netware only */
-        unsigned long           st_archivedID; /* user/object ID that last archived file*/
-        unsigned long           st_updatedID;  /* user/object ID that last updated file*/
-        unsigned short          st_inheritedRightsMask;
-        unsigned char           st_originatingNameSpace;
-:endsegment
-};
+    dev_t   st_dev;         /* disk drive file resides on */
+    ino_t   st_ino;         /* this inode's #, not used for DOS */
+    mode_t  st_mode;        /* file mode */
+    short   st_nlink;       /* # of hard links */
+    uid_t   st_uid;         /* user-id, always 'root' */
+    gid_t   st_gid;         /* group-id, always 'root' */
+    dev_t   st_rdev;        /* should be device type */
+                            /* but same as st_dev for the time being */
+    off_t   st_size;        /* total file size */
+    time_t  st_atime;       /* should be file last access time */
+    time_t  st_mtime;       /* file last modify time */
+    time_t  st_ctime;       /* should be file last status change time */
 
-:include ext.sp
-/* non-ISO names */
-struct stat {
-        dev_t   st_dev;         /* disk drive file resides on */
-        ino_t   st_ino;         /* this inode's #, not used for DOS */
-        mode_t  st_mode;        /* file mode */
-        short   st_nlink;       /* # of hard links */
-:segment DOS
-        uid_t   st_uid;         /* user-id, always 'root' */
-:elsesegment
-        short   st_uid;         /* user-id, always 'root' */
-:endsegment
-        gid_t   st_gid;         /* group-id, always 'root' */
-        dev_t   st_rdev;        /* should be device type */
-                                /* but same as st_dev for the time being */
-        off_t   st_size;        /* total file size */
-        time_t  st_atime;       /* should be file last access time */
-        time_t  st_mtime;       /* file last modify time */
-        time_t  st_ctime;       /* should be file last status change time */
-:segment DOS
-        time_t                  st_btime; /* last archived date and time */
-        unsigned long           st_attr;  /* file attributes */
-                                               /* next 4 fields Netware only */
-        unsigned long           st_archivedID; /* user/object ID that last archived file*/
-        unsigned long           st_updatedID;  /* user/object ID that last updated file*/
-        unsigned short          st_inheritedRightsMask;
-        unsigned char           st_originatingNameSpace;
-:endsegment
+    time_t          st_btime;       /* last archived date and time */
+    unsigned long   st_attr;        /* file attributes */
+                                    /* next 4 fields Netware only */
+    unsigned long   st_archivedID;  /* user/object ID that last archived file */
+    unsigned long   st_updatedID;   /* user/object ID that last updated file */
+    unsigned short  st_inheritedRightsMask;
+    unsigned char   st_originatingNameSpace;
 };
-:: end of extensions
-:include extepi.sp
 
 struct _stati64 {
-        dev_t   st_dev;         /* disk drive file resides on */
-        ino_t   st_ino;         /* this inode's #, not used for DOS */
-        mode_t  st_mode;        /* file mode */
-        short   st_nlink;       /* # of hard links */
-:segment DOS
-        uid_t   st_uid;         /* user-id, always 'root' */
-:elsesegment
-        short   st_uid;         /* user-id, always 'root' */
-:endsegment
-        gid_t   st_gid;         /* group-id, always 'root' */
-        dev_t   st_rdev;        /* should be device type */
-                                /* but same as st_dev for the time being */
-        __int64 st_size;        /* total file size */
-        time_t  st_atime;       /* should be file last access time */
-        time_t  st_mtime;       /* file last modify time */
-        time_t  st_ctime;       /* should be file last status change time */
-:segment DOS
-        time_t                  st_btime; /* last archived date and time */
-        unsigned long           st_attr;  /* file attributes */
-                                               /* next 4 fields Netware only */
-        unsigned long           st_archivedID; /* user/object ID that last archived file*/
-        unsigned long           st_updatedID;  /* user/object ID that last updated file*/
-        unsigned short          st_inheritedRightsMask;
-        unsigned char           st_originatingNameSpace;
-:endsegment
+    dev_t   st_dev;         /* disk drive file resides on */
+    ino_t   st_ino;         /* this inode's #, not used for DOS */
+    mode_t  st_mode;        /* file mode */
+    short   st_nlink;       /* # of hard links */
+    uid_t   st_uid;         /* user-id, always 'root' */
+    gid_t   st_gid;         /* group-id, always 'root' */
+    dev_t   st_rdev;        /* should be device type */
+                            /* but same as st_dev for the time being */
+    __int64 st_size;        /* total file size */
+    time_t  st_atime;       /* should be file last access time */
+    time_t  st_mtime;       /* file last modify time */
+    time_t  st_ctime;       /* should be file last status change time */
+
+    time_t          st_btime;       /* last archived date and time */
+    unsigned long   st_attr;        /* file attributes */
+                                    /* next 4 fields Netware only */
+    unsigned long   st_archivedID;  /* user/object ID that last archived file */
+    unsigned long   st_updatedID;   /* user/object ID that last updated file */
+    unsigned short  st_inheritedRightsMask;
+    unsigned char   st_originatingNameSpace;
 };
+:include extepi.sp
 
 :endsegment
+/*
+ *  Encoding of the file mode
+ */
+#define S_IFMT      0xF000          /* Type of file mask               */
+#define S_IFIFO     0x1000          /* FIFO (pipe)                     */
+#define S_IFCHR     0x2000          /* Character special               */
+#define S_IFDIR     0x4000          /* Directory                       */
+#define S_IFNAM     0x5000          /* Special named file              */
 :segment LINUX
-/* Encoding of the file mode */
+#define S_IFBLK     0x6000          /* Block special                   */
+:elsesegment DOS
+#define S_IFBLK     0               /* Block special                   */
+:endsegment
+#define S_IFREG     0x8000          /* Regular                         */
+:segment LINUX
+#define S_IFLNK     0xA000          /* Symbolic link                   */
+#define S_IFSOCK    0xC000          /* Socket                          */
+:elsesegment DOS
+#define S_IFLNK     0               /* Symbolic link                   */
+#define S_IFSOCK    0               /* Socket                          */
+:endsegment
 
-#define _S_IFMT     0xF000              /*  Type of file                    */
-#define _S_IFIFO    0x1000              /*  FIFO                            */
-#define _S_IFCHR    0x2000              /*  Character special               */
-#define _S_IFDIR    0x4000              /*  Directory                       */
-#define _S_IFNAM    0x5000              /*  Special named file              */
-#define _S_IFBLK    0x6000              /*  Block special                   */
-#define _S_IFREG    0x8000              /*  Regular                         */
-#define _S_IFLNK    0xA000              /*  Symbolic link                   */
-#define _S_IFSOCK   0xC000              /*  Socket                          */
+:include ext.sp
+#define _S_IFMT     S_IFMT
+#define _S_IFIFO    S_IFIFO
+#define _S_IFCHR    S_IFCHR
+#define _S_IFDIR    S_IFDIR
+#define _S_IFNAM    S_IFNAM
+#define _S_IFBLK    S_IFBLK
+#define _S_IFREG    S_IFREG
+#define _S_IFLNK    S_IFLNK
+#define _S_IFSOCK   S_IFSOCK
+:include extepi.sp
 
-#define S_ISFIFO(m) (((m)&_S_IFMT)==_S_IFIFO) /* Test for FIFO.             */
-#define S_ISCHR(m)  (((m)&_S_IFMT)==_S_IFCHR) /* Test for char special file.*/
-#define S_ISDIR(m)  (((m)&_S_IFMT)==_S_IFDIR) /* Test for directory file.   */
-#define S_ISBLK(m)  (((m)&_S_IFMT)==_S_IFBLK) /* Test for block specl file. */
-#define S_ISREG(m)  (((m)&_S_IFMT)==_S_IFREG) /* Test for regular file.     */
-
-:include extposix.sp
-
-#define S_ISLNK(m)  (((m)&_S_IFMT)==_S_IFLNK) /* Test for symbolic link.    */
-#define S_ISNAM(m)  (((m)&_S_IFMT)==_S_IFNAM) /* Test for special named file*/
-#define S_ISSOCK(m) (((m)&_S_IFMT)==_S_IFSOCK)/* Test for socket.           */
+#define S_ISFIFO(m) (((m)&_S_IFMT)==S_IFIFO)    /* Test for FIFO (pipe)        */
+#define S_ISCHR(m)  (((m)&_S_IFMT)==S_IFCHR)    /* Test for char special file  */
+#define S_ISDIR(m)  (((m)&_S_IFMT)==S_IFDIR)    /* Test for directory file     */
+#define S_ISBLK(m)  (((m)&_S_IFMT)==S_IFBLK)    /* Test for block specl file   */
+#define S_ISREG(m)  (((m)&_S_IFMT)==S_IFREG)    /* Test for regular file       */
+#define S_ISLNK(m)  (((m)&_S_IFMT)==S_IFLNK)    /* Test for symbolic link      */
+#define S_ISNAM(m)  (((m)&_S_IFMT)==S_IFNAM)    /* Test for special named file */
+#define S_ISSOCK(m) (((m)&_S_IFMT)==S_IFSOCK)   /* Test for socket             */
 
 /*
  *  Common filetype macros
  */
-#define S_IFMT      _S_IFMT             /*  Type of file                    */
-#define S_IFIFO     _S_IFIFO            /*  FIFO                            */
-#define S_IFCHR     _S_IFCHR            /*  Character special               */
-#define S_IFDIR     _S_IFDIR            /*  Directory                       */
-#define S_IFNAM     _S_IFNAM            /*  Special named file              */
-#define S_IFBLK     _S_IFBLK            /*  Block special                   */
-#define S_IFREG     _S_IFREG            /*  Regular                         */
-#define S_IFLNK     _S_IFLNK            /*  Symbolic link                   */
-#define S_IFSOCK    _S_IFSOCK           /*  Socket                          */
+#define S_ISUID     004000      /* set user id on execution         */
+#define S_ISGID     002000      /* set group id on execution        */
+#define S_ISVTX     001000      /* sticky bit (does nothing yet)    */
 
-:include extepi.sp
-
-#define S_ISUID     004000              /* set user id on execution         */
-#define S_ISGID     002000              /* set group id on execution        */
-#define S_ISVTX     001000              /* sticky bit (does nothing yet)    */
-#define S_ENFMT     002000              /* enforcement mode locking         */
+#define S_ENFMT     S_ISGID     /* enforcement mode locking         */
 
 /*
  *  Owner permissions
  */
-#define S_IRWXU     000700              /*  Read, write, execute/search     */
-#define S_IRUSR     000400              /*  Read permission                 */
-#define S_IWUSR     000200              /*  Write permission                */
-#define S_IXUSR     000100              /*  Execute/search permission       */
-#define S_IREAD     S_IRUSR             /*  Read permission                 */
-#define S_IWRITE    S_IWUSR             /*  Write permission                */
-#define S_IEXEC     S_IXUSR             /*  Execute/search permission       */
+#define S_IRWXU     000700      /* Read, write, execute/search     */
+#define S_IRUSR     000400      /* Read permission                 */
+#define S_IWUSR     000200      /* Write permission                */
+#define S_IXUSR     000100      /* Execute/search permission       */
+
+#define S_IREAD     S_IRUSR     /* Read permission                 */
+#define S_IWRITE    S_IWUSR     /* Write permission                */
+#define S_IEXEC     S_IXUSR     /* Execute/search permission       */
+
+:include ext.sp
+#define _S_IREAD    S_IREAD
+#define _S_IWRITE   S_IWRITE
+#define _S_IEXEC    S_IEXEC
+:include extepi.sp
 
 /*
  *  Group permissions
  */
-#define S_IRWXG     000070              /*  Read, write, execute/search     */
-#define S_IRGRP     000040              /*  Read permission                 */
-#define S_IWGRP     000020              /*  Write permission                */
-#define S_IXGRP     000010              /*  Execute/search permission       */
+#define S_IRWXG     000070      /* Read, write, execute/search     */
+#define S_IRGRP     000040      /* Read permission                 */
+#define S_IWGRP     000020      /* Write permission                */
+#define S_IXGRP     000010      /* Execute/search permission       */
 
 /*
  *  Other permissions
  */
-#define S_IRWXO     000007              /*  Read, write, execute/search     */
-#define S_IROTH     000004              /*  Read permission                 */
-#define S_IWOTH     000002              /*  Write permission                */
-#define S_IXOTH     000001              /*  Execute/search permission       */
+#define S_IRWXO     000007      /*  Read, write, execute/search     */
+#define S_IROTH     000004      /*  Read permission                 */
+#define S_IWOTH     000002      /*  Write permission                */
+#define S_IXOTH     000001      /*  Execute/search permission       */
 
-:endsegment
-:segment DOS
-/* File attribute constants for st_mode field */
-#define _S_IFMT         0170000 /* type of file */
-#define _S_IFDIR        0040000 /* directory */
-#define _S_IFCHR        0020000 /* character special file */
-#define _S_IFIFO        0010000 /* FIFO */
-#define _S_IFREG        0100000 /* regular */
-#define _S_IFBLK        0060000 /* block special */
-#define _S_IFLNK        0120000 /* symbolic link */
-#define _S_IFSOCK       0140000 /* socket */
-#define _S_IREAD        0000400
-#define _S_IWRITE       0000200
-#define _S_IEXEC        0000100
-/* Not all of the following are possible on DOSish systems */
-#define S_ISBLK( m )    0
-#define S_ISCHR( m )    (((m) & S_IFMT) == S_IFCHR)
-#define S_ISDIR( m )    (((m) & S_IFMT) == S_IFDIR)
-#define S_ISFIFO( m )   (((m) & S_IFMT) == S_IFIFO)
-#define S_ISREG( m )    (((m) & S_IFMT) == S_IFREG)
-#define S_ISLNK( m )    0
-#define S_ISSOCK( m )   0
-
-/* owner permission */
-#define S_IRWXU         0000700
-#define S_IRUSR         0000400
-#define S_IWUSR         0000200
-#define S_IXUSR         0000100
-
-/* group permission.  same as owners on PC */
-#define S_IRWXG         0000070
-#define S_IRGRP         0000040
-#define S_IWGRP         0000020
-#define S_IXGRP         0000010
-
-/* other permission.  same as owners on PC */
-#define S_IRWXO         0000007
-#define S_IROTH         0000004
-#define S_IWOTH         0000002
-#define S_IXOTH         0000001
-
-/* setuid, setgid, and sticky.  always false on PC */
-#define S_ISUID         0004000
-#define S_ISGID         0002000
-#define S_ISVTX         0001000
-
-/* non-ISO names */
-:include ext.sp
-#define S_IFMT   _S_IFMT
-#define S_IFBLK  _S_IFBLK
-#define S_IFCHR  _S_IFCHR
-#define S_IFIFO  _S_IFIFO
-#define S_IFREG  _S_IFREG
-#define S_IFDIR  _S_IFDIR
-#define S_IFLNK  _S_IFLNK
-#define S_IFSOCK _S_IFSOCK
-#define S_IREAD  _S_IREAD
-#define S_IWRITE _S_IWRITE
-#define S_IEXEC  _S_IEXEC
-:include extepi.sp
-
-:endsegment
-:segment LINUX
 /*
  *  POSIX 1003.1 Prototypes.
  */
 _WCRTLINK extern int     chmod( const char *__path, mode_t __mode );
 _WCRTLINK extern int     stat( const char *__path, struct stat *__buf );
 _WCRTLINK extern int     lstat( const char *__path, struct stat *__buf );
-_WCRTLINK extern int     fchmod( int __fildes, mode_t __mode );
 _WCRTLINK extern int     fstat( int __fildes, struct stat *__buf );
+_WCRTLINK extern mode_t  umask( mode_t __cmask );
+:segment LINUX
+_WCRTLINK extern int     fchmod( int __fildes, mode_t __mode );
 _WCRTLINK extern int     mkdir( const char *__path, mode_t __mode );
 _WCRTLINK extern int     mkfifo( const char *__path, mode_t __mode );
 _WCRTLINK extern int     mknod( const char *__path, mode_t __mode, int __dev );
-_WCRTLINK extern mode_t  umask( mode_t __cmask );
 :segment LINUX
-_WCRTLINK extern int     fstat64( int __fildes, struct stat64 * __buf );
-_WCRTLINK extern int     lstat64( const char *filename, struct stat64 * __buf );
-_WCRTLINK extern int     stat64( const char *filename, struct stat64 * __buf );
+_WCRTLINK extern int     fstat64( int __fildes, struct stat64 *__buf );
+_WCRTLINK extern int     lstat64( const char *__path, struct stat64 *__buf );
+_WCRTLINK extern int     stat64( const char *__path, struct stat64 *__buf );
 :endsegment
-::
-:elsesegment
-::
-_WCRTLINK extern int _fstat( int, struct _stat * );
-_WCRTLINK extern int _stat( const char *, struct _stat * );
-
-_WCRTLINK extern int _wstat( const wchar_t *, struct _stat * );
-_WCRTLINK extern int _wfstat( int, struct _stat * );
-
-_WCRTLINK extern int _fstati64( int, struct _stati64 * );
-_WCRTLINK extern int _wfstati64( int, struct _stati64 * );
-_WCRTLINK extern int _stati64( const char *, struct _stati64 * );
-_WCRTLINK extern int _wstati64( const wchar_t *, struct _stati64 * );
-
-/* non-ISO names */
+:: ISO names (MS)
 :include ext.sp
-_WCRTLINK extern int fstat( int, struct stat * );
-_WCRTLINK extern int stat( const char *, struct stat * );
-_WCRTLINK extern int lstat( const char *, struct stat * );
-:: end of extensions
-:include extepi.sp
+::
+:elsesegment DOS
+::
+:: ISO names (MS)
+:include ext.sp
+_WCRTLINK extern int     _wstat( const wchar_t *__path, struct stat *__buf );
+_WCRTLINK extern int     _wfstat( int __fildes, struct stat *__buf );
+
+_WCRTLINK extern int     _fstati64( int __fildes, struct _stati64 *__buf );
+_WCRTLINK extern int     _wfstati64( int __fildes, struct _stati64 *__buf );
+_WCRTLINK extern int     _stati64( const char *__path, struct _stati64 *__buf );
+_WCRTLINK extern int     _wstati64( const wchar_t *__path, struct _stati64 *__buf );
+
 :endsegment
+_WCRTLINK extern int     _fstat( int, struct stat *__buf );
+_WCRTLINK extern int     _stat( const char *__path, struct stat *__buf );
+:include extepi.sp
 
 :include poppack.sp
 
 :include cplusepi.sp
+
+:include extepi.sp
 
 #endif
 :endsegment
