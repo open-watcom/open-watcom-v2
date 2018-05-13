@@ -4,4 +4,3 @@
      int sched_priority;
  };
 #endif /* SCHED_PARAM_DEFINED */
-

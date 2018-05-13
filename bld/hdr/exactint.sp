@@ -24,12 +24,12 @@
  typedef unsigned short      uint16_t;
 :segment DOS | QNX
 #ifdef _M_I86
- typedef long               int32_t;
- typedef unsigned long      uint32_t;
+ typedef long                int32_t;
+ typedef unsigned long       uint32_t;
 #else
 :endsegment
- typedef int                int32_t;
- typedef unsigned int       uint32_t;
+ typedef int                 int32_t;
+ typedef unsigned int        uint32_t;
 :segment DOS | QNX
 #endif
 :endsegment
