@@ -14,13 +14,23 @@
 :include lfndos.sp
 
 :endsegment
-:segment LINUX | QNX
+:segment QNX
 :include systypes.sp
 
 :endsegment
 :include cpluspro.sp
 
+/* 
+ *  ISO C types
+ */
 :include wchar_t.sp
+:segment DOS | LINUX
+/*
+ *  POSIX 1003.1 types
+ */
+:include pid_t.sp
+
+:endsegment
 /*
  *  POSIX 1003.1 Prototypes
  */
@@ -76,21 +86,22 @@ extern pid_t tfork( char *__stk_addr, unsigned __stk_size, int (*__func)(void*),
 /* mode flags for spawnxxx routines */
 _WCRTDATA extern int __p_overlay;
 
-#define P_WAIT      0
 #define _P_WAIT     0
-#define P_NOWAIT    1
 #define _P_NOWAIT   1
-#define P_OVERLAY   __p_overlay
 #define _P_OVERLAY  __p_overlay
-#define P_NOWAITO   3
 #define _P_NOWAITO  3
-
+#define _OLD_P_OVERLAY  _P_OVERLAY
 #ifdef __NT__
-#define P_DETACH    4
 #define _P_DETACH   4
 #endif
 
-#define _OLD_P_OVERLAY  _P_OVERLAY
+#define P_WAIT      _P_WAIT
+#define P_NOWAIT    _P_NOWAIT
+#define P_OVERLAY   _P_OVERLAY
+#define P_NOWAITO   _P_NOWAITO
+#ifdef __NT__
+#define P_DETACH    _P_DETACH
+#endif
 
 /*
  *  Prototypes for non-POSIX functions
@@ -117,8 +128,7 @@ _WCRTLINK extern int    _execvpe( const char *__file, const char *const __argv[]
  _WCRTLINK extern void _WCFAR _endthread( void );
  _WCRTLINK extern void _WCFAR *__chkstack( void _WCFAR * );
  #ifndef __SW_ZU
-  #define _beginthread( __sa, __sb, __ss, __al ) \
-          _beginthread( __sa, __chkstack(__sb), __ss, __al )
+  #define _beginthread( __sa, __sb, __ss, __al )    _beginthread( __sa, __chkstack(__sb), __ss, __al )
  #endif
 #else
  #ifdef __NT__
@@ -149,7 +159,7 @@ _WCRTLINK extern int    _execvpe( const char *__file, const char *const __argv[]
 :segment DOS
 /* values for __action_code used with cwait() */
 
-#define WAIT_CHILD 0
+#define WAIT_CHILD      0
 #define WAIT_GRANDCHILD 1
 
 _WCRTLINK extern int    cwait( int *__status, int __process_id, int __action_code );
@@ -224,18 +234,12 @@ _WCRTLINK extern int    _wsystem( const wchar_t *__cmd );
   extern int (__stdcall *_pRawDllMain)( void *, unsigned, void * );
  #endif
 #endif
-:endsegment
-:segment DOS
-_WCRTLINK extern int    getpid( void );
-_WCRTLINK extern int    _getpid( void );
-_WCRTLINK extern int    wait( int *__status );
 
-:elsesegment LINUX | QNX
+:endsegment
 _WCRTLINK extern pid_t  getpid( void );
 _WCRTLINK extern pid_t  _getpid( void );
 _WCRTLINK extern pid_t  wait( int *__status );
 
-:endsegment
 :segment LINUX
 _WCRTLINK extern pid_t  gettid( void );
 

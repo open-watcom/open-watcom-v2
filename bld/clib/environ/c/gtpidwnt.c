@@ -33,7 +33,7 @@
 #include <process.h>
 #include <windows.h>
 
-_WCRTLINK int getpid( void )
+_WCRTLINK pid_t getpid( void )
 {
     return( GetCurrentProcessId() );
 }

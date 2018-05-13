@@ -35,7 +35,7 @@
 
 extern unsigned short _pid;
 
-_WCRTLINK int getpid( void )
+_WCRTLINK pid_t getpid( void )
 {
     return( _pid );
 }
