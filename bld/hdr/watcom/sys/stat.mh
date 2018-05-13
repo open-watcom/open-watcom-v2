@@ -19,14 +19,27 @@
 :include lfndos.sp
 
 :endsegment
-:include systypes.sp
-
 :include cpluspro.sp
 
 :segment LINUX
 :include lnxkpack.sp
 
-/* Versions of the `struct stat' data structure.  */
+:elsesegment DOS
+:include pshpackl.sp
+
+:endsegment
+/* 
+ *  ISO C types
+ */
+:include time_t.sp
+
+/* 
+ *  POSIX 1003.1 types
+ */
+:include off_t.sp
+:segment LINUX
+
+/* Versions of the 'struct stat' data structure.  */
 #define _STAT_VER_LINUX_OLD 1
 #define _STAT_VER_KERNEL    1
 #define _STAT_VER_SVR4      2
@@ -42,21 +55,26 @@
 #define _STATBUF_ST_RDEV
 
 :elsesegment DOS
-:include pshpackl.sp
+:include dev_t.sp
+:include ino_t.sp
+:include mode_t.sp
+:include nlink_t.sp
+:include uid_t.sp
+:include gid_t.sp
 
 struct stat {
-    dev_t   st_dev;         /* disk drive file resides on */
-    ino_t   st_ino;         /* this inode's #, not used for DOS */
-    mode_t  st_mode;        /* file mode */
-    short   st_nlink;       /* # of hard links */
-    uid_t   st_uid;         /* user-id, always 'root' */
-    gid_t   st_gid;         /* group-id, always 'root' */
-    dev_t   st_rdev;        /* should be device type */
-                            /* but same as st_dev for the time being */
-    off_t   st_size;        /* total file size */
-    time_t  st_atime;       /* should be file last access time */
-    time_t  st_mtime;       /* file last modify time */
-    time_t  st_ctime;       /* should be file last status change time */
+    dev_t           st_dev;         /* disk drive file resides on */
+    ino_t           st_ino;         /* this inode's #, not used for DOS */
+    mode_t          st_mode;        /* file mode */
+    nlink_t         st_nlink;       /* # of hard links */
+    uid_t           st_uid;         /* user-id, always 'root' */
+    gid_t           st_gid;         /* group-id, always 'root' */
+    dev_t           st_rdev;        /* should be device type */
+                                    /* but same as st_dev for the time being */
+    off_t           st_size;        /* total file size */
+    time_t          st_atime;       /* should be file last access time */
+    time_t          st_mtime;       /* file last modify time */
+    time_t          st_ctime;       /* should be file last status change time */
 
     time_t          st_btime;       /* last archived date and time */
     unsigned long   st_attr;        /* file attributes */
@@ -67,23 +85,21 @@ struct stat {
     unsigned char   st_originatingNameSpace;
 };
 
-:: ISO names (MS)
+:: ISO names + Extensions MS/Open Watcom
 :include ext.sp
-
-:include wchar_t.sp
 struct _stat {
-    dev_t   st_dev;         /* disk drive file resides on */
-    ino_t   st_ino;         /* this inode's #, not used for DOS */
-    mode_t  st_mode;        /* file mode */
-    short   st_nlink;       /* # of hard links */
-    uid_t   st_uid;         /* user-id, always 'root' */
-    gid_t   st_gid;         /* group-id, always 'root' */
-    dev_t   st_rdev;        /* should be device type */
-                            /* but same as st_dev for the time being */
-    off_t   st_size;        /* total file size */
-    time_t  st_atime;       /* should be file last access time */
-    time_t  st_mtime;       /* file last modify time */
-    time_t  st_ctime;       /* should be file last status change time */
+    dev_t           st_dev;         /* disk drive file resides on */
+    ino_t           st_ino;         /* this inode's #, not used for DOS */
+    mode_t          st_mode;        /* file mode */
+    nlink_t         st_nlink;       /* # of hard links */
+    uid_t           st_uid;         /* user-id, always 'root' */
+    gid_t           st_gid;         /* group-id, always 'root' */
+    dev_t           st_rdev;        /* should be device type */
+                                    /* but same as st_dev for the time being */
+    off_t           st_size;        /* total file size */
+    time_t          st_atime;       /* should be file last access time */
+    time_t          st_mtime;       /* file last modify time */
+    time_t          st_ctime;       /* should be file last status change time */
 
     time_t          st_btime;       /* last archived date and time */
     unsigned long   st_attr;        /* file attributes */
@@ -95,18 +111,18 @@ struct _stat {
 };
 
 struct _stati64 {
-    dev_t   st_dev;         /* disk drive file resides on */
-    ino_t   st_ino;         /* this inode's #, not used for DOS */
-    mode_t  st_mode;        /* file mode */
-    short   st_nlink;       /* # of hard links */
-    uid_t   st_uid;         /* user-id, always 'root' */
-    gid_t   st_gid;         /* group-id, always 'root' */
-    dev_t   st_rdev;        /* should be device type */
-                            /* but same as st_dev for the time being */
-    __int64 st_size;        /* total file size */
-    time_t  st_atime;       /* should be file last access time */
-    time_t  st_mtime;       /* file last modify time */
-    time_t  st_ctime;       /* should be file last status change time */
+    dev_t           st_dev;         /* disk drive file resides on */
+    ino_t           st_ino;         /* this inode's #, not used for DOS */
+    mode_t          st_mode;        /* file mode */
+    nlink_t         st_nlink;       /* # of hard links */
+    uid_t           st_uid;         /* user-id, always 'root' */
+    gid_t           st_gid;         /* group-id, always 'root' */
+    dev_t           st_rdev;        /* should be device type */
+                                    /* but same as st_dev for the time being */
+    __int64         st_size;        /* total file size */
+    time_t          st_atime;       /* should be file last access time */
+    time_t          st_mtime;       /* file last modify time */
+    time_t          st_ctime;       /* should be file last status change time */
 
     time_t          st_btime;       /* last archived date and time */
     unsigned long   st_attr;        /* file attributes */
@@ -122,23 +138,23 @@ struct _stati64 {
 /*
  *  Encoding of the file mode
  */
-#define S_IFMT      0xF000          /* Type of file mask               */
-#define S_IFIFO     0x1000          /* FIFO (pipe)                     */
-#define S_IFCHR     0x2000          /* Character special               */
-#define S_IFDIR     0x4000          /* Directory                       */
-#define S_IFNAM     0x5000          /* Special named file              */
+#define S_IFMT      0xF000          /* Type of file mask    */
+#define S_IFIFO     0x1000          /* FIFO (pipe)          */
+#define S_IFCHR     0x2000          /* Character special    */
+#define S_IFDIR     0x4000          /* Directory            */
+#define S_IFNAM     0x5000          /* Special named file   */
 :segment LINUX
-#define S_IFBLK     0x6000          /* Block special                   */
+#define S_IFBLK     0x6000          /* Block special        */
 :elsesegment DOS
-#define S_IFBLK     0               /* Block special                   */
+#define S_IFBLK     0               /* Block special        */
 :endsegment
-#define S_IFREG     0x8000          /* Regular                         */
+#define S_IFREG     0x8000          /* Regular              */
 :segment LINUX
-#define S_IFLNK     0xA000          /* Symbolic link                   */
-#define S_IFSOCK    0xC000          /* Socket                          */
+#define S_IFLNK     0xA000          /* Symbolic link        */
+#define S_IFSOCK    0xC000          /* Socket               */
 :elsesegment DOS
-#define S_IFLNK     0               /* Symbolic link                   */
-#define S_IFSOCK    0               /* Socket                          */
+#define S_IFLNK     0               /* Symbolic link        */
+#define S_IFSOCK    0               /* Socket               */
 :endsegment
 
 :include ext.sp
@@ -174,14 +190,14 @@ struct _stati64 {
 /*
  *  Owner permissions
  */
-#define S_IRWXU     000700      /* Read, write, execute/search     */
-#define S_IRUSR     000400      /* Read permission                 */
-#define S_IWUSR     000200      /* Write permission                */
-#define S_IXUSR     000100      /* Execute/search permission       */
+#define S_IRWXU     000700      /* Read, write, execute/search      */
+#define S_IRUSR     000400      /* Read permission                  */
+#define S_IWUSR     000200      /* Write permission                 */
+#define S_IXUSR     000100      /* Execute/search permission        */
 
-#define S_IREAD     S_IRUSR     /* Read permission                 */
-#define S_IWRITE    S_IWUSR     /* Write permission                */
-#define S_IEXEC     S_IXUSR     /* Execute/search permission       */
+#define S_IREAD     S_IRUSR     /* Read permission                  */
+#define S_IWRITE    S_IWUSR     /* Write permission                 */
+#define S_IEXEC     S_IXUSR     /* Execute/search permission        */
 
 :include ext.sp
 #define _S_IREAD    S_IREAD
@@ -192,18 +208,25 @@ struct _stati64 {
 /*
  *  Group permissions
  */
-#define S_IRWXG     000070      /* Read, write, execute/search     */
-#define S_IRGRP     000040      /* Read permission                 */
-#define S_IWGRP     000020      /* Write permission                */
-#define S_IXGRP     000010      /* Execute/search permission       */
+#define S_IRWXG     000070      /* Read, write, execute/search      */
+#define S_IRGRP     000040      /* Read permission                  */
+#define S_IWGRP     000020      /* Write permission                 */
+#define S_IXGRP     000010      /* Execute/search permission        */
 
 /*
  *  Other permissions
  */
-#define S_IRWXO     000007      /*  Read, write, execute/search     */
-#define S_IROTH     000004      /*  Read permission                 */
-#define S_IWOTH     000002      /*  Write permission                */
-#define S_IXOTH     000001      /*  Execute/search permission       */
+#define S_IRWXO     000007      /* Read, write, execute/search      */
+#define S_IROTH     000004      /* Read permission                  */
+#define S_IWOTH     000002      /* Write permission                 */
+#define S_IXOTH     000001      /* Execute/search permission        */
+
+/* 
+ *  ISO C types
+ */
+:keep EXTWCHART
+:include wchar_t.sp
+:remove EXTWCHART
 
 /*
  *  POSIX 1003.1 Prototypes.
@@ -223,13 +246,16 @@ _WCRTLINK extern int     fstat64( int __fildes, struct stat64 *__buf );
 _WCRTLINK extern int     lstat64( const char *__path, struct stat64 *__buf );
 _WCRTLINK extern int     stat64( const char *__path, struct stat64 *__buf );
 :endsegment
-:: ISO names (MS)
-:include ext.sp
+:endsegment
 ::
-:elsesegment DOS
-::
-:: ISO names (MS)
+:: ISO names + Extensions MS/Open Watcom
 :include ext.sp
+:segment DOS | LINUX
+_WCRTLINK extern int     _fstat( int __fildes, struct stat *__buf );
+_WCRTLINK extern int     _stat( const char *__path, struct stat *__buf );
+:endsegment
+:segment DOS
+
 _WCRTLINK extern int     _wstat( const wchar_t *__path, struct stat *__buf );
 _WCRTLINK extern int     _wfstat( int __fildes, struct stat *__buf );
 
@@ -237,10 +263,7 @@ _WCRTLINK extern int     _fstati64( int __fildes, struct _stati64 *__buf );
 _WCRTLINK extern int     _wfstati64( int __fildes, struct _stati64 *__buf );
 _WCRTLINK extern int     _stati64( const char *__path, struct _stati64 *__buf );
 _WCRTLINK extern int     _wstati64( const wchar_t *__path, struct _stati64 *__buf );
-
 :endsegment
-_WCRTLINK extern int     _fstat( int, struct stat *__buf );
-_WCRTLINK extern int     _stat( const char *__path, struct stat *__buf );
 :include extepi.sp
 
 :include poppack.sp

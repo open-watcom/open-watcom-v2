@@ -23,7 +23,7 @@
 #endif
 :elsesegment
 :segment !CNAME
-:segment WCHARTEXT
+:segment EXTWCHART
 :include ext.sp
 :endsegment
 :segment !CONLY
@@ -37,7 +37,7 @@
 :segment !CONLY
 #endif
 :endsegment
-:segment WCHARTEXT
+:segment EXTWCHART
 :include extepi.sp
 :elsesegment
 
