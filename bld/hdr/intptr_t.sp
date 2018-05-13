@@ -1,3 +1,6 @@
+::
+:: POSIX, ISO C/C++ intptr_t typedef declaration
+::
 /* Integer type able to hold pointers. */
 #ifndef _INTPTR_T_DEFINED_
  #define _INTPTR_T_DEFINED_

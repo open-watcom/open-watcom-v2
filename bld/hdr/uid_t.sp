@@ -1,3 +1,6 @@
+::
+:: POSIX uid_t typedef declaration
+::
 #ifndef _UID_T_DEFINED_
  #define _UID_T_DEFINED_
 :segment LINUX

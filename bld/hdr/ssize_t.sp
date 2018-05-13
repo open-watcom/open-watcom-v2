@@ -1,3 +1,6 @@
+::
+:: POSIX ssize_t typedef declaration
+::
 :: This is a signed counterpart of size_t. If one of the types changes, the
 :: other needs to change as well.
 #ifndef _SSIZE_T_DEFINED_

@@ -1,3 +1,6 @@
+::
+:: POSIX, ISO C/C++ time_t typedef declaration
+::
 :segment CNAME
 #ifndef _STDTIME_T_DEFINED
 #define _STDTIME_T_DEFINED

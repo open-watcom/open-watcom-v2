@@ -1,3 +1,6 @@
+::
+:: POSIX gid_t typedef declaration
+::
 #ifndef _GID_T_DEFINED_
  #define _GID_T_DEFINED_
 :segment LINUX

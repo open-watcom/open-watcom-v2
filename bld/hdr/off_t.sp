@@ -1,3 +1,6 @@
+::
+:: POSIX off_t typedef declaration
+::
 #ifndef _OFF_T_DEFINED_
  #define _OFF_T_DEFINED_
 :segment LINUX

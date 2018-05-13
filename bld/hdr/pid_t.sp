@@ -1,3 +1,6 @@
+::
+:: POSIX pid_t typedef declaration
+::
 #ifndef _PID_T_DEFINED_
  #define _PID_T_DEFINED_
 :segment LINUX

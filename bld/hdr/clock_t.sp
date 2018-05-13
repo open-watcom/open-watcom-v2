@@ -1,3 +1,6 @@
+::
+:: POSIX, ISO C/C++ clock_t typedef declaration
+::
 :: Open Watcom only defines clock_t in time.h/ctime. However, the legacy
 :: OW declaration was protected by an inclusion guard that defined the
 :: symbol _CLOCK_T_DEFINED. This was done for compatibility with MS
