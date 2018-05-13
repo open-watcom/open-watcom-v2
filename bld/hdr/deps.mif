@@ -275,30 +275,30 @@ wsample.h       : wsample.mh ../crwat.sp ../readonly.sp $(cplus)
 sys/locking.h   : sys/locking.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus)
 sys/time.h      : sys/time.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) ../time_t.sp $(packll) ../timeval.sp
 sys/timeb.h     : sys/timeb.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) ../time_t.sp $(packll)
-sys/types.h     : sys/types.mh ../crqnx.sp ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) ../time_t.sp ../size_t.sp ../ssize_t.sp ../incdir.sp $(extension) ../exactint.sp ../off_t.sp ../pid_t.sp ../uid_t.sp ../gid_t.sp ../timer_t.sp ../clockidt.sp
 sys/utime.h     : sys/utime.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packll) ../time_t.sp ../wchar_t.sp ../utime.sp
 
 # The follow describe the system specific dependencies
 
 !ifeq system dos
 
-fcntl.h         : fcntl.mh $(crwatqnx_sp) ../readonly.sp ../owrtlink.sp $(cplus) ../wchar_t.sp $(packll) $(extension)
-process.h       : process.mh $(crwatqnx_sp) ../readonly.sp ../owrtlink.sp ../lfndos.sp $(cplus) ../wchar_t.sp $(extension) ../thrdhndl.sp ../process1.sp ../_exit.sp
+fcntl.h         : fcntl.mh $(crwatqnx_sp) ../readonly.sp $(posixext) ../owrtlink.sp $(cplus) ../off_t.sp ../pid_t.sp ../mode_t.sp ../wchar_t.sp $(packll) $(extension)
+process.h       : process.mh $(crwatqnx_sp) ../readonly.sp ../owrtlink.sp ../lfndos.sp $(cplus) ../pid_t.sp ../wchar_t.sp $(extension) ../thrdhndl.sp ../process1.sp ../_exit.sp
 unistd.h        : unistd.mh $(crwatqnx_sp) ../readonly.sp ../owrtlink.sp $(cplus) ../null.sp ../access.sp ../seekpos.sp ../pid_t.sp ../uid_t.sp ../gid_t.sp ../off_t.sp ../size_t.sp ../ssize_t.sp ../intptr_t.sp $(posixext) $(unixext) $(extension) ../_exit.sp ../brk.sp
 
 sys/_lfndos.h   : dos/sys/_lfndos.mh ../crwatcnt.sp ../readonly.sp
-sys/stat.h      : sys/stat.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../lfndos.sp ../systypes.sp $(cplus) ../wchar_t.sp $(packll) $(extension)
+sys/stat.h      : sys/stat.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../lfndos.sp $(cplus) $(packll) $(extension) $(posixext) ../time_t.sp ../off_t.sp ../dev_t.sp ../ino_t.sp ../mode_t.sp ../nlink_t.sp ../uid_t.sp ../gid_t.sp ../wchar_t.sp
 sys/time.h      : sys/time.mh ../crwatcnt.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packll)
+sys/types.h     : sys/types.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packll) ../time_t.sp ../size_t.sp ../exactint.sp ../ssize_t.sp $(extension) ../pid_t.sp ../off_t.sp ../timer_t.sp ../clockidt.sp ../schedp.sp ../dev_t.sp ../ino_t.sp ../mode_t.sp ../nlink_t.sp ../uid_t.sp ../gid_t.sp ../id_t.sp
 
 !else ifeq system linux
 
-dirent.h        : linux/dirent.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) $(packll)
-fcntl.h         : fcntl.mh $(crwatqnx_sp) ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) ../wchar_t.sp $(packlnxk) ../incdir.sp $(extension)
-grp.h           : grp.mh $(crwatqnx_sp) ../readonly.sp ../systypes.sp $(cplus) $(packll)
+dirent.h        : linux/dirent.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../ino_t.sp ../off_t.sp $(cplus) $(packll)
+fcntl.h         : fcntl.mh $(crwatqnx_sp) ../readonly.sp $(posixext) ../owrtlink.sp ../systypes.sp $(cplus)  ../off_t.sp ../pid_t.sp ../wchar_t.sp $(packlnxk) ../incdir.sp $(extension)
+grp.h           : grp.mh $(crwatqnx_sp) ../readonly.sp ../size_t.sp ../gid_t.sp $(cplus) $(packll)
 netdb.h         : linux/netdb.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packlnxk)
-process.h       : process.mh $(crwatqnx_sp) ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) ../wchar_t.sp $(extension) ../process1.sp ../_exit.sp
+process.h       : process.mh $(crwatqnx_sp) ../readonly.sp ../owrtlink.sp ../pid_t.sp $(cplus) ../wchar_t.sp $(extension) ../process1.sp ../_exit.sp
 pwd.h           : pwd.mh $(crwatqnx_sp) ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) $(packll)
-sched.h         : sched.mh ../crwatcnt.sp ../readonly.sp ../owrtlink.sp $(cplus)
+sched.h         : sched.mh ../crwatcnt.sp ../readonly.sp ../owrtlink.sp $(cplus) ../pid_t.sp ../time_t.sp ../timespec.sp ../schedp.sp
 termios.h       : linux/termios.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packlnxk) ../pid_t.sp
 unistd.h        : unistd.mh $(crwatqnx_sp) ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) ../null.sp ../pid_t.sp ../uid_t.sp ../gid_t.sp ../off_t.sp ../size_t.sp ../ssize_t.sp ../intptr_t.sp $(posixext) $(unixext) $(extension) ../_exit.sp ../brk.sp
 
@@ -311,41 +311,42 @@ sys/mount.h     : linux/sys/mount.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $
 sys/ptrace.h    : linux/sys/ptrace.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packlnxk)
 sys/resource.h  : linux/sys/resource.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packlnxk)
 sys/socket.h    : linux/sys/socket.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packlnxk) ../incdir.sp ../unistd.sp
-sys/stat.h      : sys/stat.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) $(packlnxk) ../incdir.sp $(posixext)
+sys/stat.h      : sys/stat.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packlnxk) ../time_t.sp ../off_t.sp ../incdir.sp ../wchar_t.sp $(extension) $(posixext)
 sys/sysinfo.h   : linux/sys/sysinfo.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packlnxk)
 sys/sysmips.h   : linux/sys/sysmips.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus)
 sys/time.h      : sys/time.mh ../crwatcnt.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packlnxk)
 sys/times.h     : linux/sys/times.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packlnxk)
+sys/types.h     : sys/types.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packlnxk) ../time_t.sp ../size_t.sp ../exactint.sp ../ssize_t.sp ../incdir.sp $(extension) ../pid_t.sp ../off_t.sp ../timer_t.sp ../clockidt.sp ../schedp.sp ../semaphor.sp
 sys/un.h        : linux/sys/un.mh ../crwat.sp ../readonly.sp $(cplus) $(packlnxk)
 sys/utsname.h   : linux/sys/utsname.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packlnxk)
 sys/wait.h      : linux/sys/wait.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packlnxk)
 
 arch/i386/err_no.h       : linux/arch/i386/err_no.mh ../crwatcnt.sp
-arch/i386/fcntl.h        : linux/arch/i386/fcntl.mh ../crwatcnt.sp
+arch/i386/fcntl.h        : linux/arch/i386/fcntl.mh ../crwatcnt.sp ../mode_t.sp
 arch/i386/siginfo.h      : linux/arch/i386/siginfo.mh ../crwatcnt.sp ../clock_t.sp
 arch/i386/signal.h       : linux/arch/i386/signal.mh ../crwatcnt.sp
 arch/i386/sigposix.h     : linux/arch/i386/sigposix.mh ../crwatcnt.sp
 arch/i386/sys/ioctl.h    : linux/arch/i386/sys/ioctl.mh ../crwatcnt.sp
 arch/i386/sys/resource.h : linux/arch/i386/sys/resource.mh ../crwatcnt.sp
 arch/i386/sys/socket.h   : linux/arch/i386/sys/socket.mh ../crwatcnt.sp
-arch/i386/sys/stat.h     : linux/arch/i386/sys/stat.mh ../crwatcnt.sp
-arch/i386/sys/types.h    : linux/arch/i386/sys/types.mh ../crwatcnt.sp ../off_t.sp ../pid_t.sp ../uid_t.sp ../gid_t.sp ../timer_t.sp ../clockidt.sp
+arch/i386/sys/stat.h     : linux/arch/i386/sys/stat.mh ../crwatcnt.sp ../dev_t.sp ../ino_t.sp ../mode_t.sp ../nlink_t.sp ../uid_t.sp ../gid_t.sp ../blksizet.sp ../blkcnt_t.sp
+arch/i386/sys/types.h    : linux/arch/i386/sys/types.mh ../crwatcnt.sp ../dev_t.sp ../ino_t.sp ../mode_t.sp ../nlink_t.sp ../uid_t.sp ../gid_t.sp ../blksizet.sp ../blkcnt_t.sp ../id_t.sp
 arch/mips/err_no.h       : linux/arch/mips/err_no.mh ../crwatcnt.sp
-arch/mips/fcntl.h        : linux/arch/mips/fcntl.mh ../crwatcnt.sp
+arch/mips/fcntl.h        : linux/arch/mips/fcntl.mh ../crwatcnt.sp ../mode_t.sp
 arch/mips/siginfo.h      : linux/arch/mips/siginfo.mh ../crwatcnt.sp ../clock_t.sp
 arch/mips/signal.h       : linux/arch/mips/signal.mh ../crwatcnt.sp
 arch/mips/sigposix.h     : linux/arch/mips/sigposix.mh ../crwatcnt.sp
 arch/mips/sys/ioctl.h    : linux/arch/mips/sys/ioctl.mh ../crwatcnt.sp
 arch/mips/sys/resource.h : linux/arch/mips/sys/resource.mh ../crwatcnt.sp
 arch/mips/sys/socket.h   : linux/arch/mips/sys/socket.mh ../crwatcnt.sp
-arch/mips/sys/stat.h     : linux/arch/mips/sys/stat.mh ../crwatcnt.sp
-arch/mips/sys/types.h    : linux/arch/mips/sys/types.mh ../crwatcnt.sp ../off_t.sp ../pid_t.sp ../uid_t.sp ../gid_t.sp ../timer_t.sp ../clockidt.sp
+arch/mips/sys/stat.h     : linux/arch/mips/sys/stat.mh ../crwatcnt.sp ../dev_t.sp ../ino_t.sp ../mode_t.sp ../nlink_t.sp ../uid_t.sp ../gid_t.sp ../blksizet.sp ../blkcnt_t.sp
+arch/mips/sys/types.h    : linux/arch/mips/sys/types.mh ../crwatcnt.sp ../dev_t.sp ../ino_t.sp ../mode_t.sp ../nlink_t.sp ../uid_t.sp ../gid_t.sp ../blksizet.sp ../blkcnt_t.sp ../id_t.sp
 
 !else ifeq system qnx
 
 dirent.h        : ../quantum/dirent.mh $(packll)
 cdrom.h         : ../quantum/cdrom.mh $(packll)
-fcntl.h         : fcntl.mh $(crwatqnx_sp) ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) ../wchar_t.sp $(packll) $(extension)
+fcntl.h         : fcntl.mh $(crwatqnx_sp) ../readonly.sp $(posixext) ../owrtlink.sp ../systypes.sp $(cplus) ../off_t.sp ../pid_t.sp ../mode_t.sp ../wchar_t.sp $(packll) $(extension)
 grp.h           : ../quantum/grp.mh $(packll)
 process.h       : process.mh $(crwatqnx_sp) ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) ../wchar_t.sp $(extension) ../process1.sp ../_exit.sp
 pwd.h           : ../quantum/pwd.mh $(packll)
@@ -391,6 +392,7 @@ sys/time.h      : ../quantum/sys/sys_time.mh $(packll)
 sys/timers.h    : ../quantum/sys/timers.mh $(packll)
 sys/times.h     : ../quantum/sys/times.mh $(packll)
 sys/trace.h     : ../quantum/sys/trace.mh $(packll)
+sys/types.h     : sys/types.mh ../quantum/sys/types.mh $(packll)
 sys/uio.h       : ../quantum/sys/uio.mh $(packll)
 sys/utsname.h   : ../quantum/sys/utsname.mh $(packll)
 sys/vc.h        : ../quantum/sys/vc.mh $(packll)
