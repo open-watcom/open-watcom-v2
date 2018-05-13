@@ -4,17 +4,18 @@
 :include crwatcnt.sp
  */
 
-typedef unsigned short  dev_t;  /* Combination of node and device   */
-typedef unsigned long   ino_t;  /* Used for file serial numbers     */
-typedef unsigned short  mode_t; /* Used for some file attributes    */
-typedef unsigned short  nlink_t;/* Used for link counts             */
-:include off_t.sp
-:include pid_t.sp
+/*
+ *  POSIX 1003.1 types
+ */
+:include dev_t.sp
+:include ino_t.sp
+:include mode_t.sp
+:include nlink_t.sp
 :include uid_t.sp
 :include gid_t.sp
-typedef int             id_t;   /* Generic ID, may be uid, gid, pid */
-:include timer_t.sp
-:include clockidt.sp
+:include blksizet.sp
+:include blkcnt_t.sp
+:include id_t.sp
 
 #define major(device)           ((int)(((device) >> 8) & 0xFF))
 #define minor(device)           ((int)((device) & 0xff))

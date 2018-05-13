@@ -22,23 +22,43 @@
 :endsegment
 :include cpluspro.sp
 
+:: no Linux kernel structure
+:include pshpackl.sp
+
+/* 
+ *  ISO C types
+ */
+:include time_t.sp
+:include size_t.sp
+/* Exact-width types. */
+:include exactint.sp
+
+/*
+ *  POSIX 1003.1 types
+ */
+:include ssize_t.sp
+:include pid_t.sp
+:include off_t.sp
+:include timer_t.sp
+:include clockidt.sp
+:include schedp.sp
 :segment LINUX
 :include incdir.sp
 
-/* Define POSIX 1003.1 types */
 #include _ARCH_INCLUDE(sys/types.h)
 
+:elsesegment DOS | QNX
+:include dev_t.sp
+:include ino_t.sp
+:include mode_t.sp
+:include nlink_t.sp
+:include uid_t.sp
+:include gid_t.sp
+:segment DOS
+:include id_t.sp
 :endsegment
-:include time_t.sp
 
-:include size_t.sp
-
-:include ssize_t.sp
-
-:include exactint.sp
-
-:include schedp.sp
-
+:endsegment
 :segment LINUX
 typedef unsigned char   u_char;
 typedef unsigned short  u_short;
@@ -46,56 +66,23 @@ typedef unsigned int    u_int;
 typedef unsigned long   u_long;
 typedef unsigned __int64 u_quad_t;
 typedef __int64         quad_t;
-typedef quad_t *        qaddr_t;
+typedef quad_t          *qaddr_t;
 typedef int             key_t;
-typedef long            blksize_t;
-typedef long            blkcnt_t;
 typedef quad_t          loff_t;
 
 :elsesegment QNX
-/* Define POSIX 1003.1 types */
-
-typedef long            dev_t;  /* Combination of node and device   */
-typedef long            ino_t;  /* Used for file serial numbers     */
-typedef short unsigned  mode_t; /* Used for some file attributes    */
-typedef short unsigned  nlink_t;/* Used for link counts             */
-:include off_t.sp
-:include pid_t.sp
-:include uid_t.sp
-:include gid_t.sp
+:keep XLOCALE
+:include wchar_t.sp
+:remove XLOCALE
 
 :include ext.sp
-
 typedef short unsigned  msg_t;  /* Used for message passing         */
 typedef long            nid_t;  /* Used for network IDs             */
-:include timer_t.sp
-:include clockidt.sp
-
 :include extepi.sp
 
 #define minor(device)                   ((int)((device) & 0x3ff))
 #define major(device)                   ((int)(((device) >> 10) & 0x3f))
 #define makedev(node,major,minor)       ((dev_t)(((node) << 16) | ((major) << 10) | (minor)))
-
-#ifndef _WCHAR_T_DEFINED
-#define _WCHAR_T_DEFINED
- #ifndef _WCHAR_T_DEFINED_
- #define _WCHAR_T_DEFINED_
-  #ifdef X_LOCALE
-   typedef unsigned long wchar_t;
-  #else
-   #ifdef __cplusplus
-    typedef long char wchar_t;
-   #else
-    typedef unsigned short wchar_t;
-   #endif
-  #endif
- #endif
-#else
- #ifndef _WCHAR_T_DEFINED_
- #define _WCHAR_T_DEFINED_
- #endif
-#endif
 
 typedef char _WCI86FAR *caddr_t;
 
@@ -107,7 +94,7 @@ typedef unsigned long   u_int32_t;
 typedef unsigned int    u_int32_t;
 #endif
 
-typedef char _WCFAR *   faddr_t;
+typedef char _WCFAR     *faddr_t;
 typedef unsigned long   paddr_t;
 typedef long            daddr_t;
 typedef unsigned char   uchar_t;
@@ -120,27 +107,17 @@ typedef unsigned int    u_int;
 typedef unsigned long   u_long;
 typedef struct _uquad   { u_long val[2]; } u_quad;
 typedef struct _quad    {   long val[2]; } quad;
-typedef quad *          qaddr_t;
+typedef quad            *qaddr_t;
 typedef unsigned long   fixpt_t;
 typedef int             key_t;
 typedef unsigned short  sel_t;
-:elsesegment DOS
-typedef unsigned int    ino_t;  /* i-node # type */
-typedef int             dev_t;  /* device code (drive #) */
-:include off_t.sp
-typedef unsigned short  mode_t; /* file mode (attributes) */
-:: The following are not cast in stone - they aren't really used
-:: in any structures or function prototypes
-:include pid_t.sp
-:include uid_t.sp
-:include gid_t.sp
-typedef long            id_t;   /* pid_t, uid_t or gid_t */
 
+:elsesegment DOS
 #define major(device)           ((int)(((device) >> 8) & 0xFF))
 #define minor(device)           ((int)((device) & 0xff))
 #define makedev(major,minor)    ((dev_t) (((major) << 8) | (minor)))
-:endsegment
 
+:endsegment
 /* POSIX threads support */
 :segment LINUX
 
@@ -148,18 +125,18 @@ typedef long            id_t;   /* pid_t, uid_t or gid_t */
 :include semaphor.sp
 
 typedef struct {
-    sem_t mutex;
-    volatile pid_t   owner;
-    int              type;
+    sem_t           mutex;
+    volatile pid_t  owner;
+    int             type;
 } pthread_mutex_t;
 
 typedef struct {
-    int type;
+    int         type;
 } pthread_mutexattr_t;
 
-typedef int pthread_key_t;
+typedef int     pthread_key_t;
 
-typedef pid_t pthread_t;
+typedef pid_t   pthread_t;
 
 typedef struct {
     sem_t           wait_block;
@@ -168,37 +145,37 @@ typedef struct {
 } pthread_cond_t;
 
 /* Dummy type - nothing supported */
-typedef void* pthread_condattr_t;
+typedef void    *pthread_condattr_t;
 
 typedef struct {
-    pthread_mutex_t  block_mutex;
-    int              read_waiters;
+    pthread_mutex_t block_mutex;
+    int         read_waiters;
 } pthread_rwlock_t;
 
 /* Dummy type - nothing supported */
-typedef void* pthread_rwlockattr_t;
+typedef void    *pthread_rwlockattr_t;
 
 typedef struct {
-    int *value;
+    int         *value;
 } pthread_spinlock_t;
 
 typedef struct {
-    size_t stack_size;
-    void *stack_addr;
-    int detached;
-    int sched_policy;
-    int sched_inherit;
-    struct sched_param *sched_params;
+    size_t              stack_size;
+    void                *stack_addr;
+    int                 detached;
+    int                 sched_policy;
+    int                 sched_inherit;
+    struct sched_param  *sched_params;
 } pthread_attr_t;
 
 typedef struct {
     pthread_mutex_t *access;
-    pthread_cond_t *cond;
-    unsigned count;
-    unsigned limit;
+    pthread_cond_t  *cond;
+    unsigned        count;
+    unsigned        limit;
 } pthread_barrier_t;
 
-typedef void* pthread_barrierattr_t;
+typedef void    *pthread_barrierattr_t;
 
 typedef struct {
     pthread_mutex_t access;
@@ -206,6 +183,7 @@ typedef struct {
 } pthread_once_t;
 
 :endsegment
+:include poppack.sp
 
 :include cplusepi.sp
 
