@@ -10,16 +10,24 @@
 
 :include owrtlink.sp
 
-::segment LINUX | QNX
-:include systypes.sp
-
-::endsegment
 :include cpluspro.sp
 
-:include wchar_t.sp
 :segment LINUX
 :include lnxkpack.sp
+:elsesegment DOS | QNX
+:include pshpackl.sp
+:endsegment
 
+/* 
+ *  POSIX 1003.1 types
+ */
+:include off_t.sp
+:include pid_t.sp
+:segment DOS | QNX
+:include mode_t.sp
+
+:endsegment
+:segment LINUX
 :include incdir.sp
 
 #include _ARCH_INCLUDE(fcntl.h)
@@ -38,8 +46,6 @@
 #define O_BINARY    000000  /*  Binary file (DOS thing)     */
 
 :elsesegment QNX
-:include pshpackl.sp
-
 /*
  *  Flag values accessible to both open() and fcntl()
  *  (The first three can only be set by open)
@@ -153,43 +159,57 @@ typedef struct flock {
 } flock_t;
 
 :elsesegment DOS
-:include pshpackl.sp
-
 #define O_RDONLY        0x0000  /* open for read only */
-#define _O_RDONLY       0x0000  /* open for read only */
 #define O_WRONLY        0x0001  /* open for write only */
-#define _O_WRONLY       0x0001  /* open for write only */
 #define O_RDWR          0x0002  /* open for read and write */
-#define _O_RDWR         0x0002  /* open for read and write */
 #define O_APPEND        0x0010  /* writes done at end of file */
-#define _O_APPEND       0x0010  /* writes done at end of file */
 #define O_CREAT         0x0020  /* create new file */
-#define _O_CREAT        0x0020  /* create new file */
 #define O_TRUNC         0x0040  /* truncate existing file */
-#define _O_TRUNC        0x0040  /* truncate existing file */
 #define O_NOINHERIT     0x0080  /* file is not inherited by child process */
-#define _O_NOINHERIT    0x0080  /* file is not inherited by child process */
 #define O_TEXT          0x0100  /* text file */
-#define _O_TEXT         0x0100  /* text file */
 #define O_BINARY        0x0200  /* binary file */
-#define _O_BINARY       0x0200  /* binary file */
 #define O_EXCL          0x0400  /* exclusive open */
-#define _O_EXCL         0x0400  /* exclusive open */
 
 :endsegment
+:include ext.sp
+#define _O_RDONLY       O_RDONLY
+#define _O_WRONLY       O_WRONLY
+#define _O_RDWR         O_RDWR
+#define _O_APPEND       O_APPEND
+#define _O_CREAT        O_CREAT
+#define _O_TRUNC        O_TRUNC
+:segment DOS
+#define _O_NOINHERIT    O_NOINHERIT
+:endsegment
+#define _O_TEXT         O_TEXT
+#define _O_BINARY       O_BINARY
+#define _O_EXCL         O_EXCL
+:include extepi.sp
+
+/* 
+ *  ISO C types
+ */
+:keep EXTWCHART
+:include wchar_t.sp
+:remove EXTWCHART
+
 /*
  *  POSIX 1003.1 Prototypes.
  */
 _WCRTLINK extern int open( const char *__path, int __oflag, ... );
 _WCRTLINK extern int sopen( const char *__path, int __oflag, int __share, ... );
-:segment LINUX | QNX
 _WCRTLINK extern int creat( const char *__path, mode_t __mode );
-:endsegment
+
+:include ext.sp
+_WCRTLINK extern int _open( const char *__path, int __oflag, ... );
+_WCRTLINK extern int _sopen( const char *__path, int __oflag, int __share, ... );
+_WCRTLINK extern int _creat( const char *__path, mode_t __mode );
 
 :: Wide character version
 _WCRTLINK extern int _wopen( const wchar_t *, int, ... );
 _WCRTLINK extern int _wsopen( const wchar_t *, int, int, ... );
 _WCRTLINK extern int _wcreat( const wchar_t *, mode_t );
+:include extepi.sp
 :segment LINUX | QNX
 
 _WCRTLINK extern int fcntl( int __fildes, int __cmd, ... );

@@ -4,6 +4,8 @@
 :include crwatcnt.sp
  */
 
+:include mode_t.sp
+
 /* open/fcntl - O_SYNC is only implemented on blocks devices and on files
    located on an ext2 file system */
 #define O_ACCMODE   0x0003
