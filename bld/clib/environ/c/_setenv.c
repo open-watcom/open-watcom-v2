@@ -67,7 +67,7 @@ static int __F_NAME(addenv,waddenv)( int index, const CHAR_TYPE *name, const CHA
     env_str = lib_realloc( (void *)old_val, ( len + __F_NAME(strlen,wcslen)( newvalue ) + 2 ) * sizeof( CHAR_TYPE ) );
     if( env_str == NULL )
         return( -1 );
-    memcpy( env_str, name, len*sizeof( CHAR_TYPE ) );
+    memcpy( env_str, name, len * sizeof( CHAR_TYPE ) );
     env_str[len] = STRING( '=' );
     __F_NAME(strcpy,wcscpy)( &env_str[len + 1], newvalue );
     envp[index] = env_str;
