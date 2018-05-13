@@ -251,7 +251,7 @@ extern ssize_t __far_write(int __fildes,void __far *__buffer,size_t __len);
 :endsegment
 
 _WCRTLINK extern int    chdir( const char *__path );
-/* the following are also in process.h, but they are expected to be here */
+:: the following are also in process.h, but they are expected to be here
 :include _exit.sp
 
 _WCRTLINK extern int    execl( const char *__path, const char *__arg0, ... );
@@ -264,22 +264,16 @@ _WCRTLINK extern int    execvp( const char *__file, const char *const __argv[] )
 _WCRTLINK extern char   *getcwd( char *__buf, size_t __size );
 _WCRTLINK extern char   *_getcwd( char *__buf, size_t __size );
 _WCRTLINK extern int    getopt( int __argc, char * const __argv[], const char *__optstring );
+_WCRTLINK extern pid_t  getpid( void );
+_WCRTLINK extern int    rmdir( const char *__path );
+_WCRTLINK extern unsigned sleep( unsigned int __seconds );
+_WCRTLINK extern int    usleep( unsigned long __usec );
 :segment DOS
-_WCRTLINK extern int    getpid( void );
-
 #ifdef __RDOS__
-:include pid_t.sp
 _WCRTLINK extern pid_t  fork( void );
 _WCRTLINK extern pid_t  waitpid( pid_t __pid, int *__stat_loc, int __options );
 #endif
-
 :endsegment
-:segment LINUX | QNX
-_WCRTLINK extern pid_t  getpid( void );
-:endsegment
-_WCRTLINK extern int    rmdir( const char *__path );
-_WCRTLINK extern unsigned int sleep( unsigned int __seconds );
-_WCRTLINK extern int    usleep( unsigned long __usec );
 
 :include brk.sp
 
