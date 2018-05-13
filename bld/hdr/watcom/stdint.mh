@@ -240,6 +240,7 @@ using std::uintmax_t;
 :endsegment
 :: In cname version place all these typedefs in std namespace
 :include nsstd.sp
+/* Exact-width types. */
 :include exactint.sp
 
 /* Minimum-width types. */

@@ -12,8 +12,17 @@
 
 :include cpluspro.sp
 
-#include <time.h>
-#include <sys/types.h>
+/* 
+ *  ISO C types
+ */
+:include time_t.sp
+
+/* 
+ *  POSIX 1003.1 types
+ */
+:include pid_t.sp
+
+:include timespec.sp
 
 :include schedp.sp
 
@@ -23,7 +32,7 @@
 #define SCHED_RR                2
 #define SCHED_BATCH             3
 #define SCHED_IDLE              5
-#define SCHED_DEADLINE	        6
+#define SCHED_DEADLINE          6
 
 /* Flags for clone() on Linux*/
 :segment LINUX
@@ -62,20 +71,15 @@ _WCRTLINK extern int    sched_get_priority_max( int __policy );
 _WCRTLINK extern int    sched_get_priority_min( int __policy );
 
 _WCRTLINK extern int    sched_getscheduler( pid_t __pid );
-_WCRTLINK extern int    sched_setscheduler( pid_t __pid, int __policy,
-                                            const struct sched_param *__sp );
+_WCRTLINK extern int    sched_setscheduler( pid_t __pid, int __policy, const struct sched_param *__sp );
 
-_WCRTLINK extern int    sched_getparam( pid_t __pid,
-                                        struct sched_param *__sp );
-_WCRTLINK extern int    sched_setparam( pid_t __pid,
-                                        const struct sched_param *__sp );
+_WCRTLINK extern int    sched_getparam( pid_t __pid, struct sched_param *__sp );
+_WCRTLINK extern int    sched_setparam( pid_t __pid, const struct sched_param *__sp );
 
-_WCRTLINK extern int    sched_rr_get_interval( pid_t __pid,
-                                               struct timespec *__ts );
+_WCRTLINK extern int    sched_rr_get_interval( pid_t __pid, struct timespec *__ts );
 
 :segment LINUX
-_WCRTLINK extern pid_t  clone( int (_WCCALLBACK *__fn)(void *), void *__child_stack,
-                               int __flags, void *args, ... );
+_WCRTLINK extern pid_t  clone( int (_WCCALLBACK *__fn)(void *), void *__child_stack, int __flags, void *args, ... );
 :endsegment
 
 :include cplusepi.sp
