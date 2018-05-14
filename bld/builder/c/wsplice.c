@@ -334,14 +334,24 @@ static void OpenFileNormal(
 {
     FILE        *new;           // - new file ptr.
     FILESTK     *stk;           // - new stack entry
+    char        *p;
+    char        c;
 
     stk = ( FILESTK * )GetMem( sizeof( FILESTK ) + strlen( file_name ) );
     if( stk != NULL ) {
-        strcpy( stk->name, file_name );
+        p = stk->name;
+        while( (c = *file_name++) != '\0' ) {
+#ifndef __UNIX__
+            if( c == '/' )
+                c = '\\';
+#endif
+            *p++ = c;
+        }
+        *p = c;
         stk->rec_count = 0;
-        new = OpenFilePathList( file_name, mode );
+        new = OpenFilePathList( stk->name, mode );
         if( new == NULL ) {
-            Error( "Can not open '%s'", file_name );
+            Error( "Can not open '%s'", stk->name );
             free( stk );
         } else {
             stk->last = Files;
