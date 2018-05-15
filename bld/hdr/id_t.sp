@@ -16,6 +16,7 @@
  #endif
 :endsegment
 :elsesegment QNX
+ typedef int            id_t;   /* Generic ID, may be uid, gid, pid */
 :elsesegment
  typedef long           id_t;   /* Generic ID, may be uid, gid, pid */
 :endsegment
