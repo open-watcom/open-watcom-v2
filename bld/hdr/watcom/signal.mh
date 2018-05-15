@@ -37,13 +37,38 @@ using std::raise;
 
 :include owrtlink.sp
 
-:segment LINUX | QNX
+:segment QNX
 :include systypes.sp
 
 :endsegment
 :: Only need extern "C" in csignal
 :segment CNAME
 :include cpluspro.sp
+
+:endsegment
+:segment LINUX
+:include lnxkpack.sp
+
+:elsesegment DOS | QNX
+:include pshpackl.sp
+
+:endsegment
+:segment DOS | LINUX
+/* 
+ *  ISO C types
+ */
+:include size_t.sp
+:include time_t.sp
+
+/* 
+ *  POSIX 1003.1 types
+ */
+:include uid_t.sp
+:include pid_t.sp
+:include timespec.sp
+:segment LINUX
+:include pthread1.sp
+:endsegment
 
 :endsegment
 :include nsstd.sp
@@ -54,17 +79,14 @@ typedef void (_WCCALLBACK *__sig_func)( int );
 :segment LINUX
 
 :include incdir.sp
+
 #include _ARCH_INCLUDE(signal.h)
 
 :include extposix.sp
 
-:include pshpackl.sp
-
 #include _ARCH_INCLUDE(siginfo.h)
 typedef struct siginfo siginfo_t;
 #include _ARCH_INCLUDE(sigposix.h)
-
-:include poppack.sp
 
 :include extepi.sp
 
@@ -76,8 +98,6 @@ typedef struct siginfo siginfo_t;
 ::
 :: Begin of extension section
 ::
-
-:include pshpackl.sp
 
 #ifdef __NEUTRINO__
 typedef struct {
@@ -132,8 +152,6 @@ struct msigevent {
     union sigval sigev_value;
 };
 #endif
-
-:include poppack.sp
 
 ::
 :: End of extension section
@@ -245,6 +263,8 @@ _WCRTLINK extern int  pthread_kill( pthread_t __thread, int __sig );
 :include extepi.sp
 
 :endsegment
+:include poppack.sp
+
 :segment CNAME
 :include cplusepi.sp
 :elsesegment

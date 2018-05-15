@@ -1,6 +1,3 @@
-:segment QNX
-:include quantum/stat.mh
-:elsesegment
 /*
  *  sys/stat.h  Equates and prototype for fstat, stat functions
  *
@@ -32,6 +29,9 @@
  *  ISO C types
  */
 :include time_t.sp
+:keep EXTWCHART
+:include wchar_t.sp
+:remove EXTWCHART
 
 /* 
  *  POSIX 1003.1 types
@@ -221,13 +221,6 @@ struct _stati64 {
 #define S_IWOTH     000002      /* Write permission                 */
 #define S_IXOTH     000001      /* Execute/search permission        */
 
-/* 
- *  ISO C types
- */
-:keep EXTWCHART
-:include wchar_t.sp
-:remove EXTWCHART
-
 /*
  *  POSIX 1003.1 Prototypes.
  */
@@ -273,4 +266,3 @@ _WCRTLINK extern int     _wstati64( const wchar_t *__path, struct _stati64 *__bu
 :include extepi.sp
 
 #endif
-:endsegment

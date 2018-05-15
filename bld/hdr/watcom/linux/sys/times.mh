@@ -10,13 +10,11 @@
 
 :include owrtlink.sp
 
-#ifndef _TIME_H_INCLUDED
- #include <time.h>
-#endif
-
 :include cpluspro.sp
 
 :include lnxkpack.sp
+
+:include clock_t.sp
 
 struct tms {
     clock_t tms_utime;  /* user time */

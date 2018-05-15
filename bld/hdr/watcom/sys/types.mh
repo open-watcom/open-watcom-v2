@@ -43,6 +43,10 @@
 :include clockidt.sp
 :include schedp.sp
 :segment LINUX
+:include sem_t.sp
+:include pthread1.sp
+:include pthread2.sp
+
 :include incdir.sp
 
 #include _ARCH_INCLUDE(sys/types.h)
@@ -54,9 +58,7 @@
 :include nlink_t.sp
 :include uid_t.sp
 :include gid_t.sp
-:segment DOS
 :include id_t.sp
-:endsegment
 
 :endsegment
 :segment LINUX
@@ -116,71 +118,6 @@ typedef unsigned short  sel_t;
 #define major(device)           ((int)(((device) >> 8) & 0xFF))
 #define minor(device)           ((int)((device) & 0xff))
 #define makedev(major,minor)    ((dev_t) (((major) << 8) | (minor)))
-
-:endsegment
-/* POSIX threads support */
-:segment LINUX
-
-/* For the definition of semaphores */
-:include semaphor.sp
-
-typedef struct {
-    sem_t           mutex;
-    volatile pid_t  owner;
-    int             type;
-} pthread_mutex_t;
-
-typedef struct {
-    int         type;
-} pthread_mutexattr_t;
-
-typedef int     pthread_key_t;
-
-typedef pid_t   pthread_t;
-
-typedef struct {
-    sem_t           wait_block;
-    sem_t           clear_block;
-    volatile int    waiters;
-} pthread_cond_t;
-
-/* Dummy type - nothing supported */
-typedef void    *pthread_condattr_t;
-
-typedef struct {
-    pthread_mutex_t block_mutex;
-    int         read_waiters;
-} pthread_rwlock_t;
-
-/* Dummy type - nothing supported */
-typedef void    *pthread_rwlockattr_t;
-
-typedef struct {
-    int         *value;
-} pthread_spinlock_t;
-
-typedef struct {
-    size_t              stack_size;
-    void                *stack_addr;
-    int                 detached;
-    int                 sched_policy;
-    int                 sched_inherit;
-    struct sched_param  *sched_params;
-} pthread_attr_t;
-
-typedef struct {
-    pthread_mutex_t *access;
-    pthread_cond_t  *cond;
-    unsigned        count;
-    unsigned        limit;
-} pthread_barrier_t;
-
-typedef void    *pthread_barrierattr_t;
-
-typedef struct {
-    pthread_mutex_t access;
-    int             executed;
-} pthread_once_t;
 
 :endsegment
 :include poppack.sp

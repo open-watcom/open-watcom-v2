@@ -10,14 +10,21 @@
 
 :include owrtlink.sp
 
+#ifndef _TIME_H_INCLUDED
+ #include <time.h>
+#endif
+
+#ifndef _SCHED_H_INCLUDED
+ #include <sched.h>
+#endif
+
 :include cpluspro.sp
 
-:include systypes.sp
-
-#include <time.h>
-#include <sched.h>
-
 :include lnxkpack.sp
+
+:include sem_t.sp
+:include pthread1.sp
+:include pthread2.sp
 
 #define PTHREAD_CANCEL_DISABLE      0
 #define PTHREAD_CANCEL_ENABLE       1
@@ -188,14 +195,9 @@ _WCRTLINK extern int pthread_rwlockattr_setpshared( pthread_rwlockattr_t *__attr
 /* Execute-once routine */
 _WCRTLINK extern int pthread_once( pthread_once_t *__once_control, void (_WCCALLBACK *__init_routine)(void) );
 
-/* Initializers */
-/* NOTE: These utilize internal values and must be synced with
- *       the definitions in sys/types.h
- */
-#define PTHREAD_MUTEX_INITIALIZER   { { 1, 1 }, (pid_t)(-1), PTHREAD_MUTEX_DEFAULT }
-#define PTHREAD_COND_INITIALIZER    { { 1, 0 }, { 1, 1 }, 0 }
-#define PTHREAD_RWLOCK_INITIALIZER  { PTHREAD_MUTEX_INITIALIZER, 0 }
-#define PTHREAD_ONCE_INIT           { PTHREAD_MUTEX_INITIALIZER, 0 }
+:keep INITIALIZERS
+:include pthread2.sp
+:remove INITIALIZERS
 
 :include poppack.sp
 

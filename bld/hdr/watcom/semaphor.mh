@@ -12,16 +12,11 @@
 
 :include cpluspro.sp
 
-:segment LINUX
-
 :include time_t.sp
 
 :include timespec.sp
 
-typedef struct {
-    volatile int futex;
-    volatile int value;
-} sem_t;
+:include sem_t.sp
 
 /* We only support this currently on Intel chips */
 #ifdef __386__
@@ -33,8 +28,6 @@ _WCRTLINK extern int sem_trywait( sem_t *__sem );
 _WCRTLINK extern int sem_wait( sem_t *__sem );
 _WCRTLINK extern int sem_timedwait( sem_t *__sem, const struct timespec *__abstime );
 #endif
-
-:endsegment
 
 :include cplusepi.sp
 
