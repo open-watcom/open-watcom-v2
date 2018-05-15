@@ -31,7 +31,7 @@
 
 
 typedef struct array_info {
-    size_t      num;
+    int         num;
     size_t      alloc;
     size_t      esize;
     void        **array;

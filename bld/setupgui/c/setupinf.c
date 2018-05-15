@@ -85,7 +85,7 @@ extern char             *VariablesFile;
 #include "dynarray.h"
 
 static struct setup_info {
-    long                stamp;
+    unsigned long       stamp;
     char                *pm_group_file_name;
     char                *pm_group_name;
     char                *pm_group_icon;
@@ -152,7 +152,7 @@ static struct dir_info {
 
 static struct target_info {
     char                *name;
-    disk_size           space_needed;
+    disk_ssize          space_needed;
     disk_size           max_tmp_file;
     int                 num_files;
     int                 supplimental;
@@ -1108,8 +1108,8 @@ static bool dialog_textwindow( char *next, DIALOG_INFO *dlg, bool license_file )
                 if( text != NULL ) {
                     FileRead( io, text, buf.st_size );
                     text[buf.st_size] = '\0';
-                    FileClose( io );
                 }
+                FileClose( io );
             }
             GUIMemFree( file_name );
             //VERY VERY SLOW!!!!  Don't use large files!!!
@@ -1171,7 +1171,8 @@ static bool dialog_dynamic( char *next, DIALOG_INFO *dlg )
         dlg->curr_dialog->pConditions[dlg->num_variables] = NULL;
         dlg->num_variables++;
         len = strlen( text );
-        line = next; next = NextToken( line, ',' );
+        line = next;
+        next = NextToken( line, ',' );
         // condition for visibility (dynamic)
         dlg->curr_dialog->controls_ext[dlg->curr_dialog->num_controls].pVisibilityConds = GUIStrDup( line, NULL );
         if( dlg->max_width < len )
@@ -1320,8 +1321,7 @@ static bool dialog_edit_button( char *next, DIALOG_INFO *dlg )
             // dummy_var allows control to have an id - used by dynamic visibility feature
             var_handle = MakeDummyVar();
             set_dlg_dynamstring( dlg->curr_dialog->controls, dlg->controls.num - 1, buff,
-                                 VarGetId( var_handle ), C0, dlg->row_num,
-                                 C0 + strlen( buff ) );
+                                 VarGetId( var_handle ), C0, dlg->row_num, C0 + strlen( buff ) );
         }
         if( dlg->max_width < 2 * strlen( buff ) ) {
             dlg->max_width = 2 * strlen( buff );
@@ -1431,8 +1431,7 @@ static bool dialog_radiobutton( char *next, DIALOG_INFO *dlg )
         // condition for visibility (dynamic)
         dlg->curr_dialog->controls_ext[dlg->curr_dialog->num_controls].pVisibilityConds = GUIStrDup( line, NULL );
         set_dlg_radio( dlg->curr_dialog->controls, dlg->controls.num - 1,
-                       dlg->num_radio_buttons, text, VarGetId( var_handle ), C0,
-                       dlg->row_num, C0 + len );
+                       dlg->num_radio_buttons, text, VarGetId( var_handle ), C0, dlg->row_num, C0 + len );
         if( dlg->max_width < len ) {
             dlg->max_width = len;
         }
@@ -1460,6 +1459,9 @@ static bool dialog_checkbox( char *next, DIALOG_INFO *dlg, bool detail_button )
     char                *button_text;
     vhandle             dlg_var_handle;
 
+    dlg_var_handle = NO_VAR;
+    dialog_name = NULL;
+    button_text = "";
     if( detail_button ) {
         line = next; next = NextToken( line, ',' );
         dialog_name = line;
@@ -1599,8 +1601,7 @@ static bool dialog_editcontrol( char *next, DIALOG_INFO *dlg )
             // dummy_var allows control to have an id - used by dynamic visibility feature
             var_handle = MakeDummyVar();
             set_dlg_dynamstring( dlg->curr_dialog->controls, dlg->controls.num - 1, buff,
-                                 VarGetId( var_handle ), C0, dlg->row_num,
-                                 C0 + strlen( buff ) );
+                                 VarGetId( var_handle ), C0, dlg->row_num, C0 + strlen( buff ) );
         }
         if( dlg->max_width < 2 * strlen( buff ) ) {
             dlg->max_width = 2 * strlen( buff );
@@ -2238,7 +2239,7 @@ static bool GetFileInfo( int dir_index, int i, bool in_old_dir, bool *pzeroed )
             stat( buff, &buf );
             found = true;
             file->disk_size = buf.st_size;
-            file->disk_date = buf.st_mtime;
+            file->disk_date = (unsigned long)buf.st_mtime;
             if( in_old_dir ) {
                 file->in_old_dir = true;
             } else {
@@ -2486,7 +2487,7 @@ long SimInit( char *inf_name )
 
     memset( &SetupInfo, 0, sizeof( struct setup_info ) );
     FileStat( inf_name, &stat_buf );
-    SetupInfo.stamp = stat_buf.st_mtime;
+    SetupInfo.stamp = (unsigned long)stat_buf.st_mtime;
 #define setvar( x, y ) x = AddVariable( #x );
     MAGICVARS( setvar, 0 )
     NONMAGICVARS( setvar, 0 )
@@ -2624,8 +2625,8 @@ bool SimTargetNeedsUpdate( int i )
     return( TargetInfo[i].needs_update );
 }
 
-disk_size SimTargetSpaceNeeded( int i )
-/*************************************/
+disk_ssize SimTargetSpaceNeeded( int i )
+/**************************************/
 {
     return( TargetInfo[i].space_needed );
 }
@@ -2985,7 +2986,7 @@ static int SimFindDirForFile( char *buff )
             }
         }
     }
-    return( (int)SIM_INIT_ERROR );
+    return( -1 );
 }
 
 
@@ -3015,8 +3016,8 @@ void SimGetPMDesc( int parm, char *buff, size_t buff_len )
     buff[buff_len - 1] = '\0';
 }
 
-long SimGetPMIconInfo( int parm, char *buff, size_t buff_len )
-/************************************************************/
+int SimGetPMIconInfo( int parm, char *buff, size_t buff_len, int *icon_pos )
+/**************************************************************************/
 {
     if( PMInfo[parm].icoioname == NULL ) {
         ReplaceVars( buff, buff_len, PMInfo[parm].filename );
@@ -3024,7 +3025,8 @@ long SimGetPMIconInfo( int parm, char *buff, size_t buff_len )
         strncpy( buff, PMInfo[parm].icoioname, buff_len - 1 );
         buff[buff_len - 1] = '\0';
     }
-    return( (unsigned long)(unsigned short)SimFindDirForFile( buff ) | ((unsigned long)(unsigned short)PMInfo[parm].icon_pos ) << 16 );
+    *icon_pos = PMInfo[parm].icon_pos;
+    return( SimFindDirForFile( buff ) );
 }
 
 bool SimCheckPMCondition( int parm )
@@ -3103,11 +3105,10 @@ static append_mode SimGetConfigStringsFrom( struct config_info *array, int i,
     append_mode append;
     char        *p;
 
+    append = AM_OVERWRITE;
     ReplaceVars( buff, buff_len, array[i].value );
     p = array[i].var;
-    if( *p != '+' ) {
-        append = AM_OVERWRITE;
-    } else if( *p == '+' ) {
+    if( *p == '+' ) {
         ++p;
         if( *p == '+' ) {
             ++p;
@@ -3279,27 +3280,21 @@ char *SimGetUpgradeName( int parm )
  * =======================================================================
  */
 
-char *SimGetTargetDriveLetter( int parm )
-/***************************************/
+char *SimGetTargetDriveLetter( int parm, char *buff, size_t buff_len )
+/********************************************************************/
 {
-    char *buff;
     char temp[_MAX_PATH];
 
-    buff = GUIMemAlloc( _MAX_PATH );
-    if( buff == NULL ) {
-        return( NULL );
-    }
-
-    SimTargetDir( parm, buff, _MAX_PATH );
+    SimTargetDir( parm, buff, buff_len );
     if( buff[0] == '\0' ) {
-        getcwd( buff, _MAX_DIR );
+        getcwd( buff, buff_len );
     } else if( buff[0] != '\\' || buff[1] != '\\' ) {
         if( buff[0] == '\\' && buff[1] != '\\' ) {
             strcpy( temp, buff );
-            getcwd( buff, _MAX_DIR );
+            getcwd( buff, buff_len );
             strcat( buff, temp );
         } else if( buff[1] != ':' ) {
-            getcwd( buff, _MAX_DIR );
+            getcwd( buff, buff_len );
         }
     }
     return( buff );
@@ -3505,8 +3500,7 @@ void SimCalcAddRemove( void )
                     continue;
                 if( DirInfo[j].num_files <= DirInfo[j].num_existing )
                     continue;
-                TargetInfo[i].space_needed += RoundUp( (((DirInfo[j].num_files -
-                    DirInfo[j].num_existing) / 10) + 1) *1024UL, cs);
+                TargetInfo[i].space_needed += RoundUp( ((( DirInfo[j].num_files - DirInfo[j].num_existing ) / 10) + 1) * 1024UL, cs);
             }
         }
     }
@@ -3519,6 +3513,7 @@ bool SimCalcTargetSpaceNeeded( void )
     int                 i;
     gui_mcursor_handle  old_cursor;
     char                *temp;
+    char                temp_path[_MAX_PATH];
 
     /* assume power of 2 */
 
@@ -3529,11 +3524,10 @@ bool SimCalcTargetSpaceNeeded( void )
     }
     old_cursor = GUISetMouseCursor( GUI_HOURGLASS_CURSOR );
     for( i = 0; i < SetupInfo.target.num; ++i ) {
-        temp = SimGetTargetDriveLetter( i );
+        temp = SimGetTargetDriveLetter( i, temp_path, sizeof( temp_path ) );
         if( temp == NULL )
             return( false );
         strcpy( TargetInfo[i].temp_disk, temp );
-        GUIMemFree( temp );
         TargetInfo[i].space_needed = 0;
         TargetInfo[i].max_tmp_file = 0;
         TargetInfo[i].num_files = 0;
@@ -3681,14 +3675,12 @@ bool ReadBlock( char *fullpath, char *pattern, void *block, long blocklen )
     }
     if( FindStr( fp, fullpath, pattern ) ) {
         len = fread( block, 1, blocklen, fp );
-        if( len != blocklen ) {
-            fclose( fp );
-            return( false );
+        if( len == blocklen ) {
+            if( fclose( fp ) != 0 ) {
+                return( false );
+            }
+            return( true );
         }
-        if( fclose( fp ) != 0 ) {
-            return( false );
-        }
-        return( true );
     }
     fclose( fp );
     return( false );
@@ -3729,7 +3721,6 @@ bool WriteBlock( char *fullpath, char *pattern, void *block, long blocklen )
     }
     fclose( fp );
     utime( fullpath, &utimbuf );
-
     return( foundstr );
 }
 #endif
@@ -3820,7 +3811,7 @@ bool PatchFiles( void )
     // be called.  Setting "Patch" to 1 overrides any regular setup (ie.
     // only this function will be called )
 
-    unsigned            i;
+    int                 i;
     char                destfullpath[_MAX_PATH];
     char                srcfullpath[_MAX_PATH];
     gui_message_return  guiret;

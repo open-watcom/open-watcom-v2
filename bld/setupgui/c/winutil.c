@@ -115,7 +115,7 @@ static void CreateRegEntry( char *hive_key, char *app_name, const char *key_name
                         }
                         value += 2;
                     }
-                    rc = RegSetValueEx( hkey1, key_name, 0, REG_BINARY, (LPBYTE)bin_buf, len / 2 );
+                    rc = RegSetValueEx( hkey1, key_name, 0, REG_BINARY, (LPBYTE)bin_buf, (DWORD)( len / 2 ) );
                     free( bin_buf );
                 }
             } else {
@@ -125,7 +125,7 @@ static void CreateRegEntry( char *hive_key, char *app_name, const char *key_name
                 } else {
                     type = REG_SZ;
                 }
-                rc = RegSetValueEx( hkey1, key_name, 0, type, (LPBYTE)value, strlen( value ) + 1 );
+                rc = RegSetValueEx( hkey1, key_name, 0, type, (LPBYTE)value, (DWORD)( strlen( value ) + 1 ) );
             }
         }
     } else {
@@ -134,9 +134,8 @@ static void CreateRegEntry( char *hive_key, char *app_name, const char *key_name
 }
 
 
-bool GetRegString( HKEY hive, const char *section, const char *value,
-                   char *buffer, DWORD buff_size )
-/*******************************************************/
+bool GetRegString( HKEY hive, const char *section, const char *value, char *buffer, DWORD buff_size )
+/***************************************************************************************************/
 {
     HKEY                hkey;
     LONG                rc;
@@ -155,9 +154,9 @@ bool GetRegString( HKEY hive, const char *section, const char *value,
 }
 
 static DWORD ConvertDataToDWORD( BYTE *data, DWORD num_bytes, DWORD type )
-/*****************************************************************/
+/************************************************************************/
 {
-    int                         i;
+    DWORD                       i;
     DWORD                       temp;
 
     if( type == REG_DWORD || type == REG_DWORD_LITTLE_ENDIAN || type  == REG_BINARY ) {
@@ -432,9 +431,9 @@ void WriteProfileStrings( bool uninstall )
     bool                add;
 
 
+    add = false;
     num = SimNumProfile();
     if( uninstall ) {
-        add = false;
         i = num - 1;
         sign = -1;
         end = -1;
@@ -460,8 +459,7 @@ void WriteProfileStrings( bool uninstall )
         if( hive_name[0] != '\0' ) {
             CreateRegEntry( hive_name, app_name, key_name, buf, file_name, add );
         } else {
-            WindowsWriteProfile( app_name, key_name, buf, file_name, add, value,
-                                 hive_name );
+            WindowsWriteProfile( app_name, key_name, buf, file_name, add, value, hive_name );
         }
 #elif defined( __OS2__ )
         OS2WriteProfile( app_name, key_name, buf, file_name, add );
@@ -476,9 +474,9 @@ void SetDialogFont()
     char            *fontstr;
     LOGFONT         lf;
     char            dlgfont[100];
-#if defined( __NT__ )
+  #if defined( __NT__ ) && !defined( _M_X64 )
     DWORD   ver;
-#endif
+  #endif
 
     if( !GetVariableIntVal( "IsJapanese" ) ) {
         fontstr = GUIGetFontInfo( MainWnd );
@@ -486,16 +484,18 @@ void SetDialogFont()
 //      following line removed - has no effect on line spacing, it only
 //      causes the dialog boxes to be too narrow in Win 4.0
 //      lf.lfHeight = (lf.lfHeight * 8)/12;
-#if defined( __NT__ )
+  #if defined( __NT__ ) && defined( _M_X64 )
+        lf.lfWeight = FW_NORMAL;
+  #elif defined( __NT__ )
         ver = GetVersion();
         if( ver < 0x80000000 && LOBYTE( LOWORD( ver ) ) >= 4 ) {
             lf.lfWeight = FW_NORMAL;
         } else {
             lf.lfWeight = FW_BOLD;
         }
-#else
+  #else
         lf.lfWeight = FW_BOLD;
-#endif
+  #endif
         strcpy(lf.lfFaceName, "MS Sans Serif");
         GetFontFormatString( &lf, dlgfont );
         GUISetFontInfo( MainWnd, dlgfont );

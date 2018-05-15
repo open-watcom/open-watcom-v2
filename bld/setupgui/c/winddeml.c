@@ -54,14 +54,12 @@ static bool SendCommand( DWORD ddeinst, HCONV hconv, char *buff )
     HDDEDATA    hData, hrc;
 
     // Note data handle is freed by call to DdeClientTransaction
-    hData = DdeCreateDataHandle( ddeinst, (LPBYTE)buff, strlen( buff ) + 1,
-                                 0, (HSZ)NULL, 0L, 0L );
+    hData = DdeCreateDataHandle( ddeinst, (LPBYTE)buff, (DWORD)( strlen( buff ) + 1 ), 0, (HSZ)NULL, 0L, 0L );
     if( hData == (HDDEDATA)NULL ) {
         return( false );
     }
 
-    hrc = DdeClientTransaction( (LPBYTE) hData, -1, hconv, (HSZ)NULL, 0L,
-                                XTYP_EXECUTE, DDE_WAITTIME, NULL );
+    hrc = DdeClientTransaction( (LPBYTE) hData, (DWORD)-1L, hconv, (HSZ)NULL, 0L, XTYP_EXECUTE, DDE_WAITTIME, NULL );
     if( hrc == (HDDEDATA)NULL ) {
         return( false );
     }
@@ -72,11 +70,13 @@ static bool SendCommand( DWORD ddeinst, HCONV hconv, char *buff )
 static bool UseDDE( bool uninstall )
 /**********************************/
 {
-    WORD                dir_index, icon_number, version;
+#if defined( __WINDOWS__ )
+    WORD                version;
+#endif
+    int                 dir_index, icon_number;
     int                 i, num_icons, num_groups;
     int                 num_installed, num_total_install;
     size_t              len;
-    DWORD               temp;
     bool                ok;
     char                prog_name[_MAX_PATH], prog_desc[_MAX_PATH];
     char                icon_name[_MAX_PATH], working_dir[_MAX_PATH];
@@ -89,7 +89,7 @@ static bool UseDDE( bool uninstall )
     char                progman[] = "PROGMAN";
 
     SimGetPMGroup( t1, sizeof( t1 ) );
-    if( t1[ 0 ] == '\0' ) {
+    if( t1[0] == '\0' ) {
         return( true );
     }
 
@@ -117,6 +117,7 @@ static bool UseDDE( bool uninstall )
     }
 
     if( uninstall ) {
+        ok = true;
         // Delete the PM Group box
         num_groups = SimGetNumPMGroups();
         for( i = 0; i < num_groups; i++ ) {
@@ -127,7 +128,6 @@ static bool UseDDE( bool uninstall )
                 ok = SendCommand( ddeinst, hconv, buff );
             }
         }
-        goto cleanup;   // I can't believe I'm doing this
     } else {
         // Delete the PM Group box to get rid of stale icons
         // (Don't do this for SQL install, since user may install
@@ -137,7 +137,7 @@ static bool UseDDE( bool uninstall )
 
         // re-Create the PM Group box.
         SimGetPMGroupFileName( t2, sizeof( t2 ) );
-        if( t2[ 0 ] == '\0' ) {
+        if( t2[0] == '\0' ) {
 #if defined( __NT__ )
             sprintf( buff, "[CreateGroup(%s,0)]", t1 );  // create a personal group
 #else
@@ -147,93 +147,95 @@ static bool UseDDE( bool uninstall )
             sprintf( buff, "[CreateGroup(%s,%s)]", t1, t2 );
         }
         ok = SendCommand( ddeinst, hconv, buff );
-    }
 
-    // Add the individual PM files to the Group box.
-    num_icons = SimGetNumPMProgs();
-    StatusLines( STAT_CREATEPROGRAMFOLDER, "" );
-    num_total_install = 0;
-    for( i = 0; i < num_icons; i++ ) {
-        if( SimCheckPMCondition( i ) ) {
-            ++num_total_install;
+        // Add the individual PM files to the Group box.
+        num_icons = SimGetNumPMProgs();
+        StatusLines( STAT_CREATEPROGRAMFOLDER, "" );
+        num_total_install = 0;
+        for( i = 0; i < num_icons; i++ ) {
+            if( SimCheckPMCondition( i ) ) {
+                ++num_total_install;
+            }
         }
-    }
-    num_installed = 0;
-    StatusAmount( 0, num_total_install );
-    for( i = 0; ok && ( i < num_icons ); i++ ) {
-        if( !SimCheckPMCondition( i ) ) {
-            continue;
-        }
-        SimGetPMDesc( i, prog_desc, sizeof( prog_desc ) );
-        dir_index = SimGetPMProgName( i, prog_name );
-        if( strcmp( prog_name, "GROUP" ) == 0 ) {
-            // Delete the PM Group box to get rid of stale icons
-            sprintf( buff, "[DeleteGroup(%s)]", prog_desc );
-            ok = SendCommand( ddeinst, hconv, buff );
+        num_installed = 0;
+        StatusAmount( 0, num_total_install );
+        for( i = 0; ok && ( i < num_icons ); i++ ) {
+            if( !SimCheckPMCondition( i ) ) {
+                continue;
+            }
+            SimGetPMDesc( i, prog_desc, sizeof( prog_desc ) );
+            dir_index = SimGetPMProgName( i, prog_name );
+            if( strcmp( prog_name, "GROUP" ) == 0 ) {
+                // Delete the PM Group box to get rid of stale icons
+                sprintf( buff, "[DeleteGroup(%s)]", prog_desc );
+                ok = SendCommand( ddeinst, hconv, buff );
 
-            /* creating a new group */
-            SimGetPMParms( i, t1, sizeof( t1 ) );
-            if( t1[ 0 ] == '\0' ) {
+                /* creating a new group */
+                SimGetPMParms( i, t1, sizeof( t1 ) );
+                if( t1[0] == '\0' ) {
 #if defined( __NT__ )
-                sprintf( buff, "[CreateGroup(%s,0)]", prog_desc );  // create a personal group
+                    sprintf( buff, "[CreateGroup(%s,0)]", prog_desc );  // create a personal group
 #else
-                sprintf( buff, "[CreateGroup(%s)]", prog_desc );
+                    sprintf( buff, "[CreateGroup(%s)]", prog_desc );
 #endif
+                } else {
+                    sprintf( buff, "[CreateGroup(%s,%s)]", prog_desc, t1 );
+                }
             } else {
-                sprintf( buff, "[CreateGroup(%s,%s)]", prog_desc, t1 );
-            }
-        } else {
-            /* adding item to group */
-            if( dir_index == SIM_INIT_ERROR ) {
-                working_dir[0] = '\0';
-                ReplaceVars( t2, sizeof( t2 ), prog_name );
-                strcpy( prog_name, t2 );
-            } else {
-                 SimDirNoSlash( dir_index, working_dir, sizeof( working_dir ) );
-            }
+                /* adding item to group */
+                if( dir_index == -1 ) {
+                    working_dir[0] = '\0';
+                    ReplaceVars( t2, sizeof( t2 ), prog_name );
+                    strcpy( prog_name, t2 );
+                } else {
+                     SimDirNoSlash( dir_index, working_dir, sizeof( working_dir ) );
+                }
 
-            // get parameters
-            SimGetPMParms( i, t1, sizeof( t1 ) );
-            if( t1[0] != '\0' ) {
-                // add parameters to end of prog_name
-                len = strlen( prog_name );
-                prog_name[len] = ' ';
-                ReplaceVars( prog_name + len + 1, sizeof( prog_name ) - len - 1, t1 );
-            }
+                // get parameters
+                SimGetPMParms( i, t1, sizeof( t1 ) );
+                if( t1[0] != '\0' ) {
+                    // add parameters to end of prog_name
+                    len = strlen( prog_name );
+                    prog_name[len] = ' ';
+                    ReplaceVars( prog_name + len + 1, sizeof( prog_name ) - len - 1, t1 );
+                }
 
-            // Append the subdir where the icon file is and the icon file's name.
-            temp = SimGetPMIconInfo( i, icon_name, sizeof( icon_name ) );
-            dir_index = LOWORD( temp );
-            icon_number = HIWORD( temp );
-            if( icon_number == SIM_INIT_ERROR ) {
-                icon_number = 0;
-            }
-            if( dir_index != SIM_INIT_ERROR ) {
-                SimGetDir( dir_index, t1, sizeof( t1 ) );
-                strcat( t1, icon_name );
-                strcpy( icon_name, t1 );
-            }
-            // Add the new file to the already created PM Group.
-            version = (WORD)GetVersion();
-            if( (LOBYTE( version ) > 3) ||    // Version 3.1 or higher
-                (LOBYTE( version ) == 3 && HIBYTE( version ) > 0) ) {
+                // Append the subdir where the icon file is and the icon file's name.
+                dir_index = SimGetPMIconInfo( i, icon_name, sizeof( icon_name ), &icon_number );
+                if( icon_number == -1 ) {
+                    icon_number = 0;
+                }
+                if( dir_index != -1 ) {
+                    SimGetDir( dir_index, t1, sizeof( t1 ) );
+                    strcat( t1, icon_name );
+                    strcpy( icon_name, t1 );
+                }
+#if defined( __WINDOWS__ )
+                // Add the new file to the already created PM Group.
+                version = (WORD)GetVersion();
+                if( (LOBYTE( version ) > 3) ||    // Version 3.1 or higher
+                    (LOBYTE( version ) == 3 && HIBYTE( version ) > 0) ) {
+                    sprintf( buff, "[ReplaceItem(%s)]", prog_desc );
+                    SendCommand( ddeinst, hconv, buff );
+                    sprintf( buff, "[AddItem(%s,%s,%s,%d,-1,-1,%s)]", prog_name, prog_desc, icon_name, icon_number, working_dir );
+                } else {
+                    sprintf( buff, "[AddItem(%s%s,%s,%s,%d)]", working_dir, prog_name, prog_desc, icon_name, icon_number );
+                }
+#else
                 sprintf( buff, "[ReplaceItem(%s)]", prog_desc );
                 SendCommand( ddeinst, hconv, buff );
-                sprintf( buff, "[AddItem(%s,%s,%s,%d,-1,-1,%s)]", prog_name,
-                               prog_desc, icon_name, icon_number, working_dir );
-            } else {
-                sprintf( buff, "[AddItem(%s%s,%s,%s,%d)]", working_dir, prog_name,
-                               prog_desc, icon_name, icon_number );
+                sprintf( buff, "[AddItem(%s,%s,%s,%d,-1,-1,%s)]", prog_name, prog_desc, icon_name, icon_number, working_dir );
+#endif
+            }
+            ok = SendCommand( ddeinst, hconv, buff );
+            ++num_installed;
+            StatusAmount( num_installed, num_total_install );
+            if( StatusCancelled() ) {
+                break;
             }
         }
-        ok = SendCommand( ddeinst, hconv, buff );
-        ++num_installed;
-        StatusAmount( num_installed, num_total_install );
-        if( StatusCancelled() ) break;
+        StatusAmount( num_total_install, num_total_install );
     }
-    StatusAmount( num_total_install, num_total_install );
-
-cleanup:
     // Terminate the DDE conversation with the Program Manager.
     DdeFreeStringHandle( ddeinst, happ );
     DdeFreeStringHandle( ddeinst, htopic );
@@ -394,10 +396,9 @@ static bool create_icon( char *group, char *pgm, char *desc,
 static bool UseIShellLink( bool uninstall )
 /*****************************************/
 {
-    WORD                dir_index, icon_number;
+    int                 dir_index, icon_number;
     int                 i, num_icons, num_groups;
     int                 num_installed, num_total_install;
-    DWORD               temp;
     char                prog_name[_MAX_PATH], prog_desc[_MAX_PATH];
     char                icon_name[_MAX_PATH], working_dir[_MAX_PATH];
     char                group[_MAX_PATH], prog_arg[_MAX_PATH], tmp[_MAX_PATH];
@@ -453,8 +454,8 @@ static bool UseIShellLink( bool uninstall )
             }
         } else {
             // Adding item to group
-            if( dir_index == SIM_INIT_ERROR ) {
-                working_dir[ 0 ] = '\0';
+            if( dir_index == -1 ) {
+                working_dir[0] = '\0';
                 ReplaceVars( tmp, sizeof( tmp ), prog_name );
                 strcpy( prog_name, tmp );
             } else {
@@ -466,11 +467,10 @@ static bool UseIShellLink( bool uninstall )
             ReplaceVars( prog_arg, sizeof( prog_arg ), tmp );
 
             // Append the subdir where the icon file is and the icon file's name.
-            temp = SimGetPMIconInfo( i, icon_name, sizeof( icon_name ) );
-            dir_index = LOWORD( temp );
-            icon_number = HIWORD( temp );
-            if( icon_number == SIM_INIT_ERROR ) icon_number = 0;
-            if( dir_index != SIM_INIT_ERROR ) {
+            dir_index = SimGetPMIconInfo( i, icon_name, sizeof( icon_name ), &icon_number );
+            if( icon_number == -1 )
+                icon_number = 0;
+            if( dir_index != -1 ) {
                 SimGetDir( dir_index, tmp, sizeof( tmp ) );
                 strcat( tmp, icon_name );
                 strcpy( icon_name, tmp );

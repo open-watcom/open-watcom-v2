@@ -409,18 +409,26 @@ void GUImain( void )
     GUIMemOpen();
     GUIGetArgs( &argv, &argc );
 #if defined( __NT__ ) && !defined( _M_X64 )
-    if( CheckWin95Uninstall( argc, argv ) ) return;
-    if( CheckWow64() ) return;
+    if( CheckWin95Uninstall( argc, argv ) )
+        return;
+    if( CheckWow64() )
+        return;
 #endif
 #ifdef __WINDOWS__
-    if( CheckForSetup32( argc, argv ) ) return;
+    if( CheckForSetup32( argc, argv ) )
+        return;
 #endif
 
     // initialize paths and env. vbls.
 
-    if( !SetupPreInit() ) return;
-    if( !GetDirParams( argc, argv, &inf_name, &src_path, &arc_name ) ) return;
-    if( !SetupInit() ) return;
+    if( !SetupPreInit() )
+        return;
+    if( !GetDirParams( argc, argv, &inf_name, &src_path, &arc_name ) )
+        return;
+    if( !SetupInit() ) {
+        FreeDirParams( &inf_name, &src_path, &arc_name );
+        return;
+    }
     GUIDrainEvents();   // push things along
     FileInit( arc_name );
     InitGlobalVarList();
@@ -430,9 +438,11 @@ void GUImain( void )
 
         ret = DoMainLoop( &state );
 
-        if( state == DLG_DONE ) break;
+        if( state == DLG_DONE )
+            break;
 //        if( CancelSetup || !ret ) break;
-        if( CancelSetup ) break;
+        if( CancelSetup )
+            break;
 //        if( !ret ) break;
 
         // look for another SETUP.INF

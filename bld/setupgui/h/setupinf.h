@@ -62,11 +62,6 @@ typedef enum {
     SIM_INIT_NOFILE
 } SIM_INITIALIZE_ERROR;
 
-// Fixes bug in 32-bit comparisons... I hate it when
-// people mix return codes and out params...
-#define SIM_INIT_ERROR          ((unsigned short)(-1))
-
-
 // Defines used by the SETUP program.
 #define MAXBUF          128
 #define MAXVALUE        256
@@ -123,7 +118,7 @@ typedef struct a_dialog_header {
 
 
 extern void             CheckStateVars();
-extern char             *SimGetTargetDriveLetter( int parm );
+extern char             *SimGetTargetDriveLetter( int parm, char *buff, size_t buff_len );
 extern bool             SimFileAdd( int parm );
 extern bool             SimFileUpToDate( int parm );
 extern bool             SimFileRemove( int parm );
@@ -148,7 +143,7 @@ extern void             SimSetTargTempDisk( int parm, char disk );
 extern char             *SimGetTargTempDisk( int parm );
 extern int              SimGetTargNumFiles( int parm );
 extern int              SimNumTargets( void );
-extern disk_size        SimTargetSpaceNeeded( int parm );
+extern disk_ssize       SimTargetSpaceNeeded( int parm );
 extern void             SimTargetDir( int i, char *buff, size_t buff_len );
 extern void             SimTargetDirName( int i, char *buff, size_t buff_len );
 extern disk_size        SimMaxTmpFile( int i );
@@ -176,7 +171,7 @@ extern int              SimGetNumPMProgs( void );
 extern int              SimGetPMProgName( int parm, char *buff );
 extern void             SimGetPMParms( int parm, char *buff, size_t buff_len );
 extern void             SimGetPMDesc( int parm, char *buff, size_t buff_len );
-extern long             SimGetPMIconInfo( int parm, char *buff, size_t buff_len );
+extern int              SimGetPMIconInfo( int parm, char *buff, size_t buff_len, int *icon_pos );
 extern bool             SimCheckPMCondition( int parm );
 extern void             SimGetPMGroupName( int parm, char *buff, size_t buff_len );
 extern void             SimGetPMGroupFName( int parm, char *buff, size_t buff_len );

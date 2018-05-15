@@ -289,8 +289,11 @@ static bool StatusGUIEventProc( gui_window *gui, gui_event gui_ev, void *parm )
 #else
             {
                 gui_coord   coord;
-                int         str_len, width, height;
-                int         bar_width, len1, len2, divider;
+                int         width, height;
+                size_t      str_len;
+                size_t      len1;
+                size_t      len2;
+                int         bar_width, divider;
                 gui_point   start, end;
                 gui_rect    rStatusBar;
 
@@ -317,19 +320,17 @@ static bool StatusGUIEventProc( gui_window *gui, gui_event gui_ev, void *parm )
                 if( coord.x > divider ) {
                     // text is completely to right of divider
                     GUIFillRect( gui, &rStatusBar, WND_STATUS_TEXT );
-                    GUIDrawTextPos( gui, StatusBarBuf, str_len, &coord,
-                                    WND_STATUS_TEXT );
+                    GUIDrawTextPos( gui, StatusBarBuf, str_len, &coord, WND_STATUS_TEXT );
                 } else if( coord.x + width < divider ) {
                     // text is completely to left of divider
                     GUIFillRect( gui, &rStatusBar, WND_STATUS_TEXT );
-                    GUIDrawTextPos( gui, StatusBarBuf, str_len, &coord,
-                                    WND_STATUS_BAR );
+                    GUIDrawTextPos( gui, StatusBarBuf, str_len, &coord, WND_STATUS_BAR );
                 } else {
+                    // text is over divider
+                    // coord.x <= divider <= coord.x + width
                     // need to split text
-                    len1 = ((long)(divider - coord.x) * str_len) / width;
-                    if( len1 < 0 ) {
-                        len1 = 0;
-                    } else if( len1 > str_len ) {
+                    len1 = ((size_t)(divider - coord.x) * str_len) / (size_t)width;
+                    if( len1 > str_len ) {
                         len1 = str_len;
                     }
                     len2 = str_len - len1;
@@ -338,13 +339,11 @@ static bool StatusGUIEventProc( gui_window *gui, gui_event gui_ev, void *parm )
                     rStatusBar.width = divider - StatusBarRect.x;
                     GUIFillRect( gui, &rStatusBar, WND_STATUS_TEXT );
                     if( len1 > 0 ) {
-                        GUIDrawTextPos( gui, StatusBarBuf, len1, &coord,
-                                        WND_STATUS_BAR );
+                        GUIDrawTextPos( gui, StatusBarBuf, len1, &coord, WND_STATUS_BAR );
                     }
                     if( len2 > 0 ) {
                         coord.x = divider;
-                        GUIDrawTextPos( gui, StatusBarBuf + len1, len2, &coord,
-                                        WND_STATUS_TEXT );
+                        GUIDrawTextPos( gui, StatusBarBuf + len1, len2, &coord, WND_STATUS_TEXT );
                     }
                 }
                 // draw frame

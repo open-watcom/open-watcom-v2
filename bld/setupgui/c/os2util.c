@@ -40,6 +40,8 @@
 #include "setupinf.h"
 
 
+#define ICONFILETAG     "ICONFILE="
+
 static HOBJECT create_group( const char *group, const char *grp_filename )
 /************************************************************************/
 {
@@ -51,8 +53,8 @@ static HOBJECT create_group( const char *group, const char *grp_filename )
 
     SimGetPMGroupIcon( icon_file, sizeof( icon_file ) );
     if( icon_file[0] != '\0' ) {
-        strcat( cmd, "ICONFILE=" );
-        ReplaceVars( cmd + 9, sizeof( cmd ) - 9 - 1, icon_file );
+        strcat( cmd, ICONFILETAG );
+        ReplaceVars( cmd + ( sizeof( ICONFILETAG ) - 1 ), sizeof( cmd ) - ( sizeof( ICONFILETAG ) - 1 ), icon_file );
         strcat( cmd, ";" );
     }
 
@@ -82,7 +84,6 @@ bool CreatePMInfo( bool uninstall )
     char                Folder[_MAX_PATH];
     int                 nDirIndex, icon_number;
     int                 nPMProg, nMaxPMProgs, len;
-    unsigned long       dwTemp;
     char                *p;
     HOBJECT             obj;
 
@@ -153,7 +154,7 @@ bool CreatePMInfo( bool uninstall )
             obj = create_group( PMProgDesc, GroupFileName );
         } else {
             // Process a regular object
-            if( nDirIndex == SIM_INIT_ERROR ) {
+            if( nDirIndex == -1 ) {
                 WorkingDir[0] = '\0';
                 ReplaceVars( t2, sizeof( t2 ), PMProgName );
                 strcpy( PMProgName, t2 );
@@ -183,9 +184,7 @@ bool CreatePMInfo( bool uninstall )
             }
 
             // Append the subdir where the icon file is and the icon file's name.
-            dwTemp = SimGetPMIconInfo( nPMProg, PMIconFileName, sizeof( PMIconFileName ) );
-            nDirIndex = (short)(dwTemp & 0xFFFF);
-            icon_number = (short)(dwTemp >> 16);
+            nDirIndex = SimGetPMIconInfo( nPMProg, PMIconFileName, sizeof( PMIconFileName ), &icon_number );
             if( icon_number == -1 ) {
                 icon_number = 0;
             }
@@ -197,14 +196,12 @@ bool CreatePMInfo( bool uninstall )
 
             if( PMProgName[0] == '+' ) {
                 sprintf( Cmd, "SHADOWID=%s%s", WorkingDir, &PMProgName[1] );
-                obj = WinCreateObject( "WPShadow", PMProgDesc,
-                                       Cmd, Folder, CO_REPLACEIFEXISTS );
+                obj = WinCreateObject( "WPShadow", PMProgDesc, Cmd, Folder, CO_REPLACEIFEXISTS );
             } else {
                 // Add the new file to the already created PM Group.
                 sprintf( Cmd, "EXENAME=%s%s;PARAMETERS=%s;STARTUPDIR=%s",
                          WorkingDir, PMProgName, PMParams, WorkingDir );
-                obj = WinCreateObject( "WPProgram", PMProgDesc,
-                                       Cmd, Folder, CO_REPLACEIFEXISTS );
+                obj = WinCreateObject( "WPProgram", PMProgDesc, Cmd, Folder, CO_REPLACEIFEXISTS );
             }
         }
     }

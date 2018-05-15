@@ -1354,7 +1354,8 @@ int MakeScript( void )
     }
     inf_size = 0;
     old_size = 0;
-    if( !FillFirst ) size = DiskSize;
+    if( !FillFirst )
+        size = DiskSize;
     for ( ;; ) {
         /* keep creating script until size stabilizes */
         disks = CreateScript( size+inf_size, 0 );
@@ -1369,7 +1370,8 @@ int MakeScript( void )
             disks = CreateScript( size+old_size, old_size - inf_size );
             inf_size = old_size;
         }
-        if( old_size == inf_size ) break;
+        if( old_size == inf_size )
+            break;
         old_size = inf_size;
     }
     printf( "Installation will require %d disks\n", disks );
@@ -1450,10 +1452,12 @@ int main( int argc, char *argv[] )
     printf( "Reading Info File...\n" );
     ReadInfFile();
     ok = ReadList( fp );
-    if( !ok ) return( 1 );
+    if( !ok )
+        return( 1 );
     printf( "Checking for duplicate files...\n" );
     ok = CheckForDuplicateFiles();
-    if( !ok ) return( 1 );
+    if( !ok )
+        return( 1 );
     fclose( fp );
     if( !CreateMissingFiles ) {
         printf( "Making script...\n" );

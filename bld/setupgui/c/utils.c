@@ -1015,7 +1015,7 @@ static void catnum( char *buff, long long num )
 /*********************************************/
 {
 
-    char        num_buff[128];
+    char        num_buff[MAXBUF];
     char        ch;
 
     ch = ' ';
@@ -1045,7 +1045,7 @@ static void ucatnum( char *buff, unsigned long long num )
 /*******************************************************/
 {
 
-    char        num_buff[128];
+    char        num_buff[MAXBUF];
     char        ch;
 
     ch = ' ';
@@ -1175,12 +1175,13 @@ bool CheckDrive( bool issue_message )
 {
     bool                ret;
     disk_size           free_disk_space;
-    disk_size           disk_space_needed;
+    disk_ssize          disk_space_needed;
     disk_size           max_tmp_file;
     int                 max_targs;
     int                 i, j, targ_num;
     char                *disks[MAX_DRIVES];
     bool                disk_counted[MAX_DRIVES];
+    char                tmp_dir[_MAX_PATH];
 #if !defined( __UNIX__ )
     char                drive;
     gui_message_return  reply;
@@ -1189,7 +1190,7 @@ bool CheckDrive( bool issue_message )
     char                drive_freesp[20];
     struct {
         char                *drive;
-        disk_size   needed;
+        disk_ssize  needed;
         disk_size   max_tmp;
         disk_size   free;
         int         num_files;
@@ -1203,12 +1204,16 @@ bool CheckDrive( bool issue_message )
     if( !SimCalcTargetSpaceNeeded() )
         return( false );
     max_targs = SimNumTargets();
+    if( max_targs > MAX_DRIVES )
+        max_targs = MAX_DRIVES;
     for( i = 0; i < max_targs; i++ ) {
         // get drive letter for each target (actually the path including the drive letter)
-        disks[i] = SimGetTargetDriveLetter( i );
-        if( disks[i] == NULL )
+        if( SimGetTargetDriveLetter( i, tmp_dir, sizeof( tmp_dir ) ) == NULL ) {
+            free_disks( disks, i );
             return( false );
-        ConcatDirSep( disks[i] );
+        }
+        ConcatDirSep( tmp_dir );
+        disks[i] = GUIStrDup( tmp_dir, NULL );
         disk_counted[i] = false;
     }
     // check for enough disk space, combine drives that are the same
@@ -1266,7 +1271,7 @@ bool CheckDrive( bool issue_message )
             space[i].max_tmp = max_tmp_file;
             space[i].num_files = SimGetTargNumFiles( targ_num );
 #if !defined( __UNIX__ )
-            if( (disk_ssize)disk_space_needed > 0 && free_disk_space < disk_space_needed + max_tmp_file ) {
+            if( disk_space_needed > 0 && free_disk_space < (disk_size)disk_space_needed + max_tmp_file ) {
                 for( drive = 'c'; drive <= 'z'; ++drive ) {
                     if( drive == tolower( *disks[i] ) )
                         continue;
@@ -1289,7 +1294,7 @@ bool CheckDrive( bool issue_message )
                 }
             }
             if( issue_message ) {
-                if( (disk_ssize)disk_space_needed > 0 && free_disk_space < disk_space_needed ) {
+                if( disk_space_needed > 0 && free_disk_space < (disk_size)disk_space_needed ) {
     #ifdef UNC_SUPPORT
                     if( TEST_UNC( disks[i] ) ) {
                         if( DriveInfoIsAvailable( disks[i] ) ) {
@@ -1297,9 +1302,8 @@ bool CheckDrive( bool issue_message )
                                             disks[i], free_disk_space / 1000,
                                             disk_space_needed / 1000 );
                         } else {
-                            GetRootFromPath( root, disks[i] );
-                            reply = MsgBox( NULL, "IDS_ASSUME_ENOUGHSPACE", GUI_YES_NO,
-                                            root );
+                            GetRootFromPath( UNC_root, disks[i] );
+                            reply = MsgBox( NULL, "IDS_ASSUME_ENOUGHSPACE", GUI_YES_NO, UNC_root );
                         }
                     } else {
     #endif
@@ -1331,7 +1335,7 @@ bool CheckDrive( bool issue_message )
                 sprintf( buff, GetVariableStrVal( "IDS_DRIVE_SPEC" ),
                          toupper( *space[i].drive ) );
             }
-            if( (disk_ssize)space[i].needed < 0 ) {
+            if( space[i].needed < 0 ) {
                 catnum( buff, -space[i].needed );
                 strcat( buff, GetVariableStrVal( "IDS_DRIVE_FREED" ) );
             } else {
