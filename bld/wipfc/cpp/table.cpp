@@ -293,7 +293,7 @@ void Table::rowRule()
             appendChild( new Word( document, this, document->dataName(),
                 document->lexerLine(), document->lexerCol(), txt) );
         }
-        //right frame edge        
+        //right frame edge
         appendChild( new Word( document, this, document->dataName(),
             document->lexerLine(), document->lexerCol(), txt3) );
     }
@@ -501,10 +501,10 @@ Lexer::Token TableCol::parse( Lexer* lexer )
             }
         }
         else if( tok == Lexer::ENTITY ) {
-            const std::wstring* entitytxt( document->nameit( lexer->text() ) ); //lookup nameit
-            if( entitytxt ) {
+            const std::wstring* nameittxt( document->nameit( lexer->text() ) ); //lookup nameit
+            if( nameittxt ) {
                 std::wstring* name( document->prepNameitName( lexer->text() ) );
-                IpfBuffer* buffer( new IpfBuffer( name, document->dataLine(), document->dataCol(), *entitytxt ) );
+                IpfBuffer* buffer( new IpfBuffer( name, document->dataLine(), document->dataCol(), *nameittxt ) );
                 document->pushInput( buffer );
                 tok = document->getNextToken();
                 continue;
@@ -906,7 +906,7 @@ Lexer::Token TableCol::parse( Lexer* lexer )
             document->printError( ERR1_TAGNOTDEF );
             tok = document->getNextToken();
         }
-    }    
+    }
     return tok;
 }
 
