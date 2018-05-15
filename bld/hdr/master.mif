@@ -32,8 +32,8 @@ qnx_path   = ../quantum;../watcom
 all : $($(system)_dirs) $($(system)_files) .symbolic
     @%null
 
-.mh:  $($(system)_path);../watcom
-.mhp: $($(system)_path);../watcom
+.mh:  $($(system)_path)
+.mhp: $($(system)_path)
 
 .mhp.hpp:
     @%make echo_wsplice
