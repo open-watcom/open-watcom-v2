@@ -32,8 +32,6 @@
 #ifndef _LINUXCOMM_H
 #define _LINUXCOMM_H
 
-#include <stddef.h>
-#include <sys/stat.h>
 #include "machtype.h"
 #include "exeelf.h"
 
