@@ -291,14 +291,22 @@ static FILE *OpenFileTruncate(
         char    *dir;
         char    *fname;
         char    *ext;
+        bool    truncated;
 
+        truncated = false;
         _splitpath2( file_name, path_buffer, &drive, &dir, &fname, &ext );
-        if( fname != NULL && strlen( fname ) > 8 )
+        if( fname != NULL && strlen( fname ) > 8 ) {
             fname[8] = '\0';
-        if( ext != NULL && strlen( ext ) > 3 )
+            truncated = true;
+        }
+        if( ext != NULL && strlen( ext ) > 3 ) {
             ext[3] = '\0';
-        _makepath( new_name, drive, dir, fname, ext );
-        new = fopen( new_name, mode );
+            truncated = true;
+        }
+        if( truncated ) {
+            _makepath( new_name, drive, dir, fname, ext );
+            new = fopen( new_name, mode );
+        }
     }
     return( new );
 }
@@ -337,7 +345,7 @@ static void OpenFileNormal(
     char        *p;
     char        c;
 
-    stk = ( FILESTK * )GetMem( sizeof( FILESTK ) + strlen( file_name ) );
+    stk = (FILESTK *)GetMem( sizeof( FILESTK ) + strlen( file_name ) );
     if( stk != NULL ) {
         p = stk->name;
         while( (c = *file_name++) != '\0' ) {
