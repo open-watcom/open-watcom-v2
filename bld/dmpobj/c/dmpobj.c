@@ -34,6 +34,7 @@
 #include <string.h>
 #include "banner.h"
 #include "dmpobj.h"
+#include "wnoret.h"
 
 #include "clibext.h"
 
@@ -42,6 +43,8 @@ bool Descriptions;
 bool InterpretComent;
 bool quiet;
 bool TranslateIndex;
+
+NO_RETURN( static void usage( void ) );
 
 void leave( int rc )
 {
@@ -83,11 +86,11 @@ int main( int argc, char **argv )
 /*******************************/
 {
     FILE        *fp;
-    char        drive[ _MAX_DRIVE ];
-    char        dir[ _MAX_DIR ];
-    char        fname[ _MAX_FNAME ];
-    char        ext[ _MAX_EXT ];
-    char        file[ _MAX_PATH ];
+    char        drive[_MAX_DRIVE];
+    char        dir[_MAX_DIR];
+    char        fname[_MAX_FNAME];
+    char        ext[_MAX_EXT];
+    char        file[_MAX_PATH];
     char        *fn;
     int         i;
     bool        list_file;
@@ -119,9 +122,9 @@ int main( int argc, char **argv )
                 if( strnicmp( argv[i] + 1, "rec=", 4 ) == 0 ) {
                     if( rec_count < 10 ) {
                         if( isdigit( argv[i][5] ) ) {
-                            rec_type[ rec_count++ ] = atoi( argv[i] + 5 );
+                            rec_type[rec_count++] = atoi( argv[i] + 5 );
                         } else {
-                            rec_type[ rec_count++ ] = RecNameToNumber( argv[i] + 5 );
+                            rec_type[rec_count++] = RecNameToNumber( argv[i] + 5 );
                         }
                     } else {
                         Output( "Maximum 10 record type allowed." CRLF );
@@ -179,5 +182,4 @@ int main( int argc, char **argv )
         OutputSetFH( stdout );  /* does fclose() if necessary */
     }
     leave( 0 );
-    return( 0 );  // for the less intelligent compilers
 }

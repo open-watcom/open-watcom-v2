@@ -261,7 +261,7 @@ size_t  Output( const char *fmt, ... )
             break;
         case '<':
             len = va_arg( args, unsigned );
-            while( p - outBuffPtr < len ) {
+            while( (size_t)( p - outBuffPtr ) < len ) {
                 *p++ = ' ';
             }
             break;
