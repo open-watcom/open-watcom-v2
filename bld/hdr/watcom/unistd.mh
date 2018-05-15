@@ -126,9 +126,9 @@ _WCRTLINK extern int    close( int __fildes );
 _WCRTLINK extern int    dup( int __fildes );
 :include ext.sp
 _WCRTLINK extern long   _get_osfhandle( int __posixhandle );
-_WCRTLINK extern int    _hdopen(int __handle,int __mode);
+_WCRTLINK extern int    _hdopen( int __handle,int __mode );
 _WCRTLINK extern int    _open_osfhandle( long __osfhandle, int __flags );
-_WCRTLINK extern int    _os_handle(int __handle);
+_WCRTLINK extern int    _os_handle( int __handle );
 :include extepi.sp
 _WCRTLINK extern int    isatty( int __fildes );
 _WCRTLINK extern off_t  lseek( int __fildes, off_t __offset, int __whence );
@@ -143,7 +143,7 @@ _WCRTLINK extern int    chown( const char *__path, uid_t __owner, gid_t __group 
 :segment LINUX
 _WCRTLINK extern int    lchown( const char *__path, uid_t __owner, gid_t __group );
 :endsegment
-_WCRTLINK extern int    chroot(const char *__path);
+_WCRTLINK extern int    chroot( const char *__path );
 _WCRTLINK extern int    dup2( int __fildes, int __fildes2 );
 _WCRTLINK extern int    fchown( int __fildes, uid_t __owner, gid_t __group );
 _WCRTLINK extern int    fdatasync( int __fildes );
@@ -164,7 +164,7 @@ _WCRTLINK extern int    gethostname( char *__name, size_t __len );
 _WCRTLINK extern char   *getlogin( void );
 _WCRTLINK extern pid_t  getpgrp( void );
 _WCRTLINK extern pid_t  getppid( void );
-_WCRTLINK extern pid_t  getsid(pid_t __pid);
+_WCRTLINK extern pid_t  getsid( pid_t __pid );
 _WCRTLINK extern uid_t  getuid( void );
 _WCRTLINK extern int    link( const char *__path1, const char *__path2 );
 _WCRTLINK extern long   pathconf( const char *__path, int __name );
@@ -175,8 +175,8 @@ _WCRTLINK extern int    setegid( gid_t __newegroup );
 _WCRTLINK extern int    seteuid( uid_t __newuserid );
 _WCRTLINK extern int    setgid( gid_t __newgroup );
 _WCRTLINK extern int    setpgid( pid_t __pid, pid_t __pgroupid );
-_WCRTLINK extern int    setregid(gid_t real, uid_t effective);
-_WCRTLINK extern int    setreuid(uid_t real, uid_t effective);
+_WCRTLINK extern int    setregid( gid_t real, uid_t effective );
+_WCRTLINK extern int    setreuid( uid_t real, uid_t effective );
 _WCRTLINK extern pid_t  setsid( void );
 _WCRTLINK extern int    setuid( uid_t __newuserid );
 _WCRTLINK extern int    symlink( const char *__pname, const char *__slink );
@@ -216,7 +216,7 @@ _WCRTLINK extern char   *qnx_fullpath( char *__fullpath, const char *__path );
 
 struct _psinfo2; /* for C++ */
 
-_WCRTLINK extern int    qnx_getids( pid_t pid, struct _psinfo2 *info);
+_WCRTLINK extern int    qnx_getids( pid_t pid, struct _psinfo2 *info );
 _WCRTLINK extern int    qnx_setids( pid_t pid, int id, unsigned subtype );
 _WCRTLINK extern int    qnx_sync( nid_t nid );
 _WCRTLINK extern int    unlock( int __fildes, long __offset, long __nbytes );
@@ -235,7 +235,7 @@ _WCRTLINK extern off_t  ltrunc( int __fildes, off_t __offset, int __origin );
 _WCRTLINK extern int    ioperm( unsigned long __from, unsigned long __num, int __turn_on );
 _WCRTLINK extern int    iopl( int __level );
 _WCRTLINK extern int    nice( int __val );
-_WCRTLINK extern int    _llseek( unsigned int __fildes, unsigned long __hi, unsigned long __lo, loff_t *__res, unsigned int __whence);
+_WCRTLINK extern int    _llseek( unsigned int __fildes, unsigned long __hi, unsigned long __lo, loff_t *__res, unsigned int __whence );
 
 :endsegment
 :segment QNX
@@ -243,8 +243,8 @@ _WCRTLINK extern int    _llseek( unsigned int __fildes, unsigned long __hi, unsi
 #define __far_read read
 #define __far_write write
 #else
-extern ssize_t __far_read(int __fildes,void __far *__buffer,size_t __len);
-extern ssize_t __far_write(int __fildes,void __far *__buffer,size_t __len);
+extern ssize_t __far_read( int __fildes,void __far *__buffer,size_t __len );
+extern ssize_t __far_write( int __fildes,void __far *__buffer,size_t __len );
 #endif
 
 :endsegment
