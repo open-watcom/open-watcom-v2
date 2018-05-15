@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 2015 Open Watcom contributors. 
+*    Portions Copyright (c) 2015 Open Watcom contributors.
 *    All Rights Reserved.
 *
 *  ========================================================================
@@ -40,17 +40,14 @@
 _WCRTLINK struct passwd *getpwuid(uid_t uid)
 {
     struct passwd *res = NULL;
-    
+
     setpwent();
-    
-    res = getpwent();
-    while(res != NULL) {
-        if(res->pw_uid == uid)
+    while( (res = getpwent()) != NULL ) {
+        if( res->pw_uid == uid ) {
             break;
-        res = getpwent();
+        }
     }
-    
     endpwent();
-    
+
     return res;
 }
