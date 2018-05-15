@@ -38,7 +38,7 @@ stdlib_deps   = stdlib.mh $(crwatqnx_sp) ../readonly.sp $(extension) $(unixext) 
 stdnoret_deps = stdnoret.mh ../crwat.sp ../readonly.sp
 string_deps   = string.mh ../crwat.sp ../crwatcnt.sp ../readonly.sp $(extension) ../owrtlink.sp $(cplus) ../wchar_t.sp ../wint_t.sp ../size_t.sp $(saferc) ../null.sp ../nlserror.sp ../namwat.sp $(ns_std) ../windowsx.sp
 time_deps     = time.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) $(packll) ../wchar_t.sp ../size_t.sp ../null.sp ../time_t.sp ../clock_t.sp $(saferc) $(unixext) $(extension) ../timer_t.sp ../clockidt.sp $(ns_std) ../timespec.sp ../tm.sp
-wchar_deps    = wchar.mh ../crwat.sp ../readonly.sp $(extension) ../owrtlink.sp $(cplus) ../wchar_t.sp ../wint_t.sp ../wctype_t.sp ../size_t.sp $(saferc) ../null.sp $(ns_std) ../weof.sp $(wctype_sp) ../tm.sp ../file.sp ../mbstatet.sp
+wchar_deps    = wchar.mh ../crwat.sp ../readonly.sp $(extension) ../owrtlink.sp $(cplus) ../wchar_t.sp ../wint_t.sp ../wctype_t.sp ../size_t.sp $(saferc) ../null.sp $(ns_std) ../weof.sp $(wctype_sp) ../tm.sp ../file.sp ../mbstatet.sp ../time_t.sp
 wctype_deps   = wctype.mh ../crwat.sp ../readonly.sp $(extension) $(c99ext) ../owrtlink.sp $(cplus) ../wint_t.sp ../wctype_t.sp ../wctranst.sp $(ns_std) ../weof.sp $(wctype_sp)
 
 cassert      : cassert.mh ../cpponly.sp $(assert_deps)

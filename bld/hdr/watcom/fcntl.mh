@@ -210,20 +210,20 @@ _WCRTLINK extern int _wopen( const wchar_t *, int, ... );
 _WCRTLINK extern int _wsopen( const wchar_t *, int, int, ... );
 _WCRTLINK extern int _wcreat( const wchar_t *, mode_t );
 :include extepi.sp
-:segment LINUX | QNX
 
+:segment LINUX | QNX
 _WCRTLINK extern int fcntl( int __fildes, int __cmd, ... );
+
 :endsegment
 :segment QNX
-
 struct _io_open; /* for C++ */
 
 _WCRTLINK extern int __fcntl_slib( int, int, int, struct flock * );
 _WCRTLINK extern int __open_slib( const char *__path, int __oflag, mode_t __mode );
 _WCRTLINK extern int __sopen_slib( const char *__path, int __oflag, int __share, mode_t __mode );
 _WCRTLINK extern int __resolve_net( unsigned, int, struct _io_open *, const char *, unsigned, char * );
-:endsegment
 
+:endsegment
 :include poppack.sp
 
 :include cplusepi.sp
