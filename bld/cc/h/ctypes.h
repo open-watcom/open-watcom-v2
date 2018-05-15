@@ -659,11 +659,11 @@ typedef struct comp_flags {
     bool use_long_double            : 1;    /* Make CC send long double types to code gen */
     bool track_includes             : 1;    /* report opens of include files */
 
-    bool ignore_fnf                 : 1;    /* ignore file not found errors */
     bool cpp_ignore_env             : 1;    /* ignore *INCLUDE env var(s) */
     bool ignore_default_dirs        : 1;    /* ignore default directories for file search .,../h,../c, etc. */
     bool pragma_library             : 1;    /* pragma library simulate -zlf option */
     bool oldmacros_enabled          : 1;    /* enable old predefined macros (non-ISO compatible) */
+    bool check_truncated_fnames     : 1;    /* do not check for truncated versions of file names */
 } comp_flags;
 
 typedef struct global_comp_flags {  // things that live across compiles

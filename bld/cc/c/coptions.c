@@ -1172,6 +1172,16 @@ static void Set_FR( void )
     }
 }
 
+static void Set_FT( void )
+{
+    CompFlags.check_truncated_fnames = true;
+}
+
+static void Set_FX( void )
+{
+    CompFlags.check_truncated_fnames = false;
+}
+
 #if _CPU == 8086 || _CPU == 386
 static void SetCodeClass( void )    { CodeClassName = CopyOfParm(); }
 static void SetDataSegName( void )
@@ -1729,7 +1739,9 @@ static struct option const CFE_Options[] = {
     { "fld",    0,              Set_FLD },
     { "fo=@",   0,              Set_FO },
     { "fr=@",   0,              Set_FR },
+    { "ft",     0,              Set_FT },
     { "fti",    0,              SetTrackInc },
+    { "fx",     0,              Set_FX },
 #if _CPU == 8086 || _CPU == 386
     { "fp2",    SW_FPU0,        SetFPU },
     { "fp3",    SW_FPU3,        SetFPU },

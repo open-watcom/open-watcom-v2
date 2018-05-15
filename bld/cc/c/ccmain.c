@@ -64,6 +64,14 @@
 #define CPP_EXT         ".i"
 #define DEP_EXT         ".d"
 
+typedef struct path_descr {     // path description
+    char buffer[_MAX_PATH2];    // - buffer
+    char *drv;                  // - drive
+    char *dir;                  // - directory
+    char *fnm;                  // - file name
+    char *ext;                  // - extension
+} path_descr;
+
 bool    PrintWhiteSpace;     // also refered from cmac2.c
 
 static  bool    IsStdIn;
@@ -274,13 +282,32 @@ static const char *IncludeAlias( const char *filename, bool is_lib )
     return( filename );
 }
 
+static void CppPrtfFilenameErr( const char *filename, src_file_type typ, bool print_error )
+{
+    bool        save;
+
+    save = CompFlags.cpp_output;
+    if( CompFlags.cpp_output ) {
+        if( typ == FT_LIBRARY || typ == FT_HEADER_PRE ) {
+            CppPrtf( "#include <%s>", filename );
+        } else {
+            CppPrtf( "#include \"%s\"", filename );
+        }
+        CompFlags.cpp_output = false;
+    }
+    if( print_error ) {
+        CErr2p( ERR_CANT_OPEN_FILE, filename );
+    }
+    CompFlags.cpp_output = save;
+}
+
 static bool openForcePreInclude( void )
 {
     bool    ok;
 
-    CompFlags.ignore_fnf = true;
     ok = OpenSrcFile( ForcePreInclude, FT_HEADER_PRE );
-    CompFlags.ignore_fnf = false;
+    if( !ok )
+        CppPrtfFilenameErr( ForcePreInclude, FT_HEADER_PRE, false );
     return( ok );
 }
 
@@ -626,17 +653,27 @@ static bool IsFNameOnce( char const *filename )
         return( false );
     return( flist->once );
 }
-static bool TryOpen( const char *path, const char *fname, src_file_type typ )
+
+static bool TryOpen( const char *path, path_descr *ff, src_file_type typ )
 {
     FILE        *fp;
     char        filename[_MAX_PATH];
     char        *p;
+    path_descr  fd;
 
-    p = filename;
-    while( (*p = *path++) != '\0' )
-        ++p;
-    while( (*p = *fname++) != '\0' )
-        ++p;
+    _splitpath2( path, fd.buffer, &fd.drv, &fd.dir, NULL, NULL );
+    if( ff->drv[0] != '\0' && fd.drv[0] != '\0' ) {
+        return( false );
+    }
+    // concatenate fd.dir + sep + fp.dir
+    p = fd.dir + strlen( fd.dir );
+    if( fd.dir[0] != '\0' ) {
+        if( !IS_PATH_SEP( p[-1] ) ) {
+            *p++ = DIR_SEP;
+        }
+    }
+    strcpy( p, ff->dir );
+    _makepath( filename, ( fd.drv[0] == '\0' ) ? ff->drv : fd.drv, fd.dir, ff->fnm, ff->ext );
     if( IsFNameOnce( filename ) ) {
         return( true );
     }
@@ -930,12 +967,10 @@ static bool OpenPgmFile( void )
         }
         return( false );
     }
-    if( !TryOpen( "", WholeFName, FT_SRC ) ) {
-        if( CompFlags.ignore_default_dirs || !TryOpen( C_PATH, WholeFName, FT_SRC ) ) {
-            CantOpenFile( WholeFName );
-            CSuicide();
-            return( false );
-        }
+    if( !OpenSrcFile( WholeFName, FT_SRC ) ) {
+        CantOpenFile( WholeFName );
+        CSuicide();
+        return( false );
     }
 #if _CPU == 370
     SrcFile->colum = Column;
@@ -954,7 +989,9 @@ static void Parse( void )
     // get the very first token of the file will load the pre-compiled
     // header if the user requested such and it is a #include directive.
     if( ForceInclude != NULL ) {
-        OpenSrcFile( ForceInclude, FT_HEADER_FORCED );
+        if( !OpenSrcFile( ForceInclude, FT_HEADER_FORCED ) ) {
+            CppPrtfFilenameErr( ForceInclude, FT_HEADER_FORCED, true );
+        }
     }
     if( ForcePreInclude != NULL ) {
         openForcePreInclude();
@@ -978,7 +1015,9 @@ static void CPP_Parse( void )
 {
     if( ForceInclude != NULL ) {
         CppPrtChar( '\n' );
-        OpenSrcFile( ForceInclude, FT_HEADER_FORCED );
+        if( !OpenSrcFile( ForceInclude, FT_HEADER_FORCED ) ) {
+            CppPrtfFilenameErr( ForceInclude, FT_HEADER_FORCED, true );
+        }
     }
     CurToken = T_NULL;
     while( CurToken != T_EOF ) {
@@ -1075,55 +1114,108 @@ static void DoCCompile( char **cmdline )
     FreeIncFileList();
 }
 
-bool OpenSrcFile( const char *filename, src_file_type typ )
+static bool try_open_file( const char *path, path_descr *fp, path_descr *fa, src_file_type typ )
+{
+    bool    ok;
+    bool    truncated;
+    char    save_chr_name;
+    char    save_chr_ext;
+
+    // try to open regular name
+    ok = TryOpen( path, fp, typ );
+    if( ok ) {
+        return( ok );
+    }
+    if( fa != NULL ) {
+        // try to open alias name if defined
+        ok = TryOpen( path, fa, typ );
+        if( ok ) {
+            return( ok );
+        }
+    }
+    if( CompFlags.check_truncated_fnames ) {
+        save_chr_name = fp->fnm[8];
+        save_chr_ext = fp->ext[4];
+        truncated = false;
+        if( strlen( fp->fnm ) > 8 ) {
+            fp->fnm[8] = '\0';
+            truncated = true;
+        }
+        if( strlen( fp->ext ) > 4 ) {
+            fp->fnm[4] = '\0';
+            truncated = true;
+        }
+        if( truncated ) {
+            // try to open truncated name if enabled
+            ok = TryOpen( path, fp, typ );
+            if( ok ) {
+                return( ok );
+            }
+            fp->fnm[8] = save_chr_name;
+            fp->ext[4] = save_chr_ext;
+        }
+    }
+    return( ok );
+}
+
+static bool doOpenSrcFile( path_descr *fp, path_descr *fa, src_file_type typ )
 {
     char        *s;
     char        *p;
     char        buff[_MAX_PATH2];
     char        try[_MAX_PATH];
-    char        *drive;
-    char        *dir;
-    bool        save;
     FCB         *curr;
     char        c;
-    bool        is_lib;
+    path_descr  fd;
 
-    is_lib = ( typ == FT_LIBRARY || typ == FT_HEADER_PRE );
-
-    // See if there's an alias for this filename
-    filename = IncludeAlias( filename, is_lib );
-
-    // include path here...
-    _splitpath2( filename, buff, &drive, &dir, NULL, NULL );
-    if( drive[0] != '\0' || IS_DIR_SEP( dir[0] ) ) {
+    if( typ == FT_SRC ) {
+        if( try_open_file( "", fp, NULL, typ ) )
+            return( true );
+        if( !CompFlags.ignore_default_dirs ) {
+            if( try_open_file( C_PATH, fp, NULL, typ ) ) {
+                return( true );
+            }
+        }
+        return( false );
+    }
+    if( fp->drv[0] != '\0' || IS_DIR_SEP( fp->dir[0] ) ) {
         // try absolute path
         // if drive letter given or path from root given
-        if( TryOpen( "", filename, typ ) ) {
+        if( try_open_file( "", fp, fa, typ ) ) {
             return( true );
         }
     } else {
-        if( !is_lib ) {
+        switch( typ ) {
+        case FT_HEADER_PRE:
+        case FT_LIBRARY:
+            break;
+        case FT_HEADER:
+        case FT_HEADER_FORCED:
             if( CompFlags.ignore_default_dirs ) {
+                try[0] = '\0';
                 // physical file name must be used, not logical
-                _splitpath2( SrcFile->src_flist->name, buff, &drive, &dir, NULL, NULL );
-                _makepath( try, drive, dir, filename, NULL );
-                if( TryOpen( "", try, typ ) ) {
+                _splitpath2( SrcFile->src_flist->name, fd.buffer, &fd.drv, &fd.dir, NULL, NULL );
+                _makepath( try, fd.drv, fd.dir, NULL, NULL );
+                if( try_open_file( try, fp, fa, typ ) ) {
                     return( true );
                 }
             } else {
                 // try current directory
-                if( !GlobalCompFlags.ignore_current_dir && TryOpen( "", filename, typ ) ) {
-                    return( true );
+                if( !GlobalCompFlags.ignore_current_dir ) {
+                    if( try_open_file( "", fp, fa, typ ) ) {
+                        return( true );
+                    }
                 }
                 for( curr = SrcFile; curr!= NULL; curr = curr->prev_file ) {
                     // physical file name must be used, not logical
-                    _splitpath2( curr->src_flist->name, buff, &drive, &dir, NULL, NULL );
-                    _makepath( try, drive, dir, filename, NULL );
-                    if( TryOpen( "", try, typ ) ) {
+                    _splitpath2( curr->src_flist->name, fd.buffer, &fd.drv, &fd.dir, NULL, NULL );
+                    _makepath( try, fd.drv, fd.dir, NULL, NULL );
+                    if( try_open_file( try, fp, fa, typ ) ) {
                         return( true );
                     }
                 }
             }
+            break;
         }
         s = IncPathList;
         while( (c = *s) != '\0' ) {
@@ -1139,33 +1231,54 @@ bool OpenSrcFile( const char *filename, src_file_type typ )
                 *p++ = DIR_SEP;
             }
             *p = '\0';
-            if( TryOpen( buff, filename, typ ) ) {
+            if( try_open_file( buff, fp, fa, typ ) ) {
                 return( true );
             }
         }
-        if( !is_lib ) {
+        switch( typ ) {
+        case FT_HEADER_PRE:
+        case FT_LIBRARY:
+            break;
+        case FT_HEADER:
+        case FT_HEADER_FORCED:
             if( !CompFlags.ignore_default_dirs ) {
                 // try current ../h directory
-                if( TryOpen( H_PATH, filename, typ ) ) {
+                if( try_open_file( H_PATH, fp, fa, typ ) ) {
                     return( true );
                 }
             }
+            break;
         }
     }
-    save = CompFlags.cpp_output;
-    if( CompFlags.cpp_output ) {
-        if( is_lib ) {
-            CppPrtf( "#include <%s>", filename );
-        } else {
-            CppPrtf( "#include \"%s\"", filename );
-        }
-        CompFlags.cpp_output = false;
-    }
-    if( !CompFlags.ignore_fnf ) {
-        CErr2p( ERR_CANT_OPEN_FILE, filename );
-    }
-    CompFlags.cpp_output = save;
     return( false );
+}
+
+
+bool OpenSrcFile( const char *filename, src_file_type typ )
+{
+    const char  *alias_filename;
+    path_descr  fp;
+    path_descr  fa;
+    path_descr  *fap;
+
+    _splitpath2( filename, fp.buffer, &fp.drv, &fp.dir, &fp.fnm, &fp.ext );
+    fap = NULL;
+    switch( typ ) {
+    case FT_SRC:
+        break;
+    case FT_HEADER:
+    case FT_HEADER_FORCED:
+    case FT_HEADER_PRE:
+    case FT_LIBRARY:
+        // See if there's an alias for this filename
+        alias_filename = IncludeAlias( filename, ( typ == FT_LIBRARY || typ == FT_HEADER_PRE ) );
+        if( alias_filename != NULL ) {
+            _splitpath2( alias_filename, fa.buffer, &fa.drv, &fa.dir, &fa.fnm, &fa.ext );
+            fap = &fa;
+        }
+        break;
+    }
+    return( doOpenSrcFile( &fp, fap, typ ) );
 }
 
 

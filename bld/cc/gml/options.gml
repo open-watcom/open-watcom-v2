@@ -532,10 +532,20 @@
 :usage. set error file name
 :jusage. エラー･ファイル名を設定します
 
+:option. ft
+:target. any
+:usage. check for truncated versions of file names
+:jusage. 切り詰めたファイル名をチェックします
+
 :option. fti
 :target. any
 :usage. print informational message when opening include file
 :jusage.
+
+:option. fx
+:target. any
+:usage. do not check for truncated versions of file names
+:jusage. 切り詰めたファイル名をチェックしません
 
 :usagegrp. fp Generate Floating-point code
 
