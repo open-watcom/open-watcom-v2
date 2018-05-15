@@ -492,8 +492,8 @@ static const char *openSrcExts( // ATTEMPT TO OPEN FILE (EXT.S TO BE APPENDED)
 
 static bool openSrcPath(        // ATTEMPT TO OPEN FILE (PATH TO BE PREPENDED)
     const char *path,           // - path
-    const char **exts,          // - file extensions
     struct path_descr *fd,      // - file descriptor
+    const char **exts,          // - file extensions
     src_file_type typ )         // - type of file being opened
 {
     bool ok;                    // - return: true ==> opened
@@ -531,28 +531,43 @@ static bool openSrcPath(        // ATTEMPT TO OPEN FILE (PATH TO BE PREPENDED)
     return( ok );
 }
 
-static bool try_open_file( struct path_descr *fd, struct path_descr *fa, const char *path, const char **exts, src_file_type typ )
+static bool try_open_file( const char *path, struct path_descr *fd, struct path_descr *fa, const char **exts, src_file_type typ )
 {
     bool    ok;
+    bool    truncated;
+    char    save_chr_name;
+    char    save_chr_ext;
 
-    ok = openSrcPath( path, exts, fd, typ );
+    ok = openSrcPath( path, fd, exts, typ );
     if( ok ) {
         return( ok );
     }
     if( fa != NULL ) {
-        ok = openSrcPath( path, exts, fa, typ );
+        ok = openSrcPath( path, fa, exts, typ );
         if( ok ) {
             return( ok );
         }
     }
-    if( CompFlags.check_truncated_fnames && strlen( fd->fnm ) > 8 ) {
-        char save_chr = fd->fnm[8];
-        fd->fnm[8] = '\0';
-        ok = openSrcPath( path, exts, fd, typ );
-        if( ok ) {
-            return( ok );
+    if( CompFlags.check_truncated_fnames ) {
+        save_chr_name = fd->fnm[8];
+        save_chr_ext = fd->ext[4];
+        truncated = false;
+        if( strlen( fd->fnm ) > 8 ) {
+            fd->fnm[8] = '\0';
+            truncated = true;
         }
-        fd->fnm[8] = save_chr;
+        if( strlen( fd->ext ) > 4 ) {
+            fd->ext[4] = '\0';
+            truncated = true;
+        }
+        if( truncated ) {
+            ok = openSrcPath( path, fd, exts, typ );
+            if( ok ) {
+                return( ok );
+            }
+            fd->fnm[8] = save_chr_name;
+            fd->ext[4] = save_chr_ext;
+        }
     }
     return( ok );
 }
@@ -595,12 +610,12 @@ static bool doIoSuppOpenSrc(    // OPEN A SOURCE FILE (PRIMARY,HEADER)
             ok = true;
             break;
         }
-        ok = openSrcPath( "", exts, fd, typ );
+        ok = openSrcPath( "", fd, exts, typ );
         if( ok )
             break;
         if( !CompFlags.ignore_default_dirs && !IS_DIR_SEP( fd->dir[0] ) ) {
             for( paths = pathSrc; (path = *paths) != NULL; ++paths ) {
-                ok = openSrcPath( path, exts, fd, typ );
+                ok = openSrcPath( path, fd, exts, typ );
                 if( ok ) {
                     break;
                 }
@@ -618,7 +633,7 @@ static bool doIoSuppOpenSrc(    // OPEN A SOURCE FILE (PRIMARY,HEADER)
             if( alias_abs )
                 fa = fai;
             alias_abs = false;
-            ok = try_open_file( fd, fa, "", exts, typ );
+            ok = try_open_file( "", fd, fa, exts, typ );
             break;
         }
         /* if alias contains abs path then check it after last check for regular name */
@@ -633,14 +648,14 @@ static bool doIoSuppOpenSrc(    // OPEN A SOURCE FILE (PRIMARY,HEADER)
                     splitFileName( SrcFileName( curr ), &idescr );
                     _makepath( bufpth, idescr.drv, idescr.dir, NULL, NULL );
                 }
-                ok = try_open_file( fd, fa, bufpth, exts, typ );
+                ok = try_open_file( bufpth, fd, fa, exts, typ );
                 if( ok ) {
                     break;
                 }
             } else {
                 if( !CompFlags.ignore_current_dir ) {
                     // check for current directory
-                    ok = try_open_file( fd, fa, "", exts, typ );
+                    ok = try_open_file( "", fd, fa, exts, typ );
                     if( ok ) {
                         break;
                     }
@@ -654,7 +669,7 @@ static bool doIoSuppOpenSrc(    // OPEN A SOURCE FILE (PRIMARY,HEADER)
                     _makepath( bufpth, idescr.drv, idescr.dir, NULL, NULL );
                     /*optimization: don't try and open if in previously checked dir*/
                     if( strcmp( bufpth, prevpth ) != 0 ) {
-                        ok = try_open_file( fd, fa, bufpth, exts, typ );
+                        ok = try_open_file( bufpth, fd, fa, exts, typ );
                         if( ok ) {
                             break;
                         }
@@ -672,7 +687,7 @@ static bool doIoSuppOpenSrc(    // OPEN A SOURCE FILE (PRIMARY,HEADER)
             HFileListNext( bufpth );
             if( *bufpth == '\0' )
                 break;
-            ok = try_open_file( fd, fa, bufpth, exts, typ );
+            ok = try_open_file( bufpth, fd, fa, exts, typ );
             if( ok ) {
                 break;
             }
@@ -682,24 +697,24 @@ static bool doIoSuppOpenSrc(    // OPEN A SOURCE FILE (PRIMARY,HEADER)
         }
         if( typ != FT_LIBRARY && !CompFlags.ignore_default_dirs && !IS_DIR_SEP( fd->dir[0] ) ) {
             for( paths = pathHdr; (path = *paths) != NULL; ++paths ) {
-                ok = try_open_file( fd, fa, path, exts, typ );
+                ok = try_open_file( path, fd, fa, exts, typ );
                 if( ok ) {
                     break;
                 }
             }
         }
         if( alias_abs ) {
-            ok = openSrcPath( "", exts, fai, typ );
+            ok = openSrcPath( "", fai, exts, typ );
         }
         break;
     case FT_CMD:
         exts = extsCmd;
-        ok = openSrcPath( "", exts, fd, typ );
+        ok = openSrcPath( "", fd, exts, typ );
         if( ok )
             break;
         if( !IS_DIR_SEP( fd->dir[0] ) ) {
             for( paths = pathCmd; (path = *paths) != NULL; ++paths ) {
-                ok = openSrcPath( path, exts, fd, typ );
+                ok = openSrcPath( path, fd, exts, typ );
                 if( ok ) {
                     break;
                 }
@@ -764,16 +779,7 @@ bool IoSuppOpenSrc(             // OPEN A SOURCE FILE (PRIMARY,HEADER)
         }
         break;
     }
-    if( doIoSuppOpenSrc( &fd, fap, typ ) ) {
-        return( true );
-    }
-    if( CompFlags.check_truncated_fnames && strlen( fd.fnm ) > 8 ) {
-        fd.fnm[8] = '\0';
-        if( doIoSuppOpenSrc( &fd, NULL, typ ) ) {
-            return( true );
-        }
-    }
-    return( false );
+    return( doIoSuppOpenSrc( &fd, fap, typ ) );
 }
 
 static void tempFname( char *fname )

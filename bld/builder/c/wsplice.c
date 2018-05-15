@@ -299,8 +299,8 @@ static FILE *OpenFileTruncate(
             fname[8] = '\0';
             truncated = true;
         }
-        if( ext != NULL && strlen( ext ) > 3 ) {
-            ext[3] = '\0';
+        if( ext != NULL && strlen( ext ) > 4 ) {
+            ext[4] = '\0';
             truncated = true;
         }
         if( truncated ) {
