@@ -61,14 +61,14 @@ Lexer::Token Table::parse( Lexer* lexer )
     tbBorder( false );
     while( tok != Lexer::END && !( tok == Lexer::TAG && lexer->tagId() == Lexer::EUSERDOC ) ) {
         //allowed: '\n', command, :row.
-        if( tok == Lexer::WHITESPACE && lexer->text()[ 0 ] == L'\n' )
+        if( tok == Lexer::WHITESPACE && lexer->text()[ 0 ] == L'\n' ) {
             tok = document->getNextToken();     //ignore \n's
-        else if( tok == Lexer::COMMAND )
+        } else if( tok == Lexer::COMMAND ) {
             tok = document->processCommand( lexer, this );
-        else if( tok == Lexer::TAG ) {
-            if( lexer->tagId() == Lexer::ETABLE )
+        } else if( tok == Lexer::TAG ) {
+            if( lexer->tagId() == Lexer::ETABLE ) {
                 break;
-            else if( lexer->tagId() == Lexer::TROW ) {
+            } else if( lexer->tagId() == Lexer::TROW ) {
                 if( rowCount )
                     rowRule();
                 Element* elt( new TableRow( document, this, document->dataName(),
@@ -76,13 +76,11 @@ Lexer::Token Table::parse( Lexer* lexer )
                 appendChild( elt );
                 tok = elt->parse( lexer );
                 ++rowCount;
-            }
-            else {
+            } else {
                 document->printError( ERR1_TAGCONTEXT );
                 parseCleanup( lexer, tok );
             }
-        }
-        else {
+        } else {
             document->printError( ERR1_TABLETEXT );
             tok = document->getNextToken();
         }
@@ -109,40 +107,40 @@ Lexer::Token Table::parseAttributes( Lexer* lexer )
                     idx1 = idx2 == std::wstring::npos ? std::wstring::npos : idx2 + 1;
                     idx2 = value.find( L' ', idx1 );
                 }
-            }
-            else if( key == L"rules" ) {
-                if( value == L"none" )
+            } else if( key == L"rules" ) {
+                if( value == L"none" ) {
                     rules = NO_RULES;
-                else if( value == L"horiz" )
+                } else if( value == L"horiz" ) {
                     rules = HORIZONTAL;
-                else if( value == L"vert" )
+                } else if( value == L"vert" ) {
                     rules = VERTICAL;
-                else if( value == L"both" )
+                } else if( value == L"both" ) {
                     rules = BOTH;
-                else
+                } else {
                     document->printError( ERR2_VALUE );
-            }
-            else if( key == L"frame" ) {
-                if( value == L"none" )
+                }
+            } else if( key == L"frame" ) {
+                if( value == L"none" ) {
                     frame = NO_FRAME;
-                else if( value == L"rules" )
+                } else if( value == L"rules" ) {
                     frame = RULES;
-                else if( value == L"box" )
+                } else if( value == L"box" ) {
                     frame = BOX;
-                else
+                } else {
                     document->printError( ERR2_VALUE );
-            }
-            else
+                }
+            } else {
                 document->printError( ERR1_ATTRNOTDEF );
-        }
-        else if( tok == Lexer::FLAG )
+            }
+        } else if( tok == Lexer::FLAG ) {
             document->printError( ERR1_ATTRNOTDEF );
-        else if( tok == Lexer::ERROR_TAG )
+        } else if( tok == Lexer::ERROR_TAG ) {
             throw FatalError( ERR_SYNTAX );
-        else if( tok == Lexer::END )
+        } else if( tok == Lexer::END ) {
             throw FatalError( ERR_EOF );
-        else
+        } else {
             document->printError( ERR1_TAGSYNTAX );
+        }
         tok = document->getNextToken();
     }
     if( colWidth.empty() )
@@ -176,38 +174,39 @@ void Table::tbBorder( bool bottom )
                     if( bottom ) {
                         txt1.push_back( document->entity( L"&bxll." ) );
                         txt3.push_back( document->entity( L"&bxlr." ) );
-                        if( rules & VERTICAL )
+                        if( rules & VERTICAL ) {
                             txt2.push_back( document->entity( L"&bxas." ) );
-                        else
+                        } else {
                             txt2.push_back( ch );
-                    }
-                    else {
+                        }
+                    } else {
                         txt1.push_back( document->entity( L"&bxul." ) );
                         txt3.push_back( document->entity( L"&bxur." ) );
-                        if( rules & VERTICAL )
+                        if( rules & VERTICAL ) {
                             txt2.push_back( document->entity( L"&bxde." ) );
-                        else
+                        } else {
                             txt2.push_back( ch );
+                        }
                     }
-                }
-                else {
+                } else {
                     txt1.push_back( ch );
                     txt3.push_back( ch );
                     if( rules & VERTICAL ) {
-                        if( bottom )
+                        if( bottom ) {
                             txt2.push_back( document->entity( L"&bxas." ) );
-                        else
+                        } else {
                             txt2.push_back( document->entity( L"&bxde." ) );
-                    }
-                    else
+                        }
+                    } else {
                         txt2.push_back( ch );
+                    }
                 }
-            }
-            else {
+            } else {
                 txt1.push_back( L' ' );
                 txt3.push_back( L' ' );
-                if( rules & VERTICAL )
+                if( rules & VERTICAL ) {
                     txt2.push_back( document->entity( L"&bxv." ) );
+                }
             }
         }
         catch( Class2Error& e ) {
@@ -252,27 +251,26 @@ void Table::rowRule()
                 if( rules & HORIZONTAL ) {
                     txt1.push_back( document->entity( L"&bxlj." ) );
                     txt3.push_back( document->entity( L"&bxrj." ) );
-                }
-                else {
+                } else {
                     txt1.push_back( document->entity( L"&bxv." ) );
                     txt3.push_back( document->entity( L"&bxv." ) );
                 }
-            }
-            else {
+            } else {
                 txt1.push_back( L' ' );
                 txt3.push_back( L' ' );
             }
             if( rules & HORIZONTAL ) {
                 ch = document->entity( L"&bxh." );
-                if( rules & VERTICAL )
+                if( rules & VERTICAL ) {
                     txt2.push_back( document->entity( L"&bxcr." ) );
-                else
+                } else {
                     txt2.push_back( ch );
-            }
-            else if( rules & VERTICAL )
+                }
+            } else if( rules & VERTICAL ) {
                 txt2.push_back( document->entity( L"&bxv." ) );
-            else
+            } else {
                 txt2.push_back( L' ' );
+            }
         }
         catch( Class2Error& e ) {
             printError( e.code );
@@ -321,8 +319,9 @@ void ETable::buildText( Cell* cell )
 /*****************************************************************************/
 TableRow::~TableRow()
 {
-    for( ColIter itr = columns.begin(); itr != columns.end(); ++itr )
+    for( ColIter itr = columns.begin(); itr != columns.end(); ++itr ) {
         delete *itr;
+    }
 }
 /*****************************************************************************/
 Lexer::Token TableRow::parse( Lexer* lexer )
@@ -334,19 +333,20 @@ Lexer::Token TableRow::parse( Lexer* lexer )
     std::wstring txt2( 1, rules & Table::VERTICAL ? document->entity( L"&bxv." ) : L' ' );
     while( tok != Lexer::END && !( tok == Lexer::TAG && lexer->tagId() == Lexer::EUSERDOC ) ) {
         //allowed: '\n', command, :c.
-        if( tok == Lexer::WHITESPACE && lexer->text()[ 0 ] == L'\n' )
+        if( tok == Lexer::WHITESPACE && lexer->text()[ 0 ] == L'\n' ) {
             tok = document->getNextToken();     //ignore \n's
-        else if( tok == Lexer::COMMAND )
+        } else if( tok == Lexer::COMMAND ) {
             tok = document->processCommand( lexer, this );
-        else if( tok == Lexer::TAG ) {
-            if( lexer->tagId() == Lexer::ETABLE || lexer->tagId() == Lexer::TROW )
+        } else if( tok == Lexer::TAG ) {
+            if( lexer->tagId() == Lexer::ETABLE || lexer->tagId() == Lexer::TROW ) {
                 break;
-            else if( lexer->tagId() == Lexer::TCOL ) {
+            } else if( lexer->tagId() == Lexer::TCOL ) {
                 unsigned char width( 0 );
-                if( colCount < colWidth.size() )
+                if( colCount < colWidth.size() ) {
                     width = colWidth[ colCount ];
-                else
+                } else {
                     document->printError( ERR1_TABLECELLCOUNTHIGH );
+                }
                 TableCol* tablecol( new TableCol( document, this, document->dataName(),
                     document->lexerLine(), document->lexerCol(), width ) );
                 columns.push_back( tablecol );
@@ -354,13 +354,11 @@ Lexer::Token TableRow::parse( Lexer* lexer )
                 tok = tablecol->parse( lexer );
                 if( tablecol->rows() > rows )
                     rows = tablecol->rows();
-            }
-            else {
+            } else {
                 document->printError( ERR1_TAGCONTEXT );
                 parseCleanup( lexer, tok );
             }
-        }
-        else {
+        } else {
             document->printError( ERR1_TABLETEXT );
             tok = document->getNextToken();
         }
@@ -382,17 +380,18 @@ Lexer::Token TableRow::parse( Lexer* lexer )
             if( count1 < columns[ count2 ]->rows() &&
                 columns[ count2 ]->rowData( count1 ).size() ) {
                 std::list< Element* >& data = columns[ count2 ]->rowData( count1 );
-                for( ChildrenIter itr = data.begin(); itr != data.end(); ++itr )
+                for( ChildrenIter itr = data.begin(); itr != data.end(); ++itr ) {
                     appendChild( *itr );
-            }
-            else {  //it's blank
+                }
+            } else {  //it's blank
                 std::wstring blank( colWidth[ count2 ], L' ' );
                 appendChild( new WhiteSpace( document, this, document->dataName(),
                     document->lexerLine(), document->lexerCol(), blank, whiteSpace ) );
             }
-            if( count2 < colWidth.size() - 1 )
+            if( count2 < colWidth.size() - 1 ) {
                 appendChild( new Word( document, this, document->dataName(),
                     document->lexerLine(), document->lexerCol(), txt2 ) );
+            }
         }
         if( frame == Table::BOX )
             appendChild( new Word( document, this, document->dataName(),
@@ -431,24 +430,23 @@ Lexer::Token TableCol::parse( Lexer* lexer )
             std::wstring txt( lexer->text() );  //get text from lexer
             tok = document->getNextToken();
             while( tok == Lexer::WORD || tok == Lexer::ENTITY ) {
-                if( tok == Lexer::WORD )
+                if( tok == Lexer::WORD ) {
                     txt += lexer->text();       //part of a compound ...-word-entity-word-...
-                else if( tok == Lexer::ENTITY ) {
+                } else if( tok == Lexer::ENTITY ) {
                     const std::wstring* exp( document->nameit( lexer->text() ) );
                     if( exp ) {
                         std::wstring* name( document->prepNameitName( lexer->text() ) );
                         IpfBuffer* buffer( new IpfBuffer( name, document->dataLine(), document->dataCol(), *exp ) );
                         document->pushInput( buffer );
-                    }
-                    else {
+                    } else {
                         try {
                             wchar_t entity( document->entity( lexer->text() ) );
                             if ( std::iswpunct( entity ) ) {
                                 nextIsPunct = true;
                                 break;
-                            }
-                            else
+                            } else {
                                 txt += entity;
+                            }
                         }
                         catch( Class2Error& e ) {
                             document->printError( e.code );
@@ -471,8 +469,7 @@ Lexer::Token TableCol::parse( Lexer* lexer )
                     appendData( cellLine, word );
                     spaces -= txtSize;
                 }
-            }
-            else {
+            } else {
                 if( txt.size() > static_cast< std::string::size_type >( colWidth ) ) {
                     txt.erase( colWidth );  //trim text
                     txtSize = colWidth;
@@ -499,8 +496,7 @@ Lexer::Token TableCol::parse( Lexer* lexer )
                 if( txtSize < colWidth && ( nextIsPunct || tok == Lexer::PUNCTUATION ) )
                     ++spaces;
             }
-        }
-        else if( tok == Lexer::ENTITY ) {
+        } else if( tok == Lexer::ENTITY ) {
             const std::wstring* nameittxt( document->nameit( lexer->text() ) ); //lookup nameit
             if( nameittxt ) {
                 std::wstring* name( document->prepNameitName( lexer->text() ) );
@@ -529,16 +525,16 @@ Lexer::Token TableCol::parse( Lexer* lexer )
                 tok = document->getNextToken();
                 if( !std::iswpunct( entity ) ) {
                     while( tok == Lexer::WORD || tok == Lexer::ENTITY ) {
-                        if( tok == Lexer::WORD )
+                        if( tok == Lexer::WORD ) {
                             entitytxt += lexer->text();       //part of a compound ...-word-entity-word-...
-                        else if( tok == Lexer::ENTITY ) {
+                        } else if( tok == Lexer::ENTITY ) {
                             entity = document->entity( lexer->text() );
                             if ( std::iswpunct( entity ) ) {
                                 nextIsPunct = true;
                                 break;
-                            }
-                            else
+                            } else {
                                 entitytxt += entity;
+                            }
                         }
                         tok = document->getNextToken();
                     }
@@ -556,8 +552,7 @@ Lexer::Token TableCol::parse( Lexer* lexer )
                         appendData( cellLine, ent );
                         spaces -= txtSize;
                     }
-                }
-                else {
+                } else {
                     if( entitytxt.size() > static_cast< std::string::size_type >( colWidth ) ) {
                         entitytxt.erase( colWidth );  //trim text
                         txtSize = colWidth;
@@ -581,16 +576,16 @@ Lexer::Token TableCol::parse( Lexer* lexer )
                     }
                     appendData( cellLine, ent );
                     spaces -= txtSize;
-                    if( txtSize < colWidth && ( nextIsPunct || tok == Lexer::PUNCTUATION ) )
+                    if( txtSize < colWidth && ( nextIsPunct || tok == Lexer::PUNCTUATION ) ) {
                         ++spaces;
+                    }
                 }
             }
             catch( Class2Error& e ) {
                 document->printError( e.code );
                 tok = document->getNextToken();
             }
-        }
-        else if( tok == Lexer::PUNCTUATION ) {
+        } else if( tok == Lexer::PUNCTUATION ) {
             if( inLines ) {
                 if( currentLine < document->dataLine() ) {
                     currentLine = document->dataLine();
@@ -611,8 +606,7 @@ Lexer::Token TableCol::parse( Lexer* lexer )
                 appendData( cellLine, punct );
                 --spaces;
                 }
-            }
-            else {
+            } else {
                 if( spaces == 0 ) {
                     std::list< Element* > lst;
                     data.push_back( lst );
@@ -625,11 +619,10 @@ Lexer::Token TableCol::parse( Lexer* lexer )
                 --spaces;
             }
             tok = document->getNextToken();
-        }
-        else if( tok == Lexer::WHITESPACE ) {
-            if( lexer->text()[0] == L'\n' )     //ignore \n's
+        } else if( tok == Lexer::WHITESPACE ) {
+            if( lexer->text()[0] == L'\n' ) {   //ignore \n's
                 tok = document->getNextToken();
-            else if( inLines ) {
+            } else if( inLines ) {
                 if( currentLine < document->dataLine() ) {
                     currentLine = document->dataLine();
                     if( spaces > 0 ) {
@@ -654,8 +647,7 @@ Lexer::Token TableCol::parse( Lexer* lexer )
                     spaces -= whitespacetxt.size();
                 }
                 tok = document->getNextToken();
-            }
-            else {
+            } else {
                 std::wstring whitespacetxt( lexer->text() );  //get text from lexer
                 tok = document->getNextToken();
                 while( tok == Lexer::WHITESPACE ) { //accumulate whitespace
@@ -672,10 +664,9 @@ Lexer::Token TableCol::parse( Lexer* lexer )
                     spaces -= whitespacetxt.size();
                 }
             }
-        }
-        else if( tok == Lexer::COMMAND )
+        } else if( tok == Lexer::COMMAND ) {
             tok = document->processCommand( lexer, this );
-        else if( tok == Lexer::TAG ) {
+        } else if( tok == Lexer::TAG ) {
             switch( lexer->tagId() ) {
             case Lexer::COLOR:
                 {
@@ -897,12 +888,10 @@ Lexer::Token TableCol::parse( Lexer* lexer )
                 tok = document->getNextToken();
                 break;
             }
-        }
-        else if( tok == Lexer::ERROR_TAG ) {
+        } else if( tok == Lexer::ERROR_TAG ) {
             document->printError( ERR1_TAGNOTDEF );
             tok = document->getNextToken();
-        }
-        else if( tok == Lexer::ERROR_ENTITY ) {
+        } else if( tok == Lexer::ERROR_ENTITY ) {
             document->printError( ERR1_TAGNOTDEF );
             tok = document->getNextToken();
         }
