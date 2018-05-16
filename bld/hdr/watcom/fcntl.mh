@@ -19,6 +19,13 @@
 :endsegment
 
 /* 
+ *  ISO C types
+ */
+:keep EXTWCHART
+:include wchar_t.sp
+:remove EXTWCHART
+
+/* 
  *  POSIX 1003.1 types
  */
 :include off_t.sp
@@ -32,6 +39,10 @@
 
 #include _ARCH_INCLUDE(fcntl.h)
 
+:endsegment
+:include modedef.sp
+
+:segment LINUX
 /* For now Linux has synchronicity options for data and read operations.
  * We define the symbols here but let them do the same as O_SYNC since
  * this is a superset.
@@ -185,13 +196,6 @@ typedef struct flock {
 #define _O_BINARY       O_BINARY
 #define _O_EXCL         O_EXCL
 :include extepi.sp
-
-/* 
- *  ISO C types
- */
-:keep EXTWCHART
-:include wchar_t.sp
-:remove EXTWCHART
 
 /*
  *  POSIX 1003.1 Prototypes.

@@ -74,3 +74,9 @@ struct stat64 {
     unsigned long       st_pad2;
     long long           st_blocks;
 };
+
+/* Tell code we have these members.  */
+#define _STATBUF_ST_BLKSIZE
+#define _STATBUF_ST_RDEV
+
+#define STAT_HAVE_NSEC 1

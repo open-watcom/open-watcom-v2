@@ -64,4 +64,8 @@ struct stat64 {
     unsigned long long      st_ino;
 };
 
+/* Tell code we have these members.  */
+#define _STATBUF_ST_BLKSIZE
+#define _STATBUF_ST_RDEV
+
 #define STAT_HAVE_NSEC 1
