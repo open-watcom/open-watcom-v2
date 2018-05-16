@@ -1142,7 +1142,7 @@ static bool try_open_file( const char *path, path_descr *fp, path_descr *fa, src
             truncated = true;
         }
         if( strlen( fp->ext ) > 4 ) {
-            fp->fnm[4] = '\0';
+            fp->ext[4] = '\0';
             truncated = true;
         }
         if( truncated ) {
