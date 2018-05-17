@@ -44,13 +44,11 @@ bool InterpretComent;
 bool quiet;
 bool TranslateIndex;
 
-NO_RETURN( static void usage( void ) );
-
 void leave( int rc )
 {
     OutputSetFH( stdout );
     OutputFini();
-    exit( rc );
+    exit( rc ); // never return
 }
 
 static void ShowProductInfo( void )
@@ -79,7 +77,6 @@ static void usage( void )
     Output( "-r\t\tProvide raw dump of records as well" CRLF );
     Output( "-rec=xxx\tProvide dump of selected record type" CRLF );
     Output( "\t\t  (by number or by symbolic name)" CRLF );
-    leave( 1 );
 }
 
 int main( int argc, char **argv )
@@ -145,6 +142,7 @@ int main( int argc, char **argv )
                 break;
             default:
                 usage();
+                leave( 1 ); // never return
             }
         } else {
             break;
@@ -152,6 +150,7 @@ int main( int argc, char **argv )
     }
     if( i == argc ) {
         usage();
+        leave( 1 ); // never return
     }
 
     ShowProductInfo();
@@ -166,14 +165,14 @@ int main( int argc, char **argv )
         fp = fopen( fn, "rb" );
         if( fp == NULL ) {
             Output( "Cannot open '%s' for reading" CRLF, fn );
-            leave( 20 );
+            leave( 20 );    // never return
         }
         if( list_file ) {
             _makepath( file, drive, dir, fname, LSTSUFFIX );
             fh = fopen( file, "w" );
             if( fh == NULL ) {
                 Output( "Cannot open '%s' for writing" CRLF, file );
-                leave( 20 );
+                leave( 20 );    // never return
             }
             OutputSetFH( fh );
         }
@@ -181,5 +180,7 @@ int main( int argc, char **argv )
         fclose( fp );
         OutputSetFH( stdout );  /* does fclose() if necessary */
     }
-    leave( 0 );
+    leave( 0 ); // never return
+    // next is for compilers not supporting "no return" function modifier
+    NO_RETURN_FAKE( return( 0 ) );
 }

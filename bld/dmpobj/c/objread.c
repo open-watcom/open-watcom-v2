@@ -421,7 +421,7 @@ void ResizeBuff( unsigned_16 reqd_len ) {
         if( RecBuff == NULL ) {
             OutputSetFH( stdout );
             Output( CRLF "**FATAL** Out of memory!" CRLF );
-            leave( 20 );
+            leave( 20 );    // never return
         }
     }
 }
@@ -434,7 +434,7 @@ void AddLname( void ) {
     if( entry == NULL ) {
         OutputSetFH( stdout );
         Output( CRLF "**FATAL** Out of memory!" CRLF );
-        leave( 21 );
+        leave( 21 );    // never return
     }
     if( Lnames == NULL ) {
         Lnames = entry;
@@ -536,7 +536,7 @@ void AddXname( void ) {
     if( entry == NULL ) {
         OutputSetFH( stdout );
         Output( CRLF "**FATAL** Out of memory!" CRLF );
-        leave( 21 );
+        leave( 21 );    // never return
     }
     if( Xnames == NULL ) {
         Xnames = entry;
@@ -596,7 +596,7 @@ void AddSegdef( unsigned_16 idx ) {
     if( entry == NULL ) {
         OutputSetFH( stdout );
         Output( CRLF "**FATAL** Out of memory!" CRLF );
-        leave( 21 );
+        leave( 21 );    // never return
     }
     if( Segdefs == NULL ) {
         Segdefs = entry;
@@ -660,7 +660,7 @@ void AddGrpdef( unsigned_16 grpidx, unsigned_16 segidx ) {
         if( entry == NULL ) {
             OutputSetFH( stdout );
             Output( CRLF "**FATAL** Out of memory!" CRLF );
-            leave( 21 );
+            leave( 21 );    // never return
         }
         entry->next = NULL;
         entry->grpind = grpidx;
@@ -683,7 +683,7 @@ void AddGrpdef( unsigned_16 grpidx, unsigned_16 segidx ) {
         if( Grpdefs == NULL ) {
             OutputSetFH( stdout );
             Output( CRLF "**FATAL** No grpdef entry!" CRLF );
-            leave( 21 );
+            leave( 21 );    // never return
         } else {
             wkentry = Grpdefs;
             for ( ;; ) {
