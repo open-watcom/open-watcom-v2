@@ -121,16 +121,16 @@ int main(int argc, char *argv[])
     printf("#include <stdio.h>\n");
     printf("#include \"awk.h\"\n");
     printf("#include \"ytab.h\"\n\n");
-    for (i = SIZE; --i >= 0; )
+    for( i = SIZE; --i >= 0; ) {
         names[i] = "";
-
+    }
     if ((fp = fopen("ytab.h", "r")) == NULL) {
         fprintf(stderr, "maketab can't open ytab.h!\n");
         exit(1);
     }
     printf("static char *printname[%d] = {\n", SIZE);
     i = 0;
-    while (fgets(buf, sizeof buf, fp) != NULL) {
+    while( fgets( buf, sizeof buf, fp ) != NULL ) {
         n = sscanf(buf, "%1c %s %s %d", &c, def, name, &tok);
         if (c != '#' || (n != 4 && strcmp(def,"define") != 0))  /* not a valid #define */
             continue;
@@ -138,22 +138,24 @@ int main(int argc, char *argv[])
             /* fprintf(stderr, "maketab funny token %d %s ignored\n", tok, buf); */
             continue;
         }
-        names[tok-FIRSTTOKEN] = (char *) malloc(strlen(name)+1);
-        strcpy(names[tok-FIRSTTOKEN], name);
-        printf("\t(char *) \"%s\",\t/* %d */\n", name, tok);
+        names[tok - FIRSTTOKEN] = (char *)malloc( strlen( name ) + 1 );
+        strcpy( names[tok - FIRSTTOKEN], name );
+        printf("\t(char *)\"%s\",\t/* %d */\n", name, tok);
         i++;
     }
     printf("};\n\n");
 
-    for (p=proc; p->token!=0; p++)
-        table[p->token-FIRSTTOKEN] = p->name;
-    printf("\nCell *(*proctab[%d])(Node **, int) = {\n", SIZE);
-    for (i=0; i<SIZE; i++)
-        if (table[i]==0)
+    for( p = proc; p->token != 0; p++ )
+        table[p->token - FIRSTTOKEN] = p->name;
+    printf( "\nCell *(*proctab[%d])(Node **, int) = {\n", SIZE );
+    for( i = 0; i < SIZE; i++ ) {
+        if( table[i] == '\0' ) {
             printf("\tnullproc,\t/* %s */\n", names[i]);
-        else
+        } else {
             printf("\t%s,\t/* %s */\n", table[i], names[i]);
-    printf("};\n\n");
+        }
+    }
+    printf( "};\n\n" );
 
     printf("char *tokname(int n)\n");   /* print a tokname() function */
     printf("{\n");

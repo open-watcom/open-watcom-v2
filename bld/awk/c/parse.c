@@ -29,16 +29,20 @@ THIS SOFTWARE.
 #include "awk.h"
 #include "ytab.h"
 
-Node *nodealloc(int n)
+
+extern Node *arglist;
+extern Cell *literal0;
+
+Node *nodealloc( int n )
 {
     Node *x;
 
-    x = (Node *) malloc(sizeof(Node) + (n-1)*sizeof(Node *));
-    if (x == NULL)
-        FATAL("out of space in nodealloc");
+    x = (Node *)malloc( sizeof( Node ) + ( n - 1 ) * sizeof( Node * ) );
+    if( x == NULL )
+        FATAL( "out of space in nodealloc" );
     x->nnext = NULL;
     x->lineno = lineno;
-    return(x);
+    return( x );
 }
 
 Node *exptostat(Node *a)
@@ -171,106 +175,120 @@ Node *celltonode(Cell *a, int b)
 
     a->ctype = OCELL;
     a->csub = b;
-    x = node1(0, (Node *) a);
+    x = node1(0, (Node *)a);
     x->ntype = NVALUE;
     return(x);
 }
 
 Node *rectonode(void)   /* make $0 into a Node */
 {
-    extern Cell *literal0;
     return op1(INDIRECT, celltonode(literal0, CUNK));
 }
 
-Node *makearr(Node *p)
+Node *makearr( Node *p )
 {
     Cell *cp;
 
-    if (isvalue(p)) {
-        cp = (Cell *) (p->narg[0]);
-        if (isfcn(cp))
+    if( isvalue( p ) ) {
+        cp = (Cell *)(p->narg[0]);
+        if( isfcn( cp ) ) {
             SYNTAX( "%s is a function, not an array", cp->nval );
-        else if (!isarr(cp)) {
-            xfree(cp->sval);
-            cp->sval = (char *) makesymtab(NSYMTAB);
+        } else if( !isarr( cp ) ) {
+            xfree( cp->sval );
+            cp->sval = (char *)makesymtab( NSYMTAB );
             cp->tval = ARR;
         }
     }
-    return p;
+    return( p );
 }
 
-#define PA2NUM  50  /* max number of pat,pat patterns allowed */
-int paircnt;        /* number of them in use */
+#define PA2NUM  50      /* max number of pat,pat patterns allowed */
+int paircnt;            /* number of them in use */
 int pairstack[PA2NUM];  /* state of each pat,pat */
 
-Node *pa2stat(Node *a, Node *b, Node *c)    /* pat, pat {...} */
+Node *pa2stat( Node *a, Node *b, Node *c )  /* pat, pat {...} */
 {
     Node *x;
 
-    x = node4(PASTAT2, a, b, c, itonp(paircnt));
-    if (paircnt++ >= PA2NUM)
+    x = node4( PASTAT2, a, b, c, itonp( paircnt ) );
+    if( paircnt++ >= PA2NUM )
         SYNTAX( "limited to %d pat,pat statements", PA2NUM );
     x->ntype = NSTAT;
-    return(x);
+    return( x );
 }
 
 Node *linkum(Node *a, Node *b)
 {
     Node *c;
 
-    if (errorflag)  /* don't link things that are wrong */
-        return a;
-    if (a == NULL)
-        return(b);
-    else if (b == NULL)
-        return(a);
-    for (c = a; c->nnext != NULL; c = c->nnext)
+    if( errorflag )  /* don't link things that are wrong */
+        return( a );
+    if( a == NULL ) {
+        return( b );
+    } else if( b == NULL ) {
+        return( a );
+    }
+    for( c = a; c->nnext != NULL; c = c->nnext ) {
         ;
+    }
     c->nnext = b;
-    return(a);
+    return( a );
 }
 
-void defn(Cell *v, Node *vl, Node *st)  /* turn on FCN bit in definition, */
-{                   /*   body of function, arglist */
+void defn( Cell *v, Node *vl, Node *st )
+/* turn on FCN bit in definition, */
+/*   body of function, arglist */
+{
     Node *p;
     int n;
 
-    if (isarr(v)) {
+    if( isarr( v ) ) {
         SYNTAX( "`%s' is an array name and a function name", v->nval );
         return;
     }
-    if (isarg(v->nval) != -1) {
+    if( isarg( v->nval ) != -1 ) {
         SYNTAX( "`%s' is both function name and argument name", v->nval );
         return;
     }
 
     v->tval = FCN;
-    v->sval = (char *) st;
+    v->sval = (char *)st;
     n = 0;  /* count arguments */
-    for (p = vl; p; p = p->nnext)
+    for( p = vl; p != NULL; p = p->nnext )
         n++;
     v->fval = n;
-    dprintf( ("defining func %s (%d args)\n", v->nval, n) );
+    dprintf(( "defining func %s (%d args)\n", v->nval, n ));
 }
 
-int isarg(const char *s)        /* is s in argument list for current function? */
-{           /* return -1 if not, otherwise arg # */
-    extern Node *arglist;
+int isarg( const char *s )
+/* is s in argument list for current function? */
+/* return -1 if not, otherwise arg # */
+{
     Node *p = arglist;
     int n;
 
-    for (n = 0; p != 0; p = p->nnext, n++)
-        if (strcmp(((Cell *)(p->narg[0]))->nval, s) == 0)
-            return n;
-    return -1;
+    for( n = 0; p != NULL; p = p->nnext, n++ ) {
+        if( strcmp( ((Cell *)(p->narg[0]))->nval, s ) == 0 ) {
+            return( n );
+        }
+    }
+    return( -1 );
 }
 
-int ptoi(void *p)   /* convert pointer to integer */
+int ptoi( void *p )     /* convert pointer to integer */
 {
-    return (int) (long) p;  /* swearing that p fits, of course */
+#if defined( _WIN64 )
+    return( (int)(__int64)p );
+#else
+    return( (int)(long)p );
+#endif
 }
 
-Node *itonp(int i)  /* and vice versa */
+Node *itonp( int i )    /* and vice versa */
 {
-    return (Node *) (long) i;
+#if defined( _WIN64 )
+    return( (Node *)(__int64)i );
+#else
+    return( (Node *)(long)i );
+#endif
 }

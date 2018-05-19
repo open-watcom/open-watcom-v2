@@ -132,8 +132,8 @@ int main( int argc, char *argv[] )
     setlocale( LC_NUMERIC, "C" ); /* for parsing cmdline & prog */
     cmdname = argv[0];
     if( argc == 1 ) {
-        fprintf( stderr, 
-          "usage: %s [-F fs] [-v var=value] [-f progfile | 'prog'] [file ...]\n", 
+        fprintf( stderr,
+          "usage: %s [-F fs] [-v var=value] [-f progfile | 'prog'] [file ...]\n",
           cmdname );
         exit( 1 );
     }
@@ -173,7 +173,7 @@ int main( int argc, char *argv[] )
                 safe = 1;
             break;
         case 'f':       /* next argument is program filename */
-            if( argv[1][2] != 0 ) {  /* arg is -fsomething */
+            if( argv[1][2] != '\0' ) {  /* arg is -fsomething */
                 if( npfile >= MAX_PFILE - 1 ) {
                     FATAL( "too many -f options" );
                 }
@@ -190,17 +190,17 @@ int main( int argc, char *argv[] )
             }
             break;
         case 'F':       /* set field separator */
-            if( argv[1][2] != 0 ) {  /* arg is -Fsomething */
-                if( argv[1][2] == 't' && argv[1][3] == 0 ) {     /* wart: t=>\t */
+            if( argv[1][2] != '\0' ) {  /* arg is -Fsomething */
+                if( argv[1][2] == 't' && argv[1][3] == '\0' ) {     /* wart: t=>\t */
                     fs = "\t";
-                } else if( argv[1][2] != 0 ) {
+                } else if( argv[1][2] != '\0' ) {
                     fs = &argv[1][2];
                 }
             } else {        /* arg is -F something */
                 argc--; argv++;
-                if( argc > 1 && argv[1][0] == 't' && argv[1][1] == 0 ) { /* wart: t=>\t */
+                if( argc > 1 && argv[1][0] == 't' && argv[1][1] == '\0' ) { /* wart: t=>\t */
                     fs = "\t";
-                } else if( argc > 1 && argv[1][0] != 0 ) {
+                } else if( argc > 1 && argv[1][0] != '\0' ) {
                     fs = &argv[1][0];
                 }
             }
@@ -208,7 +208,7 @@ int main( int argc, char *argv[] )
                 WARNING( "field separator FS is empty" );
             break;
         case 'v':       /* -v a=1 to be done NOW.  one -v for each */
-            if( argv[1][2] != 0 ) {  /* arg is -vsomething */
+            if( argv[1][2] != '\0' ) {  /* arg is -vsomething */
                 char *p;
 
                 p = unquote( &argv[1][2] );
@@ -255,7 +255,7 @@ int main( int argc, char *argv[] )
             FATAL( "no program given" );
         }
         p = unquote( argv[1] );
-        dprintf( ( "program = |%s|\n", p ) );
+        dprintf(( "program = |%s|\n", p ));
         lexprog = p;
         argc--;
         argv++;
@@ -267,7 +267,7 @@ int main( int argc, char *argv[] )
     syminit();
     compile_time = 1;
     argv[0] = cmdname;      /* put prog name at front of arglist */
-    dprintf( ( "argc=%d, argv[0]=%s\n", argc, argv[0] ) );
+    dprintf(( "argc=%d, argv[0]=%s\n", argc, argv[0] ));
     arginit( argc, argv );
     if( !safe )
         envinit( environ );
@@ -275,7 +275,7 @@ int main( int argc, char *argv[] )
     setlocale( LC_NUMERIC, "" ); /* back to whatever it is locally */
     if( fs )
         *FS = qstring( fs, '\0' );
-    dprintf( ( "errorflag=%d\n", errorflag ) );
+    dprintf(( "errorflag=%d\n", errorflag ));
     if( errorflag == 0 ) {
         compile_time = 0;
         run( winner );
