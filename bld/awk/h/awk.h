@@ -95,7 +95,7 @@ THIS SOFTWARE.
 #define NSTAT       2
 #define NEXPR       3
 
-#define notlegal(n)     (n <= FIRSTTOKEN || n >= LASTTOKEN || proctab[n-FIRSTTOKEN] == nullproc)
+#define notlegal(n)     (n <= FIRSTTOKEN || n >= LASTTOKEN || proctab[n - FIRSTTOKEN] == nullproc)
 #define isvalue(n)      ((n)->ntype == NVALUE)
 #define isexpr(n)       ((n)->ntype == NEXPR)
 #define isjump(n)       ((n)->ctype == OJUMP)

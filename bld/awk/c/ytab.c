@@ -2919,7 +2919,7 @@ case 74:
     if( safe ) {
         SYNTAX( "cmd | getline is unsafe" );
     } else {
-        yyval.p = op3( GETLINE, (Node *)0, itonp( yyvsp[-1].i ), yyvsp[-2].p );
+        yyval.p = op3( GETLINE, NIL, itonp( yyvsp[-1].i ), yyvsp[-2].p );
     }
 }
 break;

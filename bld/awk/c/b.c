@@ -62,9 +62,10 @@ size_t maxsetvec = 0;
 
 int rtok;       /* next token in current re */
 int rlxval;
-static uschar   *rlxstr;
-static uschar   *prestr;    /* current position in current re */
-static uschar   *lastre;    /* origin of last re */
+
+static const char   *rlxstr;
+static const char   *prestr;    /* current position in current re */
+static const char   *lastre;    /* origin of last re */
 
 static  int setcnt;
 static  int poscnt;
@@ -235,13 +236,15 @@ void freetr(Node *p)    /* free parse tree */
 /* in the parsing of regular expressions, metacharacters like . have */
 /* to be seen literally;  \056 is not a metacharacter. */
 
-int hexstr(uschar **pp) /* find and eval hex string at pp, return new p */
-{           /* only pick up one 8-bit byte (2 chars) */
-    uschar *p;
+int hexstr( const char **pp )
+/* find and eval hex string at pp, return new p */
+/* only pick up one 8-bit byte (2 chars) */
+{
+    const char *p;
     int n = 0;
     int i;
 
-    for( i = 0, p = (uschar *)*pp; i < 2 && isxdigit( *p ); i++, p++ ) {
+    for( i = 0, p = *pp; i < 2 && isxdigit( *p ); i++, p++ ) {
         if( isdigit( *p ) ) {
             n = 16 * n + *p - '0';
         } else if( *p >= 'a' && *p <= 'f' ) {
@@ -250,19 +253,20 @@ int hexstr(uschar **pp) /* find and eval hex string at pp, return new p */
             n = 16 * n + *p - 'A' + 10;
         }
     }
-    *pp = (uschar *)p;
+    *pp = p;
     return( n );
 }
 
 #define isoctdigit(c) ((c) >= '0' && (c) <= '7')    /* multiple use of arg */
 
-int quoted(uschar **pp) /* pick up next thing after a \\ */
-            /* and increment *pp */
+int quoted( const char **pp )
+/* pick up next thing after a \\ */
+/* and increment *pp */
 {
-    uschar *p = *pp;
+    const char *p = *pp;
     int c;
 
-    if( (c = *p++) == 't' ) {
+    if( (c = (uschar)*p++) == 't' ) {
         c = '\t';
     } else if( c == 'n' ) {
         c = '\n';
@@ -288,28 +292,27 @@ int quoted(uschar **pp) /* pick up next thing after a \\ */
     } /* else */
         /* c = c; */
     *pp = p;
-    return c;
+    return( c );
 }
 
 char *cclenter( const char *argp )    /* add a character class */
 {
     int i, c, c2;
-    uschar *p = (uschar *)argp;
-    uschar *op, *bp;
-    static uschar *buf = NULL;
+    const char *p = argp;
+    char *bp;
+    static char *buf = NULL;
     static size_t bufsz = 100;
 
-    op = p;
-    if( buf == NULL && (buf = (uschar *)malloc( bufsz )) == NULL )
+    if( buf == NULL && (buf = (char *)malloc( bufsz )) == NULL )
         FATAL( "out of space for character class [%.10s...] 1", p );
     bp = buf;
-    for( i = 0; (c = *p++) != '\0'; ) {
+    for( i = 0; (c = (uschar)*p++) != '\0'; ) {
         if( c == '\\' ) {
             c = quoted( &p );
         } else if( c == '-' && i > 0 && bp[-1] != '\0' ) {
             if( *p != '\0' ) {
-                c = bp[-1];
-                c2 = *p++;
+                c = (uschar)bp[-1];
+                c2 = (uschar)*p++;
                 if( c2 == '\\' )
                     c2 = quoted( &p );
                 if( c > c2 ) {   /* empty; ignore */
@@ -318,7 +321,7 @@ char *cclenter( const char *argp )    /* add a character class */
                     continue;
                 }
                 while( c < c2 ) {
-                    if( !adjbuf( (char **)&buf, &bufsz, bp - buf + 2, 100, (char **)&bp, "cclenter1" ) )
+                    if( !adjbuf( &buf, &bufsz, bp - buf + 2, 100, &bp, "cclenter1" ) )
                         FATAL( "out of space for character class [%.10s...] 2", p );
                     *bp++ = ++c;
                     i++;
@@ -326,15 +329,14 @@ char *cclenter( const char *argp )    /* add a character class */
                 continue;
             }
         }
-        if( !adjbuf( (char **)&buf, &bufsz, bp - buf + 2, 100, (char **)&bp, "cclenter2" ) )
+        if( !adjbuf( &buf, &bufsz, bp - buf + 2, 100, &bp, "cclenter2" ) )
             FATAL( "out of space for character class [%.10s...] 3", p );
         *bp++ = c;
         i++;
     }
     *bp = 0;
-    dprintf(( "cclenter: in = |%s|, out = |%s|\n", op, buf ));
-    xfree( op );
-    return( (char *)tostring( (char *)buf ) );
+    dprintf(( "cclenter: in = |%s|, out = |%s|\n", argp, buf ));
+    return( tostring( buf ) );
 }
 
 void overflo( const char *s )
@@ -629,12 +631,14 @@ nnextin:
     return( false );
 }
 
-Node *reparse(const char *p)    /* parses regular expression pointed to by p */
-{           /* uses relex() to scan regular expression */
+Node *reparse( const char *p )
+/* parses regular expression pointed to by p */
+/* uses relex() to scan regular expression */
+{
     Node *np;
 
     dprintf(( "reparse <%s>\n", p ));
-    lastre = prestr = (uschar *)p; /* prestr points to string to be parsed */
+    lastre = prestr = p; /* prestr points to string to be parsed */
     rtok = relex();
     /* GNU compatibility: an empty regexp matches anything */
     if( rtok == '\0' ) {
@@ -671,11 +675,11 @@ Node *primary(void)
         rtok = relex();
         return (unary(op2(DOT, NIL, NIL)));
     case CCL:
-        np = op2( CCL, NIL, (Node *)cclenter( (char *)rlxstr ) );
+        np = op2( CCL, NIL, (Node *)cclenter( rlxstr ) );
         rtok = relex();
         return (unary(np));
     case NCCL:
-        np = op2( NCCL, NIL, (Node *)cclenter( (char *)rlxstr ) );
+        np = op2( NCCL, NIL, (Node *)cclenter( rlxstr ) );
         rtok = relex();
         return (unary(np));
     case '^':
@@ -765,15 +769,10 @@ Node *unary(Node *np)
  * to nelson beebe for the suggestion; let's see if it works everywhere.
  */
 
-#define HAS_ISBLANK
-#ifndef HAS_ISBLANK
-
-int (xisblank)(int c)
+int (xisblank)( int c )
 {
-    return c==' ' || c=='\t';
+    return( c == ' ' || c == '\t' );
 }
-
-#endif
 
 struct charclass {
     const char *cc_name;
@@ -782,11 +781,7 @@ struct charclass {
 } charclasses[] = {
     { "alnum",  5,  isalnum },
     { "alpha",  5,  isalpha },
-#ifndef HAS_ISBLANK
-    { "blank",  5,  isspace }, /* was isblank */
-#else
-    { "blank",  5,  isblank },
-#endif
+    { "blank",  5,  xisblank },
     { "cntrl",  5,  iscntrl },
     { "digit",  5,  isdigit },
     { "graph",  5,  isgraph },
@@ -800,53 +795,53 @@ struct charclass {
 };
 
 
-int relex(void)     /* lexical analyzer for reparse */
+int relex( void )   /* lexical analyzer for reparse */
 {
     int c;
     size_t n;
     int cflag;
-    static uschar *buf = NULL;
+    static char *buf = NULL;
     static size_t bufsz = 100;
-    uschar *bp;
+    char *bp;
     struct charclass *cc;
     int i;
 
-    switch (c = *prestr++) {
-    case '|': return OR;
-    case '*': return STAR;
-    case '+': return PLUS;
-    case '?': return QUEST;
-    case '.': return DOT;
-    case '\0': prestr--; return '\0';
+    switch( c = (uschar)*prestr++ ) {
+    case '|': return( OR );
+    case '*': return( STAR );
+    case '+': return( PLUS );
+    case '?': return( QUEST );
+    case '.': return( DOT );
+    case '\0': prestr--; return( '\0' );
     case '^':
     case '$':
     case '(':
     case ')':
-        return c;
+        return( c );
     case '\\':
-        rlxval = quoted(&prestr);
-        return CHAR;
+        rlxval = quoted( &prestr );
+        return( CHAR );
     default:
         rlxval = c;
-        return CHAR;
+        return( CHAR );
     case '[':
-        if( buf == NULL && (buf = (uschar *)malloc( bufsz )) == NULL )
+        if( buf == NULL && (buf = (char *)malloc( bufsz )) == NULL )
             FATAL( "out of space in reg expr %.10s..", lastre );
         bp = buf;
-        if (*prestr == '^') {
+        if( *prestr == '^' ) {
             cflag = 1;
             prestr++;
         } else {
             cflag = 0;
         }
-        n = 2 * strlen( (const char *)prestr ) + 1;
-        if( !adjbuf( (char **)&buf, &bufsz, n, n, (char **)&bp, "relex1" ) ) {
+        n = 2 * strlen( prestr ) + 1;
+        if( !adjbuf( &buf, &bufsz, n, n, &bp, "relex1" ) ) {
             FATAL( "out of space for reg expr %.10s...", lastre );
         }
         for( ;; ) {
-            if( (c = *prestr++) == '\\' ) {
+            if( (c = (uschar)*prestr++) == '\\' ) {
                 *bp++ = '\\';
-                if( (c = *prestr++) == '\0' )
+                if( (c = (uschar)*prestr++) == '\0' )
                     FATAL( "nonterminated character class %.20s...", lastre );
                 *bp++ = c;
             /* } else if (c == '\n') { */
@@ -854,7 +849,7 @@ int relex(void)     /* lexical analyzer for reparse */
             } else if( c == '[' && *prestr == ':' ) {
                 /* POSIX char class names, Dag-Erling Smorgrav, des@ofug.org */
                 for( cc = charclasses; cc->cc_name != NULL; cc++ ) {
-                    if( strncmp( (const char *)prestr + 1, (const char *)cc->cc_name, cc->cc_namelen ) == 0 ) {
+                    if( strncmp( prestr + 1, cc->cc_name, cc->cc_namelen ) == 0 ) {
                         break;
                     }
                 }
@@ -862,7 +857,7 @@ int relex(void)     /* lexical analyzer for reparse */
                     prestr[2 + cc->cc_namelen] == ']' ) {
                     prestr += cc->cc_namelen + 3;
                     for( i = 0; i < NCHARS; i++ ) {
-                        if( !adjbuf( (char **)&buf, &bufsz, bp - buf + 1, 100, (char **)&bp, "relex2" ) )
+                        if( !adjbuf( &buf, &bufsz, bp - buf + 1, 100, &bp, "relex2" ) )
                             FATAL( "out of space for reg expr %.10s...", lastre );
                         if( cc->cc_func( i ) ) {
                             *bp++ = i;
@@ -878,7 +873,7 @@ int relex(void)     /* lexical analyzer for reparse */
                 *bp++ = c;
             } else if( c == ']' ) {
                 *bp++ = 0;
-                rlxstr = (uschar *)tostring( (char *)buf );
+                rlxstr = tostring( buf );
                 if( cflag == 0 ) {
                     return( CCL );
                 } else {
