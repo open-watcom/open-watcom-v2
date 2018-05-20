@@ -117,7 +117,7 @@ static int gettok( char **pbuf, size_t *psz )    /* get next input token */
     *bp++ = c;
     if( isalpha( c ) || c == '_' ) {   /* it's a varname */
         for( ; (c = input()) != '\0'; ) {
-            if( bp - buf >= sz ) {
+            if( (size_t)( bp - buf ) >= sz ) {
                 if( !adjbuf( &buf, &sz, bp - buf + 2, 100, &bp, "gettok" ) ) {
                     FATAL( "out of space for name %.10s...", buf );
                 }
@@ -136,7 +136,7 @@ static int gettok( char **pbuf, size_t *psz )    /* get next input token */
         char *rem;
         /* read input until can't be a number */
         for( ; (c = input()) != '\0'; ) {
-            if( bp - buf >= sz ) {
+            if( (size_t)( bp - buf ) >= sz ) {
                 if( !adjbuf( &buf, &sz, bp - buf + 2, 100, &bp, "gettok" ) ) {
                     FATAL( "out of space for number %.10s...", buf );
                 }

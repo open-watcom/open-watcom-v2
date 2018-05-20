@@ -56,26 +56,26 @@ THIS SOFTWARE.
 */
 
 
-int *setvec;
-int *tmpset;
-size_t maxsetvec = 0;
+char    *patbeg;
+size_t  patlen;
 
-int rtok;       /* next token in current re */
-int rlxval;
+static size_t       maxsetvec = 0;
+static bool         *setvec;
+static int          *tmpset;
+
+static int          rtok;       /* next token in current re */
+static int          rlxval;
 
 static const char   *rlxstr;
 static const char   *prestr;    /* current position in current re */
 static const char   *lastre;    /* origin of last re */
 
-static  int setcnt;
-static  int poscnt;
-
-char    *patbeg;
-size_t  patlen;
+static int          setcnt;
+static int          poscnt;
 
 #define NFA 20  /* cache this many dynamic fa's */
-fa  *fatab[NFA];
-int nfatab  = 0;    /* entries in fatab */
+static fa           *fatab[NFA];
+static int          nfatab  = 0;    /* entries in fatab */
 
 fa *makedfa( const char *s, bool anchor )   /* returns dfa for reg expr s */
 {
@@ -85,7 +85,7 @@ fa *makedfa( const char *s, bool anchor )   /* returns dfa for reg expr s */
 
     if( setvec == NULL ) {  /* first time through any RE */
         maxsetvec = MAXLIN;
-        setvec = (int *)malloc( maxsetvec * sizeof( int ) );
+        setvec = (bool *)malloc( maxsetvec * sizeof( bool ) );
         tmpset = (int *)malloc( maxsetvec * sizeof( int ) );
         if( setvec == NULL || tmpset == NULL ) {
             overflo( "out of space initializing makedfa" );
@@ -95,7 +95,7 @@ fa *makedfa( const char *s, bool anchor )   /* returns dfa for reg expr s */
     if( compile_time )   /* a constant for sure */
         return( mkdfa( s, anchor ) );
     for( i = 0; i < nfatab; i++ ) {  /* is it there already? */
-        if( fatab[i]->anchor == anchor && strcmp( (const char *)fatab[i]->restr, s ) == 0 ) {
+        if( fatab[i]->anchor == anchor && strcmp( fatab[i]->restr, s ) == 0 ) {
             fatab[i]->use = now++;
             return( fatab[i] );
         }
@@ -148,7 +148,7 @@ fa *mkdfa( const char *s, bool anchor )
     *f->posns[1] = 0;
     f->initstat = makeinit( f, anchor );
     f->anchor = anchor;
-    f->restr = (uschar *)tostring( s );
+    f->restr = tostring( s );
     return f;
 }
 
@@ -157,7 +157,7 @@ int makeinit( fa *f, bool anchor )
     int i, k;
 
     f->curstat = 2;
-    f->out[2] = 0;
+    f->out[2] = false;
     f->reset = false;
     k = *(f->re[0].lfollow);
     xfree(f->posns[2]);
@@ -167,7 +167,7 @@ int makeinit( fa *f, bool anchor )
         (f->posns[2])[i] = (f->re[0].lfollow)[i];
     }
     if( (f->posns[2])[1] == f->accept )
-        f->out[2] = 1;
+        f->out[2] = true;
     for( i = 0; i < NCHARS; i++ )
         f->gototab[2][i] = 0;
     f->curstat = cgoto( f, 2, HAT );
@@ -356,14 +356,14 @@ void cfoll(fa *f, Node *v)  /* enter follow set of each leaf of vertex v into lf
         f->re[info(v)].lval.np = right(v);
         while( f->accept >= maxsetvec ) {    /* guessing here! */
             maxsetvec *= 4;
-            setvec = (int *)realloc( setvec, maxsetvec * sizeof( int ) );
+            setvec = (bool *)realloc( setvec, maxsetvec * sizeof( bool ) );
             tmpset = (int *)realloc( tmpset, maxsetvec * sizeof( int ) );
             if( setvec == NULL || tmpset == NULL ) {
                 overflo( "out of space in cfoll()" );
             }
         }
         for( i = 0; i <= f->accept; i++ ) {
-            setvec[i] = 0;
+            setvec[i] = false;
         }
         setcnt = 0;
         follow(v);  /* computes setvec and setcnt */
@@ -372,7 +372,7 @@ void cfoll(fa *f, Node *v)  /* enter follow set of each leaf of vertex v into lf
         f->re[info(v)].lfollow = p;
         *p = setcnt;
         for( i = f->accept; i >= 0; i-- ) {
-            if( setvec[i] == 1 ) {
+            if( setvec[i] ) {
                 *++p = i;
             }
         }
@@ -402,18 +402,18 @@ int first( Node *p )
         lp = info( p );     /* look for high-water mark of subscripts */
         while( setcnt >= maxsetvec || lp >= maxsetvec ) {    /* guessing here! */
             maxsetvec *= 4;
-            setvec = (int *)realloc( setvec, maxsetvec * sizeof( int ) );
+            setvec = (bool *)realloc( setvec, maxsetvec * sizeof( bool ) );
             tmpset = (int *)realloc( tmpset, maxsetvec * sizeof( int ) );
             if( setvec == NULL || tmpset == NULL ) {
                 overflo( "out of space in first()" );
             }
         }
         if( type( p ) == EMPTYRE ) {
-            setvec[lp] = 0;
+            setvec[lp] = false;
             return( 0 );
         }
-        if( setvec[lp] != 1 ) {
-            setvec[lp] = 1;
+        if( !setvec[lp] ) {
+            setvec[lp] = true;
             setcnt++;
         }
         if( type( p ) == CCL && *(char *)right( p ) == '\0' )
@@ -471,12 +471,10 @@ void follow( Node *v )
     }
 }
 
-bool member( int c, const char *sarg )   /* is c in s? */
+bool member( int c, const char *s )   /* is c in s? */
 {
-    uschar *s = (uschar *)sarg;
-
     while( *s != '\0' ) {
-        if( c == *s++ ) {
+        if( c == (uschar)*s++ ) {
             return( true );
         }
     }
@@ -660,7 +658,7 @@ Node *primary(void)
 {
     Node *np;
 
-    switch (rtok) {
+    switch( rtok ) {
     case CHAR:
         np = op2(CHAR, NIL, itonp(rlxval));
         rtok = relex();
@@ -709,7 +707,7 @@ Node *primary(void)
 
 Node *concat( Node *np )
 {
-    switch (rtok) {
+    switch( rtok ) {
     case CHAR:
     case DOT:
     case ALL:
@@ -725,16 +723,16 @@ Node *concat( Node *np )
 
 Node *alt( Node *np )
 {
-    if (rtok == OR) {
+    if( rtok == OR ) {
         rtok = relex();
-        return (alt(op2(OR, np, concat(primary()))));
+        return( alt( op2( OR, np, concat( primary() ) ) ) );
     }
-    return (np);
+    return( np );
 }
 
 Node *unary(Node *np)
 {
-    switch (rtok) {
+    switch( rtok ) {
     case STAR:
         rtok = relex();
         return (unary(op2(STAR, np, NIL)));
@@ -797,14 +795,14 @@ struct charclass {
 
 int relex( void )   /* lexical analyzer for reparse */
 {
-    int c;
-    size_t n;
-    int cflag;
-    static char *buf = NULL;
-    static size_t bufsz = 100;
-    char *bp;
+    int             c;
+    size_t          n;
+    bool            cflag;
+    static char     *buf = NULL;
+    static size_t   bufsz = 100;
+    char            *bp;
     struct charclass *cc;
-    int i;
+    int             i;
 
     switch( c = (uschar)*prestr++ ) {
     case '|': return( OR );
@@ -894,14 +892,15 @@ int cgoto(fa *f, int s, int c)
     assert(c == HAT || c < NCHARS);
     while( f->accept >= maxsetvec ) {    /* guessing here! */
         maxsetvec *= 4;
-        setvec = (int *)realloc( setvec, maxsetvec * sizeof( int ) );
+        setvec = (bool *)realloc( setvec, maxsetvec * sizeof( bool ) );
         tmpset = (int *)realloc( tmpset, maxsetvec * sizeof( int ) );
         if( setvec == NULL || tmpset == NULL ) {
             overflo( "out of space in cgoto()" );
         }
     }
-    for( i = 0; i <= f->accept; i++ )
-        setvec[i] = 0;
+    for( i = 0; i <= f->accept; i++ ) {
+        setvec[i] = false;
+    }
     setcnt = 0;
     /* compute positions of gototab[s,c] into setvec */
     p = f->posns[s];
@@ -917,15 +916,15 @@ int cgoto(fa *f, int s, int c)
                 for( j = 1; j <= *q; j++ ) {
                     if( q[j] >= maxsetvec ) {
                         maxsetvec *= 4;
-                        setvec = (int *)realloc( setvec, maxsetvec * sizeof( int ) );
+                        setvec = (bool *)realloc( setvec, maxsetvec * sizeof( bool ) );
                         tmpset = (int *)realloc( tmpset, maxsetvec * sizeof( int ) );
                         if( setvec == NULL || tmpset == NULL ) {
                             overflo( "cgoto overflow" );
                         }
                     }
-                    if( setvec[q[j]] == 0 ) {
+                    if( !setvec[q[j]] ) {
                         setcnt++;
-                        setvec[q[j]] = 1;
+                        setvec[q[j]] = true;
                     }
                 }
             }
@@ -935,7 +934,7 @@ int cgoto(fa *f, int s, int c)
     tmpset[0] = setcnt;
     j = 1;
     for( i = f->accept; i >= 0; i-- ) {
-        if (setvec[i]) {
+        if( setvec[i] ) {
             tmpset[j++] = i;
         }
     }
@@ -977,11 +976,7 @@ different:;
     for( i = 0; i <= setcnt; i++ ) {
         p[i] = tmpset[i];
     }
-    if( setvec[f->accept] ) {
-        f->out[f->curstat] = 1;
-    } else {
-        f->out[f->curstat] = 0;
-    }
+    f->out[f->curstat] = setvec[f->accept];
     return( f->curstat );
 }
 

@@ -52,7 +52,7 @@ char    *pfile[MAX_PFILE];      /* program filenames from -f's */
 int     npfile = 0;             /* number of filenames */
 int     curpfile = 0;           /* current filename */
 
-int     safe    = 0;            /* 1 => "safe" mode */
+bool    safe = false;           /* true => "safe" mode */
 
 static int ParseEnvVar( const char *env, char **argv, char *buf )
 /***************************************************************/
@@ -140,7 +140,7 @@ int main( int argc, char *argv[] )
     signal( SIGFPE, fpecatch );
 
     srand_seed = 1;
-    srand( srand_seed );
+    srand( (unsigned)srand_seed );
 
     yyin = NULL;
     symtab = makesymtab( NSYMTAB/NSYMTAB );
@@ -170,7 +170,7 @@ int main( int argc, char *argv[] )
         switch( argv[1][1] ) {
         case 's':
             if( strcmp( argv[1], "-safe" ) == 0 )
-                safe = 1;
+                safe = true;
             break;
         case 'f':       /* next argument is program filename */
             if( argv[1][2] != '\0' ) {  /* arg is -fsomething */

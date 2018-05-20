@@ -43,6 +43,8 @@ THIS SOFTWARE.
 
 #define NOPAT       ((size_t)-1)
 
+#define NIL         ((Node *)0)
+
 #define NSYMTAB     50              /* initial size of a symbol table */
 
 /* function types */
@@ -60,8 +62,6 @@ THIS SOFTWARE.
 #define FTOUPPER    12
 #define FTOLOWER    13
 #define FFLUSH      14
-
-#define NIL         ((Node *)0)
 
 /* ctypes */
 #define OCELL       1
@@ -181,20 +181,20 @@ typedef struct rrow {
 
 typedef struct fa {
     uschar      gototab[NSTATES][NCHARS];
-    uschar      out[NSTATES];
-    uschar      *restr;
+    bool        out[NSTATES];
+    char        *restr;
     int         *posns[NSTATES];
     bool        anchor;
+    bool        reset;
     int         use;
     int         initstat;
     int         curstat;
     int         accept;
-    bool        reset;
     struct rrow re[1]; /* variable: actual size set by calling malloc */
 } fa;
 
 extern int      compile_time;   /* 1 if compiling, 0 if running */
-extern int      safe;           /* 0 => unsafe, 1 => safe */
+extern bool     safe;           /* false => unsafe, true => safe */
 
 extern size_t   recsize;        /* size of current record, orig RECSIZE */
 
@@ -235,7 +235,7 @@ extern Node     *winner;
 extern Node     *nullstat;
 extern Node     *nullnode;
 
-extern int      pairstack[];
-extern int      paircnt;
+extern bool     pairstack[];
+extern Cell     **fldtab;
 
 #include "proto.h"

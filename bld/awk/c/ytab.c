@@ -23,8 +23,8 @@ int yywrap(void) { return( 1 ); }
 
 Node    *beginloc = 0;
 Node    *endloc = 0;
-int infunc  = 0;    /* = 1 if in arglist or body of func */
-int inloop  = 0;    /* = 1 if in while, for, do */
+int     infunc  = 0;    /* = 1 if in arglist or body of func */
+int     inloop  = 0;    /* = 1 if in while, for, do */
 char    *curfname = 0;  /* current function name */
 Node    *arglist = 0;   /* list of args for current function */
 #line 41 "awkgram.y"
@@ -2521,7 +2521,7 @@ static int yygrowstack( void )
     if( newsize > YYMAXDEPTH ) {
         newsize = YYMAXDEPTH;
     }
-    i = yyssp - yyss;
+    i = (int)( yyssp - yyss );
     newss = ( yyss != NULL ) ? (short *)realloc( yyss, newsize * sizeof( *newss ) ) :
         (short *)malloc( newsize * sizeof( *newss ) );
     if( newss == NULL )
@@ -2544,30 +2544,7 @@ static int yygrowstack( void )
 #define YYACCEPT goto yyaccept
 #define YYERROR goto yyerrlab
 
-#ifndef YYPARSE_PARAM
-#if defined(__cplusplus) || __STDC__
-#define YYPARSE_PARAM_ARG void
-#define YYPARSE_PARAM_DECL
-#else   /* ! ANSI-C/C++ */
-#define YYPARSE_PARAM_ARG
-#define YYPARSE_PARAM_DECL
-#endif  /* ANSI-C/C++ */
-#else   /* YYPARSE_PARAM */
-#ifndef YYPARSE_PARAM_TYPE
-#define YYPARSE_PARAM_TYPE void *
-#endif
-#if defined(__cplusplus) || __STDC__
-#define YYPARSE_PARAM_ARG YYPARSE_PARAM_TYPE YYPARSE_PARAM
-#define YYPARSE_PARAM_DECL
-#else   /* ! ANSI-C/C++ */
-#define YYPARSE_PARAM_ARG YYPARSE_PARAM
-#define YYPARSE_PARAM_DECL YYPARSE_PARAM_TYPE YYPARSE_PARAM;
-#endif  /* ANSI-C/C++ */
-#endif  /* ! YYPARSE_PARAM */
-
-int
-yyparse (YYPARSE_PARAM_ARG)
-    YYPARSE_PARAM_DECL
+int yyparse( void )
 {
     register int yym, yyn, yystate;
 #if YYDEBUG
@@ -2592,7 +2569,7 @@ yyparse (YYPARSE_PARAM_ARG)
     *yyssp = yystate = 0;
 
 yyloop:
-    if( (yyn = yydefred[yystate]) )
+    if( (yyn = yydefred[yystate]) != 0 )
         goto yyreduce;
     if( yychar < 0 ) {
         if( (yychar = yylex()) < 0 ) {
@@ -3347,7 +3324,7 @@ break;
             goto yyaccept;
         goto yyloop;
     }
-    if( (yyn = yygindex[yym]) != NULL && (yyn += yystate) >= 0 && yyn <= YYTABLESIZE && yycheck[yyn] == yystate ) {
+    if( (yyn = yygindex[yym]) != 0 && (yyn += yystate) >= 0 && yyn <= YYTABLESIZE && yycheck[yyn] == yystate ) {
         yystate = yytable[yyn];
     } else {
         yystate = yydgoto[yym];

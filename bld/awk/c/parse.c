@@ -33,6 +33,11 @@ THIS SOFTWARE.
 extern Node *arglist;
 extern Cell *literal0;
 
+#define PA2NUM  50                  /* max number of pat,pat patterns allowed */
+bool            pairstack[PA2NUM];  /* state of each pat,pat */
+
+static int      paircnt;            /* number of them in use */
+
 Node *nodealloc( int n )
 {
     Node *x;
@@ -201,10 +206,6 @@ Node *makearr( Node *p )
     }
     return( p );
 }
-
-#define PA2NUM  50      /* max number of pat,pat patterns allowed */
-int paircnt;            /* number of them in use */
-int pairstack[PA2NUM];  /* state of each pat,pat */
 
 Node *pa2stat( Node *a, Node *b, Node *c )  /* pat, pat {...} */
 {

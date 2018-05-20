@@ -213,7 +213,7 @@ int readrec( char **pbuf, size_t *pbufsize, FILE *inf )  /* read one record into
     }
     for( rr = buf;; ) {
         for( ; (c = getc( inf )) != sep && c != EOF; ) {
-            if( rr - buf + 1 > bufsize ) {
+            if( (size_t)( rr - buf + 1 ) > bufsize ) {
                 if( !adjbuf( &buf, &bufsize, 1 + rr - buf, recsize, &rr, "readrec 1" ) ) {
                     FATAL( "input record `%.30s...' too long", buf );
                 }
@@ -567,6 +567,8 @@ void bracecheck(void)
 
 void bcheck2(int n, int c1, int c2)
 {
+    /* unused parameters */ (void)c1;
+
     if( n == 1 ) {
         fprintf( stderr, "\tmissing %c\n", c2 );
     } else if( n > 1 ) {
