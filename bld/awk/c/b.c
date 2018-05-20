@@ -56,8 +56,8 @@ THIS SOFTWARE.
 */
 
 
-char    *patbeg;
-size_t  patlen;
+const char          *patbeg;
+size_t              patlen;
 
 static size_t       maxsetvec = 0;
 static bool         *setvec;
@@ -481,20 +481,19 @@ bool member( int c, const char *s )   /* is c in s? */
     return( false );
 }
 
-bool match( fa *f, const char *p0 )      /* shortest match ? */
+bool match( fa *f, const char *p )      /* shortest match ? */
 {
     int s, ns;
-    uschar *p = (uschar *)p0;
 
     s = ( f->reset ) ? makeinit( f, false ) : f->initstat;
     if( f->out[s] )
         return( true );
     do {
         /* assert(*p < NCHARS); */
-        if( (ns = f->gototab[s][*p]) != 0 ) {
+        if( (ns = f->gototab[s][(uschar)*p]) != 0 ) {
             s = ns;
         } else {
-            s = cgoto( f, s, *p );
+            s = cgoto( f, s, (uschar)*p );
         }
         if( f->out[s] ) {
             return( true );
@@ -503,11 +502,10 @@ bool match( fa *f, const char *p0 )      /* shortest match ? */
     return( false );
 }
 
-bool pmatch( fa *f, const char *p0 )     /* longest match, for sub */
+bool pmatch( fa *f, const char *p )         /* longest match, for sub */
 {
     int s, ns;
-    uschar *p = (uschar *)p0;
-    uschar *q;
+    const char *q;
     int i, k;
 
     /* s = ( f->reset ) ? makeinit( f, true ) : f->initstat; */
@@ -516,7 +514,7 @@ bool pmatch( fa *f, const char *p0 )     /* longest match, for sub */
     } else {
         s = f->initstat;
     }
-    patbeg = (char *)p;
+    patbeg = p;
     patlen = NOPAT;
     do {
         q = p;
@@ -524,14 +522,14 @@ bool pmatch( fa *f, const char *p0 )     /* longest match, for sub */
             if( f->out[s] )         /* final state */
                 patlen = q - p;
             /* assert(*q < NCHARS); */
-            if( (ns = f->gototab[s][*q]) != 0 ) {
+            if( (ns = f->gototab[s][(uschar)*q]) != 0 ) {
                 s = ns;
             } else {
-                s = cgoto(f, s, *q);
+                s = cgoto(f, s, (uschar)*q);
             }
             if( s == 1 ) {          /* no transition */
                 if( patlen != NOPAT ) {
-                    patbeg = (char *)p;
+                    patbeg = p;
                     return( true );
                 } else {
                     goto nextin;    /* no match */
@@ -541,7 +539,7 @@ bool pmatch( fa *f, const char *p0 )     /* longest match, for sub */
         if( f->out[s] )
             patlen = q - p - 1;     /* don't count $ */
         if( patlen != NOPAT ) {
-            patbeg = (char *)p;
+            patbeg = p;
             return( true );
         }
 nextin:
@@ -566,11 +564,10 @@ nextin:
     return( false );
 }
 
-bool nematch( fa *f, const char *p0 )  /* non-empty match, for sub */
+bool nematch( fa *f, const char *p )    /* non-empty match, for sub */
 {
     int s, ns;
-    uschar *p = (uschar *)p0;
-    uschar *q;
+    const char *q;
     int i, k;
 
     /* s = f->reset ? makeinit( f, true ) : f->initstat; */
@@ -586,14 +583,14 @@ bool nematch( fa *f, const char *p0 )  /* non-empty match, for sub */
             if( f->out[s] )      /* final state */
                 patlen = q - p;
             /* assert(*q < NCHARS); */
-            if( (ns = f->gototab[s][*q]) != 0 ) {
+            if( (ns = f->gototab[s][(uschar)*q]) != 0 ) {
                 s = ns;
             } else {
-                s = cgoto(f, s, *q);
+                s = cgoto(f, s, (uschar)*q);
             }
             if (s == 1) {   /* no transition */
                 if( patlen != NOPAT && patlen > 0 ) {
-                    patbeg = (char *)p;
+                    patbeg = p;
                     return( true );
                 } else {
                     goto nnextin;   /* no nonempty match */
@@ -603,7 +600,7 @@ bool nematch( fa *f, const char *p0 )  /* non-empty match, for sub */
         if( f->out[s] )
             patlen = q - p - 1; /* don't count $ */
         if( patlen != NOPAT && patlen > 0 ) {
-            patbeg = (char *)p;
+            patbeg = p;
             return( true );
         }
 nnextin:

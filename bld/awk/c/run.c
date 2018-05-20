@@ -1331,9 +1331,10 @@ Cell *split( Node **a, int nnn )
 /* split(a[0], a[1], a[2]); a[3] is type */
 {
     Cell *x = 0, *y, *ap;
-    char *s;
+    const char *s;
+    const char *t;
     int sep;
-    char *t, temp, num[50], *fs = '\0';
+    char temp, num[50], *fs = '\0';
     int n, tempstat, arg3type;
 
     /* unused parameters */ (void)nnn;
@@ -1381,13 +1382,13 @@ Cell *split( Node **a, int nnn )
                 n++;
                 sprintf( num, "%d", n );
                 temp = *patbeg;
-                *patbeg = '\0';
+                *(char *)patbeg = '\0';
                 if( is_number( s ) ) {
                     setsymtab( num, s, atof( s ), STR | NUM, (Array *)ap->sval );
                 } else {
                     setsymtab( num, s, 0.0, STR, (Array *)ap->sval );
                 }
-                *patbeg = temp;
+                *(char *)patbeg = temp;
                 s = patbeg + patlen;
                 if( *( patbeg + patlen - 1 ) == '\0' || *s == '\0' ) {
                     n++;
@@ -1421,14 +1422,14 @@ Cell *split( Node **a, int nnn )
                 s++;
             } while( *s != ' ' && *s != '\t' && *s != '\n' && *s != '\0' );
             temp = *s;
-            *s = '\0';
+            *(char *)s = '\0';
             sprintf( num, "%d", n );
             if( is_number( t ) ) {
                 setsymtab( num, t, atof( t ), STR | NUM, (Array *)ap->sval );
             } else {
                 setsymtab( num, t, 0.0, STR, (Array *)ap->sval );
             }
-            *s = temp;
+            *(char *)s = temp;
             if( *s != '\0' ) {
                 s++;
             }
@@ -1453,14 +1454,14 @@ Cell *split( Node **a, int nnn )
             while( *s != sep && *s != '\n' && *s != '\0' )
                 s++;
             temp = *s;
-            *s = '\0';
+            *(char *)s = '\0';
             sprintf( num, "%d", n );
             if( is_number( t ) ) {
                 setsymtab( num, t, atof( t ), STR | NUM, (Array *)ap->sval );
             } else {
                 setsymtab( num, t, 0.0, STR, (Array *)ap->sval );
             }
-            *s = temp;
+            *(char *)s = temp;
             if( *s++ == '\0' ) {
                 break;
             }
@@ -1924,12 +1925,14 @@ void flush_all( void )
     }
 }
 
-void backsub( char **pb_ptr, char **sptr_ptr );
+void backsub( char **pb_ptr, const char **sptr_ptr );
 
 Cell *sub( Node **a, int nnn )
 /* substitute command */
 {
-    char *sptr, *pb, *q;
+    const char *sptr;
+    const char *q;
+    char *pb;
     Cell *x, *y, *result;
     char *t, *buf;
     fa *pfa;
@@ -1996,7 +1999,10 @@ Cell *gsub( Node **a, int nnn )
 /* global substitute */
 {
     Cell *x, *y;
-    char *rptr, *sptr, *t, *pb, *q;
+    char *rptr, *pb;
+    const char *sptr;
+    const char *t;
+    const char *q;
     char *buf;
     fa *pfa;
     int mflag, tempstat, num;
@@ -2102,11 +2108,12 @@ Cell *gsub( Node **a, int nnn )
     return( x );
 }
 
-void backsub( char **pb_ptr, char **sptr_ptr )
+void backsub( char **pb_ptr, const char **sptr_ptr )
 /* handle \\& variations */
 /* sptr[0] == '\\' */
 {
-    char *pb = *pb_ptr, *sptr = *sptr_ptr;
+    char        *pb = *pb_ptr;
+    const char  *sptr = *sptr_ptr;
 
     if( sptr[1] == '\\' ) {
         if( sptr[2] == '\\' && sptr[3] == '&' ) { /* \\\& -> \& */

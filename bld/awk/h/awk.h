@@ -193,49 +193,49 @@ typedef struct fa {
     struct rrow re[1]; /* variable: actual size set by calling malloc */
 } fa;
 
-extern int      compile_time;   /* 1 if compiling, 0 if running */
-extern bool     safe;           /* false => unsafe, true => safe */
+extern int          compile_time;   /* 1 if compiling, 0 if running */
+extern bool         safe;           /* false => unsafe, true => safe */
 
-extern size_t   recsize;        /* size of current record, orig RECSIZE */
+extern size_t       recsize;        /* size of current record, orig RECSIZE */
 
-extern char     **FS;
-extern char     **RS;
-extern char     **ORS;
-extern char     **OFS;
-extern char     **OFMT;
-extern Awkfloat *NR;
-extern Awkfloat *FNR;
-extern Awkfloat *NF;
-extern char     **FILENAME;
-extern char     **SUBSEP;
-extern Awkfloat *RSTART;
-extern Awkfloat *RLENGTH;
+extern char         **FS;
+extern char         **RS;
+extern char         **ORS;
+extern char         **OFS;
+extern char         **OFMT;
+extern Awkfloat     *NR;
+extern Awkfloat     *FNR;
+extern Awkfloat     *NF;
+extern char         **FILENAME;
+extern char         **SUBSEP;
+extern Awkfloat     *RSTART;
+extern Awkfloat     *RLENGTH;
 
-extern char     *record;        /* points to $0 */
-extern int      lineno;         /* line number in awk program */
-extern int      errorflag;      /* 1 if error has occurred */
-extern bool     donefld;        /* true if record broken into fields */
-extern bool     donerec;        /* true if record is valid (no fld has changed */
-extern char     inputFS[];      /* FS at time of input, for field splitting */
+extern char         *record;        /* points to $0 */
+extern int          lineno;         /* line number in awk program */
+extern int          errorflag;      /* 1 if error has occurred */
+extern bool         donefld;        /* true if record broken into fields */
+extern bool         donerec;        /* true if record is valid (no fld has changed */
+extern char         inputFS[];      /* FS at time of input, for field splitting */
 
-extern int      dbg;
+extern int          dbg;
 
-extern char     *patbeg;        /* beginning of pattern matched */
-extern size_t   patlen;         /* length of pattern matched.  set in b.c */
+extern const char   *patbeg;        /* beginning of pattern matched */
+extern size_t       patlen;         /* length of pattern matched.  set in b.c */
 
-extern Array    *symtab;
+extern Array        *symtab;
 
-extern Cell     *nrloc;         /* NR */
-extern Cell     *fnrloc;        /* FNR */
-extern Cell     *nfloc;         /* NF */
-extern Cell     *rstartloc;     /* RSTART */
-extern Cell     *rlengthloc;    /* RLENGTH */
+extern Cell         *nrloc;         /* NR */
+extern Cell         *fnrloc;        /* FNR */
+extern Cell         *nfloc;         /* NF */
+extern Cell         *rstartloc;     /* RSTART */
+extern Cell         *rlengthloc;    /* RLENGTH */
 
-extern Node     *winner;
-extern Node     *nullstat;
-extern Node     *nullnode;
+extern Node         *winner;
+extern Node         *nullstat;
+extern Node         *nullnode;
 
-extern bool     pairstack[];
-extern Cell     **fldtab;
+extern bool         pairstack[];
+extern Cell         **fldtab;
 
 #include "proto.h"
