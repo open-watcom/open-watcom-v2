@@ -270,7 +270,7 @@ void defs( void )
 {
     token_n     gentoken;
     a_sym       *sym;
-    int         ctype;
+    a_token     ctype;
     char        *type;
     a_prec      prec;
     char        *union_name = NULL;
@@ -371,13 +371,15 @@ void defs( void )
             }
             while( token == T_IDENTIFIER ) {
                 sym = addsym( buf );
-                if( type != NULL && sym->type != NULL ) {
-                    if( strcmp( sym->type, type ) != 0 ) {
-                        msg( "'%s' type redeclared from '%s' to '%s'\n",
-                            buf, sym->type, type );
+                if( type != NULL ) {
+                    if( sym->type != NULL ) {
+                        if( strcmp( sym->type, type ) != 0 ) {
+                            msg( "'%s' type redeclared from '%s' to '%s'\n",
+                                buf, sym->type, type );
+                        }
                     }
+                    sym->type = type;
                 }
-                sym->type = type;
                 if( ctype == T_TYPE ) {
                     scan( 0 );
                 } else {

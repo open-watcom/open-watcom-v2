@@ -98,7 +98,7 @@ static void performReduce( traceback **h, a_pro *pro )
 }
 
 
-a_sym *terminalInKernel( an_item *p )
+static a_sym *terminalInKernel( an_item *p )
 {
     a_sym       *sym_after_dot;
     a_sym       *post_sym;
