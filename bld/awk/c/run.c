@@ -512,7 +512,7 @@ Cell *array( Node **a, int n )
         FATAL( "out of memory in array" );
 
     x = execute( a[0] );  /* Cell* for symbol table */
-    buf[0] = 0;
+    buf[0] = '\0';
     for( np = a[1]; np != NULL; np = np->nnext ) {
         y = execute( np );    /* subscript */
         s = getsval( y );
@@ -562,7 +562,7 @@ Cell *awkdelete( Node **a, int n )
         char *buf;
         if( (buf = (char *)malloc( bufsz )) == NULL )
             FATAL( "out of memory in adelete" );
-        buf[0] = 0;
+        buf[0] = '\0';
         for( np = a[1]; np != NULL; np = np->nnext ) {
             y = execute( np );    /* subscript */
             s = getsval( y );
@@ -604,7 +604,7 @@ Cell *intest( Node **a, int n )
     if( (buf = (char *)malloc( bufsz )) == NULL ) {
         FATAL( "out of memory in intest" );
     }
-    buf[0] = 0;
+    buf[0] = '\0';
     for( p = a[0]; p != NULL; p = p->nnext ) {
         x = execute( p );       /* expr */
         s = getsval( x );
@@ -769,7 +769,7 @@ Cell *gettemp( void )
             FATAL( "out of space for temporaries" );
         for( i = 1; i < 100; i++ )
             tmps[i - 1].cnext = &tmps[i];
-        tmps[i - 1].cnext = 0;
+        tmps[i - 1].cnext = NULL;
     }
     x = tmps;
     tmps = x->cnext;
@@ -820,7 +820,7 @@ Cell *substr( Node **a, int nnn )
     size_t k, m, n;
     char *s;
     int temp;
-    Cell *x, *y, *z = 0;
+    Cell *x, *y, *z = NULL;
 
     /* unused parameters */ (void)nnn;
 
@@ -1330,7 +1330,7 @@ Cell *dopa2( Node **a, int n )
 Cell *split( Node **a, int nnn )
 /* split(a[0], a[1], a[2]); a[3] is type */
 {
-    Cell *x = 0, *y, *ap;
+    Cell *x = NULL, *y, *ap;
     const char *s;
     const char *t;
     int sep;
@@ -1795,7 +1795,7 @@ FILE *openfile( int a, const char *us )
 {
     const char *s = us;
     int i, m;
-    FILE *fp = 0;
+    FILE *fp = NULL;
 
     if( *s == '\0' )
         FATAL( "null file name in print or getline" );

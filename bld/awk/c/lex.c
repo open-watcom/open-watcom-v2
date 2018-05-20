@@ -169,8 +169,8 @@ static int gettok( char **pbuf, size_t *psz )    /* get next input token */
 int word(char *);
 int string(void);
 int regexpr(void);
-int sc  = 0;    /* 1 => return a } right now */
-int reg = 0;    /* 1 => return a REGEXPR now */
+bool sc  = false;    /* true => return a } right now */
+bool reg = false;    /* true => return a REGEXPR now */
 
 int yylex(void)
 {
@@ -180,12 +180,12 @@ int yylex(void)
 
     if( buf == NULL && (buf = (char *)malloc( bufsize )) == NULL )
         FATAL( "out of space in yylex" );
-    if (sc) {
-        sc = 0;
+    if( sc ) {
+        sc = false;
         RET('}');
     }
-    if (reg) {
-        reg = 0;
+    if( reg ) {
+        reg = false;
         return regexpr();
     }
     for( ;; ) {
@@ -331,7 +331,7 @@ int yylex(void)
         case '}':
             if( --bracecnt < 0 )
                 SYNTAX( "extra }" );
-            sc = 1;
+            sc = true;
             RET( ';' );
         case ']':
             if( --brackcnt < 0 )
@@ -502,7 +502,7 @@ int word( char *w )
 
 void startreg( void ) /* next call to yylex will return a regular expression */
 {
-    reg = 1;
+    reg = true;
 }
 
 int regexpr( void )
@@ -543,7 +543,7 @@ char    ebuf[300];
 char    *ep = ebuf;
 char    yysbuf[100];    /* pushback buffer */
 char    *yysptr = yysbuf;
-FILE    *yyin = 0;
+FILE    *yyin = NULL;
 
 int input( void ) /* get next lexical input character */
 {
@@ -561,7 +561,7 @@ int input( void ) /* get next lexical input character */
     if( c == '\n' ) {
         lineno++;
     } else if( c == EOF ) {
-        c = 0;
+        c = '\0';
     }
     if( ep >= ebuf + sizeof( ebuf ) )
         ep = ebuf;

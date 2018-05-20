@@ -21,12 +21,12 @@ static int yygrowstack();
 void checkdup(Node *list, Cell *item);
 int yywrap(void) { return( 1 ); }
 
-Node    *beginloc = 0;
-Node    *endloc = 0;
+Node    *beginloc = NULL;
+Node    *endloc = NULL;
 int     infunc  = 0;    /* = 1 if in arglist or body of func */
 int     inloop  = 0;    /* = 1 if in while, for, do */
-char    *curfname = 0;  /* current function name */
-Node    *arglist = 0;   /* list of args for current function */
+char    *curfname = NULL;  /* current function name */
+Node    *arglist = NULL;   /* list of args for current function */
 #line 41 "awkgram.y"
 typedef union {
     Node    *p;
@@ -2577,7 +2577,7 @@ yyloop:
         }
 #if YYDEBUG
         if( yydebug ) {
-            yys = 0;
+            yys = NULL;
             if( yychar <= YYMAXTOKEN )
                 yys = yyname[yychar];
             if( !yys )
@@ -2644,7 +2644,7 @@ yyinrecovery:
             goto yyabort;
 #if YYDEBUG
         if( yydebug ) {
-            yys = 0;
+            yys = NULL;
             if( yychar <= YYMAXTOKEN )
                 yys = yyname[yychar];
             if( yys == NULL )
@@ -2720,11 +2720,11 @@ case 28:
 break;
 case 30:
 #line 161 "awkgram.y"
-{ yyval.p = 0; }
+{ yyval.p = NULL; }
 break;
 case 32:
 #line 166 "awkgram.y"
-{ yyval.p = 0; }
+{ yyval.p = NULL; }
 break;
 case 33:
 #line 167 "awkgram.y"
@@ -2756,11 +2756,11 @@ case 39:
 break;
 case 40:
 #line 181 "awkgram.y"
-{ beginloc = linkum(beginloc, yyvsp[-1].p); yyval.p = 0; }
+{ beginloc = linkum(beginloc, yyvsp[-1].p); yyval.p = NULL; }
 break;
 case 41:
 #line 183 "awkgram.y"
-{ endloc = linkum(endloc, yyvsp[-1].p); yyval.p = 0; }
+{ endloc = linkum(endloc, yyvsp[-1].p); yyval.p = NULL; }
 break;
 case 42:
 #line 184 "awkgram.y"
@@ -2768,7 +2768,7 @@ case 42:
 break;
 case 43:
 #line 185 "awkgram.y"
-{ infunc--; curfname=0; defn((Cell *)yyvsp[-7].p, yyvsp[-5].p, yyvsp[-1].p); yyval.p = 0; }
+{ infunc--; curfname=0; defn((Cell *)yyvsp[-7].p, yyvsp[-5].p, yyvsp[-1].p); yyval.p = NULL; }
 break;
 case 45:
 #line 190 "awkgram.y"
@@ -3062,7 +3062,7 @@ case 126:
 break;
 case 127:
 #line 339 "awkgram.y"
-{ yyval.p = 0; }
+{ yyval.p = NULL; }
 break;
 case 129:
 #line 344 "awkgram.y"
@@ -3262,7 +3262,7 @@ case 177:
 break;
 case 178:
 #line 427 "awkgram.y"
-{ arglist = yyval.p = 0; }
+{ arglist = yyval.p = NULL; }
 break;
 case 179:
 #line 428 "awkgram.y"
@@ -3310,7 +3310,7 @@ break;
                 yychar = 0;
 #if YYDEBUG
             if( yydebug ) {
-                yys = 0;
+                yys = NULL;
                 if( yychar <= YYMAXTOKEN )
                     yys = yyname[yychar];
                 if( yys == NULL )

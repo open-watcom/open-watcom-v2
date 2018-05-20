@@ -334,7 +334,7 @@ char *cclenter( const char *argp )    /* add a character class */
         *bp++ = c;
         i++;
     }
-    *bp = 0;
+    *bp = '\0';
     dprintf(( "cclenter: in = |%s|, out = |%s|\n", argp, buf ));
     return( tostring( buf ) );
 }
@@ -824,10 +824,10 @@ int relex( void )   /* lexical analyzer for reparse */
             FATAL( "out of space in reg expr %.10s..", lastre );
         bp = buf;
         if( *prestr == '^' ) {
-            cflag = 1;
+            cflag = true;
             prestr++;
         } else {
-            cflag = 0;
+            cflag = false;
         }
         n = 2 * strlen( prestr ) + 1;
         if( !adjbuf( &buf, &bufsz, n, n, &bp, "relex1" ) ) {
@@ -867,9 +867,9 @@ int relex( void )   /* lexical analyzer for reparse */
             } else if( bp == buf ) { /* 1st char is special */
                 *bp++ = c;
             } else if( c == ']' ) {
-                *bp++ = 0;
+                *bp++ = '\0';
                 rlxstr = tostring( buf );
-                if( cflag == 0 ) {
+                if( !cflag ) {
                     return( CCL );
                 } else {
                     return( NCCL );

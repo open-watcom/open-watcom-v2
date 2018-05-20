@@ -131,7 +131,7 @@ int getrec( char **pbuf, size_t *pbufsize, bool isrecord )    /* get next input 
         donerec = true;
     }
     saveb0 = buf[0];
-    buf[0] = 0;
+    buf[0] = '\0';
     while( argno < *ARGC || infile == stdin ) {
         dprintf(( "argno=%d, file=|%s|\n", argno, file ));
         if( infile == NULL ) {   /* have to open a new file */
@@ -231,7 +231,7 @@ int readrec( char **pbuf, size_t *pbufsize, FILE *inf )  /* read one record into
     }
     if( !adjbuf( &buf, &bufsize, 1 + rr - buf, recsize, &rr, "readrec 3" ) )
         FATAL( "input record `%.30s...' too long", buf );
-    *rr = 0;
+    *rr = '\0';
     dprintf(( "readrec saw <%s>, returns %d\n", buf, c == EOF && rr == buf ? 0 : 1 ));
     *pbuf = buf;
     *pbufsize = bufsize;
@@ -261,7 +261,7 @@ void setclvar( char *s )  /* set var=value from s */
     for( p = s; *p != '='; p++ ) {
         ;
     }
-    *p++ = 0;
+    *p++ = '\0';
     p = qstring( p, '\0' );
     q = setsymtab( s, p, 0.0, STR, symtab );
     setsval( q, p );
@@ -328,7 +328,7 @@ void fldbld( void )   /* create fields from current record */
             if( freeable( fldtab[i] ) )
                 xfree( fldtab[i]->sval );
             buf[0] = *r;
-            buf[1] = 0;
+            buf[1] = '\0';
             fldtab[i]->sval = tostring( buf );
             fldtab[i]->tval = FLD | STR;
         }
