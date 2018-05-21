@@ -764,12 +764,12 @@ Node *unary(Node *np)
  * to nelson beebe for the suggestion; let's see if it works everywhere.
  */
 
-int (xisblank)( int c )
+static int (xisblank)( int c )
 {
     return( c == ' ' || c == '\t' );
 }
 
-struct charclass {
+static struct charclass {
     const char *cc_name;
     int cc_namelen;
     int (*cc_func)(int);

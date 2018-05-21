@@ -90,7 +90,7 @@ Keyword keywords[] ={   /* keep sorted: binary searched */
     { "while",  WHILE,      WHILE },
 };
 
-#define RET(x)  { if(dbg)printf("lex %s\n", tokname(x)); return(x); }
+#define RET(x)  { if(dbg) printf("lex %s\n", tokname(x)); return(x); }
 
 static int peek( void )
 {

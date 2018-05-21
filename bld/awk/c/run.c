@@ -34,7 +34,29 @@ THIS SOFTWARE.
 #include "awk.h"
 #include "ytab.h"
 
+
+#define NARGS   50  /* max args in a call */
+
 #define tempfree(x) if (istemp(x)) tfree(x); else
+
+struct files {
+    FILE        *fp;
+    const char  *fname;
+    int         mode;   /* '|', 'a', 'w' => LE/LT, GT */
+} *files;
+
+struct Frame {          /* stack frame for awk function calls */
+    int     nargs;      /* number of arguments in this call */
+    Cell    *fcncell;   /* pointer to Cell for function */
+    Cell    **args;     /* pointer to array of arguments after execute */
+    Cell    *retval;    /* return value */
+};
+
+static int  nfiles;
+
+static size_t       nframe = 0;         /* number of frames allocated */
+static struct Frame *frame = NULL;     /* base of stack frames; dynamically allocated */
+static struct Frame *framep = NULL;    /* frame pointer. bottom level unused */
 
 /*
 #undef tempfree
@@ -64,9 +86,6 @@ void tempfree(Cell *p) {
 /* #ifndef RAND_MAX */
 /* #define RAND_MAX 32767 */    /* all that ansi guarantees */
 /* #endif */
-
-// forward declaration
-void flush_all( void );
 
 jmp_buf env;
 
@@ -130,14 +149,6 @@ bool adjbuf( char **pbuf, size_t *psiz, size_t minlen, size_t quantum, char **pb
     return( true );
 }
 
-struct files {
-    FILE        *fp;
-    const char  *fname;
-    int         mode;   /* '|', 'a', 'w' => LE/LT, GT */
-} *files;
-
-int nfiles;
-
 static void stdinit( void )
 /* in case stdin, etc., are not constants */
 {
@@ -154,6 +165,17 @@ static void stdinit( void )
     files[2].fp = stderr;
     files[2].fname = "/dev/stderr";
     files[2].mode = GT;
+}
+
+static void flush_all( void )
+{
+    int i;
+
+    for( i = 0; i < nfiles; i++ ) {
+        if( files[i].fp ) {
+            fflush( files[i].fp );
+        }
+    }
 }
 
 void run( Node *a )
@@ -242,19 +264,6 @@ Cell *program( Node **a, int n )
   ex1:
     return( True );
 }
-
-struct Frame {          /* stack frame for awk function calls */
-    int     nargs;      /* number of arguments in this call */
-    Cell    *fcncell;   /* pointer to Cell for function */
-    Cell    **args;     /* pointer to array of arguments after execute */
-    Cell    *retval;    /* return value */
-};
-
-#define NARGS   50  /* max args in a call */
-
-struct Frame *frame = NULL;     /* base of stack frames; dynamically allocated */
-size_t nframe = 0;              /* number of frames allocated */
-struct Frame *framep = NULL;    /* frame pointer. bottom level unused */
 
 Cell *call( Node **a, int n )
 /* function call.  very kludgy and fragile */
@@ -1914,18 +1923,34 @@ void closeall( void )
     }
 }
 
-void flush_all( void )
+static void backsub( char **pb_ptr, const char **sptr_ptr )
+/* handle \\& variations */
+/* sptr[0] == '\\' */
 {
-    int i;
+    char        *pb = *pb_ptr;
+    const char  *sptr = *sptr_ptr;
 
-    for( i = 0; i < nfiles; i++ ) {
-        if( files[i].fp ) {
-            fflush( files[i].fp );
+    if( sptr[1] == '\\' ) {
+        if( sptr[2] == '\\' && sptr[3] == '&' ) { /* \\\& -> \& */
+            *pb++ = '\\';
+            *pb++ = '&';
+            sptr += 4;
+        } else if( sptr[2] == '&' ) {   /* \\& -> \ + matched */
+            *pb++ = '\\';
+            sptr += 2;
+        } else {                        /* \\x -> \\x */
+            *pb++ = *sptr++;
+            *pb++ = *sptr++;
         }
+    } else if( sptr[1] == '&' ) {       /* literal & */
+        sptr++;
+        *pb++ = *sptr++;
+    } else {                            /* literal \ */
+        *pb++ = *sptr++;
     }
+    *pb_ptr = pb;
+    *sptr_ptr = sptr;
 }
-
-void backsub( char **pb_ptr, const char **sptr_ptr );
 
 Cell *sub( Node **a, int nnn )
 /* substitute command */
@@ -2106,33 +2131,4 @@ Cell *gsub( Node **a, int nnn )
     x->fval = num;
     free( buf );
     return( x );
-}
-
-void backsub( char **pb_ptr, const char **sptr_ptr )
-/* handle \\& variations */
-/* sptr[0] == '\\' */
-{
-    char        *pb = *pb_ptr;
-    const char  *sptr = *sptr_ptr;
-
-    if( sptr[1] == '\\' ) {
-        if( sptr[2] == '\\' && sptr[3] == '&' ) { /* \\\& -> \& */
-            *pb++ = '\\';
-            *pb++ = '&';
-            sptr += 4;
-        } else if( sptr[2] == '&' ) {   /* \\& -> \ + matched */
-            *pb++ = '\\';
-            sptr += 2;
-        } else {                        /* \\x -> \\x */
-            *pb++ = *sptr++;
-            *pb++ = *sptr++;
-        }
-    } else if( sptr[1] == '&' ) {       /* literal & */
-        sptr++;
-        *pb++ = *sptr++;
-    } else {                            /* literal \ */
-        *pb++ = *sptr++;
-    }
-    *pb_ptr = pb;
-    *sptr_ptr = sptr;
 }
