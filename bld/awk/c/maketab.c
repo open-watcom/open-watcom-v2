@@ -116,7 +116,7 @@ int main( void )
     int i, n, tok;
     char c;
     FILE *fp;
-    char buf[200], name[200], def[200];
+    char buf[200], name[200], def[200], numstr[11];
 
     printf( "#include <stdio.h>\n" );
     printf( "#include \"awk.h\"\n" );
@@ -131,16 +131,17 @@ int main( void )
     printf( "static char *printname[%d] = {\n", SIZE );
     i = 0;
     while( fgets( buf, sizeof buf, fp ) != NULL ) {
-        n = sscanf(buf, "%1c %s %s %d", &c, def, name, &tok);
-        if( c != '#' || ( n != 4 && strcmp( def, "define" ) != 0 ) )  /* not a valid #define */
+        n = sscanf(buf, "%1c %s %s %10s", &c, def, name, numstr);
+        if( n != 4 || c != '#' || strcmp( def, "define" ) != 0 )  /* not a valid #define */
             continue;
+        tok = strtol( numstr, NULL, 0 );
         if( tok < FIRSTTOKEN || tok > LASTTOKEN ) {
             /* fprintf( stderr, "maketab funny token %d %s ignored\n", tok, buf ); */
             continue;
         }
         names[tok - FIRSTTOKEN] = (char *)malloc( strlen( name ) + 1 );
         strcpy( names[tok - FIRSTTOKEN], name );
-        printf( "\t(char *)\"%s\",\t/* %d */\n", name, tok );
+        printf( "    (char *)\"%s\",\t/* %d */\n", name, tok );
         i++;
     }
     printf( "};\n\n" );
@@ -150,9 +151,9 @@ int main( void )
     printf( "\nCell *(*proctab[%d])(Node **, int) = {\n", SIZE );
     for( i = 0; i < SIZE; i++ ) {
         if( table[i] == '\0' ) {
-            printf( "\tnullproc,\t/* %s */\n", names[i] );
+            printf( "    nullproc,\t/* %s */\n", names[i] );
         } else {
-            printf( "\t%s,\t/* %s */\n", table[i], names[i] );
+            printf( "    %s,\t/* %s */\n", table[i], names[i] );
         }
     }
     printf( "};\n\n" );
