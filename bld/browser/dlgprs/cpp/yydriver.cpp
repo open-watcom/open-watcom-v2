@@ -26,10 +26,13 @@
 //Never used
 //#define YYERROR         goto yyerrlab
 
+extern const TokenStruct  xtokens[];
+extern const int          xtokcnt;
+
 YYPARSER::YYPARSER( const char * fileName )
 //-----------------------------------------
 {
-    _scanner = new Scanner( fileName );
+    _scanner = new Scanner( fileName, T_String, T_Number, T_Ident, xtokens, xtokcnt );
 }
 
 YYPARSER::~YYPARSER()

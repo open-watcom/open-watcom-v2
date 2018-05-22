@@ -11,6 +11,9 @@
     extern Binding *    CurrBinding;
 
     #define YYPARSER BindingParser
+
+    #define xtokens tokens_bnd
+    #define xtokcnt tokcnt_bnd
 %}
 
 %token T_String
@@ -90,3 +93,8 @@ absrel
 
 %%
 
+const TokenStruct xtokens[] = {
+    { "class",  T_Class },
+};
+
+const int   xtokcnt = sizeof( xtokens ) / sizeof( xtokens[0] );

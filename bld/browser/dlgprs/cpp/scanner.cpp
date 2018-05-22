@@ -38,29 +38,21 @@
 
 #include "chbffile.h"
 #include "scanner.h"
-#include "bndytab.h"
-#include "dlgytab.h"
 
 const char * const   Scanner::_SpecialCharacters = ",{}|:()@#;";
 
-struct TokenStruct {
-    const char * name;
-    short        token; // token value associated with this
-};
 
-#define DEFTOKEN( n, val )  { n, val },
-
-TokenStruct Tokens[] = {
-    #include "deftoken.h"
-};
-
-
-Scanner::Scanner( const char * fileName )
-//---------------------------------------
+Scanner::Scanner( const char * fileName, short t_string, short t_number, short t_ident, const TokenStruct *tokens, int tokcnt )
+//-----------------------------------------------------------------------------------------------------------------------------
 {
     _file = new CheckedBufferedFile( fileName );
     _strings = new std::vector<char *>;
     _identifiers = new std::vector<char *>;
+    _T_String = t_string;
+    _T_Number = t_number;
+    _T_Ident = t_ident;
+    _tokens = tokens;
+    _tokcnt = tokcnt;
 
     _file->open( CheckedFile::ReadBinary, CheckedFile::UserReadWrite );
 
@@ -263,7 +255,7 @@ short Scanner::getToken( YYSTYPE & lval )
 
     if( isQuote() ) {
         readQuotedString( lval );
-        return T_String;   // <-------- early return
+        return _T_String;   // <-------- early return
     }
 
     if( _current == '0' ) {
@@ -277,12 +269,12 @@ short Scanner::getToken( YYSTYPE & lval )
                 lval = 0;
             }
         }
-        return T_Number;   // <-------- early return
+        return _T_Number;   // <-------- early return
     }
 
     if( isDigit() ) {
         readDecimal( lval );
-        return T_Number;   // <-------- early return
+        return _T_Number;   // <-------- early return
     }
 
     for( bufPos = 0; bufPos < MaxBufLen; bufPos += 1 ) {
@@ -313,7 +305,7 @@ short Scanner::tokenValue( const char * tok, YYSTYPE & lval )
     TokenStruct * res;
     char *  dupStr;
 
-    res = (TokenStruct *) bsearch( tok, Tokens, sizeof( Tokens ) / sizeof( TokenStruct ), sizeof( TokenStruct ), &CompareTokens );
+    res = (TokenStruct *)bsearch( tok, _tokens, _tokcnt, sizeof( TokenStruct ), &CompareTokens );
 
     if( res ) {
         return res->token;
@@ -324,7 +316,7 @@ short Scanner::tokenValue( const char * tok, YYSTYPE & lval )
         lval = (YYSTYPE)_identifiers->size();
         _identifiers->push_back( dupStr );
 
-        return T_Ident;
+        return _T_Ident;
     }
 }
 
