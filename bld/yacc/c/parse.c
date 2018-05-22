@@ -950,7 +950,6 @@ void dump_header( FILE *fp )
     y_token     *t;
     y_token     *tmp;
 
-    fprintf( fp, "#define YYTOKENTYPE yytokentype\n" );
     if( fastflag || bigflag || compactflag ) {
         ttype = "unsigned short";
     } else {
