@@ -71,7 +71,7 @@ void recinit( size_t n )
         FATAL( "out of space for $0 and fields" );
     *fldtab[0] = dollar0;
     fldtab[0]->sval = record;
-    fldtab[0]->nval = tostring("0");
+    fldtab[0]->nval = tostring( "0" );
     makefields(1, nfields);
 }
 

@@ -73,7 +73,7 @@ static const char   *lastre;    /* origin of last re */
 static int          setcnt;
 static int          poscnt;
 
-#define NFA 20  /* cache this many dynamic fa's */
+#define NFA         20  /* cache this many dynamic fa's */
 static fa           *fatab[NFA];
 static int          nfatab  = 0;    /* entries in fatab */
 
@@ -297,9 +297,9 @@ int quoted( const char **pp )
 
 char *cclenter( const char *argp )    /* add a character class */
 {
-    int i, c, c2;
-    const char *p = argp;
-    char *bp;
+    int         i, c, c2;
+    const char  *p = argp;
+    char        *bp;
     static char *buf = NULL;
     static size_t bufsz = 100;
 
@@ -366,10 +366,10 @@ void cfoll(fa *f, Node *v)  /* enter follow set of each leaf of vertex v into lf
             setvec[i] = false;
         }
         setcnt = 0;
-        follow(v);  /* computes setvec and setcnt */
+        follow( v );  /* computes setvec and setcnt */
         if( (p = (int *)calloc( 1, ( setcnt + 1 ) * sizeof( int ) )) == NULL )
             overflo( "out of space building follow set" );
-        f->re[info(v)].lfollow = p;
+        f->re[info( v )].lfollow = p;
         *p = setcnt;
         for( i = f->accept; i >= 0; i-- ) {
             if( setvec[i] ) {
@@ -848,8 +848,8 @@ int relex( void )   /* lexical analyzer for reparse */
                         break;
                     }
                 }
-                if( cc->cc_name != NULL && prestr[1 + cc->cc_namelen] == ':' &&
-                    prestr[2 + cc->cc_namelen] == ']' ) {
+                if( cc->cc_name != NULL && prestr[1 + cc->cc_namelen] == ':'
+                  && prestr[2 + cc->cc_namelen] == ']' ) {
                     prestr += cc->cc_namelen + 3;
                     for( i = 0; i < NCHARS; i++ ) {
                         if( !adjbuf( &buf, &bufsz, bp - buf + 1, 100, &bp, "relex2" ) )
@@ -881,7 +881,7 @@ int relex( void )   /* lexical analyzer for reparse */
     }
 }
 
-int cgoto(fa *f, int s, int c)
+int cgoto( fa *f, int s, int c )
 {
     int i, j, k;
     int *p, *q;

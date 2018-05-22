@@ -64,36 +64,40 @@ THIS SOFTWARE.
 #define FFLUSH      14
 
 /* ctypes */
-#define OCELL       1
-#define OBOOL       2
-#define OJUMP       3
+typedef enum {
+    OCELL = 1,
+    OBOOL = 2,
+    OJUMP = 3,
+} cell_type;
 
 /* Cell subtypes: csub */
-#define CFREE       7
-#define CCOPY       6
-#define CCON        5
-#define CTEMP       4
-#define CNAME       3
-#define CVAR        2
-#define CFLD        1
-#define CUNK        0
-
+typedef enum {
+    CUNK        = 0,
+    CFLD        = 1,
+    CVAR        = 2,
+    CNAME       = 3,
+    CTEMP       = 4,
+    CCON        = 5,
+    CCOPY       = 6,
+    CFREE       = 7,
 /* bool subtypes */
-#define BTRUE       11
-#define BFALSE      12
-
+    BTRUE       = 11,
+    BFALSE      = 12,
 /* jump subtypes */
-#define JEXIT       21
-#define JNEXT       22
-#define JBREAK      23
-#define JCONT       24
-#define JRET        25
-#define JNEXTFILE   26
+    JEXIT       = 21,
+    JNEXT       = 22,
+    JBREAK      = 23,
+    JCONT       = 24,
+    JRET        = 25,
+    JNEXTFILE   = 26,
+} cell_subtyp;
 
 /* node types */
-#define NVALUE      1
-#define NSTAT       2
-#define NEXPR       3
+typedef enum {
+    NVALUE = 1,
+    NSTAT  = 2,
+    NEXPR  = 3,
+} node_type;
 
 #define notlegal(n)     (n <= FIRSTTOKEN || n >= LASTTOKEN || proctab[n - FIRSTTOKEN] == nullproc)
 #define isvalue(n)      ((n)->ntype == NVALUE)
@@ -144,8 +148,8 @@ typedef enum {
 } type_info;
 
 typedef struct Cell {
-    uschar      ctype;  /* OCELL, OBOOL, OJUMP, etc. */
-    uschar      csub;   /* CCON, CTEMP, CFLD, etc. */
+    cell_type   ctype;  /* OCELL, OBOOL, OJUMP, etc. */
+    cell_subtyp csub;   /* CCON, CTEMP, CFLD, etc. */
     char        *nval;  /* name, for variables only */
     char        *sval;  /* string value */
     Awkfloat    fval;   /* value as number */
@@ -162,7 +166,7 @@ typedef struct Array {  /* symbol table array */
 /* Node:  parse tree is made of nodes, with Cell's at bottom */
 
 typedef struct Node {
-    int         ntype;
+    node_type   ntype;
     struct Node *nnext;
     int         lineno;
     int         nobj;

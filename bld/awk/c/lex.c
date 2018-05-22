@@ -29,7 +29,7 @@ THIS SOFTWARE.
 #include "awk.h"
 #include "ytab.h"
 
-extern YYSTYPE  yylval;
+
 extern int  infunc;
 extern char *lexprog;
 

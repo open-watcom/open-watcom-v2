@@ -1959,7 +1959,8 @@ Cell *sub( Node **a, int nnn )
     const char *q;
     char *pb;
     Cell *x, *y, *result;
-    char *t, *buf;
+    const char *t;
+    char *buf;
     fa *pfa;
     size_t bufsz = recsize;
 

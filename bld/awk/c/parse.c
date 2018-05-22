@@ -174,7 +174,7 @@ Node *op4(int a, Node *b, Node *c, Node *d, Node *e)
     return(x);
 }
 
-Node *celltonode(Cell *a, int b)
+Node *celltonode(Cell *a, cell_subtyp b)
 {
     Node *x;
 

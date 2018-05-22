@@ -435,28 +435,27 @@ char *tostring( const char *s )
     return( p );
 }
 
-char *qstring( const char *is, int delim )
+char *qstring( const char *s, int delim )
 /* collect string up to next delim */
 {
-    const char *os = is;
+    const char *os = s;
     int c, n;
-    uschar *s = (uschar *)is;
-    uschar *buf, *bp;
+    char *buf, *bp;
 
-    if( (buf = (uschar *)malloc( strlen( is ) + 3 )) == NULL )
+    if( (buf = (char *)malloc( strlen( s ) + 3 )) == NULL )
         FATAL( "out of space in qstring(%s)", s );
-    for( bp = buf; (c = *s) != delim; s++ ) {
+    for( bp = buf; (c = (uschar)*s++) != delim; ) {
         if( c == '\n' ) {
             SYNTAX( "newline in string %.20s...", os );
         } else if( c != '\\' ) {
             *bp++ = c;
         } else {  /* \something */
-            c = *++s;
+            c = (uschar)*s++;
             if( c == '\0' ) {   /* \ at end */
                 *bp++ = '\\';
                 break;  /* for loop */
             }
-            switch (c) {
+            switch( c ) {
             case '\\':  *bp++ = '\\'; break;
             case 'n':   *bp++ = '\n'; break;
             case 't':   *bp++ = '\t'; break;
@@ -469,16 +468,17 @@ char *qstring( const char *is, int delim )
                     break;
                 }
                 n = c - '0';
-                if( isdigit( s[1] ) ) {
-                    n = 8 * n + *++s - '0';
-                    if (isdigit(s[1]))
-                        n = 8 * n + *++s - '0';
+                if( isdigit( (uschar)*s ) ) {
+                    n = 8 * n + (uschar)*s++ - '0';
+                    if( isdigit( (uschar)*s ) ) {
+                        n = 8 * n + (uschar)*s++ - '0';
+                    }
                 }
                 *bp++ = n;
                 break;
             }
         }
     }
-    *bp++ = 0;
-    return( (char *)buf );
+    *bp++ = '\0';
+    return( buf );
 }

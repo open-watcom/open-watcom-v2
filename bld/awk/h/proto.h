@@ -81,7 +81,7 @@ extern  Node    *op3(int, Node *, Node *, Node *);
 extern  Node    *op4(int, Node *, Node *, Node *, Node *);
 extern  Node    *stat2(int, Node *, Node *);
 extern  Node    *stat4(int, Node *, Node *, Node *, Node *);
-extern  Node    *celltonode(Cell *, int);
+extern  Node    *celltonode(Cell *, cell_subtyp);
 extern  Node    *rectonode(void);
 extern  Node    *makearr(Node *);
 extern  Node    *pa2stat(Node *, Node *, Node *);
