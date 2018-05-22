@@ -18,7 +18,6 @@ static int yygrowstack();
 #include <string.h>
 #include "awk.h"
 
-void checkdup(Node *list, Cell *item);
 int yywrap(void) { return( 1 ); }
 
 Node    *beginloc = NULL;
