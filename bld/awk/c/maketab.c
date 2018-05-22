@@ -124,16 +124,22 @@ int main( void )
     for( i = SIZE; --i >= 0; ) {
         names[i] = "";
     }
-    if( (fp = fopen("ytab.h", "r")) == NULL ) {
-        fprintf(stderr, "maketab can't open ytab.h!\n");
-        exit(1);
+    if( (fp = fopen( "ytab.h", "r" )) == NULL ) {
+        fprintf( stderr, "maketab can't open ytab.h!\n" );
+        exit( 1 );
     }
     printf( "static char *printname[%d] = {\n", SIZE );
     i = 0;
     while( fgets( buf, sizeof buf, fp ) != NULL ) {
         n = sscanf(buf, "%1c %s %s %10s", &c, def, name, numstr);
-        if( n != 4 || c != '#' || strcmp( def, "define" ) != 0 )  /* not a valid #define */
+        if( n != 4 )
             continue;
+        if( c != '#' || strcmp( def, "define" ) != 0 ) { /* not a valid #define */
+            sscanf(buf, "%s %s %10s", name, def, numstr);
+            if( strcmp( def, "=" ) != 0 ) { /* not a valid enum */
+                continue;
+            }
+        }
         tok = strtol( numstr, NULL, 0 );
         if( tok < FIRSTTOKEN || tok > LASTTOKEN ) {
             /* fprintf( stderr, "maketab funny token %d %s ignored\n", tok, buf ); */
