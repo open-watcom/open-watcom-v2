@@ -52,20 +52,20 @@ static a_entry *table;
 static unsigned used;
 static unsigned table_size;
 
-void dump_define( char *name, int i )
+void dump_define( FILE *fp, char *name, int i )
 {
-    fprintf( actout, "#define\t%-20s\t%d\n", name, i );
+    fprintf( fp, "#define\t%-20s\t%d\n", name, i );
 }
 
 static int tabcol;
 
-static void begin_table( char *tipe, char *name )
+static void begin_table( FILE *fp, char *tipe, char *name )
 {
-    fprintf( actout, "static const %s YYFAR %s[] = {", tipe, name );
+    fprintf( fp, "static const %s YYFAR %s[] = {", tipe, name );
     tabcol = 0;
 }
 
-void puttab( value_size fits, unsigned i )
+void puttab( FILE *fp, value_size fits, unsigned i )
 {
     char *format;
     unsigned mod;
@@ -81,18 +81,18 @@ void puttab( value_size fits, unsigned i )
         mod = 13;
     }
     if( tabcol ) {
-        fprintf( actout, "," );
+        fprintf( fp, "," );
     }
     if( !(tabcol % mod) ) {
-        fprintf( actout, "\n" );
+        fprintf( fp, "\n" );
     }
-    fprintf( actout, format, i );
+    fprintf( fp, format, i );
     ++tabcol;
 }
 
-static void end_table( void )
+static void end_table( FILE *fp )
 {
-    fprintf( actout, "\n};\n" );
+    fprintf( fp, "\n};\n" );
 }
 
 static void add_table( short token, short action )
@@ -119,7 +119,7 @@ static void dump_reduction( a_reduce_action *rx, unsigned *base )
     }
 }
 
-void genobj( void )
+void genobj( FILE *fp )
 {
     int i;
     int ntoken;
@@ -191,62 +191,62 @@ void genobj( void )
         }
     }
     printf( "avg: %u max: %u\n", sum / nstate, max );
-    dump_define( "YYANYTOKEN", any_token );
-    dump_define( "YYEOFTOKEN", eofsym->token );
-    dump_define( "YYSTART", startstate->sidx );
-    begin_table( "YYACTTYPE", "yybasetab" );
+    dump_define( fp, "YYANYTOKEN", any_token );
+    dump_define( fp, "YYEOFTOKEN", eofsym->token );
+    dump_define( fp, "YYSTART", startstate->sidx );
+    begin_table( fp, "YYACTTYPE", "yybasetab" );
     for( i = 0; i < nstate; ++i ) {
-        puttab( FITS_A_WORD, state_base[i] );
+        puttab( fp, FITS_A_WORD, state_base[i] );
     }
-    end_table();
-    begin_table( "YYCHKTYPE", "yychktab" );
+    end_table( fp );
+    begin_table( fp, "YYCHKTYPE", "yychktab" );
     for( i = 0; i < used; ++i ) {
-        puttab( FITS_A_BYTE, table[i].token );
+        puttab( fp, FITS_A_BYTE, table[i].token );
     }
-    end_table();
-    begin_table( "YYACTTYPE", "yyacttab" );
+    end_table( fp );
+    begin_table( fp, "YYACTTYPE", "yyacttab" );
     for( i = 0; i < used; ++i ) {
-        puttab( FITS_A_WORD, table[i].action );
+        puttab( fp, FITS_A_WORD, table[i].action );
     }
-    end_table();
-    begin_table( "YYPLENTYPE", "yyplentab" );
+    end_table( fp );
+    begin_table( fp, "YYPLENTYPE", "yyplentab" );
     for( i = 0; i < npro; ++i ) {
         for( item = protab[i]->item; item->p.sym != NULL; ) {
             ++item;
         }
-        puttab( FITS_A_BYTE, (unsigned)( item - protab[i]->item ) );
+        puttab( fp, FITS_A_BYTE, (unsigned)( item - protab[i]->item ) );
     }
-    end_table();
-    begin_table( "YYPLHSTYPE", "yyplhstab" );
+    end_table( fp );
+    begin_table( fp, "YYPLHSTYPE", "yyplhstab" );
     for( i = 0; i < npro; ++i ) {
-        puttab( FITS_A_BYTE, protab[i]->sym->token );
+        puttab( fp, FITS_A_BYTE, protab[i]->sym->token );
     }
-    end_table();
-    fprintf( actout, "#ifdef YYDEBUG\n" );
+    end_table( fp );
+    fprintf( fp, "#ifdef YYDEBUG\n" );
     rule_base = 0;
-    begin_table( "unsigned short", "yyrulebase" );
+    begin_table( fp, "unsigned short", "yyrulebase" );
     for( i = 0; i < npro; ++i ) {
         for( item = protab[i]->item; item->p.sym != NULL; ) {
             ++item;
         }
-        puttab( FITS_A_WORD, rule_base );
+        puttab( fp, FITS_A_WORD, rule_base );
         rule_base += (int)( item - protab[i]->item );
     }
-    end_table();
-    begin_table( "YYCHKTYPE", "yyrhstoks" );
+    end_table( fp );
+    begin_table( fp, "YYCHKTYPE", "yyrhstoks" );
     for( i = 0; i < npro; ++i ) {
         for( item = protab[i]->item; item->p.sym != NULL; ++item ) {
-            puttab( FITS_A_BYTE, item->p.sym->token );
+            puttab( fp, FITS_A_BYTE, item->p.sym->token );
         }
     }
-    end_table();
-    begin_table( "char YYFAR *", "yytoknames" );
-    fputc( '\n', actout );
+    end_table( fp );
+    begin_table( fp, "char YYFAR *", "yytoknames" );
+    fputc( '\n', fp );
     for( i = 0; i < nsym; ++i ) {
-        fprintf( actout, "\"%s\",\n", symtab[i]->name );
+        fprintf( fp, "\"%s\",\n", symtab[i]->name );
     }
-    fprintf( actout, "\"\"" );
-    end_table();
-    fprintf( actout, "#endif\n" );
+    fprintf( fp, "\"\"" );
+    end_table( fp );
+    fprintf( fp, "#endif\n" );
     FREE( table );
 }

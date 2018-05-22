@@ -37,7 +37,7 @@
 #include "alloc.h"
 #include "walloca.h"
 
-FILE *yaccin, *actout, *tokout;
+FILE *yaccin;
 char *loadpath, *srcname;
 char *codefilename;
 char *headerfilename;
@@ -83,7 +83,7 @@ static FILE *openw( char *filename )
 {
     FILE *file;
 
-    file = fopen( filename, "w" );
+    file = fopen( filename, "w+" );
     if( file == NULL ) {
         msg( "Can't open %s for output.\n", filename );
     }
@@ -191,10 +191,28 @@ void dumpstatistic( char *name, unsigned stat )
     printf( "%6u\n", stat );
 }
 
+void copy_part( FILE *fi, FILE *fo )
+{
+    int ch;
+
+    while( (ch = fgetc( fi )) != '\f' && ch != EOF ) {
+        fputc( ch, fo );
+    }
+}
+
+void copy_rest( FILE *fi, FILE *fo )
+{
+    int ch;
+
+    while( (ch = fgetc( fi )) != EOF ) {
+        fputc( ch, fo );
+    }
+}
+
 int main( int argc, char **argv )
 {
     int     i;
-    FILE    *skeleton, *temp, *save;
+    FILE    *skeleton, *temp, *tokout, *actout;
     int     ch;
     char    tempfname[10];
     char    *fileprefix = "y";
@@ -272,9 +290,9 @@ int main( int argc, char **argv )
     descfilename   = MALLOC( size + 5, char );
     strcat( strcpy( descfilename, fileprefix), ".out" );
     actout = openw( codefilename );
+    defs( actout );
     tokout = openw( headerfilename );
-
-    defs();
+    dump_header( tokout );
     temp = NULL;
     for( i = 0; i < 1000 && temp == NULL; ++i ) {
         sprintf( tempfname, "ytab.%3d", i );
@@ -283,10 +301,7 @@ int main( int argc, char **argv )
     if( temp == NULL ) {
         msg( "Cannot create temporary file\n" );
     }
-    save = actout;
-    actout = temp;
-    rules();
-    actout = save;
+    rules( temp );
     buildpro();
     CalcMinSentence();
     if( proflag || showflag ) {
@@ -327,34 +342,30 @@ int main( int argc, char **argv )
     dumpstatistic( "reduce/reduce conflicts", RR_conflicts );
     dumpstatistic( "shift/reduce conflicts", SR_conflicts );
     show_unused();
-    rewind( tokout );
-    while( (ch = fgetc( tokout )) != EOF ) {
-        fputc( ch, actout );
-    }
     if( skeleton == NULL ) {
         skeleton = fpopen( loadpath, "yydriver.c" );
         if( skeleton == NULL ) {
             msg( "Can't find yacc skeleton yydriver.c\n" );
         }
     }
-    while( (ch = fgetc( skeleton )) != '\f' && ch != EOF ) {
-        fputc( ch, actout );
-    }
-    genobj();
-    while( (ch = fgetc( skeleton )) != '\f' && ch != EOF ) {
-        fputc( ch, actout );
-    }
+    /* copy first part of skeleton */
+    copy_part( skeleton, actout );
+    rewind( tokout );
+    /* copy tokens */
+    copy_rest( tokout, actout );
+    close_header( tokout );
+    genobj( actout );
+    /* copy middle part of skeleton */
+    copy_part( skeleton, actout );
     rewind( temp );
-    while( (ch = fgetc( temp )) != EOF ) {
-        fputc( ch, actout );
-    }
-    while( (ch = fgetc( skeleton )) != EOF ) {
-        fputc( ch, actout );
-    }
-    fclose( skeleton );
-    tail();
+    copy_rest( temp, actout );
     fclose( temp );
     remove( tempfname );
+    /* copy last part of skeleton */
+    copy_rest( skeleton, actout );
+    fclose( skeleton );
+    tail( actout );
+    fclose( actout );
     FREE( codefilename );
     FREE( headerfilename );
     FREE( descfilename );

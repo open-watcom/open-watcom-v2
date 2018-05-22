@@ -246,12 +246,14 @@ extern char     *getname( char * );
 
 extern FILE     *fpopen( char *, char * );
 
-extern void     defs(void);
-extern void     rules(void);
+extern void     defs( FILE * );
+extern void     rules( FILE * );
 extern void     parsestats( void );
-extern void     tail(void);
+extern void     tail( FILE * );
+extern void     dump_header( FILE * );
+extern void     close_header( FILE * );
 
-extern void     genobj(void);
+extern void     genobj( FILE * );
 
 extern void     msg( char *, ... );
 extern void     warn( char *, ... );
@@ -259,17 +261,17 @@ extern void     dumpstatistic( char *name, unsigned stat );
 
 extern void     MarkNoUnitRuleOptimizationStates( void );
 
-extern void     GenFastTables( void );
+extern void     GenFastTables( FILE * );
 
 extern token_n  FirstNonTerminalTokenValue( void );
-extern void     endtab( void );
-extern void     putcompact( token_n token, action_n action );
-extern void     begtab( char *tipe, char *name );
-extern void     putnum( char *name, int i );
-extern void     putambigs( base_n *base );
-extern void     puttab( value_size fits, unsigned i );
-extern void     puttokennames( token_n dtoken, value_size token_size );
-extern void     putcomment( char *comment );
+extern void     endtab( FILE *fp );
+extern void     putcompact( FILE *fp, token_n token, action_n action );
+extern void     begtab( FILE *fp, char *tipe, char *name );
+extern void     putnum( FILE *fp, char *name, int i );
+extern void     putambigs( FILE *fp, base_n *base );
+extern void     puttab( FILE *fp, value_size fits, unsigned i );
+extern void     puttokennames( FILE *fp, token_n dtoken, value_size token_size );
+extern void     putcomment( FILE *fp, char *comment );
 
 extern rule_n   npro;    /* # of productions */
 extern index_n  nsym;    /* # of symbols */
@@ -319,8 +321,6 @@ extern set_size *setmembers;
 extern char     *srcname;
 
 extern FILE     *yaccin;
-extern FILE     *actout;
-extern FILE     *tokout;
 
 extern int      lineno;
 

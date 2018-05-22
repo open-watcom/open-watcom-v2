@@ -330,7 +330,7 @@ static action_n *orderActionVectors( action_n **av, token_n ntoken )
     return( map );
 }
 
-void GenFastTables( void )
+void GenFastTables( FILE *fp )
 {
     index_n     i;
     index_n     j;
@@ -478,81 +478,81 @@ void GenFastTables( void )
 
     FREE( all_actions );
 
-    putambigs( NULL );
+    putambigs( fp, NULL );
 
-    putnum( "YYNOACTION", 0 );
-    putnum( "YYEOFTOKEN", eofsym->token );
-    putnum( "YYERRTOKEN", errsym->token );
-    putnum( "YYETOKEN", errsym->token );
-    putnum( "YYSTART", startstate->sidx );
-    putnum( "YYSTOP", eofsym->enter->sidx );
-    putnum( "YYERR", errstate->sidx );
-    putnum( "YYUSED", nstate );
+    putnum( fp, "YYNOACTION", 0 );
+    putnum( fp, "YYEOFTOKEN", eofsym->token );
+    putnum( fp, "YYERRTOKEN", errsym->token );
+    putnum( fp, "YYETOKEN", errsym->token );
+    putnum( fp, "YYSTART", startstate->sidx );
+    putnum( fp, "YYSTOP", eofsym->enter->sidx );
+    putnum( fp, "YYERR", errstate->sidx );
+    putnum( fp, "YYUSED", nstate );
     if( keyword_id_low != 0 && default_shiftflag ) {
-        putnum( "YYKEYWORD_ID_LOW", keyword_id_low );
-        putnum( "YYKEYWORD_ID_HIGH", keyword_id_high );
+        putnum( fp, "YYKEYWORD_ID_LOW", keyword_id_low );
+        putnum( fp, "YYKEYWORD_ID_HIGH", keyword_id_high );
     }
 
-    putcomment( "index by state to get default action for state" );
-    begtab( "YYACTIONTYPE", "yydefaction" );
+    putcomment( fp, "index by state to get default action for state" );
+    begtab( fp, "YYACTIONTYPE", "yydefaction" );
     for( i = 0; i < nstate; ++i ) {
-        puttab( FITS_A_WORD, defaction[i] );
+        puttab( fp, FITS_A_WORD, defaction[i] );
     }
-    endtab();
+    endtab( fp );
     FREE( defaction );
     bitv_base_size = FITS_A_WORD;
     if( bsize < 257 ) {
         bitv_base_size = FITS_A_BYTE;
     }
-    putcomment( "index by state to get offset into bit vector" );
-    begtab( "YYBITBASETYPE", "yybitbase" );
+    putcomment( fp, "index by state to get offset into bit vector" );
+    begtab( fp, "YYBITBASETYPE", "yybitbase" );
     for( i = 0; i < nstate; ++i ) {
-        puttab( bitv_base_size, base[i] );
+        puttab( fp, bitv_base_size, base[i] );
     }
-    endtab();
-    putcomment( "index by token (from state base) to see if token is valid in state" );
-    begtab( "YYBITTYPE", "yybitcheck" );
+    endtab( fp );
+    putcomment( fp, "index by token (from state base) to see if token is valid in state" );
+    begtab( fp, "YYBITTYPE", "yybitcheck" );
     for( i = 0; i < bsize; ++i ) {
-        puttab( FITS_A_BYTE, bvector[i] );
+        puttab( fp, FITS_A_BYTE, bvector[i] );
     }
-    endtab();
-    putcomment( "index by state to get offset into action vector" );
-    begtab( "YYACTIONBASETYPE", "yyactionbasetab" );
+    endtab( fp );
+    putcomment( fp, "index by state to get offset into action vector" );
+    begtab( fp, "YYACTIONBASETYPE", "yyactionbasetab" );
     for( i = 0; i < nstate; ++i ) {
-        puttab( FITS_A_WORD, abase[i] );
+        puttab( fp, FITS_A_WORD, abase[i] );
     }
-    endtab();
-    putcomment( "index by state to get offset into action vector" );
-    begtab( "YYACTIONBASETYPE", "yygotobase" );
+    endtab( fp );
+    putcomment( fp, "index by state to get offset into action vector" );
+    begtab( fp, "YYACTIONBASETYPE", "yygotobase" );
     for( i = 0; i < nstate; ++i ) {
-        puttab( FITS_A_WORD, gbase[i] );
+        puttab( fp, FITS_A_WORD, gbase[i] );
     }
-    endtab();
-    putcomment( "index by token (from state base) to get action for state" );
+    endtab( fp );
+    putcomment( fp, "index by token (from state base) to get action for state" );
     empty_actions = 0;
-    begtab( "YYACTIONTYPE", "yyactiontab" );
+    begtab( fp, "YYACTIONTYPE", "yyactiontab" );
     for( i = 0; i < asize; ++i ) {
         if( avector[i] == ACTION_NULL ) {
             ++empty_actions;
         }
-        puttab( FITS_A_WORD, avector[i] );
+        puttab( fp, FITS_A_WORD, avector[i] );
     }
-    endtab();
-    putcomment( "index by rule to get length of rule" );
-    begtab( "YYPLENTYPE", "yyplentab" );
+    endtab( fp );
+    putcomment( fp, "index by rule to get length of rule" );
+    begtab( fp, "YYPLENTYPE", "yyplentab" );
     for( i = 0; i < npro; ++i ) {
         for( item = protab[i]->items; item->p.sym != NULL; ) {
             ++item;
         }
-        puttab( FITS_A_BYTE, (unsigned)( item - protab[i]->items ) );
+        puttab( fp, FITS_A_BYTE, (unsigned)( item - protab[i]->items ) );
     }
-    endtab();
-    putcomment( "index by rule to get left hand side token" );
-    begtab( "YYPLHSTYPE", "yyplhstab" );
+    endtab( fp );
+    putcomment( fp, "index by rule to get left hand side token" );
+    begtab( fp, "YYPLHSTYPE", "yyplhstab" );
     for( i = 0; i < npro; ++i ) {
-        puttab( FITS_A_WORD, protab[i]->sym->token );
+        puttab( fp, FITS_A_WORD, protab[i]->sym->token );
     }
-    endtab();
+    endtab( fp );
 
     FREE( base );
     FREE( abase );
@@ -563,7 +563,7 @@ void GenFastTables( void )
     dumpstatistic( "bytes used in tables", bytesused );
     dumpstatistic( "table space utilization", 100 - ( empty_actions * 100L / asize ) );
 
-    puttokennames( 0, FITS_A_WORD );
+    puttokennames( fp, 0, FITS_A_WORD );
 
     FREE( protab );
     FREE( symtab );

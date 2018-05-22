@@ -60,7 +60,7 @@ token_n FirstNonTerminalTokenValue( void )
     return( ntoken );
 }
 
-static void putambig( a_SR_conflict *ambig, base_n *base )
+static void putambig( FILE *fp, a_SR_conflict *ambig, base_n *base )
 {
     unsigned i;
     index_n ambig_state, ambig_state_based;
@@ -86,34 +86,34 @@ static void putambig( a_SR_conflict *ambig, base_n *base )
         ambig_shift_based = base[ambig_shift];
     }
     i = ambig->id;
-    fprintf( actout, msg[0], i, ambig_state_based, ambig_state );
-    fprintf( actout, msg[1], i, ambig->sym->token );
-    fprintf( actout, msg[2], i, ambig_shift_based, ambig_shift );
-    fprintf( actout, msg[3], i, ambig->reduce );
+    fprintf( fp, msg[0], i, ambig_state_based, ambig_state );
+    fprintf( fp, msg[1], i, ambig->sym->token );
+    fprintf( fp, msg[2], i, ambig_shift_based, ambig_shift );
+    fprintf( fp, msg[3], i, ambig->reduce );
 }
 
-void putambigs( base_n *base )
+void putambigs( FILE *fp, base_n *base )
 {
     a_SR_conflict *cx;
 
     for( cx = ambiguousstates; cx != NULL; cx = cx->next ) {
-        putambig( cx, base );
+        putambig( fp, cx, base );
     }
 }
 
-void putnum( char *name, int i )
+void putnum( FILE *fp, char *name, int i )
 {
-    fprintf( actout, "#define\t%-20s\t%5d\n", name, i );
+    fprintf( fp, "#define\t%-20s\t%5d\n", name, i );
 }
 
-void begtab( char *tipe, char *name )
+void begtab( FILE *fp, char *tipe, char *name )
 {
-    fprintf( actout, "static const %s YYFAR %s[] = {", tipe, name );
+    fprintf( fp, "static const %s YYFAR %s[] = {", tipe, name );
     tablename = name;
     tabcol = 0;
 }
 
-void puttab( value_size fits, unsigned i )
+void puttab( FILE *fp, value_size fits, unsigned i )
 {
     char *format;
     unsigned mod;
@@ -131,39 +131,39 @@ void puttab( value_size fits, unsigned i )
         mod = 10;
     }
     if( tabcol ) {
-        fprintf( actout, "," );
+        fprintf( fp, "," );
     }
     if( !(tabcol % mod) ) {
-        fprintf( actout, "\n/* %4u */ ", tabcol );
+        fprintf( fp, "\n/* %4u */ ", tabcol );
     }
-    fprintf( actout, format, i );
+    fprintf( fp, format, i );
     ++tabcol;
 }
 
-void putcompact( token_n token, action_n action )
+void putcompact( FILE *fp, token_n token, action_n action )
 {
     if( tabcol ) {
-        fprintf( actout, "," );
+        fprintf( fp, "," );
     }
     if( !(tabcol % 5 ) ) {
-        fprintf( actout, "\n/* %4u */ ", tabcol );
+        fprintf( fp, "\n/* %4u */ ", tabcol );
     }
-    fprintf( actout, "{%4d,%2d,%3d}", token, action >> 8, action & 0xff );
+    fprintf( fp, "{%4d,%2d,%3d}", token, action >> 8, action & 0xff );
     bytesused += 3;
     ++tabcol;
 }
 
-void endtab( void )
+void endtab( FILE *fp )
 {
-    fprintf( actout, "\n};\n" );
+    fprintf( fp, "\n};\n" );
 }
 
-void putcomment( char *comment )
+void putcomment( FILE *fp, char *comment )
 {
-    fprintf( actout, "/* %s */\n", comment );
+    fprintf( fp, "/* %s */\n", comment );
 }
 
-void puttokennames( token_n dtoken, value_size token_size )
+void puttokennames( FILE *fp, token_n dtoken, value_size token_size )
 {
     unsigned rule_base;
     an_item *item;
@@ -172,34 +172,34 @@ void puttokennames( token_n dtoken, value_size token_size )
     if( ! denseflag ) {
         return;
     }
-    fprintf( actout, "#ifdef YYDEBUG\n" );
+    fprintf( fp, "#ifdef YYDEBUG\n" );
     rule_base = 0;
-    begtab( "unsigned short", "yyrulebase" );
+    begtab( fp, "unsigned short", "yyrulebase" );
     for( i = 0; i < npro; ++i ) {
         for( item = protab[i]->items; item->p.sym != NULL; ) {
             ++item;
         }
-        puttab( FITS_A_WORD, rule_base );
+        puttab( fp, FITS_A_WORD, rule_base );
         rule_base += (unsigned)( item - protab[i]->items );
     }
-    endtab();
-    begtab( "YYTOKENTYPE", "yyrhstoks" );
+    endtab( fp );
+    begtab( fp, "YYTOKENTYPE", "yyrhstoks" );
     for( i = 0; i < npro; ++i ) {
         for( item = protab[i]->items; item->p.sym != NULL; ++item ) {
-            puttab( token_size, item->p.sym->token );
+            puttab( fp, token_size, item->p.sym->token );
         }
     }
-    endtab();
-    begtab( "char YYFAR *", "yytoknames" );
-    fputc( '\n', actout );
+    endtab( fp );
+    begtab( fp, "char YYFAR *", "yytoknames" );
+    fputc( '\n', fp );
     for( i = 0; i < nsym; ++i ) {
         if( dtoken != 0 && symtab[i]->token == dtoken ) {
-            fprintf( actout, "\"$dtoken\",\n" );
-            fprintf( actout, "\"$ptoken\",\n" );
+            fprintf( fp, "\"$dtoken\",\n" );
+            fprintf( fp, "\"$ptoken\",\n" );
         }
-        fprintf( actout, "\"%s\",\n", symtab[i]->name );
+        fprintf( fp, "\"%s\",\n", symtab[i]->name );
     }
-    fprintf( actout, "\"\"" );
-    endtab();
-    fprintf( actout, "#endif\n" );
+    fprintf( fp, "\"\"" );
+    endtab( fp );
+    fprintf( fp, "#endif\n" );
 }

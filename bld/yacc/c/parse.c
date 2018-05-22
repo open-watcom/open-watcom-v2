@@ -108,6 +108,8 @@ static uniq_case            *caseActions;
 static y_token  *tokens_head = NULL;
 static y_token  *tokens_tail = NULL;
 
+static char     *union_name = NULL;
+
 static xlat_entry xlat[] = {
     { '~',      "TILDE" },
     { '`',      "BACKQUOTE" },
@@ -698,11 +700,11 @@ static char *type_name( char *type )
     return( type );
 }
 
-static void copycurl( void )
+static void copycurl( FILE *fp )
 {
     do {
         while( ch != '%' && ch != EOF ) {
-            fputc( ch, actout );
+            fputc( ch, fp );
             nextc();
         }
     } while( nextc() != '}' && ch != EOF );
@@ -773,7 +775,7 @@ static a_pro *findPro( a_sym *lhs, rule_n pnum )
     return( NULL );
 }
 
-static void copyUniqueActions( void )
+static void copyUniqueActions( FILE *fp )
 {
     a_pro       *pro;
     char        *s;
@@ -787,19 +789,19 @@ static void copyUniqueActions( void )
         cnext = c->next;
         for( r = c->rules; r != NULL; r = rnext ) {
             rnext = r->next;
-            fprintf( actout, "case %d:\n", r->pnum );
+            fprintf( fp, "case %d:\n", r->pnum );
             pro = findPro( r->lhs, r->pnum );
-            fprintf( actout, "/* %s <-", pro->sym->name );
+            fprintf( fp, "/* %s <-", pro->sym->name );
             for( item = pro->items; item->p.sym != NULL; ++item ) {
-                fprintf( actout, " %s", item->p.sym->name );
+                fprintf( fp, " %s", item->p.sym->name );
             }
-            fprintf( actout, " */\n" );
+            fprintf( fp, " */\n" );
             FREE( r );
         }
         for( s = c->action; *s != '\0'; ++s ) {
-            fputc( *s, actout );
+            fputc( *s, fp );
         }
-        fprintf( actout, "\nbreak;\n" );
+        fprintf( fp, "\nbreak;\n" );
         FREE( c->action );
         FREE( c );
     }
@@ -852,14 +854,14 @@ static char *strpcpy( char *d, char *s )
     return( d );
 }
 
-static void lineinfo( void )
+static void lineinfo( FILE *fp )
 {
     if( lineflag ) {
-        fprintf( actout, "\n#line %d \"%s\"\n", lineno, srcname );
+        fprintf( fp, "\n#line %d \"%s\"\n", lineno, srcname );
     }
 }
 
-static void copyact( rule_n pnum, a_sym *lhs, a_sym **rhs, unsigned base, unsigned n )
+static void copyact( FILE *fp, rule_n pnum, a_sym *lhs, a_sym **rhs, unsigned base, unsigned n )
 {
     char        *action;
     char        *p;
@@ -909,26 +911,26 @@ static void copyact( rule_n pnum, a_sym *lhs, a_sym **rhs, unsigned base, unsign
         }
         return;
     }
-    fprintf( actout, "case %d:\n", pnum );
-    fprintf( actout, "/* %s <-", lhs->name );
+    fprintf( fp, "case %d:\n", pnum );
+    fprintf( fp, "/* %s <-", lhs->name );
     for( i = 0; i < n; ++i ) {
-        fprintf( actout, " %s", rhs[i]->name );
+        fprintf( fp, " %s", rhs[i]->name );
     }
-    fprintf( actout, " */\n" );
-    lineinfo();
+    fprintf( fp, " */\n" );
+    lineinfo( fp );
     for( s = buf; *s != '\0'; ) {
         if( *s == '$' ) {
             s = checkAttrib( s, &type, buff, &errs, lhs, rhs, base, n );
-            fprintf( actout, "%s", buff );
+            fprintf( fp, "%s", buff );
             if( type != NULL ) {
-                fprintf( actout, ".%s", type );
+                fprintf( fp, ".%s", type );
                 FREE( type );
             }
         } else {
-            fputc( *s++, actout );
+            fputc( *s++, fp );
         }
     }
-    fprintf( actout, "\nbreak;\n" );
+    fprintf( fp, "\nbreak;\n" );
 }
 
 static char *dupbuf( void )
@@ -941,54 +943,58 @@ static char *dupbuf( void )
     return( str );
 }
 
-static void dump_header( char *union_name )
+void dump_header( FILE *fp )
 {
     const char  *fmt;
     const char  *ttype;
     y_token     *t;
     y_token     *tmp;
 
+    fprintf( fp, "#define YYTOKENTYPE yytokentype\n" );
     if( fastflag || bigflag || compactflag ) {
         ttype = "unsigned short";
     } else {
         ttype = "unsigned char";
     }
     if( enumflag ) {
-        fprintf( tokout, "typedef enum yytokentype {\n" );
+        fprintf( fp, "typedef enum yytokentype {\n" );
         fmt = "\t%-20s = 0x%02x,\n";
     } else {
         fmt = "#define %-20s 0x%02x\n";
     }
     t = tokens_head;
     while( t != NULL ) {
-        fprintf( tokout, fmt, t->name, t->value );
+        fprintf( fp, fmt, t->name, t->value );
         tmp = t;
         t = t->next;
         FREE( tmp );
     }
     if( enumflag ) {
-        fprintf( tokout, "\tYTOKEN_ENUMSIZE_SETUP = (%s)-1\n", ttype );
-        fprintf( tokout, "} yytokentype;\n" );
+        fprintf( fp, "\tYTOKEN_ENUMSIZE_SETUP = (%s)-1\n", ttype );
+        fprintf( fp, "} yytokentype;\n" );
     } else {
-        fprintf( tokout, "typedef %s yytokentype;\n", ttype );
+        fprintf( fp, "typedef %s yytokentype;\n", ttype );
     }
-    if( union_name != NULL ) {
-        fprintf( tokout, "#ifndef __YYSTYPE_DEFINED\n" );
-        fprintf( tokout, "#define __YYSTYPE_DEFINED\n" );
-        fprintf( tokout, "typedef union %s YYSTYPE;\n", union_name );
-        fprintf( tokout, "#endif\n" );
-        FREE( union_name );
-    }
+    fflush( fp );
 }
 
-void defs( void )
+void close_header( FILE *fp )
+{
+    if( union_name != NULL ) {
+        fprintf( fp, "typedef union %s YYSTYPE;\n", union_name );
+        fprintf( fp, "extern YYSTYPE yylval;\n" );
+        FREE( union_name );
+    }
+    fclose( fp );
+}
+
+void defs( FILE *fp )
 {
     token_n     gentoken;
     a_sym       *sym;
     a_token     ctype;
     char        *type;
     a_prec      prec;
-    char        *union_name = NULL;
 
     eofsym = make_sym( "$eof", TOKEN_EOF );
     nosym = make_sym( "$impossible", TOKEN_IMPOSSIBLE );
@@ -1013,12 +1019,9 @@ void defs( void )
             if( scan( 0 ) != '{' ) {
                 msg( "Need '{' after %%union.\n" );
             }
-            fprintf( actout, "#ifndef __YYSTYPE_DEFINED\n" );
-            fprintf( actout, "#define __YYSTYPE_DEFINED\n" );
-            fprintf( actout, "typedef union " );
-            lineinfo();
-            fprintf( actout, "%s YYSTYPE;\n", buf );
-            fprintf( actout, "#endif\n" );
+            fprintf( fp, "typedef union " );
+            lineinfo( fp );
+            fprintf( fp, "%s YYSTYPE;\n", buf );
             if( union_name == NULL ) {
                 union_name = MALLOC( strlen( buf ) + 1, char );
                 strcpy( union_name, buf );
@@ -1028,8 +1031,8 @@ void defs( void )
             scan( 0 );
             break;
         case T_LCURL:
-            lineinfo();
-            copycurl();
+            lineinfo( fp );
+            copycurl( fp );
             scan( 0 );
             break;
         case T_KEYWORD_ID:
@@ -1089,8 +1092,7 @@ void defs( void )
                 if( type != NULL ) {
                     if( sym->type != NULL ) {
                         if( strcmp( sym->type, type ) != 0 ) {
-                            msg( "'%s' type redeclared from '%s' to '%s'\n",
-                                buf, sym->type, type );
+                            msg( "'%s' type redeclared from '%s' to '%s'\n", buf, sym->type, type );
                         }
                     }
                     sym->type = type;
@@ -1130,10 +1132,9 @@ void defs( void )
         }
     }
     scan( 0 );
-    dump_header( union_name );
 }
 
-void rules( void )
+void rules( FILE *fp )
 {
     a_sym               *lhs, *sym, *precsym;
     a_sym               **rhs;
@@ -1174,10 +1175,10 @@ void rules( void )
                     if( token == '{' || token == T_IDENTIFIER ) {
                         sprintf( buffer, "$pro%d", npro );
                         sym = addsym( buffer );
-                        copyact( npro, sym, rhs, nrhs, nrhs );
+                        copyact( fp, npro, sym, rhs, nrhs, nrhs );
                         addpro( sym, rhs, 0 );
                     } else {
-                        copyact( npro, lhs, rhs, 0, nrhs );
+                        copyact( fp, npro, lhs, rhs, 0, nrhs );
                         action_defined = true;
                         break;
                     }
@@ -1269,20 +1270,20 @@ void rules( void )
     if( not_token ) {
         msg( "cannot continue (because of %%token problems)\n" );
     }
-    copyUniqueActions();
+    copyUniqueActions( fp );
 }
 
-static void copyfile( void )
+static void copyfile( FILE *fp )
 {
     do {
-        fputc( ch, actout );
+        fputc( ch, fp );
     } while( nextc() != EOF );
 }
 
-void tail( void )
+void tail( FILE *fp )
 {
     if( token == T_MARK ) {
-        copyfile();
+        copyfile( fp );
     } else if( token != T_EOF ) {
         msg( "Expected end of file.\n" );
     }

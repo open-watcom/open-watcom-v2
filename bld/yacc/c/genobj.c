@@ -50,7 +50,7 @@ static int label;
 extern void emitins( unsigned, unsigned );
 extern void writeobj( int );
 
-void genobj( void )
+void genobj( FILE *fp )
 {
     short int *symbol, *target;
     short int *p, *q, *r;

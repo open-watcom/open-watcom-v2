@@ -37,18 +37,18 @@
 #include "yacc.h"
 #include "alloc.h"
 
-static void putnum( char *name, int i )
+static void putnum( FILE *fp, char *name, int i )
 {
-    fprintf( actout, "#define\t%-20s\t%d\n", name, i );
+    fprintf( fp, "#define\t%-20s\t%d\n", name, i );
 }
 
-static void preamble( void )
+static void preamble( FILE *fp )
 {
     int         i;
 
-    putnum( "SHIFT", -1 );
-    putnum( "ERROR", -2 );
-    fprintf( actout, "\n"
+    putnum( fp, "SHIFT", -1 );
+    putnum( fp, "ERROR", -2 );
+    fprintf( fp, "\n"
                      "#ifndef YYSTYPE\n"
                      "    #define YYSTYPE int\n"
                      "#endif\n"
@@ -61,21 +61,21 @@ static void preamble( void )
                      );
 
     for( i = 0; i < nstate; ++i ) {
-        fprintf( actout, "static int YYNEAR state%d( struct parse_stack *, unsigned );\n", i );
+        fprintf( fp, "static int YYNEAR state%d( struct parse_stack *, unsigned );\n", i );
     }
 }
 
-static void prolog( int i )
+static void prolog( FILE *fp, int i )
 {
     a_name              name;
     a_state *           x;
 
-    fprintf( actout, "\nint YYNEAR state%d( parse_stack * yysp, unsigned token )\n/*\n", i );
+    fprintf( fp, "\nint YYNEAR state%d( parse_stack * yysp, unsigned token )\n/*\n", i );
     x = statetab[i];
     for( name.item = x->name.item; *name.item != NULL; ++name.item ) {
-        showitem( actout, *name.item, " ." );
+        showitem( fp, *name.item, " ." );
     }
-    fprintf( actout, "*/\n{\n" );
+    fprintf( fp, "*/\n{\n" );
 }
 
 static void copyact( a_pro * pro, char * indent )
@@ -92,11 +92,11 @@ static void copyact( a_pro * pro, char * indent )
         return;   // Default action is noop
     lhs = pro->sym;
     rhs = pro->item;
-    fprintf( actout, "%s/* %s <-", indent, lhs->name );
+    fprintf( fp, "%s/* %s <-", indent, lhs->name );
     for( n = 0; rhs[n].p.sym != NULL; ++n ) {
-        fprintf( actout, " %s", rhs[n].p.sym->name );
+        fprintf( fp, " %s", rhs[n].p.sym->name );
     }
-    fprintf( actout, " */\n%s{ YYSTYPE yyval;\n%s\t", indent, indent );
+    fprintf( fp, " */\n%s{ YYSTYPE yyval;\n%s\t", indent, indent );
     only_default_type = true;
     for( s = pro->action; *s != '\0'; ) {
         if( *s == '$' ) {
@@ -112,7 +112,7 @@ static void copyact( a_pro * pro, char * indent )
                 type = NULL;
             }
             if( *s == '$' ) {
-                fprintf( actout, "yyval", *s );
+                fprintf( fp, "yyval", *s );
                 if( !type ) {
                     type = lhs->type;
                 }
@@ -124,28 +124,28 @@ static void copyact( a_pro * pro, char * indent )
                 if( i >= 0 && i > n ) {
                     msg( "Invalid $ parameter.\n" );
                 }
-                fprintf( actout, "yysp[%d].v", i - 1 ); // Adjust yysp first
+                fprintf( fp, "yysp[%d].v", i - 1 ); // Adjust yysp first
                 if( !type && i >= 1 ) {
                     type = rhs[i - 1].p.sym->type;
                 }
             }
             if( type ) {
-                fprintf( actout, ".%s", type );
+                fprintf( fp, ".%s", type );
             }
         } else if( *s == '\n' ) {
-            fprintf( actout, "\n\t%s", indent );
+            fprintf( fp, "\n\t%s", indent );
             ++s;
         } else {
-            fputc( *s++, actout );
+            fputc( *s++, fp );
         }
     }
     type = lhs->type;
     if( only_default_type && (type = lhs->type) != NULL ) {
-        fprintf( actout, "\n\t%syysp[0].v.%s = yyval.%s;", indent, type, type );
+        fprintf( fp, "\n\t%syysp[0].v.%s = yyval.%s;", indent, type, type );
     } else {
-        fprintf( actout, "\n\t%syysp[0].v = yyval;", indent );
+        fprintf( fp, "\n\t%syysp[0].v = yyval;", indent );
     }
-    fprintf( actout, "\n%s};\n", indent );
+    fprintf( fp, "\n%s};\n", indent );
 }
 
 static a_state * unique_shift( a_pro * reduced )
@@ -175,7 +175,7 @@ static a_state * unique_shift( a_pro * reduced )
     return( shift_to );
 }
 
-static void reduce( int production, int error )
+static void reduce( FILE *fp, int production, int error )
 {
     int                 plen;
     an_item *           item;
@@ -183,7 +183,7 @@ static void reduce( int production, int error )
     a_state *           shift_to;
 
     if( production == error ) {
-        fprintf( actout, "\treturn( ERROR );\n" );
+        fprintf( fp, "\treturn( ERROR );\n" );
     } else {
         production -= nstate;           // Convert to 0 base
         pro = protab[production];
@@ -191,20 +191,25 @@ static void reduce( int production, int error )
             ++plen;
         }
         if( plen != 0 ) {
-            fprintf( actout, "\tyysp -= %d;\n", plen );
+            fprintf( fp, "\tyysp -= %d;\n", plen );
         }
         copyact( pro, "\t" );
-        // fprintf( actout, "\tactions( %d, yysp );\n", production );
+        // fprintf( fp, "\tactions( %d, yysp );\n", production );
         if( (shift_to = unique_shift( pro )) != NULL ) {
-            fprintf( actout, "\tyysp[0].state = state%d;\n", shift_to->sidx );
+            fprintf( fp, "\tyysp[0].state = state%d;\n", shift_to->sidx );
         } else {
-            fprintf( actout, "\t(*yysp[-1].state) ( yysp, %d );\n", pro->sym->token );
+            fprintf( fp, "\t(*yysp[-1].state) ( yysp, %d );\n", pro->sym->token );
         }
-        fprintf( actout, "\treturn( %d );\n", plen );
+        fprintf( fp, "\treturn( %d );\n", plen );
     }
 }
 
-static void gencode( int statenum, short *toklist, short *s, short *actions,
+static void epilog( FILE *fp )
+{
+    fprintf( fp, "}\n" );
+}
+
+static void gencode( FILE *fp, int statenum, short *toklist, short *s, short *actions,
                         short default_token, short parent_token, short error )
 {
     short               default_action;
@@ -213,7 +218,7 @@ static void gencode( int statenum, short *toklist, short *s, short *actions,
     int                 symnum;
     int                 switched;
 
-    prolog( statenum );
+    prolog( fp, statenum );
     default_action = 0;
     switched = false;
     for( ; toklist < s; ++toklist ) {
@@ -223,7 +228,7 @@ static void gencode( int statenum, short *toklist, short *s, short *actions,
             default_action = todo;
         } else if( token != parent_token ) {
             if( ! switched ) {
-                fprintf( actout, "    switch( token ) {\n" );
+                fprintf( fp, "    switch( token ) {\n" );
                 switched = true;
             }
 
@@ -233,50 +238,45 @@ static void gencode( int statenum, short *toklist, short *s, short *actions,
                 }
             }
             if( symnum == nsym ) {
-                fprintf( actout, "    case %d:\n", token );
+                fprintf( fp, "    case %d:\n", token );
             } else if( symtab[symnum]->name[0] == '\'' ) {
-                fprintf( actout, "    case %s:\n", symtab[symnum]->name );
+                fprintf( fp, "    case %s:\n", symtab[symnum]->name );
             } else {
-                fprintf( actout, "    case %d: /* %s */\n", token, symtab[symnum]->name );
+                fprintf( fp, "    case %d: /* %s */\n", token, symtab[symnum]->name );
             }
             if( todo >= nstate ) {
                 // Reduction or error
-                reduce( todo, error );
+                reduce( fp, todo, error );
             } else {
                 // Shift
-                fprintf( actout, "\tyysp[0].state = state%d;\n", todo );
-                fprintf( actout, "\tbreak;\n" );
+                fprintf( fp, "\tyysp[0].state = state%d;\n", todo );
+                fprintf( fp, "\tbreak;\n" );
             }
         }
     }
     if( switched ) {
-        fprintf( actout, "    default: ;\n" );
+        fprintf( fp, "    default: ;\n" );
     }
     todo = actions[parent_token];
     if( todo != error ) {
         // There is a parent production
         // For now, try parents only when there is no default action
-        fprintf( actout, "\treturn( state%d( yysp, token ) );\n", todo );
+        fprintf( fp, "\treturn( state%d( yysp, token ) );\n", todo );
     } else if( default_action != 0 ) {
         reduce( default_action, error );
     } else {
-        fprintf( actout, "\treturn( ERROR );\n" );
+        fprintf( fp, "\treturn( ERROR );\n" );
     }
     if( switched ) {
-        fprintf( actout, "    }\n    return( SHIFT );\n" );
+        fprintf( fp, "    }\n    return( SHIFT );\n" );
     }
     epilog();
 }
 
-static void epilog( void )
+static void putambig( FILE *fp, int i, int state, int token )
 {
-    fprintf( actout, "}\n" );
-}
-
-static void putambig( int i, int state, int token )
-{
-    fprintf( actout, "#define\tYYAMBIGS%u\t\t%d\n", i, state );
-    fprintf( actout, "#define\tYYAMBIGT%u\t\t%d\n", i, token );
+    fprintf( fp, "#define\tYYAMBIGS%u\t\t%d\n", i, state );
+    fprintf( fp, "#define\tYYAMBIGT%u\t\t%d\n", i, token );
 }
 
 static void print_token( int token )
@@ -295,7 +295,7 @@ static void print_token( int token )
     }
 }
 
-void genobj( void )
+void genobj( FILE *fp )
 {
     short *token, *actions, *base, *other, *parent, *size;
     register short *p, *q, *r, *s;
@@ -325,7 +325,7 @@ void genobj( void )
     for( i = 0; i < ntoken; ++i ) {
         actions[i] = error;
     }
-    preamble();
+    preamble( fp );
     token = CALLOC( ntoken, short );
     test = CALLOC( ntoken, short );
     best = CALLOC( ntoken, short );
@@ -465,20 +465,20 @@ void genobj( void )
             *s++ = ptoken;
             actions[ptoken] = tokval;
         }
-        gencode( i, token, s, actions, dtoken, ptoken, error );
+        gencode( fp, i, token, s, actions, dtoken, ptoken, error );
         while( --s >= token ) {
             actions[*s] = error;
         }
     }
     for( i = 0; i < nambig; ++i ) {
-        putambig( i, base[ambiguities[i].state], ambiguities[i].token );
+        putambig( fp, i, base[ambiguities[i].state], ambiguities[i].token );
     }
-    putnum( "YYNOACTION", error - nstate + dtoken );
-    putnum( "YYEOFTOKEN", eofsym->token );
-    putnum( "YYERRTOKEN", errsym->token );
-    putnum( "YYETOKEN", errsym->token );
-    putnum( "YYERR", errstate->sidx );
-    fprintf( actout, "#define YYSTART   state%d\n", startstate->sidx );
-    fprintf( actout, "#define YYSTOP    state%d\n", eofsym->enter->sidx );
+    putnum( fp, "YYNOACTION", error - nstate + dtoken );
+    putnum( fp, "YYEOFTOKEN", eofsym->token );
+    putnum( fp, "YYERRTOKEN", errsym->token );
+    putnum( fp, "YYETOKEN", errsym->token );
+    putnum( fp, "YYERR", errstate->sidx );
+    fprintf( fp, "#define YYSTART   state%d\n", startstate->sidx );
+    fprintf( fp, "#define YYSTOP    state%d\n", eofsym->enter->sidx );
     printf( "%u states, %u with defaults, %u with parents\n", nstate, num_default, num_parent );
 }

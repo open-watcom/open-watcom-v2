@@ -165,7 +165,7 @@ static base_n addtotable( token_n *tokens, token_n *end_token, action_n *actions
     return( start );
 }
 
-void genobj( void )
+void genobj( FILE *fp )
 {
     value_size  token_size;
     action_n    *actions, *parent, *other;
@@ -188,7 +188,7 @@ void genobj( void )
     unsigned    num_default, num_parent;
 
     if( fastflag ) {
-        GenFastTables();
+        GenFastTables( fp );
         return;
     }
     if( bigflag || compactflag ) {
@@ -345,31 +345,31 @@ void genobj( void )
     FREE( other );
     FREE( size );
 
-    putambigs( base );
+    putambigs( fp, base );
 
-    putnum( "YYNOACTION", error - nstate + used );
-    putnum( "YYEOFTOKEN", eofsym->token );
-    putnum( "YYERRTOKEN", errsym->token );
-    putnum( "YYETOKEN", errsym->token );
+    putnum( fp, "YYNOACTION", error - nstate + used );
+    putnum( fp, "YYEOFTOKEN", eofsym->token );
+    putnum( fp, "YYERRTOKEN", errsym->token );
+    putnum( fp, "YYETOKEN", errsym->token );
     if( compactflag ) {
         parent_base = used + npro;
-        putnum( "YYPARENT", parent_base );
+        putnum( fp, "YYPARENT", parent_base );
         shift = 8;
         for( i = 256; i < used; i <<= 1 ) {
             ++shift;
         }
-        putnum( "YYPRODSIZE", shift );
+        putnum( fp, "YYPRODSIZE", shift );
     } else {
-        putnum( "YYPTOKEN", ptoken );
-        putnum( "YYDTOKEN", dtoken );
+        putnum( fp, "YYPTOKEN", ptoken );
+        putnum( fp, "YYDTOKEN", dtoken );
     }
-    putnum( "YYSTART", base[startstate->sidx] );
-    putnum( "YYSTOP", base[eofsym->enter->sidx] );
-    putnum( "YYERR", base[errstate->sidx] );
-    putnum( "YYUSED", used );
+    putnum( fp, "YYSTART", base[startstate->sidx] );
+    putnum( fp, "YYSTOP", base[eofsym->enter->sidx] );
+    putnum( fp, "YYERR", base[errstate->sidx] );
+    putnum( fp, "YYUSED", used );
 
     if( compactflag ) {
-        begtab( "YYPACKTYPE", "yyacttab" );
+        begtab( fp, "YYPACKTYPE", "yyacttab" );
         j = nstate;
         for( i = 0; i < used; ++i ) {
             new_action = table[i].action;
@@ -404,48 +404,48 @@ void genobj( void )
                     new_action += used;         // now convert to 'used' base
                 }
             }
-            putcompact( tokval, new_action );
+            putcompact( fp, tokval, new_action );
         }
-        endtab();
+        endtab( fp );
         // Combine lengths & lhs into a single table
-        begtab( "YYPRODTYPE", "yyprodtab" );
+        begtab( fp, "YYPRODTYPE", "yyprodtab" );
         for( i = 0; i < npro; ++i ) {
             j = 0;
             for( item = protab[i]->items; item->p.sym != NULL; ++item ) {
                 ++j;
             }
-            puttab( FITS_A_WORD, (j << shift) + protab[i]->sym->token );
+            puttab( fp, FITS_A_WORD, (j << shift) + protab[i]->sym->token );
         }
-        endtab();
+        endtab( fp );
     } else {
-        begtab( "YYCHKTYPE", "yychktab" );
+        begtab( fp, "YYCHKTYPE", "yychktab" );
         for( i = 0; i < used; ++i ) {
-            puttab( token_size, Token( table + i ) );
+            puttab( fp, token_size, Token( table + i ) );
         }
-        endtab();
-        begtab( "YYACTTYPE", "yyacttab" );
+        endtab( fp );
+        begtab( fp, "YYACTTYPE", "yyacttab" );
         for( i = 0; i < used; ++i ) {
             j = Action( table + i );
             if( j < nstate ) {
-                puttab( FITS_A_WORD, base[j] );
+                puttab( fp, FITS_A_WORD, base[j] );
             } else {
-                puttab( FITS_A_WORD, j - nstate + used );
+                puttab( fp, FITS_A_WORD, j - nstate + used );
             }
         }
-        endtab();
-        begtab( "YYPLENTYPE", "yyplentab" );
+        endtab( fp );
+        begtab( fp, "YYPLENTYPE", "yyplentab" );
         for( i = 0; i < npro; ++i ) {
             for( item = protab[i]->items; item->p.sym != NULL; ) {
                 ++item;
             }
-            puttab( FITS_A_BYTE, (unsigned)( item - protab[i]->items ) );
+            puttab( fp, FITS_A_BYTE, (unsigned)( item - protab[i]->items ) );
         }
-        endtab();
-        begtab( "YYPLHSTYPE", "yyplhstab" );
+        endtab( fp );
+        begtab( fp, "YYPLHSTYPE", "yyplhstab" );
         for( i = 0; i < npro; ++i ) {
-            puttab( token_size, protab[i]->sym->token );
+            puttab( fp, token_size, protab[i]->sym->token );
         }
-        endtab();
+        endtab( fp );
     }
     FREE( table );
     FREE( base );
@@ -455,7 +455,7 @@ void genobj( void )
     dumpstatistic( "states with defaults", num_default );
     dumpstatistic( "states with parents", num_parent );
 
-    puttokennames( dtoken, token_size );
+    puttokennames( fp, dtoken, token_size );
 
     FREE( protab );
     FREE( symtab );
