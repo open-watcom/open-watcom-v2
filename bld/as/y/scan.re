@@ -1,7 +1,6 @@
 #include "as.h"
 #include "lexyacc.h"
 #include "ytab.h"
-#include "tokens.h"
 #include "asparser.h"
 #ifdef _STANDALONE_
 #include "preproc.h"

@@ -1,8 +1,6 @@
 %{
     #include "as.h"
     #include "lexyacc.h"
-    #include "ytab.h"
-    #include "tokens.h"
     #include "asparser.h"
 
     typedef uint_16         YYACTIONBASETYPE;
