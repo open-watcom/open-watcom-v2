@@ -41,6 +41,9 @@
 
 #define INIT_RHS_SIZE       16
 
+#define TYPENAME_FIRST_CHAR(x) (isalpha(x)||x=='_')
+#define TYPENAME_NEXT_CHAR(x) (isalpha(x)||isdigit(x)||x=='_'||x=='.')
+
 typedef enum {
     /* ASCII_MIN = 0x0000 */
     /* ASCII_MAX = 0x00FF */
@@ -70,17 +73,24 @@ typedef struct y_token {
     char            name[1];
 } y_token;
 
-static void                 copycurl( void );
-static void                 copyUniqueActions( void );
-static void                 copyact( rule_n, a_sym *, a_sym **, unsigned, unsigned );
-static void                 lineinfo( void );
-static a_token              scan( unsigned used );
-static void                 need( char *pat );
-static int                  eatcrud( void );
-static int                  nextc( void );
-static int                  lastc( void );
-static void                 addbuf( int ch );
-static char                 *dupbuf( void );
+typedef struct xlat_entry {
+    int         c;
+    char        *x;
+} xlat_entry;
+
+typedef struct rule_case {
+    struct rule_case    *next;
+    a_sym               *lhs;
+    rule_n              pnum;
+} rule_case;
+
+typedef struct uniq_case {
+    struct uniq_case    *next;
+    char                *action;
+    rule_case           *rules;
+} uniq_case;
+
+a_SR_conflict               *ambiguousstates;
 
 int lineno = { 1 };
 
@@ -92,29 +102,418 @@ static int                  ch = { ' ' };
 static a_token              token;
 static int                  value;
 
-typedef struct uniq_case    uniq_case;
-typedef struct rule_case    rule_case;
-struct rule_case {
-    rule_case   *next;
-    a_sym       *lhs;
-    rule_n      pnum;
-};
-struct uniq_case {
-    uniq_case   *next;
-    char        *action;
-    rule_case   *rules;
-};
-
 static unsigned long        actionsCombined;
 static uniq_case            *caseActions;
 
-a_SR_conflict               *ambiguousstates;
-
-#define TYPENAME_FIRST_CHAR(x) (isalpha(x)||x=='_')
-#define TYPENAME_NEXT_CHAR(x) (isalpha(x)||isdigit(x)||x=='_'||x=='.')
-
 static y_token  *tokens_head = NULL;
 static y_token  *tokens_tail = NULL;
+
+static xlat_entry xlat[] = {
+    { '~',      "TILDE" },
+    { '`',      "BACKQUOTE" },
+    { '!',      "EXCLAMATION" },
+    { '@',      "AT" },
+    { '#',      "SHARP" },
+    { '$',      "DOLLAR" },
+    { '%',      "PERCENT" },
+    { '^',      "XOR" },
+    { '&',      "AND" },
+    { '*',      "TIMES" },
+    { '(',      "LPAREN" },
+    { ')',      "RPAREN" },
+    { '-',      "MINUS" },
+    { '+',      "PLUS" },
+    { '=',      "EQUAL" },
+    { '[',      "LSQUARE" },
+    { ']',      "RSQUARE" },
+    { '{',      "LBRACE" },
+    { '}',      "RBRACE" },
+    { '\\',     "BACKSLASH" },
+    { '|',      "OR" },
+    { ':',      "COLON" },
+    { ';',      "SEMICOLON" },
+    { '\'',     "QUOTE" },
+    { '"',      "DQUOTE" },
+    { '<',      "LT" },
+    { '>',      "GT" },
+    { '.',      "DOT" },
+    { ',',      "COMMA" },
+    { '/',      "DIVIDE" },
+    { '?',      "QUESTION" },
+    { '\0',     NULL }
+};
+
+static void addbuf( int c )
+{
+    if( bufused == bufmax ) {
+        bufmax += BUF_INCR;
+        if( buf != NULL ) {
+            buf = REALLOC( buf, bufmax, char );
+        } else {
+            buf = MALLOC( bufmax, char );
+        }
+    }
+    buf[bufused++] = (char)c;
+}
+
+static void addstr( char *p )
+{
+    while( *p ) {
+        addbuf( *(unsigned char *)p );
+        ++p;
+    }
+}
+
+static int nextc( void )
+{
+    if( (ch = fgetc( yaccin )) == '\r' ) {
+        ch = fgetc( yaccin );
+    }
+    if( ch == '\n' ) {
+        ++lineno;
+    }
+    return( ch );
+}
+
+static bool xlat_char( bool special, int c )
+{
+    xlat_entry  *t;
+    char        buff[16];
+
+    if( isalpha( c ) || isdigit( c ) || c == '_' ) {
+        if( special ) {
+            addbuf( '_' );
+        }
+        addbuf( c );
+        return( false );
+    }
+    /* NYI: add %translate 'c' XXXX in case user doesn't like our name */
+    addbuf( '_' );
+    for( t = xlat; t->x != NULL; ++t ) {
+        if( t->c == c ) {
+            addstr( t->x );
+            return( true );
+        }
+    }
+    warn( "'x' token contains unknown character '%c' (\\x%x)\n", c, c );
+    addbuf( 'X' );
+    sprintf( buff, "%x", c );
+    addstr( buff );
+    return( true );
+}
+
+static void xlat_token( void )
+{
+    bool special;
+
+    addbuf( 'Y' );
+    special = true;
+    for( ;; ) {
+        nextc();
+        if( ch == EOF || ch == '\n' ) {
+            msg( "invalid 'x' token" );
+            break;
+        }
+        if( ch == '\'' )
+            break;
+        if( ch == '\\' ) {
+            special = xlat_char( special, ch );
+            nextc();
+        }
+        special = xlat_char( special, ch );
+    }
+    addbuf( '\0' );
+    value = 0;
+    token = T_IDENTIFIER;
+}
+
+static int eatcrud( void )
+{
+    int prev;
+
+    for( ;; nextc() ) {
+        switch( ch ) {
+        case ' ':
+        case '\t':
+        case '\r':
+        case '\n':
+        case '\f':
+            break;
+        case '/':
+            if( nextc() != '*' ) {
+                if( ch == '\n' ) {
+                    --lineno;
+                }
+                ungetc( ch, yaccin );
+                return( '/' );
+            }
+            for( prev = '\0'; nextc() != '/' || prev != '*'; prev = ch ) {
+                if( ch == EOF ) {
+                    return( ch );
+                }
+            }
+            break;
+        default:
+            return( ch );
+        }
+    }
+}
+
+static void need( char *pat )
+{
+    while( *pat ) {
+        if( nextc() != *(unsigned char *)pat++ ) {
+            msg( "Expected '%c'\n", pat[-1] );
+        }
+    }
+}
+
+static int lastc( void )
+{
+    if( bufused > 1 ) {
+        return( (unsigned char)buf[bufused - 1] );
+    }
+    return( '\0' );
+}
+
+static void copybal( void )
+{
+    int         depth;
+
+    depth = 1;
+    do {
+        addbuf( ch );
+        nextc();
+        if( lastc() == '/' ) {
+            if( ch == '*' ) {
+                /* copy a C style comment */
+                for( ;; ) {
+                    addbuf( ch );
+                    nextc();
+                    if( ch == EOF )
+                        break;
+                    if( ch == '/' && lastc() == '*' ) {
+                        addbuf( ch );
+                        nextc();
+                        break;
+                    }
+                }
+            } else if( ch == '/' ) {
+                /* copy a C++ style comment */
+                for( ;; ) {
+                    addbuf( ch );
+                    nextc();
+                    if( ch == EOF )
+                        break;
+                    if( ch == '\n' ) {
+                        addbuf( ch );
+                        nextc();
+                        break;
+                    }
+                }
+            }
+        }
+        if( ch == '"' ) {
+            /* copy a string */
+            addbuf( ch );
+            for( ;; ) {
+                nextc();
+                if( ch == EOF )
+                    break;
+                if( ch == '\n' ) {
+                    msg( "string literal was not terminated by \" before end of line\n" );
+                    break;
+                }
+                if( ch == '\\' ) {
+                    addbuf( ch );
+                    nextc();
+                    addbuf( ch );
+                } else {
+                    if( ch == '"' )
+                        break;
+                    addbuf( ch );
+                }
+            }
+        }
+        if( ch == '\'' ) {
+            /* copy a character constant */
+            addbuf( ch );
+            for( ;; ) {
+                nextc();
+                if( ch == EOF )
+                    break;
+                if( ch == '\n' ) {
+                    msg( "character literal was not terminated by \" before end of line\n" );
+                    break;
+                }
+                if( ch == '\\' ) {
+                    addbuf( ch );
+                    nextc();
+                    addbuf( ch );
+                } else {
+                    if( ch == '\'' )
+                        break;
+                    addbuf( ch );
+                }
+            }
+        }
+        if( ch == '{' ) {
+            ++depth;
+        } else if( ch == '}' ) {
+            --depth;
+        }
+    } while( depth > 0 && ch != EOF );
+    addbuf( ch );
+    addbuf( '\0' );
+    nextc();
+}
+
+static a_token scan( unsigned used )
+{
+    bufused = used;
+    eatcrud();
+    if( isalpha( ch ) ) {
+        for( ;; ) {
+            addbuf( ch );
+            nextc();
+            if( isalpha( ch ) )
+                continue;
+            if( isdigit( ch ) )
+                continue;
+            if( ch == '_' )
+                continue;
+            if( ch == '.' )
+                continue;
+            if( ch == '-' )
+                continue;
+            break;
+        }
+        addbuf( '\0' );
+        if( eatcrud() == ':' ) {
+            nextc();
+            token = T_CIDENTIFIER;
+        } else {
+            token = T_IDENTIFIER;
+        }
+        value = 0;
+    } else if( isdigit( ch ) || ch == '-' ) {
+        do {
+            addbuf( ch );
+        } while( isdigit( nextc() ) );
+        addbuf( '\0' );
+        token = T_NUMBER;
+        value = atoi( buf );
+    } else {
+        switch( ch ) {
+        case '\'':
+            if( denseflag && ! translateflag ) {
+                msg( "cannot use '+' style of tokens with the dense option\n" );
+            }
+            if( ! translateflag ) {
+                addbuf( '\'' );
+                nextc();
+                addbuf( ch );
+                if( ch == '\\' ) {
+                    nextc();
+                    addbuf( ch );
+                    switch( ch ) {
+                    case 'n':  ch = '\n'; break;
+                    case 'r':  ch = '\r'; break;
+                    case 't':  ch = '\t'; break;
+                    case 'b':  ch = '\b'; break;
+                    case 'f':  ch = '\f'; break;
+                    case '\\': ch = '\\'; break;
+                    case '\'': ch = '\''; break;
+                    }
+                }
+                addbuf( '\'' );
+                value = ch;
+                token = T_IDENTIFIER;
+                need( "'" );
+            } else {
+                xlat_token();
+            }
+            break;
+        case '{':
+            token = ch;
+            copybal();
+            break;
+        case '<': case '>': case '|': case ';': case ',':
+            token = ch;
+            break;
+        case EOF:
+            token = T_EOF;
+            break;
+        case '%':
+            switch( nextc() ) {
+            case '%':
+                token = T_MARK;
+                break;
+            case '{':
+                token = T_LCURL;
+                break;
+            case '}':
+                token = T_RCURL;
+                break;
+            case 'a':
+                need( "mbig" );
+                token = T_AMBIG;
+                break;
+            case 'k':
+                need( "eyword_id" );
+                token = T_KEYWORD_ID;
+                break;
+            case 'l':
+                need( "eft" );
+                token = T_LEFT;
+                value = L_ASSOC;
+                break;
+            case 'n':
+                need( "onassoc" );
+                token = T_NONASSOC;
+                value = NON_ASSOC;
+                break;
+            case 'p':
+                need( "rec" );
+                token = T_PREC;
+                break;
+            case 'r':
+                need( "ight" );
+                token = T_RIGHT;
+                value = R_ASSOC;
+                break;
+            case 's':
+                need( "tart" );
+                token = T_START;
+                break;
+            case 't':
+                nextc();
+                if( ch == 'o' ) {
+                    need( "ken" );
+                    token = T_TOKEN;
+                } else if( ch == 'y' ) {
+                    need( "pe" );
+                    token = T_TYPE;
+                } else {
+                    msg( "Expecting %%token or %%type.\n" );
+                }
+                break;
+            case 'u':
+                need( "nion" );
+                token = T_UNION;
+                break;
+            default:
+                msg( "Unrecognized %% token.\n" );
+            }
+            break;
+        default:
+            msg( "Bad token.\n" );
+        }
+        addbuf( '\0' );
+        nextc();
+    }
+    return( token );
+}
 
 static a_token scan_typename( unsigned used )
 {
@@ -224,6 +623,322 @@ static void tlist_add( char *name, token_n tokval )
         tokens_tail->next = tmp;
     }
     tokens_tail = tmp;
+}
+
+static bool scanambig( unsigned used, a_SR_conflict_list **list )
+{
+    bool                    absorbed_something;
+    unsigned                index;
+    a_sym                   *sym;
+    a_SR_conflict           *am;
+    a_SR_conflict_list      *en;
+
+    absorbed_something = false;
+    for( ; token == T_AMBIG; ) {
+        /* syntax is "%ambig <number> <token>" */
+        /* token has already been scanned by scanprec() */
+        if( scan( used ) != T_NUMBER || value < 0 ) {
+            msg( "Expecting a non-negative number after %ambig.\n" );
+            break;
+        }
+        index = value;
+        if( scan( used ) != T_IDENTIFIER ) {
+            msg( "Expecting a token name after %ambig <number>.\n" );
+            break;
+        }
+        sym = findsym( buf );
+        if( sym == NULL ) {
+            msg( "Unknown token specified in %ambig directive.\n" );
+            break;
+        }
+        if( sym->token == 0 ) {
+            msg( "Non-terminal specified in %ambig directive.\n" );
+            break;
+        }
+        scan( used );
+        absorbed_something = true;
+        am = make_unique_ambiguity( sym, index );
+        en = MALLOC( 1, a_SR_conflict_list );
+        en->next = *list;
+        en->thread = am->thread;
+        en->pro = NULL;
+        en->conflict = am;
+        am->thread = en;
+        *list = en;
+    }
+    return( absorbed_something );
+}
+
+static bool scanprec( unsigned used, a_sym **precsym )
+{
+    if( token != T_PREC )
+        return( false );
+    if( scan( used ) != T_IDENTIFIER || (*precsym = findsym( buf )) == NULL || (*precsym)->token == 0 ) {
+        msg( "Expecting a token after %prec.\n" );
+    }
+    scan( used );
+    return( true );
+}
+
+static void scanextra( unsigned used, a_sym **psym, a_SR_conflict_list **pSR )
+{
+    scan( used );
+    for( ;; ) {
+        if( !scanprec( used, psym ) && !scanambig( used, pSR ) ) {
+            break;
+        }
+    }
+}
+
+static char *type_name( char *type )
+{
+    if( type == NULL ) {
+        return( "** no type **" );
+    }
+    return( type );
+}
+
+static void copycurl( void )
+{
+    do {
+        while( ch != '%' && ch != EOF ) {
+            fputc( ch, actout );
+            nextc();
+        }
+    } while( nextc() != '}' && ch != EOF );
+    nextc();
+}
+
+static char *checkAttrib( char *s, char **ptype, char *buff, int *errs,
+                          a_sym *lhs, a_sym **rhs, unsigned base, unsigned n )
+{
+    char        save;
+    char        *type;
+    int         err_count;
+    long        il;
+
+    err_count = 0;
+    ++s;
+    if( *s == '<' ) {
+        ++s;
+        type = s;
+        s = get_typename( type );
+        if( type == s || *s != '>' )  {
+            ++err_count;
+            msg( "Bad type specifier.\n" );
+        }
+        save = *s;
+        *s = '\0';
+        type = strdup( type );
+        *s = save;
+        ++s;
+    } else {
+        type = NULL;
+    }
+    if( *s == '$' ) {
+        strcpy( buff, "yyval" );
+        if( type == NULL && lhs->type != NULL ) {
+            type = strdup( lhs->type );
+        }
+        ++s;
+    } else {
+        il = n + 1;
+        if( *s == '-' || isdigit( *s ) ) {
+            il = strtol( s, &s, 10 );
+        }
+        if( il > (long)n ) {
+            ++err_count;
+            msg( "Invalid $ parameter (%ld).\n", il );
+        }
+        il -= base + 1;
+        sprintf( buff, "yyvp[%ld]", il );
+        if( type == NULL && il >= 0 && rhs[il]->type != NULL ) {
+            type = strdup( rhs[il]->type );
+        }
+    }
+    *ptype = type;
+    *errs = err_count;
+    return( s );
+}
+
+static a_pro *findPro( a_sym *lhs, rule_n pnum )
+{
+    a_pro       *pro;
+
+    for( pro = lhs->pro; pro != NULL; pro = pro->next ) {
+        if( pro->pidx == pnum ) {
+            return( pro );
+        }
+    }
+    return( NULL );
+}
+
+static void copyUniqueActions( void )
+{
+    a_pro       *pro;
+    char        *s;
+    uniq_case   *c;
+    uniq_case   *cnext;
+    rule_case   *r;
+    rule_case   *rnext;
+    an_item     *item;
+
+    for( c = caseActions; c != NULL; c = cnext ) {
+        cnext = c->next;
+        for( r = c->rules; r != NULL; r = rnext ) {
+            rnext = r->next;
+            fprintf( actout, "case %d:\n", r->pnum );
+            pro = findPro( r->lhs, r->pnum );
+            fprintf( actout, "/* %s <-", pro->sym->name );
+            for( item = pro->items; item->p.sym != NULL; ++item ) {
+                fprintf( actout, " %s", item->p.sym->name );
+            }
+            fprintf( actout, " */\n" );
+            FREE( r );
+        }
+        for( s = c->action; *s != '\0'; ++s ) {
+            fputc( *s, actout );
+        }
+        fprintf( actout, "\nbreak;\n" );
+        FREE( c->action );
+        FREE( c );
+    }
+}
+
+static void addRuleToUniqueCase( uniq_case *p, rule_n pnum, a_sym *lhs )
+{
+    rule_case   *r;
+
+    r = MALLOC( 1, rule_case );
+    r->lhs = lhs;
+    r->pnum = pnum;
+    r->next = p->rules;
+    p->rules = r;
+}
+
+static void insertUniqueAction( rule_n pnum, char *action, a_sym *lhs )
+{
+    uniq_case   **p;
+    uniq_case   *c;
+    uniq_case   *n;
+
+    p = &caseActions;
+    for( c = *p; c != NULL; c = c->next ) {
+        if( strcmp( c->action, action ) == 0 ) {
+            ++actionsCombined;
+            addRuleToUniqueCase( c, pnum, lhs );
+            /* promote to front */
+            *p = c->next;
+            c->next = caseActions;
+            caseActions = c;
+            FREE( action );
+            return;
+        }
+        p = &(c->next);
+    }
+    n = MALLOC( 1, uniq_case );
+    n->action = action;
+    n->rules = NULL;
+    n->next = *p;
+    *p = n;
+    addRuleToUniqueCase( n, pnum, lhs );
+}
+
+static char *strpcpy( char *d, char *s )
+{
+    while( (*d = *s++) != '\0' ) {
+        ++d;
+    }
+    return( d );
+}
+
+static void lineinfo( void )
+{
+    if( lineflag ) {
+        fprintf( actout, "\n#line %d \"%s\"\n", lineno, srcname );
+    }
+}
+
+static void copyact( rule_n pnum, a_sym *lhs, a_sym **rhs, unsigned base, unsigned n )
+{
+    char        *action;
+    char        *p;
+    char        *s;
+    char        *type;
+    unsigned    i;
+    int         errs;
+    int         total_errs;
+    size_t      total_len;
+    char        buff[80];
+
+    if( ! lineflag ) {
+        /* we don't need line numbers to correspond to the grammar */
+        total_errs = 0;
+        total_len = strlen( buf ) + 1;
+        for( s = buf; *s != '\0'; ) {
+            if( *s == '$' ) {
+                s = checkAttrib( s, &type, buff, &errs, lhs, rhs, base, n );
+                total_len += strlen( buff );
+                if( type != NULL ) {
+                    total_len += strlen( type ) + 1;
+                }
+                FREE( type );
+                total_errs += errs;
+            } else {
+                ++s;
+            }
+        }
+        if( total_errs == 0 ) {
+            action = MALLOC( total_len, char );
+            p = action;
+            for( s = buf; *s != '\0'; ) {
+                if( *s == '$' ) {
+                    s = checkAttrib( s, &type, buff, &errs, lhs, rhs, base, n );
+                    p = strpcpy( p, buff );
+                    if( type != NULL ) {
+                        *p++ = '.';
+                        p = strpcpy( p, type );
+                        FREE( type );
+                    }
+                } else {
+                    *p++ = *s++;
+                }
+            }
+            *p = '\0';
+            insertUniqueAction( pnum, action, lhs );
+        }
+        return;
+    }
+    fprintf( actout, "case %d:\n", pnum );
+    fprintf( actout, "/* %s <-", lhs->name );
+    for( i = 0; i < n; ++i ) {
+        fprintf( actout, " %s", rhs[i]->name );
+    }
+    fprintf( actout, " */\n" );
+    lineinfo();
+    for( s = buf; *s != '\0'; ) {
+        if( *s == '$' ) {
+            s = checkAttrib( s, &type, buff, &errs, lhs, rhs, base, n );
+            fprintf( actout, "%s", buff );
+            if( type != NULL ) {
+                fprintf( actout, ".%s", type );
+                FREE( type );
+            }
+        } else {
+            fputc( *s++, actout );
+        }
+    }
+    fprintf( actout, "\nbreak;\n" );
+}
+
+static char *dupbuf( void )
+{
+    char *str;
+
+    str = MALLOC( bufused, char );
+    memcpy( str, buf, bufused );
+    bufused = 0;
+    return( str );
 }
 
 static void dump_header( char *union_name )
@@ -418,79 +1133,6 @@ void defs( void )
     dump_header( union_name );
 }
 
-static bool scanambig( unsigned used, a_SR_conflict_list **list )
-{
-    bool                    absorbed_something;
-    unsigned                index;
-    a_sym                   *sym;
-    a_SR_conflict           *am;
-    a_SR_conflict_list      *en;
-
-    absorbed_something = false;
-    for( ; token == T_AMBIG; ) {
-        /* syntax is "%ambig <number> <token>" */
-        /* token has already been scanned by scanprec() */
-        if( scan( used ) != T_NUMBER || value < 0 ) {
-            msg( "Expecting a non-negative number after %ambig.\n" );
-            break;
-        }
-        index = value;
-        if( scan( used ) != T_IDENTIFIER ) {
-            msg( "Expecting a token name after %ambig <number>.\n" );
-            break;
-        }
-        sym = findsym( buf );
-        if( sym == NULL ) {
-            msg( "Unknown token specified in %ambig directive.\n" );
-            break;
-        }
-        if( sym->token == 0 ) {
-            msg( "Non-terminal specified in %ambig directive.\n" );
-            break;
-        }
-        scan( used );
-        absorbed_something = true;
-        am = make_unique_ambiguity( sym, index );
-        en = MALLOC( 1, a_SR_conflict_list );
-        en->next = *list;
-        en->thread = am->thread;
-        en->pro = NULL;
-        en->conflict = am;
-        am->thread = en;
-        *list = en;
-    }
-    return( absorbed_something );
-}
-
-static bool scanprec( unsigned used, a_sym **precsym )
-{
-    if( token != T_PREC )
-        return( false );
-    if( scan( used ) != T_IDENTIFIER || (*precsym = findsym( buf )) == NULL || (*precsym)->token == 0 ) {
-        msg( "Expecting a token after %prec.\n" );
-    }
-    scan( used );
-    return( true );
-}
-
-static void scanextra( unsigned used, a_sym **psym, a_SR_conflict_list **pSR )
-{
-    scan( used );
-    for( ;; ) {
-        if( !scanprec( used, psym ) && !scanambig( used, pSR ) ) {
-            break;
-        }
-    }
-}
-
-static char *type_name( char *type )
-{
-    if( type == NULL ) {
-        return( "** no type **" );
-    }
-    return( type );
-}
-
 void rules( void )
 {
     a_sym               *lhs, *sym, *precsym;
@@ -644,661 +1286,6 @@ void tail( void )
     } else if( token != T_EOF ) {
         msg( "Expected end of file.\n" );
     }
-}
-
-static void copycurl( void )
-{
-    do {
-        while( ch != '%' && ch != EOF ) {
-            fputc( ch, actout );
-            nextc();
-        }
-    } while( nextc() != '}' && ch != EOF );
-    nextc();
-}
-
-static char *checkAttrib( char *s, char **ptype, char *buff, int *errs,
-                          a_sym *lhs, a_sym **rhs, unsigned base, unsigned n )
-{
-    char        save;
-    char        *type;
-    int         err_count;
-    long        il;
-
-    err_count = 0;
-    ++s;
-    if( *s == '<' ) {
-        ++s;
-        type = s;
-        s = get_typename( type );
-        if( type == s || *s != '>' )  {
-            ++err_count;
-            msg( "Bad type specifier.\n" );
-        }
-        save = *s;
-        *s = '\0';
-        type = strdup( type );
-        *s = save;
-        ++s;
-    } else {
-        type = NULL;
-    }
-    if( *s == '$' ) {
-        strcpy( buff, "yyval" );
-        if( type == NULL && lhs->type != NULL ) {
-            type = strdup( lhs->type );
-        }
-        ++s;
-    } else {
-        il = n + 1;
-        if( *s == '-' || isdigit( *s ) ) {
-            il = strtol( s, &s, 10 );
-        }
-        if( il > (long)n ) {
-            ++err_count;
-            msg( "Invalid $ parameter (%ld).\n", il );
-        }
-        il -= base + 1;
-        sprintf( buff, "yyvp[%ld]", il );
-        if( type == NULL && il >= 0 && rhs[il]->type != NULL ) {
-            type = strdup( rhs[il]->type );
-        }
-    }
-    *ptype = type;
-    *errs = err_count;
-    return( s );
-}
-
-static a_pro *findPro( a_sym *lhs, rule_n pnum )
-{
-    a_pro       *pro;
-
-    for( pro = lhs->pro; pro != NULL; pro = pro->next ) {
-        if( pro->pidx == pnum ) {
-            return( pro );
-        }
-    }
-    return( NULL );
-}
-
-static void copyUniqueActions( void )
-{
-    a_pro       *pro;
-    char        *s;
-    uniq_case   *c;
-    uniq_case   *cnext;
-    rule_case   *r;
-    rule_case   *rnext;
-    an_item     *item;
-
-    for( c = caseActions; c != NULL; c = cnext ) {
-        cnext = c->next;
-        for( r = c->rules; r != NULL; r = rnext ) {
-            rnext = r->next;
-            fprintf( actout, "case %d:\n", r->pnum );
-            pro = findPro( r->lhs, r->pnum );
-            fprintf( actout, "/* %s <-", pro->sym->name );
-            for( item = pro->items; item->p.sym != NULL; ++item ) {
-                fprintf( actout, " %s", item->p.sym->name );
-            }
-            fprintf( actout, " */\n" );
-            FREE( r );
-        }
-        for( s = c->action; *s != '\0'; ++s ) {
-            fputc( *s, actout );
-        }
-        fprintf( actout, "\nbreak;\n" );
-        FREE( c->action );
-        FREE( c );
-    }
-}
-
-static void addRuleToUniqueCase( uniq_case *p, rule_n pnum, a_sym *lhs )
-{
-    rule_case   *r;
-
-    r = MALLOC( 1, rule_case );
-    r->lhs = lhs;
-    r->pnum = pnum;
-    r->next = p->rules;
-    p->rules = r;
-}
-
-static void insertUniqueAction( rule_n pnum, char *action, a_sym *lhs )
-{
-    uniq_case   **p;
-    uniq_case   *c;
-    uniq_case   *n;
-
-    p = &caseActions;
-    for( c = *p; c != NULL; c = c->next ) {
-        if( strcmp( c->action, action ) == 0 ) {
-            ++actionsCombined;
-            addRuleToUniqueCase( c, pnum, lhs );
-            /* promote to front */
-            *p = c->next;
-            c->next = caseActions;
-            caseActions = c;
-            FREE( action );
-            return;
-        }
-        p = &(c->next);
-    }
-    n = MALLOC( 1, uniq_case );
-    n->action = action;
-    n->rules = NULL;
-    n->next = *p;
-    *p = n;
-    addRuleToUniqueCase( n, pnum, lhs );
-}
-
-static char *strpcpy( char *d, char *s )
-{
-    while( (*d = *s++) != '\0' ) {
-        ++d;
-    }
-    return( d );
-}
-
-static void copyact( rule_n pnum, a_sym *lhs, a_sym **rhs, unsigned base, unsigned n )
-{
-    char        *action;
-    char        *p;
-    char        *s;
-    char        *type;
-    unsigned    i;
-    int         errs;
-    int         total_errs;
-    size_t      total_len;
-    char        buff[80];
-
-    if( ! lineflag ) {
-        /* we don't need line numbers to correspond to the grammar */
-        total_errs = 0;
-        total_len = strlen( buf ) + 1;
-        for( s = buf; *s != '\0'; ) {
-            if( *s == '$' ) {
-                s = checkAttrib( s, &type, buff, &errs, lhs, rhs, base, n );
-                total_len += strlen( buff );
-                if( type != NULL ) {
-                    total_len += strlen( type ) + 1;
-                }
-                FREE( type );
-                total_errs += errs;
-            } else {
-                ++s;
-            }
-        }
-        if( total_errs == 0 ) {
-            action = MALLOC( total_len, char );
-            p = action;
-            for( s = buf; *s != '\0'; ) {
-                if( *s == '$' ) {
-                    s = checkAttrib( s, &type, buff, &errs, lhs, rhs, base, n );
-                    p = strpcpy( p, buff );
-                    if( type != NULL ) {
-                        *p++ = '.';
-                        p = strpcpy( p, type );
-                        FREE( type );
-                    }
-                } else {
-                    *p++ = *s++;
-                }
-            }
-            *p = '\0';
-            insertUniqueAction( pnum, action, lhs );
-        }
-        return;
-    }
-    fprintf( actout, "case %d:\n", pnum );
-    fprintf( actout, "/* %s <-", lhs->name );
-    for( i = 0; i < n; ++i ) {
-        fprintf( actout, " %s", rhs[i]->name );
-    }
-    fprintf( actout, " */\n" );
-    lineinfo();
-    for( s = buf; *s != '\0'; ) {
-        if( *s == '$' ) {
-            s = checkAttrib( s, &type, buff, &errs, lhs, rhs, base, n );
-            fprintf( actout, "%s", buff );
-            if( type != NULL ) {
-                fprintf( actout, ".%s", type );
-                FREE( type );
-            }
-        } else {
-            fputc( *s++, actout );
-        }
-    }
-    fprintf( actout, "\nbreak;\n" );
-}
-
-static void copybal( void )
-{
-    int         depth;
-
-    depth = 1;
-    do {
-        addbuf( ch );
-        nextc();
-        if( lastc() == '/' ) {
-            if( ch == '*' ) {
-                /* copy a C style comment */
-                for( ;; ) {
-                    addbuf( ch );
-                    nextc();
-                    if( ch == EOF )
-                        break;
-                    if( ch == '/' && lastc() == '*' ) {
-                        addbuf( ch );
-                        nextc();
-                        break;
-                    }
-                }
-            } else if( ch == '/' ) {
-                /* copy a C++ style comment */
-                for( ;; ) {
-                    addbuf( ch );
-                    nextc();
-                    if( ch == EOF )
-                        break;
-                    if( ch == '\n' ) {
-                        addbuf( ch );
-                        nextc();
-                        break;
-                    }
-                }
-            }
-        }
-        if( ch == '"' ) {
-            /* copy a string */
-            addbuf( ch );
-            for( ;; ) {
-                nextc();
-                if( ch == EOF )
-                    break;
-                if( ch == '\n' ) {
-                    msg( "string literal was not terminated by \" before end of line\n" );
-                    break;
-                }
-                if( ch == '\\' ) {
-                    addbuf( ch );
-                    nextc();
-                    addbuf( ch );
-                } else {
-                    if( ch == '"' )
-                        break;
-                    addbuf( ch );
-                }
-            }
-        }
-        if( ch == '\'' ) {
-            /* copy a character constant */
-            addbuf( ch );
-            for( ;; ) {
-                nextc();
-                if( ch == EOF )
-                    break;
-                if( ch == '\n' ) {
-                    msg( "character literal was not terminated by \" before end of line\n" );
-                    break;
-                }
-                if( ch == '\\' ) {
-                    addbuf( ch );
-                    nextc();
-                    addbuf( ch );
-                } else {
-                    if( ch == '\'' )
-                        break;
-                    addbuf( ch );
-                }
-            }
-        }
-        if( ch == '{' ) {
-            ++depth;
-        } else if( ch == '}' ) {
-            --depth;
-        }
-    } while( depth > 0 && ch != EOF );
-    addbuf( ch );
-    addbuf( '\0' );
-    nextc();
-}
-
-static void lineinfo( void )
-{
-    if( lineflag ) {
-        fprintf( actout, "\n#line %d \"%s\"\n", lineno, srcname );
-    }
-}
-
-static void addstr( char *p )
-{
-    while( *p ) {
-        addbuf( *(unsigned char *)p );
-        ++p;
-    }
-}
-
-typedef struct xlat_entry {
-    int         c;
-    char        *x;
-} xlat_entry;
-
-static xlat_entry xlat[] = {
-    { '~',      "TILDE" },
-    { '`',      "BACKQUOTE" },
-    { '!',      "EXCLAMATION" },
-    { '@',      "AT" },
-    { '#',      "SHARP" },
-    { '$',      "DOLLAR" },
-    { '%',      "PERCENT" },
-    { '^',      "XOR" },
-    { '&',      "AND" },
-    { '*',      "TIMES" },
-    { '(',      "LPAREN" },
-    { ')',      "RPAREN" },
-    { '-',      "MINUS" },
-    { '+',      "PLUS" },
-    { '=',      "EQUAL" },
-    { '[',      "LSQUARE" },
-    { ']',      "RSQUARE" },
-    { '{',      "LBRACE" },
-    { '}',      "RBRACE" },
-    { '\\',     "BACKSLASH" },
-    { '|',      "OR" },
-    { ':',      "COLON" },
-    { ';',      "SEMICOLON" },
-    { '\'',     "QUOTE" },
-    { '"',      "DQUOTE" },
-    { '<',      "LT" },
-    { '>',      "GT" },
-    { '.',      "DOT" },
-    { ',',      "COMMA" },
-    { '/',      "DIVIDE" },
-    { '?',      "QUESTION" },
-    { '\0',     NULL }
-};
-
-static bool xlat_char( bool special, int c )
-{
-    xlat_entry  *t;
-    char        buff[16];
-
-    if( isalpha( c ) || isdigit( c ) || c == '_' ) {
-        if( special ) {
-            addbuf( '_' );
-        }
-        addbuf( c );
-        return( false );
-    }
-    /* NYI: add %translate 'c' XXXX in case user doesn't like our name */
-    addbuf( '_' );
-    for( t = xlat; t->x != NULL; ++t ) {
-        if( t->c == c ) {
-            addstr( t->x );
-            return( true );
-        }
-    }
-    warn( "'x' token contains unknown character '%c' (\\x%x)\n", c, c );
-    addbuf( 'X' );
-    sprintf( buff, "%x", c );
-    addstr( buff );
-    return( true );
-}
-
-static void xlat_token( void )
-{
-    bool special;
-
-    addbuf( 'Y' );
-    special = true;
-    for( ;; ) {
-        nextc();
-        if( ch == EOF || ch == '\n' ) {
-            msg( "invalid 'x' token" );
-            break;
-        }
-        if( ch == '\'' )
-            break;
-        if( ch == '\\' ) {
-            special = xlat_char( special, ch );
-            nextc();
-        }
-        special = xlat_char( special, ch );
-    }
-    addbuf( '\0' );
-    value = 0;
-    token = T_IDENTIFIER;
-}
-
-static a_token scan( unsigned used )
-{
-    bufused = used;
-    eatcrud();
-    if( isalpha( ch ) ) {
-        for( ;; ) {
-            addbuf( ch );
-            nextc();
-            if( isalpha( ch ) )
-                continue;
-            if( isdigit( ch ) )
-                continue;
-            if( ch == '_' )
-                continue;
-            if( ch == '.' )
-                continue;
-            if( ch == '-' )
-                continue;
-            break;
-        }
-        addbuf( '\0' );
-        if( eatcrud() == ':' ) {
-            nextc();
-            token = T_CIDENTIFIER;
-        } else {
-            token = T_IDENTIFIER;
-        }
-        value = 0;
-    } else if( isdigit( ch ) || ch == '-' ) {
-        do {
-            addbuf( ch );
-        } while( isdigit( nextc() ) );
-        addbuf( '\0' );
-        token = T_NUMBER;
-        value = atoi( buf );
-    } else {
-        switch( ch ) {
-        case '\'':
-            if( denseflag && ! translateflag ) {
-                msg( "cannot use '+' style of tokens with the dense option\n" );
-            }
-            if( ! translateflag ) {
-                addbuf( '\'' );
-                nextc();
-                addbuf( ch );
-                if( ch == '\\' ) {
-                    nextc();
-                    addbuf( ch );
-                    switch( ch ) {
-                    case 'n':  ch = '\n'; break;
-                    case 'r':  ch = '\r'; break;
-                    case 't':  ch = '\t'; break;
-                    case 'b':  ch = '\b'; break;
-                    case 'f':  ch = '\f'; break;
-                    case '\\': ch = '\\'; break;
-                    case '\'': ch = '\''; break;
-                    }
-                }
-                addbuf( '\'' );
-                value = ch;
-                token = T_IDENTIFIER;
-                need( "'" );
-            } else {
-                xlat_token();
-            }
-            break;
-        case '{':
-            token = ch;
-            copybal();
-            break;
-        case '<': case '>': case '|': case ';': case ',':
-            token = ch;
-            break;
-        case EOF:
-            token = T_EOF;
-            break;
-        case '%':
-            switch( nextc() ) {
-            case '%':
-                token = T_MARK;
-                break;
-            case '{':
-                token = T_LCURL;
-                break;
-            case '}':
-                token = T_RCURL;
-                break;
-            case 'a':
-                need( "mbig" );
-                token = T_AMBIG;
-                break;
-            case 'k':
-                need( "eyword_id" );
-                token = T_KEYWORD_ID;
-                break;
-            case 'l':
-                need( "eft" );
-                token = T_LEFT;
-                value = L_ASSOC;
-                break;
-            case 'n':
-                need( "onassoc" );
-                token = T_NONASSOC;
-                value = NON_ASSOC;
-                break;
-            case 'p':
-                need( "rec" );
-                token = T_PREC;
-                break;
-            case 'r':
-                need( "ight" );
-                token = T_RIGHT;
-                value = R_ASSOC;
-                break;
-            case 's':
-                need( "tart" );
-                token = T_START;
-                break;
-            case 't':
-                nextc();
-                if( ch == 'o' ) {
-                    need( "ken" );
-                    token = T_TOKEN;
-                } else if( ch == 'y' ) {
-                    need( "pe" );
-                    token = T_TYPE;
-                } else {
-                    msg( "Expecting %%token or %%type.\n" );
-                }
-                break;
-            case 'u':
-                need( "nion" );
-                token = T_UNION;
-                break;
-            default:
-                msg( "Unrecognized %% token.\n" );
-            }
-            break;
-        default:
-            msg( "Bad token.\n" );
-        }
-        addbuf( '\0' );
-        nextc();
-    }
-    return( token );
-}
-
-static void need( char *pat )
-{
-    while( *pat ) {
-        if( nextc() != *(unsigned char *)pat++ ) {
-            msg( "Expected '%c'\n", pat[-1] );
-        }
-    }
-}
-
-static int eatcrud( void )
-{
-    int prev;
-
-    for( ;; nextc() ) {
-        switch( ch ) {
-        case ' ':
-        case '\t':
-        case '\r':
-        case '\n':
-        case '\f':
-            break;
-        case '/':
-            if( nextc() != '*' ) {
-                if( ch == '\n' ) {
-                    --lineno;
-                }
-                ungetc( ch, yaccin );
-                return( '/' );
-            }
-            for( prev = '\0'; nextc() != '/' || prev != '*'; prev = ch ) {
-                if( ch == EOF ) {
-                    return( ch );
-                }
-            }
-            break;
-        default:
-            return( ch );
-        }
-    }
-}
-
-static int nextc( void )
-{
-    if( (ch = fgetc( yaccin )) == '\r' ) {
-        ch = fgetc( yaccin );
-    }
-    if( ch == '\n' ) {
-        ++lineno;
-    }
-    return( ch );
-}
-
-static int lastc( void )
-{
-    if( bufused > 1 ) {
-        return( (unsigned char)buf[bufused - 1] );
-    }
-    return( '\0' );
-}
-
-static void addbuf( int c )
-{
-    if( bufused == bufmax ) {
-        bufmax += BUF_INCR;
-        if( buf != NULL ) {
-            buf = REALLOC( buf, bufmax, char );
-        } else {
-            buf = MALLOC( bufmax, char );
-        }
-    }
-    buf[bufused++] = (char)c;
-}
-
-static char *dupbuf( void )
-{
-    char *str;
-
-    str = MALLOC( bufused, char );
-    memcpy( str, buf, bufused );
-    bufused = 0;
-    return( str );
 }
 
 void parsestats( void )
