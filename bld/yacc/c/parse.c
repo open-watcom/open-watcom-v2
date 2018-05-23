@@ -366,8 +366,6 @@ static void copybal( void )
         }
     } while( depth > 0 && ch != EOF );
     addbuf( ch );
-    addbuf( '\0' );
-    nextc();
 }
 
 static a_token scan( unsigned used )
