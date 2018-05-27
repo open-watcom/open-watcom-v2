@@ -224,8 +224,8 @@ static p_action doAction( YYCHKTYPE t, parse_stack *state )
         yyk = *(state->ssp);
         yyi = yyk + t;
         while( yyi >= YYUSED || yychktab[yyi] != t ) {
-            yyi = yyk + YYPTOKEN;
-            if( yyi >= YYUSED || yychktab[yyi] != YYPTOKEN ) {
+            yyi = yyk + YYPARTOKEN;
+            if( yyi >= YYUSED || yychktab[yyi] != YYPARTOKEN ) {
                 goto use_d_token;
             }
             yyk = yyacttab[yyi];
@@ -235,14 +235,14 @@ static p_action doAction( YYCHKTYPE t, parse_stack *state )
         if( yyaction == YYNOACTION ) {
     use_d_token:
             yyk = *(state->ssp);
-            yyi = yyk + YYDTOKEN;
-            while( yyi >= YYUSED || yychktab[yyi] != YYDTOKEN ) {
-                yyi = yyk + YYPTOKEN;
-                if( yyi >= YYUSED || yychktab[yyi] != YYPTOKEN ) {
+            yyi = yyk + YYDEFTOKEN;
+            while( yyi >= YYUSED || yychktab[yyi] != YYDEFTOKEN ) {
+                yyi = yyk + YYPARTOKEN;
+                if( yyi >= YYUSED || yychktab[yyi] != YYPARTOKEN ) {
                     return( P_SYNTAX );
                 }
                 yyk = yyacttab[yyi];
-                yyi = yyk + YYDTOKEN;
+                yyi = yyk + YYDEFTOKEN;
             }
             yyaction = yyacttab[yyi];
             if( yyaction == YYNOACTION ) {
@@ -273,8 +273,8 @@ static p_action doAction( YYCHKTYPE t, parse_stack *state )
         yyk = *(state->ssp);
         yyi = yyk + yylhs;
         while( yyi >= YYUSED || yychktab[yyi] != yylhs ) {
-            yyi = yyk + YYPTOKEN;
-            if( yyi >= YYUSED || yychktab[yyi] != YYPTOKEN ) {
+            yyi = yyk + YYPARTOKEN;
+            if( yyi >= YYUSED || yychktab[yyi] != YYPARTOKEN ) {
                 return( P_ERROR );
             }
             yyk = yyacttab[yyi];

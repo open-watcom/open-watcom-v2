@@ -55,7 +55,7 @@ int yyparse( void )
 yynewact:
       yyk = *yysp;
       while( (yyi = yyk + yytoken) < 0 || yyi >= YYUSED || yychktab[yyi] != yytoken )
-          if( (yyi = yyk + YYPTOKEN) < 0 || yyi >= YYUSED || yychktab[yyi] != YYPTOKEN )
+          if( (yyi = yyk + YYPARTOKEN) < 0 || yyi >= YYUSED || yychktab[yyi] != YYPARTOKEN )
               goto yycheck1;
           else
               yyk = yyacttab[yyi];
@@ -63,8 +63,8 @@ yynewact:
       if( yyaction == YYNOACTION ){
 yycheck1:
           yyk = *yysp;
-          while( (yyi = yyk + YYDTOKEN) < 0 || yyi >= YYUSED || yychktab[yyi] != YYDTOKEN )
-              if( (yyi = yyk + YYPTOKEN) < 0 || yyi >= YYUSED || yychktab[yyi] != YYPTOKEN )
+          while( (yyi = yyk + YYDEFTOKEN) < 0 || yyi >= YYUSED || yychktab[yyi] != YYDEFTOKEN )
+              if( (yyi = yyk + YYPARTOKEN) < 0 || yyi >= YYUSED || yychktab[yyi] != YYPARTOKEN )
                   goto yycheck2;
               else
                   yyk = yyacttab[yyi];
@@ -80,8 +80,8 @@ yycheck2:
                   yyerrflag = 3;
                   while( yysp >= yys ){
                       yyk = *yysp;
-                      while( (yyi = yyk + YYETOKEN) < 0 || yyi >= YYUSED || yychktab[yyi] != YYETOKEN )
-                          if( (yyi = yyk + YYPTOKEN) < 0 || yyi >= YYUSED || yychktab[yyi] != YYPTOKEN )
+                      while( (yyi = yyk + YYERRTOKEN) < 0 || yyi >= YYUSED || yychktab[yyi] != YYERRTOKEN )
+                          if( (yyi = yyk + YYPARTOKEN) < 0 || yyi >= YYUSED || yychktab[yyi] != YYPARTOKEN )
                               goto continu;
                           else
                               yyk = yyacttab[yyi];
@@ -126,7 +126,7 @@ yycheck2:
           };
           yyk = *yysp;
           while( (yyi = yyk + yylhs) < 0 || yyi >= YYUSED || yychktab[yyi] != yylhs ){
-              if( (yyi = yyk + YYPTOKEN) < 0 || yyi >= YYUSED || yychktab[yyi] != YYPTOKEN ){
+              if( (yyi = yyk + YYPARTOKEN) < 0 || yyi >= YYUSED || yychktab[yyi] != YYPARTOKEN ){
                   printf( "missing nonterminal\n" );
                   YYABORT;
               };

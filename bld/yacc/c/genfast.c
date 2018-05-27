@@ -483,7 +483,6 @@ void GenFastTables( FILE *fp )
     putnum( fp, "YYNOACTION", 0 );
     putnum( fp, "YYEOFTOKEN", eofsym->token );
     putnum( fp, "YYERRTOKEN", errsym->token );
-    putnum( fp, "YYETOKEN", errsym->token );
     putnum( fp, "YYSTART", startstate->sidx );
     putnum( fp, "YYSTOP", eofsym->enter->sidx );
     putnum( fp, "YYERR", errstate->sidx );

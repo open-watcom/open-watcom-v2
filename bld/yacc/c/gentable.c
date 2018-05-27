@@ -350,7 +350,6 @@ void genobj( FILE *fp )
     putnum( fp, "YYNOACTION", error - nstate + used );
     putnum( fp, "YYEOFTOKEN", eofsym->token );
     putnum( fp, "YYERRTOKEN", errsym->token );
-    putnum( fp, "YYETOKEN", errsym->token );
     if( compactflag ) {
         parent_base = used + npro;
         putnum( fp, "YYPARENT", parent_base );
@@ -360,8 +359,8 @@ void genobj( FILE *fp )
         }
         putnum( fp, "YYPRODSIZE", shift );
     } else {
-        putnum( fp, "YYPTOKEN", ptoken );
-        putnum( fp, "YYDTOKEN", dtoken );
+        putnum( fp, "YYPARTOKEN", ptoken );
+        putnum( fp, "YYDEFTOKEN", dtoken );
     }
     putnum( fp, "YYSTART", base[startstate->sidx] );
     putnum( fp, "YYSTOP", base[eofsym->enter->sidx] );

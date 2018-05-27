@@ -37,7 +37,7 @@
 
 #define YYSTYPE int
 #define  YYFAR
-#define  YYETOKEN 0
+#define  YYERRTOKEN 0
 
 extern YYSTYPE yylval;
 

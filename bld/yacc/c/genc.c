@@ -476,7 +476,6 @@ void genobj( FILE *fp )
     putnum( fp, "YYNOACTION", error - nstate + dtoken );
     putnum( fp, "YYEOFTOKEN", eofsym->token );
     putnum( fp, "YYERRTOKEN", errsym->token );
-    putnum( fp, "YYETOKEN", errsym->token );
     putnum( fp, "YYERR", errstate->sidx );
     fprintf( fp, "#define YYSTART   state%d\n", startstate->sidx );
     fprintf( fp, "#define YYSTOP    state%d\n", eofsym->enter->sidx );
