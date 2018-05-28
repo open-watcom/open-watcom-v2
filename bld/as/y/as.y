@@ -1,20 +1,18 @@
 %{
-    #include "as.h"
-    #include "lexyacc.h"
-    #include "asparser.h"
+#include "as.h"
+#include "lexyacc.h"
+#include "asparser.h"
 
-    typedef uint_16         YYACTIONBASETYPE;
-    typedef uint_16         YYACTIONTYPE;
-    typedef uint_16         YYBITBASETYPE;
-    typedef uint_8          YYBITTYPE;
-    typedef uint_8          YYPLENTYPE;
-    typedef uint_16         YYPLHSTYPE;
+typedef uint_16         YYACTIONBASETYPE;
+typedef uint_16         YYACTIONTYPE;
+typedef uint_16         YYBITBASETYPE;
+typedef uint_8          YYBITTYPE;
+typedef uint_8          YYPLENTYPE;
+typedef uint_16         YYPLHSTYPE;
 
-    typedef unsigned        YYTOKENTYPE;
+instruction             *AsCurrIns;
 
-    instruction             *AsCurrIns;
-
-static directive_t          *AsCurrDir;
+static directive_t      *AsCurrDir;
 
 %}
 

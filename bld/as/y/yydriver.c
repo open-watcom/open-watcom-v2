@@ -47,7 +47,7 @@ static void dump_rule( unsigned rule )
     const YYTOKENTYPE YYFAR *yytoken;
     const char YYFAR *p;
 
-    #ifdef _STANDALONE_
+    #if defined( _STANDALONE_ )
     if( !_IsOption( DUMP_PARSE_TREE ) )
         return;
     #endif
@@ -58,7 +58,7 @@ static void dump_rule( unsigned rule )
     putchar( '<' );
     putchar( '-' );
     yytoken = &yyrhstoks[ yyrulebase[ rule ] ];
-    for( i = yyplentab[ rule ]; i != 0; --i ) {
+    for( i = yyplentab[rule]; i != 0; --i ) {
         putchar( ' ' );
         for( p = yytoknames[*yytoken]; *p; ++p ) {
             putchar( *p );
@@ -66,6 +66,8 @@ static void dump_rule( unsigned rule )
         ++yytoken;
     }
     putchar( '\n' );
+  #else
+    /* unused parameters */ (void)rule;
   #endif
 }
 #endif
@@ -103,10 +105,10 @@ bool yyparse( void )
     for( ;; ) {
 yynewact:
         yyaction = find_action( *yysp, yytoken );
-        if( yyaction == YYNOACTION ){
+        if( yyaction == YYNOACTION ) {
             yyaction = find_action( *yysp, YYDEFTOKEN );
-            if( yyaction == YYNOACTION ){
-                switch( yyerrflag ){
+            if( yyaction == YYNOACTION ) {
+                switch( yyerrflag ) {
                 case 0:
                     yyerror( "syntax error" );
                     YYERROR;
@@ -114,7 +116,7 @@ yyerrlab:
                 case 1:
                 case 2:
                     yyerrflag = 3;
-                    while( yysp >= yys ){
+                    while( yysp >= yys ) {
                         yyaction = find_action( *yysp, YYERRTOKEN );
                         if( yyaction != YYNOACTION && yyaction < YYUSED ) {
                             *++yysp = yyaction;
@@ -133,8 +135,8 @@ yyerrlab:
                 }
             }
         }
-        if( yyaction < YYUSED ){
-            if( yyaction == YYSTOP ){
+        if( yyaction < YYUSED ) {
+            if( yyaction == YYSTOP ) {
                 YYACCEPT;
             }
             *++yysp = yyaction;
@@ -148,26 +150,26 @@ yyerrlab:
             yysp -= yyi;
             yyvp -= yyi;
             yylhs = yyplhstab[yypnum];
-            if( yysp < yys ){
+            if( yysp < yys ) {
                 printf( "stack underflow\n" );
                 YYABORT;
             }
             yyaction = find_action( *yysp, yylhs );
-            if( yyaction < YYUSED ){
+            if( yyaction == YYNOACTION ) {
                 printf( "missing nonterminal\n" );
                 YYABORT;
             }
-        }
-        *++yysp = yyaction;
-        ++yyvp;
+            *++yysp = yyaction;
+            ++yyvp;
 #ifdef AS_DEBUG_DUMP
-        dump_rule( yypnum );
+            dump_rule( yypnum );
 #endif
-        switch( yypnum ) {
+            switch( yypnum ) {
 
-        default:
-            yyval = yyvp[0];
+            default:
+                yyval = yyvp[0];
+            }
+            *yyvp = yyval;
         }
-        *yyvp = yyval;
     }
 }

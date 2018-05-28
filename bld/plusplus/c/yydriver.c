@@ -55,8 +55,6 @@ typedef uint_8          YYBITTYPE;
 typedef uint_8          YYPLENTYPE;
 typedef uint_16         YYPLHSTYPE;
 
-typedef yytokentype     YYTOKENTYPE;
-
 typedef union {
     inherit_flag        flags_inh;
     type_flag           flags_mod;

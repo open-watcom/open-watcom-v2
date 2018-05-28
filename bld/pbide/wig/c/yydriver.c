@@ -71,7 +71,7 @@ yynewact:
         if( yyaction == YYNOACTION ) {
             yyaction = find_action( *yysp, YYDEFTOKEN );
             if( yyaction == YYNOACTION ) {
-                switch( yyerrflag ){
+                switch( yyerrflag ) {
                 case 0:
                     yyerror( "syntax error" );
                     YYERROR;
@@ -79,7 +79,7 @@ yyerrlab:
                 case 1:
                 case 2:
                     yyerrflag = 3;
-                    while( yysp >= yys ){
+                    while( yysp >= yys ) {
                         yyaction = find_action( *yysp, YYERRTOKEN );
                         if( yyaction != YYNOACTION && yyaction < YYUSED ) {
                             *++yysp = yyaction;
@@ -98,8 +98,8 @@ yyerrlab:
                 }
             }
         }
-        if( yyaction < YYUSED ){
-            if( yyaction == YYSTOP ){
+        if( yyaction < YYUSED ) {
+            if( yyaction == YYSTOP ) {
                 YYACCEPT;
             }
             *++yysp = yyaction;

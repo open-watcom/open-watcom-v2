@@ -35,8 +35,6 @@
 #include "os2ytab.h"
 #include "scan.h"
 
-typedef yytokentype YYTOKENTYPE;
-
 extern YYTOKENTYPE  LookupKeywordOS2( ScanString newstring );
 extern YYTOKENTYPE  ScanOS2( ScanValue * value );
 

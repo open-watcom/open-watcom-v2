@@ -239,7 +239,7 @@ int yyparse( void )
     yyerrflag = 0;
     yysp = yys;
     yyvp = yyv;
-    *yysp = YYSTART ;
+    *yysp = YYSTART;
     yytoken = yylex();
     for( ;; ) {
 yynewact:
@@ -247,7 +247,7 @@ yynewact:
         if( yyaction == YYNOACTION ) {
             yyaction = find_action( *yysp, YYDEFTOKEN );
             if( yyaction == YYNOACTION ) {
-                switch( yyerrflag ){
+                switch( yyerrflag ) {
                 case 0:
                     yyerror( "syntax error" );
                     YYERROR;
@@ -274,8 +274,8 @@ yyerrlab:
                 }
             }
         }
-        if( yyaction < YYUSED ){
-            if( yyaction == YYSTOP ){
+        if( yyaction < YYUSED ) {
+            if( yyaction == YYSTOP ) {
                 YYACCEPT;
             }
             *++yysp = yyaction;
@@ -289,7 +289,7 @@ yyerrlab:
             yysp -= yyi;
             yyvp -= yyi;
             yylhs = yyplhstab[yypnum];
-            if( yysp < yys ){
+            if( yysp < yys ) {
                 printf( "stack underflow\n" );
                 YYABORT;
             }
@@ -300,7 +300,7 @@ yyerrlab:
             }
             *++yysp = yyaction;
             ++yyvp;
-            switch( yypnum ){
+            switch( yypnum ) {
 
             default:
                 yyval = yyvp[0];

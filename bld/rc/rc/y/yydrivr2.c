@@ -365,12 +365,12 @@ static p_action doParse( parse_stack *resource_state )
         what = doAction( yytoken, resource_state );
 
         if( what == P_SYNTAX ) {
-            handleError( token, resource_state, error_state );
+            handleError( yytoken, resource_state, error_state );
             error_state = true;
             yysyntaxerror = true;
             ErrorHasOccured = true;
             token_count = 0;
-        } else if( token == Y_INTEGER && yylval.intinfo.str != NULL ) {
+        } else if( yytoken == Y_INTEGER && yylval.intinfo.str != NULL ) {
             RcMemFree( yylval.intinfo.str );
             yylval.intinfo.str = NULL;
         }
