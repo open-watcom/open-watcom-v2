@@ -94,7 +94,7 @@ YYSTYPE yylval = {0};
 
 static void             actions( unsigned short production, YYSTYPE * yyvp );
 
-static YYACTTYPE find_action( unsigned base, YYCHKTYPE lookup )
+static YYACTTYPE find_action( YYACTTYPE yyk, YYTOKENTYPE yytoken )
 {
     packed_action YYFAR *       pack;
     packed_action YYFAR *       probe;
@@ -149,12 +149,12 @@ static YYACTTYPE find_default( unsigned base )
     return( action );
 }
 
-yyparse()
+int yyparse( void )
 {
     unsigned short production;
-    unsigned short action;
-    unsigned short token;
-    unsigned short yys[MAXDEPTH], *yysp;
+    YYACTTYPE action;
+    YYTOKENTYPE yytoken;
+    YYACTTYPE yys[MAXDEPTH], *yysp;
     YYSTYPE yyv[MAXDEPTH], *yyvp;
     unsigned short plen, lhs;
 #if !defined(OMIT_ERROR_RECOVERY)
@@ -165,13 +165,13 @@ yyparse()
     yysp = yys;
     yyvp = yyv;
     *yysp = YYSTART;
-    token = yylex();
+    yytoken = yylex();
     for(;;) {   /* parse loop */
         if( yysp >= &yys[MAXDEPTH-1] ) {
             yyerror( "parse stack overflow" );
             YYABORT;
         }
-        action = find_action( *yysp, token );
+        action = find_action( *yysp, yytoken );
         if( action == YYNOACTION ) {
             // No action -- look for default action
             action = find_default( *yysp );
@@ -188,7 +188,7 @@ yyerrlab:
                 case 1:
                 case 2:
                     yyerrflag = 3;
-                    for(;;) {
+                    for( ;; ) {
                         // Look for a shift rule for YYERRTOKEN
                         action = find_action( *yysp, YYERRTOKEN );
                         if( action != YYNOACTION && action < YYUSED ) {
@@ -204,10 +204,10 @@ yyerrlab:
                     ++yyvp;
                     continue;           /* Through parse loop again */
                 case 3:
-                    if( token == 0 ) {  /* EOF token */
+                    if( yytoken == YYEOFTOKEN ) {
                         YYABORT;
                     }
-                    token = yylex();
+                    yytoken = yylex();
                     continue;           /* Through parse loop again */
                 }
 #endif
@@ -224,7 +224,7 @@ yyerrlab:
             if( yyerrflag )
                 --yyerrflag;
 #endif
-            token = yylex();
+            yytoken = yylex();
         } else {
             // Reduce to production indicated by action
             // Production is

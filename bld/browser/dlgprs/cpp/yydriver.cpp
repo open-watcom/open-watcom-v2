@@ -58,8 +58,8 @@ int YYPARSER::yylex()
     return _scanner->getToken( yylval );
 }
 
-short YYPARSER::find_action( short yyk, short yytoken )
-//-----------------------------------------------------
+YYACTTYPE YYPARSER::find_action( YYACTTYPE yyk, YYTOKENTYPE yytoken )
+//-------------------------------------------------------------------
 {
     int     yyi;
 
@@ -76,10 +76,11 @@ int YYPARSER::yyparse()
 //---------------------
 {
     int yypnum;
-    int yyi, yylhs, yyaction;
-    int yytoken;
-    YYSTYPE yys[MAXDEPTH];
-    YYSTYPE *yysp;
+    int yyi, yylhs;
+    YYACTTYPE yyaction;
+    YYTOKENTYPE yytoken;
+    YYACTTYPE yys[MAXDEPTH];
+    YYACTTYPE *yysp;
     YYSTYPE yyv[MAXDEPTH];
     YYSTYPE *yyvp;
     int yyerrflag;
@@ -118,7 +119,7 @@ yyerrlab:
                     }
                     YYABORT;
                 case 3:
-                    if( yytoken == 0 ) /* EOF token */
+                    if( yytoken == YYEOFTOKEN )
                         YYABORT;
                     yytoken = yylex();
                     goto yynewact;

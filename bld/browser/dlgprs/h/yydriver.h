@@ -58,7 +58,7 @@ public:
             int                         yylex();
 private:
 
-            short                       find_action( short, short );
+            YYACTTYPE                   find_action( YYACTTYPE yyk, YYTOKENTYPE yytoken );
 
             Scanner *                   _scanner;
 

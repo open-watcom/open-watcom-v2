@@ -42,16 +42,14 @@ YYSTYPE yylval;
 #ifdef AS_DEBUG_DUMP
 static void dump_rule( unsigned rule )
 {
+  #if defined( _STANDALONE_ ) || defined( MYDEBUG )
     unsigned i;
-    const YYTOKENTYPE YYFAR *tok;
+    const YYTOKENTYPE YYFAR *yytoken;
     const char YYFAR *p;
 
     #ifdef _STANDALONE_
-    if( !_IsOption( DUMP_PARSE_TREE ) ) return;
-    #else
-    #ifndef MYDEBUG
-    return;
-    #endif // !MYDEBUG
+    if( !_IsOption( DUMP_PARSE_TREE ) )
+        return;
     #endif
     for( p = yytoknames[ yyplhstab[ rule ] ]; *p; ++p ) {
         putchar( *p );
@@ -59,19 +57,20 @@ static void dump_rule( unsigned rule )
     putchar( ' ' );
     putchar( '<' );
     putchar( '-' );
-    tok = &yyrhstoks[ yyrulebase[ rule ] ];
+    yytoken = &yyrhstoks[ yyrulebase[ rule ] ];
     for( i = yyplentab[ rule ]; i != 0; --i ) {
         putchar( ' ' );
-        for( p = yytoknames[ *tok ]; *p; ++p ) {
+        for( p = yytoknames[*yytoken]; *p; ++p ) {
             putchar( *p );
         }
-        ++tok;
+        ++yytoken;
     }
     putchar( '\n' );
+  #endif
 }
 #endif
 
-static short find_action( short yyk, short yytoken )
+static YYACTTYPE find_action( YYACTTYPE yyk, YYTOKENTYPE yytoken )
 {
     int     yyi;
 
@@ -87,9 +86,11 @@ static short find_action( short yyk, short yytoken )
 bool yyparse( void )
 {
     short yypnum;
-    short yyi, yylhs, yyaction;
-    short yytoken;
-    short yys[MAXDEPTH], *yysp;
+    short yyi;
+    short yylhs;
+    YYACTTYPE yyaction;
+    YYTOKENTYPE yytoken;
+    YYACTTYPE yys[MAXDEPTH], *yysp;
     YYSTYPE yyv[MAXDEPTH], *yyvp;
     short yyerrflag;
 
@@ -125,7 +126,7 @@ yyerrlab:
                     }
                     YYABORT;
                 case 3:
-                    if( yytoken == 0 ) /* EOF token */
+                    if( yytoken == YYEOFTOKEN )
                         YYABORT;
                     yytoken = yylex();
                     goto yynewact;

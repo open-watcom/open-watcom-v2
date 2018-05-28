@@ -73,7 +73,7 @@ YYSTYPE yyval, yylval;
 #define YYACCEPT        return(0)
 #define YYERROR         goto yyerrlab
 
-static short find_action( short yyk, short yytoken )
+static YYACTTYPE find_action( YYACTTYPE yyk, YYTOKENTYPE yytoken )
 {
     int     yyi;
 
@@ -89,9 +89,10 @@ static short find_action( short yyk, short yytoken )
 int yyparse( void )
 {
     short yypnum;
-    short yyi, yylhs, yyaction;
-    short yytoken;
-    short yys[MAXDEPTH], *yysp;
+    short yyi, yylhs;
+    YYACTTYPE yyaction;
+    YYTOKENTYPE yytoken;
+    YYACTTYPE yys[MAXDEPTH], *yysp;
     YYSTYPE yyv[MAXDEPTH], *yyvp;
     short yyerrflag;
 
@@ -130,7 +131,7 @@ yyerrlab:
                     }
                     YYABORT;
                 case 3:
-                    if( yytoken == 0 ) /* EOF token */
+                    if( yytoken == YYEOFTOKEN )
                         YYABORT;
                     yytoken = yylex();
                     continue;
