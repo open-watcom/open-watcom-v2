@@ -87,7 +87,7 @@ static short find_action( short yyk, short yytoken )
 bool yyparse( void )
 {
     short yypnum;
-    short yyi, yyk, yylhs, yyaction;
+    short yyi, yylhs, yyaction;
     short yytoken;
     short yys[MAXDEPTH], *yysp;
     YYSTYPE yyv[MAXDEPTH], *yyvp;

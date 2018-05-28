@@ -229,7 +229,6 @@ static p_action doAction( YYCHKTYPE t, parse_stack *state )
 {
     YYSTYPE yyval = { 0 };
     YYSTYPE *yyvp;
-    YYACTTYPE yyk;
     YYACTTYPE yyi;
     YYACTTYPE yyaction;
     YYACTTYPE rule;

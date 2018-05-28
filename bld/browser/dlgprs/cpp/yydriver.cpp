@@ -76,7 +76,7 @@ int YYPARSER::yyparse()
 //---------------------
 {
     int yypnum;
-    int yyi, yyk, yylhs, yyaction;
+    int yyi, yylhs, yyaction;
     int yytoken;
     YYSTYPE yys[MAXDEPTH];
     YYSTYPE *yysp;
