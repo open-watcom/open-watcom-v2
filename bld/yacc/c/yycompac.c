@@ -77,12 +77,6 @@ typedef struct packed_action {
 #define YYSTYPE         int
 #endif
 
-#ifndef __TURBOC__
-YYSTYPE yylval = {0};
-#else
-YYSTYPE yylval;
-#endif
-
 #define yyerrok         yyerrflag = 0
 #define yyclearin       token = yyscan()
 
@@ -96,6 +90,8 @@ YYSTYPE yylval;
 #define YYERROR         goto yyerrlab
 #endif
 
+YYSTYPE yylval = {0};
+
 static void             actions( unsigned short production, YYSTYPE * yyvp );
 
 static YYACTTYPE find_action( unsigned base, YYCHKTYPE lookup )
@@ -106,7 +102,7 @@ static YYACTTYPE find_action( unsigned base, YYCHKTYPE lookup )
 
     // yychktab[base] is parent + YYPARENT
     // yyacttab[base] is default reduction
-    for(;;) {   // Chase up through parent productions
+    for( ;; ) {     // Chase up through parent productions
         pack = yyacttab + base;
 #if !defined(OMIT_ERROR_RECOVER)
         if( _check( *pack ) < YYPARENT ) {
@@ -116,7 +112,8 @@ static YYACTTYPE find_action( unsigned base, YYCHKTYPE lookup )
 #endif
         for( probe = pack + 1; ; ++probe ) {
             check = _check( *probe );
-            if( check >= YYPARENT ) break;
+            if( check >= YYPARENT )
+                break;
             if( check == lookup ) {
                 return( _action( *probe ) );
             }
@@ -135,11 +132,13 @@ static YYACTTYPE find_default( unsigned base )
     packed_action YYFAR *       pack;
     YYACTTYPE                   action;
 
-    for(;;) {
+    for( ;; ) {
         pack = yyacttab + base;
         action = _action( *pack );
-        if( action >= YYUSED ) break;           // Found a reduction
-        if( action == YYNOACTION ) break;       // Default is error
+        if( action >= YYUSED )
+            break;                              // Found a reduction
+        if( action == YYNOACTION )
+            break;                              // Default is error
         // Check parent production for default
         base = _check( *pack ) - YYPARENT;
         if( base == YYUSED ) {
@@ -183,9 +182,9 @@ yyparse()
 #else
                 // No default action either -- error!
                 switch( yyerrflag ) {
-                  case 0:
+                case 0:
                     yyerror( "syntax error" );
-                    yyerrlab:
+yyerrlab:
                 case 1:
                 case 2:
                     yyerrflag = 3;
@@ -218,15 +217,14 @@ yyparse()
             // Shift to new state 'action'
             if( action == YYSTOP ) {
                 YYACCEPT;
-            } else {
-                *++yysp = action;
-                *++yyvp = yylval;
-#if !defined(OMIT_ERROR_RECOVERY)
-                if( yyerrflag )
-                    --yyerrflag;
-#endif
-                token = yylex();
             }
+            *++yysp = action;
+            *++yyvp = yylval;
+#if !defined(OMIT_ERROR_RECOVERY)
+            if( yyerrflag )
+                --yyerrflag;
+#endif
+            token = yylex();
         } else {
             // Reduce to production indicated by action
             // Production is

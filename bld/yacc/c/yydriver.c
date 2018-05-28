@@ -73,6 +73,19 @@ YYSTYPE yyval, yylval;
 #define YYACCEPT        return(0)
 #define YYERROR         goto yyerrlab
 
+static short find_action( short yyk, short yytoken )
+{
+    int     yyi;
+
+    while( (yyi = yyk + yytoken) < 0 || yyi >= YYUSED || yychktab[yyi] != yytoken ) {
+        if( (yyi = yyk + YYPARTOKEN) < 0 || yyi >= YYUSED || yychktab[yyi] != YYPARTOKEN ) {
+            return( YYNOACTION );
+        }
+        yyk = yyacttab[yyi];
+    }
+    return( yyacttab[yyi] );
+}
+
 int yyparse( void )
 {
     short yypnum;
@@ -87,57 +100,31 @@ int yyparse( void )
     yyvp = yyv;
     *yysp = YYSTART;
     yytoken = yylex();
-    for(;;) {
+    for( ;; ) {
 yynewact:
         if( yysp >= &yys[MAXDEPTH - 1] ) {
             yyerror( "parse stack overflow" );
             YYABORT;
         }
-        yyk = *yysp;
-        while( (yyi = yyk + yytoken) < 0 || yyi >= YYUSED || yychktab[yyi] != yytoken ) {
-            if( (yyi = yyk + YYPARTOKEN) < 0 || yyi >= YYUSED || yychktab[yyi] != YYPARTOKEN ) {
-                goto yycheck1;
-            } else {
-                yyk = yyacttab[yyi];
-            }
-        }
-        yyaction = yyacttab[yyi];
+        yyaction = find_action( *yysp, yytoken );
         if( yyaction == YYNOACTION ) {
-yycheck1:
-            yyk = *yysp;
-            while( (yyi = yyk + YYDEFTOKEN) < 0 || yyi >= YYUSED || yychktab[yyi] != YYDEFTOKEN ) {
-                if( (yyi = yyk + YYPARTOKEN) < 0 || yyi >= YYUSED || yychktab[yyi] != YYPARTOKEN ) {
-                    goto yycheck2;
-                } else {
-                    yyk = yyacttab[yyi];
-                }
-            }
-            yyaction = yyacttab[yyi];
+            yyaction = find_action( *yysp, YYDEFTOKEN );
             if( yyaction == YYNOACTION ) {
-yycheck2:
                 switch( yyerrflag ) {
                 case 0:
                     yyerror( "syntax error" );
-                    yyerrlab:
+                    YYERROR;
+yyerrlab:
                 case 1:
                 case 2:
                     yyerrflag = 3;
                     while( yysp >= yys ) {
-                        yyk = *yysp;
-                        while( (yyi = yyk + YYERRTOKEN) < 0 || yyi >= YYUSED || yychktab[yyi] != YYERRTOKEN ) {
-                            if( (yyi = yyk + YYPARTOKEN) < 0 || yyi >= YYUSED || yychktab[yyi] != YYPARTOKEN ) {
-                                goto continu;
-                            } else {
-                                yyk = yyacttab[yyi];
-                            }
-                        }
-                        yyaction = yyacttab[yyi];
-                        if( yyaction < YYUSED ) {
+                        yyaction = find_action( *yysp, YYERRTOKEN );
+                        if( yyaction != YYNOACTION && yyaction < YYUSED ) {
                             *++yysp = yyaction;
                             ++yyvp;
                             goto yynewact;
                         }
-continu:;
                         --yysp;
                         --yyvp;
                     }
@@ -153,13 +140,12 @@ continu:;
         if( yyaction < YYUSED ) {
             if( yyaction == YYSTOP ) {
                 YYACCEPT;
-            } else {
-                *++yysp = yyaction;
-                *++yyvp = yylval;
-                if( yyerrflag )
-                    --yyerrflag;
-                yytoken = yylex();
             }
+            *++yysp = yyaction;
+            *++yyvp = yylval;
+            if( yyerrflag )
+                --yyerrflag;
+            yytoken = yylex();
         } else {
             yypnum = yyaction - YYUSED;
             yyi = yyplentab[yypnum];
@@ -170,15 +156,12 @@ continu:;
                 printf( "stack underflow\n" );
                 YYABORT;
             }
-            yyk = *yysp;
-            while( (yyi = yyk + yylhs) < 0 || yyi >= YYUSED || yychktab[yyi] != yylhs ) {
-                if( (yyi = yyk + YYPARTOKEN) < 0 || yyi >= YYUSED || yychktab[yyi] != YYPARTOKEN ) {
-                    printf( "missing nonterminal\n" );
-                    YYABORT;
-                }
-                yyk = yyacttab[yyi];
+            yyaction = find_action( *yysp, yylhs );
+            if( yyaction == YYNOACTION ) {
+                printf( "missing nonterminal\n" );
+                YYABORT;
             }
-            *++yysp = yyacttab[yyi];
+            *++yysp = yyaction;
             ++yyvp;
             switch( yypnum ) {
 

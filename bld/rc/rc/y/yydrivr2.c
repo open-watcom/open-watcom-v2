@@ -148,6 +148,7 @@ static void dump_rule( unsigned rule )
         RcMsgFprintf( NULL, "\n" );
     }
 }
+
 static void puts_far( const char YYFAR *string )
 {
     const char YYFAR            *p;
@@ -211,6 +212,19 @@ static YYTOKENTYPE yylexOS2( void )
     return( curtoken );
 }
 
+static short find_action( short yyk, short yytoken )
+{
+    int     yyi;
+
+    while( (yyi = yyk + yytoken) < 0 || yyi >= YYUSED || yychktab[yyi] != yytoken ) {
+        if( (yyi = yyk + YYPARTOKEN) < 0 || yyi >= YYUSED || yychktab[yyi] != YYPARTOKEN ) {
+            return( YYNOACTION );
+        }
+        yyk = yyacttab[yyi];
+    }
+    return( yyacttab[yyi] );
+}
+
 static p_action doAction( YYCHKTYPE t, parse_stack *state )
 {
     YYSTYPE yyval = { 0 };
@@ -221,31 +235,10 @@ static p_action doAction( YYCHKTYPE t, parse_stack *state )
     YYACTTYPE rule;
     YYCHKTYPE yylhs;
 
-    for(;;) {
-        yyk = *(state->ssp);
-        yyi = yyk + t;
-        while( yyi >= YYUSED || yychktab[yyi] != t ) {
-            yyi = yyk + YYPARTOKEN;
-            if( yyi >= YYUSED || yychktab[yyi] != YYPARTOKEN ) {
-                goto use_d_token;
-            }
-            yyk = yyacttab[yyi];
-            yyi = yyk + t;
-        }
-        yyaction = yyacttab[yyi];
+    for( ;; ) {
+        yyaction = find_action( *(state->ssp), t );
         if( yyaction == YYNOACTION ) {
-    use_d_token:
-            yyk = *(state->ssp);
-            yyi = yyk + YYDEFTOKEN;
-            while( yyi >= YYUSED || yychktab[yyi] != YYDEFTOKEN ) {
-                yyi = yyk + YYPARTOKEN;
-                if( yyi >= YYUSED || yychktab[yyi] != YYPARTOKEN ) {
-                    return( P_SYNTAX );
-                }
-                yyk = yyacttab[yyi];
-                yyi = yyk + YYDEFTOKEN;
-            }
-            yyaction = yyacttab[yyi];
+            yyaction = find_action( *(state->ssp), YYDEFTOKEN );
             if( yyaction == YYNOACTION ) {
                 return( P_SYNTAX );
             }
@@ -271,43 +264,23 @@ static p_action doAction( YYCHKTYPE t, parse_stack *state )
             return( P_ERROR );
         }
         yylhs = yyplhstab[rule];
-        yyk = *(state->ssp);
-        yyi = yyk + yylhs;
-        while( yyi >= YYUSED || yychktab[yyi] != yylhs ) {
-            yyi = yyk + YYPARTOKEN;
-            if( yyi >= YYUSED || yychktab[yyi] != YYPARTOKEN ) {
-                return( P_ERROR );
-            }
-            yyk = yyacttab[yyi];
-            yyi = yyk + yylhs;
+        yyaction = find_action( *(state->ssp), yylhs );
+        if( yyaction == YYNOACTION ) {
+            return( P_ERROR );
         }
-        state->ssp++;
-        *(state->ssp) = yyacttab[yyi];
-#if 0                                   /*** change with new yacc */
-        yyvp = state->vsp;
-#else
+        *++(state->ssp) = yyaction;
         yyvp = ++(state->vsp);
-#endif
 #ifdef YYDEBUG
         dump_rule( rule );
 #endif
         if( !yysyntaxerror ) {
             switch( rule ) {
-            /*  */
-/* */
+
             default:
-#if 0                                   /*** change with new yacc */
-                yyval = yyvp[1];
-#else
                 yyval = yyvp[0];
-#endif
             }
         }
-#if 0                               /*** change with new yacc **/
-        state->vsp++;
-#endif
         *(state->vsp) = yyval;
-        /* reduce as far as possible */
     }
 }
 

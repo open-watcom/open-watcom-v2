@@ -58,6 +58,8 @@ public:
             int                         yylex();
 private:
 
+            short                       find_action( short, short );
+
             Scanner *                   _scanner;
 
             YYSTYPE                     yyval;

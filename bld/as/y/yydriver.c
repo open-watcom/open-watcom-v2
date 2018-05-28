@@ -37,9 +37,7 @@ YYSTYPE yylval;
 
 #define YYABORT         return(true)
 #define YYACCEPT        return(false)
-#ifdef _STANDALONE_
 #define YYERROR         goto yyerrlab
-#endif
 
 #ifdef AS_DEBUG_DUMP
 static void dump_rule( unsigned rule )
@@ -73,115 +71,102 @@ static void dump_rule( unsigned rule )
 }
 #endif
 
+static short find_action( short yyk, short yytoken )
+{
+    int     yyi;
+
+    while( (yyi = yyk + yytoken) < 0 || yyi >= YYUSED || yychktab[yyi] != yytoken ) {
+        if( (yyi = yyk + YYPARTOKEN) < 0 || yyi >= YYUSED || yychktab[yyi] != YYPARTOKEN ) {
+            return( YYNOACTION );
+        }
+        yyk = yyacttab[yyi];
+    }
+    return( yyacttab[yyi] );
+}
+
 bool yyparse( void )
 {
-  short yypnum;
-  short yyi, yyk, yylhs, yyaction;
-  short yytoken;
-  short yys[MAXDEPTH], *yysp;
-  YYSTYPE yyv[MAXDEPTH], *yyvp;
-  short yyerrflag;
+    short yypnum;
+    short yyi, yyk, yylhs, yyaction;
+    short yytoken;
+    short yys[MAXDEPTH], *yysp;
+    YYSTYPE yyv[MAXDEPTH], *yyvp;
+    short yyerrflag;
 
-  yyerrflag = 0;
-  yyaction = 0;
-  yysp = yys;
-  yyvp = yyv;
-  *yysp = YYSTART;
-  yytoken = yylex();
-  for(;;){
+    yyerrflag = 0;
+    yyaction = 0;
+    yysp = yys;
+    yyvp = yyv;
+    *yysp = YYSTART;
+    yytoken = yylex();
+    for( ;; ) {
 yynewact:
-      yyk = *yysp;
-      while( (yyi = yyk + yytoken) < 0 || yyi >= YYUSED || yychktab[yyi] != yytoken )
-          if( (yyi = yyk + YYPARTOKEN) < 0 || yyi >= YYUSED || yychktab[yyi] != YYPARTOKEN )
-              goto yycheck1;
-          else
-              yyk = yyacttab[yyi];
-      yyaction = yyacttab[yyi];
-      if( yyaction == YYNOACTION ){
-yycheck1:
-          yyk = *yysp;
-          while( (yyi = yyk + YYDEFTOKEN) < 0 || yyi >= YYUSED || yychktab[yyi] != YYDEFTOKEN )
-              if( (yyi = yyk + YYPARTOKEN) < 0 || yyi >= YYUSED || yychktab[yyi] != YYPARTOKEN )
-                  goto yycheck2;
-              else
-                  yyk = yyacttab[yyi];
-          yyaction = yyacttab[yyi];
-          if( yyaction == YYNOACTION ){
-yycheck2:
-              switch( yyerrflag ){
+        yyaction = find_action( *yysp, yytoken );
+        if( yyaction == YYNOACTION ){
+            yyaction = find_action( *yysp, YYDEFTOKEN );
+            if( yyaction == YYNOACTION ){
+                switch( yyerrflag ){
                 case 0:
-                  yyerror( "syntax error" );
-#ifdef _STANDALONE_
-                  yyerrlab:
-#endif
+                    yyerror( "syntax error" );
+                    YYERROR;
+yyerrlab:
                 case 1:
                 case 2:
-                  yyerrflag = 3;
-                  while( yysp >= yys ){
-                      yyk = *yysp;
-                      while( (yyi = yyk + YYERRTOKEN) < 0 || yyi >= YYUSED || yychktab[yyi] != YYERRTOKEN )
-                          if( (yyi = yyk + YYPARTOKEN) < 0 || yyi >= YYUSED || yychktab[yyi] != YYPARTOKEN )
-                              goto continu;
-                          else
-                              yyk = yyacttab[yyi];
-                      yyaction = yyacttab[yyi];
-                      if( yyaction < YYUSED ){
-                          *++yysp = yyaction;
-                          ++yyvp;
-                          goto yynewact;
-                      };
-                      continu:;
-                      --yysp;
-                      --yyvp;
-                  };
-                  YYABORT;
+                    yyerrflag = 3;
+                    while( yysp >= yys ){
+                        yyaction = find_action( *yysp, YYERRTOKEN );
+                        if( yyaction != YYNOACTION && yyaction < YYUSED ) {
+                            *++yysp = yyaction;
+                            ++yyvp;
+                            goto yynewact;
+                        }
+                        --yysp;
+                        --yyvp;
+                    }
+                    YYABORT;
                 case 3:
-                  if( yytoken == 0 ) /* EOF token */
-                      YYABORT;
-                  yytoken = yylex();
-                  goto yynewact;
-              };
-          };
-      };
-      if( yyaction < YYUSED ){
-          if( yyaction == YYSTOP ){
-              YYACCEPT;
-          } else {
-              *++yysp = yyaction;
-              *++yyvp = yylval;
-              if( yyerrflag )
-                  --yyerrflag;
-              yytoken = yylex();
-          };
-      } else {
-          yypnum = yyaction - YYUSED;
-          yyi = yyplentab[yypnum];
-          yysp -= yyi;
-          yyvp -= yyi;
-          yylhs = yyplhstab[yypnum];
-          if( yysp < yys ){
-              printf( "stack underflow\n" );
-              YYABORT;
-          };
-          yyk = *yysp;
-          while( (yyi = yyk + yylhs) < 0 || yyi >= YYUSED || yychktab[yyi] != yylhs ){
-              if( (yyi = yyk + YYPARTOKEN) < 0 || yyi >= YYUSED || yychktab[yyi] != YYPARTOKEN ){
-                  printf( "missing nonterminal\n" );
-                  YYABORT;
-              };
-              yyk = yyacttab[yyi];
-          };
-          *++yysp = yyacttab[yyi];
-          ++yyvp;
+                    if( yytoken == 0 ) /* EOF token */
+                        YYABORT;
+                    yytoken = yylex();
+                    goto yynewact;
+                }
+            }
+        }
+        if( yyaction < YYUSED ){
+            if( yyaction == YYSTOP ){
+                YYACCEPT;
+            }
+            *++yysp = yyaction;
+            *++yyvp = yylval;
+            if( yyerrflag )
+                --yyerrflag;
+            yytoken = yylex();
+        } else {
+            yypnum = yyaction - YYUSED;
+            yyi = yyplentab[yypnum];
+            yysp -= yyi;
+            yyvp -= yyi;
+            yylhs = yyplhstab[yypnum];
+            if( yysp < yys ){
+                printf( "stack underflow\n" );
+                YYABORT;
+            }
+            yyaction = find_action( *yysp, yylhs );
+            if( yyaction < YYUSED ){
+                printf( "missing nonterminal\n" );
+                YYABORT;
+            }
+        }
+        *++yysp = yyaction;
+        ++yyvp;
 #ifdef AS_DEBUG_DUMP
-          dump_rule( yypnum );
+        dump_rule( yypnum );
 #endif
-          switch( yypnum ){
+        switch( yypnum ) {
 
-            default:
-              yyval = yyvp[0];
-          };
-          *yyvp = yyval;
-      };
-  };
+        default:
+            yyval = yyvp[0];
+        }
+        *yyvp = yyval;
+    }
 }
