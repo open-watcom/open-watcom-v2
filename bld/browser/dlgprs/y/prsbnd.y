@@ -14,6 +14,7 @@
 
     #define xtokens tokens_bnd
     #define xtokcnt tokcnt_bnd
+    #define xfind   find_action_bnd
 %}
 
 %token T_String

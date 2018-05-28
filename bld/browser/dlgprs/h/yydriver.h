@@ -38,12 +38,6 @@
 
 #include "scancm.h"
 
-#define YYTABTYPE       int_16
-#define YYCHKTYPE       YYTABTYPE
-#define YYACTTYPE       YYTABTYPE
-#define YYPLENTYPE      YYTABTYPE
-#define YYPLHSTYPE      YYTABTYPE
-
 
 class Scanner;
 
@@ -58,15 +52,8 @@ public:
             int                         yylex();
 private:
 
-            YYACTTYPE                   find_action( YYACTTYPE yyk, YYTOKENTYPE yytoken );
-
             Scanner *                   _scanner;
 
             YYSTYPE                     yyval;
             YYSTYPE                     yylval;
-
-static      const YYCHKTYPE YYFAR       yychktab[];
-static      const YYACTTYPE YYFAR       yyactab[];
-static      const YYPLENTYPE YYFAR      yyplentab[];
-static      const YYPLHSTYPE YYFAR      yyplhstab[];
 };

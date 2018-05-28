@@ -3,10 +3,10 @@
 
 #include "scanner.h"
 
-#define yychktab    YYPARSER::yychktab
-#define yyacttab    YYPARSER::yyactab
-#define yyplentab   YYPARSER::yyplentab
-#define yyplhstab   YYPARSER::yyplhstab
+#define YYCHKTYPE       int_16
+#define YYACTTYPE       int_16
+#define YYPLENTYPE      int_16
+#define YYPLHSTYPE      int_16
 
 
 
@@ -58,8 +58,7 @@ int YYPARSER::yylex()
     return _scanner->getToken( yylval );
 }
 
-YYACTTYPE YYPARSER::find_action( YYACTTYPE yyk, YYTOKENTYPE yytoken )
-//-------------------------------------------------------------------
+static YYACTTYPE xfind( YYACTTYPE yyk, YYTOKENTYPE yytoken )
 {
     int     yyi;
 
@@ -95,9 +94,9 @@ int YYPARSER::yyparse()
     yytoken = yylex();
     for( ;; ) {
 yynewact:
-        yyaction = find_action( *yysp, yytoken );
+        yyaction = xfind( *yysp, yytoken );
         if( yyaction == YYNOACTION ) {
-            yyaction = find_action( *yysp, YYDEFTOKEN );
+            yyaction = xfind( *yysp, YYDEFTOKEN );
             if( yyaction == YYNOACTION ) {
                 switch( yyerrflag ) {
                 case 0:
@@ -108,7 +107,7 @@ yyerrlab:
                 case 2:
                     yyerrflag = 3;
                     while( yysp >= yys ) {
-                        yyaction = find_action( *yysp, YYERRTOKEN );
+                        yyaction = xfind( *yysp, YYERRTOKEN );
                         if( yyaction != YYNOACTION && yyaction < YYUSED ) {
                             *++yysp = yyaction;
                             ++yyvp;
@@ -145,7 +144,7 @@ yyerrlab:
                 yyerror( "stack underflow\n" );
                 YYABORT;
             }
-            yyaction = find_action( *yysp, yylhs );
+            yyaction = xfind( *yysp, yylhs );
             if( yyaction == YYNOACTION ) {
                 yyerror( "missing nonterminal\n" );
                 YYABORT;
