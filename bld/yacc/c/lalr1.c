@@ -333,8 +333,7 @@ static void resolve( a_state *x, set_size *work, a_reduce_action **reduce )
 
     w = work;
     for( rx = x->redun; rx->pro != NULL; ++rx ) {
-        for( mp = Members( rx->follow ); mp != setmembers; ) {
-            --mp;
+        for( mp = Members( rx->follow ); mp-- != setmembers; ) {
             if( reduce[*mp] != NULL ) {
                 prevprec = reduce[*mp]->pro->prec;
                 proprec = rx->pro->prec;
@@ -559,8 +558,7 @@ void showstate( a_state *x )
     putchar( '\n' );
     col = 0;
     for( rx = x->redun; rx->pro != NULL; ++rx ) {
-        for( mp = Members( rx->follow ); mp != setmembers; ) {
-            --mp;
+        for( mp = Members( rx->follow ); mp-- != setmembers; ) {
             new_col = col + 1 + strlen( symtab[*mp]->name );
             if( new_col > 79 ) {
                 putchar('\n');

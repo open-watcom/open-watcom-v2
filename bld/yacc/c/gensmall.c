@@ -113,7 +113,7 @@ static void dump_reduction( a_reduce_action *rx, unsigned *base )
     set_size *mp;
 
     pro = rx->pro;
-    for( mp = Members( rx->follow ); --mp >= setmembers; ) {
+    for( mp = Members( rx->follow ); mp-- != setmembers; ) {
         add_table( *mp, ACTION_REDUCE | pro->pidx );
         ++(*base);
     }
@@ -137,7 +137,8 @@ void genobj( FILE *fp )
     an_item *item;
     unsigned max;
     unsigned sum;
-    unsigned savings;
+    set_size savings;
+    set_size max_savings;
     unsigned base;
     unsigned rule_base;
     short *state_base;
@@ -162,19 +163,18 @@ void genobj( FILE *fp )
             ++base;
         }
         default_reduction = NULL;
-        savings = 0;
+        max_savings = 0;
         for( rx = x->redun; rx->pro != NULL; ++rx ) {
-            mp = Members( rx->follow );
-            if( mp != setmembers ) {
-                if( mp - setmembers > savings ) {
-                    savings = mp - setmembers;
-                    if( default_reduction != NULL ) {
-                        dump_reduction( default_reduction, &base );
-                    }
-                    default_reduction = rx;
-                } else {
-                    dump_reduction( rx, &base );
+            if( (savings = Members( rx->follow ) - setmembers) == 0 )
+                continue;
+            if( max_savings < savings ) {
+                max_savings = savings;
+                if( default_reduction != NULL ) {
+                    dump_reduction( default_reduction, &base );
                 }
+                default_reduction = rx;
+            } else {
+                dump_reduction( rx, &base );
             }
         }
         if( default_reduction != NULL ) {

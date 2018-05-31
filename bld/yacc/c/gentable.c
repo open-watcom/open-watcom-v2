@@ -182,7 +182,11 @@ void genobj( FILE *fp )
     a_shift_action *tx;
     a_reduce_action *rx;
     index_n     i, j;
-    set_size    savings, min, *size;
+    set_size    max_savings;
+    set_size    savings;
+    set_size    min_len;
+    set_size    len;
+    set_size    *size;
     set_size    shift;
     token_n     parent_base;
     unsigned    num_default, num_parent;
@@ -233,28 +237,28 @@ void genobj( FILE *fp )
             *q++ = sym->token;
             actions[sym->token] = tx->state->sidx;
         }
-        savings = 0;
+        max_savings = 0;
         for( rx = x->redun; (pro = rx->pro) != NULL; ++rx ) {
+            if( (savings = (set_size)((mp = Members( rx->follow )) - setmembers)) == 0 )
+                continue;
             redun = pro->pidx + nstate;
-            mp = Members( rx->follow );
-            if( (set_size)( mp - setmembers ) > savings ) {
-                savings = (set_size)( mp - setmembers );
+            if( max_savings < savings ) {
+                max_savings = savings;
                 r = q;
             }
-            while( mp != setmembers ) {
-                --mp;
+            while( mp-- != setmembers ) {
                 tokval = symtab[*mp]->token;
                 *q++ = tokval;
                 actions[tokval] = redun;
             }
         }
-        if( savings ) {
+        if( max_savings ) {
             actval = actions[*r];
             other[i] = actval;
             *q++ = dtoken;
             actions[dtoken] = actval;
             p = r;
-            while( savings-- > 0 )
+            while( max_savings-- > 0 )
                 actions[*p++] = error;
             while( p < q )
                 *r++ = *p++;
@@ -264,11 +268,11 @@ void genobj( FILE *fp )
             other[i] = error;
         }
         r = q;
-        min = (set_size)( q - tokens );
-        size[i] = min;
+        min_len = (set_size)( q - tokens );
+        size[i] = min_len;
         parent[i] = nstate;
         for( j = nstate; --j > i; ) {
-            if( abs( size[j] - size[i] ) < min ) {
+            if( abs( size[j] - size[i] ) < min_len ) {
                 x = statetab[j];
                 p = test;
                 q = test + ntoken;
@@ -283,8 +287,7 @@ void genobj( FILE *fp )
                     redun = pro->pidx + nstate;
                     if( redun == other[j] )
                         redun = error;
-                    for( mp = Members( rx->follow ); mp != setmembers; ) {
-                        --mp;
+                    for( mp = Members( rx->follow ); mp-- != setmembers; ) {
                         tokval = symtab[*mp]->token;
                         if( actions[tokval] == redun ) {
                             *p++ = tokval;
@@ -300,9 +303,9 @@ void genobj( FILE *fp )
                         *--q = dtoken;
                     }
                 }
-                savings = (set_size)( size[i] + size[j] - 2 * ( p - test ) );
-                if( savings < min ) {
-                    min = savings;
+                len = (set_size)( size[i] + size[j] - 2 * ( p - test ) );
+                if( min_len > len ) {
+                    min_len = len;
                     same = p;
                     diff = q;
                     s = test; test = best; best = s;
@@ -310,7 +313,7 @@ void genobj( FILE *fp )
                 }
             }
         }
-        if( min >= size[i] ) {
+        if( min_len >= size[i] ) {
             s = r;
         } else {
             ++num_parent;

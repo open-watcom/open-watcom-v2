@@ -309,8 +309,10 @@ void genobj( FILE *fp )
     a_state *x;
     a_shift_action *tx;
     a_reduce_action *rx;
-    int i, j, savings, max, ntoken, dtoken, ptoken;
+    int i, j, ntoken, dtoken, ptoken;
     unsigned num_default, num_parent;
+    set_size max_savings;
+    set_size savings;
 
     num_default = num_parent = 0;
     ntoken = FirstNonTerminalTokenValue();
@@ -344,29 +346,28 @@ void genobj( FILE *fp )
             *q++ = tokval;
             actions[tokval] = tx->state->sidx;
         }
-        savings = 0;
+        max_savings = 0;
         for( rx = x->redun; (pro = rx->pro) != NULL; ++rx ) {
+            if( (savings = (mp = Members( rx->follow )) - setmembers) == 0 )
+                continue;
             redun = pro->pidx + nstate;
-            mp = Members( rx->follow );
-            if( mp - setmembers > savings ) {
-                savings = mp - setmembers;
+            if( max_savings < savings ) {
+                max_savings = savings;
                 r = q;
             }
-            if( mp - setmembers ) {
-                protab[pro->pidx]->used = true;
-            }
-            while( --mp >= setmembers ) {
+            protab[pro->pidx]->used = true;
+            while( mp-- != setmembers ) {
                 tokval = symtab[*mp]->token;
                 *q++ = tokval;
                 actions[tokval] = redun;
             }
         }
-        if( savings ) {
+        if( max_savings ) {
             tokval = other[i] = actions[*r];
             *q++ = dtoken;
             actions[dtoken] = tokval;
             p = r;
-            while( --savings >= 0 )
+            while( max_savings-- > 0 )
                 actions[*p++] = error;
             while( p < q )
                 *r++ = *p++;
@@ -377,7 +378,7 @@ void genobj( FILE *fp )
         }
         r = q;
         size[i] = r - token;
-        max = 0;
+        max_savings = 0;
         parent[i] = nstate;
         for( j = nstate; --j > i; ) {
             // FOR NOW -- only use parent if no default here or same default
@@ -400,7 +401,7 @@ void genobj( FILE *fp )
                 if( (redun = pro->pidx + nstate) == other[j] )
                     redun = error;
                 redun = pro->pidx + nstate;
-                for( mp = Members( rx->follow ); --mp >= setmembers; ) {
+                for( mp = Members( rx->follow ); mp-- != setmembers; ) {
                     tokval = symtab[*mp]->token;
                     if( actions[tokval] == redun ) {
                         ++savings;
@@ -421,8 +422,7 @@ void genobj( FILE *fp )
                 }
             }
 #if 0
-            printf( "state %d calling state %d saves %d:",
-                        i, j, savings );
+            printf( "state %d calling state %d saves %d:", i, j, savings );
             for( s = test; s < p; ++s ) {
                 print_token( *s );
             }
@@ -434,15 +434,15 @@ void genobj( FILE *fp )
             }
             printf( "\n" );
 #endif
-            if( savings > max ) {
-                max = savings;
+            if( max_savings < savings ) {
+                max_savings = savings;
                 same = p;
                 diff = q;
                 s = test;  test = best;  best = s;
                 parent[i] = j;
             }
         }
-        if( max < 1 ) { // Could raise threshold for performance
+        if( max_savings < 1 ) { // Could raise threshold for performance
             s = r;
         } else {
             ++num_parent;

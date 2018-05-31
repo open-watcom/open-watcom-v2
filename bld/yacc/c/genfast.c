@@ -395,8 +395,7 @@ void GenFastTables( FILE *fp )
         for( raction = state->redun; (pro = raction->pro) != NULL; ++raction ) {
             if( state->default_reduction == raction )
                 continue;
-            for( mp = Members( raction->follow ); mp != setmembers; ) {
-                --mp;
+            for( mp = Members( raction->follow ); mp-- != setmembers; ) {
                 tokval = symtab[*mp]->token;
                 state_vector[tokval >> 3] |= 1 << ( tokval & 0x07 );
             }
@@ -431,8 +430,7 @@ void GenFastTables( FILE *fp )
                 defaction[i] = reduceaction( state, raction );
                 continue;
             }
-            for( mp = Members( raction->follow ); mp != setmembers; ) {
-                --mp;
+            for( mp = Members( raction->follow ); mp-- != setmembers; ) {
                 state_actions[symtab[*mp]->token] = reduceaction( state, raction );
             }
         }

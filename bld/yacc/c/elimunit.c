@@ -79,8 +79,7 @@ void dumpInternalState( a_state *x )
     putchar( '\n' );
     col = 0;
     for( rx = x->redun; rx->pro != NULL; ++rx ) {
-        for( mp = Members( rx->follow ); mp != setmembers; ) {
-            --mp;
+        for( mp = Members( rx->follow ); mp-- != setmembers; ) {
             new_col = col + 1 + strlen( symtab[*mp]->name );
             if( new_col > 79 ) {
                 putchar('\n');
@@ -339,8 +338,7 @@ static int immediateShift( a_state *state, a_reduce_action *raction, a_pro *pro 
     follow = raction->follow;
     unit_lhs = pro->sym;
     change_occurred = 0;
-    for( mp = Members( follow ); mp != setmembers; ) {
-        --mp;
+    for( mp = Members( follow ); mp-- != setmembers; ) {
         term_sym = symtab[*mp];
         check_state = NULL;
         for( parent = state->parents; parent != NULL; parent = parent->next ) {
