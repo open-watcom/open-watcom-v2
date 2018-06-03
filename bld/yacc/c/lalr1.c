@@ -243,25 +243,25 @@ static a_pro *extract_pro( an_item *p )
 
 static void check_for_user_hooks( a_state *state, a_shift_action *saction, index_n rule )
 {
-    int                 min_max_set;
-    int                 all_match;
-    unsigned            min;
-    unsigned            max;
-    unsigned            index;
+    bool                min_max_set;
+    bool                all_match;
+    conflict_id         min_id;
+    conflict_id         max_id;
+    conflict_id         id;
     an_item             **item;
     a_pro               *pro;
     a_SR_conflict       *conflict;
+    a_SR_conflict       *last_conflict;
     a_SR_conflict_list  *cx;
-    a_SR_conflict_list  *last;
     a_sym               *sym;
 
     if( state->kersize < 2 ) {
         return;
     }
     sym = saction->sym;
-    min_max_set = 0;
-    min = UINT_MAX;
-    max = 0;
+    min_max_set = false;
+    min_id = UINT_MAX;
+    max_id = 0;
     for( item = state->items; *item != NULL; ++item ) {
         pro = extract_pro( *item );
         if( pro->SR_conflicts == NULL ) {
@@ -273,29 +273,29 @@ static void check_for_user_hooks( a_state *state, a_shift_action *saction, index
             if( conflict->sym != sym ) {
                 continue;
             }
-            index = conflict->id;
-            if( index < min ) {
-                min_max_set = 1;
-                min = index;
+            id = conflict->id;
+            if( min_id > id ) {
+                min_id = id;
+                min_max_set = true;
             }
-            if( index > max ) {
-                min_max_set = 1;
-                max = index;
+            if( max_id < id ) {
+                max_id = id;
+                min_max_set = true;
             }
         }
-        if( ! min_max_set ) {
+        if( !min_max_set ) {
             /* production doesn't contain a matching conflict */
             return;
         }
     }
-    for( index = min; index <= max; ++index ) {
-        last = NULL;
-        all_match = 1;
+    for( id = min_id; id <= max_id; ++id ) {
+        last_conflict = NULL;
+        all_match = true;
         for( item = state->items; *item != NULL; ++item ) {
             pro = extract_pro( *item );
             for( cx = pro->SR_conflicts; cx != NULL; cx = cx->next ) {
                 conflict = cx->conflict;
-                if( conflict->id != index ) {
+                if( conflict->id != id ) {
                     continue;
                 }
                 if( conflict->sym != sym ) {
@@ -304,18 +304,17 @@ static void check_for_user_hooks( a_state *state, a_shift_action *saction, index
                 break;
             }
             if( cx == NULL ) {
-                all_match = 0;
+                all_match = false;
                 break;
             }
-            last = cx;
+            last_conflict = conflict;
         }
         if( all_match ) {
             /* found the desired S/R conflict */
             Ambiguous( state );
-            conflict = last->conflict;
-            conflict->state = state;
-            conflict->shift = saction->state;
-            conflict->reduce = rule;
+            last_conflict->state = state;
+            last_conflict->shift = saction->state;
+            last_conflict->reduce = rule;
             return;
         }
     }

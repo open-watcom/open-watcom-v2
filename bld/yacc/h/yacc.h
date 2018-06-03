@@ -105,6 +105,8 @@ typedef struct a_SR_conflict a_SR_conflict;
 typedef struct a_SR_conflict_list a_SR_conflict_list;
 typedef struct a_link   a_link;
 
+typedef unsigned        conflict_id;
+
 typedef struct an_item {
     union {
         a_sym           *sym;
@@ -119,7 +121,7 @@ struct a_SR_conflict {
     a_state             *state;         /* final state that contains ambigity */
     a_state             *shift;         /* state if we were to shift token */
     a_SR_conflict_list  *thread;        /* all registered productions */
-    unsigned            id;             /* numeric id assigned by user */
+    conflict_id         id;             /* numeric id assigned by user */
     index_n             reduce;         /* rule if we were to reduce on token */
 };
 

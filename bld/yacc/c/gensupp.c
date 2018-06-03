@@ -62,7 +62,7 @@ token_n FirstNonTerminalTokenValue( void )
 
 static void putambig( FILE *fp, a_SR_conflict *ambig, base_n *base )
 {
-    unsigned i;
+    conflict_id id;
     index_n ambig_state, ambig_state_based;
     index_n ambig_shift, ambig_shift_based;
     static char *msg[] = {
@@ -85,11 +85,11 @@ static void putambig( FILE *fp, a_SR_conflict *ambig, base_n *base )
         ambig_state_based = base[ambig_state];
         ambig_shift_based = base[ambig_shift];
     }
-    i = ambig->id;
-    fprintf( fp, msg[0], i, ambig_state_based, ambig_state );
-    fprintf( fp, msg[1], i, ambig->sym->token );
-    fprintf( fp, msg[2], i, ambig_shift_based, ambig_shift );
-    fprintf( fp, msg[3], i, ambig->reduce );
+    id = ambig->id;
+    fprintf( fp, msg[0], id, ambig_state_based, ambig_state );
+    fprintf( fp, msg[1], id, ambig->sym->token );
+    fprintf( fp, msg[2], id, ambig_shift_based, ambig_shift );
+    fprintf( fp, msg[3], id, ambig->reduce );
 }
 
 void putambigs( FILE *fp, base_n *base )

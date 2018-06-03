@@ -552,15 +552,14 @@ static a_sym *make_sym( char *name, token_n tokval )
     return( p );
 }
 
-static a_SR_conflict *make_unique_ambiguity( a_sym *sym, unsigned index )
+static a_SR_conflict *make_unique_ambiguity( a_sym *sym, conflict_id id )
 {
     a_SR_conflict   *am;
 
     for( am = ambiguousstates; am != NULL; am = am->next ) {
-        if( am->id == index ) {
+        if( am->id == id ) {
             if( am->sym != sym ) {
-                msg( "ambiguity %u deals with %s, not %s.\n",
-                     index, am->sym->name, sym->name );
+                msg( "ambiguity %u deals with %s, not %s.\n", id, am->sym->name, sym->name );
                 break;
             }
             return( am );
@@ -569,7 +568,7 @@ static a_SR_conflict *make_unique_ambiguity( a_sym *sym, unsigned index )
     am = MALLOC( 1, a_SR_conflict );
     am->next = ambiguousstates;
     am->sym = sym;
-    am->id = index;
+    am->id = id;
     am->state = NULL;
     am->shift = NULL;
     am->thread = NULL;
@@ -628,7 +627,7 @@ static void tlist_add( char *name, token_n tokval )
 static bool scanambig( unsigned used, a_SR_conflict_list **list )
 {
     bool                    absorbed_something;
-    unsigned                index;
+    conflict_id             id;
     a_sym                   *sym;
     a_SR_conflict           *am;
     a_SR_conflict_list      *en;
@@ -641,7 +640,7 @@ static bool scanambig( unsigned used, a_SR_conflict_list **list )
             msg( "Expecting a non-negative number after %ambig.\n" );
             break;
         }
-        index = value;
+        id = value;
         if( scan( used ) != T_IDENTIFIER ) {
             msg( "Expecting a token name after %ambig <number>.\n" );
             break;
@@ -657,7 +656,7 @@ static bool scanambig( unsigned used, a_SR_conflict_list **list )
         }
         scan( used );
         absorbed_something = true;
-        am = make_unique_ambiguity( sym, index );
+        am = make_unique_ambiguity( sym, id );
         en = MALLOC( 1, a_SR_conflict_list );
         en->next = *list;
         en->thread = am->thread;
