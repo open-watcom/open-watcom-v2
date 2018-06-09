@@ -110,102 +110,64 @@ static const char *Help_info[] = {
     NULL
 };
 
+#define ARG_DEFS() \
+    pick( ARG_I,    "i" ) \
+    pick( ARG_S,    "s" ) \
+    pick( ARG_K,    "k" ) \
+    pick( ARG_XL,   "xl" ) \
+    pick( ARG_DL,   "dl" ) \
+    pick( ARG_SL,   "sl" ) \
+    pick( ARG_OL,   "ol" ) \
+    pick( ARG_UL,   "ul" ) \
+    pick( ARG_H,    "h" ) \
+    pick( ARG_HH,   "hh" ) \
+    pick( ARG_HN,   "hn" ) \
+    pick( ARG_B,    "b" ) \
+    pick( ARG_UP,   "up" ) \
+    pick( ARG_IW,   "iw" ) \
+    pick( ARG_RTF,  "rtf" ) \
+    pick( ARG_IPF,  "ipf" ) \
+    pick( ARG_BL,   "bl" ) \
+    pick( ARG_T,    "t" ) \
+    pick( ARG_E,    "e" ) \
+    pick( ARG_RF,   "rf" ) \
+    pick( ARG_LK,   "lk" ) \
+    pick( ARG_KT,   "kt" ) \
+    pick( ARG_IB,   "ib" ) \
+    pick( ARG_RM,   "rm" ) \
+    pick( ARG_HD,   "hd" ) \
+    pick( ARG_FT,   "ft" ) \
+    pick( ARG_TAB,  "tab" ) \
+    pick( ARG_HB,   "hb" ) \
+    pick( ARG_BR,   "br" ) \
+    pick( ARG_TC,   "tc" ) \
+    pick( ARG_IX,   "ix" ) \
+    pick( ARG_KW,   "kw" ) \
+    pick( ARG_KB,   "kb" ) \
+    pick( ARG_TL,   "tl" ) \
+    pick( ARG_EX,   "ex" ) \
+    pick( ARG_MC,   "mc" ) \
+    pick( ARG_OF,   "@" ) \
+    pick( ARG_DT,   "dt" ) \
+    pick( ARG_DS,   "ds" ) \
+    pick( ARG_DPT,  "dpt" ) \
+    pick( ARG_DPK,  "dpk" ) \
+    pick( ARG_DPI,  "dpi" ) \
+    pick( ARG_DPB,  "dpb" ) \
+    pick( ARG_HTML, "html" ) \
+    pick( ARG_WIKI, "wiki" ) \
+    pick( ARG_END,  NULL )
+
 enum {
-    ARG_I,
-    ARG_S,
-    ARG_K,
-    ARG_XL,
-    ARG_DL,
-    ARG_SL,
-    ARG_OL,
-    ARG_UL,
-    ARG_H,
-    ARG_HH,
-    ARG_HN,
-    ARG_B,
-    ARG_UP,
-    ARG_IW,
-    ARG_RTF,
-    ARG_IPF,
-    ARG_BL,
-    ARG_T,
-    ARG_E,
-    ARG_RF,
-    ARG_LK,
-    ARG_KT,
-    ARG_IB,
-    ARG_RM,
-    ARG_HD,
-    ARG_FT,
-    ARG_TAB,
-    ARG_HB,
-    ARG_BR,
-    ARG_TC,
-    ARG_IX,
-    ARG_KW,
-    ARG_KB,
-    ARG_TL,
-    ARG_EX,
-    ARG_MC,
-    ARG_OF,
-    ARG_DT,
-    ARG_DS,
-    ARG_DPT,
-    ARG_DPK,
-    ARG_DPI,
-    ARG_DPB,
-    ARG_HTML,
-    ARG_WIKI,
-    ARG_END
+    #define pick(e,t) e,
+    ARG_DEFS()
+    #undef pick
 };
 
 static char *Args[]={
-    "i",
-    "s",
-    "k",
-    "xl",
-    "dl",
-    "sl",
-    "ol",
-    "ul",
-    "h",
-    "hh",
-    "hn",
-    "b",
-    "up",
-    "iw",
-    "rtf",
-    "ipf",
-    "bl",
-    "t",
-    "e",
-    "rf",
-    "lk",
-    "kt",
-    "ib",
-    "rm",
-    "hd",
-    "ft",
-    "tab",
-    "hb",
-    "br",
-    "tc",
-    "ix",
-    "kw",
-    "kb",
-    "tl",
-    "ex",
-    "mc",
-    "@",
-    "dt",
-    "ds",
-    "dpt",
-    "dpk",
-    "dpi",
-    "dpb",
-    "html",
-    "wiki",
-    NULL
+    #define pick(e,t) t,
+    ARG_DEFS()
+    #undef pick
 };
 
 enum {
@@ -236,7 +198,7 @@ static int              Line_buf_size;
 
 /* Processing globals */
 static bool             Exclude_on = false;
-static char             Delim[3] = " \t";
+static char             Delim[] = " \t";
 static bool             Do_index = false;
 static bool             Do_blist = false;
 static bool             Do_keywords = false;
