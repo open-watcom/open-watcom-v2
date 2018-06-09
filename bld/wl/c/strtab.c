@@ -75,24 +75,6 @@ void InitStringTable( stringtable *strtab, bool dontsplit )
     AllocNewBlock( strtab );
 }
 
-void ReserveStringTable( stringtable *strtab, size_t len )
-/********************************************************/
-{
-    stringblock *blk;
-    size_t      diff;
-
-    blk = RingLast( strtab->data );
-    if( blk->size + len > STR_BLOCK_SIZE && (strtab->currbase & 1) ) {
-        diff = STR_BLOCK_SIZE - blk->size;
-        if( diff != 0 ) {
-            memset( blk->data + blk->size, 0, diff );
-        }
-        blk->size = STR_BLOCK_SIZE;
-        strtab->currbase += STR_BLOCK_SIZE;
-        blk = AllocNewBlock( strtab );
-    }
-}
-
 static char *AddToStringTable( stringtable *strtab, const void *data, size_t len, bool addnullchar, size_t *offs )
 /****************************************************************************************************************/
 {
