@@ -366,10 +366,10 @@ static void WriteOS2Resources( FILE *res_fp, WResDir inRes, ResTable *outRes )
 }
 
 
-static unsigned long WriteTabList( name_list *val, unsigned long *pcount, bool upper )
-/************************************************************************************/
+static unsigned long WriteTabList( obj_name_list *val, unsigned long *pcount, bool upper )
+/****************************************************************************************/
 {
-    name_list           *node;
+    obj_name_list       *node;
     unsigned long       off;
     unsigned long       count;
 
@@ -412,8 +412,8 @@ static unsigned long ModRefTable( void )
 /**************************************/
 /* count total number of groups */
 {
-    name_list           *node;
-    name_list           *inode;
+    obj_name_list       *node;
+    obj_name_list       *inode;
     unsigned long       nodenum;
     unsigned long       off;
 

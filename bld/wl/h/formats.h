@@ -105,8 +105,8 @@ struct fmt_phar_data {
 
 struct fmt_os2_data {
     struct entry_export *exports;
-    name_list           *mod_ref_list;
-    name_list           *imp_tab_list;
+    obj_name_list       *mod_ref_list;
+    obj_name_list       *imp_tab_list;
     char                *stub_file_name;
     char                *module_name;
     char                *old_lib_name;
@@ -164,8 +164,8 @@ struct fmt_d16m_data {
 // stuff common to some file formats which have the concept of an export
 
 struct exp_common {
-    name_list   *export;
-    name_list   *module;
+    obj_name_list   *export;
+    obj_name_list   *module;
 };
 
 // linker specific Novell NLM data

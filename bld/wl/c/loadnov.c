@@ -149,12 +149,12 @@ static unsigned_32 WriteNovImports( fixed_header *header )
 static unsigned_32 WriteNovExports( fixed_header *header )
 /********************************************************/
 {
-    name_list   *export;
-    symbol      *sym;
-    unsigned_32 count;
-    unsigned_32 wrote;
-    unsigned_32 off;
-    size_t      len;
+    obj_name_list   *export;
+    symbol          *sym;
+    unsigned_32     count;
+    unsigned_32     wrote;
+    unsigned_32     off;
+    size_t          len;
 
     count = wrote = 0;
     for( export = FmtData.u.nov.exp.export; export != NULL; export = export->next ) {
@@ -185,9 +185,9 @@ static unsigned_32 WriteNovExports( fixed_header *header )
 static unsigned_32 WriteNovModules( fixed_header *header )
 /********************************************************/
 {
-    name_list   *module;
-    unsigned_32 count;
-    unsigned_32 wrote;
+    obj_name_list   *module;
+    unsigned_32     count;
+    unsigned_32     wrote;
 
     count = wrote = 0;
     for( module = FmtData.u.nov.exp.module; module != NULL; module = module->next ) {
@@ -254,7 +254,7 @@ void NovDBIGenGlobal( symbol *sym )
 static unsigned_32 WriteNovDBI( fixed_header *header )
 /****************************************************/
 {
-    name_list       *export;
+    obj_name_list   *export;
     symbol          *sym;
     unsigned_32     count;
     unsigned_32     wrote;
@@ -700,7 +700,7 @@ void AddNovImpReloc( symbol *sym, unsigned_32 offset, bool isrelative, bool isda
 void FindExportedSyms( void )
 /***************************/
 {
-    name_list       *export;
+    obj_name_list   *export;
     symbol          *sym;
     debug_info      *dinfo;
 

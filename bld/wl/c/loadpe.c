@@ -1573,7 +1573,7 @@ static void RegisterImport( dll_sym_info *sym )
     struct import_name          *imp;
     struct import_name          *chk;
     struct import_name          **owner;
-    name_list                   *os2_imp;
+    obj_name_list               *os2_imp;
     int                         cmp;
     unsigned                    len;
 

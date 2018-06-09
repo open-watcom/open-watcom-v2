@@ -53,12 +53,12 @@ extern void             FreePELocalImports( void );
 struct import_name {
     struct import_name  *next;
     dll_sym_info        *dll;
-    name_list           *imp;
+    obj_name_list       *imp;
 };
 
 typedef struct module_import {
     struct module_import        *next;
-    struct name_list            *mod;
+    struct obj_name_list        *mod;
     struct import_name          *imports;
     unsigned                    num_entries;
 } module_import;

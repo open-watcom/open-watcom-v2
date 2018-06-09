@@ -264,12 +264,12 @@ void FreeList( void *_curr )
     }
 }
 
-name_list *AddNameTable( const char *name, size_t len, bool is_mod, name_list **owner )
-/*************************************************************************************/
+obj_name_list *AddNameTable( const char *name, size_t len, bool is_mod, obj_name_list **owner )
+/*********************************************************************************************/
 {
-    name_list   *imp;
-    unsigned_32 off;
-    unsigned_16 index;
+    obj_name_list   *imp;
+    unsigned_32     off;
+    unsigned_16     index;
 
     index = 1;
     off = 1;
@@ -281,7 +281,7 @@ name_list *AddNameTable( const char *name, size_t len, bool is_mod, name_list **
         owner = &imp->next;
     }
     if( imp == NULL ) {
-        _PermAlloc( imp, sizeof( name_list ) );
+        _PermAlloc( imp, sizeof( obj_name_list ) );
         imp->next = NULL;
         imp->len = len;
         imp->name = AddSymbolStringTable( &PermStrings, name, len );

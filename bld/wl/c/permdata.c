@@ -355,8 +355,8 @@ static void PrepSymbol( void *_sym, void *info )
     }
 }
 
-static void PrepNameTable( name_list *list, perm_write_info *info )
-/*****************************************************************/
+static void PrepNameTable( obj_name_list *list, perm_write_info *info )
+/*********************************************************************/
 {
     for( ; list != NULL; list = list->next ) {
         list->name = (char *)(pointer_int)AddStringStringTableOffs( &info->strtab, list->name );
