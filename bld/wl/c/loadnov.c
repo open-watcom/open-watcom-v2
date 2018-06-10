@@ -203,8 +203,8 @@ void NovDBIAddGlobal( void *_sym )
 {
     symbol *sym = _sym;
 
-    if( !IS_SYM_A_REF(sym)
-            && !IS_SYM_ALIAS(sym)
+    if( !IS_SYM_A_REF( sym )
+            && !IS_SYM_ALIAS( sym )
             && ( sym->p.seg != NULL )
             && (sym->info & SYM_DEAD) == 0
             && !sym->p.seg->isabs

@@ -473,10 +473,8 @@ void DwarfDefClass( class_entry *cl, unsigned_32 size )
 }
 
 void DwarfAddGlobal( symbol *sym )
-/***************************************/
+/********************************/
 {
-    /* unused parameters */ (void)sym;
-
     CurrMod->d.d->pubsym.size += strlen( sym->name.u.ptr ) + sizeof( symbol_die ) + 1;
     if( FmtData.type & MK_SEGMENTED ) {
         CurrMod->d.d->pubsym.size += sizeof( symbol_seg );
@@ -484,7 +482,7 @@ void DwarfAddGlobal( symbol *sym )
 }
 
 static offset GetLinearGroupOffset( group_entry *group )
-/************************************************************/
+/******************************************************/
 {
     /* gives the absolute offset for ELF, relative for PE and QNX_FLAT;
        perhaps PE and QNX_FLAT should be absolute as well if the
@@ -848,8 +846,7 @@ offset DwarfWriteElf( offset curr_off, stringtable *strtab,
                                 Elf32_Shdr *dbgsecbegin )
 /*********************************************************/
 {
-    curr_off = WriteELFSections( curr_off, curr_off, dbgsecbegin, strtab );
-    return( curr_off );
+    return( WriteELFSections( curr_off, curr_off, dbgsecbegin, strtab ) );
 }
 
 void DwarfWrite( void )

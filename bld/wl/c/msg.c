@@ -615,10 +615,10 @@ bool SkipSymbol( symbol * sym )
 int SymAlphaCompare( const void *a, const void *b )
 /********************************************************/
 {
-    symbol *    left;
-    symbol *    right;
-    const char *leftname;
-    const char *rightname;
+    symbol      *left;
+    symbol      *right;
+    const char  *leftname;
+    const char  *rightname;
     size_t      leftsize;
     size_t      rightsize;
     int         result;

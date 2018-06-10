@@ -125,7 +125,7 @@ static void MarkDead( void *_seg )
 /********************************/
 {
     segdata *seg = _seg;
-        
+
     if( seg->isrefd )
         return;
     if( seg->isdead )

@@ -201,8 +201,8 @@ static bool WriteLeaderName( void *_leader, void *info )
     return( false );
 }
 
-static unsigned WriteGroups( perm_write_info *info )
-/**************************************************/
+static unsigned WriteGroupsList( perm_write_info *info )
+/******************************************************/
 {
     group_entry *group;
     unsigned    num;
@@ -284,7 +284,7 @@ static void PrepModEntry( void *_mod, void *info )
     mod->segs = CarveGetIndex( CarveSegData, mod->segs );
     mod->modinfo &= ~MOD_CLEAR_ON_INC;
     if( mod->f.source != NULL ) {
-        mod->f.fname.u.ptr = mod->f.source->file->name.u.ptr;
+        mod->f.fname = mod->f.source->file->name;
     }
 }
 
@@ -425,19 +425,19 @@ static void WriteStringBlock( void *info, const char *data, size_t size )
     QWrite( ((perm_write_info *)info)->incfhdl, data, size, IncFileName );
 }
 
-static void FiniStringBlock( stringtable *tab, size_t *size, void *info,
+static void FiniStringBlock( stringtable *strtab, size_t *size, void *info,
                                             write_strtable_fn *writefn )
 /************************************************************************/
 {
     size_t      rawsize;
 
-    rawsize = GetStringTableSize( tab );
+    rawsize = GetStringTableSize( strtab );
     *size = ROUND_UP( rawsize, SECTOR_SIZE );
     if( *size != rawsize ) {
-        ZeroStringTable( tab, *size - rawsize );
+        ZeroStringTable( strtab, *size - rawsize );
     }
-    WriteStringTable( tab, writefn, info );
-    FiniStringTable( tab );
+    WriteStringTable( strtab, writefn, info );
+    FiniStringTable( strtab );
 }
 
 static void DumpBlock( carve_t carver, void *block, void *_info )
@@ -538,7 +538,7 @@ void WritePermData( void )
     hdr.exename = GetString( &info, Root->outfile->fname );
     QModTime( Root->outfile->fname, &hdr.exemodtime );
     if( SymFileName != NULL ) {
-        hdr.symname = (unsigned_32)(pointer_int)GetString( &info, SymFileName );
+        hdr.symname = GetString( &info, SymFileName );
         QModTime( SymFileName, &hdr.symmodtime );
     } else {
         hdr.symname = 0;
@@ -546,7 +546,7 @@ void WritePermData( void )
     info.currpos = 0;
     BufWritePermFile( &info, &hdr, sizeof( inc_file_header ) ); // reserve space
     PrepClasses( &info );
-    hdr.numgroups = WriteGroups( &info );
+    hdr.numgroups = WriteGroupsList( &info );
     hdr.numuserlibs = WriteLibList( &info, true );
     hdr.numdeflibs = WriteLibList( &info, false );
     if( FmtData.type & (MK_OS2 | MK_PE | MK_WIN_VXD) ) {
@@ -619,8 +619,8 @@ static char *MapString( size_t off )
     return( IncStrTab + off );
 }
 
-static void ReadGroups( unsigned count, perm_read_info *info )
-/************************************************************/
+static void ReadGroupsList( unsigned count, perm_read_info *info )
+/****************************************************************/
 {
     incgroupdef         *def;
     unsigned_32         size;
@@ -658,7 +658,7 @@ static void RebuildDLLInfo( void *_dll, perm_read_info *info )
 {
     dll_sym_info *dll = _dll;
 
-    BufRead( info, dll, offsetof(dll_sym_info, iatsym) );
+    BufRead( info, dll, offsetof( dll_sym_info, iatsym ) );
     dll->m.modname.u.ptr = MapString( dll->m.modname.u.offs );
     if( !dll->isordinal ) {
         dll->u.entname.u.ptr = MapString( dll->u.entname.u.offs );
@@ -670,7 +670,7 @@ static void RebuildExportInfo( void *_exp, perm_read_info *info )
 {
     entry_export *exp = _exp;
 
-    BufRead( info, exp, offsetof(entry_export, sym) );
+    BufRead( info, exp, offsetof( entry_export, sym ) );
     exp->next = CarveMapIndex( CarveExportInfo, exp->next );
     if( exp->name.u.offs != 0 ) {
         exp->name.u.ptr = MapString( exp->name.u.offs );
@@ -904,7 +904,7 @@ void ReadPermData( void )
             return;
         }
     }
-    ReadGroups( hdr->numgroups, &info );
+    ReadGroupsList( hdr->numgroups, &info );
     ReadLibList( hdr->numuserlibs, &SavedUserLibs, &info );
     ReadLibList( hdr->numdeflibs, &SavedDefLibs, &info );
     if( FmtData.type & (MK_OS2 | MK_PE | MK_WIN_VXD) ) {

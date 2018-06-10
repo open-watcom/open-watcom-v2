@@ -77,7 +77,7 @@ static infilelist *AllocEntry( const char *name, const path_entry *path )
     entry->cache = NULL;
     entry->len = 0;
     entry->flags = 0;
-    return entry;
+    return( entry );
 }
 
 infilelist *AllocFileEntry( const char *name, const path_entry *path )
@@ -88,7 +88,7 @@ infilelist *AllocFileEntry( const char *name, const path_entry *path )
     entry = AllocEntry( name, path );
     entry->next = CachedFiles;
     CachedFiles = entry;
-    return entry;
+    return( entry );
 }
 
 infilelist *AllocUniqueFileEntry( const char *name, const path_entry *path )
@@ -98,7 +98,7 @@ infilelist *AllocUniqueFileEntry( const char *name, const path_entry *path )
 
     for( entry = CachedLibFiles; entry != NULL; entry = entry->next ) {
         if( FNAMECMPSTR( entry->name.u.ptr, name ) == 0 ) {
-            return entry;       // we found 1 with the same name.
+            return( entry );    // we found 1 with the same name.
         }
     }
     entry = AllocEntry( name, path );   // didn't find one, so allocate a new 1
@@ -108,7 +108,7 @@ infilelist *AllocUniqueFileEntry( const char *name, const path_entry *path )
     } else {
         LinkList( &CachedLibFiles, entry );
     }
-    return entry;
+    return( entry );
 }
 
 bool CleanCachedHandles( void )
@@ -121,7 +121,7 @@ bool CleanCachedHandles( void )
             break;
         }
     }
-    if( list == NULL ) 
+    if( list == NULL )
         return( false );
     QClose( list->handle, list->name.u.ptr );
     list->handle = NIL_FHANDLE;

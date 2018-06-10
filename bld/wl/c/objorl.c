@@ -494,7 +494,7 @@ static orl_return DeclareSegment( orl_sec_handle sec )
     } else {
         unsigned namelen;
 
-        namelen = strlen(name);
+        namelen = strlen( name );
         if( namelen >= 3 && memicmp( name + namelen - 3, "bss", 3 ) == 0 ) {
             LnkMsg( ERR+MSG_INTERNAL, "s", "Initialized BSS found" );
         }

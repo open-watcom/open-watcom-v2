@@ -43,13 +43,23 @@
 #include "wlnkmsg.h"
 #include <string.h>
 
-#define STR_BLOCK_SIZE   (4*1024)
+
+#define STR_BLOCK_SIZE   (4 * 1024)
+
+#define TableNoSplitItems(t)    ((t)->currbase & 1)
+#define GetTableLastBlkStart(t) ((t)->currbase & ~1U)
+#define GetTableLastBlk(t)      ((stringblock *)RingLast((t)->data))
 
 typedef struct stringblock {
     STRINGBLOCK *next;
     size_t      size;
     char        data[STR_BLOCK_SIZE];
 } stringblock;
+
+typedef struct {
+    write_strtable_fn   *fn;
+    void                *info;
+} strblkparam;
 
 static stringblock * AllocNewBlock( stringtable *strtab )
 /*******************************************************/
@@ -64,14 +74,10 @@ static stringblock * AllocNewBlock( stringtable *strtab )
 }
 
 void InitStringTable( stringtable *strtab, bool dontsplit )
-/****************************************************************/
+/*********************************************************/
 {
     strtab->data = NULL;
-    if( dontsplit ) {
-        strtab->currbase = 1;
-    } else {
-        strtab->currbase = 0;
-    }
+    strtab->currbase = ( dontsplit ) ? 1 : 0;
     AllocNewBlock( strtab );
 }
 
@@ -87,22 +93,18 @@ static char *AddToStringTable( stringtable *strtab, const void *data, size_t len
 
     if( addnullchar )
         ++len;
-    if( (strtab->currbase & 1) && len > STR_BLOCK_SIZE ) {
+    if( TableNoSplitItems( strtab ) && len > STR_BLOCK_SIZE ) {
         LnkMsg( ERR+MSG_SYMBOL_NAME_TOO_LONG, "s", data );
         len = STR_BLOCK_SIZE;
     }
     start = START_UNDEF;
-    for( blk = RingLast( strtab->data ); blk->size + len > STR_BLOCK_SIZE; blk = AllocNewBlock( strtab ) ) {
+    for( blk = GetTableLastBlk( strtab ); blk->size + len > STR_BLOCK_SIZE; blk = AllocNewBlock( strtab ) ) {
         if( start == START_UNDEF ) {
-            if( strtab->currbase & 1 ) {
-                start = (strtab->currbase & ~1) + STR_BLOCK_SIZE;
-            } else {
-                start = strtab->currbase + blk->size;
-            }
+            start = GetTableLastBlkStart( strtab ) + (TableNoSplitItems( strtab ) ? STR_BLOCK_SIZE : blk->size);
         }
         diff = STR_BLOCK_SIZE - blk->size;
         if( diff != 0 ) {
-            if( strtab->currbase & 1 ) {        // then don't split
+            if( TableNoSplitItems( strtab ) ) {   // then don't split
                 memset( blk->data + blk->size, 0, diff );
             } else {
                 memcpy( blk->data + blk->size, data, diff );
@@ -115,13 +117,13 @@ static char *AddToStringTable( stringtable *strtab, const void *data, size_t len
     }
     if( offs != NULL ) {
         if( start == START_UNDEF )
-            start = (strtab->currbase & ~1) + blk->size;
+            start = GetTableLastBlkStart( strtab ) + blk->size;
         *offs = start;
     }
     dest = blk->data + blk->size;
     blk->size += len;
     if( addnullchar )
-        dest[ --len ] = '\0';
+        dest[--len] = '\0';
     memcpy( dest, data, len );
     return( dest );
 }
@@ -164,16 +166,11 @@ void ZeroStringTable( stringtable *strtab, size_t len )
 {
     stringblock *blk;
 
-    blk = RingLast( strtab->data );
+    blk = GetTableLastBlk( strtab );
     DbgAssert( blk->size + len <= STR_BLOCK_SIZE );
     memset( blk->data + blk->size, 0, len );
     blk->size += len;
 }
-
-typedef struct {
-    write_strtable_fn   *fn;
-    void                *info;
-} strblkparam;
 
 static bool WriteStringData( void *_blk, void *_param )
 /******************************************************/
@@ -203,8 +200,5 @@ void FiniStringTable( stringtable *strtab )
 size_t GetStringTableSize( stringtable *strtab )
 /**********************************************/
 {
-    stringblock *blk;
-
-    blk = RingLast( strtab->data );
-    return( blk->size + (strtab->currbase & ~1) );
+    return( GetTableLastBlkStart( strtab ) + GetTableLastBlk( strtab )->size );
 }
