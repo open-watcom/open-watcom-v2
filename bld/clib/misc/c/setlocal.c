@@ -39,9 +39,9 @@
 #include "localset.h"
 
 static CHAR_TYPE *ValidLocales[] = {
-        STRING( "C" ),  /* C_LOCALE */
-        STRING( "" ),   /* NATIVE_LOCALE */
-        NULL            /* INVALID_LOCALE */
+    STRING( "C" ),  /* C_LOCALE */
+    STRING( "" ),   /* NATIVE_LOCALE */
+    NULL            /* INVALID_LOCALE */
 };
 
 _WCRTLINK CHAR_TYPE *__F_NAME(setlocale,_wsetlocale)( int category, CHAR_TYPE const *locale )
@@ -49,20 +49,20 @@ _WCRTLINK CHAR_TYPE *__F_NAME(setlocale,_wsetlocale)( int category, CHAR_TYPE co
     register int i;
 
     _INITLOCALESETTING
-    if( category < LC_CTYPE  ||  category > LC_ALL ) {
+    if( category < LC_MIN  ||  category > LC_MAX ) {
         return( NULL );
     }
     if( locale == NULL ) {
         i = _LOCALESETTING[category];
     } else {
-        i = C_LOCALE;
-        if( *locale != NULLCHAR ) {
-            /* Special case - "POSIX" was requested - same as "C" per POSIX std */
-            if( __F_NAME(strcmp,wcscmp)( locale, STRING( "POSIX" ) ) == 0 )
-                locale = STRING( "C" );
-            
-            for( ; ValidLocales[i]; ++i ) {
-                if( __F_NAME(strcmp,wcscmp)( locale, ValidLocales[i] ) == 0 )  break;
+        /* Special case - "POSIX" was requested - same as "C" per POSIX std */
+        if( __F_NAME(strcmp,wcscmp)( locale, STRING( "POSIX" ) ) == 0 ) {
+            i = C_LOCALE;
+        } else {
+            for( i = C_LOCALE; ValidLocales[i] != NULL; ++i ) {
+                if( __F_NAME(strcmp,wcscmp)( locale, ValidLocales[i] ) == 0 ) {
+                    break;
+                }
             }
         }
         if( i != INVALID_LOCALE ) {
@@ -73,9 +73,7 @@ _WCRTLINK CHAR_TYPE *__F_NAME(setlocale,_wsetlocale)( int category, CHAR_TYPE co
                 _LOCALESETTING[LC_NUMERIC]  = i;
                 _LOCALESETTING[LC_TIME]     = i;
                 _LOCALESETTING[LC_MONETARY] = i;
-#if defined( __UNIX__ )
                 _LOCALESETTING[LC_MESSAGES] = i;
-#endif
             }
         }
     }
