@@ -89,12 +89,12 @@ static void DoSavedImport( symbol *sym )
         dll = sym->p.import;
         sym->p.import = NULL;
         sym->info &= ~SYM_DEFINED;
-        modname.name = dll->m.modname;
+        modname.name = dll->m.modname.u.ptr;
         modname.len = strlen( modname.name );
         if( dll->isordinal ) {
             MSImportKeyword( sym, &modname, NULL, dll->u.ordinal );
         } else {
-            extname.name = dll->u.entname;
+            extname.name = dll->u.entname.u.ptr;
             extname.len = strlen( extname.name );
             MSImportKeyword( sym, &modname, &extname, NOT_IMP_BY_ORDINAL );
         }
@@ -113,7 +113,7 @@ static void DoSavedExport( symbol *sym )
         exp->impname = NULL;
         AddToExportList( exp );
     } else {
-        AddNameTable( sym->name, strlen( sym->name ), true, &FmtData.u.nov.exp.export );
+        AddNameTable( sym->name.u.ptr, strlen( sym->name.u.ptr ), true, &FmtData.u.nov.exp.export );
     }
 }
 
@@ -246,7 +246,7 @@ static void DoIncSymbol( void *_sym )
         if( sym->info & SYM_STATIC ) {
             flags |= ST_STATIC;
         }
-        mainsym = SymOp( flags, sym->name, strlen( sym->name ) );
+        mainsym = SymOp( flags, sym->name.u.ptr, strlen( sym->name.u.ptr ) );
         if( IS_SYM_NICOMDEF( sym ) ) {
             MakeCommunalSym( mainsym, sym->p.cdefsize, (sym->info & SYM_FAR_COMMUNAL) != 0, IS_SYM_COMM32( sym ) );
         } else if( IS_SYM_COMDAT( sym ) ) {
@@ -295,7 +295,7 @@ unsigned long IncPass1( void )
         if( seg == NULL )
             break;
         dataoff = seg->u1.vm_offs;
-        DoAllocateSegment( seg, seg->o.clname );
+        DoAllocateSegment( seg, seg->o.clname.u.ptr );
         seg->o.mod = CurrMod;
         if( !seg->isuninit && !seg->isdead && !seg->iscdat ) {
             PutInfo( seg->u1.vm_ptr, GetSegContents( seg, dataoff ), seg->length );
@@ -318,7 +318,7 @@ static class_entry *FindNamedClass( char *name )
     class_entry   *class;
 
     for( class = Root->classlist; class != NULL; class = class->next_class ) {
-        if( stricmp( class->name, name ) == 0 ) {
+        if( stricmp( class->name.u.ptr, name ) == 0 ) {
             return( class );
         }
     }
@@ -328,7 +328,7 @@ static class_entry *FindNamedClass( char *name )
 static bool CmpSegName( void *leader, void *name )
 /************************************************/
 {
-    return( stricmp( ((seg_leader *)leader)->segname, name ) == 0 );
+    return( stricmp( ((seg_leader *)leader)->segname.u.ptr, name ) == 0 );
 }
 
 static bool DefIncGroup( void *_def, void *_grouptab )
@@ -383,7 +383,7 @@ void Set64BitMode( void )
         if( (ObjFormat & FMT_TOLD_XXBIT) == 0 ) {
             ObjFormat |= FMT_TOLD_XXBIT;
             LnkMsg( WRN+MSG_FOUND_XXBIT_OBJ, "sd",
-                        CurrMod->f.source->file->name, 64 );
+                        CurrMod->f.source->file->name.u.ptr, 64 );
         }
     }
 }
@@ -397,7 +397,7 @@ void Set32BitMode( void )
         if( (ObjFormat & FMT_TOLD_XXBIT) == 0 ) {
             ObjFormat |= FMT_TOLD_XXBIT;
             LnkMsg( WRN+MSG_FOUND_XXBIT_OBJ, "sd",
-                        CurrMod->f.source->file->name, 32 );
+                        CurrMod->f.source->file->name.u.ptr, 32 );
         }
     }
 }
@@ -409,7 +409,7 @@ void Set16BitMode( void )
         if( (ObjFormat & FMT_TOLD_XXBIT) == 0 ) {
             ObjFormat |= FMT_TOLD_XXBIT;
             LnkMsg( WRN+MSG_FOUND_XXBIT_OBJ, "sd",
-                    CurrMod->f.source->file->name, 16 );
+                    CurrMod->f.source->file->name.u.ptr, 16 );
         }
     }
 }
@@ -473,7 +473,7 @@ void AddSegment( segdata *sd, class_entry *class )
     unsigned_16     info;
     seg_leader      *leader;
 
-    DEBUG((DBG_OLD,"- adding segment %s, class %s",sd->u.name, class->name ));
+    DEBUG((DBG_OLD,"- adding segment %s, class %s",sd->u.name.u.ptr, class->name.u.ptr ));
     DEBUG(( DBG_OLD, "- - size = %h, comb = %x, alignment = %x",
                       sd->length, sd->combine, sd->align ));
     info = 0;
@@ -490,7 +490,7 @@ void AddSegment( segdata *sd, class_entry *class )
     if( sd->isabs || sd->combine == COMBINE_INVALID ) {
         leader = MakeNewLeader( sd, class, info );
     } else {
-        const char  *seg_name = sd->u.name;
+        const char  *seg_name = sd->u.name.u.ptr;
 
         leader = FindALeader( sd, class, info );
         if( ( (leader->info & USE_32) != (info & USE_32) ) &&
@@ -500,11 +500,11 @@ void AddSegment( segdata *sd, class_entry *class )
             const char  *segname_32;
 
             if( info & USE_32 ) {
-                segname_16 = leader->segname;
+                segname_16 = leader->segname.u.ptr;
                 segname_32 = seg_name;
             } else {
                 segname_16 = seg_name;
-                segname_32 = leader->segname;
+                segname_32 = leader->segname.u.ptr;
             }
             LnkMsg( ERR+MSG_CANT_COMBINE_32_AND_16, "12", segname_32, segname_16 );
         }
@@ -537,7 +537,7 @@ class_entry *DuplicateClass( class_entry *old )
 
     new = CarveAlloc( CarveClass );
     memcpy( new, old, sizeof( class_entry ) );
-    new->name = AddBufferStringTable( &PermStrings, old->name, strlen( old->name ) + 1 );
+    new->name.u.ptr = AddBufferStringTable( &PermStrings, old->name.u.ptr, strlen( old->name.u.ptr ) + 1 );
     old->next_class = new;
     return( new );
 }
@@ -555,7 +555,7 @@ class_entry *FindClass( section *sect, const char *name, bool is32bit, bool isco
         cls_is32bit = CLASS_32BIT;
     lastclass = sect->classlist;
     for( currclass = sect->classlist; currclass != NULL; currclass = currclass->next_class ) {
-        if( stricmp( currclass->name, name ) == 0 && (currclass->flags & CLASS_32BIT) == cls_is32bit ) {
+        if( stricmp( currclass->name.u.ptr, name ) == 0 && (currclass->flags & CLASS_32BIT) == cls_is32bit ) {
             return( currclass );
         }
         lastclass = currclass;
@@ -563,7 +563,7 @@ class_entry *FindClass( section *sect, const char *name, bool is32bit, bool isco
     namelen = strlen( name );
     currclass = CarveAlloc( CarveClass );
     currclass->flags = 0;
-    currclass->name = AddBufferStringTable( &PermStrings, name, namelen + 1 );
+    currclass->name.u.ptr = AddBufferStringTable( &PermStrings, name, namelen + 1 );
     currclass->segs = NULL;
     currclass->section = sect;
     currclass->next_class = NULL;
@@ -607,8 +607,7 @@ static bool CheckClassName( void *_seg, void *_sdata )
     seg_leader  *seg = _seg;
     segdata     *sdata = _sdata;
 
-    return( stricmp( seg->segname, sdata->u.name ) == 0 &&
-                                seg->combine != COMBINE_INVALID );
+    return( stricmp( seg->segname.u.ptr, sdata->u.name.u.ptr ) == 0 && seg->combine != COMBINE_INVALID );
 }
 
 static void AddToLeader( seg_leader *seg, segdata *sdata )
@@ -667,7 +666,7 @@ seg_leader *InitLeader( const char *segname )
     SET_ADDR_UNDEFINED( seg->seg_addr );
     seg->group = NULL;
     seg->info = 0;
-    seg->segname = AddStringStringTable( &PermStrings, segname );
+    seg->segname.u.ptr = AddStringStringTable( &PermStrings, segname );
     seg->dbgtype = NOT_DEBUGGING_INFO;
     seg->segflags = FmtData.def_seg_flags;
     return( seg );
@@ -685,7 +684,7 @@ static seg_leader *MakeNewLeader( segdata *sdata, class_entry *class, unsigned_1
 {
     seg_leader *leader;
 
-    sdata->u.leader = leader = InitLeader( sdata->u.name );
+    sdata->u.leader = leader = InitLeader( sdata->u.name.u.ptr );
     leader->align = sdata->align;
     leader->combine = sdata->combine;
     leader->class = class;
@@ -709,8 +708,8 @@ void AddToGroup( group_entry *group, seg_leader *seg )
     if( Ring2Lookup( group->leaders, CmpLeaderPtr, seg ) )
         return;
     if( seg->group != NULL && seg->group != group ) {
-        LnkMsg( LOC+ERR+MSG_SEG_IN_TWO_GROUPS, "123", seg->segname,
-                                   seg->group->sym->name, group->sym->name );
+        LnkMsg( LOC+ERR+MSG_SEG_IN_TWO_GROUPS, "123", seg->segname.u.ptr,
+                                   seg->group->sym->name.u.ptr, group->sym->name.u.ptr );
         return;
     }
     if( ( group->leaders != NULL ) &&
@@ -722,11 +721,11 @@ void AddToGroup( group_entry *group, seg_leader *seg )
         const char  *segname_32;
 
         if( seg->info & USE_32 ) {
-            segname_16 = group->leaders->segname;
-            segname_32 = seg->segname;
+            segname_16 = group->leaders->segname.u.ptr;
+            segname_32 = seg->segname.u.ptr;
         } else {
-            segname_16 = seg->segname;
-            segname_32 = group->leaders->segname;
+            segname_16 = seg->segname.u.ptr;
+            segname_32 = group->leaders->segname.u.ptr;
         }
         LnkMsg( ERR+MSG_CANT_COMBINE_32_AND_16, "12", segname_32, segname_16 );
     }
@@ -754,7 +753,7 @@ void DefineSymbol( symbol *sym, segnode *seg, offset off, unsigned_16 frame )
     if( seg != NULL ) {
         frame = 0;
     }
-    name_len = strlen( sym->name );
+    name_len = strlen( sym->name.u.ptr );
     if( !IS_ADDR_UNDEFINED( sym->addr ) && !IS_SYM_COMMUNAL( sym ) ) {
         if( seg != NULL && sym->p.seg != NULL ) {
             frame_ok = (sym->p.seg->u.leader == seg->entry->u.leader);
@@ -769,7 +768,7 @@ void DefineSymbol( symbol *sym, segnode *seg, offset off, unsigned_16 frame )
             frame_ok = true;
         }
         if( !(frame_ok && off == sym->addr.off) ) {
-            ReportMultiple( sym, sym->name, name_len );
+            ReportMultiple( sym, sym->name.u.ptr, name_len );
         }
     } else {
         sym_type = SYM_REGULAR;
@@ -779,7 +778,7 @@ void DefineSymbol( symbol *sym, segnode *seg, offset off, unsigned_16 frame )
                 dll_sym_info  *dll_info = sym->p.import;
                 AddPEImportLocalSym( sym, dll_info->iatsym );
                 sym_type |= SYM_REFERENCED;
-                LnkMsg( WRN+MSG_IMPORT_LOCAL, "s", sym->name );
+                LnkMsg( WRN+MSG_IMPORT_LOCAL, "s", sym->name.u.ptr );
             }
         } else if( IS_SYM_COMMUNAL( sym ) ) {
             sym = HashReplace( sym );
@@ -832,7 +831,7 @@ static segdata *GetSegment( char *seg_name, char *class_name, char *group_name,
     class = FindClass( sect, class_name, !use_16, false );
     info = 0;
     sdata = AllocSegData();
-    sdata->u.name = seg_name;
+    sdata->u.name.u.ptr = seg_name;
     sdata->align = align;
     sdata->combine = comb;
     sdata->isuninit = true;
@@ -865,7 +864,7 @@ static void FarAllocCommunal( symbol *sym, unsigned size )
 
     first = NULL;
     for(;;) {
-        seg = GetSegment( sym->name, FarDataClassName, NULL,
+        seg = GetSegment( sym->name.u.ptr, FarDataClassName, NULL,
                           0, COMBINE_INVALID, !IS_SYM_COMM32( sym ) );
         if( first == NULL )
             first = seg;
@@ -950,7 +949,7 @@ void CheckComdatSym( symbol *sym, sym_info flags )
         }
     }
     if( symflags == SYM_CDAT_SEL_NODUP ) {
-        ReportMultiple( sym, sym->name, strlen( sym->name ) );
+        ReportMultiple( sym, sym->name.u.ptr, strlen( sym->name.u.ptr ) );
     }
 }
 
@@ -1203,7 +1202,7 @@ group_entry *SearchGroups( const char *name )
     group_entry     *currgrp;
 
     for( currgrp = Groups; currgrp != NULL; currgrp = currgrp->next_group ) {
-        if( stricmp( currgrp->sym->name, name ) == 0 ) {
+        if( stricmp( currgrp->sym->name.u.ptr, name ) == 0 ) {
             DEBUG(( DBG_OLD, "- group %s found at %x", name, currgrp ));
             return( currgrp );
         }

@@ -83,7 +83,7 @@ static void BadLibrary( file_list *list )
     list->file->flags |= INSTAT_IOERR;
     _LnkFree( list->u.dict );
     list->u.dict = NULL;
-    Locator( list->file->name, NULL, 0 );
+    Locator( list->file->name.u.ptr, NULL, 0 );
     LnkMsg( ERR+MSG_LIB_FILE_ATTR, NULL );
 }
 
@@ -327,7 +327,7 @@ static bool ReadARDict( file_list *list, unsigned long *loc, bool makedict )
     }
     if( makedict ) {
         if( numdicts == 0 ) {
-            Locator( list->file->name, NULL, 0 );
+            Locator( list->file->name.u.ptr, NULL, 0 );
             LnkMsg( ERR+MSG_NO_DICT_FOUND, NULL );
             _LnkFree( list->u.dict );
             list->u.dict = NULL;
@@ -398,7 +398,7 @@ mod_entry *SearchLib( file_list *lib, const char *name )
     update lib struct since we found desired object file
 */
     obj = NewModEntry();
-    obj->name = IdentifyObject( lib, &pos, &dummy );
+    obj->name.u.ptr = IdentifyObject( lib, &pos, &dummy );
     obj->location = pos;
     obj->f.source = lib;
     obj->modtime = lib->file->modtime;
@@ -468,11 +468,11 @@ static void SetDict( file_list *lib, unsigned dict_page )
         residue = pages - num_buckets * PAGES_IN_CACHE;
         dict->cache = AllocDict( num_buckets, residue );
         if( dict->cache != NULL ) {
-            QSeek( lib->file->handle, dict->start, lib->file->name );
+            QSeek( lib->file->handle, dict->start, lib->file->name.u.ptr );
             for( bucket = 0; bucket < num_buckets; ++bucket ) {
-                QRead( lib->file->handle, dict->cache[ bucket ], DIC_REC_SIZE * PAGES_IN_CACHE, lib->file->name );
+                QRead( lib->file->handle, dict->cache[ bucket ], DIC_REC_SIZE * PAGES_IN_CACHE, lib->file->name.u.ptr );
             }
-            QRead( lib->file->handle, dict->cache[bucket], DIC_REC_SIZE * residue, lib->file->name );
+            QRead( lib->file->handle, dict->cache[bucket], DIC_REC_SIZE * residue, lib->file->name.u.ptr );
             lib->file->currpos = dict->start + DIC_REC_SIZE * ( residue + PAGES_IN_CACHE * num_buckets );
         }
     }
@@ -480,8 +480,8 @@ static void SetDict( file_list *lib, unsigned dict_page )
         off = dict_page * DIC_REC_SIZE;
         dictoff = dict->start + off;
         dict->buffer = (unsigned_8 *)TokBuff;
-        QSeek( lib->file->handle, dictoff, lib->file->name );
-        QRead( lib->file->handle, dict->buffer, DIC_REC_SIZE, lib->file->name );
+        QSeek( lib->file->handle, dictoff, lib->file->name.u.ptr );
+        QRead( lib->file->handle, dict->buffer, DIC_REC_SIZE, lib->file->name.u.ptr );
         lib->file->currpos = dictoff + DIC_REC_SIZE;
     } else {
         bucket = dict_page / PAGES_IN_CACHE;

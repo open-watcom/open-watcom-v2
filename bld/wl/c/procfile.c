@@ -102,7 +102,7 @@ void SetupFakeModule( void )
     if( FmtData.type & MK_PE ) {
         FakeModule = NewModEntry();
         FakeModule->modinfo = DBI_ALL|MOD_LAST_SEG|MOD_NEED_PASS_2|FMT_PE_XFER;
-        FakeModule->name = AddStringStringTable( &PermStrings, LinkerModule );
+        FakeModule->name.u.ptr = AddStringStringTable( &PermStrings, LinkerModule );
         DBIInitModule( FakeModule );
     }
 }
@@ -124,11 +124,11 @@ static void CheckNewFile( mod_entry *mod, file_list *list,
     time_t      modtime;
 
     if( (LinkFlags & GOT_CHGD_FILES) == 0 || AlwaysCheckUsingDate ) {
-        if( QModTime( list->file->name, &modtime ) || modtime > mod->modtime ) {
+        if( QModTime( list->file->name.u.ptr, &modtime ) || modtime > mod->modtime ) {
             list->status |= STAT_HAS_CHANGED;
         }
     } else {
-        if( FindHTableElem( Root->modFilesHashed, list->file->name ) ) {
+        if( FindHTableElem( Root->modFilesHashed, list->file->name.u.ptr ) ) {
             list->status |= STAT_HAS_CHANGED;
         }
     }
@@ -158,13 +158,13 @@ static void SetupModule( mod_entry **mod, file_list *list )
     currmod = *mod;
 
     CheckNewFile( currmod, list, 0 );
-    fname = currmod->f.fname;
+    fname = currmod->f.fname.u.ptr;
     for( ;; ) {
         currmod->f.source = list;
         currmod = currmod->n.next_mod;
         if( currmod == NULL )
             break;
-        if( currmod->f.fname != fname ) {
+        if( currmod->f.fname.u.ptr != fname ) {
             break;
         }
     }
@@ -193,7 +193,7 @@ static libnamelist *CalcLibBlacklist( void )
     for( oldlibs = SavedUserLibs; oldlibs != NULL; oldlibs = oldlibs->next ) {
         if( userlibs == NULL )
             return( oldlibs );
-        if( FNAMECMPSTR( userlibs->name, oldlibs->name ) != 0 )
+        if( FNAMECMPSTR( userlibs->name.u.ptr, oldlibs->name ) != 0 )
             return( oldlibs );
         userlibs = userlibs->next;
     }
@@ -209,12 +209,12 @@ static void CheckBlacklist( file_list *list, libnamelist *blacklist )
 
     if( list->status & STAT_HAS_CHANGED )
         return;
-    length = strlen( list->file->name );
+    length = strlen( list->file->name.u.ptr );
     for( ; blacklist != NULL; blacklist = blacklist->next ) {
         length_b = strlen( blacklist->name );
         if( length >= length_b ) {
             delta = length - length_b;
-            if( FNAMECMPSTR( blacklist->name,list->file->name + delta ) == 0 ) {
+            if( FNAMECMPSTR( blacklist->name, list->file->name.u.ptr + delta ) == 0 ) {
                 list->status |= STAT_HAS_CHANGED;
                 return;
             }
@@ -232,10 +232,10 @@ static void PrepareModList( void )
 
     mod = Root->mods;
     for( list = Root->files; list != NULL && mod != NULL; list = list->next_file ) {
-        if( strcmp( list->file->name, mod->f.fname ) == 0 ) {
+        if( strcmp( list->file->name.u.ptr, mod->f.fname.u.ptr ) == 0 ) {
             SetupModule( &mod, list );
         } else if( mod->n.next_mod != NULL ) {
-            if( FNAMECMPSTR( list->file->name, mod->n.next_mod->f.fname ) == 0 ) {
+            if( FNAMECMPSTR( list->file->name.u.ptr, mod->n.next_mod->f.fname.u.ptr ) == 0 ) {
                 mod->modinfo |= MOD_KILL;
                 mod = mod->n.next_mod;
                 SetupModule( &mod, list );
@@ -247,14 +247,14 @@ static void PrepareModList( void )
     }
     blacklist = CalcLibBlacklist();
     for( mod = LibModules; mod != NULL; mod = mod->n.next_mod ) {
-        if( mod->f.fname == NULL ) {
+        if( mod->f.fname.u.ptr == NULL ) {
             mod->modinfo |= MOD_KILL;
         } else if( (mod->modinfo & MOD_VISITED) == 0 ) {
-            list = AddObjLib( mod->f.fname, LIB_PRIORITY_MID );
+            list = AddObjLib( mod->f.fname.u.ptr, LIB_PRIORITY_MID );
             CheckNewFile( mod, list, 1);
             CheckBlacklist( list, blacklist );
             for( curr = mod->n.next_mod; curr != NULL; curr = curr->n.next_mod){
-                if( curr->f.fname == mod->f.fname ) {
+                if( curr->f.fname.u.ptr == mod->f.fname.u.ptr ) {
                     curr->f.source = list;
                     curr->modinfo |= MOD_VISITED;
                 }
@@ -522,9 +522,9 @@ static void DoPass1( mod_entry *next, file_list *list )
                 AddToModList( next );
                 next->location = loc;
                 if( membname == NULL ) {
-                    membname = ChkStrDup( list->file->name );
+                    membname = ChkStrDup( list->file->name.u.ptr );
                 }
-                next->name = membname;
+                next->name.u.ptr = membname;
                 loc = ObjPass1();
                 if( list->status & STAT_TRACE_SYMS ) {
                     TraceSymList( CurrMod->publist );
@@ -542,8 +542,7 @@ static void DoPass1( mod_entry *next, file_list *list )
             }
         }
         if( list->u.member != NULL ) {
-            LnkMsg( ERR+MSG_CANT_FIND_MEMBER, "12", list->file->name,
-                                                    list->u.member->name );
+            LnkMsg( ERR+MSG_CANT_FIND_MEMBER, "12", list->file->name.u.ptr, list->u.member->name );
         }
         CacheClose( list, 1 );
     }
@@ -646,8 +645,8 @@ unsigned long ObjPass1( void )
     CollapseLazyExtdefs();
     SymModEnd();
     if( (CurrMod->modinfo & MOD_GOT_NAME) == 0 ) {
-        savename = CurrMod->name;
-        CurrMod->name = AddStringStringTable( &PermStrings, savename );
+        savename = CurrMod->name.u.ptr;
+        CurrMod->name.u.ptr = AddStringStringTable( &PermStrings, savename );
         _LnkFree( savename );
         CurrMod->modinfo |= MOD_GOT_NAME;
     }
@@ -704,7 +703,7 @@ void ResolveUndefined( void )
                  || (FmtData.type & MK_NOVELL) && IS_SYM_IMPORTED( sym )
                     && (sym->info & (SYM_REFERENCED | SYM_LOCAL_REF)) )
                 && (sym->info & SYM_IS_ALTDEF) == 0 ) {
-                LibFind( sym->name, (sym->info & SYM_CHECKED) != 0 );
+                LibFind( sym->name.u.ptr, (sym->info & SYM_CHECKED) != 0 );
             }
             sym->info |= SYM_CHECKED;
         }

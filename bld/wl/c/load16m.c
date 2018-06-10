@@ -428,7 +428,7 @@ static void RemapAliasSels( void *_leader )
 
     if( leader->info & SEG_ABSOLUTE ) {
         sect = Root;
-        while( (seg = FindSegment( sect, leader->segname )) != NULL ) {
+        while( (seg = FindSegment( sect, leader->segname.u.ptr )) != NULL ) {
             sect = NULL;
             if( (seg->info & SEG_ABSOLUTE) == 0 ) {
                 seg->info |= SEG_ABSOLUTE;

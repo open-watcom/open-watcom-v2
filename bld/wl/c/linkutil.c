@@ -229,7 +229,7 @@ static class_entry  *class = NULL;
     }
     for( ; class != NULL; class = class->next_class ) {
         while( (seg = RingStep( class->segs, seg )) != NULL ) {
-            if( stricmp( seg->segname, name ) == 0 ) {
+            if( stricmp( seg->segname.u.ptr, name ) == 0 ) {
                 return( seg );
             }
         }
@@ -274,7 +274,7 @@ obj_name_list *AddNameTable( const char *name, size_t len, bool is_mod, obj_name
     index = 1;
     off = 1;
     for( imp = *owner; imp != NULL; imp = imp->next ) {
-        if( len == imp->len && memcmp( imp->name, name, len ) == 0 )
+        if( len == imp->len && memcmp( imp->name.u.ptr, name, len ) == 0 )
             break;
         off += imp->len + 1;
         ++index;
@@ -284,7 +284,7 @@ obj_name_list *AddNameTable( const char *name, size_t len, bool is_mod, obj_name
         _PermAlloc( imp, sizeof( obj_name_list ) );
         imp->next = NULL;
         imp->len = len;
-        imp->name = AddSymbolStringTable( &PermStrings, name, len );
+        imp->name.u.ptr = AddSymbolStringTable( &PermStrings, name, len );
         imp->num = is_mod ? index : off;
         *owner = imp;
     }

@@ -420,7 +420,7 @@ static void CheckRWData( target_spec *target, targ_addr *addr )
         if( !IS_SYM_IMPORTED( target->u.sym ) && !IsReadOnly( GetTargetSegData( target ) ) ) {
             if( !IS_DBG_INFO( CurrRec.seg->u.leader ) ) {
                 if( target->type == FIX_TARGET_SEG ) {
-                    sym.name = target->u.sdata->u.leader->segname;
+                    sym.name.u.ptr = target->u.sdata->u.leader->segname.u.ptr;
                     LnkMsg( LOC+WRN+MSG_RELOC_TO_RWDATA_SEG, "aS", addr, &sym );
                 } else if( target->type == FIX_TARGET_EXT ) {
                     LnkMsg( LOC+WRN+MSG_RELOC_TO_RWDATA_SEG, "aS", addr, target->u.sym );

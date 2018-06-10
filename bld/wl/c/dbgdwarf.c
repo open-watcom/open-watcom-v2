@@ -231,7 +231,7 @@ static int GetStmtHeaderSize( mod_entry *mod )
     int         len;
 
     len = sizeof( stmt_prologue );  // fixed size
-    len += 1 + strlen( mod->name ) + 1 + 3 + 1;
+    len += 1 + strlen( mod->name.u.ptr ) + 1 + 3 + 1;
     return( len );
 }
 
@@ -297,7 +297,7 @@ void DwarfP1ModuleFinished( mod_entry *mod )
     }
     /* add length of compile unit header, abrrev code, module name, producer, stmts offset and reserve one byte for end */
     mod->d.d->pubsym.u.vm_offs = SectionTable[SECT_DEBUG_INFO].size;
-    mod->d.d->pubsym.size += sizeof( compuhdr_prologue ) + sizeof( unsigned_8 ) + strlen( mod->name ) + 1 + sizeof( WLINK_PRODUCER ) + 1;
+    mod->d.d->pubsym.size += sizeof( compuhdr_prologue ) + sizeof( unsigned_8 ) + strlen( mod->name.u.ptr ) + 1 + sizeof( WLINK_PRODUCER ) + 1;
     if( mod->d.d->dasi.size > 0 )
         mod->d.d->pubsym.size += sizeof( unsigned_32 ); // DW_AT_STMT_LIST
     SectionTable[SECT_DEBUG_INFO].size += mod->d.d->pubsym.size;
@@ -372,8 +372,8 @@ void DwarfAddModule( mod_entry *mod, section *sect )
         PutInfo( mod->d.d->pubsym.u.vm_ptr, &abbrev_code, sizeof( abbrev_code ) );
         mod->d.d->pubsym.u.vm_ptr += sizeof( abbrev_code );
         /* output module name */
-        namelen = strlen( mod->name ) + 1;
-        PutInfo( mod->d.d->pubsym.u.vm_ptr, mod->name, namelen );
+        namelen = strlen( mod->name.u.ptr ) + 1;
+        PutInfo( mod->d.d->pubsym.u.vm_ptr, mod->name.u.ptr, namelen );
         mod->d.d->pubsym.u.vm_ptr += namelen;
         /* output producer */
         PutInfo( mod->d.d->pubsym.u.vm_ptr, WLINK_PRODUCER, sizeof( WLINK_PRODUCER ) );
@@ -407,7 +407,7 @@ void DwarfAddModule( mod_entry *mod, section *sect )
             PutInfoNulls( mod->d.d->dasi.u.vm_ptr, 1 );  // no include directories;
             mod->d.d->dasi.u.vm_ptr += 1;
             buff = alloca( namelen + 3 );
-            memcpy( &buff[0], mod->name, namelen );
+            memcpy( &buff[0], mod->name.u.ptr, namelen );
             buff[namelen + 0] = 0;          // no directory index
             buff[namelen + 1] = 0;          // no time
             buff[namelen + 2] = 0;          // no length
@@ -450,7 +450,7 @@ static void DefAClass( void *_seg )
     seg->group->grp_addr.seg = 0;
     if( SectionTable[SECT_DEBUG_INFO].size > 0 ) {
         for( index = 0; index < SECT_NUM_SECTIONS; index++ ) {
-            if( stricmp( seg->segname, SectionTable[index].name ) == 0 ) {
+            if( stricmp( seg->segname.u.ptr, SectionTable[index].name ) == 0 ) {
                 seg->dbgtype = index + DWARF_DEBUG_INFO;
                 SectionTable[index].start = seg->size;
                 break;
@@ -477,7 +477,7 @@ void DwarfAddGlobal( symbol *sym )
 {
     /* unused parameters */ (void)sym;
 
-    CurrMod->d.d->pubsym.size += strlen( sym->name ) + sizeof( symbol_die ) + 1;
+    CurrMod->d.d->pubsym.size += strlen( sym->name.u.ptr ) + sizeof( symbol_die ) + 1;
     if( FmtData.type & MK_SEGMENTED ) {
         CurrMod->d.d->pubsym.size += sizeof( symbol_seg );
     }
@@ -535,8 +535,8 @@ void DwarfGenGlobal( symbol *sym, section *sect )
             PutInfo( vmem_addr, &symseg, sizeof( symbol_seg ) );
             vmem_addr += sizeof( symbol_seg );
         }
-        len = strlen( sym->name ) + 1;
-        PutInfo( vmem_addr, sym->name, len );
+        len = strlen( sym->name.u.ptr ) + 1;
+        PutInfo( vmem_addr, sym->name.u.ptr, len );
         CurrMod->d.d->pubsym.u.vm_ptr = vmem_addr + len;
     }
 }
@@ -776,7 +776,7 @@ static unsigned_32 WriteELFSections( unsigned_32 file_off, unsigned_32 curr_off,
                 addsize = SectionTable[addidx].size;
             }
             if( seg->size != 0 ) {
-                FillHeader( hdr, seg->segname, strtab, curr_off );
+                FillHeader( hdr, seg->segname.u.ptr, strtab, curr_off );
                 hdr->sh_size = seg->size + addsize;
                 WriteLeaderLoad( seg );
                 if( addsize != 0 ) {

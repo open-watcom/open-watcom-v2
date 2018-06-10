@@ -143,11 +143,11 @@ void DataRef( symbol * sym )
 /* symbol referenced from data, so make sure it is included */
 {
     if( (LinkState & HAVE_PPC_CODE) && (FmtData.type & MK_PE) ) {
-        size_t      len = strlen( sym->name ) + 3;
+        size_t      len = strlen( sym->name.u.ptr ) + 3;
         char        *s = alloca( len );
 
-        s[ 0 ] = s[ 1 ] = '.';
-        strcpy( s + 2, sym->name );
+        s[0] = s[1] = '.';
+        strcpy( s + 2, sym->name.u.ptr );
         sym = SymOp( ST_FIND, s, len - 1 );
     }
     if( (sym->info & SYM_DEFINED) && !IS_SYM_IMPORTED( sym ) ) {

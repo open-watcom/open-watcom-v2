@@ -87,11 +87,11 @@ static size_t create_sym_extname( symbol *sym, char *ext_name )
         strcpy( ext_name, sym->prefix );    // len < 255
         strcat( ext_name, "@" );
     }
-    len = strlen( sym->name );
+    len = strlen( sym->name.u.ptr );
     len1 = strlen( ext_name );
     if( len + len1 > 255 )
         len = 255 - len1;
-    memcpy( ext_name + len1, sym->name, len );
+    memcpy( ext_name + len1, sym->name.u.ptr, len );
     len += len1;
     ext_name[len] = '\0';
     return( len );
@@ -158,9 +158,9 @@ static unsigned_32 WriteNovExports( fixed_header *header )
 
     count = wrote = 0;
     for( export = FmtData.u.nov.exp.export; export != NULL; export = export->next ) {
-        sym = SymOp( ST_FIND, export->name, export->len );
+        sym = SymOp( ST_FIND, export->name.u.ptr, export->len );
         if( ( sym == NULL ) || (sym->info & SYM_DEFINED) == 0 ) {
-            LnkMsg( WRN+MSG_EXP_SYM_NOT_FOUND, "s", export->name );
+            LnkMsg( WRN+MSG_EXP_SYM_NOT_FOUND, "s", export->name.u.ptr );
         } else if( !IS_SYM_IMPORTED( sym ) ) {
             char    ext_name[255 + 1];
 
@@ -175,7 +175,7 @@ static unsigned_32 WriteNovExports( fixed_header *header )
             wrote += sizeof( unsigned_32 );
             count++;
 
-            AddImpLibEntry( sym->name, ext_name, NOT_IMP_BY_ORDINAL );
+            AddImpLibEntry( sym->name.u.ptr, ext_name, NOT_IMP_BY_ORDINAL );
         }
     }
     header->numberOfPublics = count;
@@ -191,7 +191,7 @@ static unsigned_32 WriteNovModules( fixed_header *header )
 
     count = wrote = 0;
     for( module = FmtData.u.nov.exp.module; module != NULL; module = module->next ) {
-        wrote += WriteLoadU8Name( module->name, module->len, false );
+        wrote += WriteLoadU8Name( module->name.u.ptr, module->len, false );
         count++;
     }
     header->numberOfModuleDependencies = count;
@@ -210,7 +210,7 @@ void NovDBIAddGlobal( void *_sym )
             && !sym->p.seg->isabs
             && (sym->info & SYM_STATIC) == 0
             && (FmtData.u.nov.flags & DO_NOV_EXPORTS) == 0 ) {
-        DbgInfoLen += sizeof( nov_dbg_info ) + strlen( sym->name );
+        DbgInfoLen += sizeof( nov_dbg_info ) + strlen( sym->name.u.ptr );
     }
 }
 
@@ -240,13 +240,13 @@ void NovDBIGenGlobal( symbol *sym )
         info.offset = sym->addr.off;
         PutInfo( CurrDbgLoc, &info, offsetof( nov_dbg_info, namelen ) );
         CurrDbgLoc += offsetof( nov_dbg_info, namelen );
-        namelen = strlen( sym->name );
+        namelen = strlen( sym->name.u.ptr );
         if( namelen > 255 )
             namelen = 255;
         val8 = namelen;
         PutInfo( CurrDbgLoc, &val8, 1 );
         CurrDbgLoc++;
-        PutInfo( CurrDbgLoc, sym->name, namelen );
+        PutInfo( CurrDbgLoc, sym->name.u.ptr, namelen );
         CurrDbgLoc += namelen;
     }
 }
@@ -267,7 +267,7 @@ static unsigned_32 WriteNovDBI( fixed_header *header )
     } else if( FmtData.u.nov.flags & DO_NOV_EXPORTS ) {
         count = wrote = 0;
         for( export = FmtData.u.nov.exp.export; export != NULL; export = export->next ) {
-            sym = SymOp( ST_FIND, export->name, export->len );
+            sym = SymOp( ST_FIND, export->name.u.ptr, export->len );
             if( ( sym != NULL ) && !IS_SYM_IMPORTED( sym ) ) {
                 if( sym->addr.seg == DATA_SEGMENT ) {
                     info.type = DBG_DATA;
@@ -276,7 +276,7 @@ static unsigned_32 WriteNovDBI( fixed_header *header )
                 }
                 info.offset = sym->addr.off;
                 WriteLoad( &info, offsetof( nov_dbg_info, namelen ) );
-                wrote += offsetof( nov_dbg_info, namelen ) + WriteLoadU8Name( export->name, export->len, false );
+                wrote += offsetof( nov_dbg_info, namelen ) + WriteLoadU8Name( export->name.u.ptr, export->len, false );
                 count++;
             }
         }
@@ -371,7 +371,7 @@ static void GetProcOffsets( fixed_header *header )
         }
     }
     if( StartInfo.type == START_IS_SYM ) {
-        name = StartInfo.targ.sym->name;
+        name = StartInfo.targ.sym->name.u.ptr;
     } else {
         name = DEFAULT_PRELUDE_FN_CLIB;
     }
@@ -707,9 +707,9 @@ void FindExportedSyms( void )
     dinfo = CurrSect->dbg_info;
     if( (FmtData.u.nov.flags & DO_WATCOM_EXPORTS) && ( dinfo != NULL ) ) {
         for( export = FmtData.u.nov.exp.export; export != NULL; export = export->next ) {
-            sym = SymOp( ST_FIND, export->name, export->len );
+            sym = SymOp( ST_FIND, export->name.u.ptr, export->len );
             if( ( sym != NULL ) && !IS_SYM_IMPORTED( sym ) ) {
-                dinfo->global.curr.u.vm_offs += sizeof( v3_gbl_info ) + strlen( sym->name );
+                dinfo->global.curr.u.vm_offs += sizeof( v3_gbl_info ) + strlen( sym->name.u.ptr );
             }
         }
     }

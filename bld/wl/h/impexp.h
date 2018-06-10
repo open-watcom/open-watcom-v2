@@ -32,7 +32,7 @@
 
 typedef struct entry_export {
     struct entry_export     *next;
-    char                    *name;
+    name_strtab             name;
     ordinal_t               ordinal;
     unsigned_16             iopl_words;
     bool                    isresident  : 1;

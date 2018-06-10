@@ -307,7 +307,7 @@ void ODBIP1ModuleFinished( mod_entry *obj )
         DBILineWalk( obj->lines, ODBIAddLines );
     }
     Ring2Walk( obj->publist, DBIModGlobal );
-    dinfo->mod.curr.u.vm_offs += strlen( obj->name ) + sizeof( mod_dbg_info );
+    dinfo->mod.curr.u.vm_offs += strlen( obj->name.u.ptr ) + sizeof( mod_dbg_info );
     dinfo->linelinks.size = 0;
 }
 
@@ -344,9 +344,9 @@ void ODBIAddGlobal( symbol *sym )
     if( dinfo == NULL )
         return;
     if( ODBISymIsForGlobalDebugging( sym, CurrMod ) ) {
-        len = strlen( sym->name );
+        len = strlen( sym->name.u.ptr );
         if( len > 255 ) {
-            LnkMsg( WRN+MSG_SYMBOL_NAME_TOO_LONG, "s", sym->name );
+            LnkMsg( WRN+MSG_SYMBOL_NAME_TOO_LONG, "s", sym->name.u.ptr );
             len = 255;
         }
         dinfo->global.curr.u.vm_offs += sizeof( v3_gbl_info ) + len;
@@ -452,7 +452,7 @@ void ODBIGenGlobal( symbol *sym, section *sect )
     if( dptr == NULL )
         return;
     if( ODBISymIsForGlobalDebugging( sym, CurrMod ) ) {
-        len = strlen( sym->name );
+        len = strlen( sym->name.u.ptr );
         if( len > 255 ) {
             len = 255;
         }
@@ -471,7 +471,7 @@ void ODBIGenGlobal( symbol *sym, section *sect )
                 data->kind |= GBL_KIND_DATA;
             }
         }
-        DoName( sym->name, data->name, len );
+        DoName( sym->name.u.ptr, data->name, len );
         len += sizeof( v3_gbl_info );
         DumpInfo( dptr, data, len );
         dptr->global.size += len;
@@ -767,7 +767,7 @@ void ODBIGenModule( void )
     if( ( dptr == NULL ) || (CurrMod->modinfo & DBI_ALL) == 0 )
         return;
     rec = CurrMod->d.o;
-    len = strlen( CurrMod->name );
+    len = strlen( CurrMod->name.u.ptr );
     if( len > 255 )
         len = 255;
     info = (mod_dbg_info *)alloca( sizeof( mod_dbg_info ) + len );
@@ -777,7 +777,7 @@ void ODBIGenModule( void )
     _HostU32toTarg( rec->locals.offset, info->di[DMND_LOCALS].info_off );
     _HostU16toTarg( rec->lines.num, info->di[DMND_LINES].u.entries );
     _HostU32toTarg( rec->lines.offset, info->di[DMND_LINES].info_off );
-    DoName( CurrMod->name, info->name, len );
+    DoName( CurrMod->name.u.ptr, info->name, len );
     info->language = rec->dbisourceoffset;
     len += sizeof( mod_dbg_info );
     PutInfo( dptr->mod.curr.u.vm_ptr, (char *)info, len );

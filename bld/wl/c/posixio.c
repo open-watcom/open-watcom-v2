@@ -434,7 +434,8 @@ int WaitForKey( void )
     new.c_cc[VMIN] = 1;
     new.c_cc[VTIME] = 0;
     tcsetattr( 0, TCSANOW, &new );
-    read( 0, &result, 1 );
+    if( read( 0, &result, 1 ) != 1 )
+        result = '\0';
     tcsetattr( 0, TCSANOW, &old );
     return( result );
 }

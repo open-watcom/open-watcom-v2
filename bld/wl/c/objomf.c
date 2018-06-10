@@ -609,7 +609,7 @@ static void ProcModuleEnd( void )
             break;
         case TARGET_EXTWD:
             ext = (extnode *)FindNode( ExtNodes, targetidx );
-            SetStartSym( ext->entry->name );
+            SetStartSym( ext->entry->name.u.ptr );
             break;
         case TARGET_ABSWD:
         case TARGET_GRPWD:
@@ -699,7 +699,7 @@ static void ProcSegDef( void )
         ObjBuff += sizeof( unsigned_16 );
     }
     name = FindName( GetIdx() );
-    sdata->u.name = name->name;
+    sdata->u.name.u.ptr = name->name;
     clname = FindName( GetIdx() );
     if( ObjFormat & FMT_EASY_OMF ) {
         SkipIdx();                          // skip overlay name index

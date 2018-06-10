@@ -264,17 +264,17 @@ static void CarveDebugFree( carve_t cv, void *elm )
     /* make sure object is from this carve allocator */
     for( block = cv->blk_list; block != NULL; block = block->next ) {
         start = block->data;
-        compare = (char *)start + cv->blk_top;
+        compare = start + cv->blk_top;
 #if ! ( defined(__COMPACT__) || defined(__LARGE__) )
         /* quick check */
-        if( elm < start || elm > compare ) {
+        if( (char *)elm < start || (char *)elm > compare ) {
             continue;
         }
 #endif
         esize = cv->elm_size;
         for(;;) {
             if( compare == start ) break;
-            compare = (char *)compare - esize;
+            compare = compare - esize;
             if( elm == compare ) break;
         }
         if( elm == compare ) break;

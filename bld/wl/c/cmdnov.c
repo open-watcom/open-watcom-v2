@@ -202,7 +202,7 @@ static bool GetNovImport( void )
     }
 
 #ifndef NDEBUG
-    printf( "imported %s from %s\n", sym->name, ( sym->prefix != NULL ) ? sym->prefix : "(NONE)" );
+    printf( "imported %s from %s\n", sym->name.u.ptr, ( sym->prefix != NULL ) ? sym->prefix : "(NONE)" );
 #endif
 
     SET_SYM_TYPE( sym, SYM_IMPORTED );

@@ -117,7 +117,7 @@ void AddSymElfSymTable( ElfSymTable *tab, symbol *sym )
 
     DbgAssert(tab->numElems < tab->maxElems);
     tab->table[tab->numElems] = sym;
-    hash = ElfHash( sym->name ) % tab->numBuckets;
+    hash = ElfHash( sym->name.u.ptr ) % tab->numBuckets;
     tab->chains[tab->numElems] = tab->buckets[hash];
     tab->buckets[hash] = tab->numElems;
     tab->numElems++;
@@ -130,7 +130,7 @@ int FindSymIdxElfSymTable( ElfSymTable *tab, symbol *sym )
     unsigned_32 idx;
     symbol *s;
 
-    hash = ElfHash(sym->name) % tab->numBuckets;
+    hash = ElfHash( sym->name.u.ptr ) % tab->numBuckets;
     idx = tab->buckets[hash];
     DbgAssert(idx < tab->maxElems);
     for(s = tab->table[idx]; s != NULL && s != sym;
@@ -214,7 +214,7 @@ void WriteElfSymTable( ElfSymTable *tab, ElfHdr *hdr, int hashidx,
     WriteLoad( &elfsym, sizeof( elfsym ) );
     for( i = 1; i < tab->numElems; i++ ) {
         sym = tab->table[i];
-        elfsym.st_name = AddStringStringTableOffs( tab->strtab, sym->name );
+        elfsym.st_name = AddStringStringTableOffs( tab->strtab, sym->name.u.ptr );
         if( tableSH->sh_info == 0 && (sym->info & SYM_STATIC) == 0 ) {
             tableSH->sh_info = i;
         }

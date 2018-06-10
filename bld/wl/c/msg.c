@@ -198,10 +198,10 @@ size_t DoFmtStr( char *buff, size_t len, const char *src, va_list *args )
             switch( ch ) {
             case 'S' :
                 if( UseArgInfo() ) {
-                    str = MsgArgInfo.arg[MsgArgInfo.index].symb->name;
+                    str = MsgArgInfo.arg[MsgArgInfo.index].symb->name.u.ptr;
                     IncremIndex();
                 } else {
-                    str = va_arg( *args, symbol * )->name;
+                    str = va_arg( *args, symbol * )->name.u.ptr;
                 }
                 if( (LinkFlags & DONT_UNMANGLE) == 0 ) {
                     size = __demangle_l( str, 0, dest, len );
@@ -377,7 +377,7 @@ static void LocateFile( unsigned num )
                 Locator( CmdFile->name, NULL, 0 );
             }
          } else {
-            Locator( CurrMod->f.source->file->name, CurrMod->name, rec );
+            Locator( CurrMod->f.source->file->name.u.ptr, CurrMod->name.u.ptr, rec );
         }
     }
 }
@@ -608,7 +608,7 @@ bool SkipSymbol( symbol * sym )
 
     if( (sym->info & SYM_STATIC) && (MapFlags & MAP_STATICS) == 0 )
         return( true );
-    art = __is_mangled_internal( sym->name, strlen( sym->name ) );
+    art = __is_mangled_internal( sym->name.u.ptr, strlen( sym->name.u.ptr ) );
     return( (MapFlags & MAP_ARTIFICIAL) == 0 && art == __MANGLED_INTERNAL );
 }
 
@@ -626,11 +626,11 @@ int SymAlphaCompare( const void *a, const void *b )
     left = *((symbol **) a);
     right = *((symbol **) b);
     if( (LinkFlags & DONT_UNMANGLE) == 0 ) {
-        __unmangled_name( left->name, 0, &leftname, &leftsize );
-        __unmangled_name( right->name, 0, &rightname, &rightsize );
+        __unmangled_name( left->name.u.ptr, 0, &leftname, &leftsize );
+        __unmangled_name( right->name.u.ptr, 0, &rightname, &rightsize );
     } else {
-        leftname = left->name;
-        rightname = right->name;
+        leftname = left->name.u.ptr;
+        rightname = right->name.u.ptr;
         leftsize = strlen( leftname );
         rightsize = strlen( rightname );
     }
