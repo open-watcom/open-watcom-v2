@@ -75,7 +75,7 @@ typedef enum            // OPAC -- operation actions
 ,   REQD_LVALUE_LEFT    // - required: lvalue on left
 ,   REQD_NOT_ENUM_LEFT  // - required: left must not be enum variable
 #if 0
-,   REQD_NOT_BOOL_LEFT  // - required: left must not be enum variable
+,   REQD_NOT_BOOL_LEFT  // - required: left must not be bool variable
 #endif
 ,   REQD_ENUM_SAME      // - required: if enum, must be same enum
 ,   REQD_ZERO_LEFT      // - required: left must be 0 integer constant
@@ -1515,6 +1515,8 @@ static void warnUselessCompare( // WARN IF COMPARISON IS USELESS (CONSTANT)
     bool        constant_left;
     CGOP        cgop;
 
+    op1 = NULL;
+    op2 = NULL;
     constant_right = false;
     constant_left = false;
     cgop = expr->cgop;
@@ -2745,9 +2747,6 @@ PTREE AnalyseOperator(          // ANALYSE AN OPERATOR
     temp_class = TEMP_TYPE_NONE;
     action_code = opr_rtn_table[expr->cgop][index];
     for( ap = opcomb_actions[action_code]; *ap < OPAC_END ; ++ap ) {
-        // The following label is goto'ed when a new string is set for
-        // analysis.
-start_opac_string:
         // The following cases "break" when an error is detected, and
         // will "continue" when successful
         switch( *ap ) {
@@ -3299,8 +3298,13 @@ start_opac_string:
             continue;
         case CONV_FUN_MP_CHECK :  // CHECK FOR MEMBPTR EXTENSION
             if( MembPtrExtension( right ) || MembPtrExtension( left ) ) {
-                ap = opac_memb_ptr_ext;
-                goto start_opac_string;
+                // check if new opac string is set for analysis
+                // fail if not set
+                if( opac_memb_ptr_ext == NULL )
+                    break;
+                // process new opac string
+                ap = opac_memb_ptr_ext - 1;
+                opac_memb_ptr_ext = NULL;
             }
             continue;
         case ASSIGN_OTHER :
