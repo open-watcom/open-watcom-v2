@@ -42,6 +42,99 @@
 #include "clibext.h"
 
 
+#define HELP_PREFIX     "HLP_"
+
+#define BUF_GROW        150
+
+#define ARG_DEFS() \
+    pick( ARG_I,    "i" ) \
+    pick( ARG_S,    "s" ) \
+    pick( ARG_K,    "k" ) \
+    pick( ARG_XL,   "xl" ) \
+    pick( ARG_DL,   "dl" ) \
+    pick( ARG_SL,   "sl" ) \
+    pick( ARG_OL,   "ol" ) \
+    pick( ARG_UL,   "ul" ) \
+    pick( ARG_H,    "h" ) \
+    pick( ARG_HH,   "hh" ) \
+    pick( ARG_HN,   "hn" ) \
+    pick( ARG_B,    "b" ) \
+    pick( ARG_UP,   "up" ) \
+    pick( ARG_IW,   "iw" ) \
+    pick( ARG_RTF,  "rtf" ) \
+    pick( ARG_IPF,  "ipf" ) \
+    pick( ARG_BL,   "bl" ) \
+    pick( ARG_T,    "t" ) \
+    pick( ARG_E,    "e" ) \
+    pick( ARG_RF,   "rf" ) \
+    pick( ARG_LK,   "lk" ) \
+    pick( ARG_KT,   "kt" ) \
+    pick( ARG_IB,   "ib" ) \
+    pick( ARG_RM,   "rm" ) \
+    pick( ARG_HD,   "hd" ) \
+    pick( ARG_FT,   "ft" ) \
+    pick( ARG_TAB,  "tab" ) \
+    pick( ARG_HB,   "hb" ) \
+    pick( ARG_BR,   "br" ) \
+    pick( ARG_TC,   "tc" ) \
+    pick( ARG_IX,   "ix" ) \
+    pick( ARG_KW,   "kw" ) \
+    pick( ARG_KB,   "kb" ) \
+    pick( ARG_TL,   "tl" ) \
+    pick( ARG_EX,   "ex" ) \
+    pick( ARG_MC,   "mc" ) \
+    pick( ARG_OF,   "@" ) \
+    pick( ARG_DT,   "dt" ) \
+    pick( ARG_DS,   "ds" ) \
+    pick( ARG_DPT,  "dpt" ) \
+    pick( ARG_DPK,  "dpk" ) \
+    pick( ARG_DPI,  "dpi" ) \
+    pick( ARG_DPB,  "dpb" ) \
+    pick( ARG_HTML, "html" ) \
+    pick( ARG_WIKI, "wiki" ) \
+    pick( ARG_END,  NULL )
+
+enum {
+    TITLE_CASE_UPPER,
+    TITLE_CASE_MIXED,
+    TITLE_CASE_LAST,
+};
+
+enum {
+    GEN_TITLE_CONTENTS,
+    GEN_TITLE_INDEX,
+    GEN_TITLE_KEYWORD,
+    GEN_TITLE_BROWSE,
+    GEN_TITLE_LAST,
+};
+
+enum {
+    #define pick(e,t) e,
+    ARG_DEFS()
+    #undef pick
+};
+
+enum {
+    OUT_RTF,
+    OUT_IPF,
+    OUT_IB,
+    OUT_HTML,
+    OUT_WIKI
+};
+
+/* global variables */
+
+char Help_fname[100];
+char Header_File[100];
+char Footer_File[100];
+
+char Fonttype_roman[] = "roman";
+char Fonttype_symbol[] = "symbol";
+char Fonttype_helv[] = "helv";
+char Fonttype_courier[] = "courier";
+
+/* local variables */
+
 static const char *Help_info[] = {
     "Usage: whpcvt [options] <in_file> [<out_file>]",
     "   Options for all help file types:",
@@ -110,78 +203,10 @@ static const char *Help_info[] = {
     NULL
 };
 
-#define ARG_DEFS() \
-    pick( ARG_I,    "i" ) \
-    pick( ARG_S,    "s" ) \
-    pick( ARG_K,    "k" ) \
-    pick( ARG_XL,   "xl" ) \
-    pick( ARG_DL,   "dl" ) \
-    pick( ARG_SL,   "sl" ) \
-    pick( ARG_OL,   "ol" ) \
-    pick( ARG_UL,   "ul" ) \
-    pick( ARG_H,    "h" ) \
-    pick( ARG_HH,   "hh" ) \
-    pick( ARG_HN,   "hn" ) \
-    pick( ARG_B,    "b" ) \
-    pick( ARG_UP,   "up" ) \
-    pick( ARG_IW,   "iw" ) \
-    pick( ARG_RTF,  "rtf" ) \
-    pick( ARG_IPF,  "ipf" ) \
-    pick( ARG_BL,   "bl" ) \
-    pick( ARG_T,    "t" ) \
-    pick( ARG_E,    "e" ) \
-    pick( ARG_RF,   "rf" ) \
-    pick( ARG_LK,   "lk" ) \
-    pick( ARG_KT,   "kt" ) \
-    pick( ARG_IB,   "ib" ) \
-    pick( ARG_RM,   "rm" ) \
-    pick( ARG_HD,   "hd" ) \
-    pick( ARG_FT,   "ft" ) \
-    pick( ARG_TAB,  "tab" ) \
-    pick( ARG_HB,   "hb" ) \
-    pick( ARG_BR,   "br" ) \
-    pick( ARG_TC,   "tc" ) \
-    pick( ARG_IX,   "ix" ) \
-    pick( ARG_KW,   "kw" ) \
-    pick( ARG_KB,   "kb" ) \
-    pick( ARG_TL,   "tl" ) \
-    pick( ARG_EX,   "ex" ) \
-    pick( ARG_MC,   "mc" ) \
-    pick( ARG_OF,   "@" ) \
-    pick( ARG_DT,   "dt" ) \
-    pick( ARG_DS,   "ds" ) \
-    pick( ARG_DPT,  "dpt" ) \
-    pick( ARG_DPK,  "dpk" ) \
-    pick( ARG_DPI,  "dpi" ) \
-    pick( ARG_DPB,  "dpb" ) \
-    pick( ARG_HTML, "html" ) \
-    pick( ARG_WIKI, "wiki" ) \
-    pick( ARG_END,  NULL )
-
-enum {
-    #define pick(e,t) e,
-    ARG_DEFS()
-    #undef pick
-};
-
 static char *Args[]={
     #define pick(e,t) t,
     ARG_DEFS()
     #undef pick
-};
-
-enum {
-    TITLE_CASE_UPPER,
-    TITLE_CASE_MIXED,
-    TITLE_CASE_LAST,
-};
-
-enum {
-    GEN_TITLE_CONTENTS,
-    GEN_TITLE_INDEX,
-    GEN_TITLE_KEYWORD,
-    GEN_TITLE_BROWSE,
-    GEN_TITLE_LAST,
 };
 
 static char *(Gen_titles[GEN_TITLE_LAST][TITLE_CASE_LAST])={
@@ -194,7 +219,6 @@ static char *(Gen_titles[GEN_TITLE_LAST][TITLE_CASE_LAST])={
 /* File stuff */
 static jmp_buf          Jmp_buf;
 static int              Line_buf_size;
-#define BUF_GROW        150
 
 /* Processing globals */
 static bool             Exclude_on = false;
@@ -216,13 +240,6 @@ static bool             Dump_popup_t = false;
 static bool             Dump_popup_k = false;
 static bool             Dump_popup_i = false;
 static bool             Dump_popup_b = false;
-enum {
-    OUT_RTF,
-    OUT_IPF,
-    OUT_IB,
-    OUT_HTML,
-    OUT_WIKI
-};
 static int              Output_type = OUT_RTF;
 
 
@@ -238,22 +255,11 @@ static char *Error_list[]={
     "Invalid number of parameters."
 };
 
-#define HELP_PREFIX     "HLP_"
+static char *Options_file = NULL;
 
 static char *Chk_buf = NULL;
 
 static char Output_file_ext[10];
-
-char Help_fname[100];
-char Header_File[100];
-char Footer_File[100];
-
-char *Options_file = NULL;
-
-char Fonttype_roman[] = "roman";
-char Fonttype_symbol[] = "symbol";
-char Fonttype_helv[] = "helv";
-char Fonttype_courier[] = "courier";
 
 static ctx_def **Ctx_list_end = NULL;
 
@@ -276,75 +282,57 @@ void error_quit( void )
     longjmp( Jmp_buf, 1 );
 }
 
-void error_str(
-/*************/
-
-    char                *err_str
-) {
+void error_str( char *err_str )
+/*****************************/
+{
     printf( "****%s\n", err_str );
     error_quit();
 }
 
-void error(
-/*********/
-
-    int                 err,
-    bool                line_num
-) {
+void error( int err, bool line_num )
+/**********************************/
+{
     if( line_num ) {
         printf( "Error in input file on line %d.\n", Line_num );
     }
     error_str( Error_list[err] );
 }
 
-void error_line(
-/**************/
-
-    int                 err,
-    int                 line_num
-) {
+void error_line( int err, int line_num )
+/**************************************/
+{
     Line_num = line_num;
 
     error( err, true );
 }
 
 
-void warning_str(
-/***************/
-
-    char                *warn_str
-) {
+void warning_str( char *warn_str )
+/********************************/
+{
     printf( "****%s\n", warn_str );
 }
 
-void warning(
-/***********/
-
-    int                 err,
-    bool                line_num
-) {
+void warning( int err, bool line_num )
+/************************************/
+{
     if( line_num ) {
         printf( "Warning - in input file on line %d.\n", Line_num );
     }
     warning_str( Error_list[err] );
 }
 
-void warning_line(
-/****************/
-
-    int                 err,
-    int                 line_num
-) {
+void warning_line( int err, int line_num )
+/****************************************/
+{
     Line_num = line_num;
 
     warning( err, true );
 }
 
-void *check_alloc(
-/****************/
-
-    size_t              size
-) {
+void *check_alloc( size_t size )
+/******************************/
+{
     void                *p;
 
     p = malloc( size );
@@ -356,12 +344,9 @@ void *check_alloc(
     return( p );
 }
 
-void *check_realloc(
-/******************/
-
-    void                *ptr,
-    size_t              size
-) {
+void *check_realloc( void *ptr, size_t size )
+/*******************************************/
+{
     ptr = realloc( ptr, size );
 
     if( ptr == NULL && size != 0 ) {
@@ -371,12 +356,9 @@ void *check_realloc(
     return( ptr );
 }
 
-static void check_brace(
-/**********************/
-
-    void                *buf,
-    int                 len
-) {
+static void check_brace( void *buf, int len )
+/*******************************************/
+{
     char                *ptr;
     char                ch;
     char                prev_ch;
@@ -395,13 +377,9 @@ static void check_brace(
     }
 }
 
-void whp_fprintf(
-/***************/
-
-    FILE                *file,
-    char                *fmt,
-    ...
-) {
+void whp_fprintf( FILE *file, char *fmt, ... )
+/********************************************/
+{
     va_list             arglist;
 
     if( Chk_buf == NULL ) {
@@ -417,24 +395,16 @@ void whp_fprintf(
     }
 }
 
-void whp_fwrite(
-/**************/
-
-    void                *buf,
-    int                 el_size,
-    int                 num_el,
-    FILE                *f
-) {
+void whp_fwrite( void *buf, int el_size, int num_el, FILE *f )
+/************************************************************/
+{
     check_brace( buf, el_size * num_el );
     fwrite( buf, el_size, num_el, f );
 }
 
-static int process_args(
-/**********************/
-
-    int                 argc,
-    char                *argv[]
-) {
+static int process_args( int argc, char *argv[] )
+/***********************************************/
+{
     int                 i;
     int                 start_arg;
 
@@ -690,12 +660,9 @@ static int process_args(
     return( start_arg );
 }
 
-static int valid_args(
-/********************/
-
-    int                 argc,
-    char                *argv[]
-) {
+static int valid_args( int argc, char *argv[] )
+/*********************************************/
+{
     int                 start_arg;
     FILE                *opt_file;
     char                line[200];
@@ -807,11 +774,9 @@ static int valid_args(
     return( start_arg );
 }
 
-char *skip_blank(
-/***************/
-
-    char                *ptr
-) {
+char *skip_blank( char *ptr )
+/***************************/
+{
     for( ; *ptr == ' ' || *ptr == '\t'; ++ptr );
 
     return( ptr );
@@ -887,11 +852,9 @@ bool read_line( void )
     }
 }
 
-char *whole_keyword_line(
-/***********************/
-
-    char                *ptr
-) {
+char *whole_keyword_line( char *ptr )
+/***********************************/
+{
     char                buf[100];
     char                *end;
 
@@ -919,13 +882,9 @@ char *whole_keyword_line(
     return( ptr );
 }
 
-int trans_add_char(
-/******************/
-
-    int                 ch,
-    section_def         *section,
-    int                 *alloc_size
-) {
+int trans_add_char( int ch, section_def *section, int *alloc_size )
+/*****************************************************************/
+{
     ++section->section_size;
     if( section->section_size > *alloc_size ) {
         *alloc_size += 1024;    // grow by a good, big amount
@@ -936,13 +895,9 @@ int trans_add_char(
     return( 1 );
 }
 
-int trans_add_str(
-/****************/
-
-    char                *str,
-    section_def         *section,
-    int                 *alloc_size
-) {
+int trans_add_str( char *str, section_def *section, int *alloc_size )
+/*******************************************************************/
+{
     int                 len;
 
     len = 0;
@@ -954,13 +909,9 @@ int trans_add_str(
     return( len );
 }
 
-int trans_add_nobreak_str(
-/************************/
-
-    char                *str,
-    section_def         *section,
-    int                 *alloc_size
-) {
+int trans_add_nobreak_str( char *str, section_def *section, int *alloc_size )
+/***************************************************************************/
+{
     int                 len;
 
     len = 0;
@@ -982,11 +933,9 @@ int trans_add_nobreak_str(
     return( len );
 }
 
-void add_link(
-/************/
-
-    char                *link_name
-) {
+void add_link( char *link_name )
+/******************************/
+{
     link_def            *link;
 
     _new( link, 1 );
@@ -998,12 +947,9 @@ void add_link(
     link->line_num = Line_num;
 }
 
-bool find_keyword(
-/****************/
-
-    ctx_def             *ctx,
-    char                *keyword
-) {
+bool find_keyword( ctx_def *ctx, char *keyword )
+/**********************************************/
+{
     keylist_def         *keylist;
 
     for( keylist = ctx->keylist; keylist != NULL; keylist = keylist->next ) {
@@ -1015,11 +961,9 @@ bool find_keyword(
     return( false );
 }
 
-keyword_def *find_keyword_all(
-/****************************/
-
-    char                *keyword
-) {
+keyword_def *find_keyword_all( char *keyword )
+/********************************************/
+{
     keyword_def         *key;
 
     for( key = Keyword_list; key != NULL; key = key->next ) {
@@ -1031,12 +975,9 @@ keyword_def *find_keyword_all(
     return( NULL );
 }
 
-static void add_key_ctx(
-/**********************/
-
-    keyword_def                 *key,
-    ctx_def                     *ctx
-) {
+static void add_key_ctx( keyword_def *key, ctx_def *ctx )
+/*******************************************************/
+{
     if( key->ctx_list == NULL ) {
         _new( key->ctx_list, 1);
         key->ctx_list_alloc = 1;
@@ -1052,12 +993,9 @@ static void add_key_ctx(
 }
 
 
-void add_ctx_keyword(
-/*******************/
-
-    ctx_def             *ctx,
-    char                *keyword
-) {
+void add_ctx_keyword( ctx_def *ctx, char *keyword )
+/*************************************************/
+{
     keyword_def         *key;
     keylist_def         *keylist;
 
@@ -1088,12 +1026,9 @@ void add_ctx_keyword(
 }
 
 
-static int trans_line(
-/********************/
-
-    section_def         *section,
-    int                 alloc_size
-) {
+static int trans_line( section_def *section, int alloc_size )
+/***********************************************************/
+{
     switch( Output_type ) {
     case OUT_RTF:
         return( rtf_trans_line( section, alloc_size ) );
@@ -1133,13 +1068,9 @@ static void topic_init( void )
 
 
 
-static bool read_topic_text(
-/**************************/
-
-    ctx_def             *ctx,
-    bool                is_blank,
-    int                 order_num
-) {
+static bool read_topic_text( ctx_def *ctx, bool is_blank, int order_num )
+/***********************************************************************/
+{
     bool                more_to_do;
     section_def         *section;
     section_def         **ins_section;
@@ -1182,11 +1113,9 @@ static bool read_topic_text(
     return( more_to_do );
 }
 
-ctx_def *find_ctx(
-/****************/
-
-    char                *ctx_name
-) {
+ctx_def *find_ctx( char *ctx_name )
+/*********************************/
+{
     ctx_def             *ctx;
 
     for( ctx = Ctx_list; ctx != NULL; ctx = ctx->next ) {
@@ -1198,11 +1127,9 @@ ctx_def *find_ctx(
     return( NULL );
 }
 
-static char *skip_prep(
-/*********************/
-
-    char                        *str
-) {
+static char *skip_prep( char *str )
+/*********************************/
+{
     char                        ch;
     char                        *start;
     char                        *end;
@@ -1233,12 +1160,9 @@ static char *skip_prep(
     return( start );
 }
 
-static browse_def *add_browse(
-/****************************/
-
-    char                *browse_name,
-    ctx_def             *ctx
-) {
+static browse_def *add_browse( char *browse_name, ctx_def *ctx )
+/**************************************************************/
+{
     browse_def          *browse;
     browse_def          *browse_prev;
     browse_ctx          *b_ctx;
@@ -1284,14 +1208,9 @@ static browse_def *add_browse(
 }
 
 
-static void add_ctx(
-/******************/
-    ctx_def             *ctx,
-    char                *title,
-    char                *keywords,
-    char                *browse_name,
-    int                 head_level
-) {
+static void add_ctx( ctx_def *ctx, char *title, char *keywords, char *browse_name, int head_level )
+/*************************************************************************************************/
+{
     char                *ptr;
     char                *end;
     char                ch;
@@ -1332,11 +1251,9 @@ static void add_ctx(
     ctx->browse = add_browse( browse_name, ctx );
 }
 
-static ctx_def *init_ctx(
-/***********************/
-
-    char                *ctx_name
-) {
+static ctx_def *init_ctx( char *ctx_name )
+/****************************************/
+{
     ctx_def             *ctx;
 
     _new( ctx, 1 );
@@ -1555,12 +1472,9 @@ static void sort_ctx_list( void )
     Ctx_list = sort_list;
 }
 
-bool is_special_topic(
-/********************/
-
-    ctx_def                     *ctx,
-    bool                        dump_popup
-) {
+bool is_special_topic( ctx_def *ctx, bool dump_popup )
+/****************************************************/
+{
     bool                        res;
 
     if( ctx == NULL ) {
@@ -1632,24 +1546,18 @@ static void output_idx_file( void )
     }
 }
 
-static int kw_cmp(
-/****************/
-
-    const void          *_kw1,
-    const void          *_kw2
-) {
+static int kw_cmp( const void *_kw1, const void *_kw2 )
+/*****************************************************/
+{
     keyword_def **kw1 = (keyword_def**)_kw1;
     keyword_def **kw2 = (keyword_def**)_kw2;
 
     return( stricmp( (*kw1)->keyword, (*kw2)->keyword ) );
 }
 
-static int ctx_cmp(
-/****************/
-
-    const void          *_ctx1,
-    const void          *_ctx2
-) {
+static int ctx_cmp( const void *_ctx1, const void *_ctx2 )
+/********************************************************/
+{
     ctx_def **ctx1 = (ctx_def**)_ctx1;
     ctx_def **ctx2 = (ctx_def**)_ctx2;
 
@@ -2011,12 +1919,9 @@ static void check_links( void )
     }
 }
 
-int main(
-/*******/
-
-    int                 argc,
-    char                *argv[]
-) {
+int main( int argc, char *argv[] )
+/********************************/
+{
     char                file[200];
     int                 start_arg;
     void                *start_alloc;
