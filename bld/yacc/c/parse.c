@@ -554,27 +554,27 @@ static a_sym *make_sym( char *name, token_n tokval )
 
 static a_SR_conflict *make_unique_ambiguity( a_sym *sym, conflict_id id )
 {
-    a_SR_conflict   *am;
+    a_SR_conflict   *ambig;
 
-    for( am = ambiguousstates; am != NULL; am = am->next ) {
-        if( am->id == id ) {
-            if( am->sym != sym ) {
-                msg( "ambiguity %u deals with %s, not %s.\n", id, am->sym->name, sym->name );
+    for( ambig = ambiguousstates; ambig != NULL; ambig = ambig->next ) {
+        if( ambig->id == id ) {
+            if( ambig->sym != sym ) {
+                msg( "ambiguity %u deals with %s, not %s.\n", id, ambig->sym->name, sym->name );
                 break;
             }
-            return( am );
+            return( ambig );
         }
     }
-    am = MALLOC( 1, a_SR_conflict );
-    am->next = ambiguousstates;
-    am->sym = sym;
-    am->id = id;
-    am->state = NULL;
-    am->shift = NULL;
-    am->thread = NULL;
-    am->reduce = 0;
-    ambiguousstates = am;
-    return( am );
+    ambig = MALLOC( 1, a_SR_conflict );
+    ambig->next = ambiguousstates;
+    ambig->sym = sym;
+    ambig->id = id;
+    ambig->state = NULL;
+    ambig->shift = NULL;
+    ambig->thread = NULL;
+    ambig->reduce = 0;
+    ambiguousstates = ambig;
+    return( ambig );
 }
 
 static void tlist_remove( char *name )
@@ -629,7 +629,7 @@ static bool scanambig( unsigned used, a_SR_conflict_list **list )
     bool                    absorbed_something;
     conflict_id             id;
     a_sym                   *sym;
-    a_SR_conflict           *am;
+    a_SR_conflict           *ambig;
     a_SR_conflict_list      *en;
 
     absorbed_something = false;
@@ -656,13 +656,13 @@ static bool scanambig( unsigned used, a_SR_conflict_list **list )
         }
         scan( used );
         absorbed_something = true;
-        am = make_unique_ambiguity( sym, id );
+        ambig = make_unique_ambiguity( sym, id );
         en = MALLOC( 1, a_SR_conflict_list );
         en->next = *list;
-        en->thread = am->thread;
+        en->thread = ambig->thread;
         en->pro = NULL;
-        en->conflict = am;
-        am->thread = en;
+        en->conflict = ambig;
+        ambig->thread = en;
         *list = en;
     }
     return( absorbed_something );
@@ -1147,7 +1147,7 @@ void rules( FILE *fp )
     bool                unit_production;
     bool                not_token;
     a_SR_conflict_list  *list_of_ambiguities;
-    a_SR_conflict_list  *am;
+    a_SR_conflict_list  *ambig;
 
     ambiguousstates = NULL;
     maxrhs = INIT_RHS_SIZE;
@@ -1227,8 +1227,8 @@ void rules( FILE *fp )
                 pro->prec = precsym->prec;
             }
             if( list_of_ambiguities ) {
-                for( am = list_of_ambiguities; am != NULL; am = am->next ) {
-                    am->pro = pro;
+                for( ambig = list_of_ambiguities; ambig != NULL; ambig = ambig->next ) {
+                    ambig->pro = pro;
                 }
                 pro->SR_conflicts = list_of_ambiguities;
             }

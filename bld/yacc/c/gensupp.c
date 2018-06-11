@@ -94,10 +94,10 @@ static void putambig( FILE *fp, a_SR_conflict *ambig, base_n *base )
 
 void putambigs( FILE *fp, base_n *base )
 {
-    a_SR_conflict *cx;
+    a_SR_conflict *ambig;
 
-    for( cx = ambiguousstates; cx != NULL; cx = cx->next ) {
-        putambig( fp, cx, base );
+    for( ambig = ambiguousstates; ambig != NULL; ambig = ambig->next ) {
+        putambig( fp, ambig, base );
     }
 }
 
