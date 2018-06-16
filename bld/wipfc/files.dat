@@ -11,6 +11,10 @@ dir="binl64"    usr="wipfc"     conda="lnx64host"                   keys="lx64"
 
 [ DEFAULT dir="wipfc" cond="os2targ" type="s" where="c f77 jc jf77 ac" desc="OS/2 IPFC help compiler support files" ]
 #
+# WIPFC NLS config file
+#
+usr="nlsconf.txt"
+#
 # WIPFC data files
 #
 usr="de_DE.nls"

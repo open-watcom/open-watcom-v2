@@ -1,0 +1,13 @@
+de_DE       de_DE.nls
+en_GB       en_GB.nls
+en_US       en_US.nls
+fr_CA       fr_CA.nls
+fr_FR       fr_FR.nls
+ja_JA       ja_JA.nls
+de_DE.UTF-8 deDEUTF8.nls
+en_GB.UTF-8 enGBUTF8.nls
+en_US.UTF-8 enUSUTF8.nls
+fr_CA.UTF-8 frCAUTF8.nls
+fr_FR.UTF-8 frFRUTF8.nls
+ja_JA.UTF-8 jaJAUTF8.nls
+

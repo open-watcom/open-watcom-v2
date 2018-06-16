@@ -53,7 +53,7 @@ public:
     const std::wstring& warning() const { return warningText; };
     const std::wstring& caution() const { return cautionText; };
     const std::wstring& reference() const { return referenceText; };
-    const std::wstring& grammer() const { return grammerChars; };
+    const std::wstring& grammar() const { return grammarChars; };
     //graphics font characteristics
     const std::wstring& cgraphicFontFaceName() const { return cgraphicFontFace; };
     int cgraphicFontWidth() const { return cgraphicFontW; };
@@ -86,30 +86,30 @@ private:
         STD1::uint32_t write( std::FILE* out ) const;
         };
     
-    struct SbcsGrammerDef {         //Single-byte character set
+    struct SbcsGrammarDef {         //Single-byte character set
         STD1::uint16_t size;        //36
         STD1::uint8_t  type;        //NLSRecType.WORD, NLSRecType.GRAPHIC
         STD1::uint8_t  format;      //0
         STD1::uint8_t  bits[ 32 ];  //high-order bit first
-        SbcsGrammerDef() : size( sizeof( SbcsGrammerDef ) ), type( Nls::TEXT ), format( 0 ) { };
+        SbcsGrammarDef() : size( sizeof( SbcsGrammarDef ) ), type( Nls::TEXT ), format( 0 ) { };
         void setDefaultBits( NlsRecType rectype );
         STD1::uint32_t write( std::FILE* out ) const;
         };
 #pragma pack(pop)
-    struct DbcsGrammerDef {         //Double-byte character set
+    struct DbcsGrammarDef {         //Double-byte character set
         STD1::uint16_t size;        //4 + (# ranges * 4)
         STD1::uint8_t  type;        //NLSRecType.TEXT, NLSRecType.GRAPHIC
         STD1::uint8_t  format;      //1
         std::vector<STD1::uint16_t> ranges;
-        DbcsGrammerDef() : size( 4 ), type( Nls::TEXT ) , format( 1 ) {};
+        DbcsGrammarDef() : size( 4 ), type( Nls::TEXT ) , format( 1 ) {};
         STD1::uint32_t write( std::FILE* out );
         };
 
     CountryDef country;
-    SbcsGrammerDef sbcsT;
-    SbcsGrammerDef sbcsG;
-    DbcsGrammerDef dbcsT;
-    DbcsGrammerDef dbcsG;
+    SbcsGrammarDef sbcsT;
+    SbcsGrammarDef sbcsG;
+    DbcsGrammarDef dbcsT;
+    DbcsGrammarDef dbcsG;
     std::map< std::wstring, wchar_t > entityMap; //stuff from entity file
     typedef std::map< std::wstring, wchar_t >::iterator EntityIter;
     typedef std::map< std::wstring, wchar_t >::const_iterator ConstEntityIter;
@@ -117,7 +117,7 @@ private:
     std::wstring cautionText;
     std::wstring warningText;
     std::wstring referenceText;
-    std::wstring grammerChars;
+    std::wstring grammarChars;
     std::wstring cgraphicFontFace;
     STD1::uint32_t bytes;
     int cgraphicFontW;
@@ -129,7 +129,9 @@ private:
     void setCodePage( int cp );
     void readEntityFile( std::FILE* aps );
     void readNLS( std::FILE* nls );
-    void processGrammer( wchar_t* value );
+    void processGrammar( wchar_t* value );
+    void readAliasFile( std::FILE *alias, std::map< std::string, std::string >& aliasMap );
+    std::string getNlsFileName( const char *loc );
 };
 
 #endif //NLS_INCLUDED

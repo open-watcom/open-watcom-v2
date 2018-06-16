@@ -53,6 +53,54 @@ Nls::Nls( const char *loc ) : bytes( 0 ), useDBCS( false )
     sbcsG.setDefaultBits( GRAPHIC );
     setLocalization( loc );
 }
+
+void Nls::readAliasFile( std::FILE *alias, std::map< std::string, std::string >& aliasMap )
+{
+    char    buffer[ 256 ];
+    char    *p;
+
+    while( std::fgets( buffer, sizeof( buffer ) / sizeof( char ), alias ) ) {
+        std::size_t len = std::strlen( buffer );
+        killEOL( buffer + len - 1 );
+        p = std::strtok( buffer, " \t" );
+        if( p != 0 ) {
+            p = std::strtok( NULL, " \t" );
+            if( p != 0 ) {
+                aliasMap.insert( std::map< std::string, std::string >::value_type( buffer, p ) );
+            }
+        }
+    }
+}
+
+std::string Nls::getNlsFileName( const char *loc )
+{
+    std::string path( Environment.value( "WIPFC" ) );
+
+    if( path.length() )
+#if !defined( __UNIX__ ) && !defined( __APPLE__ )
+        path += '\\';
+#else
+        path += '/';
+#endif
+    path += "nlsconf.txt";
+    std::FILE *alias = std::fopen( path.c_str(), "r" );
+    if( alias != 0 ) {
+        std::map< std::string, std::string > aliasMap;
+        std::map< std::string, std::string >::iterator it;
+
+        readAliasFile( alias, aliasMap );
+        std::fclose( alias );
+        it = aliasMap.find( loc );
+        if( it != aliasMap.end() ) {
+            std::string fname( it->second );
+            return( fname );
+        }
+    }
+    std::string fname( loc );
+    fname += ".nls";
+    return( fname );
+}
+
 /*****************************************************************************/
 void Nls::setCodePage( int cp )
 {
@@ -114,8 +162,7 @@ void Nls::setLocalization( const char *loc)
 #else
         path += '/';
 #endif
-    path += loc;
-    path += ".nls";
+    path += getNlsFileName( loc );
     std::FILE *nls = std::fopen( path.c_str(), "r" );
     if( nls == 0 )
         throw FatalError( ERR_LANG );
@@ -131,7 +178,7 @@ void Nls::readNLS( std::FILE *nls )
 {
     wchar_t  buffer[ 256 ];
     wchar_t* value;
-    bool     doGrammer( false );
+    bool     doGrammar( false );
     while( std::fgetws( buffer, sizeof( buffer ) / sizeof( wchar_t ), nls )) {
         std::size_t len( std::wcslen( buffer ) );
         killEOL( buffer + len - 1 );
@@ -145,9 +192,9 @@ void Nls::readNLS( std::FILE *nls )
         }
         else
             value = buffer;
-        if( doGrammer ) {
+        if( doGrammar ) {
             if( std::wcscmp( buffer, L"Words" ) == 0 ) {
-                processGrammer( value );
+                processGrammar( value );
             }
             else if ( std::wcscmp( buffer, L"RemoveNL" ) == 0 ) {
                 //FIXME: exclude these values from s/dbcs table?
@@ -214,19 +261,19 @@ void Nls::readNLS( std::FILE *nls )
         else if( std::wcscmp( buffer, L"cgraphicFontHeight" ) == 0 ) {
             cgraphicFontH = static_cast< int >( std::wcstol( value, 0, 10 ) );
         }
-        else if( std::wcscmp( buffer, L"Grammer" ) == 0 ) {
-            doGrammer = true;
+        else if( std::wcscmp( buffer, L"Grammar" ) == 0 ) {
+            doGrammar = true;
         }
-        else if( std::wcscmp( buffer, L"eGrammer" ) == 0 ) {
-            doGrammer = false;
+        else if( std::wcscmp( buffer, L"eGrammar" ) == 0 ) {
+            doGrammar = false;
         }
     }
 }
 /*****************************************************************************/
-void Nls::processGrammer( wchar_t *buffer )
+void Nls::processGrammar( wchar_t *buffer )
 {
-    if( grammerChars.empty() ) {
-        grammerChars.reserve( 26 + 26 + 10 );
+    if( grammarChars.empty() ) {
+        grammarChars.reserve( 26 + 26 + 10 );
     }
 #if defined( _MSC_VER )
     wchar_t* tok( std::wcstok( buffer, L"+" ) );
@@ -238,14 +285,14 @@ void Nls::processGrammer( wchar_t *buffer )
         if( std::wcslen( tok ) > 1 ) {
             //change this loop if we use RegExp
             for( wchar_t c = tok[ 0 ]; c <= tok[ 2 ]; ++c )
-                grammerChars += c;
+                grammarChars += c;
             dbcsT.ranges.push_back( static_cast< STD1::uint16_t >( tok[ 0 ] ));
             dbcsT.ranges.push_back( static_cast< STD1::uint16_t >( tok[ 2 ] ));
             if( tok[ 0 ] > 255 || tok[ 2 ] > 255 )
                 useDBCS = true;
         }
         else {
-            grammerChars += *tok;
+            grammarChars += *tok;
             dbcsT.ranges.push_back( static_cast< STD1::uint16_t >( *tok ) );
             dbcsT.ranges.push_back( static_cast< STD1::uint16_t >( *tok ) );
             if( *tok > 255 )
@@ -294,7 +341,7 @@ STD1::uint32_t Nls::CountryDef::write( std::FILE *out ) const
     return start;
 }
 /*****************************************************************************/
-void Nls::SbcsGrammerDef::setDefaultBits( NlsRecType rectype )
+void Nls::SbcsGrammarDef::setDefaultBits( NlsRecType rectype )
 {
     static const unsigned char defbits[ 2 ][ 32 ] = {\
         { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xff, 0xc0, 
@@ -308,15 +355,15 @@ void Nls::SbcsGrammerDef::setDefaultBits( NlsRecType rectype )
     std::memcpy( this->bits, &defbits[ rectype - 1 ][ 0 ], 32 * sizeof( char ) );
 }
 /*****************************************************************************/
-STD1::uint32_t Nls::SbcsGrammerDef::write( std::FILE *out ) const
+STD1::uint32_t Nls::SbcsGrammarDef::write( std::FILE *out ) const
 {
     STD1::uint32_t start( std::ftell( out ) );
-    if( std::fwrite( this, sizeof( SbcsGrammerDef ), 1, out) != 1 )
+    if( std::fwrite( this, sizeof( SbcsGrammarDef ), 1, out) != 1 )
         throw FatalError( ERR_WRITE );
     return start;
 }
 /*****************************************************************************/
-STD1::uint32_t Nls::DbcsGrammerDef::write( std::FILE *out )
+STD1::uint32_t Nls::DbcsGrammarDef::write( std::FILE *out )
 {
     STD1::uint32_t start( std::ftell( out ) );
     size = 4 + static_cast< STD1::uint16_t >( ranges.size() * sizeof( STD1::uint16_t )) ;
@@ -452,7 +499,7 @@ parameter of the IPFC command:
 |----------+------------------------------+------------------------------|
 |FRA       |French                        |IPFFRA.NLS                    |
 |----------+------------------------------+------------------------------|
-|FRC       |Canadian French               |IPFFRC.NL                     |
+|FRC       |Canadian French               |IPFFRC.NLS                    |
 |----------+------------------------------+------------------------------|
 |GRK       |Greek 869                     |IPFGRK.NLS                    |
 |----------+------------------------------+------------------------------|

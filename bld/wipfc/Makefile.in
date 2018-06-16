@@ -230,7 +230,7 @@ noinst_HEADERS = cpp/compiler.hpp cpp/document.hpp cpp/env.hpp cpp/ipfbuff.hpp \
 wipfcdir = $datadir/wipfc
 dist_wipfc_DATA = helper/de_DE.nls helper/en_GB.nls helper/en_US.nls helper/fr_CA.nls \
         helper/fr_FR.nls helper/ja_JA.nls helper/xx_YY.nls helper/enti0932.txt \
-        helper/enti0934.txt helper/enti0938.txt helper/entity.txt
+        helper/enti0934.txt helper/enti0938.txt helper/entity.txt helper/nlsconf.txt
 
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-am
