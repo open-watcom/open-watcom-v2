@@ -46,14 +46,14 @@ static void processCountry( FILE *in, FILE *out, NlsHeader *hdr )
 /*****************************************************************************/
 static void processSBCS( FILE *in, FILE *out, NlsHeader *hdr )
 {
-    SbcsNlsGrammerDef s;
+    SbcsNlsGrammarDef s;
     size_t count;
-    fread( &s, sizeof(SbcsNlsGrammerDef), 1, in );
-    fputs( "  NLS SBCS Grammer Definition\n", out );
-    fprintf( out, "    SbcsNlsGrammerDef.size:   %4.4x (%hu)\n", hdr->size, hdr->size );
-    fprintf( out, "    SbcsNlsGrammerDef.type:   %s\n", getType( hdr->type ) );
-    fprintf( out, "    SbcsNlsGrammerDef.format: %4.2x (%hu)\n", hdr->format, hdr->format );
-    fprintf( out, "    SbcsNlsGrammerDef.bits:\n");
+    fread( &s, sizeof(SbcsNlsGrammarDef), 1, in );
+    fputs( "  NLS SBCS Grammar Definition\n", out );
+    fprintf( out, "    SbcsNlsGrammarDef.size:   %4.4x (%hu)\n", hdr->size, hdr->size );
+    fprintf( out, "    SbcsNlsGrammarDef.type:   %s\n", getType( hdr->type ) );
+    fprintf( out, "    SbcsNlsGrammarDef.format: %4.2x (%hu)\n", hdr->format, hdr->format );
+    fprintf( out, "    SbcsNlsGrammarDef.bits:\n");
     for( count = 0; count < 32; count++ ) {
         fprintf(out, "%s ", bstring( s.bits[ count ] ) );
         if( !( ( count + 1 ) & 7 ) )
@@ -76,11 +76,11 @@ static void processDBCS( FILE *in, FILE *out, NlsHeader *hdr )
     size_t   items = ( hdr->size - sizeof( NlsHeader ) ) / sizeof( size_t );
     uint16_t hi;
     uint16_t lo;
-    fputs( "  NLS DBCS Grammer Definition\n", out );
-    fprintf( out, "    DbcsNlsGrammerDef.size:   %4.4x (%hu)\n", hdr->size, hdr->size );
-    fprintf( out, "    DbcsNlsGrammerDef.type:   %s\n", getType( hdr->type ) );
-    fprintf( out, "    DbcsNlsGrammerDef.format: %4.2x (%hu)\n", hdr->format, hdr->format );
-    fputs( "    DbcsNlsGrammerDef data:\n", out );
+    fputs( "  NLS DBCS Grammar Definition\n", out );
+    fprintf( out, "    DbcsNlsGrammarDef.size:   %4.4x (%hu)\n", hdr->size, hdr->size );
+    fprintf( out, "    DbcsNlsGrammarDef.type:   %s\n", getType( hdr->type ) );
+    fprintf( out, "    DbcsNlsGrammarDef.format: %4.2x (%hu)\n", hdr->format, hdr->format );
+    fputs( "    DbcsNlsGrammarDef data:\n", out );
     for( count = 0; count < items; count++ ) {
         fread( &lo, sizeof( uint16_t ), 1, in );
         fread( &hi, sizeof( uint16_t ), 1, in );

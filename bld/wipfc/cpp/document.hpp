@@ -171,7 +171,7 @@ public:
     const std::wstring& warning() const { return nls->warning(); };
     const std::wstring& caution() const { return nls->caution(); };
     const std::wstring& reference() const { return nls->reference(); };
-    //const std::wstring& grammer() const { return nls->grammer(); };
+    //const std::wstring& grammar() const { return nls->grammar(); };
     const std::wstring& cgraphicFontFaceName() const { return nls->cgraphicFontFaceName(); };
     int cgraphicFontWidth() const { return nls->cgraphicFontWidth(); };
     int cgraphicFontHeight() const { return nls->cgraphicFontHeight(); };
