@@ -19,6 +19,6 @@ cgraphicFontHeight=18
 # Words defines the characters that make words. This is used for
 # searching and data compression.
 
-Grammer
+Grammar
 Words=0-9+A-Z+a-z+ü+é+ä+à+Ä+É+ö+Ö+Ü+À+ß
-eGrammer
+eGrammar

@@ -85,10 +85,10 @@ private:
             country( 1 ), codePage( 850 ), reserved( 0 ) {};
         STD1::uint32_t write( std::FILE* out ) const;
         };
-    
+
     struct SbcsGrammarDef {         //Single-byte character set
         STD1::uint16_t size;        //36
-        STD1::uint8_t  type;        //NLSRecType.WORD, NLSRecType.GRAPHIC
+        STD1::uint8_t  type;        //NLSRecType.TEXT, NLSRecType.GRAPHIC
         STD1::uint8_t  format;      //0
         STD1::uint8_t  bits[ 32 ];  //high-order bit first
         SbcsGrammarDef() : size( sizeof( SbcsGrammarDef ) ), type( Nls::TEXT ), format( 0 ) { };
