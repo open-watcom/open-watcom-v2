@@ -56,7 +56,7 @@ Nls::Nls( const char *loc ) : bytes( 0 ), useDBCS( false )
 
 void Nls::readAliasFile( std::FILE *alias, std::map< std::string, std::string >& aliasMap )
 {
-    char    buffer[ 256 ];
+    char    buffer[256];
     char    *p;
 
     while( std::fgets( buffer, sizeof( buffer ) / sizeof( char ), alias ) ) {
@@ -115,10 +115,10 @@ void Nls::setCodePage( int cp )
         path += '/';
 #endif
     path += "enti";
-    if( cp == 850 || cp == 437)
+    if( cp == 850 || cp == 437 ) {
         path += "ty";
-    else {
-        char code[ 6 ];
+    } else {
+        char code[6];
         std::sprintf( code, "%4.4d", cp );
         path.append( code, 4 );
     }
@@ -133,8 +133,8 @@ void Nls::setCodePage( int cp )
 /*****************************************************************************/
 void Nls::readEntityFile( std::FILE *entty )
 {
-    char    buffer[ 256 ];
-    wchar_t text[ 256 ];
+    char    buffer[256];
+    wchar_t text[256];
     int     offset;
     wchar_t c;
     while( std::fgets( buffer, sizeof( buffer ) / sizeof( char ), entty ) ) {
@@ -148,7 +148,7 @@ void Nls::readEntityFile( std::FILE *entty )
         len = std::mbstowcs( text, buffer + offset, sizeof( text ) / sizeof( wchar_t ) );
         if( len == static_cast< std::size_t >( -1 ))
             throw FatalError( ERR_T_CONV );
-        text[ len ] = L'\0';
+        text[len] = L'\0';
         entityMap.insert( std::map< std::wstring, wchar_t >::value_type( text, c ) );
     }
 }
@@ -176,7 +176,7 @@ void Nls::setLocalization( const char *loc)
 /*****************************************************************************/
 void Nls::readNLS( std::FILE *nls )
 {
-    wchar_t  buffer[ 256 ];
+    wchar_t  buffer[256];
     wchar_t* value;
     bool     doGrammar( false );
     while( std::fgetws( buffer, sizeof( buffer ) / sizeof( wchar_t ), nls )) {
@@ -189,82 +189,64 @@ void Nls::readNLS( std::FILE *nls )
         if( ( value = std::wcschr( buffer, L'=' ) ) != 0 ) {
             *value = '\0';
             ++value;
-        }
-        else
+        } else {
             value = buffer;
+        }
         if( doGrammar ) {
             if( std::wcscmp( buffer, L"Words" ) == 0 ) {
                 processGrammar( value );
-            }
-            else if ( std::wcscmp( buffer, L"RemoveNL" ) == 0 ) {
+            } else if ( std::wcscmp( buffer, L"RemoveNL" ) == 0 ) {
                 //FIXME: exclude these values from s/dbcs table?
             }
-        }
-        else if( std::wcscmp( buffer, L"Country" ) == 0 ) {
+        } else if( std::wcscmp( buffer, L"Country" ) == 0 ) {
             country.country = static_cast< STD1::uint16_t >( std::wcstoul( value, 0, 10 ) );
-        }
-        else if( std::wcscmp( buffer, L"CodePage" ) == 0 ) {
+        } else if( std::wcscmp( buffer, L"CodePage" ) == 0 ) {
             country.codePage = static_cast< STD1::uint16_t >( std::wcstoul( value, 0, 10 ) );
-        }
-        else if( std::wcscmp( buffer, L"Note" ) == 0 ) {
+        } else if( std::wcscmp( buffer, L"Note" ) == 0 ) {
             std::wstring text( value );
             killQuotes( text );
             noteText = text;
-        }
-        else if( std::wcscmp( buffer, L"Caution" ) == 0 ) {
+        } else if( std::wcscmp( buffer, L"Caution" ) == 0 ) {
             std::wstring text( value );
             killQuotes( text );
             cautionText = text;
-        }
-        else if( std::wcscmp( buffer, L"Warning" ) == 0 ) {
+        } else if( std::wcscmp( buffer, L"Warning" ) == 0 ) {
             std::wstring text( value );
             killQuotes( text );
             warningText = text;
-        }
-        else if( std::wcscmp( buffer, L"Reference" ) == 0 ) {
+        } else if( std::wcscmp( buffer, L"Reference" ) == 0 ) {
             std::wstring text( value );
             killQuotes( text );
             referenceText = text;
-        }
-        else if( std::wcscmp( buffer, L"olChars" ) == 0 ) {
+        } else if( std::wcscmp( buffer, L"olChars" ) == 0 ) {
             std::wstring text( value );
             olCh = text;
-        }
-        else if( std::wcscmp( buffer, L"olClose1" ) == 0 ) {
+        } else if( std::wcscmp( buffer, L"olClose1" ) == 0 ) {
             std::wstring text( value );
-            olClosers[ 0 ] = text;
-        }
-        else if( std::wcscmp( buffer, L"olClose2" ) == 0 ) {
+            olClosers[0] = text;
+        } else if( std::wcscmp( buffer, L"olClose2" ) == 0 ) {
             std::wstring text( value );
-            olClosers[ 1 ] = text;
-        }
-        else if( std::wcscmp( buffer, L"ulItemId1" ) == 0 ) {
+            olClosers[1] = text;
+        } else if( std::wcscmp( buffer, L"ulItemId1" ) == 0 ) {
             std::wstring text( value );
-            ulBul[ 0 ] = text;
-        }
-        else if( std::wcscmp( buffer, L"ulItemId2" ) == 0 ) {
+            ulBul[0] = text;
+        } else if( std::wcscmp( buffer, L"ulItemId2" ) == 0 ) {
             std::wstring text( value );
-            ulBul[ 1 ] = text;
-        }
-        else if( std::wcscmp( buffer, L"ulItemId3" ) == 0 ) {
+            ulBul[1] = text;
+        } else if( std::wcscmp( buffer, L"ulItemId3" ) == 0 ) {
             std::wstring text( value );
-            ulBul[ 2 ] = text;
-        }
-        else if( std::wcscmp( buffer, L"cgraphicFontFaceName" ) == 0 ) {
+            ulBul[2] = text;
+        } else if( std::wcscmp( buffer, L"cgraphicFontFaceName" ) == 0 ) {
             std::wstring text( value );
             killQuotes( text );
             cgraphicFontFace = text;
-        }
-        else if( std::wcscmp( buffer, L"cgraphicFontWidth" ) == 0 ) {
+        } else if( std::wcscmp( buffer, L"cgraphicFontWidth" ) == 0 ) {
             cgraphicFontW = static_cast< int >( std::wcstol( value, 0, 10 ) );
-        }
-        else if( std::wcscmp( buffer, L"cgraphicFontHeight" ) == 0 ) {
+        } else if( std::wcscmp( buffer, L"cgraphicFontHeight" ) == 0 ) {
             cgraphicFontH = static_cast< int >( std::wcstol( value, 0, 10 ) );
-        }
-        else if( std::wcscmp( buffer, L"Grammar" ) == 0 ) {
+        } else if( std::wcscmp( buffer, L"Grammar" ) == 0 ) {
             doGrammar = true;
-        }
-        else if( std::wcscmp( buffer, L"eGrammar" ) == 0 ) {
+        } else if( std::wcscmp( buffer, L"eGrammar" ) == 0 ) {
             doGrammar = false;
         }
     }
@@ -284,19 +266,20 @@ void Nls::processGrammar( wchar_t *buffer )
     while( tok ) {
         if( std::wcslen( tok ) > 1 ) {
             //change this loop if we use RegExp
-            for( wchar_t c = tok[ 0 ]; c <= tok[ 2 ]; ++c )
+            for( wchar_t c = tok[0]; c <= tok[2]; ++c )
                 grammarChars += c;
-            dbcsT.ranges.push_back( static_cast< STD1::uint16_t >( tok[ 0 ] ));
-            dbcsT.ranges.push_back( static_cast< STD1::uint16_t >( tok[ 2 ] ));
-            if( tok[ 0 ] > 255 || tok[ 2 ] > 255 )
+            dbcsT.ranges.push_back( static_cast< STD1::uint16_t >( tok[0] ));
+            dbcsT.ranges.push_back( static_cast< STD1::uint16_t >( tok[2] ));
+            if( tok[0] > 255 || tok[2] > 255 ) {
                 useDBCS = true;
-        }
-        else {
+            }
+        } else {
             grammarChars += *tok;
             dbcsT.ranges.push_back( static_cast< STD1::uint16_t >( *tok ) );
             dbcsT.ranges.push_back( static_cast< STD1::uint16_t >( *tok ) );
-            if( *tok > 255 )
+            if( *tok > 255 ) {
                 useDBCS = true;
+            }
         }
 #if defined( _MSC_VER )
         tok = std::wcstok( 0, L"+" );
@@ -323,8 +306,7 @@ STD1::uint32_t Nls::write( std::FILE *out )
         bytes += dbcsT.size;
         dbcsG.write( out );
         bytes += dbcsG.size;
-    }
-    else {
+    } else {
         sbcsT.write( out );
         bytes += sbcsT.size;
         sbcsG.write( out );
@@ -343,7 +325,7 @@ STD1::uint32_t Nls::CountryDef::write( std::FILE *out ) const
 /*****************************************************************************/
 void Nls::SbcsGrammarDef::setDefaultBits( NlsRecType rectype )
 {
-    static const unsigned char defbits[ 2 ][ 32 ] = {\
+    static const unsigned char defbits[2][32] = {\
         { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xff, 0xc0, 
           0x7f, 0xff, 0xff, 0xe0, 0x7f, 0xff, 0xff, 0xe0, 
           0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
@@ -352,7 +334,7 @@ void Nls::SbcsGrammarDef::setDefaultBits( NlsRecType rectype )
           0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
           0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 
           0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff } };
-    std::memcpy( this->bits, &defbits[ rectype - 1 ][ 0 ], 32 * sizeof( char ) );
+    std::memcpy( this->bits, &defbits[rectype - 1][0], 32 * sizeof( char ) );
 }
 /*****************************************************************************/
 STD1::uint32_t Nls::SbcsGrammarDef::write( std::FILE *out ) const
