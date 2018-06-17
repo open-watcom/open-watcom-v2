@@ -1,7 +1,5 @@
-#U.K. English text
+#U.K. English text (CP850 encoding)
 
-Country=44
-CodePage=850
 Note="Note&colon."
 Caution="CAUTION&colon."
 Warning="Warning&colon."

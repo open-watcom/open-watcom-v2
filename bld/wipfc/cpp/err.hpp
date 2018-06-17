@@ -46,6 +46,7 @@ PICK( ERR_LARGETOC, "The document has too many pages" )
 PICK( ERR_LARGEINDEX, "The document has too many index or icmd entries" )
 PICK( ERR_INVISIBLETOC, "The document has no visible table of contents entries" )
 PICK( ERR_BADTOKEN, "Internal error--unrecognized token" )
+PICK( ERR_NLSCONF, "Cannot open nls configuration file" )
 PICK( ERR_LAST, "Last fatal error code" )
 /*
 Fatal errors
@@ -54,7 +55,7 @@ Fatal errors
 003 Cannot open file                // Explanation: SYSTEM ERROR. Filename or path is incorrect, file doesn't exist, or other system problem.
 004 Cannot read file                // Explanation: SYSTEM ERROR. Source file may be corrupted.
 005 Cannot write to a file          // Explanation: SYSTEM ERROR. File system is full, out of disk space, diskette is write protected, etc.
-006 Cannot reopen. File is already opened   // Explanation: SYSTEM ERROR. 
+006 Cannot reopen. File is already opened   // Explanation: SYSTEM ERROR.
 007 Unexpected end of file          // Explanation: This may be caused by an ending tag not being found, a corrupted or truncated source file, or a control-Z character found before the true end of file.
 008 Invalid country code, or codepage
 009 Invalid language code
@@ -105,7 +106,7 @@ Class1 Errors
 102 Attribute not defined
 103 Duplicate tag in tag file
 104 Invalid tag syntax
-105 Illegal context for tag         // Explanation: Tags are not properly matched, a tag is used incorrectly, or a tag is placed incorrectly. 
+105 Illegal context for tag         // Explanation: Tags are not properly matched, a tag is used incorrectly, or a tag is placed incorrectly.
 106 List start tag missing - tag ignored
 107 List end tag not matched - tag ignored
 108 Ignoring unmatched tag
@@ -118,21 +119,21 @@ Class1 Errors
 115 A DT tag is not defined
 116 A PT tag is not defined
 117 Missing hypertext information
-118 Cannot hide parent head level   // Explanation: Preceding head level must be hidden. 
-119 Page is too big                 // Explanation: Panel is too big. Maximum size is 16 000 words and punctuation marks. (Note maximum size is language dependent.) 
+118 Cannot hide parent head level   // Explanation: Preceding head level must be hidden.
+119 Page is too big                 // Explanation: Panel is too big. Maximum size is 16 000 words and punctuation marks. (Note maximum size is language dependent.)
 120 Duplicate root word             // In isyn
 121 Ignoring text before :h1. tag
 122 Ignoring text before :c. tag
 123 Duplicate tag in source file
 124 Invalid head level              // Explanation: Head levels are not in consecutive order.
 125 Invalid tag in footnote
-126 Invalid bitmap format           // Explanation: File is not a valid PM format bitmap file. 
+126 Invalid bitmap format           // Explanation: File is not a valid PM format bitmap file.
 127 No valid COLS specification was given
 128 Ignoring invalid tag in table cell
 129 Extra cells will be placed in next table row
 130 Missing ELINK tag inserted at end of table cell
 131 Total table width exceeds limit of 250 characters
-132 Truncating table entry          // This is a warning to tell the user when the text for a table cell is too long for the size of the cell. 
+132 Truncating table entry          // This is a warning to tell the user when the text for a table cell is too long for the size of the cell.
 */
 
 //Class 2 Errors
@@ -151,12 +152,12 @@ Class2 Errors
 202 Invalid attribute
 203 Invalid symbol                  // Explanation: Invalid APS symbol; period missing after the APS symbol, symbol specified is not in the APSYMBOL.APS file, invalid APSYMBOL.APS file.
 204 Invalid macro
-205 Text too long in tag            // Explanation: Heading and index tags have a maximum of 150 characters. 
-206 Token is bigger than expected.  // Explanation: Maximum length of token is 255 characters. This error could be caused by a missing end period or quote character. 
+205 Text too long in tag            // Explanation: Heading and index tags have a maximum of 150 characters.
+206 Token is bigger than expected.  // Explanation: Maximum length of token is 255 characters. This error could be caused by a missing end period or quote character.
 207 Invalid attribute value
 208 Missing tag
 209 Attribute not matched
-210 Text too long in macro expansion // Explanation: Maximum 255 characters. 
+210 Text too long in macro expansion // Explanation: Maximum 255 characters.
 211 Total number of fonts exceeds the limit of 14
 212 Sub index cannot be global without global main index
 213 Invalid nest
@@ -177,7 +178,7 @@ PICK( ERR3_LAST, "Last level 3 error code" )
 /*
 Class3 Errors
 301 Ignoring attribute
-302 Duplicate ID                    // Explanation: Cannot specify the same ID in the same panel or index. 
+302 Duplicate ID                    // Explanation: Cannot specify the same ID in the same panel or index.
 303 Duplicate symbol in symbol file
 304 Duplicate res number
 305 Parent panel cannot have its own text

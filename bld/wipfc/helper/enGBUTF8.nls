@@ -1,7 +1,5 @@
-#U.K. English text
+#U.K. English text (UTF-8 encoding)
 
-Country=44
-CodePage=0
 Note="Note&colon."
 Caution="CAUTION&colon."
 Warning="Warning&colon."

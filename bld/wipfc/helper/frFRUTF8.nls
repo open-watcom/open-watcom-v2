@@ -1,7 +1,5 @@
-#Canadian French
+#Canadian French (UTF-8 encoding)
 
-Country=2
-CodePage=0
 Note="Remarque&colon."
 Caution="ATTENTION!"
 Warning="Avertissement&per."

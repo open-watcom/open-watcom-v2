@@ -36,8 +36,7 @@
 
 class IpfBuffer : public IpfData {
 public:
-    IpfBuffer( const std::wstring* fname, unsigned int line, unsigned int col,
-        const std::wstring& text );
+    IpfBuffer( const std::wstring* fname, unsigned int line, unsigned int col, const std::wstring& text );
     IpfBuffer( const std::wstring* fname, const std::wstring& text );
     ~IpfBuffer() { };
     //Returns the file or buffer name for use in error messages
@@ -57,7 +56,7 @@ public:
     void setPos(long int offset) { if( head + offset < tail ) head += offset; };
     //Get the current position
     virtual
-    long int pos() { return reinterpret_cast< long int >(&(*head)); };
+    long int pos() { return static_cast< long int >( head - buffer.begin() ); };
 private:
     IpfBuffer( const IpfBuffer& rhs );              //no copy
     IpfBuffer& operator=( const IpfBuffer& rhs );   //no assignment

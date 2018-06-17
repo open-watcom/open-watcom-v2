@@ -1,7 +1,5 @@
-#U.S. English text
+#U.S. English text (UTF-8 encoding)
 
-Country=1
-CodePage=0
 Note="Note&colon."
 Caution="CAUTION&colon."
 Warning="Warning&colon."

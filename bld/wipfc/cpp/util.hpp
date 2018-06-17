@@ -43,5 +43,7 @@ void killEOL( wchar_t * text );
 std::string canonicalPath( char* arg );
 void wtombstring( const std::wstring& input, std::string& output );
 void mbtowstring( const std::string& input, std::wstring& output );
+char *skipWS( char *text );
+wchar_t *skipWS( wchar_t *text );
 
 #endif //UTIL_INCLUDED

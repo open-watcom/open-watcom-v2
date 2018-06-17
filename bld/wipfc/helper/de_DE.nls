@@ -1,7 +1,5 @@
-#German
+#German (CP850 encoding)
 
-Country=49
-CodePage=850
 Note="Anmerkung&colon."
 Caution="ACHTUNG&colon."
 Warning="ACHTUNG&colon."

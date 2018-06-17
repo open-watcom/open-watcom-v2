@@ -1,7 +1,5 @@
-#User defined (currently US English)
+#User defined (currently US English CP850 encoding)
 
-Country=1
-CodePage=850
 Note="Note&colon. "
 Caution="CAUTION&colon. "
 Warning="Warning&colon. "

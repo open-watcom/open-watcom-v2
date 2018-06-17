@@ -1,7 +1,5 @@
-#French
+#French (CP850 encoding)
 
-Country=33
-CodePage=437
 Note="Remarque&colon."
 Caution="ATTENTION!"
 Warning="Avertissement&per."

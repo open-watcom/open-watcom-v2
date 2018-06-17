@@ -1,7 +1,5 @@
-# Japanese text
+# Japanese text (UTF-8 encoding)
 
-Country=81
-CodePage=0
 Note="注&colon."
 Caution="注&colon."
 Warning="警告&colon."

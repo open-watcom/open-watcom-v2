@@ -75,8 +75,7 @@ Lexer::Token Caution::parse( Lexer* lexer )
         temp += document->caution();
         temp += L":ehp2.\n";
     }
-    document->pushInput( new IpfBuffer( fname, document->dataLine(),
-        document->dataCol(), temp ) );
+    document->pushInput( new IpfBuffer( fname, document->dataLine(), document->dataCol(), temp ) );
     bool oldBlockParsing( document->blockParsing() );
     document->setBlockParsing( true );
     whiteSpace = Tag::LITERAL;

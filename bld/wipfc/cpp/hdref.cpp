@@ -85,8 +85,7 @@ Lexer::Token Hdref::parse( Lexer* lexer )
         std::wstring* fname( new std::wstring() );
         prepBufferName( fname, *( document->dataName() ) );
         fname = document->addFileName( fname );
-        document->pushInput( new IpfBuffer( fname, document->dataLine(),
-            document->dataCol(), temp ) );
+        document->pushInput( new IpfBuffer( fname, document->dataLine(), document->dataCol(), temp ) );
         bool oldBlockParsing( document->blockParsing() );
         document->setBlockParsing( true );
         tok = document->getNextToken(); //first token from buffer

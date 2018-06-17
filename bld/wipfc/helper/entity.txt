@@ -1,3 +1,4 @@
+# CP850 encoding
 -&mdash.
 -&ndash.
  &rbl.

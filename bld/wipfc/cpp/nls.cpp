@@ -54,22 +54,45 @@ Nls::Nls( const char *loc ) : bytes( 0 ), useDBCS( false )
     setLocalization( loc );
 }
 
-void Nls::readAliasFile( std::FILE *alias, std::map< std::string, std::string >& aliasMap )
+std::string Nls::readNlsConfFile( std::FILE *nlsconf, const char *loc )
 {
-    char    buffer[256];
-    char    *p;
+    char        buffer[256];
+    char        *p;
+    char        *fn;
 
-    while( std::fgets( buffer, sizeof( buffer ) / sizeof( char ), alias ) ) {
+    while( std::fgets( buffer, sizeof( buffer ) / sizeof( char ), nlsconf ) ) {
         std::size_t len = std::strlen( buffer );
         killEOL( buffer + len - 1 );
-        p = std::strtok( buffer, " \t" );
-        if( p != 0 ) {
-            p = std::strtok( NULL, " \t" );
-            if( p != 0 ) {
-                aliasMap.insert( std::map< std::string, std::string >::value_type( buffer, p ) );
-            }
-        }
+        p = skipWS( buffer );
+        if( p[0] == '\0' )
+            continue;                       // skip blank lines
+        if( p[0] == '#' )
+            continue;                       // skip comment lines
+        p = std::strtok( buffer, " \t" );   // get locale
+        if( p == 0 || std::strcmp( p, loc ) != 0 )
+            continue;
+        p = std::strtok( NULL, " \t" );     // get nls file
+        if( p == 0 )
+            continue;                       // skip incorrect lines
+        fn = skipWS( p );
+        p = std::strtok( NULL, " \t" );     // get country
+        if( p == 0 )
+            continue;                       // skip incorrect lines
+        p = skipWS( p );
+        country.country = static_cast< STD1::uint16_t >( std::strtoul( p, NULL, 10 ) );
+        p = std::strtok( NULL, " \t" );     // get codepage
+        if( p == 0 )
+            continue;                       // skip incorrect lines
+        p = skipWS( p );
+        country.codePage = static_cast< STD1::uint16_t >( std::strtoul( p, NULL, 10 ) );
+        std::fclose( nlsconf );
+        return( std::string( fn ) );
     }
+    // if error or locale not found then set default US
+    std::fclose( nlsconf );
+    country.country = 1;
+    country.codePage = 850;
+    return( std::string( "en_US.nls" ) );
 }
 
 std::string Nls::getNlsFileName( const char *loc )
@@ -83,22 +106,10 @@ std::string Nls::getNlsFileName( const char *loc )
         path += '/';
 #endif
     path += "nlsconf.txt";
-    std::FILE *alias = std::fopen( path.c_str(), "r" );
-    if( alias != 0 ) {
-        std::map< std::string, std::string > aliasMap;
-        std::map< std::string, std::string >::iterator it;
-
-        readAliasFile( alias, aliasMap );
-        std::fclose( alias );
-        it = aliasMap.find( loc );
-        if( it != aliasMap.end() ) {
-            std::string fname( it->second );
-            return( fname );
-        }
-    }
-    std::string fname( loc );
-    fname += ".nls";
-    return( fname );
+    std::FILE *nlsconf = std::fopen( path.c_str(), "r" );
+    if( nlsconf == 0 )
+        throw FatalError( ERR_NLSCONF );
+    return( readNlsConfFile( nlsconf, loc ) );
 }
 
 /*****************************************************************************/
@@ -198,10 +209,6 @@ void Nls::readNLS( std::FILE *nls )
             } else if ( std::wcscmp( buffer, L"RemoveNL" ) == 0 ) {
                 //FIXME: exclude these values from s/dbcs table?
             }
-        } else if( std::wcscmp( buffer, L"Country" ) == 0 ) {
-            country.country = static_cast< STD1::uint16_t >( std::wcstoul( value, 0, 10 ) );
-        } else if( std::wcscmp( buffer, L"CodePage" ) == 0 ) {
-            country.codePage = static_cast< STD1::uint16_t >( std::wcstoul( value, 0, 10 ) );
         } else if( std::wcscmp( buffer, L"Note" ) == 0 ) {
             std::wstring text( value );
             killQuotes( text );
@@ -326,13 +333,13 @@ STD1::uint32_t Nls::CountryDef::write( std::FILE *out ) const
 void Nls::SbcsGrammarDef::setDefaultBits( NlsRecType rectype )
 {
     static const unsigned char defbits[2][32] = {\
-        { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xff, 0xc0, 
-          0x7f, 0xff, 0xff, 0xe0, 0x7f, 0xff, 0xff, 0xe0, 
-          0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
+        { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xff, 0xc0,
+          0x7f, 0xff, 0xff, 0xe0, 0x7f, 0xff, 0xff, 0xe0,
+          0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
           0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 },
-        { 0x7f, 0xff, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00, 
-          0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-          0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 
+        { 0x7f, 0xff, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00,
+          0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+          0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
           0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff } };
     std::memcpy( this->bits, &defbits[rectype - 1][0], 32 * sizeof( char ) );
 }
@@ -363,7 +370,7 @@ STD1::uint32_t Nls::DbcsGrammarDef::write( std::FILE *out )
 /*
 The following table lists the 3-digit country code for the /COUNTRY or -d: nnn
 parameter, the numeric identifiers of code pages, and the APS filename of the
-IPFC command supported. 
+IPFC command supported.
 
 +-------------------------------------------------------------------------+
 |Country               |Country Code|Code Pages        |APS File          |
@@ -446,11 +453,11 @@ IPFC command supported.
 +-------------------------------------------------------------------------+
 Note:  If there is an APSYxxxx.APS file that matches the code page you are
     using to compile your IPF file (either specified or default), the IPFC
-    will use that file. Otherwise, it will use APSYMBOL.APS file that is 
+    will use that file. Otherwise, it will use APSYMBOL.APS file that is
     suitable for code page 437 or 850.
 
 The following table lists the 3-letter identifier for the /LANGUAGE and -l: xxx
-parameter of the IPFC command: 
+parameter of the IPFC command:
 
 +------------------------------------------------------------------------+
 |ID        |Language                      |NLS File                      |

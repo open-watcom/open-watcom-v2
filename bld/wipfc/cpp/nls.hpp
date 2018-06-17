@@ -130,7 +130,7 @@ private:
     void readEntityFile( std::FILE* aps );
     void readNLS( std::FILE* nls );
     void processGrammar( wchar_t* value );
-    void readAliasFile( std::FILE *alias, std::map< std::string, std::string >& aliasMap );
+    std::string readNlsConfFile( std::FILE *nlsconf, const char *loc );
     std::string getNlsFileName( const char *loc );
 };
 

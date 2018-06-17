@@ -37,6 +37,8 @@
 #include <memory>
 #include <string>
 #include <climits>
+#include <cctype>
+#include <cwctype>
 #if defined( __UNIX__ ) || defined( __APPLE__ )
     #include <unistd.h>
 #else
@@ -102,8 +104,7 @@ void splitAttribute( const std::wstring& text, std::wstring& key, std::wstring& 
 void killEOL( char * text )
 {
     if( *text == '\n' || *text == '\r' ) {  //CR or LF
-        *text = '\0';
-        --text;
+        *text-- = '\0';
     }
     if( *text == '\n' || *text == '\r' ) {  //CRLF (or LFCR)
         *text = '\0';
@@ -114,8 +115,7 @@ void killEOL( char * text )
 void killEOL( wchar_t * text )
 {
     if( *text == L'\n' || *text == L'\r' ) {    //CR or LF
-        *text = L'\0';
-        --text;
+        *text-- = L'\0';
     }
     if( *text == L'\n' || *text == L'\r' ) {    //CRLF (or LFCR)
         *text = L'\0';
@@ -191,4 +191,18 @@ void mbtowstring( const std::string& input, std::wstring& output )
         output += wch;
         index += consumed;
     }
+}
+
+char *skipWS( char *text )
+{
+    while( std::isspace( *(unsigned char *)text ) )
+        text++;
+    return( text );
+}
+
+wchar_t *skipWS( wchar_t *text )
+{
+    while( std::iswspace( *text ) )
+        text++;
+    return( text );
 }

@@ -1,7 +1,5 @@
-#Canadian French
+#Canadian French (CP850 encoding)
 
-Country=2
-CodePage=850
 Note="Remarque&colon."
 Caution="ATTENTION!"
 Warning="Avertissement&per."

@@ -1,13 +1,13 @@
-de_DE       de_DE.nls
-en_GB       en_GB.nls
-en_US       en_US.nls
-fr_CA       fr_CA.nls
-fr_FR       fr_FR.nls
-ja_JA       ja_JA.nls
-de_DE.UTF-8 deDEUTF8.nls
-en_GB.UTF-8 enGBUTF8.nls
-en_US.UTF-8 enUSUTF8.nls
-fr_CA.UTF-8 frCAUTF8.nls
-fr_FR.UTF-8 frFRUTF8.nls
-ja_JA.UTF-8 jaJAUTF8.nls
-
+# locale    nls file        country     codepage
+de_DE       de_DE.nls       49          850
+en_GB       en_GB.nls       44          850
+en_US       en_US.nls       1           850
+fr_CA       fr_CA.nls       2           850
+fr_FR       fr_FR.nls       33          850
+ja_JA       ja_JA.nls       81          932
+de_DE.UTF-8 deDEUTF8.nls    49          0
+en_GB.UTF-8 enGBUTF8.nls    44          0
+en_US.UTF-8 enUSUTF8.nls    1           0
+fr_CA.UTF-8 frCAUTF8.nls    2           0
+fr_FR.UTF-8 frFRUTF8.nls    33          0
+ja_JA.UTF-8 jaJAUTF8.nls    81          0
