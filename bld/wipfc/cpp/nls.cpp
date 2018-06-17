@@ -257,7 +257,7 @@ void Nls::processGrammar( wchar_t *buffer )
     if( grammarChars.empty() ) {
         grammarChars.reserve( 26 + 26 + 10 );
     }
-#if defined( _MSC_VER )
+#if defined( _MSC_VER ) && ( _MSC_VER < 1910 ) && !defined( _WCSTOK_DEPRECATED )
     wchar_t* tok( std::wcstok( buffer, L"+" ) );
 #else
     wchar_t* p;
@@ -281,7 +281,7 @@ void Nls::processGrammar( wchar_t *buffer )
                 useDBCS = true;
             }
         }
-#if defined( _MSC_VER )
+#if defined( _MSC_VER ) && ( _MSC_VER < 1910 ) && !defined( _WCSTOK_DEPRECATED )
         tok = std::wcstok( 0, L"+" );
 #else
         tok = std::wcstok( 0, L"+", &p );
