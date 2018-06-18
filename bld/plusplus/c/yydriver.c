@@ -751,9 +751,12 @@ static YYTOKENTYPE scopedChain( PARSE_STACK *state, PTREE start, PTREE id,
                 return( Y_SCOPED_TEMPLATE_NAME );
             case LK_NAMESPACE:
                 return( Y_SCOPED_NAMESPACE_NAME );
-            DbgDefault( "unknown lexical category" );
             }
+#ifndef NDEBUG
+            CFatal( "unknown lexical category" );
+#else
             return( Y_IMPOSSIBLE );
+#endif
         case T_TILDE:
         case T_ALT_TILDE:
             yylval.tree = makeUnary( CO_TILDE, curr );
@@ -766,9 +769,9 @@ static YYTOKENTYPE scopedChain( PARSE_STACK *state, PTREE start, PTREE id,
             yylval.tree = makeUnary( CO_INDIRECT, curr );
             return( Y_SCOPED_TIMES );
         default:
+            /* error! */
             PTreeFreeSubtrees( curr );
             CErr2p( ERR_COLON_COLON_SYNTAX, TokenString() );
-            /* error! */
             return( Y_IMPOSSIBLE );
         }
     }
