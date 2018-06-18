@@ -28,7 +28,7 @@
 #endif
 
 typedef struct packed_action {
-    unsigned short      token : 12;
+    unsigned short      token       : 12;
     unsigned short      high_action : 4;
     unsigned char       low_action;
 } packed_action;
@@ -154,6 +154,7 @@ int yyparse( void )
                 switch( yyerrflag ) {
                 case 0:
                     yyerror( "syntax error" );
+                    YYERROR;
 yyerrlab:
                 case 1:
                 case 2:
@@ -233,7 +234,7 @@ static void actions( unsigned short production, YYSTYPE * yyvp )
     YYSTYPE         yyval;
 
     switch( production ) {
-
+
     default:
         // No action required
         return;
