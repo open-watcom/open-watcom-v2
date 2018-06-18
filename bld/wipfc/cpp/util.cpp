@@ -101,7 +101,7 @@ void splitAttribute( const std::wstring& text, std::wstring& key, std::wstring& 
 }
 /*****************************************************************************/
 //Allow for files with non-native end-of-lines
-void killEOL( char * text )
+void killEOL( char *text )
 {
     if( *text == '\n' || *text == '\r' ) {  //CR or LF
         *text-- = '\0';
@@ -112,7 +112,7 @@ void killEOL( char * text )
 }
 /*****************************************************************************/
 //Allow for files with non-native end-of-lines
-void killEOL( wchar_t * text )
+void killEOL( wchar_t *text )
 {
     if( *text == L'\n' || *text == L'\r' ) {    //CR or LF
         *text-- = L'\0';
@@ -141,8 +141,7 @@ std::string canonicalPath( char* arg )
             if( idx2 != std::string::npos ) {
                 fullpath.erase( idx2 );
                 inFile.erase( idx1, 3 );
-            }
-            else if( !fullpath.empty() ) {
+            } else if( !fullpath.empty() ) {
 #if defined( __UNIX__ ) || defined( __APPLE__ )
                 idx2 = 0;
 #else
@@ -158,9 +157,9 @@ std::string canonicalPath( char* arg )
         }
         fullpath += sep;
         fullpath += inFile;
-    }
-    else
+    } else {
         fullpath = inFile;
+    }
 #if !defined( __UNIX__ ) && !defined( __APPLE__ )
     if( fullpath.size() > PATH_MAX )
         throw FatalError( ERR_PATH_MAX );
@@ -182,14 +181,14 @@ void wtombstring( const std::wstring& input, std::string& output )
 /*****************************************************************************/
 void mbtowstring( const std::string& input, std::wstring& output )
 {
-    std::size_t index( 0 );
-    while( index < input.size() ) {
+    int consumed;
+
+    for( std::size_t index = 0; index < input.size(); index += consumed ) {
         wchar_t wch;
-        int consumed( std::mbtowc( &wch, input.data() + index, MB_CUR_MAX ) );
+        consumed = std::mbtowc( &wch, input.data() + index, MB_CUR_MAX );
         if( consumed == -1 )
             throw FatalError( ERR_T_CONV );
         output += wch;
-        index += consumed;
     }
 }
 
