@@ -345,25 +345,29 @@ int main( int argc, char **argv )
     if( skeleton == NULL ) {
         skeleton = fpopen( loadpath, "yydriver.c" );
         if( skeleton == NULL ) {
-            msg( "Can't find yacc skeleton yydriver.c\n" );
+            warn( "Can't find yacc skeleton yydriver.c\n" );
         }
     }
     /* copy first part of skeleton */
-    copy_part( skeleton, actout );
+    if( skeleton != NULL )
+        copy_part( skeleton, actout );
     rewind( tokout );
     /* copy tokens */
     copy_rest( tokout, actout );
     close_header( tokout );
     genobj( actout );
     /* copy middle part of skeleton */
-    copy_part( skeleton, actout );
+    if( skeleton != NULL )
+        copy_part( skeleton, actout );
     rewind( temp );
     copy_rest( temp, actout );
     fclose( temp );
     remove( tempfname );
     /* copy last part of skeleton */
-    copy_rest( skeleton, actout );
-    fclose( skeleton );
+    if( skeleton != NULL ) {
+        copy_rest( skeleton, actout );
+        fclose( skeleton );
+    }
     tail( actout );
     fclose( actout );
     FREE( codefilename );
