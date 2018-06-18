@@ -121,8 +121,7 @@ typedef enum {
 } p_action;
 
 /* definitions and tables here */
-            /*  */
-/* */
+
 
 #ifdef YYDEBUG
 
