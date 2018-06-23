@@ -62,6 +62,7 @@ public:
 private:
     IpfFile( const IpfFile& rhs );              //no copy
     IpfFile& operator=( const IpfFile& rhs );   //no assignment
+    std::wint_t read_wchar();
     const std::wstring* fileName;
     std::FILE* stream;
     wchar_t ungottenChar;
