@@ -41,8 +41,12 @@ void splitAttribute( const std::wstring& text, std::wstring& key, std::wstring& 
 void killEOL( char * text );
 void killEOL( wchar_t * text );
 std::string canonicalPath( char* arg );
-void wtombstring( const std::wstring& input, std::string& output );
-void mbtowstring( const std::string& input, std::wstring& output );
+int wtomb_char( char *mbc, wchar_t wc );
+int mbtow_char( wchar_t *wc, const char *mbc, std::size_t len );
+std::size_t wtomb_cstring( char *mbc, const wchar_t *wc, std::size_t len );
+std::size_t mbtow_cstring( wchar_t *wc, const char *mbc, std::size_t len );
+void wtomb_string( const std::wstring& input, std::string& output );
+void mbtow_string( const std::string& input, std::wstring& output );
 char *skipWS( char *text );
 wchar_t *skipWS( wchar_t *text );
 

@@ -63,7 +63,7 @@ Lexer::Token Font::parse( Lexer* lexer )
                     fnt.height = 0;
                     fnt.width = 0;
                     isDefault = true;
-                } else if( std::wcstombs( &fnt.faceName[0], value.c_str(), sizeof( fnt.faceName ) / sizeof( char ) ) == static_cast< std::size_t >( -1 ) ) {
+                } else if( wtomb_cstring( fnt.faceName, value.c_str(), sizeof( fnt.faceName ) - 1 ) == static_cast< std::size_t >( -1 ) ) {
                     throw( ERR_T_CONV );
                 }
             } else if( key == L"size" ) {

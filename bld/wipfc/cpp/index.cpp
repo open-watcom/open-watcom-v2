@@ -109,10 +109,10 @@ std::size_t IndexItem::write( std::FILE* out )
     std::size_t length1( 0 );
     std::size_t length2( 0 );
     if( hdr.sortKey ) {
-        wtombstring( sortKey, buffer1 );
+        wtomb_string( sortKey, buffer1 );
         length1 = buffer1.size();
     }
-    wtombstring( text, buffer2 );
+    wtomb_string( text, buffer2 );
     length2 = buffer2.size();
     if( length1 + length2 > 254 ) {
         length2 = length1 > 254 ? 0 : 254 - length1;

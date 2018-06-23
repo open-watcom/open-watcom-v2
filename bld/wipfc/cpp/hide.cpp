@@ -90,7 +90,7 @@ Lexer::Token Hide::parse( Lexer* lexer )
 void Hide::buildText( Cell* cell )
 {
     std::string tmp;
-    wtombstring( keyPhrase, tmp );
+    wtomb_string( keyPhrase, tmp );
     std::size_t size( tmp.size() );
     if( size > 253 ) {
         tmp.erase( 253 );

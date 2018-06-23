@@ -69,7 +69,7 @@ Lexer::Token ISyn::parse( Lexer* lexer )
     while( tok != Lexer::END && !( tok == Lexer::TAG && lexer->tagId() == Lexer::EUSERDOC)) {
         if( tok == Lexer::WORD ) {
             char buffer[ 256 ];
-            std::size_t length( std::wcstombs( buffer, lexer->text().c_str(), sizeof(buffer) / sizeof(char) ) );
+            std::size_t length( wtomb_cstring( buffer, lexer->text().c_str(), sizeof( buffer ) - 1 ) );
             if( length == static_cast< std::size_t >( -1 ) )
                 throw FatalError( ERR_T_CONV );
             std::string txt( buffer );

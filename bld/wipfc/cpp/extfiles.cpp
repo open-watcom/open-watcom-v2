@@ -57,7 +57,7 @@ STD1::uint32_t ExternalFiles::write( std::FILE *out )
     STD1::uint32_t start( std::ftell( out ) );
     for( ConstTableIter itr = table.begin(); itr != table.end(); ++itr ) {
         std::string buffer;
-        wtombstring( itr->first, buffer );
+        wtomb_string( itr->first, buffer );
         std::size_t length( buffer.size() );
         if( length > 255 ) {
             buffer.erase( 255 );

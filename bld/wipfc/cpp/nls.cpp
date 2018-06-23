@@ -151,12 +151,12 @@ void Nls::readEntityFile( std::FILE *entty )
     while( std::fgets( buffer, sizeof( buffer ) / sizeof( char ), entty ) ) {
         std::size_t len = std::strlen( buffer );
         killEOL( buffer + len - 1 );
-        offset = std::mbtowc( &c, buffer, len );
+        offset = mbtow_char( &c, buffer, len );
         if( offset == -1 )
             throw FatalError( ERR_T_CONV );
         if( offset > 1 )
             useDBCS = true;
-        len = std::mbstowcs( text, buffer + offset, sizeof( text ) / sizeof( wchar_t ) );
+        len = mbtow_cstring( text, buffer + offset, sizeof( text ) / sizeof( wchar_t ) - 1 );
         if( len == static_cast< std::size_t >( -1 ))
             throw FatalError( ERR_T_CONV );
         text[len] = L'\0';

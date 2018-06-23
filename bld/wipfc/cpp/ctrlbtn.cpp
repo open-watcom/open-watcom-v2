@@ -41,7 +41,7 @@ STD1::uint32_t ControlButton::write( std::FILE *out ) const
     if( std::fwrite( &res, sizeof( STD1::uint16_t), 1, out) != 1 ) 
         throw FatalError( ERR_WRITE );
     std::string buffer;
-    wtombstring( txt, buffer );
+    wtomb_string( txt, buffer );
     std::size_t length( buffer.size() );
     if( length > 255 ) {
         buffer.erase( 255 );

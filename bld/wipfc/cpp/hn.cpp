@@ -106,7 +106,7 @@ Lexer::Token Hn::parse( Lexer* lexer )
         tok = document->getNextToken();
     }
     //convert to mbs, max 255 char
-    wtombstring( tmp, title );
+    wtomb_string( tmp, title );
     if( title.size() > 255 )
         title.erase( 255 );
     tok = document->getNextToken();
@@ -613,7 +613,7 @@ void Hn::buildText( Cell* cell )
 {
     if( etoc.setTutor ) {
         std::string tmp;
-        wtombstring( tutorial, tmp );
+        wtomb_string( tutorial, tmp );
         std::size_t size1( tmp.size() );
         if( size1 > 253 ) {
             tmp.erase( 253 );

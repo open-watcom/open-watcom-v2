@@ -38,6 +38,7 @@
 #include <cstdlib>
 #include "gdword.hpp"
 #include "errors.hpp"
+#include "util.hpp"
 
 void GlobalDictionaryWord::toUpper()
 {
@@ -52,7 +53,7 @@ std::size_t GlobalDictionaryWord::writeWord( std::FILE* out ) const
 {
     char buffer[ 256 ];
     std::size_t written;
-    std::size_t length( std::wcstombs( buffer, text.c_str(), sizeof( buffer ) / sizeof( char ) ) );
+    std::size_t length( wtomb_cstring( buffer, text.c_str(), sizeof( buffer ) - 1 ) );
     if( length == static_cast< std::size_t >( -1 ) )
         throw FatalError( ERR_T_CONV );
     if( length > 254 )

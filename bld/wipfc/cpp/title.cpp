@@ -35,6 +35,7 @@
 #include "title.hpp"
 #include "lexer.hpp"
 #include "document.hpp"
+#include "util.hpp"
 
 Lexer::Token Title::parse( Lexer* lexer, IpfHeader* hdr )
 {
@@ -58,12 +59,11 @@ Lexer::Token Title::parse( Lexer* lexer, IpfHeader* hdr )
             tok == Lexer::WORD ||
             tok == Lexer::PUNCTUATION ) {
             txt += lexer->text();
-        }
-        else if( tok == Lexer::ENTITY ) {
+        } else if( tok == Lexer::ENTITY ) {
             const std::wstring* exp( document->nameit( lexer->text() ) );
-            if( exp )
+            if( exp ) {
                 txt += *exp;
-            else {
+            } else {
                 try {
                     wchar_t ch( document->entity( lexer->text() ) );
                     txt += ch;
@@ -72,22 +72,16 @@ Lexer::Token Title::parse( Lexer* lexer, IpfHeader* hdr )
                     document->printError( e.code );
                 }
             }
-        }
-        else if( tok == Lexer::END )
+        } else if( tok == Lexer::END ) {
             throw FatalError( ERR_EOF );
-        else
+        } else {
             break;
+        }
         tok = document->getNextToken();
     }
     if( txt.size() > 47 )
         document->printError( ERR2_TEXTTOOLONG );
-    std::size_t index1 = 0;
-    std::size_t index2 = 0;
-    char *title( hdr->title );
-    while( index1 < txt.size() && index2 < 47 ) {
-        index2 += std::wctomb( title + index2, txt[ index1 ] );
-        ++index1 ;
-    }
+    wtomb_cstring( hdr->title, txt.c_str(), sizeof( hdr->title ) - 1 );
     return tok;
 }
 

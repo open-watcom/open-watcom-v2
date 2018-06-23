@@ -31,6 +31,7 @@
 #include <cstdlib>
 #include "strings.hpp"
 #include "errors.hpp"
+#include "util.hpp"
 
 STD1::uint32_t StringTable::write( std::FILE *out )
 {
@@ -40,7 +41,7 @@ STD1::uint32_t StringTable::write( std::FILE *out )
     for( ConstTableIter itr = table.begin(); itr != table.end(); ++itr ) {
         char buffer[ 256 ];
         std::size_t written;
-        std::size_t length( std::wcstombs( buffer, itr->c_str(), sizeof( buffer ) / sizeof( char ) ) );
+        std::size_t length( wtomb_cstring( buffer, itr->c_str(), sizeof( buffer ) - 1 ) );
         if( length == static_cast< std::size_t >( -1 ) )
             throw FatalError( ERR_T_CONV );
         if( std::fputc( static_cast< STD1::uint8_t >( length + 1 ), out ) == EOF ||

@@ -209,7 +209,7 @@ Document::Document( Compiler& c, const char* loc ) :
     fonts.reset( new FontCollection( codePage() ) );
     FontEntry fnt;
     char buffer[ sizeof( fnt.faceName ) ];
-    std::size_t size( std::wcstombs( buffer, cgraphicFontFaceName().c_str(), sizeof( fnt.faceName ) ) );
+    std::size_t size( wtomb_cstring( buffer, cgraphicFontFaceName().c_str(), sizeof( buffer ) - 1 ) );
     if( size == static_cast< std::size_t >( -1 ) )
         throw FatalError( ERR_T_CONV );
     std::strncpy( fnt.faceName, buffer, sizeof( fnt.faceName ) );
@@ -604,7 +604,7 @@ void Document::makeBitmaps()
         try {
             for( BitmapNameIter itr = bitmapNames.begin(); itr != bitmapNames.end(); ++itr ) {
                 std::string fname;
-                wtombstring( itr->first, fname );
+                wtomb_string( itr->first, fname );
                 for( std::size_t count = 0; count < paths.size(); ++count ) {
                     std::string fullname( paths[ count ] );
                     if( !fullname.empty() )
@@ -875,13 +875,13 @@ Lexer::Token Document::processCommand( Lexer* lexer, Tag* parent )
         std::string::size_type idx1( 0 );
         std::string::size_type idx2( env.find_first_of( separators, idx1 ) );
         std::wstring fbuffer;
-        mbtowstring( env.substr( idx1, idx2 - idx1 ), fbuffer );
+        mbtow_string( env.substr( idx1, idx2 - idx1 ), fbuffer );
         paths.push_back( fbuffer );
         while( idx2 != std::string::npos ) {
             idx1 = idx2 + 1;
             idx2 = env.find_first_of( separators, idx1 );
             fbuffer.clear();
-            mbtowstring( env.substr( idx1, idx2 - idx1 ), fbuffer );
+            mbtow_string( env.substr( idx1, idx2 - idx1 ), fbuffer );
             paths.push_back( fbuffer );
         }
         for( std::size_t count = 0; count < paths.size(); ++count ) {

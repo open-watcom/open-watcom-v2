@@ -166,12 +166,61 @@ std::string canonicalPath( char* arg )
 #endif
     return fullpath;
 }
+
+int wtomb_char( char *mbc, wchar_t wc )
+{
+    return( std::wctomb( mbc, wc ) );
+}
+
+int mbtow_char( wchar_t *wc, const char *mbc, std::size_t len )
+{
+    return( std::mbtowc( wc, mbc, len ) );
+}
+
+std::size_t wtomb_cstring( char *dst_mbc, const wchar_t *src_wc, std::size_t len )
+{
+    std::size_t dst_len = 0;
+    char        mbc[MB_LEN_MAX + 1];
+    int         bytes;
+
+    while( len > 0 && *src_wc != L'\0' ) {
+        bytes = wtomb_char( mbc, *src_wc );
+        if( bytes == -1 || bytes > len )
+            return( static_cast<std::size_t>( -1 ) );
+        std::memcpy( dst_mbc, mbc, bytes );
+        dst_mbc += bytes;
+        dst_len += bytes;
+        len -= bytes;
+        src_wc++;
+    }
+    *dst_mbc = '\0';
+    return( dst_len );
+}
+
+std::size_t mbtow_cstring( wchar_t *dst_wc, const char *src_mbc, std::size_t len )
+{
+    std::size_t dst_len = 0;
+    int         bytes;
+
+    while( len > 0 && *src_mbc != '\0' ) {
+        bytes = mbtow_char( dst_wc, src_mbc, MB_LEN_MAX );
+        if( bytes == -1 )
+            return( static_cast<std::size_t>( -1 ) );
+        dst_wc++;
+        dst_len++;
+        len--;
+        src_mbc += bytes;
+    }
+    *dst_wc = L'\0';
+    return( dst_len );
+}
+
 /*****************************************************************************/
-void wtombstring( const std::wstring& input, std::string& output )
+void wtomb_string( const std::wstring& input, std::string& output )
 {
     for( std::size_t index = 0; index < input.size(); ++index ) {
         char ch[ MB_LEN_MAX + 1 ];
-        int  bytes( std::wctomb( &ch[ 0 ], input[ index ] ) );
+        int  bytes( wtomb_char( &ch[ 0 ], input[ index ] ) );
         if( bytes == -1 )
             throw FatalError( ERR_T_CONV );
         ch[ bytes ] = '\0';
@@ -179,13 +228,13 @@ void wtombstring( const std::wstring& input, std::string& output )
     }
 }
 /*****************************************************************************/
-void mbtowstring( const std::string& input, std::wstring& output )
+void mbtow_string( const std::string& input, std::wstring& output )
 {
     int consumed;
 
     for( std::size_t index = 0; index < input.size(); index += consumed ) {
         wchar_t wch;
-        consumed = std::mbtowc( &wch, input.data() + index, MB_CUR_MAX );
+        consumed = mbtow_char( &wch, input.data() + index, MB_CUR_MAX );
         if( consumed == -1 )
             throw FatalError( ERR_T_CONV );
         output += wch;

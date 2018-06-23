@@ -234,26 +234,29 @@ void AcViewport::buildText( Cell* cell )
         esc.push_back( static_cast< STD1::uint8_t >( objectName.size() + 1 ) );
         if( !objectName.empty() ) {
             std::string buffer;
-            wtombstring( objectName, buffer );
+            wtomb_string( objectName, buffer );
             std::size_t bytes( buffer.size() );
-            for( std::size_t count1 = 0; count1 < bytes; ++count1 )
+            for( std::size_t count1 = 0; count1 < bytes; ++count1 ) {
                 esc.push_back( static_cast< STD1::uint8_t >( buffer[ count1 ] ) );
+            }
         }
         esc.push_back( static_cast< STD1::uint8_t >( dll.size() + 1 ) );
         if( !dll.empty() ) {
             std::string buffer;
-            wtombstring( dll, buffer );
+            wtomb_string( dll, buffer );
             std::size_t bytes( buffer.size() );
-            for( std::size_t count1 = 0; count1 < bytes; ++count1 )
+            for( std::size_t count1 = 0; count1 < bytes; ++count1 ) {
                 esc.push_back( static_cast< STD1::uint8_t >( buffer[ count1 ] ) );
+            }
         }
         esc.push_back( static_cast< STD1::uint8_t >( objectInfo.size() + 1 ) );
         if( !objectInfo.empty() ) {
             std::string buffer;
-            wtombstring( objectInfo, buffer );
+            wtomb_string( objectInfo, buffer );
             std::size_t bytes( buffer.size() );
-            for( std::size_t count1 = 0; count1 < bytes; ++count1 )
+            for( std::size_t count1 = 0; count1 < bytes; ++count1 ) {
                 esc.push_back( static_cast< STD1::uint8_t >( buffer[ count1 ] ) );
+            }
         }
         if( doOrigin || doSize ) {
             STD1::uint8_t flag( 0xC0 );
@@ -265,13 +268,15 @@ void AcViewport::buildText( Cell* cell )
             esc.push_back( 0 );
             if( doOrigin ) {
                 STD1::uint8_t* src = reinterpret_cast< STD1::uint8_t* >( &origin );
-                for( std::size_t count1 = 0; count1 < sizeof( PageOrigin ); ++count1, ++src)
+                for( std::size_t count1 = 0; count1 < sizeof( PageOrigin ); ++count1, ++src ) {
                     esc.push_back( *src );
+                }
             }
             if( doSize ) {
                 STD1::uint8_t* src = reinterpret_cast< STD1::uint8_t* >( &size );
-                for( std::size_t count1 = 0; count1 < sizeof( PageSize ); ++count1, ++src)
+                for( std::size_t count1 = 0; count1 < sizeof( PageSize ); ++count1, ++src ) {
                     esc.push_back( *src );
+                }
             }
         }
         esc[ 1 ] = static_cast< STD1::uint8_t >( esc.size() - 1 );

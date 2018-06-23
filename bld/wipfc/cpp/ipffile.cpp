@@ -35,11 +35,11 @@
     #include <mbctype.h>
 #endif
 
-IpfFile::IpfFile( const std::wstring*  fname ) : IpfData(), fileName ( fname ),
+IpfFile::IpfFile( const std::wstring* fname ) : IpfData(), fileName ( fname ),
     ungottenChar( WEOF ), ungotten( false )
 {
     std::string buffer;
-    wtombstring( *fname, buffer );
+    wtomb_string( *fname, buffer );
     if(( stream = std::fopen( buffer.c_str(), "rb" ) ) == 0)
         throw FatalIOError( ERR_OPEN, *fileName );
 }
@@ -94,17 +94,18 @@ std::wint_t IpfFile::readMBChar()
     if( ungotten ) {
         ch = ungottenChar;
         ungotten = false;
-    }
-    else {
+    } else {
         char    mbc[ MB_LEN_MAX ];
         if( std::fread( &mbc[0], sizeof( char ), 1, stream ) != 1 )
             return WEOF;
-        else if( _ismbblead( mbc[0] ) ) {
-            if( std::fread( &mbc[1], sizeof( char ), 1, stream ) != 1 )
+        if( _ismbblead( mbc[0] ) ) {
+            if( std::fread( &mbc[1], sizeof( char ), 1, stream ) != 1 ) {
                 return WEOF;
+            }
         }
-        if( std::mbtowc( &ch, mbc, MB_CUR_MAX ) < 0 )
+        if( mbtow_char( &ch, mbc, MB_CUR_MAX ) < 0 ) {
             throw FatalError( ERR_T_CONV );
+        }
     }
     return ch;
 }
