@@ -60,7 +60,7 @@ std::string Nls::readNlsConfFile( std::FILE *nlsconf, const char *loc )
     char        *p;
     char        *fn;
 
-    while( std::fgets( buffer, sizeof( buffer ) / sizeof( char ), nlsconf ) ) {
+    while( std::fgets( buffer, sizeof( buffer ), nlsconf ) ) {
         std::size_t len = std::strlen( buffer );
         killEOL( buffer + len - 1 );
         p = skipWS( buffer );
@@ -144,11 +144,11 @@ void Nls::setCodePage( int cp )
 /*****************************************************************************/
 void Nls::readEntityFile( std::FILE *entty )
 {
-    char    buffer[256];
+    char    buffer[256 * 2];
     wchar_t text[256];
     int     offset;
     wchar_t c;
-    while( std::fgets( buffer, sizeof( buffer ) / sizeof( char ), entty ) ) {
+    while( std::fgets( buffer, sizeof( buffer ), entty ) ) {
         std::size_t len = std::strlen( buffer );
         killEOL( buffer + len - 1 );
         offset = mbtow_char( &c, buffer, len );
@@ -187,74 +187,77 @@ void Nls::setLocalization( const char *loc)
 /*****************************************************************************/
 void Nls::readNLS( std::FILE *nls )
 {
-    wchar_t  buffer[256];
-    wchar_t* value;
-    bool     doGrammar( false );
-    while( std::fgetws( buffer, sizeof( buffer ) / sizeof( wchar_t ), nls )) {
-        std::size_t len( std::wcslen( buffer ) );
-        killEOL( buffer + len - 1 );
-        if( len == 1 )
+    char        sbuffer[256 * 2];
+    wchar_t     value[256];
+    char        *p;
+    bool        doGrammar( false );
+    while( std::fgets( sbuffer, sizeof( sbuffer ), nls ) ) {
+        std::size_t len( std::strlen( sbuffer ) );
+        killEOL( sbuffer + len - 1 );
+        if( sbuffer[0] == '\0' )
             continue;               //skip blank lines
-        if( buffer[0] == L'#' )
+        if( sbuffer[0] == '#' )
             continue;               //skip comments
-        if( ( value = std::wcschr( buffer, L'=' ) ) != 0 ) {
-            *value = '\0';
-            ++value;
-        } else {
-            value = buffer;
-        }
-        if( doGrammar ) {
-            if( std::wcscmp( buffer, L"Words" ) == 0 ) {
-                processGrammar( value );
-            } else if ( std::wcscmp( buffer, L"RemoveNL" ) == 0 ) {
-                //FIXME: exclude these values from s/dbcs table?
+        if( (p = std::strchr( sbuffer, '=' )) != 0 ) {
+            *p++ = '\0';
+            mbtow_cstring( value, p, sizeof( value ) / sizeof( wchar_t ) - 1 );
+            if( doGrammar ) {
+                if( std::strcmp( sbuffer, "Words" ) == 0 ) {
+                    processGrammar( value );
+                } else if ( std::strcmp( sbuffer, "RemoveNL" ) == 0 ) {
+                    //FIXME: exclude these values from s/dbcs table?
+                }
+            } else if( std::strcmp( sbuffer, "Note" ) == 0 ) {
+                std::wstring text( value );
+                killQuotes( text );
+                noteText = text;
+            } else if( std::strcmp( sbuffer, "Caution" ) == 0 ) {
+                std::wstring text( value );
+                killQuotes( text );
+                cautionText = text;
+            } else if( std::strcmp( sbuffer, "Warning" ) == 0 ) {
+                std::wstring text( value );
+                killQuotes( text );
+                warningText = text;
+            } else if( std::strcmp( sbuffer, "Reference" ) == 0 ) {
+                std::wstring text( value );
+                killQuotes( text );
+                referenceText = text;
+            } else if( std::strcmp( sbuffer, "olChars" ) == 0 ) {
+                std::wstring text( value );
+                olCh = text;
+            } else if( std::strcmp( sbuffer, "olClose1" ) == 0 ) {
+                std::wstring text( value );
+                olClosers[0] = text;
+            } else if( std::strcmp( sbuffer, "olClose2" ) == 0 ) {
+                std::wstring text( value );
+                olClosers[1] = text;
+            } else if( std::strcmp( sbuffer, "ulItemId1" ) == 0 ) {
+                std::wstring text( value );
+                ulBul[0] = text;
+            } else if( std::strcmp( sbuffer, "ulItemId2" ) == 0 ) {
+                std::wstring text( value );
+                ulBul[1] = text;
+            } else if( std::strcmp( sbuffer, "ulItemId3" ) == 0 ) {
+                std::wstring text( value );
+                ulBul[2] = text;
+            } else if( std::strcmp( sbuffer, "cgraphicFontFaceName" ) == 0 ) {
+                std::wstring text( value );
+                killQuotes( text );
+                cgraphicFontFace = text;
+            } else if( std::strcmp( sbuffer, "cgraphicFontWidth" ) == 0 ) {
+                cgraphicFontW = static_cast< int >( std::wcstol( value, 0, 10 ) );
+            } else if( std::strcmp( sbuffer, "cgraphicFontHeight" ) == 0 ) {
+                cgraphicFontH = static_cast< int >( std::wcstol( value, 0, 10 ) );
+            } else {
+                // error: unknown keyword
             }
-        } else if( std::wcscmp( buffer, L"Note" ) == 0 ) {
-            std::wstring text( value );
-            killQuotes( text );
-            noteText = text;
-        } else if( std::wcscmp( buffer, L"Caution" ) == 0 ) {
-            std::wstring text( value );
-            killQuotes( text );
-            cautionText = text;
-        } else if( std::wcscmp( buffer, L"Warning" ) == 0 ) {
-            std::wstring text( value );
-            killQuotes( text );
-            warningText = text;
-        } else if( std::wcscmp( buffer, L"Reference" ) == 0 ) {
-            std::wstring text( value );
-            killQuotes( text );
-            referenceText = text;
-        } else if( std::wcscmp( buffer, L"olChars" ) == 0 ) {
-            std::wstring text( value );
-            olCh = text;
-        } else if( std::wcscmp( buffer, L"olClose1" ) == 0 ) {
-            std::wstring text( value );
-            olClosers[0] = text;
-        } else if( std::wcscmp( buffer, L"olClose2" ) == 0 ) {
-            std::wstring text( value );
-            olClosers[1] = text;
-        } else if( std::wcscmp( buffer, L"ulItemId1" ) == 0 ) {
-            std::wstring text( value );
-            ulBul[0] = text;
-        } else if( std::wcscmp( buffer, L"ulItemId2" ) == 0 ) {
-            std::wstring text( value );
-            ulBul[1] = text;
-        } else if( std::wcscmp( buffer, L"ulItemId3" ) == 0 ) {
-            std::wstring text( value );
-            ulBul[2] = text;
-        } else if( std::wcscmp( buffer, L"cgraphicFontFaceName" ) == 0 ) {
-            std::wstring text( value );
-            killQuotes( text );
-            cgraphicFontFace = text;
-        } else if( std::wcscmp( buffer, L"cgraphicFontWidth" ) == 0 ) {
-            cgraphicFontW = static_cast< int >( std::wcstol( value, 0, 10 ) );
-        } else if( std::wcscmp( buffer, L"cgraphicFontHeight" ) == 0 ) {
-            cgraphicFontH = static_cast< int >( std::wcstol( value, 0, 10 ) );
-        } else if( std::wcscmp( buffer, L"Grammar" ) == 0 ) {
+        } else if( std::strcmp( sbuffer, "Grammar" ) == 0 ) {
             doGrammar = true;
-        } else if( std::wcscmp( buffer, L"eGrammar" ) == 0 ) {
+        } else if( std::strcmp( sbuffer, "eGrammar" ) == 0 ) {
             doGrammar = false;
+        } else {
+            // error: unknown keyword
         }
     }
 }
@@ -272,19 +275,24 @@ void Nls::processGrammar( wchar_t *buffer )
 #endif
     while( tok ) {
         if( std::wcslen( tok ) > 1 ) {
-            //change this loop if we use RegExp
-            for( wchar_t c = tok[0]; c <= tok[2]; ++c )
+            // characters range "chr1-chr2"
+            // change this loop if we use RegExp
+            wchar_t chr1( tok[0] );
+            wchar_t chr2( tok[2] );
+            for( wchar_t c = chr1; c <= chr2; ++c )
                 grammarChars += c;
-            dbcsT.ranges.push_back( static_cast< STD1::uint16_t >( tok[0] ));
-            dbcsT.ranges.push_back( static_cast< STD1::uint16_t >( tok[2] ));
-            if( tok[0] > 255 || tok[2] > 255 ) {
+            dbcsT.ranges.push_back( static_cast< STD1::uint16_t >( chr1 ));
+            dbcsT.ranges.push_back( static_cast< STD1::uint16_t >( chr2 ));
+            if( chr1 > 255 || chr2 > 255 ) {
                 useDBCS = true;
             }
         } else {
-            grammarChars += *tok;
-            dbcsT.ranges.push_back( static_cast< STD1::uint16_t >( *tok ) );
-            dbcsT.ranges.push_back( static_cast< STD1::uint16_t >( *tok ) );
-            if( *tok > 255 ) {
+            // single character "chr"
+            wchar_t chr( tok[0] );
+            grammarChars += chr;
+            dbcsT.ranges.push_back( static_cast< STD1::uint16_t >( chr ) );
+            dbcsT.ranges.push_back( static_cast< STD1::uint16_t >( chr ) );
+            if( chr > 255 ) {
                 useDBCS = true;
             }
         }
@@ -341,7 +349,7 @@ void Nls::SbcsGrammarDef::setDefaultBits( NlsRecType rectype )
           0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
           0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
           0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff } };
-    std::memcpy( this->bits, &defbits[rectype - 1][0], 32 * sizeof( char ) );
+    std::memcpy( this->bits, &defbits[rectype - 1][0], 32 );
 }
 /*****************************************************************************/
 STD1::uint32_t Nls::SbcsGrammarDef::write( std::FILE *out ) const
@@ -355,16 +363,18 @@ STD1::uint32_t Nls::SbcsGrammarDef::write( std::FILE *out ) const
 STD1::uint32_t Nls::DbcsGrammarDef::write( std::FILE *out )
 {
     STD1::uint32_t start( std::ftell( out ) );
-    size = 4 + static_cast< STD1::uint16_t >( ranges.size() * sizeof( STD1::uint16_t )) ;
+    size = 4 + static_cast< STD1::uint16_t >( ranges.size() * sizeof( STD1::uint16_t ) );
     if( std::fwrite( &size, sizeof( STD1::uint16_t ), 1, out) != 1 )
         throw FatalError( ERR_WRITE );
     if( std::fwrite( &type, sizeof( STD1::uint8_t ), 1, out) != 1 )
         throw FatalError( ERR_WRITE );
     if( std::fwrite( &format, sizeof( STD1::uint8_t ), 1, out) != 1 )
         throw FatalError( ERR_WRITE );
-    for( std::vector< STD1::uint16_t >::const_iterator itr = ranges.begin(); itr != ranges.end(); ++itr )
-        if( std::fwrite( &(*itr), sizeof( STD1::uint16_t), 1, out) != 1 )
+    for( std::vector< STD1::uint16_t >::const_iterator itr = ranges.begin(); itr != ranges.end(); ++itr ) {
+        if( std::fwrite( &(*itr), sizeof( STD1::uint16_t), 1, out) != 1 ) {
             throw FatalError( ERR_WRITE );
+        }
+    }
     return start;
 }
 /*
