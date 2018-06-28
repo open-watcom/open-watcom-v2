@@ -818,7 +818,7 @@ static void ITJump( ins_table *table, instruction *ins, uint_32 *buffer, asm_rel
         }
     } else {    // jalr rd,rs
         op1 = ins->operands[1];
-        if( op0->reg == op0->reg ) {
+        if( op0->reg == op1->reg ) {
             // TODO: warn - non-restartable instruction
         }
         doOpcodeRType( buffer, 0, FNCCODE_JALR, RegIndex( op1->reg ),
