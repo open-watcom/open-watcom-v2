@@ -36,8 +36,8 @@
 #include <wstd.h>
 
 #define YYSTYPE int
-#define  YYFAR
-#define  YYERRTOKEN 0
+#define YYFAR
+#define YYERRTOKEN 0
 
 extern YYSTYPE yylval;
 
