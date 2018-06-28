@@ -31,7 +31,7 @@
 #include "fntcol.hpp"
 #include "errors.hpp"
 
-FontCollection::FontCollection( int cp ) : bytes( 0 )
+FontCollection::FontCollection( STD1::uint16_t cp ) : bytes( 0 )
 {
     fonts.reserve( 14 );
     FontEntry fnt;

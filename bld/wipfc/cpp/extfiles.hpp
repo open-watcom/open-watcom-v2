@@ -50,7 +50,7 @@ public:
     //get the number of bytes written by the collection
     STD1::uint32_t length() const { return bytes; };
     //get the number of elements in the collection
-    STD1::uint32_t size() const { return table.size(); };
+    STD1::uint32_t size() const { return static_cast< STD1::uint32_t >( table.size() ); };
     STD1::uint32_t write( std::FILE* out );
 private:
     ExternalFiles( const ExternalFiles& rhs );              //no copy

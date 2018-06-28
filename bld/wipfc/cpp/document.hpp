@@ -166,7 +166,7 @@ public:
         { gnames->insert( key, value ); };
 
     //To Nls
-    int codePage() const { return nls->codePage(); };
+    STD1::uint16_t codePage() const { return nls->codePage(); };
     const std::wstring& note() const { return nls->note(); };
     const std::wstring& warning() const { return nls->warning(); };
     const std::wstring& caution() const { return nls->caution(); };

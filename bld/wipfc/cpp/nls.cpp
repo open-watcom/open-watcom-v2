@@ -69,19 +69,19 @@ std::string Nls::readNlsConfFile( std::FILE *nlsconf, const char *loc )
         if( p[0] == '#' )
             continue;                       // skip comment lines
         p = std::strtok( buffer, " \t" );   // get locale
-        if( p == 0 || std::strcmp( p, loc ) != 0 )
+        if( p == NULL || std::strcmp( p, loc ) != 0 )
             continue;
         p = std::strtok( NULL, " \t" );     // get nls file
-        if( p == 0 )
+        if( p == NULL )
             continue;                       // skip incorrect lines
         fn = skipWS( p );
         p = std::strtok( NULL, " \t" );     // get country
-        if( p == 0 )
+        if( p == NULL )
             continue;                       // skip incorrect lines
         p = skipWS( p );
         country.country = static_cast< STD1::uint16_t >( std::strtoul( p, NULL, 10 ) );
         p = std::strtok( NULL, " \t" );     // get codepage
-        if( p == 0 )
+        if( p == NULL )
             continue;                       // skip incorrect lines
         p = skipWS( p );
         country.codePage = static_cast< STD1::uint16_t >( std::strtoul( p, NULL, 10 ) );
@@ -107,13 +107,13 @@ std::string Nls::getNlsFileName( const char *loc )
 #endif
     path += "nlsconf.txt";
     std::FILE *nlsconf = std::fopen( path.c_str(), "r" );
-    if( nlsconf == 0 )
+    if( nlsconf == NULL )
         throw FatalError( ERR_NLSCONF );
     return( readNlsConfFile( nlsconf, loc ) );
 }
 
 /*****************************************************************************/
-void Nls::setCodePage( int cp )
+void Nls::setCodePage( STD1::uint16_t cp )
 {
 #if !defined( __UNIX__ ) && !defined( __APPLE__ )
     _setmbcp( cp ); //doesn't do much of anything in OW
@@ -135,11 +135,11 @@ void Nls::setCodePage( int cp )
     }
     path += ".txt";
     std::FILE* entty( std::fopen( path.c_str(), "r" ) );
-    if( entty == 0 )
+    if( entty == NULL )
         throw FatalError( ERR_COUNTRY );
     readEntityFile( entty );
     std::fclose( entty );
-    country.codePage = static_cast< STD1::uint16_t >( cp );
+    country.codePage = cp;
 }
 /*****************************************************************************/
 void Nls::readEntityFile( std::FILE *entty )
@@ -157,7 +157,7 @@ void Nls::readEntityFile( std::FILE *entty )
         if( offset > 1 )
             useDBCS = true;
         len = mbtow_cstring( text, buffer + offset, sizeof( text ) / sizeof( wchar_t ) - 1 );
-        if( len == static_cast< std::size_t >( -1 ))
+        if( len == static_cast< std::size_t >( -1 ) )
             throw FatalError( ERR_T_CONV );
         text[len] = L'\0';
         entityMap.insert( std::map< std::wstring, wchar_t >::value_type( text, c ) );
@@ -175,7 +175,7 @@ void Nls::setLocalization( const char *loc)
 #endif
     path += getNlsFileName( loc );
     std::FILE *nls = std::fopen( path.c_str(), "r" );
-    if( nls == 0 )
+    if( nls == NULL )
         throw FatalError( ERR_LANG );
     readNLS( nls );
     std::fclose( nls );
@@ -198,7 +198,7 @@ void Nls::readNLS( std::FILE *nls )
             continue;               //skip blank lines
         if( sbuffer[0] == '#' )
             continue;               //skip comments
-        if( (p = std::strchr( sbuffer, '=' )) != 0 ) {
+        if( (p = std::strchr( sbuffer, '=' )) != NULL ) {
             *p++ = '\0';
             mbtow_cstring( value, p, sizeof( value ) / sizeof( wchar_t ) - 1 );
             if( doGrammar ) {
@@ -281,8 +281,8 @@ void Nls::processGrammar( wchar_t *buffer )
             wchar_t chr2( tok[2] );
             for( wchar_t c = chr1; c <= chr2; ++c )
                 grammarChars += c;
-            dbcsT.ranges.push_back( static_cast< STD1::uint16_t >( chr1 ));
-            dbcsT.ranges.push_back( static_cast< STD1::uint16_t >( chr2 ));
+            dbcsT.ranges.push_back( static_cast< STD1::uint16_t >( chr1 ) );
+            dbcsT.ranges.push_back( static_cast< STD1::uint16_t >( chr2 ) );
             if( chr1 > 255 || chr2 > 255 ) {
                 useDBCS = true;
             }
@@ -327,7 +327,7 @@ STD1::uint32_t Nls::write( std::FILE *out )
         sbcsG.write( out );
         bytes += sbcsG.size;
     }
-    return start;
+    return( start );
 }
 /*****************************************************************************/
 STD1::uint32_t Nls::CountryDef::write( std::FILE *out ) const
@@ -335,7 +335,7 @@ STD1::uint32_t Nls::CountryDef::write( std::FILE *out ) const
     STD1::uint32_t start( std::ftell( out ) );
     if( std::fwrite( this, sizeof( CountryDef ), 1, out ) != 1 )
         throw FatalError( ERR_WRITE );
-    return start;
+    return( start );
 }
 /*****************************************************************************/
 void Nls::SbcsGrammarDef::setDefaultBits( NlsRecType rectype )
@@ -357,7 +357,7 @@ STD1::uint32_t Nls::SbcsGrammarDef::write( std::FILE *out ) const
     STD1::uint32_t start( std::ftell( out ) );
     if( std::fwrite( this, sizeof( SbcsGrammarDef ), 1, out) != 1 )
         throw FatalError( ERR_WRITE );
-    return start;
+    return( start );
 }
 /*****************************************************************************/
 STD1::uint32_t Nls::DbcsGrammarDef::write( std::FILE *out )

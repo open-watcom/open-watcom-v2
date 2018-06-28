@@ -47,7 +47,7 @@ public:
     Nls( const char* loc );
     //set the locale
     void setLocalization( const char *loc );
-    int codePage() const { return country.codePage; };
+    STD1::uint16_t codePage() const { return country.codePage; };
     //get localized text strings
     const std::wstring& note() const { return noteText; };
     const std::wstring& warning() const { return warningText; };
@@ -126,7 +126,7 @@ private:
     std::wstring olClosers[ 2 ];
     std::wstring ulBul[ 3 ];
     bool useDBCS;
-    void setCodePage( int cp );
+    void setCodePage( STD1::uint16_t cp );
     void readEntityFile( std::FILE* aps );
     void readNLS( std::FILE* nls );
     void processGrammar( wchar_t* value );

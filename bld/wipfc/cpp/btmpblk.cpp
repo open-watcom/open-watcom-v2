@@ -48,8 +48,9 @@ void BitmapBlock::write( std::FILE* out ) const
         throw FatalError( ERR_WRITE );
     if( std::fputc( type, out ) == EOF )
         throw FatalError( ERR_WRITE );
-    if( std::fwrite( &data[0], sizeof( STD1::uint8_t ), data.size(), out ) != data.size() )
+    if( std::fwrite( &data[0], sizeof( STD1::uint8_t ), data.size(), out ) != data.size() ) {
         throw FatalError( ERR_WRITE );
+    }
 }
 /***************************************************************************/
 /* This is an LZW/LZC compressor. It is based on code in 2 articles from
@@ -86,21 +87,21 @@ STD1::uint32_t BitmapBlock::compress( std::FILE* in )
             character = static_cast< STD1::uint16_t >( *itr );
             ++bytesIn;
             codeIndex = findMatch( code, prefix, append, stringCode, character );
-            if( code[ codeIndex ] != UNDEFINED )
-                stringCode = code[ codeIndex ];
+            if( code[codeIndex] != UNDEFINED )
+                stringCode = code[codeIndex];
             else {
                 if( nextCode <= maxCode ) {
-                    code[ codeIndex ] = nextCode++;
-                    prefix[ codeIndex ] = stringCode;
-                    append[ codeIndex ] = static_cast< STD1::uint8_t >( character );
+                    code[codeIndex] = nextCode++;
+                    prefix[codeIndex] = stringCode;
+                    append[codeIndex] = static_cast< STD1::uint8_t >( character );
                 }
                 bytesOut += outputCode( stringCode );
                 stringCode = character;
-                if( nextCode > maxCode ) {                  // if table full
-                    if( bitsPerCode < MAXBITS )             // if more bits available
-                        maxCode = maxVal( ++bitsPerCode );  // use 'em
+                if( nextCode > maxCode ) {                      // if table full
+                    if( bitsPerCode < MAXBITS ) {               // if more bits available
+                        maxCode = maxVal( static_cast< unsigned int >( ++bitsPerCode ) );  // use 'em
                     /* Temp change: The decompressor table must *never* grow past 4096 entries! */
-                    else if( bytesIn > 0/*checkPoint*/ ) {       // else if check time
+                    } else if( bytesIn > 0/*checkPoint*/ ) {    // else if check time
                         if( bitsPerCode == MAXBITS ) {
                             newCompRatio = bytesOut * 100 / bytesIn;
                             if( newCompRatio > 0/*oldCompRatio*/ ) { //check for compression loss
@@ -136,7 +137,7 @@ STD1::uint32_t BitmapBlock::compress( std::FILE* in )
         std::size_t index( 0 );
         InputIter in( buffer.begin() );
         OutputIter out( buffer2.begin() );
-        while ( in != buffer.end() ) {
+        while( in != buffer.end() ) {
             if( *in != *out )
                 std::printf( "    %5u %8x %8x\n", index, *in, *out );
             ++in;
@@ -144,8 +145,7 @@ STD1::uint32_t BitmapBlock::compress( std::FILE* in )
             ++index;
         }
 #endif
-    }
-    else {
+    } else {
         data.resize( blockSize );
         block = std::fread( &data[0], sizeof( STD1::uint8_t ), blockSize, in );
         if( !block )
@@ -154,7 +154,7 @@ STD1::uint32_t BitmapBlock::compress( std::FILE* in )
             data.resize( block );
         size = static_cast< STD1::uint16_t >( block + 1 );
     }
-    return block;
+    return( static_cast< STD1::uint32_t >( block ) );
 }
 /***************************************************************************/
 STD1::int16_t BitmapBlock::findMatch( std::vector< STD1::uint16_t >& code,
@@ -164,13 +164,14 @@ STD1::int16_t BitmapBlock::findMatch( std::vector< STD1::uint16_t >& code,
     STD1::int16_t index( ( character << hashingShift ) ^ hashPrefix );
     STD1::int16_t offset( ( index == 0 ) ? 1 : TABLESIZE - index );
     for( ;; ) {
-        if( code[ index ] == UNDEFINED )
+        if( code[index] == UNDEFINED )
             return index;
-        if( prefix[ index ] == hashPrefix && append[ index ] == character)
+        if( prefix[index] == hashPrefix && append[index] == character)
             return index;
         index -= offset;
-        if( index < 0 )
+        if( index < 0 ) {
             index += TABLESIZE;
+        }
     }
 }
 /***************************************************************************/
@@ -248,9 +249,9 @@ void BitmapBlock::expand( std::vector< STD1::uint8_t >& output )
             if( newCode >= nextCode) {  //Check for string+char+string
                 decode[0] = static_cast< STD1::uint8_t >( character );
                 string = decodeString( prefix, append, decode.begin() + 1, oldCode );
-            }
-            else
+            } else {
                 string = decodeString( prefix, append, decode.begin(), newCode );
+            }
             character = *string;        //Output decoded string in reverse
             while( string >= decode.begin() ) {
                 if( out == output.end() )
@@ -261,11 +262,12 @@ void BitmapBlock::expand( std::vector< STD1::uint8_t >& output )
             }
             lastCode = *( ++string );
             if( nextCode <= maxCode ) { //Add to string table if not full
-                prefix[ nextCode ] = oldCode;
-                append[ nextCode ] = static_cast< STD1::uint8_t >( character );
+                prefix[nextCode] = oldCode;
+                append[nextCode] = static_cast< STD1::uint8_t >( character );
                 ++nextCode;
-                if( nextCode == maxCode && bitsPerCode < MAXBITS )
+                if( nextCode == maxCode && bitsPerCode < MAXBITS ) {
                     maxCode = maxVal( ++bitsPerCode );
+                }
             }
             oldCode = newCode;
         }
@@ -309,9 +311,9 @@ BitmapBlock::DecodeIter BitmapBlock::decodeString( std::vector< STD1::uint16_t >
 {
     std::size_t index = 0;
     while( code > 255 ) {
-        *decode = append[ code ];
+        *decode = append[code];
         ++decode;
-        code = prefix[ code ];
+        code = prefix[code];
         if( index >= TABLESIZE )
             throw std::out_of_range( "    Decode stack size limit exceeded" );
         ++index;

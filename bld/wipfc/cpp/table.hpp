@@ -91,7 +91,7 @@ public:
         unsigned int c, unsigned char w ) : Tag( d, p, f, r, c, Tag::SPACES ),
         data( 1 ), colWidth( w ) { };
     ~TableCol() { };
-    unsigned int rows() const { return data.size(); };
+    unsigned int rows() const { return static_cast< unsigned int >( data.size() ); };
     std::list< Element* >& rowData( unsigned int rowpos ) { return data[ rowpos ]; };
     Lexer::Token parse( Lexer* lexer );
     void appendData( unsigned int rowpos, Element* e ) { data[ rowpos ].push_back( e ); };
@@ -100,7 +100,7 @@ private:
     TableCol( const TableCol& rhs );            //no copy
     TableCol& operator=( const TableCol& rhs ); //no assignment
     std::vector< std::list< Element* > > data;  //elements owned by TableRow
-    unsigned char colWidth;
+    std::size_t colWidth;
 };
 
 class TableRow : public Tag {

@@ -223,8 +223,8 @@ void Bitmap::readHeaderW32( std::FILE* in )
             RGB tmp2( tmp1 );
             rgb.push_back( tmp2 );
         }
-        bmfh.size -= rgbSize * ( sizeof( RGBA ) - sizeof( RGB ) );
-        bmfh.bitsOffset -= rgbSize * ( sizeof( RGBA ) - sizeof( RGB ) );
+        bmfh.size -= static_cast< STD1::uint32_t >( rgbSize * ( sizeof( RGBA ) - sizeof( RGB ) ) );
+        bmfh.bitsOffset -= static_cast< STD1::uint32_t >( rgbSize * ( sizeof( RGBA ) - sizeof( RGB ) ) );
     }
     else if (bmihW32.compression == 3) {
         //read and discard 3 items
@@ -271,7 +271,7 @@ void Bitmap::readHeaderOS2( std::FILE* in )
                 rgb.push_back( tmp2 );
             }
         }
-        bmfh.bitsOffset = sizeof( BitmapFileHeader ) + sizeof( BitmapInfoHeader16 ) + 3 * rgb.size();
+        bmfh.bitsOffset = static_cast< STD1::uint32_t >( sizeof( BitmapFileHeader ) + sizeof( BitmapInfoHeader16 ) + 3 * rgb.size() );
         bmfh.size = bmfh.bitsOffset + bmihOS22x.imageSize;
     }
     else if (bmihOS22x.compression == 3) {
@@ -291,28 +291,28 @@ void Bitmap::findBlockSize( std::size_t width, std::size_t height, std::size_t b
 {
     switch( bitsPerPixel ) {
     case 1:
-        bytesPerRow = (( width / 8 ) & 3 ) ? (( width / 8 ) & ~3 ) + 4 : width / 8;
+        bytesPerRow = (( width / 8 ) & 3 ) ? static_cast< STD1::uint32_t >( (( width / 8 ) & ~3 ) + 4 ) : static_cast< STD1::uint32_t >( width / 8 );
         break;
     case 4:
-        bytesPerRow = (( (width + 1) / 2 ) & 3 ) ? (( (width + 1) / 2 ) & ~3 ) + 4 : (width + 1) / 2;
+        bytesPerRow = (( (width + 1) / 2 ) & 3 ) ? static_cast< STD1::uint32_t >( (( (width + 1) / 2 ) & ~3 ) + 4 ) : static_cast< STD1::uint32_t >( (width + 1) / 2 );
         break;
     case 8:
-        bytesPerRow = ( width & 3 ) ? ( width & ~3 ) + 4 : width;
+        bytesPerRow = ( width & 3 ) ? static_cast< STD1::uint32_t >( ( width & ~3 ) + 4 ) : static_cast< STD1::uint32_t >( width );
         break;
     case 15:
     case 16:
-        bytesPerRow = (( width * 2 ) & 3 ) ? (( width * 2 ) & ~3 ) + 4 : width * 2;
+        bytesPerRow = (( width * 2 ) & 3 ) ? static_cast< STD1::uint32_t >( (( width * 2 ) & ~3 ) + 4 ) : static_cast< STD1::uint32_t >( width * 2 );
         break;
     case 24:
-        bytesPerRow = (( width * 3 ) & 3 ) ? (( width * 3 ) & ~3 ) + 4 : width * 3;
+        bytesPerRow = (( width * 3 ) & 3 ) ? static_cast< STD1::uint32_t >( (( width * 3 ) & ~3 ) + 4 ) : static_cast< STD1::uint32_t >( width * 3 );
         break;
     case 32:
-        bytesPerRow = width * 4;
+        bytesPerRow = static_cast< STD1::uint32_t >( width * 4 );
         break;
     default:
         throw Class1Error( ERR1_BADFMT );
     }
-    STD1::uint32_t totalSize( bytesPerRow * height );
+    STD1::uint32_t totalSize( static_cast< STD1::uint32_t >( bytesPerRow * height ) );
     blockSize = static_cast< STD1::uint16_t >( ( ( UINT16_MAX - 256 ) / bytesPerRow - 1 ) * bytesPerRow );
 #ifdef CHECKCOMP
     std::printf( "  width=%u bitsPerPixel=%u, bytesPerRow=%u\n", width, bitsPerPixel, bytesPerRow );

@@ -47,7 +47,7 @@ struct FontEntry {
     STD1::uint32_t write( std::FILE *out ) const;
     bool operator==( const FontEntry &rhs ) const
     {
-        return std::strncmp(faceName, rhs.faceName, 33) == 0 &&
+        return std::strncmp( faceName, rhs.faceName, 33 ) == 0 &&
             height == rhs.height &&
             width == rhs.width &&
             codePage == rhs.codePage;
