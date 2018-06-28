@@ -29,8 +29,8 @@
 ****************************************************************************/
 
 
-extern sym_id  FindStruct( char *name, int len );
-extern sym_id  STStruct( char *name, int length );
+extern sym_id  FindStruct( char *name, uint len );
+extern sym_id  STStruct( char *name, uint length );
 extern char    *STStructName( sym_id sym, char *buff );
 extern char    *STFieldName( sym_id sym, char *buff );
 extern sym_id  STField( char *name, uint len );

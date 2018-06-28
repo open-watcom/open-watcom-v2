@@ -42,7 +42,7 @@ unsigned int    CalcHash( char *p, unsigned len ) {
     h = 0;
     g = 0;
     for( ; len != 0; --len, ++p ) {
-        h = ( h << 4 ) + *p;
+        h = ( h << 4 ) + *(unsigned char *)p;
         g = h & 0xf0000000L;
         if( g != 0 ) {
             h = h ^ ( g >> 24 );

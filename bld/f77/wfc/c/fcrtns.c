@@ -80,7 +80,7 @@ call_handle     InitCall( RTCODE rtn_id ) {
     sym_id      sym;
     rt_rtn      __FAR *rt_entry;
     byte        typ;
-    int         name_len;
+    uint        name_len;
     char        __FAR *ptr;
 
     rt_entry = &RtnTab[ rtn_id ];
@@ -89,13 +89,12 @@ call_handle     InitCall( RTCODE rtn_id ) {
         name_len = 0;
         ptr = rt_entry->name;
         while( *ptr != NULLCHAR ) {
-            SymBuff[ name_len ] = *ptr;
+            SymBuff[ name_len ] = *(unsigned char *)ptr;
             ++name_len;
             ++ptr;
         }
         sym = STAdd( SymBuff, name_len );
-        sym->u.ns.flags = SY_USAGE | SY_TYPE | SY_SUBPROGRAM | SY_FUNCTION |
-                        SY_RT_ROUTINE;
+        sym->u.ns.flags = SY_USAGE | SY_TYPE | SY_SUBPROGRAM | SY_FUNCTION | SY_RT_ROUTINE;
         if( rt_entry->typ == FT_NO_TYPE ) {
             sym->u.ns.u1.s.typ = FT_INTEGER_TARG;
         } else {

@@ -63,7 +63,7 @@ static  char            *TokStart;
 static  char            *TokEnd;
 static  aux_info        *AliasInfo;
 static  char            SymName[MAX_SYMLEN];
-static  int             SymLen;
+static  uint            SymLen;
 
 #if _INTEL_CPU
 static  arr_info        *ArrayInfo;
@@ -646,9 +646,9 @@ static  void    FreeArgList( aux_info *aux ) {
 }
 
 
-aux_info        *NewAuxEntry( char *name, int name_len ) {
-//========================================================
-
+aux_info        *NewAuxEntry( char *name, uint name_len )
+//=======================================================
+{
     aux_info    *aux;
 
     aux = FMemAlloc( sizeof( aux_info ) + name_len );

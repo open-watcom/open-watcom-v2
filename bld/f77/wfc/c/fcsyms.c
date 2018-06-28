@@ -774,14 +774,16 @@ static  void    MergeCommonInfo( void ) {
 
     sym_id      sym;
     sym_id      g_sym;
-    int         len;
+    uint        len;
 
     for( sym = BList; sym != NULL; sym = sym->u.ns.link ) {
         for( g_sym = GList; ; g_sym = g_sym->u.ns.link ) {
             if( (g_sym->u.ns.flags & SY_CLASS) != SY_COMMON ) continue;
             len = sym->u.ns.u2.name_len;
             if( len == g_sym->u.ns.u2.name_len ) {
-                if( memcmp( sym->u.ns.name, g_sym->u.ns.name, len ) == 0 ) break;
+                if( memcmp( sym->u.ns.name, g_sym->u.ns.name, len ) == 0 ) {
+                    break;
+                }
             }
         }
         sym->u.ns.si.cb.seg_id = g_sym->u.ns.si.cb.seg_id;
