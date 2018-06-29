@@ -41,8 +41,6 @@ enum {
     TOKEN_SPARSE_BASE   = 0x007f, TOKEN_SPARSE_MAX      = 0x7fff,
 };
 
-#define MAX_AMBIGS      10
-
 #define WSIZE           (sizeof(a_word)*8)
 
 #define ACTION_NULL     0
@@ -51,6 +49,9 @@ enum {
 #define ClearBit(x,i)   ((x)[(i)/WSIZE] &= ~( 1UL << ((i) % WSIZE )))
 #define SetBit(x,i)     ((x)[(i)/WSIZE] |= ( 1UL << ((i) % WSIZE )))
 #define IsBitSet(x,i)   ((x)[(i)/WSIZE] &  ( 1UL << ((i) % WSIZE )))
+
+#define _RoundUp( size, word )          ( ((size)+((word)-1)) & ~((word)-1) )
+#define _RoundUpBitVector( size, word ) ( ((size)+((word)-1))/(word) )
 
 typedef enum flags {
     M_NULL              = 0x00,
@@ -76,15 +77,17 @@ typedef enum flags {
 #define IsOnlyReduce(c)         ((c)->flag &   M_ONLY_REDUCE)
 #define OnlyReduce(c)           ((c)->flag |=  M_ONLY_REDUCE)
 
-enum assoc_t {
+typedef enum {
     NON_ASSOC           = 0,
     L_ASSOC             = 1,
     R_ASSOC             = 2
-};
+} assoc_t;
+
+typedef unsigned char   prec_t;
 
 typedef struct a_prec {
-    enum assoc_t        assoc;
-    unsigned char       prec;
+    assoc_t             assoc;
+    prec_t              prec;
 } a_prec;
 
 typedef unsigned int    a_word;
@@ -105,7 +108,8 @@ typedef struct a_SR_conflict a_SR_conflict;
 typedef struct a_SR_conflict_list a_SR_conflict_list;
 typedef struct a_link   a_link;
 
-typedef unsigned        conflict_id;
+typedef unsigned        conflict_id;    /* numeric id assigned by user */
+#define CONFLICT_MAX_ID ((conflict_id)-1)
 
 typedef struct an_item {
     union {
@@ -204,9 +208,16 @@ typedef enum value_size {
     FITS_A_WORD
 } value_size;
 
+typedef union {
+    int         number;
+    token_n     id;
+    assoc_t     assoc;
+} tok_value;
+
 extern void     InitSets(unsigned );
 extern a_word   *AllocSet( unsigned );
 extern unsigned GetSetSize( unsigned );
+#define FreeSet(x)  FREE(x)
 extern void     Union(a_word *,a_word *);
 extern void     Intersection( a_word *, a_word *);
 extern void     Assign(a_word *,a_word *);

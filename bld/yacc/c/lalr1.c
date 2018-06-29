@@ -292,6 +292,7 @@ static void check_for_user_hooks( a_state *state, a_shift_action *saction, index
         last_conflict = NULL;
         all_match = true;
         for( item = state->items; *item != NULL; ++item ) {
+            conflict = NULL;
             pro = extract_pro( *item );
             for( cx = pro->SR_conflicts; cx != NULL; cx = cx->next ) {
                 conflict = cx->conflict;
