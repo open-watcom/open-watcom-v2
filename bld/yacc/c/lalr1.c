@@ -506,7 +506,6 @@ void lalr1( void )
         puts( "internal error" );
     }
     FREE( look );
-    FreeSet( lset );
     FREE( stk );
     Conflict();
     nbstate = nstate;
