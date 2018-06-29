@@ -10,7 +10,7 @@ s/r conflict in state 39 on Y_TEMPLATE_SCOPED_TEMPLATE_NAME:
 
 Sample sentence(s) for reduce of rule 65:
   Y_TYPE_NAME Y_LEFT_PAREN Y_RIGHT_PAREN Y_THROW Y_LEFT_PAREN Y_INT 
-Y_COMMA Y_GLOBAL_TEMPLATE_NAME Y_LT Y_GT_SPECIAL .Y_TEMPLATE_SCOPED_TEMPLATE_NAME
+Y_COMMA Y_GLOBAL_TEMPLATE_NAME Y_LT Y_GT_SPECIAL . Y_TEMPLATE_SCOPED_TEMPLATE_NAME
   Will never shift token 'Y_TEMPLATE_SCOPED_TEMPLATE_NAME' in this context
 Sample sentence(s) for shift to state 307:
   Y_TYPE_NAME Y_LEFT_PAREN Y_RIGHT_PAREN Y_THROW Y_LEFT_PAREN Y_INT 
@@ -25,7 +25,7 @@ s/r conflict in state 41 on Y_TEMPLATE_SCOPED_TEMPLATE_NAME:
 
 Sample sentence(s) for reduce of rule 64:
   Y_TYPE_NAME Y_LEFT_PAREN Y_RIGHT_PAREN Y_THROW Y_LEFT_PAREN Y_INT 
-Y_COMMA Y_TEMPLATE_NAME Y_LT Y_GT_SPECIAL .Y_TEMPLATE_SCOPED_TEMPLATE_NAME
+Y_COMMA Y_TEMPLATE_NAME Y_LT Y_GT_SPECIAL . Y_TEMPLATE_SCOPED_TEMPLATE_NAME
   Will never shift token 'Y_TEMPLATE_SCOPED_TEMPLATE_NAME' in this context
 Sample sentence(s) for shift to state 307:
   Y_TYPE_NAME Y_LEFT_PAREN Y_RIGHT_PAREN Y_THROW Y_LEFT_PAREN Y_INT 
@@ -151,7 +151,7 @@ s/r conflict in state 74 on Y_TYPE_NAME:
 
 Sample sentence(s) for reduce of rule 246:
   Y_TYPE_NAME Y_LEFT_PAREN Y_RIGHT_PAREN Y_THROW Y_LEFT_PAREN Y_INT 
-Y_COMMA Y_FRIEND .Y_TYPE_NAME
+Y_COMMA Y_FRIEND . Y_TYPE_NAME
   Will never shift token 'Y_TYPE_NAME' in this context
 Sample sentence(s) for shift to state 223:
   Y_TYPE_NAME Y_LEFT_PAREN Y_RIGHT_PAREN Y_THROW Y_LEFT_PAREN Y_INT 
@@ -205,7 +205,7 @@ Y_TEMPLATE_SCOPED_TIMES Y_GLOBAL_TEMPLATE_NAME Y_LT Y_GT_SPECIAL
 Y_TEMPLATE_SCOPED_UNKNOWN_ID Y_SEMI_COLON Y_TYPENAME 
 Y_SCOPED_TYPE_NAME 
 Sample sentence(s) for reduce of rule 280:
-  Y_UNION Y_LEFT_BRACE Y_TYPE_NAME .Y_COMMA
+  Y_UNION Y_LEFT_BRACE Y_TYPE_NAME . Y_COMMA
   Will never shift token 'Y_COMMA' in this context
 ---
 
@@ -250,10 +250,10 @@ r/r conflict in state 141 on Y_RIGHT_PAREN:
 280 (118): simple-type-specifier <- Y_TYPE_NAME
 
 Sample sentence(s) for reduce of rule 410:
-  Y_UNION Y_LEFT_BRACE Y_TYPE_NAME .Y_RIGHT_PAREN
+  Y_UNION Y_LEFT_BRACE Y_TYPE_NAME . Y_RIGHT_PAREN
   Will never shift token 'Y_RIGHT_PAREN' in this context
 Sample sentence(s) for reduce of rule 280:
-  Y_UNION Y_LEFT_BRACE Y_TYPE_NAME .Y_RIGHT_PAREN
+  Y_UNION Y_LEFT_BRACE Y_TYPE_NAME . Y_RIGHT_PAREN
   Will never shift token 'Y_RIGHT_PAREN' in this context
 ---
 
@@ -265,7 +265,7 @@ Sample sentence(s) for reduce of rule 410:
   Y_UNION Y_LEFT_BRACE Y_TYPE_NAME .
 Y_LEFT_BRACKET Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
 Sample sentence(s) for reduce of rule 280:
-  Y_UNION Y_LEFT_BRACE Y_TYPE_NAME .Y_LEFT_BRACKET
+  Y_UNION Y_LEFT_BRACE Y_TYPE_NAME . Y_LEFT_BRACKET
   Will never shift token 'Y_LEFT_BRACKET' in this context
 ---
 
@@ -277,7 +277,7 @@ Sample sentence(s) for reduce of rule 410:
   Y_UNION Y_LEFT_BRACE Y_TYPE_NAME .
 Y_EQUAL Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
 Sample sentence(s) for reduce of rule 280:
-  Y_UNION Y_LEFT_BRACE Y_TYPE_NAME .Y_EQUAL
+  Y_UNION Y_LEFT_BRACE Y_TYPE_NAME . Y_EQUAL
   Will never shift token 'Y_EQUAL' in this context
 ---
 
@@ -347,7 +347,7 @@ s/r conflict in state 189 on Y_TEMPLATE_SCOPED_TILDE:
 Sample sentence(s) for reduce of rule 289:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y___OFFSETOF Y_LEFT_PAREN Y_INT Y_COMMA 
 Y_ID Y_LEFT_BRACKET Y_SIZEOF Y_TYPE_NAME Y_RIGHT_BRACKET 
-Y_LEFT_BRACKET Y_TEMPLATE_NAME Y_LT Y_GT_SPECIAL .Y_TEMPLATE_SCOPED_TILDE
+Y_LEFT_BRACKET Y_TEMPLATE_NAME Y_LT Y_GT_SPECIAL . Y_TEMPLATE_SCOPED_TILDE
   Will never shift token 'Y_TEMPLATE_SCOPED_TILDE' in this context
 Sample sentence(s) for shift to state 314:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y___OFFSETOF Y_LEFT_PAREN Y_INT Y_COMMA 
@@ -364,7 +364,7 @@ s/r conflict in state 189 on Y_TEMPLATE_SCOPED_OPERATOR:
 Sample sentence(s) for reduce of rule 289:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y___OFFSETOF Y_LEFT_PAREN Y_INT Y_COMMA 
 Y_ID Y_LEFT_BRACKET Y_SIZEOF Y_TYPE_NAME Y_RIGHT_BRACKET 
-Y_LEFT_BRACKET Y_TEMPLATE_NAME Y_LT Y_GT_SPECIAL .Y_TEMPLATE_SCOPED_OPERATOR
+Y_LEFT_BRACKET Y_TEMPLATE_NAME Y_LT Y_GT_SPECIAL . Y_TEMPLATE_SCOPED_OPERATOR
   Will never shift token 'Y_TEMPLATE_SCOPED_OPERATOR' in this context
 Sample sentence(s) for shift to state 122:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y___OFFSETOF Y_LEFT_PAREN Y_INT Y_COMMA 
@@ -381,7 +381,7 @@ s/r conflict in state 189 on Y_TEMPLATE_SCOPED_ID:
 Sample sentence(s) for reduce of rule 289:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y___OFFSETOF Y_LEFT_PAREN Y_INT Y_COMMA 
 Y_ID Y_LEFT_BRACKET Y_SIZEOF Y_TYPE_NAME Y_RIGHT_BRACKET 
-Y_LEFT_BRACKET Y_TEMPLATE_NAME Y_LT Y_GT_SPECIAL .Y_TEMPLATE_SCOPED_ID
+Y_LEFT_BRACKET Y_TEMPLATE_NAME Y_LT Y_GT_SPECIAL . Y_TEMPLATE_SCOPED_ID
   Will never shift token 'Y_TEMPLATE_SCOPED_ID' in this context
 Sample sentence(s) for shift to state 319:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y___OFFSETOF Y_LEFT_PAREN Y_INT Y_COMMA 
@@ -531,7 +531,7 @@ r/r conflict in state 317 on Y_LT:
 
 Sample sentence(s) for reduce of rule 71:
   Y_UNION Y_LEFT_BRACE Y_TEMPLATE_NAME Y_LT Y_GT_SPECIAL 
-Y_TEMPLATE_SCOPED_TEMPLATE_ID .Y_LT
+Y_TEMPLATE_SCOPED_TEMPLATE_ID . Y_LT
   Will never shift token 'Y_LT' in this context
 Sample sentence(s) for reduce of rule 21:
   Y_UNION Y_LEFT_BRACE Y_TEMPLATE_NAME Y_LT Y_GT_SPECIAL 
@@ -544,7 +544,7 @@ r/r conflict in state 345 on Y_LEFT_BRACE:
 474 (1da): start-class <-
 
 Sample sentence(s) for reduce of rule 490:
-  Y_UNION Y_ID .Y_LEFT_BRACE
+  Y_UNION Y_ID . Y_LEFT_BRACE
   Will never shift token 'Y_LEFT_BRACE' in this context
 Sample sentence(s) for reduce of rule 474:
   Y_UNION Y_ID .
@@ -556,7 +556,7 @@ s/r conflict in state 345 on Y_COLON:
 490 (1ea): class-specifier <- class-key class-name
 
 Sample sentence(s) for reduce of rule 490:
-  Y_UNION Y_ID .Y_COLON
+  Y_UNION Y_ID . Y_COLON
   Will never shift token 'Y_COLON' in this context
 Sample sentence(s) for shift to state 617:
   Y_UNION Y_ID .
@@ -570,7 +570,7 @@ r/r conflict in state 356 on Y_LT:
  21 (015): lt-special-init <-
 
 Sample sentence(s) for reduce of rule 481:
-  Y_UNION Y_TEMPLATE_NAME .Y_LT
+  Y_UNION Y_TEMPLATE_NAME . Y_LT
   Will never shift token 'Y_LT' in this context
 Sample sentence(s) for reduce of rule 21:
   Y_UNION Y_TEMPLATE_NAME .
@@ -582,7 +582,7 @@ s/r conflict in state 377 on Y_TIMES:
 551 (227): conversion-type-id <- type-specifier-seq
 
 Sample sentence(s) for reduce of rule 551:
-  Y_OPERATOR Y_INT .Y_TIMES
+  Y_OPERATOR Y_INT . Y_TIMES
   Will never shift token 'Y_TIMES' in this context
 Sample sentence(s) for shift to state 145:
   Y_OPERATOR Y_INT .
@@ -595,7 +595,7 @@ s/r conflict in state 377 on Y_AND:
 551 (227): conversion-type-id <- type-specifier-seq
 
 Sample sentence(s) for reduce of rule 551:
-  Y_OPERATOR Y_INT .Y_AND
+  Y_OPERATOR Y_INT . Y_AND
   Will never shift token 'Y_AND' in this context
 Sample sentence(s) for shift to state 146:
   Y_OPERATOR Y_INT .
@@ -676,7 +676,7 @@ r/r conflict in state 463 on Y_LEFT_BRACE:
 295 (127): enum-key <- Y_ENUM make-id
 
 Sample sentence(s) for reduce of rule 302:
-  Y_ENUM Y_ID .Y_LEFT_BRACE
+  Y_ENUM Y_ID . Y_LEFT_BRACE
   Will never shift token 'Y_LEFT_BRACE' in this context
 Sample sentence(s) for reduce of rule 295:
   Y_ENUM Y_ID .
@@ -766,7 +766,7 @@ s/r conflict in state 643 on Y_TIMES:
 553 (229): conversion-declarator <- ptr-operator
 
 Sample sentence(s) for reduce of rule 553:
-  Y_TEMPLATE_SCOPED_OPERATOR Y_INT Y_AND Y_AND .Y_TIMES
+  Y_TEMPLATE_SCOPED_OPERATOR Y_INT Y_AND Y_AND . Y_TIMES
   Will never shift token 'Y_TIMES' in this context
 Sample sentence(s) for shift to state 145:
   Y_TEMPLATE_SCOPED_OPERATOR Y_INT Y_AND Y_AND .
@@ -779,7 +779,7 @@ s/r conflict in state 643 on Y_AND:
 553 (229): conversion-declarator <- ptr-operator
 
 Sample sentence(s) for reduce of rule 553:
-  Y_TEMPLATE_SCOPED_OPERATOR Y_INT Y_AND Y_AND .Y_AND
+  Y_TEMPLATE_SCOPED_OPERATOR Y_INT Y_AND Y_AND . Y_AND
   Will never shift token 'Y_AND' in this context
 Sample sentence(s) for shift to state 146:
   Y_TEMPLATE_SCOPED_OPERATOR Y_INT Y_AND Y_AND .
@@ -878,10 +878,10 @@ r/r conflict in state 941 on Y_COMMA:
 131 (083): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
 Sample sentence(s) for reduce of rule 132:
-  Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_COMMA
+  Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN . Y_COMMA
   Will never shift token 'Y_COMMA' in this context
 Sample sentence(s) for reduce of rule 131:
-  Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_COMMA
+  Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN . Y_COMMA
   Will never shift token 'Y_COMMA' in this context
 ---
 
@@ -890,10 +890,10 @@ r/r conflict in state 941 on Y_QUESTION:
 131 (083): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
 Sample sentence(s) for reduce of rule 132:
-  Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_QUESTION
+  Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN . Y_QUESTION
   Will never shift token 'Y_QUESTION' in this context
 Sample sentence(s) for reduce of rule 131:
-  Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_QUESTION
+  Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN . Y_QUESTION
   Will never shift token 'Y_QUESTION' in this context
 ---
 
@@ -902,10 +902,10 @@ r/r conflict in state 941 on Y_COLON:
 131 (083): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
 Sample sentence(s) for reduce of rule 132:
-  Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_COLON
+  Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN . Y_COLON
   Will never shift token 'Y_COLON' in this context
 Sample sentence(s) for reduce of rule 131:
-  Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_COLON
+  Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN . Y_COLON
   Will never shift token 'Y_COLON' in this context
 ---
 
@@ -914,10 +914,10 @@ r/r conflict in state 941 on Y_SEMI_COLON:
 131 (083): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
 Sample sentence(s) for reduce of rule 132:
-  Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_SEMI_COLON
+  Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN . Y_SEMI_COLON
   Will never shift token 'Y_SEMI_COLON' in this context
 Sample sentence(s) for reduce of rule 131:
-  Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_SEMI_COLON
+  Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN . Y_SEMI_COLON
   Will never shift token 'Y_SEMI_COLON' in this context
 ---
 
@@ -926,10 +926,10 @@ r/r conflict in state 941 on Y_RIGHT_PAREN:
 131 (083): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
 Sample sentence(s) for reduce of rule 132:
-  Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_RIGHT_PAREN
+  Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN . Y_RIGHT_PAREN
   Will never shift token 'Y_RIGHT_PAREN' in this context
 Sample sentence(s) for reduce of rule 131:
-  Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_RIGHT_PAREN
+  Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN . Y_RIGHT_PAREN
   Will never shift token 'Y_RIGHT_PAREN' in this context
 ---
 
@@ -938,10 +938,10 @@ r/r conflict in state 941 on Y_RIGHT_BRACKET:
 131 (083): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
 Sample sentence(s) for reduce of rule 132:
-  Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_RIGHT_BRACKET
+  Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN . Y_RIGHT_BRACKET
   Will never shift token 'Y_RIGHT_BRACKET' in this context
 Sample sentence(s) for reduce of rule 131:
-  Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_RIGHT_BRACKET
+  Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN . Y_RIGHT_BRACKET
   Will never shift token 'Y_RIGHT_BRACKET' in this context
 ---
 
@@ -950,10 +950,10 @@ r/r conflict in state 941 on Y_RIGHT_BRACE:
 131 (083): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
 Sample sentence(s) for reduce of rule 132:
-  Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_RIGHT_BRACE
+  Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN . Y_RIGHT_BRACE
   Will never shift token 'Y_RIGHT_BRACE' in this context
 Sample sentence(s) for reduce of rule 131:
-  Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_RIGHT_BRACE
+  Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN . Y_RIGHT_BRACE
   Will never shift token 'Y_RIGHT_BRACE' in this context
 ---
 
@@ -962,10 +962,10 @@ r/r conflict in state 941 on Y_EQUAL:
 131 (083): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
 Sample sentence(s) for reduce of rule 132:
-  Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_EQUAL
+  Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN . Y_EQUAL
   Will never shift token 'Y_EQUAL' in this context
 Sample sentence(s) for reduce of rule 131:
-  Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_EQUAL
+  Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN . Y_EQUAL
   Will never shift token 'Y_EQUAL' in this context
 ---
 
@@ -1010,10 +1010,10 @@ r/r conflict in state 941 on Y_OR_EQUAL:
 131 (083): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
 Sample sentence(s) for reduce of rule 132:
-  Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_OR_EQUAL
+  Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN . Y_OR_EQUAL
   Will never shift token 'Y_OR_EQUAL' in this context
 Sample sentence(s) for reduce of rule 131:
-  Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_OR_EQUAL
+  Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN . Y_OR_EQUAL
   Will never shift token 'Y_OR_EQUAL' in this context
 ---
 
@@ -1046,10 +1046,10 @@ r/r conflict in state 941 on Y_AND_EQUAL:
 131 (083): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
 Sample sentence(s) for reduce of rule 132:
-  Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_AND_EQUAL
+  Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN . Y_AND_EQUAL
   Will never shift token 'Y_AND_EQUAL' in this context
 Sample sentence(s) for reduce of rule 131:
-  Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_AND_EQUAL
+  Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN . Y_AND_EQUAL
   Will never shift token 'Y_AND_EQUAL' in this context
 ---
 
@@ -1082,10 +1082,10 @@ r/r conflict in state 941 on Y_XOR_EQUAL:
 131 (083): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
 Sample sentence(s) for reduce of rule 132:
-  Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_XOR_EQUAL
+  Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN . Y_XOR_EQUAL
   Will never shift token 'Y_XOR_EQUAL' in this context
 Sample sentence(s) for reduce of rule 131:
-  Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_XOR_EQUAL
+  Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN . Y_XOR_EQUAL
   Will never shift token 'Y_XOR_EQUAL' in this context
 ---
 
@@ -1154,10 +1154,10 @@ r/r conflict in state 941 on Y_LSHIFT_EQUAL:
 131 (083): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
 Sample sentence(s) for reduce of rule 132:
-  Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_LSHIFT_EQUAL
+  Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN . Y_LSHIFT_EQUAL
   Will never shift token 'Y_LSHIFT_EQUAL' in this context
 Sample sentence(s) for reduce of rule 131:
-  Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_LSHIFT_EQUAL
+  Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN . Y_LSHIFT_EQUAL
   Will never shift token 'Y_LSHIFT_EQUAL' in this context
 ---
 
@@ -1178,10 +1178,10 @@ r/r conflict in state 941 on Y_RSHIFT_EQUAL:
 131 (083): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
 Sample sentence(s) for reduce of rule 132:
-  Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_RSHIFT_EQUAL
+  Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN . Y_RSHIFT_EQUAL
   Will never shift token 'Y_RSHIFT_EQUAL' in this context
 Sample sentence(s) for reduce of rule 131:
-  Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_RSHIFT_EQUAL
+  Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN . Y_RSHIFT_EQUAL
   Will never shift token 'Y_RSHIFT_EQUAL' in this context
 ---
 
@@ -1202,10 +1202,10 @@ r/r conflict in state 941 on Y_PLUS_EQUAL:
 131 (083): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
 Sample sentence(s) for reduce of rule 132:
-  Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_PLUS_EQUAL
+  Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN . Y_PLUS_EQUAL
   Will never shift token 'Y_PLUS_EQUAL' in this context
 Sample sentence(s) for reduce of rule 131:
-  Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_PLUS_EQUAL
+  Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN . Y_PLUS_EQUAL
   Will never shift token 'Y_PLUS_EQUAL' in this context
 ---
 
@@ -1226,10 +1226,10 @@ r/r conflict in state 941 on Y_MINUS_EQUAL:
 131 (083): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
 Sample sentence(s) for reduce of rule 132:
-  Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_MINUS_EQUAL
+  Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN . Y_MINUS_EQUAL
   Will never shift token 'Y_MINUS_EQUAL' in this context
 Sample sentence(s) for reduce of rule 131:
-  Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_MINUS_EQUAL
+  Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN . Y_MINUS_EQUAL
   Will never shift token 'Y_MINUS_EQUAL' in this context
 ---
 
@@ -1250,10 +1250,10 @@ r/r conflict in state 941 on Y_TIMES_EQUAL:
 131 (083): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
 Sample sentence(s) for reduce of rule 132:
-  Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_TIMES_EQUAL
+  Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN . Y_TIMES_EQUAL
   Will never shift token 'Y_TIMES_EQUAL' in this context
 Sample sentence(s) for reduce of rule 131:
-  Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_TIMES_EQUAL
+  Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN . Y_TIMES_EQUAL
   Will never shift token 'Y_TIMES_EQUAL' in this context
 ---
 
@@ -1274,10 +1274,10 @@ r/r conflict in state 941 on Y_DIV_EQUAL:
 131 (083): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
 Sample sentence(s) for reduce of rule 132:
-  Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_DIV_EQUAL
+  Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN . Y_DIV_EQUAL
   Will never shift token 'Y_DIV_EQUAL' in this context
 Sample sentence(s) for reduce of rule 131:
-  Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_DIV_EQUAL
+  Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN . Y_DIV_EQUAL
   Will never shift token 'Y_DIV_EQUAL' in this context
 ---
 
@@ -1298,10 +1298,10 @@ r/r conflict in state 941 on Y_PERCENT_EQUAL:
 131 (083): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
 Sample sentence(s) for reduce of rule 132:
-  Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_PERCENT_EQUAL
+  Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN . Y_PERCENT_EQUAL
   Will never shift token 'Y_PERCENT_EQUAL' in this context
 Sample sentence(s) for reduce of rule 131:
-  Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_PERCENT_EQUAL
+  Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN . Y_PERCENT_EQUAL
   Will never shift token 'Y_PERCENT_EQUAL' in this context
 ---
 
@@ -1310,10 +1310,10 @@ r/r conflict in state 941 on Y_DOT_DOT_DOT:
 131 (083): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
 Sample sentence(s) for reduce of rule 132:
-  Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_DOT_DOT_DOT
+  Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN . Y_DOT_DOT_DOT
   Will never shift token 'Y_DOT_DOT_DOT' in this context
 Sample sentence(s) for reduce of rule 131:
-  Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_DOT_DOT_DOT
+  Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN . Y_DOT_DOT_DOT
   Will never shift token 'Y_DOT_DOT_DOT' in this context
 ---
 
@@ -1370,10 +1370,10 @@ r/r conflict in state 941 on Y_GT_SPECIAL:
 131 (083): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
 Sample sentence(s) for reduce of rule 132:
-  Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_GT_SPECIAL
+  Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN . Y_GT_SPECIAL
   Will never shift token 'Y_GT_SPECIAL' in this context
 Sample sentence(s) for reduce of rule 131:
-  Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_GT_SPECIAL
+  Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN . Y_GT_SPECIAL
   Will never shift token 'Y_GT_SPECIAL' in this context
 ---
 
@@ -1497,11 +1497,11 @@ r/r conflict in state 994 on Y_COMMA:
 
 Sample sentence(s) for reduce of rule 132:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
-Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_COMMA
+Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN . Y_COMMA
   Will never shift token 'Y_COMMA' in this context
 Sample sentence(s) for reduce of rule 131:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
-Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_COMMA
+Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN . Y_COMMA
   Will never shift token 'Y_COMMA' in this context
 ---
 
@@ -1511,11 +1511,11 @@ r/r conflict in state 994 on Y_QUESTION:
 
 Sample sentence(s) for reduce of rule 132:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
-Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_QUESTION
+Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN . Y_QUESTION
   Will never shift token 'Y_QUESTION' in this context
 Sample sentence(s) for reduce of rule 131:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
-Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_QUESTION
+Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN . Y_QUESTION
   Will never shift token 'Y_QUESTION' in this context
 ---
 
@@ -1525,11 +1525,11 @@ r/r conflict in state 994 on Y_COLON:
 
 Sample sentence(s) for reduce of rule 132:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
-Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_COLON
+Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN . Y_COLON
   Will never shift token 'Y_COLON' in this context
 Sample sentence(s) for reduce of rule 131:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
-Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_COLON
+Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN . Y_COLON
   Will never shift token 'Y_COLON' in this context
 ---
 
@@ -1539,11 +1539,11 @@ r/r conflict in state 994 on Y_SEMI_COLON:
 
 Sample sentence(s) for reduce of rule 132:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
-Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_SEMI_COLON
+Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN . Y_SEMI_COLON
   Will never shift token 'Y_SEMI_COLON' in this context
 Sample sentence(s) for reduce of rule 131:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
-Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_SEMI_COLON
+Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN . Y_SEMI_COLON
   Will never shift token 'Y_SEMI_COLON' in this context
 ---
 
@@ -1553,11 +1553,11 @@ r/r conflict in state 994 on Y_RIGHT_PAREN:
 
 Sample sentence(s) for reduce of rule 132:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
-Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_RIGHT_PAREN
+Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN . Y_RIGHT_PAREN
   Will never shift token 'Y_RIGHT_PAREN' in this context
 Sample sentence(s) for reduce of rule 131:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
-Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_RIGHT_PAREN
+Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN . Y_RIGHT_PAREN
   Will never shift token 'Y_RIGHT_PAREN' in this context
 ---
 
@@ -1567,11 +1567,11 @@ r/r conflict in state 994 on Y_RIGHT_BRACKET:
 
 Sample sentence(s) for reduce of rule 132:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
-Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_RIGHT_BRACKET
+Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN . Y_RIGHT_BRACKET
   Will never shift token 'Y_RIGHT_BRACKET' in this context
 Sample sentence(s) for reduce of rule 131:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
-Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_RIGHT_BRACKET
+Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN . Y_RIGHT_BRACKET
   Will never shift token 'Y_RIGHT_BRACKET' in this context
 ---
 
@@ -1581,11 +1581,11 @@ r/r conflict in state 994 on Y_RIGHT_BRACE:
 
 Sample sentence(s) for reduce of rule 132:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
-Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_RIGHT_BRACE
+Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN . Y_RIGHT_BRACE
   Will never shift token 'Y_RIGHT_BRACE' in this context
 Sample sentence(s) for reduce of rule 131:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
-Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_RIGHT_BRACE
+Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN . Y_RIGHT_BRACE
   Will never shift token 'Y_RIGHT_BRACE' in this context
 ---
 
@@ -1595,11 +1595,11 @@ r/r conflict in state 994 on Y_EQUAL:
 
 Sample sentence(s) for reduce of rule 132:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
-Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_EQUAL
+Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN . Y_EQUAL
   Will never shift token 'Y_EQUAL' in this context
 Sample sentence(s) for reduce of rule 131:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
-Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_EQUAL
+Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN . Y_EQUAL
   Will never shift token 'Y_EQUAL' in this context
 ---
 
@@ -1651,11 +1651,11 @@ r/r conflict in state 994 on Y_OR_EQUAL:
 
 Sample sentence(s) for reduce of rule 132:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
-Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_OR_EQUAL
+Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN . Y_OR_EQUAL
   Will never shift token 'Y_OR_EQUAL' in this context
 Sample sentence(s) for reduce of rule 131:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
-Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_OR_EQUAL
+Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN . Y_OR_EQUAL
   Will never shift token 'Y_OR_EQUAL' in this context
 ---
 
@@ -1693,11 +1693,11 @@ r/r conflict in state 994 on Y_AND_EQUAL:
 
 Sample sentence(s) for reduce of rule 132:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
-Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_AND_EQUAL
+Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN . Y_AND_EQUAL
   Will never shift token 'Y_AND_EQUAL' in this context
 Sample sentence(s) for reduce of rule 131:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
-Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_AND_EQUAL
+Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN . Y_AND_EQUAL
   Will never shift token 'Y_AND_EQUAL' in this context
 ---
 
@@ -1735,11 +1735,11 @@ r/r conflict in state 994 on Y_XOR_EQUAL:
 
 Sample sentence(s) for reduce of rule 132:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
-Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_XOR_EQUAL
+Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN . Y_XOR_EQUAL
   Will never shift token 'Y_XOR_EQUAL' in this context
 Sample sentence(s) for reduce of rule 131:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
-Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_XOR_EQUAL
+Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN . Y_XOR_EQUAL
   Will never shift token 'Y_XOR_EQUAL' in this context
 ---
 
@@ -1819,11 +1819,11 @@ r/r conflict in state 994 on Y_LSHIFT_EQUAL:
 
 Sample sentence(s) for reduce of rule 132:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
-Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_LSHIFT_EQUAL
+Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN . Y_LSHIFT_EQUAL
   Will never shift token 'Y_LSHIFT_EQUAL' in this context
 Sample sentence(s) for reduce of rule 131:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
-Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_LSHIFT_EQUAL
+Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN . Y_LSHIFT_EQUAL
   Will never shift token 'Y_LSHIFT_EQUAL' in this context
 ---
 
@@ -1847,11 +1847,11 @@ r/r conflict in state 994 on Y_RSHIFT_EQUAL:
 
 Sample sentence(s) for reduce of rule 132:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
-Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_RSHIFT_EQUAL
+Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN . Y_RSHIFT_EQUAL
   Will never shift token 'Y_RSHIFT_EQUAL' in this context
 Sample sentence(s) for reduce of rule 131:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
-Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_RSHIFT_EQUAL
+Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN . Y_RSHIFT_EQUAL
   Will never shift token 'Y_RSHIFT_EQUAL' in this context
 ---
 
@@ -1875,11 +1875,11 @@ r/r conflict in state 994 on Y_PLUS_EQUAL:
 
 Sample sentence(s) for reduce of rule 132:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
-Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_PLUS_EQUAL
+Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN . Y_PLUS_EQUAL
   Will never shift token 'Y_PLUS_EQUAL' in this context
 Sample sentence(s) for reduce of rule 131:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
-Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_PLUS_EQUAL
+Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN . Y_PLUS_EQUAL
   Will never shift token 'Y_PLUS_EQUAL' in this context
 ---
 
@@ -1903,11 +1903,11 @@ r/r conflict in state 994 on Y_MINUS_EQUAL:
 
 Sample sentence(s) for reduce of rule 132:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
-Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_MINUS_EQUAL
+Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN . Y_MINUS_EQUAL
   Will never shift token 'Y_MINUS_EQUAL' in this context
 Sample sentence(s) for reduce of rule 131:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
-Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_MINUS_EQUAL
+Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN . Y_MINUS_EQUAL
   Will never shift token 'Y_MINUS_EQUAL' in this context
 ---
 
@@ -1931,11 +1931,11 @@ r/r conflict in state 994 on Y_TIMES_EQUAL:
 
 Sample sentence(s) for reduce of rule 132:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
-Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_TIMES_EQUAL
+Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN . Y_TIMES_EQUAL
   Will never shift token 'Y_TIMES_EQUAL' in this context
 Sample sentence(s) for reduce of rule 131:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
-Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_TIMES_EQUAL
+Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN . Y_TIMES_EQUAL
   Will never shift token 'Y_TIMES_EQUAL' in this context
 ---
 
@@ -1959,11 +1959,11 @@ r/r conflict in state 994 on Y_DIV_EQUAL:
 
 Sample sentence(s) for reduce of rule 132:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
-Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_DIV_EQUAL
+Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN . Y_DIV_EQUAL
   Will never shift token 'Y_DIV_EQUAL' in this context
 Sample sentence(s) for reduce of rule 131:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
-Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_DIV_EQUAL
+Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN . Y_DIV_EQUAL
   Will never shift token 'Y_DIV_EQUAL' in this context
 ---
 
@@ -1987,11 +1987,11 @@ r/r conflict in state 994 on Y_PERCENT_EQUAL:
 
 Sample sentence(s) for reduce of rule 132:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
-Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_PERCENT_EQUAL
+Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN . Y_PERCENT_EQUAL
   Will never shift token 'Y_PERCENT_EQUAL' in this context
 Sample sentence(s) for reduce of rule 131:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
-Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_PERCENT_EQUAL
+Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN . Y_PERCENT_EQUAL
   Will never shift token 'Y_PERCENT_EQUAL' in this context
 ---
 
@@ -2001,11 +2001,11 @@ r/r conflict in state 994 on Y_DOT_DOT_DOT:
 
 Sample sentence(s) for reduce of rule 132:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
-Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_DOT_DOT_DOT
+Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN . Y_DOT_DOT_DOT
   Will never shift token 'Y_DOT_DOT_DOT' in this context
 Sample sentence(s) for reduce of rule 131:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
-Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_DOT_DOT_DOT
+Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN . Y_DOT_DOT_DOT
   Will never shift token 'Y_DOT_DOT_DOT' in this context
 ---
 
@@ -2071,11 +2071,11 @@ r/r conflict in state 994 on Y_GT_SPECIAL:
 
 Sample sentence(s) for reduce of rule 132:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
-Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_GT_SPECIAL
+Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN . Y_GT_SPECIAL
   Will never shift token 'Y_GT_SPECIAL' in this context
 Sample sentence(s) for reduce of rule 131:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
-Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_GT_SPECIAL
+Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN . Y_GT_SPECIAL
   Will never shift token 'Y_GT_SPECIAL' in this context
 ---
 

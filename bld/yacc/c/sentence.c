@@ -348,13 +348,12 @@ void ShowSentence( a_state *s, a_sym *sym, a_pro *pro, a_state *to_state )
             performReduce( &parse_stack, pro );
             runUntilShift( &parse_stack, sym, &token_stack );
         }
-        fputs( "  ", stdout );
+        printf( "  " );
         printAndFreeStack( list );
-        fputs( ".", stdout );
         if( parse_stack == NULL ) {
-            printf( "%s\n  Will never shift token '%s' in this context\n", sym->name, sym->name );
+            printf( ". %s\n  Will never shift token '%s' in this context\n", sym->name, sym->name );
         } else {
-            putchar( '\n' );
+            printf( ".\n" );
             runUntilShift( &parse_stack, eofsym, &token_stack );
             token_stack = reverseStack( token_stack );
             printAndFreeStack( token_stack );

@@ -260,8 +260,8 @@ static void check_for_user_hooks( a_state *state, a_shift_action *saction, index
     }
     sym = saction->sym;
     min_max_set = false;
-    min_id = UINT_MAX;
-    max_id = 0;
+    min_id = CONFLICT_MAX_ID;
+    max_id = CONFLICT_MIN_ID;
     for( item = state->items; *item != NULL; ++item ) {
         pro = extract_pro( *item );
         if( pro->SR_conflicts == NULL ) {

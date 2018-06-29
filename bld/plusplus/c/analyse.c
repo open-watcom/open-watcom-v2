@@ -38,9 +38,7 @@ ANALYSE.C -- analyse parsed tree of tokens
 */
 
 #include "plusplus.h"
-
 #include <stddef.h>
-
 #include "memmgr.h"
 #include "stringl.h"
 #include "cgfront.h"
@@ -58,12 +56,12 @@ ANALYSE.C -- analyse parsed tree of tokens
 #include "ctexcept.h"
 #include "objmodel.h"
 #include "analtyid.h"
-#   include "stats.h"
+#include "stats.h"
 #ifdef XTRA_RPT
 #   include "initdefs.h"
 #endif
 #ifndef NDEBUG
-#include "pragdefn.h"
+#   include "pragdefn.h"
 #endif
 #include "mngless.h"
 
@@ -1519,6 +1517,8 @@ static void warnUselessCompare( // WARN IF COMPARISON IS USELESS (CONSTANT)
     op2 = NULL;
     constant_right = false;
     constant_left = false;
+    op1 = NULL;
+    op2 = NULL;
     cgop = expr->cgop;
     if( NodeIsConstantInt( right ) ) {
         constant_right = true;

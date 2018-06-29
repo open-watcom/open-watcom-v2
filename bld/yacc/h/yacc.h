@@ -109,7 +109,8 @@ typedef struct a_SR_conflict_list a_SR_conflict_list;
 typedef struct a_link   a_link;
 
 typedef unsigned        conflict_id;    /* numeric id assigned by user */
-#define CONFLICT_MAX_ID ((conflict_id)-1)
+#define CONFLICT_MAX_ID ((conflict_id)~0)
+#define CONFLICT_MIN_ID ((conflict_id)0)
 
 typedef struct an_item {
     union {
