@@ -499,7 +499,7 @@ void EliminateUnitReductions( void )
         }
         sum += changeOccurred;
     } while( changeOccurred );
-    FREE( reduce_set );
+    FreeSet( reduce_set );
     dumpstatistic( "unit reduction states removed", deadStates );
     dumpstatistic( "unit reduction optimizations", sum );
 }

@@ -46,7 +46,6 @@
 #define SetAction(c,i)  ((c)->action |= (ACTION_USED|(i)))
 #define IsBase(c)       ((c)->action & ACTION_BASE)
 #define SetBase(c)      ((c)->action |= ACTION_BASE)
-#define roundup(a,b)    ((((a)+(b)-1)/(b))*(b))
 
 #define BLOCK           512
 
@@ -62,7 +61,7 @@ static a_table      *table;
 static void expand_table( base_n new_size )
 {
     if( new_size > avail ) {
-        avail = roundup( new_size, BLOCK );
+        avail = _RoundUp( new_size, BLOCK );
         if( table != NULL ) {
             table = REALLOC( table, avail, a_table );
         } else {

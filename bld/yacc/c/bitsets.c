@@ -41,7 +41,7 @@ static set_size wperset;
 
 void InitSets( unsigned n )
 {
-    wperset = (set_size)( ( n + WSIZE - 1 ) / WSIZE );
+    wperset = (set_size)_RoundUpBitVector( n, WSIZE );
     setmembers = CALLOC( n, set_size );
 }
 

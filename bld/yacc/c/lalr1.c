@@ -456,7 +456,7 @@ static void Conflict( void )
             }
         }
     }
-    FREE( set );
+    FreeSet( set );
     FREE( reduce );
     FREE( work );
 }
@@ -506,7 +506,7 @@ void lalr1( void )
         puts( "internal error" );
     }
     FREE( look );
-    FREE( lset );
+    FreeSet( lset );
     FREE( stk );
     Conflict();
     nbstate = nstate;
