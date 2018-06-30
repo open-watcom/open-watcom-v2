@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -59,7 +59,7 @@ private:
 
 class ELines : public Tag {
 public:
-    ELines( Document* d, Element *p, const std::wstring* f, unsigned int r, 
+    ELines( Document* d, Element *p, const std::wstring* f, unsigned int r,
             unsigned int c ) : Tag( d, p, f, r, c ) { }
     ~ELines() { };
     void buildText( Cell* cell );

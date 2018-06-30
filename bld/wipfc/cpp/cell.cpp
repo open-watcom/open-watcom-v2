@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -31,6 +31,8 @@
 *
 ****************************************************************************/
 
+
+#include "wipfc.hpp"
 #include <functional>
 #include <algorithm>
 #include "cell.hpp"
@@ -48,7 +50,7 @@ void Cell::build()
 void Cell::addWord( STD1::uint16_t word )
 {
     if( !std::binary_search( localDictionary.begin(), localDictionary.end(), word ) ) {
-        LDIter itr( 
+        LDIter itr(
             //std::lower_bound( localDictionary.begin(), localDictionary.end(), word );
             std::find_if( localDictionary.begin(), localDictionary.end(),
                 std::bind2nd( std::greater< STD1::uint16_t >(), word ) ) );
@@ -58,7 +60,7 @@ void Cell::addWord( STD1::uint16_t word )
 /***************************************************************************/
 void Cell::addText( STD1::uint16_t word )
 {
-    LDIter itr( 
+    LDIter itr(
         //std::lower_bound( localDictionary.begin(), localDictionary.end(), word );
         std::find( localDictionary.begin(), localDictionary.end(), word ) );
     std::size_t index = itr - localDictionary.begin();

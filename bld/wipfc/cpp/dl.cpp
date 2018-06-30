@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -37,6 +37,8 @@
 *   Multiple :dt's are allowed, followed by a single :dd
 ****************************************************************************/
 
+
+#include "wipfc.hpp"
 #include <cstdlib>
 #include "dl.hpp"
 #include "brcmd.hpp"

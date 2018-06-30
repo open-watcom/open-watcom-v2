@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+#include "wipfc.hpp"
 #include <cwctype>
 #include "text.hpp"
 #include "cell.hpp"

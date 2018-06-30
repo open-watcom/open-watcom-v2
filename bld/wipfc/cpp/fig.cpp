@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -33,6 +33,8 @@
 *   Honor whitespace (as literal whitespace), including '\n' (as .br)
 ****************************************************************************/
 
+
+#include "wipfc.hpp"
 #include "fig.hpp"
 #include "brcmd.hpp"
 #include "cell.hpp"

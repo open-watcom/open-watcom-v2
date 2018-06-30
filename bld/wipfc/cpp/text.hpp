@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -40,7 +40,7 @@ class Text : public Element {
 public:
     Text( Document* d, Element* p, const std::wstring* f, unsigned int r,
         unsigned int c, Tag::WsHandling w = Tag::NONE, bool ts = false) :
-        Element( d, p, f, r, c ), text( 0 ), whiteSpace( w ), 
+        Element( d, p, f, r, c ), text( 0 ), whiteSpace( w ),
         toggleSpacing( ts ) { };
     Text( Document* d, Element* p, const std::wstring* f, unsigned int r,
         unsigned int c, const std::wstring& txt, bool ts );

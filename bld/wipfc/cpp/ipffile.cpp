@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -27,10 +27,12 @@
 * Description:  IPF Input file reader
 *
 ****************************************************************************/
+
+#include "wipfc.hpp"
+#include <cstdlib>
 #include "ipffile.hpp"
 #include "errors.hpp"
 #include "util.hpp"
-#include <cstdlib>
 
 
 IpfFile::IpfFile( const std::wstring* fname ) : IpfData(), fileName ( fname ),

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -28,6 +28,8 @@
 *
 ****************************************************************************/
 
+
+#include "wipfc.hpp"
 #include <algorithm>
 #include <cstdlib>
 #include "fts.hpp"
@@ -238,7 +240,7 @@ std::size_t FTSElement::write( std::FILE *out, bool big ) const
         if( comp == NONE || comp == ALL ) {
             if( std::fwrite( &hdr, sizeof( FTS16Header ), 1, out ) != 1 )
                 throw FatalError( ERR_WRITE );
-            written = hdr.size; 
+            written = hdr.size;
         }
         else if( comp == RLE ) {
             hdr.size += static_cast< STD1::uint16_t >( pages.size() + 1 );
@@ -246,7 +248,7 @@ std::size_t FTSElement::write( std::FILE *out, bool big ) const
                 std::fputc( 0x01, out ) == EOF ||
                 std::fwrite( &pages[0], sizeof( STD1::uint8_t ), pages.size(), out ) != pages.size() )
                 throw FatalError( ERR_WRITE );
-            written = hdr.size; 
+            written = hdr.size;
         }
         else if( comp == PRESENT ) {
             std::vector< STD1::uint16_t > pg;
@@ -262,7 +264,7 @@ std::size_t FTSElement::write( std::FILE *out, bool big ) const
             if( std::fwrite( &hdr, sizeof( FTS16Header ), 1, out ) != 1 ||
                 std::fwrite( &pg[0], sizeof( STD1::uint16_t ), pg.size(), out ) != pg.size() )
                 throw FatalError( ERR_WRITE );
-            written = hdr.size; 
+            written = hdr.size;
         }
         else if ( comp == ABSENT ) {
             std::vector< STD1::uint16_t > pg;
@@ -278,14 +280,14 @@ std::size_t FTSElement::write( std::FILE *out, bool big ) const
             if( std::fwrite( &hdr, sizeof( FTS16Header ), 1, out ) != 1 ||
                 std::fwrite( &pg[0], sizeof( STD1::uint16_t ), pg.size(), out ) != pg.size() )
                 throw FatalError( ERR_WRITE );
-            written = hdr.size; 
+            written = hdr.size;
         }
         else if ( comp ==  TRUNC ) {
             hdr.size += static_cast< STD1::uint16_t >( pages.size() * sizeof( STD1::uint8_t ) );
             if( std::fwrite( &hdr, sizeof( FTS16Header ), 1, out ) != 1 ||
                 std::fwrite( &pages[0], sizeof( STD1::uint8_t ), pages.size(), out ) != pages.size() )
                 throw FatalError( ERR_WRITE );
-            written = hdr.size; 
+            written = hdr.size;
         }
         else if ( comp == DBL_TRUNC ) {
             hdr.size += static_cast< STD1::uint16_t >( pages.size() * sizeof( STD1::uint8_t ) +
@@ -294,8 +296,8 @@ std::size_t FTSElement::write( std::FILE *out, bool big ) const
                 std::fwrite( &firstPage, sizeof( STD1::uint16_t ), 1, out ) != 1 ||
                 std::fwrite( &pages[0], sizeof( STD1::uint8_t ), pages.size(), out ) != pages.size() )
                 throw FatalError( ERR_WRITE );
-            written = hdr.size; 
-        } 
+            written = hdr.size;
+        }
     }
     else {
         FTS8Header hdr;
@@ -304,7 +306,7 @@ std::size_t FTSElement::write( std::FILE *out, bool big ) const
         if( comp == NONE || comp == ALL ) {
             if( std::fwrite( &hdr, sizeof( FTS8Header ), 1, out ) != 1 )
                 throw FatalError( ERR_WRITE );
-            written = hdr.size; 
+            written = hdr.size;
         }
         else if( comp == RLE ) {
             hdr.size += static_cast< STD1::uint8_t >( ( pages.size() + 1 ) * sizeof( STD1::uint8_t ) );
@@ -312,7 +314,7 @@ std::size_t FTSElement::write( std::FILE *out, bool big ) const
                 std::fputc( 0x01, out ) == EOF ||
                 std::fwrite( &pages[0], sizeof( STD1::uint8_t ), pages.size(), out ) != pages.size() )
                 throw FatalError( ERR_WRITE );
-            written = hdr.size; 
+            written = hdr.size;
         }
         else if( comp == PRESENT ) {
             std::vector< STD1::uint16_t > pg;
@@ -328,7 +330,7 @@ std::size_t FTSElement::write( std::FILE *out, bool big ) const
             if( std::fwrite( &hdr, sizeof( FTS8Header ), 1, out ) != 1 ||
                 std::fwrite( &pg[0], sizeof( STD1::uint16_t ), pg.size(), out ) != pg.size() )
                 throw FatalError( ERR_WRITE );
-            written = hdr.size; 
+            written = hdr.size;
         }
         else if ( comp == ABSENT ) {
             std::vector< STD1::uint16_t > pg;
@@ -344,7 +346,7 @@ std::size_t FTSElement::write( std::FILE *out, bool big ) const
             if( std::fwrite( &hdr, sizeof( FTS8Header ), 1, out ) != 1 ||
                 std::fwrite( &pg[0], sizeof( STD1::uint16_t ), pg.size(), out ) != pg.size() )
                 throw FatalError( ERR_WRITE );
-            written = hdr.size; 
+            written = hdr.size;
         }
         else if ( comp ==  TRUNC ) {
             hdr.size += static_cast< STD1::uint8_t >( pages.size() * sizeof( STD1::uint8_t ) );
@@ -360,8 +362,8 @@ std::size_t FTSElement::write( std::FILE *out, bool big ) const
                 std::fwrite( &firstPage, sizeof( STD1::uint16_t ), 1, out ) != 1 ||
                 std::fwrite( &pages[0], sizeof( STD1::uint8_t ), pages.size(), out ) != pages.size() )
                 throw FatalError( ERR_WRITE );
-            written = hdr.size; 
-        } 
+            written = hdr.size;
+        }
     }
     return written;
 }

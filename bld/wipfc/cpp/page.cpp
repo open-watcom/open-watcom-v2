@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -28,6 +28,8 @@
 *
 ****************************************************************************/
 
+
+#include "wipfc.hpp"
 #include "page.hpp"
 #include "cell.hpp"
 #include "document.hpp"
@@ -54,7 +56,7 @@ void Page::buildLocalDictionary()
             cells.push_back( currentCell->index() );
             ++toc.cellCount;
             if( !autoSpacing )          //autoSpacing can't cross a cell boundry
-                currentCell->addByte( 0xFC );   //so turn it off so we can turn 
+                currentCell->addByte( 0xFC );   //so turn it off so we can turn
             flags = ( *itr )->buildLocalDict( this ); //it back on later
         }
         if( flags.second )

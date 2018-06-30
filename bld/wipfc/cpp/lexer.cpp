@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -29,6 +29,7 @@
 ****************************************************************************/
 
 
+#include "wipfc.hpp"
 #include <cstdio>
 #include <cwctype>
 #include "lexer.hpp"
@@ -192,7 +193,7 @@ Lexer::Token Lexer::lex( IpfData* input )
                         buffer.erase( buffer.size() - 1 );
                         break;
                     }
-                    else if( type == WORD && 
+                    else if( type == WORD &&
                         ( std::iswspace( ch ) || std::iswpunct( ch ) ) ) {
                         //!std::iswalnum( ch )
                         //end of token
@@ -201,7 +202,7 @@ Lexer::Token Lexer::lex( IpfData* input )
                         break;
                     }
                 }
-    
+
             }
         }
         if ( type == TAG )

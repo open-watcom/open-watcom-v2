@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -43,7 +43,7 @@
 struct TocEntry {
     STD1::uint8_t size;             // size of the entry
     STD1::uint8_t nestLevel  :4;    // nesting level
-    STD1::uint8_t unknown    :1;   
+    STD1::uint8_t unknown    :1;
     STD1::uint8_t extended   :1;    // extended entry format
     STD1::uint8_t hidden     :1;    // don't show this toc entry
     STD1::uint8_t hasChildren:1;    // following nodes are numerically higher

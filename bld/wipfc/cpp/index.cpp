@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -28,6 +28,8 @@
 *
 ****************************************************************************/
 
+
+#include "wipfc.hpp"
 #include <cwctype>
 #include "index.hpp"
 #include "errors.hpp"
@@ -44,7 +46,7 @@ IndexItem::IndexItem( Type t )
 bool IndexItem::operator==( const IndexItem& rhs ) const
 {
     if( sortKey.empty() ) {
-        if( rhs.sortKey.empty() ) 
+        if( rhs.sortKey.empty() )
             return wstricmp( text.c_str(), rhs.text.c_str() ) == 0;
         else
             return wstricmp( text.c_str(), rhs.sortKey.c_str() ) == 0;
@@ -68,7 +70,7 @@ bool IndexItem::operator==( const std::wstring& rhs ) const
 bool IndexItem::operator<( const IndexItem& rhs ) const
 {
     if( sortKey.empty() ) {
-        if( rhs.sortKey.empty() ) 
+        if( rhs.sortKey.empty() )
             return wstricmp( text.c_str(), rhs.text.c_str() ) < 0;
         else
             return wstricmp( text.c_str(), rhs.sortKey.c_str() ) < 0;

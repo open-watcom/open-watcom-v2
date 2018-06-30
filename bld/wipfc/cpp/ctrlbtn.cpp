@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -28,6 +28,8 @@
 *
 ****************************************************************************/
 
+
+#include "wipfc.hpp"
 #include "ctrlbtn.hpp"
 #include "errors.hpp"
 #include "util.hpp"
@@ -38,7 +40,7 @@ STD1::uint32_t ControlButton::write( std::FILE *out ) const
     STD1::uint16_t type( 1 );
     if( std::fwrite( &type, sizeof( STD1::uint16_t), 1, out) != 1 )
         throw FatalError( ERR_WRITE );
-    if( std::fwrite( &res, sizeof( STD1::uint16_t), 1, out) != 1 ) 
+    if( std::fwrite( &res, sizeof( STD1::uint16_t), 1, out) != 1 )
         throw FatalError( ERR_WRITE );
     std::string buffer;
     wtomb_string( txt, buffer );

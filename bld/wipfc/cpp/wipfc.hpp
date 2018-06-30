@@ -24,47 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  Process i2 tags
-*
-*   :i2
-*       refid=[a-zA-z][a-zA-z0-9]*
-*       global
-*       sortkey='key-text'.index-text
-*   Must follow :i1
+* Description:  Global WIPFC definition to cover non-OW environments
 *
 ****************************************************************************/
 
-#ifndef I2_INCLUDED
-#define I2_INCLUDED
-
-#include "config.hpp"
-#include <cstdio>
-#include <memory>
-#include "element.hpp"
-#include "index.hpp"
-
-class GlobalDictionaryWord; //forward reference
-
-class I2 : public Element {
-public:
-    I2( Document* d, Element* p, const std::wstring* f, unsigned int r, unsigned int c ) :
-        Element( d, p, f, r, c ), index( new IndexItem( IndexItem::SECONDARY ) ),
-        parentId( 0 ), parentRes( 0 ) { }
-    ~I2() { };
-    Lexer::Token parse( Lexer* lexer );
-    void buildIndex();
-    void buildText( Cell* cell ) { (void)cell; };
-    void setRes( STD1::uint16_t r ) { parentRes = r; };
-    void setIdOrName( GlobalDictionaryWord* w ) { parentId = w; };
-    bool isGlobal() const { return index->isGlobal(); };
-    std::size_t write( std::FILE* out ) { return index->write( out ); };
-private:
-    I2( const I2& rhs );                //no copy
-    I2& operator=( const I2& rhs );     //no assignment
-    std::auto_ptr< IndexItem > index;
-    std::wstring refid;
-    GlobalDictionaryWord* parentId;
-    STD1::uint16_t parentRes;
-    Lexer::Token parseAttributes( Lexer* lexer );
-};
-#endif //I2_INCLUDED
+#if defined( __unix__ ) && !defined( __UNIX__ )
+    #define __UNIX__ __unix__
+#endif
