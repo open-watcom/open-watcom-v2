@@ -100,11 +100,7 @@ std::string Nls::getNlsFileName( const char *loc )
     std::string path( Environment.value( "WIPFC" ) );
 
     if( path.length() )
-#if !defined( __UNIX__ ) && !defined( __APPLE__ )
-        path += '\\';
-#else
-        path += '/';
-#endif
+        path += PATH_SEPARATOR;
     path += "nlsconf.txt";
     std::FILE *nlsconf = std::fopen( path.c_str(), "r" );
     if( nlsconf == NULL )
@@ -120,11 +116,7 @@ void Nls::setCodePage( STD1::uint16_t cp )
 #endif
     std::string path( Environment.value( "WIPFC" ) );
     if( path.length() )
-#if !defined( __UNIX__ ) && !defined( __APPLE__ )
-        path += '\\';
-#else
-        path += '/';
-#endif
+        path += PATH_SEPARATOR;
     path += "enti";
     if( cp == 850 || cp == 437 ) {
         path += "ty";
@@ -166,19 +158,24 @@ void Nls::readEntityFile( std::FILE *entty )
 /*****************************************************************************/
 void Nls::setLocalization( const char *loc)
 {
+    // TODO! MBCS<->UNICODE conversion for mbtow_char and wtomb_char must be setup
+    // instead of existing code which rely on host OS locale support.
+    // By example proper characters encoding for US INF Documentation files is
+    // DOS codepage 850, but on Linux it is handled as ISO-8859-1 or UTF-8 in
+    // dependency how host locale are configured. It is wrong!
+    // Correct solution is to use DOS codepage 850 for US on any host OS.
+    // It requires to define appropriate MBCS<->UNICODE conversion tables as part of WIPFC.
     std::string path( Environment.value( "WIPFC" ) );
     if( path.length() )
-#if !defined( __UNIX__ ) && !defined( __APPLE__ )
-        path += '\\';
-#else
-        path += '/';
-#endif
+        path += PATH_SEPARATOR;
     path += getNlsFileName( loc );
     std::FILE *nls = std::fopen( path.c_str(), "r" );
     if( nls == NULL )
         throw FatalError( ERR_LANG );
     readNLS( nls );
     std::fclose( nls );
+    // TODO! Following code must be replaced by setup MBCS<->UNICODE conversion tables
+    // for mbtow_char and wtomb_char
 #if defined( __UNIX__ ) || defined( __APPLE__ )
     std::setlocale( LC_ALL, loc );  //this doesn't really do anything in OW either
 #endif

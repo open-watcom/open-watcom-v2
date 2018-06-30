@@ -586,13 +586,7 @@ void Document::makeBitmaps()
         std::vector< std::string > paths;
         std::string cwd;    //empty string for current directory
         paths.push_back( cwd );
-#if defined( __UNIX__ ) || defined( __APPLE__ )
-        std::string separators( ":;" );
-        char slash( '/' );
-#else
-        std::string separators( ";" );
-        char slash( '\\' );
-#endif
+        std::string separators( PATH_LIST_SEPARATORS );
         std::string::size_type idx1( 0 );
         std::string::size_type idx2( env.find_first_of( separators, idx1 ) );
         paths.push_back( env.substr( idx1, idx2 - idx1 ) );
@@ -608,7 +602,7 @@ void Document::makeBitmaps()
                 for( std::size_t count = 0; count < paths.size(); ++count ) {
                     std::string fullname( paths[ count ] );
                     if( !fullname.empty() )
-                        fullname += slash;
+                        fullname += PATH_SEPARATOR;
                     fullname += fname;
 #if !defined( __UNIX__ ) && !defined( __APPLE__ )
                     if( fullname.size() > PATH_MAX ) {
@@ -851,27 +845,20 @@ STD1::uint32_t Document::writeICmd( std::FILE* out )
 */
 Lexer::Token Document::processCommand( Lexer* lexer, Tag* parent )
 {
-    if( lexer->cmdId() == Lexer::COMMENT )
+    if( lexer->cmdId() == Lexer::COMMENT ) {
         ;//do nothing
-    else if( lexer->cmdId() == Lexer::BREAK )
+    } else if( lexer->cmdId() == Lexer::BREAK ) {
         parent->appendChild( new BrCmd( this, parent, dataName(), dataLine(), dataCol() ) );
-    else if( lexer->cmdId() == Lexer::CENTER ) {
+    } else if( lexer->cmdId() == Lexer::CENTER ) {
         CeCmd* cecmd( new CeCmd( this, parent, dataName(), dataLine(), dataCol() ) );
         parent->appendChild( cecmd );
         return cecmd->parse( lexer );
-    }
-    else if( lexer->cmdId() == Lexer::IMBED ) {
+    } else if( lexer->cmdId() == Lexer::IMBED ) {
         std::string env( Environment.value( "IPFCIMBED" ) );
         std::vector< std::wstring > paths;
         std::wstring cwd;   //empty string for current directory
         paths.push_back( cwd );
-#if defined( __UNIX__ ) || defined( __APPLE__ )
-        std::string separators( ":;" );
-        char slash( '/' );
-#else
-        std::string separators( ";" );
-        char slash( '\\' );
-#endif
+        std::string separators( PATH_LIST_SEPARATORS );
         std::string::size_type idx1( 0 );
         std::string::size_type idx2( env.find_first_of( separators, idx1 ) );
         std::wstring fbuffer;
@@ -887,7 +874,7 @@ Lexer::Token Document::processCommand( Lexer* lexer, Tag* parent )
         for( std::size_t count = 0; count < paths.size(); ++count ) {
             std::wstring* fname( new std::wstring( paths[ count ] ) );
             if( !fname->empty() )
-                *fname += slash;
+                *fname += PATH_SEPARATOR;
             *fname += lexer->text();
 #if !defined( __UNIX__ ) && !defined( __APPLE__ )
             if( fname->size() > PATH_MAX ) {
@@ -913,8 +900,7 @@ Lexer::Token Document::processCommand( Lexer* lexer, Tag* parent )
                 }
             }
         }
-    }
-    else if( lexer->cmdId() == Lexer::NAMEIT ) {
+    } else if( lexer->cmdId() == Lexer::NAMEIT ) {
         std::wstring::size_type idx1( lexer->text().find( L"symbol=" ) );
         std::wstring::size_type idx2( lexer->text().find( L' ', idx1 ) );
         std::wstring sym( lexer->text().substr( idx1 + 7, idx2 - idx1 - 7 ) );
@@ -928,14 +914,14 @@ Lexer::Token Document::processCommand( Lexer* lexer, Tag* parent )
             lexer->text().find( L' ', idx3 + 5 ) );
         std::wstring txt( lexer->text().substr( idx3 + 5, idx4 - idx3 - 5 ) );
         killQuotes( txt );
-        if( !nls->isEntity( sym ) && nameIts.find( sym ) == nameIts.end() ) //add it to the list
+        if( !nls->isEntity( sym ) && nameIts.find( sym ) == nameIts.end() ) {   //add it to the list
             nameIts.insert( std::map< std::wstring, std::wstring >::value_type( sym, txt ) );
-        else {
+        } else {
             printError( ERR3_DUPSYMBOL );
         }
-    }
-    else
+    } else {
         printError( ERR1_CMDNOTDEF );
+    }
     return getNextToken();
 }
 /***************************************************************************/

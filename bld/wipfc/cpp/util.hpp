@@ -33,6 +33,16 @@
 
 #include <string>
 
+#if defined( __UNIX__ ) || defined( __APPLE__ )
+#define PATH_LIST_SEPARATORS    ":;"
+#define PATH_SEPARATOR          '/'
+#define PATH_PARENT_REF         "../"
+#else
+#define PATH_LIST_SEPARATORS    ";"
+#define PATH_SEPARATOR          '\\'
+#define PATH_PARENT_REF         "..\\"
+#endif
+
 void killQuotes( char * text );
 void killQuotes( wchar_t * text );
 void killQuotes( std::string& val );
@@ -43,6 +53,7 @@ void killEOL( wchar_t * text );
 std::string canonicalPath( char* arg );
 int wtomb_char( char *mbc, wchar_t wc );
 int mbtow_char( wchar_t *wc, const char *mbc, std::size_t len );
+std::wint_t read_wchar( std::FILE *fp );
 std::size_t wtomb_cstring( char *mbc, const wchar_t *wc, std::size_t len );
 std::size_t mbtow_cstring( wchar_t *wc, const char *mbc, std::size_t len );
 void wtomb_string( const std::wstring& input, std::string& output );
