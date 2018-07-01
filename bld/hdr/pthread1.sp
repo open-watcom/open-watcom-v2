@@ -9,7 +9,7 @@
 #ifndef _PTHREAD_ATTR_T_DEFINED_
  #define _PTHREAD_ATTR_T_DEFINED_
  typedef struct {
-     size_t             stack_size;
+     __w_size_t         stack_size;
      void               *stack_addr;
      int                detached;
      int                sched_policy;

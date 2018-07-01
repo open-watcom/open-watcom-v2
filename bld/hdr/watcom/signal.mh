@@ -57,7 +57,9 @@ using std::raise;
 /* 
  *  ISO C types
  */
+:segment LINUX
 :include size_t.sp
+:endsegment
 :include time_t.sp
 
 /* 
@@ -127,7 +129,11 @@ union sigval {
 typedef struct stack_t stack_t;
 struct stack_t {
     void        *ss_sp;
+:segment CNAME
+    std::size_t ss_size;
+:elsesegment
     size_t      ss_size;
+:endsegment
     int         ss_flags;
     ushort_t    ss_seg;   /* should always be zero; but incase */
 };
