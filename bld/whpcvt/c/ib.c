@@ -84,7 +84,8 @@ static int              Line_postfix=LPOSTFIX_NONE;
 
 // Some stuff for tab examples:
 #define MAX_TABS                100     // up to 100 tab stops
-static int Tab_list[MAX_TABS];
+static int  Tab_list[MAX_TABS];
+static int  tabs_num = 0;
 
 // turns off bold and underline
 static char Reset_Style[] = STR_BOLD_OFF STR_UNDERLINE_OFF;
@@ -434,60 +435,39 @@ static void pop_list( void )
     Curr_list = &Lists[List_level];
 }
 
-static void read_tabs(
-/********************/
-
-    char        *tab_line
-) {
+static void read_tabs( char *tab_line )
+/*************************************/
+{
     char        *ptr;
-    int         i;
     int         tabcol;
 
     Tab_xmp_char = *tab_line;
-
-    ptr = strtok( tab_line + 1, " " );
-    for( tabcol = 0, i = 0 ; ptr != NULL; ptr = strtok( NULL, " " ), ++i ) {
+    tabs_num = 0;
+    tabcol = 0;
+    for( ptr = strtok( tab_line + 1, " " ); ptr != NULL; ptr = strtok( NULL, " " ) ) {
         if( *ptr == '+' ) {
             tabcol += atoi( ptr + 1 );
         } else {
             tabcol = atoi( ptr );
         }
-        Tab_list[i] = tabcol;
+        Tab_list[tabs_num++] = tabcol;
     }
-    Tab_list[i] = -1;
 }
 
-static int tab_align(
-/*******************/
+static int tab_align( int ch_len, section_def *section, int *alloc_size )
+/***********************************************************************/
+{
+    int         i;
+    int         len;
 
-    section_def         *section,
-    int                 *alloc_size
-) {
-    int                 i;
-    int                 len;
-    int                 ch_len;
-    int                 indent;
-
-    indent = Curr_indent;
-    if( indent < 0 )
-        indent = 0;
-    // find out how close we are to "col 0" for the current indent
-    ch_len = (Cursor_X - indent - (Box_Mode ? 2 : 0 ));
-
-    // find the tab we should use
-    i = 0;
-    while( ch_len >= Tab_list[i]) {
-        if( Tab_list[i] == -1 ) break;
-        ++i;
-    }
-
-    // figure out how far away we are from our tab
     len = 1;
-    if( Tab_list[i] != -1 ) {
-        len =  Tab_list[i] - ch_len;
+    // find the tab we should use
+    for( i = 0; i < tabs_num; i++ ) {
+        if( ch_len < Tab_list[i] ) {
+            len = Tab_list[i] - ch_len;
+            break;
+        }
     }
-
-    // output the spaces for our tab
     for( i = len; i > 0; --i ) {
         trans_add_char_wrap( ' ', section, alloc_size );
     }
@@ -828,7 +808,14 @@ int ib_trans_line(
                 Curr_ctx->empty = false;
 
                 if( Tab_xmp && ch == Tab_xmp_char ) {
-                    tab_align( section, &alloc_size );
+                    int                 ch_len;
+
+                    indent = Curr_indent;
+                    if( indent < 0 )
+                        indent = 0;
+                    // find out how close we are to "col 0" for the current indent
+                    ch_len = (Cursor_X - indent - (Box_Mode ? 2 : 0 ));
+                    tab_align( ch_len, section, &alloc_size );
                     ptr = skip_blank( ptr );
                 } else {
                     trans_add_char_wrap( ch, section, &alloc_size );
@@ -1186,11 +1173,10 @@ static void output_ctx_sections(
 ) {
     section_def                 *section;
 
-    for( section = ctx->section_list; section != NULL; ) {
+    for( section = ctx->section_list; section != NULL; section = section->next ) {
         if( section->section_size > 0 ) {
             output_section_ib( section );
         }
-        section = section->next;
     }
 }
 

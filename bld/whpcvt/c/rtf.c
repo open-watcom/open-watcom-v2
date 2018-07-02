@@ -122,49 +122,36 @@ static void set_compact(
     }
 }
 
-static int translate_char_rtf(
-/****************************/
-
-    int                 ch,
-    char                *buf,
-    int                 do_quotes
-) {
+static int translate_char_rtf( int ch, char *buf, bool do_quotes )
+/****************************************************************/
+{
     switch( ch ) {
-
     case '}':
         strcpy( buf,  "\\}" );
         break;
-
     case '{':
         strcpy( buf, "\\{" );
         break;
-
     case '\\':
         strcpy( buf, "\\\\" );
         break;
-
     case '"':
         if( do_quotes ) {
             strcpy( buf, "\\\"" );
             break;
         }
-        /* fall into default case */
-
+        /* fall through */
     default:
         buf[0] = ch;
         buf[1] = '\0';
         break;
     }
-
     return( strlen( buf ) );
 }
 
-static char *translate_str_rtf(
-/*****************************/
-
-    char                *str,
-    int                 do_quotes
-) {
+static char *translate_str_rtf( char *str, bool do_quotes )
+/*********************************************************/
+{
     char                *t_str;
     int                 len;
     char                buf[RTF_TRANS_LEN];
@@ -756,12 +743,10 @@ static void output_ctx_sections(
 ) {
     section_def                 *section;
 
-    for( section = ctx->section_list; section != NULL; ) {
+    for( section = ctx->section_list; section != NULL; section = section->next ) {
         if( section->section_size > 0 ) {
-            whp_fwrite( section->section_text, 1,
-                                        section->section_size, Out_file );
+            whp_fwrite( section->section_text, 1, section->section_size, Out_file );
         }
-        section = section->next;
     }
 }
 

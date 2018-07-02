@@ -79,8 +79,8 @@ static char *Trans_str = NULL;
 static int  Trans_len   = 0;
 
 #define MAX_TABS        100     // up to 100 tab stops
-static int Tab_list[MAX_TABS];
-
+static int  Tab_list[MAX_TABS];
+static int  tabs_num = 0;
 
 static void draw_line( section_def *section, int *alloc_size )
 /************************************************************/
@@ -197,45 +197,39 @@ static int trans_add_list( char *list, section_def *section,
 static void read_tabs( char *tab_line )
 /*************************************/
 {
-    char                *ptr;
-    int                 i;
-    int                 tabcol;
+    char        *ptr;
+    int         tabcol;
 
     Tab_xmp_char = *tab_line;
-
-    ptr = strtok( tab_line + 1, " " );
-    for( tabcol = 0, i = 0 ; ptr != NULL; ptr = strtok( NULL, " " ), ++i ) {
+    tabs_num = 0;
+    tabcol = 0;
+    for( ptr = strtok( tab_line + 1, " " ); ptr != NULL; ptr = strtok( NULL, " " ) ) {
         if( *ptr == '+' ) {
             tabcol += atoi( ptr + 1 );
         } else {
             tabcol = atoi( ptr );
         }
-        Tab_list[i] = tabcol;
+        Tab_list[tabs_num++] = tabcol;
     }
-    Tab_list[i] = -1;
 }
 
 static int tab_align( int ch_len, section_def *section, int *alloc_size )
 /***********************************************************************/
 {
-    int                 i;
-    int                 len;
-
-    // find the tab we should use
-    i = 0;
-    while( ch_len >= Tab_list[i]) {
-        if( Tab_list[i] == -1 ) break;
-        ++i;
-    }
+    int         i;
+    int         len;
 
     len = 1;
-    if( Tab_list[i] != -1 ) {
-        len =  Tab_list[i] - ch_len;
+    // find the tab we should use
+    for( i = 0; i < tabs_num; i++ ) {
+        if( ch_len < Tab_list[i] ) {
+            len = Tab_list[i] - ch_len;
+            break;
+        }
     }
     for( i = len; i > 0; --i ) {
         trans_add_str_wiki( WIKI_SPACE, section, alloc_size );
     }
-
     return( len );
 }
 
@@ -631,12 +625,10 @@ static void output_ctx_sections( ctx_def *ctx )
 {
     section_def                 *section;
 
-    for( section = ctx->section_list; section != NULL; ) {
+    for( section = ctx->section_list; section != NULL; section = section->next ) {
         if( section->section_size > 0 ) {
-            whp_fwrite( section->section_text, 1,
-                        section->section_size, Out_file );
+            whp_fwrite( section->section_text, 1, section->section_size, Out_file );
         }
-        section = section->next;
     }
 }
 

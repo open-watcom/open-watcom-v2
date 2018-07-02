@@ -356,8 +356,8 @@ void *check_realloc( void *ptr, size_t size )
     return( ptr );
 }
 
-static void check_brace( void *buf, int len )
-/*******************************************/
+static void check_brace( void *buf, size_t len )
+/**********************************************/
 {
     char                *ptr;
     char                ch;
@@ -365,7 +365,7 @@ static void check_brace( void *buf, int len )
 
     if( Brace_check && Output_type == OUT_RTF ) {
         prev_ch = ' ';
-        for( ptr = buf; len > 0; --len, ++ptr ) {
+        for( ptr = buf; len-- > 0; ++ptr ) {
             ch = *ptr;
             if( ch == '{' && prev_ch != '\\' ) {
                 ++Brace_count;
@@ -395,8 +395,8 @@ void whp_fprintf( FILE *file, char *fmt, ... )
     }
 }
 
-void whp_fwrite( void *buf, int el_size, int num_el, FILE *f )
-/************************************************************/
+void whp_fwrite( void *buf, size_t el_size, size_t num_el, FILE *f )
+/******************************************************************/
 {
     check_brace( buf, el_size * num_el );
     fwrite( buf, el_size, num_el, f );
@@ -1292,7 +1292,7 @@ static ctx_def *define_ctx( void )
     char                ch, o_ch;
     int                 i;
 
-    Delim[0] = (char)CH_CTX_DEF;
+    Delim[0] = (unsigned char)CH_CTX_DEF;
     ptr = strtok( Line_buf + 1, Delim );
     head_level = atoi( ptr );
     ctx_name = strtok( NULL, Delim );
@@ -1368,7 +1368,7 @@ static bool read_ctx_topic( void )
     ctx_def             *ctx;
     char                *order_str;
 
-    Delim[0] = (char)CH_TOPIC;
+    Delim[0] = (unsigned char)CH_TOPIC;
     ctx_name = strtok( Line_buf, Delim );
 
     ctx = find_ctx( ctx_name );
@@ -1406,10 +1406,10 @@ static bool read_topic( void )
                between topics, like this */
             return( read_line() );
         }
-        /* DROP INTO DEFAULT CASE */
-
+        /* fall throught */
     default:
-        error( ERR_NO_TOPIC, true );    // does not return
+        printf( "Error in input file on line %d.\n", Line_num );
+        printf( "****%s\n", Error_list[ERR_NO_TOPIC] );
     }
 
     return( false );
