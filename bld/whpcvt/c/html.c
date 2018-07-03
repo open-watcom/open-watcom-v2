@@ -219,7 +219,7 @@ static size_t tab_align( size_t ch_len, section_def *section, allocsize *alloc_s
             break;
         }
     }
-    for( j = len; j > 0; j--) {
+    for( j = len; j > 0; j-- ) {
         trans_add_str_html( HTML_SPACE, section, alloc_size );
     }
     return( len );

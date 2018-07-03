@@ -218,7 +218,7 @@ static char *(Gen_titles[GEN_TITLE_LAST][TITLE_CASE_LAST])={
 
 /* File stuff */
 static jmp_buf          Jmp_buf;
-static int              Line_buf_size;
+static size_t           Line_buf_size;
 
 /* Processing globals */
 static bool             Exclude_on = false;
@@ -553,7 +553,7 @@ static int process_args( int argc, char *argv[] )
             case ARG_RM:
                 start_arg++;
                 if( start_arg < argc ) {
-                    Right_Margin = atoi( argv[ start_arg ] );
+                    Right_Margin = atoi( argv[start_arg] );
                 } else {
                     error( ERR_BAD_ARGS, false );
                 }
@@ -562,7 +562,7 @@ static int process_args( int argc, char *argv[] )
             case ARG_TAB:
                 start_arg++;
                 if( start_arg < argc ) {
-                    Text_Indent = atoi( argv[ start_arg ] );
+                    Text_Indent = atoi( argv[start_arg] );
                 } else {
                     error( ERR_BAD_ARGS, false );
                 }
@@ -571,7 +571,7 @@ static int process_args( int argc, char *argv[] )
             case ARG_HD:
                 start_arg++;
                 if( start_arg < argc ) {
-                    strncpy( Header_File, argv[ start_arg ], 100 );
+                    strncpy( Header_File, argv[start_arg], 100 );
                     Header_File[99] = '\0';
                 } else {
                     error( ERR_BAD_ARGS, false );
@@ -581,7 +581,7 @@ static int process_args( int argc, char *argv[] )
             case ARG_FT:
                 start_arg++;
                 if( start_arg < argc ) {
-                    strncpy( Header_File, argv[ start_arg ], 100 );
+                    strncpy( Header_File, argv[start_arg], 100 );
                     Header_File[99] = '\0';
                 } else {
                     error( ERR_BAD_ARGS, false );
@@ -748,7 +748,7 @@ static int valid_args( int argc, char *argv[] )
                     }
                 }
                 for( j = strlen( line ), x = line + j - 1; j > 0; j--, x-- ) {
-                    if (*x == '\n' || *x == ' ' || *x == 9) {
+                    if( *x == '\n' || *x == ' ' || *x == 9 ) {
                         *x = 0;
                     } else {
                         break;
@@ -786,7 +786,7 @@ bool read_line( void )
 {
     int                 ch;
     char                *buf;
-    int                 len;
+    size_t              len;
     bool                eat_blank;
 
     eat_blank = false;
@@ -807,7 +807,7 @@ bool read_line( void )
             if( len > Line_buf_size ) {
                 Line_buf_size += BUF_GROW;
                 Line_buf = _realloc( Line_buf, Line_buf_size );
-                buf = &Line_buf[len-1];
+                buf = &Line_buf[len - 1];
             }
 
             if( ch == 255 ) {
@@ -1518,8 +1518,7 @@ static void output_idx_file( void )
                     strcpy( pfx, ":p." );
                 }
                 ch = toupper( *sort_title );
-                whp_fprintf( Idx_file, "%s%c- %c -\n",
-                                    pfx, CH_DLIST_TERM, ch );
+                whp_fprintf( Idx_file, "%s%c- %c -\n", pfx, CH_DLIST_TERM, ch );
                 new_topic = true;
             } else {
                 ch = toupper( *sort_title );
@@ -1636,7 +1635,7 @@ static void output_kw_file( void )
                                     ":pb.%c:pb.%c%s%c%s%c\n",
                                     CH_LIST_ITEM,
                                     CH_HLINK,
-                                    ctx[ 0 ]->ctx_name,
+                                    ctx[0]->ctx_name,
                                     CH_HLINK,
                                     kw[i]->keyword,
                                     CH_HLINK );
@@ -1667,9 +1666,9 @@ static void output_kw_file( void )
                         whp_fprintf( KW_file, ":pb.%c%c%s%c%s%c\n",
                                 CH_LIST_ITEM,
                                 CH_HLINK,
-                                ctx[ ctx_num ]->ctx_name,
+                                ctx[ctx_num]->ctx_name,
                                 CH_HLINK,
-                                ctx[ ctx_num ]->title,
+                                ctx[ctx_num]->title,
                                 CH_HLINK );
                     }
                     // go to the next context on our list

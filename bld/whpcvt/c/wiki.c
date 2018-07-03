@@ -223,7 +223,7 @@ static size_t tab_align( size_t ch_len, section_def *section, allocsize *alloc_s
             break;
         }
     }
-    for( j = len; j > 0; j--) {
+    for( j = len; j > 0; j-- ) {
         trans_add_str_wiki( WIKI_SPACE, section, alloc_size );
     }
     return( len );
@@ -496,13 +496,13 @@ allocsize wiki_trans_line( section_def *section, allocsize alloc_size )
                     break;
                 }
             }
-            line_len += trans_add_str( Font_match[ font_idx ], section, &alloc_size );
-            Font_list[ Font_list_curr ] = font_idx;
+            line_len += trans_add_str( Font_match[font_idx], section, &alloc_size );
+            Font_list[Font_list_curr] = font_idx;
             ++Font_list_curr;
             ++ptr;
         } else if( ch == CH_FONTSTYLE_END ) {
             --Font_list_curr;
-            line_len += trans_add_str( Font_end[ Font_list[ Font_list_curr ] ], section, &alloc_size );
+            line_len += trans_add_str( Font_end[Font_list[Font_list_curr]], section, &alloc_size );
             ++ptr;
         } else if( ch == CH_FONTTYPE ) {
             ++ptr;

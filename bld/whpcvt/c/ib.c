@@ -297,7 +297,7 @@ size_t trans_add_char_wrap( int ch, section_def *section, allocsize *alloc_size 
     // adjust the nearest safe break point if the char we got was a space and
     // is not preceded by a space
     if( ch == ' ' && section->section_size > 2 &&
-                section->section_text[ section->section_size - 2 ] != ' ' ) {
+                section->section_text[section->section_size - 2] != ' ' ) {
         Wrap_Safe = section->section_size;
         R_Chars = 0;
     }
@@ -306,7 +306,7 @@ size_t trans_add_char_wrap( int ch, section_def *section, allocsize *alloc_size 
     // of them off except one. Only happens in extreme cases. (ie: wdbg.whp)
     if( Cursor_X >= MY_MARGIN && ch==' ' ) {
         while( section->section_size > 2 &&
-                section->section_text[ section->section_size - 2 ] == ' ' ) {
+                section->section_text[section->section_size - 2] == ' ' ) {
             section->section_size--;
             Cursor_X--;
         }
@@ -318,7 +318,6 @@ size_t trans_add_char_wrap( int ch, section_def *section, allocsize *alloc_size 
 
     // if we need to wrap...
     if( Cursor_X == MY_MARGIN ) {
-
         // find out how many characters we need to move to next line
         if( R_Chars == MY_MARGIN - indent ) {
             // if the current word won't even fit on the next line then we
@@ -337,12 +336,12 @@ size_t trans_add_char_wrap( int ch, section_def *section, allocsize *alloc_size 
 
         // if we're in box mode we need some extra space for the
         // spaces and box drawing chars
-        if ( Box_Mode ) {
+        if( Box_Mode ) {
             shift += R_Chars + 3;   // trailing spaces to add plus 2 vertical bars and 1 space
         } else {
             // remove existing trailing spaces when not in box mode
             delta = 0;
-            while( 1 + delta < Wrap_Safe && section->section_text[ Wrap_Safe - 1 - delta ] == ' ' ) {
+            while( 1 + delta < Wrap_Safe && section->section_text[Wrap_Safe - 1 - delta] == ' ' ) {
                 delta++;
             }
             shift -= delta;
@@ -416,7 +415,7 @@ static void new_list( int type )
     if( List_level == MAX_LISTS ) {
         error( ERR_MAX_LISTS, true );
     }
-    Curr_list = &Lists[ List_level ];
+    Curr_list = &Lists[List_level];
     Curr_list->type = type;
     Curr_list->number = 1;
     Curr_list->prev_indent = Curr_indent;
@@ -465,7 +464,7 @@ static size_t tab_align( size_t ch_len, section_def *section, allocsize *alloc_s
             break;
         }
     }
-    for( j = len; j > 0; j--) {
+    for( j = len; j > 0; j-- ) {
         trans_add_char_wrap( ' ', section, alloc_size );
     }
     return( len );
@@ -484,7 +483,7 @@ allocsize ib_trans_line( section_def *section, allocsize alloc_size )
     int                 ch;
     char                *ctx_name;
     char                *ctx_text;
-    char                buf[ 100 ];
+    char                buf[100];
     int                 indent = 0;
     int                 ctr;
     char                *file_name;
@@ -498,8 +497,7 @@ allocsize ib_trans_line( section_def *section, allocsize alloc_size )
     Cursor_X = 0;
     R_Chars = 0;
 
-    if( Blank_line && ( ch != CH_LIST_ITEM ||
-                        Curr_list->compact != LIST_SPACE_COMPACT ) ) {
+    if( Blank_line && ( ch != CH_LIST_ITEM || Curr_list->compact != LIST_SPACE_COMPACT ) ) {
         Blank_line = false;
     }
     switch( ch ) {
@@ -684,7 +682,7 @@ allocsize ib_trans_line( section_def *section, allocsize alloc_size )
             // if the link name is too long then we warn & truncate it
             if( strlen( ctx_text ) > ctr ) {
                 warning( "Hyperlink name too long", Line_num );
-                ctx_text[ ctr ] = '\0';
+                ctx_text[ctr] = '\0';
             }
 
             /* If hyper-link bracing is on we have to do a kludge to fix
@@ -710,7 +708,7 @@ allocsize ib_trans_line( section_def *section, allocsize alloc_size )
                     for( ctr = 1; ctr <= Text_Indent; ctr++ ) {
                         strcat( buf, " " );
                     }
-                    buf[ Text_Indent / 2 - 1 ] = CHR_BULLET;
+                    buf[Text_Indent / 2 - 1] = CHR_BULLET;
                 } else if( Curr_list->type == LIST_TYPE_ORDERED ) {
                     /* ordered list type */
                     sprintf( buf, "%*d. ", Text_Indent - 2, Curr_list->number );
@@ -784,7 +782,7 @@ allocsize ib_trans_line( section_def *section, allocsize alloc_size )
 
                     indent = ( Curr_indent < 0 ) ? 0 : Curr_indent;
                     // find out how close we are to "col 0" for the current indent
-                    ch_len = (Cursor_X - indent - (Box_Mode ? 2 : 0 ));
+                    ch_len = ( Cursor_X - indent - (Box_Mode ? 2 : 0) );
                     tab_align( ch_len, section, &alloc_size );
                     ptr = skip_blank( ptr );
                 } else {
@@ -1020,11 +1018,11 @@ static void output_end( void )
 static void output_section_ib( section_def *section )
 /***************************************************/
 {
-    int                         len;
+    size_t                      len;
     ctx_def                     *ctx;
     unsigned int                line;
     unsigned char               *label;
-    int                         label_len;
+    size_t                      label_len;
     int                         ch;
     char                        *file;
     char                        *topic;
@@ -1049,7 +1047,7 @@ static void output_section_ib( section_def *section )
                     break;
                 }
             }
-            p[ len ] = '\0';
+            p[len] = '\0';
             line = atoi( (char *)p );
             p += len + 1;
 
