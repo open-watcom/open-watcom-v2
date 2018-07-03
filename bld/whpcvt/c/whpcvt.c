@@ -1290,7 +1290,7 @@ static ctx_def *define_ctx( void )
     char                ch, o_ch;
     int                 i;
 
-    Delim[0] = (unsigned char)CH_CTX_DEF;
+    Delim[0] = (char)(unsigned char)CH_CTX_DEF;
     ptr = strtok( Line_buf + 1, Delim );
     head_level = atoi( ptr );
     ctx_name = strtok( NULL, Delim );
@@ -1366,7 +1366,7 @@ static bool read_ctx_topic( void )
     ctx_def             *ctx;
     char                *order_str;
 
-    Delim[0] = (unsigned char)CH_TOPIC;
+    Delim[0] = (char)(unsigned char)CH_TOPIC;
     ctx_name = strtok( Line_buf, Delim );
 
     ctx = find_ctx( ctx_name );
