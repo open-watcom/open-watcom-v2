@@ -691,7 +691,7 @@ static void output_end( void )
 static void output_ctx_sections( ctx_def *ctx )
 /*********************************************/
 {
-    section_def         *section;
+    section_def     *section;
 
     for( section = ctx->section_list; section != NULL; section = section->next ) {
         if( section->section_size > 0 ) {
@@ -703,7 +703,7 @@ static void output_ctx_sections( ctx_def *ctx )
 void rtf_output_file( void )
 /**************************/
 {
-    ctx_def             *ctx;
+    ctx_def         *ctx;
 
     output_hdr();
     for( ctx = Ctx_list; ctx != NULL; ctx = ctx->next ) {

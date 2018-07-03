@@ -599,7 +599,7 @@ static void output_ctx_hdr( ctx_def *ctx )
 static void output_ctx_sections( ctx_def *ctx )
 /*********************************************/
 {
-    section_def                 *section;
+    section_def     *section;
 
     for( section = ctx->section_list; section != NULL; section = section->next ) {
         if( section->section_size > 0 ) {
@@ -611,7 +611,7 @@ static void output_ctx_sections( ctx_def *ctx )
 void wiki_output_file( void )
 /***************************/
 {
-    ctx_def                     *ctx;
+    ctx_def         *ctx;
 
     for( ctx = Ctx_list; ctx != NULL; ctx = ctx->next ) {
         if( !Remove_empty || !ctx->empty || ctx->req_by_link ) {

@@ -49,25 +49,25 @@ static int          Curr_head_level = 0;
 static int          Curr_head_skip = 0;
 
 static char         *Font_match[] = {
-    "",       // 0: PLAIN
-    "<B>",                      // 1: BOLD
-    "<I>",                      // 2: ITALIC
-    "<B><I>",                   // 3: BOLD + ITALIC
-    "<U>",                      // 4: UNDERLINE
-    "<B><U>",                   // 5: BOLD + UNDERLINE
-    "<I><U>",     // 6: ITALIC + UNDERLINE
-    "<I><U><B>",  // 7: ITALIC + BOLD + UNDERLINE
+    "",             // 0: PLAIN
+    "<B>",          // 1: BOLD
+    "<I>",          // 2: ITALIC
+    "<B><I>",       // 3: BOLD + ITALIC
+    "<U>",          // 4: UNDERLINE
+    "<B><U>",       // 5: BOLD + UNDERLINE
+    "<I><U>",       // 6: ITALIC + UNDERLINE
+    "<I><U><B>",    // 7: ITALIC + BOLD + UNDERLINE
 };
 
 static char         *Font_end[] = {
-    "",                 // 0: PLAIN
-    "</B>",                     // 1: BOLD
-    "</I>",                     // 2: ITALIC
-    "</I></B>",                 // 3: BOLD + ITALIC
-    "</U>",                     // 4: UNDERLINE
-    "</U></B>",                 // 5: BOLD + UNDERLINE
+    "",             // 0: PLAIN
+    "</B>",         // 1: BOLD
+    "</I>",         // 2: ITALIC
+    "</I></B>",     // 3: BOLD + ITALIC
+    "</U>",         // 4: UNDERLINE
+    "</U></B>",     // 5: BOLD + UNDERLINE
     "</U></I>",     // 6: ITALIC + UNDERLINE
-    "</B></U></I>",  // 7: ITALIC + BOLD + UNDERLINE
+    "</B></U></I>", // 7: ITALIC + BOLD + UNDERLINE
 };
 
 static int          Font_list[100];         // up to 100 nested fonts
@@ -176,10 +176,9 @@ static size_t trans_add_list( char *list, section_def *section, allocsize *alloc
     len = trans_add_str( list, section, alloc_size );
     ++ptr;
 #if 0
-  if( *ptr == 'c' ) {
+    if( *ptr == 'c' ) {
         len += trans_add_str( " compact", section, alloc_size );
     }
-
     len += trans_add_str( ">\n", section, alloc_size );
 #endif
     return( len );
@@ -593,8 +592,7 @@ static void output_ctx_hdr( ctx_def *ctx )
 
 #if 0
     if( ctx->keylist != NULL ) {
-                for( keylist = ctx->keylist; keylist != NULL;
-                                            keylist = keylist->next ) {
+        for( keylist = ctx->keylist; keylist != NULL; keylist = keylist->next ) {
             key = keylist->key;
             ptr = key->keyword;
             if( !key->duplicate ) {
@@ -602,10 +600,8 @@ static void output_ctx_hdr( ctx_def *ctx )
             } else {
                 if( key->defined_ctx == ctx ) {
                     /* this is the first instance. :i1 and :i2 */
-                    fprintf( Out_file, "<i1 id=%d>%s\n",
-                                    key->id, translate_str_html( ptr ) );
+                    fprintf( Out_file, "<i1 id=%d>%s\n", key->id, translate_str_html( ptr ) );
                 }
-
                 if( stricmp( ptr, ctx->title ) == 0 ) {
                     /* we are about to out an index subentry whose
                        name is the same as the main index entry!
@@ -617,8 +613,8 @@ static void output_ctx_hdr( ctx_def *ctx )
             }
             fputs( translate_str_html( ptr ), Out_file );
             fputc( '\n', Out_file );
-                }
-          }
+        }
+    }
 #endif
 
     if( Real_ipf_font ) {

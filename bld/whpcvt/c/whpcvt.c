@@ -884,7 +884,7 @@ char *whole_keyword_line( char *ptr )
 size_t trans_add_char( int ch, section_def *section, allocsize *alloc_size )
 /**************************************************************************/
 {
-    ++section->section_size;
+    section->section_size++;
     if( section->section_size > *alloc_size ) {
         *alloc_size += 1024;    // grow by a good, big amount
         _renew( section->section_text, *alloc_size );
@@ -1389,13 +1389,10 @@ static bool read_topic( void )
 /****************************/
 {
     switch( *(unsigned char *)Line_buf ) {
-
     case CH_CTX_DEF:
         return( read_ctx_def() );
-
     case CH_TOPIC:
         return( read_ctx_topic() );
-
     case ' ':
     case '\t':
     case '\0':
@@ -1404,12 +1401,11 @@ static bool read_topic( void )
                between topics, like this */
             return( read_line() );
         }
-        /* fall throught */
+        /* fall through */
     default:
         printf( "Error in input file on line %d.\n", Line_num );
         printf( "****%s\n", Error_list[ERR_NO_TOPIC] );
     }
-
     return( false );
 }
 
