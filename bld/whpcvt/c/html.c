@@ -33,16 +33,22 @@
 #include "clibext.h"
 
 
-static int Curr_head_level = 0;
-static int Curr_head_skip = 0;
-
-#define BOX_LINE_SIZE   200
+#define BOX_LINE_SIZE           200
 
 #define FONT_STYLE_BOLD         1
 #define FONT_STYLE_ITALIC       2
 #define FONT_STYLE_UNDERLINE    4
 
-static char     *Font_match[]={
+#define HTML_SPACE              "&nbsp;"
+
+#define IPF_TRANS_LEN           50
+
+#define MAX_TABS                100     // up to 100 tab stops
+
+static int          Curr_head_level = 0;
+static int          Curr_head_skip = 0;
+
+static char         *Font_match[] = {
     "",       // 0: PLAIN
     "<B>",                      // 1: BOLD
     "<I>",                      // 2: ITALIC
@@ -53,7 +59,7 @@ static char     *Font_match[]={
     "<I><U><B>",  // 7: ITALIC + BOLD + UNDERLINE
 };
 
-static char     *Font_end[]={
+static char         *Font_end[] = {
     "",                 // 0: PLAIN
     "</B>",                     // 1: BOLD
     "</I>",                     // 2: ITALIC
@@ -64,31 +70,26 @@ static char     *Font_end[]={
     "</B></U></I>",  // 7: ITALIC + BOLD + UNDERLINE
 };
 
-#define HTML_SPACE "&nbsp;"
+static int          Font_list[100];         // up to 100 nested fonts
+static int          Font_list_curr = 0;
 
-static int Font_list[ 100 ];      // up to 100 nested fonts
-static int Font_list_curr = 0;
+static bool         Blank_line_pfx = false;
+static bool         Blank_line_sfx = true;
 
-static bool Blank_line_pfx = false;
-static bool Blank_line_sfx = true;
+static char         *Trans_str = NULL;
+static size_t       Trans_len = 0;
 
-#define IPF_TRANS_LEN           50
+static unsigned     Tab_list[MAX_TABS];
+static int          tabs_num = 0;
 
-static char *Trans_str = NULL;
-static int  Trans_len = 0;
-
-#define MAX_TABS                100     // up to 100 tab stops
-static int  Tab_list[ MAX_TABS ];
-static int  tabs_num = 0;
-
-static void draw_line( section_def *section, int *alloc_size )
-/************************************************************/
+static void draw_line( section_def *section, allocsize *alloc_size )
+/******************************************************************/
 {
     trans_add_str( "<HR>\n", section, alloc_size );
 }
 
-static int translate_char_html( int ch, int next_ch, char *buf )
-/**************************************************************/
+static size_t translate_char_html( int ch, int next_ch, char *buf )
+/*****************************************************************/
 {
     switch( ch ) {
     case '<':
@@ -121,8 +122,8 @@ static char *translate_str_html( char *str )
 /******************************************/
 {
     unsigned char   *t_str;
-    int             len;
-    char            buf[ IPF_TRANS_LEN ];
+    size_t          len;
+    char            buf[IPF_TRANS_LEN];
     char            *ptr;
 
     len = 1;
@@ -146,19 +147,19 @@ static char *translate_str_html( char *str )
     return( Trans_str );
 }
 
-static int trans_add_char_html( int ch, int next_ch, section_def *section, int *alloc_size )
-/******************************************************************************************/
+static size_t trans_add_char_html( int ch, int next_ch, section_def *section, allocsize *alloc_size )
+/***************************************************************************************************/
 {
-    char        buf[ IPF_TRANS_LEN ];
+    char        buf[IPF_TRANS_LEN];
 
     translate_char_html( ch, next_ch, buf );
     return( trans_add_str( buf, section, alloc_size ) );
 }
 
-static int trans_add_str_html( char *str, section_def *section, int *alloc_size )
-/*******************************************************************************/
+static size_t trans_add_str_html( char *str, section_def *section, allocsize *alloc_size )
+/****************************************************************************************/
 {
-    int         len;
+    size_t      len;
 
     len = 0;
     for( ; *str != '\0'; ++str ) {
@@ -167,10 +168,10 @@ static int trans_add_str_html( char *str, section_def *section, int *alloc_size 
     return( len );
 }
 
-static int trans_add_list( char *list, section_def *section, int *alloc_size, char *ptr )
-/***************************************************************************************/
+static size_t trans_add_list( char *list, section_def *section, allocsize *alloc_size, char *ptr )
+/************************************************************************************************/
 {
-    int         len;
+    size_t      len;
 
     len = trans_add_str( list, section, alloc_size );
     ++ptr;
@@ -188,7 +189,7 @@ static void read_tabs( char *tab_line )
 /*************************************/
 {
     char        *ptr;
-    int         tabcol;
+    unsigned    tabcol;
 
     Tab_xmp_char = *tab_line;
     tabs_num = 0;
@@ -203,24 +204,24 @@ static void read_tabs( char *tab_line )
     }
 }
 
-static int tab_align( int ch_len, section_def *section, int *alloc_size )
-/***********************************************************************/
+static size_t tab_align( size_t ch_len, section_def *section, allocsize *alloc_size )
+/***********************************************************************************/
 {
     int         i;
-    int         len;
+    size_t      len;
+    size_t      j;
 
-    len = 1;
     // find the tab we should use
+    len = 1;
     for( i = 0; i < tabs_num; i++ ) {
-        if( ch_len < Tab_list[i] ) {
+        if( Tab_list[i] > ch_len ) {
             len = Tab_list[i] - ch_len;
             break;
         }
     }
-    for( i = len; i > 0; --i ) {
+    for( j = len; j > 0; j--) {
         trans_add_str_html( HTML_SPACE, section, alloc_size );
     }
-
     return( len );
 }
 
@@ -229,20 +230,20 @@ void html_topic_init( void )
 {
 }
 
-int html_trans_line( section_def *section, int alloc_size )
-/*********************************************************/
+allocsize html_trans_line( section_def *section, allocsize alloc_size )
+/*********************************************************************/
 {
     char                *ptr;
     char                *end;
     int                 ch;
     char                *ctx_name;
     char                *ctx_text;
-    char                buf[ 500 ];
+    char                buf[500];
     int                 font_idx;
-    int                 line_len;
+    size_t              line_len;
     bool                term_fix;
-    int                 ch_len;
-    int                 len;
+    size_t              ch_len;
+    size_t              len;
     char                *file_name;
 
     /* check for special column 0 stuff first */
@@ -264,7 +265,6 @@ int html_trans_line( section_def *section, int alloc_size )
             Blank_line_pfx = false;     // remove preceding blanks
         }
         return( alloc_size );
-
     case CH_BOX_ON:
         /* Table support is the closest thing to boxing in IPF, but it
            doesn't work well with changing fonts on items in the tables
@@ -273,58 +273,47 @@ int html_trans_line( section_def *section, int alloc_size )
         draw_line( section, &alloc_size );
         Blank_line_pfx = false;
         return( alloc_size );
-
     case CH_BOX_OFF:
         draw_line( section, &alloc_size );
         Blank_line_sfx = false;
         return( alloc_size );
-
     case CH_OLIST_START:
         trans_add_list( "<OL>\n", section, &alloc_size, ptr );
         Blank_line_pfx = false;
         return( alloc_size );
-
     case CH_LIST_START:
         trans_add_list( "<UL>\n", section, &alloc_size, ptr );
         Blank_line_pfx = false;
         return( alloc_size );
-
     case CH_DLIST_START:
         trans_add_str( "<DL>\n", section, &alloc_size );
         Blank_line_pfx = false;
         return( alloc_size );
-
     case CH_SLIST_START:
         trans_add_list( "<UL>\n", section, &alloc_size, ptr );
         Blank_line_pfx = false;
         return( alloc_size );
-
     case CH_SLIST_END:
         trans_add_str( "</UL>\n", section, &alloc_size );
         Blank_line_sfx = false;
         return( alloc_size );
-
     case CH_OLIST_END:
         trans_add_str( "</OL>\n", section, &alloc_size );
         Blank_line_sfx = false;
         return( alloc_size );
-
     case CH_LIST_END:
         trans_add_str( "</UL>\n", section, &alloc_size );
         Blank_line_sfx = false;
         return( alloc_size );
-
     case CH_DLIST_END:
         trans_add_str( "</DL>\n", section, &alloc_size );
         Blank_line_sfx = false;
         return( alloc_size );
-
     case CH_LIST_ITEM:
     case CH_DLIST_TERM:
         /* eat blank lines before list items and terms */
         Blank_line_pfx = false;
         break;
-
     case CH_CTX_KW:
         ptr = whole_keyword_line( ptr );
         if( ptr == NULL ) {
@@ -397,7 +386,7 @@ int html_trans_line( section_def *section, int alloc_size )
             ctx_text = ptr + 1;
             ptr = strchr( ctx_text + 1, ch );
             if( ptr == NULL ) {
-              error( ERR_BAD_LINK_DFN, true );
+                error( ERR_BAD_LINK_DFN, true );
             }
             *ptr = '\0';
             add_link( ctx_name );
@@ -449,7 +438,7 @@ int html_trans_line( section_def *section, int alloc_size )
         } else if( ch == CH_CTX_KW ) {
             end = strchr( ptr + 1, CH_CTX_KW );
             memcpy( buf, ptr + 1, end - ptr - 1 );
-            buf[ end - ptr - 1 ] = '\0';
+            buf[end - ptr - 1] = '\0';
             add_ctx_keyword( Curr_ctx, buf );
             ptr = end + 1;
             if( *ptr == ' ' ) {
@@ -468,21 +457,18 @@ int html_trans_line( section_def *section, int alloc_size )
             ptr += 2;
             end = strchr( ptr, CH_BMP );
             *end = '\0';
-           // convert filenames to lower case
-           strlwr( ptr );
-           switch( ch ) {
+            // convert filenames to lower case
+            strlwr( ptr );
+            switch( ch ) {
             case 'i':
                 sprintf( buf, "<IMG SRC=\"%s\">", ptr );
                 break;
-
             case 'l':
                 sprintf( buf, "<IMG SRC=\"%s\" ALIGN=TOP>", ptr );
                 break;
-
             case 'r':
                 sprintf( buf, "<IMG SRC=\"%s\" ALIGN=BOTTOM>", ptr );
                 break;
-
             case 'c':
                 sprintf( buf, "<IMG SRC=\"%s\" ALIGN=MIDDLE>", ptr );
                 break;
@@ -498,24 +484,22 @@ int html_trans_line( section_def *section, int alloc_size )
                 case 'b':
                     font_idx |= FONT_STYLE_BOLD;
                     break;
-
                 case 'i':
                     font_idx |= FONT_STYLE_ITALIC;
                     break;
-
                 case 'u':
                 case 's':
                     font_idx |= FONT_STYLE_UNDERLINE;
                     break;
                 }
             }
-            line_len += trans_add_str( Font_match[ font_idx ], section, &alloc_size );
-            Font_list[ Font_list_curr ] = font_idx;
+            line_len += trans_add_str( Font_match[font_idx], section, &alloc_size );
+            Font_list[Font_list_curr] = font_idx;
             ++Font_list_curr;
             ++ptr;
         } else if( ch == CH_FONTSTYLE_END ) {
             --Font_list_curr;
-            line_len += trans_add_str( Font_end[ Font_list[ Font_list_curr ] ], section, &alloc_size );
+            line_len += trans_add_str( Font_end[Font_list[Font_list_curr]], section, &alloc_size );
             ++ptr;
         } else if( ch == CH_FONTTYPE ) {
             ++ptr;
@@ -523,10 +507,10 @@ int html_trans_line( section_def *section, int alloc_size )
             *end = '\0';
 
             if( stricmp( ptr, Fonttype_courier ) == 0 ) {
-               strcpy( buf, "<TT>" );
+                strcpy( buf, "<TT>" );
             } else {
-               /* default system font */
-               strcpy( buf, "</TT>" );
+                /* default system font */
+                strcpy( buf, "</TT>" );
             }
             ptr = end + 1;
             end = strchr( ptr, CH_FONTTYPE );

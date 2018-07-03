@@ -668,6 +668,7 @@ static int valid_args( int argc, char *argv[] )
     char                line[200];
     int                 ret;
     int                 i;
+    size_t              j;
     char                *x;
 
     Tab_xmp = false;
@@ -740,21 +741,20 @@ static int valid_args( int argc, char *argv[] )
                     break;
                 }
                 line[199] = 0;
-                for (x = line, i = 0; i < 200 && *x != 0; i++, x++) {
-                    if ( *x != ' ' && *x != 9 ) {
-                        strcpy (line, x);
+                for( x = line, i = 0; i < 200 && *x != 0; i++, x++) {
+                    if( *x != ' ' && *x != 9 ) {
+                        strcpy( line, x );
                         break;
                     }
                 }
-                for (i = strlen( line ), x = line + i - 1; i > 0; i--, x--) {
+                for( j = strlen( line ), x = line + j - 1; j > 0; j--, x-- ) {
                     if (*x == '\n' || *x == ' ' || *x == 9) {
                         *x = 0;
                     } else {
                         break;
                     }
                 }
-
-                _new( argv[argc], i + 1 );
+                _new( argv[argc], j + 1 );
                 strcpy( argv[argc], line );
             }
             fclose( opt_file );
@@ -770,7 +770,6 @@ static int valid_args( int argc, char *argv[] )
             break;
         }
     }
-
     return( start_arg );
 }
 
@@ -882,8 +881,8 @@ char *whole_keyword_line( char *ptr )
     return( ptr );
 }
 
-int trans_add_char( int ch, section_def *section, int *alloc_size )
-/*****************************************************************/
+size_t trans_add_char( int ch, section_def *section, allocsize *alloc_size )
+/**************************************************************************/
 {
     ++section->section_size;
     if( section->section_size > *alloc_size ) {
@@ -891,14 +890,13 @@ int trans_add_char( int ch, section_def *section, int *alloc_size )
         _renew( section->section_text, *alloc_size );
     }
     section->section_text[section->section_size - 1] = ch;
-
     return( 1 );
 }
 
-int trans_add_str( char *str, section_def *section, int *alloc_size )
-/*******************************************************************/
+size_t trans_add_str( char *str, section_def *section, allocsize *alloc_size )
+/****************************************************************************/
 {
-    int                 len;
+    size_t      len;
 
     len = 0;
     for( ; *str != '\0'; ++str ) {
@@ -909,10 +907,10 @@ int trans_add_str( char *str, section_def *section, int *alloc_size )
     return( len );
 }
 
-int trans_add_nobreak_str( char *str, section_def *section, int *alloc_size )
-/***************************************************************************/
+size_t trans_add_nobreak_str( char *str, section_def *section, allocsize *alloc_size )
+/************************************************************************************/
 {
-    int                 len;
+    size_t      len;
 
     len = 0;
     for( ; *str != '\0'; ++str ) {
@@ -979,7 +977,7 @@ static void add_key_ctx( keyword_def *key, ctx_def *ctx )
 /*******************************************************/
 {
     if( key->ctx_list == NULL ) {
-        _new( key->ctx_list, 1);
+        _new( key->ctx_list, 1 );
         key->ctx_list_alloc = 1;
         key->ctx_list_size = 0;
     }
@@ -989,7 +987,7 @@ static void add_key_ctx( keyword_def *key, ctx_def *ctx )
         key->ctx_list_alloc += 16;      // grow by a reasonable amount
         _renew( key->ctx_list, key->ctx_list_alloc );
     }
-    key->ctx_list[ key->ctx_list_size - 1] = ctx;
+    key->ctx_list[key->ctx_list_size - 1] = ctx;
 }
 
 
@@ -1026,8 +1024,8 @@ void add_ctx_keyword( ctx_def *ctx, char *keyword )
 }
 
 
-static int trans_line( section_def *section, int alloc_size )
-/***********************************************************/
+static allocsize trans_line( section_def *section, allocsize alloc_size )
+/***********************************************************************/
 {
     switch( Output_type ) {
     case OUT_RTF:
@@ -1074,7 +1072,7 @@ static bool read_topic_text( ctx_def *ctx, bool is_blank, int order_num )
     bool                more_to_do;
     section_def         *section;
     section_def         **ins_section;
-    int                 sect_alloc_size;
+    allocsize           sect_alloc_size;
 
     section = NULL;
     sect_alloc_size = 0;
@@ -1598,8 +1596,7 @@ static void output_kw_file( void )
     bool                        title;      // whether we've printed this kw
 
     // output header
-    whp_fprintf( KW_file, ":H1.%s\n",
-                                Gen_titles[GEN_TITLE_KEYWORD][Title_case] );
+    whp_fprintf( KW_file, ":H1.%s\n", Gen_titles[GEN_TITLE_KEYWORD][Title_case] );
     whp_fprintf( KW_file, ":pb.%cc\n", CH_SLIST_START );
 
     // count the number of keywords in our list
@@ -1799,8 +1796,8 @@ static void output_def_file( void )
 {
     ctx_def                     *ctx;
     char                        *buf;
-    int                         len;
-    int                         max_len;
+    size_t                      len;
+    size_t                      max_len;
 
     whp_fprintf( Def_file, "/* This file was created by WHPCVT.EXE. DO NOT MODIFY BY HAND! */\n\n" );
 

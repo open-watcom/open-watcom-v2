@@ -41,7 +41,6 @@ enum {
     LPOSTFIX_NONE,
     LPOSTFIX_TERM,
 };
-static int              Line_postfix=LPOSTFIX_NONE;
 
 // We use the escape char a lot...
 #define STR_ESCAPE              "\x1B"
@@ -84,11 +83,6 @@ static int              Line_postfix=LPOSTFIX_NONE;
 
 // Some stuff for tab examples:
 #define MAX_TABS                100     // up to 100 tab stops
-static int  Tab_list[MAX_TABS];
-static int  tabs_num = 0;
-
-// turns off bold and underline
-static char Reset_Style[] = STR_BOLD_OFF STR_UNDERLINE_OFF;
 
 enum {
     LIST_SPACE_COMPACT,
@@ -110,11 +104,17 @@ typedef struct {
     int                 compact;
 } list_def;
 
-static list_def         Lists[MAX_LISTS]={
+static unsigned         Tab_list[MAX_TABS];
+static int              tabs_num = 0;
+
+// turns off bold and underline
+static char Reset_Style[] = STR_BOLD_OFF STR_UNDERLINE_OFF;
+
+static list_def         Lists[MAX_LISTS] = {
     { LIST_TYPE_NONE,   0,      0 },            // list base
 };
-static int              List_level=0;
-static list_def         *Curr_list=&Lists[0];
+static int              List_level = 0;
+static list_def         *Curr_list = &Lists[0];
 
 static bool             Blank_line = false;
 static int              Curr_indent = 0;
@@ -123,10 +123,12 @@ static bool             Eat_blanks = false;
 // The following are for word-wrapping and indentation support
 static int              Cursor_X = 0;   // column number
 static int              R_Chars = 0;    // visible chars since Wrap_Safe
-static int              Wrap_Safe = 0;  // index of break candidate
+static size_t           Wrap_Safe = 0;  // index of break candidate
 static int              NL_Group = 0;   // Number of contiguous newlines
 
 static bool             Box_Mode = false;
+
+static int              Line_postfix = LPOSTFIX_NONE;
 
 static void warning( char *msg, unsigned int line )
 /*************************************************/
@@ -200,11 +202,11 @@ static int map_char_ib( int ch )
 /* This function will do proper escaping or character substitution for
  * characters special to InfoBench and add them to the section text.
  */
-static int trans_add_char_ib( int ch, section_def *section, int *alloc_size )
-/***************************************************************************/
+static size_t trans_add_char_ib( int ch, section_def *section, allocsize *alloc_size )
+/************************************************************************************/
 {
-    int                 len=0;
-    int                 esc;
+    size_t      len = 0;
+    int         esc;
 
     esc = map_char_ib( ch );
     if( esc == MAP_REMOVE ) {
@@ -212,9 +214,7 @@ static int trans_add_char_ib( int ch, section_def *section, int *alloc_size )
     } else if( esc != MAP_NONE ) {
         len += trans_add_char( esc, section, alloc_size );
     }
-
     len += trans_add_char( ch, section, alloc_size );
-
     return( len );
 }
 
@@ -240,24 +240,22 @@ static void str_out_ib( FILE *f, char *str )
 }
 
 // The following two functions handle word-wrapping
-int trans_add_char_wrap( int ch, section_def *section, int *alloc_size )
-/**********************************************************************/
+size_t trans_add_char_wrap( int ch, section_def *section, allocsize *alloc_size )
+/*******************************************************************************/
 {
     int                 ctr;            // misc. counter
-    int                 wrap_amount;    // amount of wrapped text
+    size_t              wrap_amount;    // amount of wrapped text
     int                 shift;          // amount we need to shift text
     int                 delta;          // amount of whitespace we ignore
     int                 indent;         // actual indent
-    int                 len = 0;        // number of chars we just added
+    size_t              len = 0;        // number of chars we just added
 
     // the "1" is because a character is allowed to appear on the right margin
     // the minus part is so that we leave enough room for the box chars
     #define MY_MARGIN ( Right_Margin + 1 - ( Box_Mode ? 2 : 0 ) )
 
     // find out the real indentation
-    indent = Curr_indent;
-    if( indent < 0 )
-        indent = 0;
+    indent = ( Curr_indent < 0 ) ? 0 : Curr_indent;
 
     // add character
     if( ch == '\n' ) {
@@ -335,14 +333,12 @@ int trans_add_char_wrap( int ch, section_def *section, int *alloc_size )
         // By this point we know exactly how many chars we need to move to
         // the next line. Now to figure out how to move them:
         // calculate shift
-        shift = indent          // for the indent spaces
-                + 1;            // for the newline char
+        shift = indent + 1;         // for the indent spaces and for the newline char
 
         // if we're in box mode we need some extra space for the
         // spaces and box drawing chars
         if ( Box_Mode ) {
-            shift += R_Chars                 // trailing spaces to add
-                     + 3;                    // 2 vertical bars and 1 space
+            shift += R_Chars + 3;   // trailing spaces to add plus 2 vertical bars and 1 space
         } else {
             // remove existing trailing spaces when not in box mode
             delta = 0;
@@ -395,17 +391,17 @@ int trans_add_char_wrap( int ch, section_def *section, int *alloc_size )
         // Set next safe wrappable point to beginning of text on this line
         Wrap_Safe += indent + 1;
 
-        if( wrap_amount==len ) {
+        if( wrap_amount == len ) {
             R_Chars = 1;
         }
     }
     return( len );
 }
 
-int trans_add_str_wrap( char *str, section_def *section, int *alloc_size )
-/************************************************************************/
+size_t trans_add_str_wrap( char *str, section_def *section, allocsize *alloc_size )
+/*********************************************************************************/
 {
-    int         len = 0;
+    size_t      len = 0;
 
     for( ; *str != '\0'; ++str ) {
         len += trans_add_char_wrap( *(unsigned char *)str, section, alloc_size );
@@ -439,7 +435,7 @@ static void read_tabs( char *tab_line )
 /*************************************/
 {
     char        *ptr;
-    int         tabcol;
+    unsigned    tabcol;
 
     Tab_xmp_char = *tab_line;
     tabs_num = 0;
@@ -454,24 +450,24 @@ static void read_tabs( char *tab_line )
     }
 }
 
-static int tab_align( int ch_len, section_def *section, int *alloc_size )
-/***********************************************************************/
+static size_t tab_align( size_t ch_len, section_def *section, allocsize *alloc_size )
+/***********************************************************************************/
 {
     int         i;
-    int         len;
+    size_t      len;
+    size_t      j;
 
-    len = 1;
     // find the tab we should use
+    len = 1;
     for( i = 0; i < tabs_num; i++ ) {
-        if( ch_len < Tab_list[i] ) {
+        if( Tab_list[i] > ch_len ) {
             len = Tab_list[i] - ch_len;
             break;
         }
     }
-    for( i = len; i > 0; --i ) {
+    for( j = len; j > 0; j--) {
         trans_add_char_wrap( ' ', section, alloc_size );
     }
-
     return( len );
 }
 
@@ -480,12 +476,9 @@ void ib_topic_init( void )
 {
 }
 
-int ib_trans_line(
-/*****************/
-
-    section_def         *section,
-    int                 alloc_size
-) {
+allocsize ib_trans_line( section_def *section, allocsize alloc_size )
+/*******************************************************************/
+{
     char                *ptr;
     char                *end;
     int                 ch;
@@ -510,8 +503,7 @@ int ib_trans_line(
         Blank_line = false;
     }
     switch( ch ) {
-    // Tabbed-example
-    case CH_TABXMP:
+    case CH_TABXMP:     // Tabbed-example
         if( *skip_blank( ptr + 1 ) == '\0' ) {
             Tab_xmp = false;
         } else {
@@ -519,9 +511,7 @@ int ib_trans_line(
             Tab_xmp = true;
         }
         return( alloc_size );
-
-    // Box-mode start
-    case CH_BOX_ON:
+    case CH_BOX_ON:     // Box-mode start
         ctr = 0;
         // indent properly
         while( ctr < Curr_indent ) {
@@ -534,43 +524,33 @@ int ib_trans_line(
             trans_add_char( BOX_HBAR, section, &alloc_size );
         }
         trans_add_char( BOX_CORNER_TOP_RIGHT, section, &alloc_size );
-
         trans_add_char_wrap( '\n', section, &alloc_size);
-
         Box_Mode = true;
         return( alloc_size );
-
-    case CH_BOX_OFF:
+    case CH_BOX_OFF:    // Box-mode end
         ctr = 0;
         while( ctr < Curr_indent ) {
             ctr++;
             trans_add_char( ' ', section, &alloc_size);
         }
-
         trans_add_char( BOX_CORNER_BOTOM_LEFT, section, &alloc_size );
         for( ctr = 1; ctr <= Right_Margin - Curr_indent - 2; ctr++ ) {
             trans_add_char( BOX_HBAR, section, &alloc_size );
         }
         trans_add_char( BOX_CORNER_BOTOM_RIGHT, section, &alloc_size );
         Box_Mode = false;
-
         trans_add_char_wrap( '\n', section, &alloc_size );
-
         return( alloc_size );
-
     case CH_OLIST_START:
         new_list( LIST_TYPE_ORDERED );
         set_compact( ptr );
         Curr_indent += Text_Indent;
         return( alloc_size );
-
     case CH_LIST_START:
     case CH_DLIST_START:
-        new_list( ( ch == CH_LIST_START ) ? LIST_TYPE_UNORDERED :
-                                                        LIST_TYPE_DEFN );
+        new_list( ( ch == CH_LIST_START ) ? LIST_TYPE_UNORDERED : LIST_TYPE_DEFN );
         set_compact( ptr );
         Curr_indent += Text_Indent;
-
         if( ch == CH_DLIST_START ) {
             ptr = skip_blank( ptr + 1 );
             if( *ptr != '\0' ) {
@@ -581,11 +561,9 @@ int ib_trans_line(
             }
         }
         return( alloc_size );
-
     case CH_DLIST_TERM:
         Curr_indent -= Text_Indent;
         break;
-
     case CH_SLIST_START:
         indent = 0;
         if( Curr_list->type == LIST_TYPE_SIMPLE ) {
@@ -593,19 +571,16 @@ int ib_trans_line(
                indent */
             indent = Text_Indent;
         }
-
         new_list( LIST_TYPE_SIMPLE );
         set_compact( ptr );
         Curr_indent += indent;
         return( alloc_size );
-
     case CH_SLIST_END:
     case CH_OLIST_END:
     case CH_LIST_END:
     case CH_DLIST_END:
         pop_list();
         return( alloc_size );
-
     case CH_DLIST_DESC:
         Curr_indent += Text_Indent;
         if( *skip_blank( ptr + 1 ) == '\0' ) {
@@ -614,7 +589,6 @@ int ib_trans_line(
             return( alloc_size );
         }
         break;
-
     case CH_CTX_KW:
         ptr = whole_keyword_line( ptr );
         if( ptr == NULL ) {
@@ -703,9 +677,7 @@ int ib_trans_line(
             // We don't want links to break as IB doesn't like this...
             to_nobreak( ctx_text );
 
-            indent = Curr_indent;
-            if( indent < 0 )
-                indent = 0;
+            indent = ( Curr_indent < 0 ) ? 0 : Curr_indent;
             // find out the maximum allowed length for hyper-link text:
             ctr = Right_Margin - indent - ( ( Hyper_Brace_L == '<' ) ? 2 : 0 );
 
@@ -808,11 +780,9 @@ int ib_trans_line(
                 Curr_ctx->empty = false;
 
                 if( Tab_xmp && ch == Tab_xmp_char ) {
-                    int                 ch_len;
+                    size_t      ch_len;
 
-                    indent = Curr_indent;
-                    if( indent < 0 )
-                        indent = 0;
+                    indent = ( Curr_indent < 0 ) ? 0 : Curr_indent;
                     // find out how close we are to "col 0" for the current indent
                     ch_len = (Cursor_X - indent - (Box_Mode ? 2 : 0 ));
                     tab_align( ch_len, section, &alloc_size );
@@ -829,13 +799,9 @@ int ib_trans_line(
     return( alloc_size );
 }
 
-static void find_browse_pair(
-/***************************/
-
-    ctx_def                     *ctx,
-    ctx_def                     **prev,
-    ctx_def                     **next
-) {
+static void find_browse_pair( ctx_def *ctx, ctx_def **prev, ctx_def **next )
+/**************************************************************************/
+{
     browse_ctx                  *curr_ctx;
     browse_ctx                  *prev_ctx;
     browse_ctx                  *next_ctx;
@@ -884,12 +850,10 @@ static void find_browse_pair(
     *next = ctx;
     return;
 }
-static void ib_append_line(
-/*************************/
 
-    FILE                        *outfile,
-    char                        *infnam
-) {
+static void ib_append_line( FILE *outfile, char *infnam )
+/*******************************************************/
+{
     FILE                        *infile;
     int                         inchar;
 
@@ -910,12 +874,9 @@ static void ib_append_line(
     }
 }
 
-static void fake_hlink(
-/*********************/
-
-    FILE                        *file,
-    char                        *label
-) {
+static void fake_hlink( FILE *file, char *label )
+/***********************************************/
+{
     if( Hyper_Brace_L == '<' ) {
         whp_fprintf( file, "<<" );
     }
@@ -926,11 +887,9 @@ static void fake_hlink(
     whp_fprintf( file, " " );
 }
 
-static void output_ctx_hdr(
-/*************************/
-
-    ctx_def                     *ctx
-) {
+static void output_ctx_hdr( ctx_def *ctx )
+/****************************************/
+{
     ctx_def                     *temp_ctx;
     ctx_def                     *prev;      // for << button
     ctx_def                     *next;      // for >> button
@@ -1052,11 +1011,9 @@ static void output_ctx_hdr(
     }
 }
 
-static void output_end(
-/*********************/
-
-    void
-) {
+static void output_end( void )
+/****************************/
+{
     whp_fprintf( Out_file, "\n" );
 }
 
@@ -1166,11 +1123,9 @@ static void output_section_ib( section_def *section )
     }
 }
 
-static void output_ctx_sections(
-/******************************/
-
-    ctx_def                     *ctx
-) {
+static void output_ctx_sections( ctx_def *ctx )
+/*********************************************/
+{
     section_def                 *section;
 
     for( section = ctx->section_list; section != NULL; section = section->next ) {
