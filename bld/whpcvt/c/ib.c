@@ -184,7 +184,6 @@ static int map_char_ib( int ch )
     case '"':
         res = CHR_ESCAPE;
         break;
-
     // The following characters are special to InfoBench, and there is no
     // way to represent them with the current grammar
     case CHR_HLINK:
@@ -192,9 +191,9 @@ static int map_char_ib( int ch )
     case CHR_ESCAPE:
         res = MAP_REMOVE;
         break;
-
     default:
         res = MAP_NONE;
+        break;
     }
     return( res );
 }

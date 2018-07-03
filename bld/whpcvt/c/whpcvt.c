@@ -410,146 +410,111 @@ static int process_args( int argc, char *argv[] )
 
     for( start_arg = 0; start_arg < argc; ++start_arg ) {
         if( argv[start_arg][0] == '-' || argv[start_arg][0] == '/' ) {
-
             for( i = 0; Args[i] != NULL; ++i ) {
                 if( stricmp( Args[i], &argv[start_arg][1] ) == 0 ) {
                     break;
                 }
             }
-
             switch( i ) {
-
             case ARG_DPT:
                 Dump_popup_t = true;
                 break;
-
             case ARG_DPI:
                 Dump_popup_i = true;
                 break;
-
             case ARG_DPK:
                 Dump_popup_k = true;
                 break;
-
             case ARG_DPB:
                 Dump_popup_b = true;
                 break;
-
             case ARG_UP:
                 Do_up = true;
                 break;
-
             case ARG_KB:
                 Do_kw_button = true;
                 break;
-
             case ARG_I:
                 Do_index = true;
                 break;
-
             case ARG_KW:
                 Do_keywords = true;
                 break;
-
             case ARG_B:
                 Do_blist = true;
                 break;
-
             case ARG_S:
                 Browse_sort = true;
                 break;
-
             case ARG_K:
                 Keep_titles = true;
                 break;
-
             case ARG_EX:
                 Exclude_special = true;
                 break;
-
             case ARG_H:
                 Do_def = true;
                 break;
-
             case ARG_HH:
                 Do_hdef = true;
                 break;
-
             case ARG_HN:
                 Do_ctx_ids = true;
                 break;
-
             case ARG_XL:
                 Start_inc_sl = INDENT_INC;
                 Start_inc_ol = INDENT_INC;
                 Start_inc_dl = INDENT_INC;
                 Start_inc_ul = INDENT_INC;
                 break;
-
             case ARG_DL:
                 Start_inc_dl = INDENT_INC;
                 break;
-
             case ARG_SL:
                 Start_inc_sl = INDENT_INC;
                 break;
-
             case ARG_OL:
                 Start_inc_ol = INDENT_INC;
                 break;
-
             case ARG_UL:
                 Start_inc_ul = INDENT_INC;
                 break;
-
             case ARG_IW:
                 Index_gml_fmt = false;
                 break;
-
             case ARG_RTF:
                 Output_type = OUT_RTF;
                 break;
-
             case ARG_IPF:
                 Output_type = OUT_IPF;
                 break;
-
             case ARG_IB:
                 Output_type = OUT_IB;
                 break;
-
             case ARG_HTML:
                 Output_type = OUT_HTML;
                 break;
-
             case ARG_WIKI:
                 Output_type = OUT_WIKI;
                 break;
-
             case ARG_BL:
                 Break_link = true;
                 break;
-
             case ARG_T:
                 Do_contents = true;
                 break;
-
             case ARG_E:
                 Remove_empty = true;
                 break;
-
             case ARG_RF:
                 Real_ipf_font = true;
                 break;
-
             case ARG_LK:
                 Keep_link_topics = true;
                 break;
-
             case ARG_KT:
                 Do_topic_keyword=false;
                 break;
-
             case ARG_RM:
                 start_arg++;
                 if( start_arg < argc ) {
@@ -558,7 +523,6 @@ static int process_args( int argc, char *argv[] )
                     error( ERR_BAD_ARGS, false );
                 }
                 break;
-
             case ARG_TAB:
                 start_arg++;
                 if( start_arg < argc ) {
@@ -567,7 +531,6 @@ static int process_args( int argc, char *argv[] )
                     error( ERR_BAD_ARGS, false );
                 }
                 break;
-
             case ARG_HD:
                 start_arg++;
                 if( start_arg < argc ) {
@@ -577,7 +540,6 @@ static int process_args( int argc, char *argv[] )
                     error( ERR_BAD_ARGS, false );
                 }
                 break;
-
             case ARG_FT:
                 start_arg++;
                 if( start_arg < argc ) {
@@ -587,24 +549,19 @@ static int process_args( int argc, char *argv[] )
                     error( ERR_BAD_ARGS, false );
                 }
                 break;
-
             case ARG_HB:
                 Hyper_Brace_L = IB_BRACE_L_CHAR;
                 Hyper_Brace_R = IB_BRACE_R_CHAR;
                 break;
-
             case ARG_BR:
                 Do_browse = true;
                 break;
-
             case ARG_TC:
                 Do_tc_button = true;
                 break;
-
             case ARG_IX:
                 Do_idx_button = true;
                 break;
-
             case ARG_TL:
                 ++start_arg;
                 if( start_arg < argc ) {
@@ -614,11 +571,9 @@ static int process_args( int argc, char *argv[] )
                     error( ERR_BAD_ARGS, false );
                 }
                 break;
-
             case ARG_MC:
                 Title_case = TITLE_CASE_MIXED;
                 break;
-
             case ARG_DT:
                 ++start_arg;
                 if( start_arg < argc ) {
@@ -628,7 +583,6 @@ static int process_args( int argc, char *argv[] )
                     error( ERR_BAD_ARGS, false );
                 }
                 break;
-
             case ARG_DS:
                 ++start_arg;
                 if( start_arg < argc ) {
@@ -638,7 +592,6 @@ static int process_args( int argc, char *argv[] )
                     error( ERR_BAD_ARGS, false );
                 }
                 break;
-
             case ARG_OF:
                 ++start_arg;
                 if( start_arg < argc ) {
@@ -648,7 +601,6 @@ static int process_args( int argc, char *argv[] )
                     error( ERR_BAD_ARGS, false );
                 }
                 break;
-
             default:
                 return( 0 );
             }
@@ -2099,14 +2051,11 @@ int main( int argc, char *argv[] )
         wiki_output_file();
         break;
     }
-
     if( Do_contents ) {
         /* do this before sorting the context lists */
         output_contents_file();
     }
-
     sort_ctx_list();
-
     if( Do_index ) {
         output_idx_file();
     }
