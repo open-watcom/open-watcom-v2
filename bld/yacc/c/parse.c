@@ -1070,7 +1070,7 @@ void defs( FILE *fp )
         case T_NONASSOC:
             ++prec.prec;
             prec.assoc = value.assoc;
-            // pass through
+            /* fall through */
         case T_TOKEN:
         case T_TYPE:
             ctype = token;
@@ -1111,7 +1111,7 @@ void defs( FILE *fp )
                                 tlist_remove( sym->name );
                             }
                         }
-                        sym->token = value.id;
+                        sym->token = value.number;
                         scan( 0 );
                     }
                     if( sym->token == 0 ) {
