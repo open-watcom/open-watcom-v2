@@ -1611,7 +1611,7 @@ static void output_kw_file( void )
         }
 
         // .. and then sort it.
-        qsort( kw, kw_num, sizeof(keyword_def *), kw_cmp );
+        qsort( kw, kw_num, sizeof( keyword_def * ), kw_cmp );
 
         for( i = 0; i < kw_num; i++ ) {
             title = false;
@@ -1621,27 +1621,24 @@ static void output_kw_file( void )
 
             // get our array of contexts
             ctx = kw[i]->ctx_list;
-            ctx_num = 0;
 
             // we treat keywords with only one context as a special case
             if( kw[i]->ctx_list_size == 1 ) {
-                if( !is_special_topic( ctx[ctx_num], Dump_popup_k ) ) {
-                    if( kw[i]->ctx_list_size == 1 ) {
-                        whp_fprintf( KW_file,
-                                    ":pb.%c:pb.%c%s%c%s%c\n",
-                                    CH_LIST_ITEM,
-                                    CH_HLINK,
-                                    ctx[0]->ctx_name,
-                                    CH_HLINK,
-                                    kw[i]->keyword,
-                                    CH_HLINK );
-                    }
+                if( !is_special_topic( ctx[0], Dump_popup_k ) ) {
+                    whp_fprintf( KW_file,
+                                ":pb.%c:pb.%c%s%c%s%c\n",
+                                CH_LIST_ITEM,
+                                CH_HLINK,
+                                ctx[0]->ctx_name,
+                                CH_HLINK,
+                                kw[i]->keyword,
+                                CH_HLINK );
                 }
-            } else if( kw[i]->ctx_list_size >1 ) {
+            } else if( kw[i]->ctx_list_size > 1 ) {
                 // sort the list of contexts by title.
-                qsort( ctx, kw[i]->ctx_list_size, sizeof(ctx_def *), ctx_cmp );
+                qsort( ctx, kw[i]->ctx_list_size, sizeof( ctx_def * ), ctx_cmp );
 
-                while( ctx_num < kw[i]->ctx_list_size ) {
+                for( ctx_num = 0; ctx_num < kw[i]->ctx_list_size; ctx_num++ ) {
                     // if the context is not special output a hyperlink
                     if( !is_special_topic( ctx[ctx_num], Dump_popup_k ) ) {
                         if( !title ) {
@@ -1668,7 +1665,6 @@ static void output_kw_file( void )
                                 CH_HLINK );
                     }
                     // go to the next context on our list
-                    ctx_num++;
                 }
                 if( title ) {
                     whp_fprintf( KW_file, ":pb.%c\n", CH_SLIST_END );

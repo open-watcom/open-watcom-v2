@@ -262,9 +262,8 @@ size_t trans_add_char_wrap( int ch, section_def *section, allocsize *alloc_size 
         NL_Group++;
         if( Box_Mode ) {
             // Add left side if necessary:
-            while( Cursor_X < indent ) {
+            for( ; Cursor_X < indent; Cursor_X++ ) {
                 trans_add_char( ' ', section, alloc_size );
-                Cursor_X++;
             }
             if( Cursor_X == indent ) {
                 trans_add_char( BOX_VBAR, section, alloc_size );
@@ -273,9 +272,8 @@ size_t trans_add_char_wrap( int ch, section_def *section, allocsize *alloc_size 
 
             // Now add right side:
             // the "- 1" is for the BOX_VBAR
-            while( Cursor_X < Right_Margin - 1 ) {
+            for( ; Cursor_X < Right_Margin - 1; Cursor_X++ ) {
                 trans_add_char( ' ', section, alloc_size );
-                Cursor_X++;
             }
             // Now add vertical bar if room (there should be...)
             if( Cursor_X == Right_Margin - 1 ) {
@@ -305,8 +303,7 @@ size_t trans_add_char_wrap( int ch, section_def *section, allocsize *alloc_size 
     // If a bunch of spaces are pushing us over the edge then we'll rip all
     // of them off except one. Only happens in extreme cases. (ie: wdbg.whp)
     if( Cursor_X >= MY_MARGIN && ch==' ' ) {
-        while( section->section_size > 2 &&
-                section->section_text[section->section_size - 2] == ' ' ) {
+        while( section->section_size > 2 && section->section_text[section->section_size - 2] == ' ' ) {
             section->section_size--;
             Cursor_X--;
         }
@@ -510,10 +507,8 @@ allocsize ib_trans_line( section_def *section, allocsize alloc_size )
         }
         return( alloc_size );
     case CH_BOX_ON:     // Box-mode start
-        ctr = 0;
         // indent properly
-        while( ctr < Curr_indent ) {
-            ctr++;
+        for( ctr = 0; ctr < Curr_indent; ctr++ ) {
             trans_add_char( ' ', section, &alloc_size);
         }
         // draw the top line of the box
@@ -526,9 +521,7 @@ allocsize ib_trans_line( section_def *section, allocsize alloc_size )
         Box_Mode = true;
         return( alloc_size );
     case CH_BOX_OFF:    // Box-mode end
-        ctr = 0;
-        while( ctr < Curr_indent ) {
-            ctr++;
+        for( ctr = 0; ctr < Curr_indent; ctr++ ) {
             trans_add_char( ' ', section, &alloc_size);
         }
         trans_add_char( BOX_CORNER_BOTOM_LEFT, section, &alloc_size );
@@ -565,8 +558,7 @@ allocsize ib_trans_line( section_def *section, allocsize alloc_size )
     case CH_SLIST_START:
         indent = 0;
         if( Curr_list->type == LIST_TYPE_SIMPLE ) {
-            /* nested simple lists, with no pre-indent. Force an
-               indent */
+            /* nested simple lists, with no pre-indent. Force an indent */
             indent = Text_Indent;
         }
         new_list( LIST_TYPE_SIMPLE );
@@ -608,8 +600,7 @@ allocsize ib_trans_line( section_def *section, allocsize alloc_size )
     // indent properly if the first char is not white-space
     if( ch != '\0' && ch != ' ' && ch != '\t') {
         ctr = ( ch == CH_LIST_ITEM && !Box_Mode && Curr_list->type != LIST_TYPE_SIMPLE ) ? Text_Indent : 0;
-        while( ctr < Curr_indent ) {
-            ctr++;
+        for( ; ctr < Curr_indent; ctr++ ) {
             trans_add_char_wrap( ' ', section, &alloc_size);
         }
 
@@ -749,13 +740,11 @@ allocsize ib_trans_line( section_def *section, allocsize alloc_size )
             end = strchr( ptr, CH_FONTSTYLE_START );
             for( ; ptr != end; ++ptr ) {
                 switch( *ptr ) {
-
                 // bold and italic map to bold
                 case 'b':
                 case 'i':
                     trans_add_str( STR_BOLD_ON, section, &alloc_size );
                     break;
-
                 // underline and underscore map to underline
                 case 'u':
                 case 's':
@@ -770,25 +759,22 @@ allocsize ib_trans_line( section_def *section, allocsize alloc_size )
             ++ptr;
         } else if( ch == CH_FONTTYPE ) {
             // we basically ignore font type changes
-            ptr = strchr( strchr( ptr + 1 , CH_FONTTYPE ) + 1,
-                            CH_FONTTYPE ) + 1;
+            ptr = strchr( strchr( ptr + 1 , CH_FONTTYPE ) + 1, CH_FONTTYPE ) + 1;
         } else {
             ++ptr;
             if( !Eat_blanks || ch != ' ' ) {
                 Curr_ctx->empty = false;
-
                 if( Tab_xmp && ch == Tab_xmp_char ) {
                     size_t      ch_len;
 
                     indent = ( Curr_indent < 0 ) ? 0 : Curr_indent;
                     // find out how close we are to "col 0" for the current indent
-                    ch_len = ( Cursor_X - indent - (Box_Mode ? 2 : 0) );
+                    ch_len = Cursor_X - indent - ( Box_Mode ? 2 : 0 );
                     tab_align( ch_len, section, &alloc_size );
                     ptr = skip_blank( ptr );
                 } else {
                     trans_add_char_wrap( ch, section, &alloc_size );
                 }
-
                 Eat_blanks = false;
             }
         }
@@ -936,8 +922,7 @@ static void output_ctx_hdr( ctx_def *ctx )
 
             // << browse button
             if( prev != ctx ) {
-                whp_fprintf( Out_file, "%c" HB_PREV "%c", Hyper_Brace_L,
-                                CHR_HLINK_BREAK );
+                whp_fprintf( Out_file, "%c" HB_PREV "%c", Hyper_Brace_L, CHR_HLINK_BREAK );
                 str_out_ib( Out_file, prev->title );
                 whp_fprintf( Out_file, "%c ", Hyper_Brace_R );
             } else {
@@ -946,8 +931,7 @@ static void output_ctx_hdr( ctx_def *ctx )
 
             // >> browse button (relies on the find_browse_pair above)
             if( next != ctx ) {
-                whp_fprintf( Out_file, "%c" HB_NEXT "%c", Hyper_Brace_L,
-                                CHR_HLINK_BREAK );
+                whp_fprintf( Out_file, "%c" HB_NEXT "%c", Hyper_Brace_L, CHR_HLINK_BREAK );
                 str_out_ib( Out_file, next->title );
                 whp_fprintf( Out_file, "%c ", Hyper_Brace_R );
             } else {
@@ -970,8 +954,7 @@ static void output_ctx_hdr( ctx_def *ctx )
         // "Up" button
         if( Do_up ) {
             // find "parent" context
-            for( temp_ctx = ctx->up_ctx; temp_ctx != NULL;
-                                        temp_ctx = temp_ctx->up_ctx ) {
+            for( temp_ctx = ctx->up_ctx; temp_ctx != NULL; temp_ctx = temp_ctx->up_ctx ) {
                 if( !Remove_empty || !temp_ctx->empty ) {
                     break;
                 }
@@ -987,8 +970,7 @@ static void output_ctx_hdr( ctx_def *ctx )
 
             // spit out up button stuff
             if( temp_ctx != NULL ) {
-                whp_fprintf( Out_file, "%c" HB_UP "%c",
-                                        Hyper_Brace_L, CHR_HLINK_BREAK );
+                whp_fprintf( Out_file, "%c" HB_UP "%c", Hyper_Brace_L, CHR_HLINK_BREAK );
                 str_out_ib( Out_file, temp_ctx->title );
                 whp_fprintf( Out_file, "%c ", Hyper_Brace_R );
             } else {
@@ -1136,7 +1118,7 @@ static void output_ctx_sections( ctx_def *ctx )
 void ib_output_file( void )
 /*************************/
 {
-    ctx_def                     *ctx;
+    ctx_def         *ctx;
 
     if( IB_def_topic != NULL ) {
         fprintf( Out_file, "DEFTOPIC::::\"%s\"\n", IB_def_topic );
@@ -1146,7 +1128,6 @@ void ib_output_file( void )
         fprintf( Out_file, "DESCRIPTION::::\"%s\"\n", IB_help_desc );
         free( IB_help_desc );
     }
-
     for( ctx = Ctx_list; ctx != NULL; ctx = ctx->next ) {
         if( !Remove_empty || !ctx->empty || ctx->req_by_link ) {
             output_ctx_hdr( ctx );
