@@ -68,14 +68,14 @@ typedef enum {
 } a_token;
 
 typedef struct y_token {
-    struct y_token  *next;
-    token_n         value;
-    char            name[1];
+    struct y_token      *next;
+    token_n             value;
+    char                name[1];
 } y_token;
 
 typedef struct xlat_entry {
-    int         c;
-    char        *x;
+    int                 c;
+    char                *x;
 } xlat_entry;
 
 typedef struct rule_case {
@@ -90,27 +90,27 @@ typedef struct uniq_case {
     rule_case           *rules;
 } uniq_case;
 
-a_SR_conflict               *ambiguousstates;
+a_SR_conflict           *ambiguousstates;
 
-int lineno = { 1 };
+int                     lineno = { 1 };
 
-static unsigned             bufused;
-static unsigned             bufmax;
-static char                 *buf = { NULL };
+static unsigned         bufused;
+static unsigned         bufmax;
+static char             *buf = { NULL };
 
-static int                  ch = { ' ' };
-static a_token              token;
-static int                  value;
+static int              ch = { ' ' };
+static a_token          token;
+static tok_value        value;
 
-static unsigned long        actionsCombined;
-static uniq_case            *caseActions;
+static unsigned long    actionsCombined;
+static uniq_case        *caseActions;
 
-static y_token  *tokens_head = NULL;
-static y_token  *tokens_tail = NULL;
+static y_token          *tokens_head = NULL;
+static y_token          *tokens_tail = NULL;
 
-static char     *union_name = NULL;
+static char             *union_name = NULL;
 
-static xlat_entry xlat[] = {
+static xlat_entry       xlat[] = {
     { '~',      "TILDE" },
     { '`',      "BACKQUOTE" },
     { '!',      "EXCLAMATION" },
@@ -160,7 +160,7 @@ static void addbuf( int c )
 
 static void addstr( char *p )
 {
-    while( *p ) {
+    while( *p != '\0' ) {
         addbuf( *(unsigned char *)p );
         ++p;
     }
@@ -225,7 +225,7 @@ static void xlat_token( void )
         special = xlat_char( special, ch );
     }
     addbuf( '\0' );
-    value = 0;
+    value.id = 0;
     token = T_IDENTIFIER;
 }
 
@@ -263,7 +263,7 @@ static int eatcrud( void )
 
 static void need( char *pat )
 {
-    while( *pat ) {
+    while( *pat != '\0' ) {
         if( nextc() != *(unsigned char *)pat++ ) {
             msg( "Expected '%c'\n", pat[-1] );
         }
@@ -395,21 +395,21 @@ static a_token scan( unsigned used )
         } else {
             token = T_IDENTIFIER;
         }
-        value = 0;
+        value.id = 0;
     } else if( isdigit( ch ) || ch == '-' ) {
         do {
             addbuf( ch );
         } while( isdigit( nextc() ) );
         addbuf( '\0' );
         token = T_NUMBER;
-        value = atoi( buf );
+        value.number = atoi( buf );
     } else {
         switch( ch ) {
         case '\'':
-            if( denseflag && ! translateflag ) {
+            if( denseflag && !translateflag ) {
                 msg( "cannot use '+' style of tokens with the dense option\n" );
             }
-            if( ! translateflag ) {
+            if( !translateflag ) {
                 addbuf( '\'' );
                 nextc();
                 addbuf( ch );
@@ -427,7 +427,7 @@ static a_token scan( unsigned used )
                     }
                 }
                 addbuf( '\'' );
-                value = ch;
+                value.id = (unsigned char)ch;
                 token = T_IDENTIFIER;
                 need( "'" );
             } else {
@@ -466,12 +466,12 @@ static a_token scan( unsigned used )
             case 'l':
                 need( "eft" );
                 token = T_LEFT;
-                value = L_ASSOC;
+                value.assoc = L_ASSOC;
                 break;
             case 'n':
                 need( "onassoc" );
                 token = T_NONASSOC;
-                value = NON_ASSOC;
+                value.assoc = NON_ASSOC;
                 break;
             case 'p':
                 need( "rec" );
@@ -480,7 +480,7 @@ static a_token scan( unsigned used )
             case 'r':
                 need( "ight" );
                 token = T_RIGHT;
-                value = R_ASSOC;
+                value.assoc = R_ASSOC;
                 break;
             case 's':
                 need( "tart" );
@@ -526,7 +526,7 @@ static a_token scan_typename( unsigned used )
         token = T_TYPENAME;
     }
     addbuf( '\0' );
-    value = 0;
+    value.id = 0;
     return( token );
 }
 
@@ -636,11 +636,11 @@ static bool scanambig( unsigned used, a_SR_conflict_list **list )
     for( ; token == T_AMBIG; ) {
         /* syntax is "%ambig <number> <token>" */
         /* token has already been scanned by scanprec() */
-        if( scan( used ) != T_NUMBER || value < 0 ) {
+        if( scan( used ) != T_NUMBER || value.number < 0 ) {
             msg( "Expecting a non-negative number after %ambig.\n" );
             break;
         }
-        id = value;
+        id = value.number;
         if( scan( used ) != T_IDENTIFIER ) {
             msg( "Expecting a token name after %ambig <number>.\n" );
             break;
@@ -1041,35 +1041,35 @@ void defs( FILE *fp )
                 if( sym->token == 0 ) {
                     msg( "Token must be assigned number before %keyword_id\n" );
                 }
-                value = sym->token;
+                value.id = sym->token;
                 break;
             case T_NUMBER:
                 break;
             default:
                 msg( "Expecting identifier or number.\n" );
             }
-            keyword_id_low = value;
+            keyword_id_low = value.id;
             switch( scan( 0 ) ) {
             case T_IDENTIFIER:
                 sym = addsym( buf );
                 if( sym->token == 0 ) {
                     msg( "Token must be assigned number before %keyword_id\n" );
                 }
-                value = sym->token;
+                value.id = sym->token;
                 break;
             case T_NUMBER:
                 break;
             default:
                 msg( "Expecting identifier or number.\n" );
             }
-            keyword_id_high = value;
+            keyword_id_high = value.id;
             scan( 0 );
             break;
         case T_LEFT:
         case T_RIGHT:
         case T_NONASSOC:
             ++prec.prec;
-            prec.assoc = value;
+            prec.assoc = value.assoc;
             // pass through
         case T_TOKEN:
         case T_TYPE:
@@ -1100,7 +1100,7 @@ void defs( FILE *fp )
                     scan( 0 );
                 } else {
                     if( sym->token == 0 ) {
-                        sym->token = (token_n)value;
+                        sym->token = value.id;
                     }
                     if( ctype != T_TOKEN ) {
                         sym->prec = prec;
@@ -1111,7 +1111,7 @@ void defs( FILE *fp )
                                 tlist_remove( sym->name );
                             }
                         }
-                        sym->token = (token_n)value;
+                        sym->token = value.id;
                         scan( 0 );
                     }
                     if( sym->token == 0 ) {
@@ -1185,8 +1185,8 @@ void rules( FILE *fp )
                     memcpy( buf, &buf[i], bufused );
                 } else {
                     sym = addsym( buf );
-                    if( value != 0 ) {
-                        sym->token = (token_n)value;
+                    if( value.id != 0 ) {
+                        sym->token = value.id;
                     }
                     if( sym->token != 0 )
                         precsym = sym;
