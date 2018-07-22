@@ -15,7 +15,7 @@ wipfc_SOURCES = cpp/main.cpp cpp/compiler.cpp cpp/document.cpp cpp/env.cpp \
         cpp/hn.cpp cpp/hpn.cpp cpp/i1.cpp cpp/i2.cpp cpp/icmd.cpp cpp/isyn.cpp \
         cpp/lines.cpp cpp/link.cpp cpp/lm.cpp cpp/lp.cpp cpp/note.cpp cpp/nt.cpp \
         cpp/ol.cpp cpp/p.cpp cpp/parml.cpp cpp/pbutton.cpp cpp/rm.cpp cpp/sl.cpp \
-        cpp/table.cpp cpp/title.cpp cpp/ul.cpp cpp/warning.cpp cpp/xmp.cpp
+        cpp/table.cpp cpp/title.cpp cpp/ul.cpp cpp/warning.cpp cpp/xmp.cpp cpp/uniutil.cpp
 noinst_HEADERS = cpp/compiler.hpp cpp/document.hpp cpp/env.hpp cpp/ipfbuff.hpp \
         cpp/ipffile.hpp cpp/lexer.hpp \
         cpp/bitmap.hpp cpp/btmpblk.hpp cpp/cecmd.hpp cpp/cell.hpp cpp/ctrlbtn.hpp \
