@@ -73,7 +73,7 @@ static void processSBCS( FILE *in, FILE *out, NlsHeader *hdr )
 static void processDBCS( FILE *in, FILE *out, NlsHeader *hdr )
 {
     size_t   count = 0;
-    size_t   items = ( hdr->size - sizeof( NlsHeader ) ) / sizeof( size_t );
+    size_t   items = ( hdr->size - sizeof( NlsHeader ) ) / ( 2 * sizeof( uint16_t ) );
     uint16_t hi;
     uint16_t lo;
     fputs( "  NLS DBCS Grammar Definition\n", out );

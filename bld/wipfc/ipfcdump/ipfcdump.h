@@ -498,7 +498,7 @@ typedef struct {
 } NlsHeader;
 
 typedef struct {
-    //NlsHeader.size = 10
+    //NlsHeader.size = 10/12
     //NlsHeader.type = NLSRecType.CONTROL
     //NlsHeader.format = 0
     uint16_t    value;              //=256

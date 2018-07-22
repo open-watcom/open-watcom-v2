@@ -74,37 +74,37 @@ void FTSElement::build()
     else if( pageCount == maxPage )
         comp = ALL;
     else {
-        std::size_t score[ 5 ];
-        score[ 0 ] = pageCount * sizeof( STD1::uint16_t );
-        score[ 1 ] = ( maxPage - pageCount ) * sizeof( STD1::uint16_t );
+        std::size_t score[5];
+        score[0] = pageCount * sizeof( STD1::uint16_t );
+        score[1] = ( maxPage - pageCount ) * sizeof( STD1::uint16_t );
         //find the last non-zero byte
         PageIter lnz( pages.end() - 1 );
         while( lnz != pages.begin() && *lnz == 0 )
             --lnz;
         pages.erase( lnz + 1, pages.end() );    //remove bytes containing 0's from end
-        score[ 2 ] = pages.size() * sizeof( STD1::uint8_t );
+        score[2] = pages.size() * sizeof( STD1::uint8_t );
         //find first non-zero byte
         PageIter fnz( pages.begin() );
         while( fnz != pages.end() && *fnz == 0 ) {
             ++fnz;
             ++firstPage;
         }
-        score[ 3 ] = ( score[ 2 ] - firstPage ) * sizeof( STD1::uint8_t ) + sizeof( STD1::uint16_t );
+        score[3] = ( score[2] - firstPage ) * sizeof( STD1::uint8_t ) + sizeof( STD1::uint16_t );
         std::vector< STD1::uint8_t > rle;
         if( pages.size() > 3 ) {
             //run length encode the truncated bitstring
             //but only if data > 3 bytes because minimum size of
             //rle encoding is 3 bytes
             encode( rle );
-            score[ 4 ] = ( rle.size() + 1 ) * sizeof( STD1::uint8_t );
+            score[4] = ( rle.size() + 1 ) * sizeof( STD1::uint8_t );
         }
         else
-            score[ 4 ] = static_cast< std::size_t >( -1 );
+            score[4] = static_cast< std::size_t >( -1 );
         std::size_t index = 0;
-        dataSize = score[ 0 ];
-        for( std::size_t count = 1; count < sizeof( score ) / sizeof( std::size_t ); ++count ) {
-            if( score[ count ] < dataSize ) {
-                dataSize = score[ count ];
+        dataSize = score[0];
+        for( std::size_t count = 1; count < sizeof( score ) / sizeof( score[0] ); ++count ) {
+            if( score[count] < dataSize ) {
+                dataSize = score[count];
                 index = count;
             }
         }
