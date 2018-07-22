@@ -33,7 +33,6 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <memory>
 #include <string>
 #include <climits>
 #include <cctype>
@@ -42,7 +41,6 @@
     #include <unistd.h>
 #else
     #include <direct.h>
-    #include <mbctype.h>
 #endif
 #include "util.hpp"
 #include "errors.hpp"
@@ -134,8 +132,7 @@ void killEOL( wchar_t *text )
 std::string canonicalPath( char* arg )
 /************************************/
 {
-    std::auto_ptr< char > cwd( ::getcwd( 0, 0 ) );
-    std::string fullpath( cwd.get() );
+    std::string fullpath( ::getcwd( 0, 0 ) );
     std::string inFile( arg );
     bool no_parent_ref = true;
     // parent reference "../" must be on the begining then remove all levels

@@ -15,7 +15,8 @@ wipfc_SOURCES = cpp/main.cpp cpp/compiler.cpp cpp/document.cpp cpp/env.cpp \
         cpp/hn.cpp cpp/hpn.cpp cpp/i1.cpp cpp/i2.cpp cpp/icmd.cpp cpp/isyn.cpp \
         cpp/lines.cpp cpp/link.cpp cpp/lm.cpp cpp/lp.cpp cpp/note.cpp cpp/nt.cpp \
         cpp/ol.cpp cpp/p.cpp cpp/parml.cpp cpp/pbutton.cpp cpp/rm.cpp cpp/sl.cpp \
-        cpp/table.cpp cpp/title.cpp cpp/ul.cpp cpp/warning.cpp cpp/xmp.cpp
+        cpp/table.cpp cpp/title.cpp cpp/ul.cpp cpp/warning.cpp cpp/xmp.cpp \
+        cpp/uniutil.cpp
 noinst_HEADERS = cpp/compiler.hpp cpp/document.hpp cpp/env.hpp cpp/ipfbuff.hpp \
         cpp/ipffile.hpp cpp/lexer.hpp \
         cpp/bitmap.hpp cpp/btmpblk.hpp cpp/cecmd.hpp cpp/cell.hpp cpp/ctrlbtn.hpp \
@@ -31,7 +32,8 @@ noinst_HEADERS = cpp/compiler.hpp cpp/document.hpp cpp/env.hpp cpp/ipfbuff.hpp \
         cpp/hpn.hpp cpp/i1.hpp cpp/i2.hpp cpp/icmd.hpp cpp/isyn.hpp \
         cpp/lines.hpp cpp/link.hpp cpp/lm.hpp cpp/lp.hpp cpp/note.hpp cpp/nt.hpp \
         cpp/ol.hpp cpp/p.hpp cpp/parml.hpp cpp/pbutton.hpp cpp/rm.hpp cpp/sl.hpp \
-        cpp/table.hpp cpp/title.hpp cpp/ul.hpp cpp/warning.hpp cpp/wipfc.hpp cpp/xmp.hpp
+        cpp/table.hpp cpp/title.hpp cpp/ul.hpp cpp/warning.hpp cpp/wipfc.hpp cpp/xmp.hpp \
+        cpp/uniutil.hpp
 wipfcdir = $datadir/wipfc
 dist_wipfc_DATA = helper/de_DE.nls helper/en_GB.nls helper/en_US.nls helper/fr_CA.nls \
         helper/fr_FR.nls helper/ja_JA.nls helper/xx_YY.nls helper/enti0932.txt \

@@ -31,10 +31,10 @@
 #include "wipfc.hpp"
 #include <cstdio>
 #include <cstdlib>
-#include <cwctype>
+#include <cstring>
 #include <string>
+#include <climits>
 #if defined( __UNIX__ ) || defined( __APPLE__ )
-    #include <unistd.h>
 #else
     #include <mbctype.h>
 #endif
