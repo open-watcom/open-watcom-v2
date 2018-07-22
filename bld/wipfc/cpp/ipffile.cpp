@@ -39,7 +39,7 @@ IpfFile::IpfFile( const std::wstring* fname ) : IpfData(), fileName ( fname ),
     ungottenChar( WEOF ), ungotten( false )
 {
     std::string buffer;
-    wtomb_string( *fname, buffer );
+    def_wtomb_string( *fname, buffer );
     if( (stream = std::fopen( buffer.c_str(), "rb" )) == 0 ) {
         throw FatalIOError( ERR_OPEN, *fileName );
     }

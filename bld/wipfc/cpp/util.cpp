@@ -294,3 +294,30 @@ void mbtow_string( const std::string& input, std::wstring& output )
         output += wch;
     }
 }
+
+void def_wtomb_string( const std::wstring& input, std::string& output )
+/*********************************************************************/
+{
+    for( std::size_t index = 0; index < input.size(); ++index ) {
+        char ch[ MB_LEN_MAX + 1 ];
+        int  bytes( std::wctomb( &ch[ 0 ], input[ index ] ) );
+        if( bytes == -1 )
+            throw FatalError( ERR_T_CONV );
+        ch[ bytes ] = '\0';
+        output += ch;
+    }
+}
+
+void def_mbtow_string( const std::string& input, std::wstring& output )
+/*********************************************************************/
+{
+    int consumed;
+
+    for( std::size_t index = 0; index < input.size(); index += consumed ) {
+        wchar_t wch;
+        consumed = std::mbtowc( &wch, input.data() + index, MB_CUR_MAX );
+        if( consumed == -1 )
+            throw FatalError( ERR_T_CONV );
+        output += wch;
+    }
+}

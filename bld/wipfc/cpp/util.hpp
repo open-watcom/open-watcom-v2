@@ -61,4 +61,7 @@ void mbtow_string( const std::string& input, std::wstring& output );
 char *skipWS( char *text );
 wchar_t *skipWS( wchar_t *text );
 
+void def_wtomb_string( const std::wstring& input, std::string& output );
+void def_mbtow_string( const std::string& input, std::wstring& output );
+
 #endif //UTIL_INCLUDED

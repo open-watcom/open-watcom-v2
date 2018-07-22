@@ -65,7 +65,7 @@ Compiler::~Compiler()
 void Compiler::setInputFile( std::string& name )
 {
     std::wstring* wname( new std::wstring() );
-    mbtow_string( name, *wname );
+    def_mbtow_string( name, *wname );
     wname = addFileName( wname );
     inFiles.push_back( new IpfFile( wname ) );
 }

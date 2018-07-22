@@ -596,7 +596,7 @@ void Document::makeBitmaps()
         try {
             for( BitmapNameIter itr = bitmapNames.begin(); itr != bitmapNames.end(); ++itr ) {
                 std::string fname;
-                wtomb_string( itr->first, fname );
+                def_wtomb_string( itr->first, fname );
                 for( std::size_t count = 0; count < paths.size(); ++count ) {
                     std::string fullname( paths[ count ] );
                     if( !fullname.empty() )
@@ -860,13 +860,13 @@ Lexer::Token Document::processCommand( Lexer* lexer, Tag* parent )
         std::string::size_type idx1( 0 );
         std::string::size_type idx2( env.find_first_of( separators, idx1 ) );
         std::wstring fbuffer;
-        mbtow_string( env.substr( idx1, idx2 - idx1 ), fbuffer );
+        def_mbtow_string( env.substr( idx1, idx2 - idx1 ), fbuffer );
         paths.push_back( fbuffer );
         while( idx2 != std::string::npos ) {
             idx1 = idx2 + 1;
             idx2 = env.find_first_of( separators, idx1 );
             fbuffer.clear();
-            mbtow_string( env.substr( idx1, idx2 - idx1 ), fbuffer );
+            def_mbtow_string( env.substr( idx1, idx2 - idx1 ), fbuffer );
             paths.push_back( fbuffer );
         }
         for( std::size_t count = 0; count < paths.size(); ++count ) {
