@@ -331,7 +331,19 @@ STD1::uint32_t Nls::write( std::FILE *out )
 STD1::uint32_t Nls::CountryDef::write( std::FILE *out ) const
 {
     STD1::uint32_t start( std::ftell( out ) );
-    if( std::fwrite( this, sizeof( CountryDef ), 1, out ) != 1 )
+    if( std::fwrite( &size, sizeof( STD1::uint16_t ), 1, out ) != 1 )
+        throw FatalError( ERR_WRITE );
+    if( std::fwrite( &type, sizeof( STD1::uint8_t ), 1, out ) != 1 )
+        throw FatalError( ERR_WRITE );
+    if( std::fwrite( &format, sizeof( STD1::uint8_t ), 1, out ) != 1 )
+        throw FatalError( ERR_WRITE );
+    if( std::fwrite( &value, sizeof( STD1::uint16_t ), 1, out ) != 1 )
+        throw FatalError( ERR_WRITE );
+    if( std::fwrite( &country, sizeof( STD1::uint16_t ), 1, out ) != 1 )
+        throw FatalError( ERR_WRITE );
+    if( std::fwrite( &codePage, sizeof( STD1::uint16_t ), 1, out ) != 1 )
+        throw FatalError( ERR_WRITE );
+    if( std::fwrite( &reserved, sizeof( STD1::uint16_t ), 1, out ) != 1 )
         throw FatalError( ERR_WRITE );
     return( start );
 }
@@ -354,7 +366,13 @@ void Nls::SbcsGrammarDef::setDefaultBits( NlsRecType rectype )
 STD1::uint32_t Nls::SbcsGrammarDef::write( std::FILE *out ) const
 {
     STD1::uint32_t start( std::ftell( out ) );
-    if( std::fwrite( this, sizeof( SbcsGrammarDef ), 1, out) != 1 )
+    if( std::fwrite( &size, sizeof( STD1::uint16_t ), 1, out ) != 1 )
+        throw FatalError( ERR_WRITE );
+    if( std::fwrite( &type, sizeof( STD1::uint8_t ), 1, out ) != 1 )
+        throw FatalError( ERR_WRITE );
+    if( std::fwrite( &format, sizeof( STD1::uint8_t ), 1, out ) != 1 )
+        throw FatalError( ERR_WRITE );
+    if( std::fwrite( bits, sizeof( STD1::uint8_t ), sizeof( bits ) / sizeof( bits[0] ), out ) != sizeof( bits ) / sizeof( bits[0] ) )
         throw FatalError( ERR_WRITE );
     return( start );
 }
@@ -363,14 +381,14 @@ STD1::uint32_t Nls::DbcsGrammarDef::write( std::FILE *out )
 {
     STD1::uint32_t start( std::ftell( out ) );
     size = 4 + static_cast< STD1::uint16_t >( ranges.size() * sizeof( STD1::uint16_t ) );
-    if( std::fwrite( &size, sizeof( STD1::uint16_t ), 1, out) != 1 )
+    if( std::fwrite( &size, sizeof( STD1::uint16_t ), 1, out ) != 1 )
         throw FatalError( ERR_WRITE );
-    if( std::fwrite( &type, sizeof( STD1::uint8_t ), 1, out) != 1 )
+    if( std::fwrite( &type, sizeof( STD1::uint8_t ), 1, out ) != 1 )
         throw FatalError( ERR_WRITE );
-    if( std::fwrite( &format, sizeof( STD1::uint8_t ), 1, out) != 1 )
+    if( std::fwrite( &format, sizeof( STD1::uint8_t ), 1, out ) != 1 )
         throw FatalError( ERR_WRITE );
     for( std::vector< STD1::uint16_t >::const_iterator itr = ranges.begin(); itr != ranges.end(); ++itr ) {
-        if( std::fwrite( &(*itr), sizeof( STD1::uint16_t), 1, out) != 1 ) {
+        if( std::fwrite( &(*itr), sizeof( STD1::uint16_t), 1, out ) != 1 ) {
             throw FatalError( ERR_WRITE );
         }
     }

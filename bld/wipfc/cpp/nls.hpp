@@ -71,7 +71,6 @@ public:
 private:
     Nls( const Nls& rhs );              //no copy
     Nls& operator=( const Nls& rhs );   //no assignment
-#pragma pack(push, 1)
     struct CountryDef {
         STD1::uint16_t size;        //12
         STD1::uint8_t  type;        //NLSRecType.CONTROL
@@ -80,30 +79,29 @@ private:
         STD1::uint16_t country;
         STD1::uint16_t codePage;
         STD1::uint16_t reserved;    //0
-        CountryDef() :
-            size( sizeof(CountryDef) ), type( Nls::CONTROL ), format( 0 ), value( 256 ),
-            country( 1 ), codePage( 850 ), reserved( 0 ) {};
+        CountryDef() : size( sizeof( STD1::uint16_t ) + 2 * sizeof( STD1::uint8_t ) + 4 * sizeof( STD1::uint16_t ) ),
+            type( Nls::CONTROL ), format( 0 ), value( 256 ), country( 1 ), codePage( 850 ), reserved( 0 ) {};
         STD1::uint32_t write( std::FILE* out ) const;
-        };
+    };
 
     struct SbcsGrammarDef {         //Single-byte character set
         STD1::uint16_t size;        //36
         STD1::uint8_t  type;        //NLSRecType.TEXT, NLSRecType.GRAPHIC
         STD1::uint8_t  format;      //0
-        STD1::uint8_t  bits[ 32 ];  //high-order bit first
-        SbcsGrammarDef() : size( sizeof( SbcsGrammarDef ) ), type( Nls::TEXT ), format( 0 ) { };
+        STD1::uint8_t  bits[32];    //high-order bit first
+        SbcsGrammarDef() : size( sizeof( STD1::uint16_t ) + (2 + sizeof( bits ) / sizeof( bits[0] )) * sizeof( STD1::uint8_t ) ),
+            type( Nls::TEXT ), format( 0 ) {};
         void setDefaultBits( NlsRecType rectype );
         STD1::uint32_t write( std::FILE* out ) const;
-        };
-#pragma pack(pop)
+    };
     struct DbcsGrammarDef {         //Double-byte character set
         STD1::uint16_t size;        //4 + (# ranges * 4)
         STD1::uint8_t  type;        //NLSRecType.TEXT, NLSRecType.GRAPHIC
         STD1::uint8_t  format;      //1
         std::vector<STD1::uint16_t> ranges;
-        DbcsGrammarDef() : size( 4 ), type( Nls::TEXT ) , format( 1 ) {};
+        DbcsGrammarDef() : size( 4 ), type( Nls::TEXT ), format( 1 ) {};
         STD1::uint32_t write( std::FILE* out );
-        };
+    };
 
     CountryDef country;
     SbcsGrammarDef sbcsT;
