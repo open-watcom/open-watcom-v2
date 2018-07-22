@@ -35,6 +35,7 @@
 #include <string>
 #if defined( __UNIX__ ) || defined( __APPLE__ )
     #include <unistd.h>
+    #include <limits.h>
 #else
     #include <mbctype.h>
 #endif
