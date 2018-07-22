@@ -40,7 +40,6 @@
 #include "document.hpp"
 #include "p.hpp"
 #include "page.hpp"
-#include "util.hpp"
 
 Lexer::Token CGraphic::parse( Lexer* lexer )
 {

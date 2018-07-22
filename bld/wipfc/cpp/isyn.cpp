@@ -40,6 +40,7 @@
 #include "errors.hpp"
 #include "lexer.hpp"
 #include "util.hpp"
+#include "uniutil.hpp"
 
 Lexer::Token ISyn::parse( Lexer* lexer )
 {

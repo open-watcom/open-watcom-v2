@@ -66,6 +66,7 @@
 #include "page.hpp"
 #include "tocref.hpp"
 #include "util.hpp"
+#include "uniutil.hpp"
 
 Hn::~Hn()
 {

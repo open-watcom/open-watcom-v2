@@ -38,7 +38,6 @@
 #include "cell.hpp"
 #include "document.hpp"
 #include "errors.hpp"
-#include "util.hpp"
 
 
 std::vector< STD1::uint8_t > Hpn::levelStack;

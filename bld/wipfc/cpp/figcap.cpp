@@ -40,9 +40,9 @@
 #include "document.hpp"
 #include "entity.hpp"
 #include "punct.hpp"
-#include "util.hpp"
 #include "whtspc.hpp"
 #include "word.hpp"
+
 
 Lexer::Token Figcap::parse( Lexer* lexer )
 {

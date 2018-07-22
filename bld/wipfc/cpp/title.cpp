@@ -37,7 +37,7 @@
 #include "title.hpp"
 #include "lexer.hpp"
 #include "document.hpp"
-#include "util.hpp"
+#include "uniutil.hpp"
 
 Lexer::Token Title::parse( Lexer* lexer, IpfHeader* hdr )
 {

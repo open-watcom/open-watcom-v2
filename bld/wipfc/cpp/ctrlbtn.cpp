@@ -32,7 +32,7 @@
 #include "wipfc.hpp"
 #include "ctrlbtn.hpp"
 #include "errors.hpp"
-#include "util.hpp"
+#include "uniutil.hpp"
 
 STD1::uint32_t ControlButton::write( std::FILE *out ) const
 {

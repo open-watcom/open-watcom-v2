@@ -33,7 +33,7 @@
 #include <cstdlib>
 #include "strings.hpp"
 #include "errors.hpp"
-#include "util.hpp"
+#include "uniutil.hpp"
 
 STD1::uint32_t StringTable::write( std::FILE *out )
 {

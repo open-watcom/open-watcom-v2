@@ -34,7 +34,7 @@
 #include <cstdlib>
 #include "extfiles.hpp"
 #include "errors.hpp"
-#include "util.hpp"
+#include "uniutil.hpp"
 
 void ExternalFiles::addFile( std::wstring& str )
 {

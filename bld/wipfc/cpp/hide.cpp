@@ -42,6 +42,7 @@
 #include "document.hpp"
 #include "errors.hpp"
 #include "util.hpp"
+#include "uniutil.hpp"
 
 bool Hide::hide( false );
 

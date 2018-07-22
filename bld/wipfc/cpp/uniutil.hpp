@@ -24,62 +24,21 @@
 *
 *  ========================================================================
 *
-* Description:  IPF Input file reader
+* Description:  Some utility functions
 *
 ****************************************************************************/
 
-#include "wipfc.hpp"
-#include <cstdlib>
-#include "ipffile.hpp"
-#include "errors.hpp"
-#include "uniutil.hpp"
+#ifndef UNIUTIL_INCLUDED
+#define UNIUTIL_INCLUDED
 
+extern int          wtomb_char( char *mbc, wchar_t wc );
+extern int          mbtow_char( wchar_t *wc, const char *mbc, std::size_t len );
+extern std::wint_t  read_wchar( std::FILE *fp );
+extern std::size_t  wtomb_cstring( char *mbc, const wchar_t *wc, std::size_t len );
+extern std::size_t  mbtow_cstring( wchar_t *wc, const char *mbc, std::size_t len );
+extern void         wtomb_string( const std::wstring& input, std::string& output );
+extern void         mbtow_string( const std::string& input, std::wstring& output );
+extern void         def_wtomb_string( const std::wstring& input, std::string& output );
+extern void         def_mbtow_string( const std::string& input, std::wstring& output );
 
-IpfFile::IpfFile( const std::wstring* fname ) : IpfData(), fileName ( fname ),
-    ungottenChar( WEOF ), ungotten( false )
-{
-    std::string buffer;
-    def_wtomb_string( *fname, buffer );
-    if( (stream = std::fopen( buffer.c_str(), "rb" )) == 0 ) {
-        throw FatalIOError( ERR_OPEN, *fileName );
-    }
-}
-/*****************************************************************************/
-//Read a character
-//Returns EOB if end-of-file reached
-std::wint_t IpfFile::get()
-{
-    std::wint_t     ch;
-
-    if( ungotten ) {
-        ch = ungottenChar;
-        ungotten = false;
-    } else {
-        ch = read_wchar( stream );
-    }
-    if( ch == L'\r' ) {
-        ch = read_wchar( stream );
-    }
-    incCol();
-    if( ch == L'\n' ) {
-        incLine();
-        resetCol();
-    } else if( ch == WEOF ) {
-        ch = EOB;
-        if( !std::feof( stream ) ) {
-            throw FatalIOError( ERR_READ, *fileName );
-        }
-    }
-    return( ch );
-}
-/*****************************************************************************/
-void IpfFile::unget( wchar_t ch )
-{
-    //std::ungetwc( ch, stream );
-    ungottenChar = ch;
-    ungotten = true;
-    decCol();
-    if( ch == L'\n' ) {
-        decLine();
-    }
-}
+#endif //UTIL_INCLUDED

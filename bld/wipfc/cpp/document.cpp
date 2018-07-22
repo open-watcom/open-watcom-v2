@@ -178,6 +178,7 @@
 #include "synonym.hpp"
 #include "title.hpp"
 #include "util.hpp"
+#include "uniutil.hpp"
 
 #ifndef HAVE_CONFIG_H
 #include "clibext.h"

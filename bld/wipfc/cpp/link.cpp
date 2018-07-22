@@ -70,6 +70,7 @@
 #include "util.hpp"
 #include "whtspc.hpp"
 #include "word.hpp"
+#include "uniutil.hpp"
 
 Link::~Link()
 {

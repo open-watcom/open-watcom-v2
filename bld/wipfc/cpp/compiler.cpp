@@ -40,7 +40,7 @@
 #include "ipfbuff.hpp"
 #include "ipffile.hpp"
 #include "lexer.hpp"
-#include "util.hpp"
+#include "uniutil.hpp"
 
 Compiler::Compiler():
     lexer( new Lexer() ),

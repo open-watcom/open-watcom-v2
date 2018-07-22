@@ -42,7 +42,7 @@
 #include "figcap.hpp"
 #include "p.hpp"
 #include "page.hpp"
-#include "util.hpp"
+
 
 Lexer::Token Fig::parse( Lexer* lexer )
 {

@@ -46,6 +46,7 @@
 #include "lexer.hpp"
 #include "page.hpp"
 #include "util.hpp"
+#include "uniutil.hpp"
 
 Lexer::Token Font::parse( Lexer* lexer )
 {

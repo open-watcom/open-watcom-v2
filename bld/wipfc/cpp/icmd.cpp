@@ -38,7 +38,6 @@
 #include "document.hpp"
 #include "errors.hpp"
 #include "gdword.hpp"
-#include "util.hpp"
 #include "xref.hpp"
 
 ICmd::ICmd( Document* d, Element* p, const std::wstring* f, unsigned int r, unsigned int c ) :

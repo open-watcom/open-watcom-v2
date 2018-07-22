@@ -41,6 +41,7 @@
 #include "env.hpp"
 #include "nls.hpp"
 #include "util.hpp"
+#include "uniutil.hpp"
 
 
 extern class Env Environment;

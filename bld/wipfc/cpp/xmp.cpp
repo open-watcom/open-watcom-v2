@@ -40,7 +40,7 @@
 #include "cell.hpp"
 #include "document.hpp"
 #include "p.hpp"
-#include "util.hpp"
+
 
 Lexer::Token Xmp::parse( Lexer* lexer )
 {

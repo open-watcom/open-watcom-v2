@@ -40,7 +40,7 @@
 #include <cstdlib>
 #include "gdword.hpp"
 #include "errors.hpp"
-#include "util.hpp"
+#include "uniutil.hpp"
 
 void GlobalDictionaryWord::toUpper()
 {

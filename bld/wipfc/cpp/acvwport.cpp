@@ -45,6 +45,7 @@
 #include "document.hpp"
 #include "errors.hpp"
 #include "util.hpp"
+#include "uniutil.hpp"
 
 Lexer::Token AcViewport::parse( Lexer* lexer )
 {

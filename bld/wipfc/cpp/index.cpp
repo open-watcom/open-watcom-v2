@@ -33,7 +33,7 @@
 #include <cwctype>
 #include "index.hpp"
 #include "errors.hpp"
-#include "util.hpp"
+#include "uniutil.hpp"
 
 IndexItem::IndexItem( Type t )
 {
