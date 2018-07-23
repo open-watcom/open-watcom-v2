@@ -12,7 +12,8 @@ pmake_trmem = 1
 
 .c : ..;$(trmem_dir)
 
-extra_c_flags	= -I.. -I"$(builder_dir)/h"
+inc_dirs = -I.. -I"$(builder_dir)/h"
+
 extra_c_flags_pmkcmd = $(trmem_cover_cflags)
 extra_c_flags_trmem = $(trmem_cflags)
 
