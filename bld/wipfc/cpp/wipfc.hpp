@@ -28,6 +28,24 @@
 *
 ****************************************************************************/
 
+
+/* !!! It must be included in each source file as first included header file !!! */
+
+
 #if defined( __unix__ ) && !defined( __UNIX__ )
     #define __UNIX__ __unix__
+#endif
+
+#ifdef HAVE_CONFIG_H
+    #include "config.h"
+    #ifdef HAVE_CSTDINT
+        #include <cstdint>
+        #define STD1 std
+    #else
+        #include <stdint.h>
+        #define STD1
+    #endif
+#else
+    #include <cstdint>
+    #define STD1 std
 #endif

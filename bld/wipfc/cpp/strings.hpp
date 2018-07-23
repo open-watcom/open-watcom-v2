@@ -34,7 +34,6 @@
 #ifndef STRINGS_INCLUDED
 #define STRINGS_INCLUDED
 
-#include "config.hpp"
 #include <cstdio>
 #include <string>
 #include <vector>

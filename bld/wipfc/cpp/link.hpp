@@ -59,7 +59,6 @@
 #ifndef LINK_INCLUDED
 #define LINK_INCLUDED
 
-#include "config.hpp"
 #include "tag.hpp"
 #include "toc.hpp"
 

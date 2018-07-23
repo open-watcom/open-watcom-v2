@@ -34,7 +34,6 @@
 #ifndef DDF_INCLUDED
 #define DDF_INCLUDED
 
-#include "config.hpp"
 #include "element.hpp"
 
 class Ddf : public Element {

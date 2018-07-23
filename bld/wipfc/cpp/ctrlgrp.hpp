@@ -31,7 +31,6 @@
 #ifndef CONTROLGROUP_INCLUDED
 #define CONTROLGROUP_INCLUDED
 
-#include "config.hpp"
 #include <cstdio>
 #include <string>
 #include <vector>

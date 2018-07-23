@@ -34,7 +34,6 @@
 #ifndef LP_INCLUDED
 #define LP_INCLUDED
 
-#include "config.hpp"
 #include "tag.hpp"
 
 class Lp : public Tag {

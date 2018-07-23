@@ -31,7 +31,6 @@
 #ifndef DOCUMENT_INCLUDED
 #define DOCUMENT_INCLUDED
 
-#include "config.hpp"
 #include <cstdio>
 #include <map>
 #include <memory>

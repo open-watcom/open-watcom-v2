@@ -31,7 +31,6 @@
 #ifndef FNT_INCLUDED
 #define FNT_INCLUDED
 
-#include "config.hpp"
 #include <cstring>
 #include <cstdio>
 

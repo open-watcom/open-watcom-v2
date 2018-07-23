@@ -31,7 +31,6 @@
 #ifndef CONTROLBUTTON_INCLUDED
 #define CONTROLBUTTON_INCLUDED
 
-#include "config.hpp"
 #include <cstdio>
 #include <string>
 

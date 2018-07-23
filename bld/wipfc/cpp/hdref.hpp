@@ -35,7 +35,6 @@
 #ifndef HDREF_INCLUDED
 #define HDREF_INCLUDED
 
-#include "config.hpp"
 #include "tag.hpp"
 
 class Hdref : public Tag {

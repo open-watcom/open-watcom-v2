@@ -54,7 +54,6 @@
 #ifndef HN_INCLUDED
 #define HN_INCLUDED
 
-#include "config.hpp"
 #include <vector>
 #include "tag.hpp"
 #include "toc.hpp"

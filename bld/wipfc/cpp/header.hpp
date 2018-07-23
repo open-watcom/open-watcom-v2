@@ -31,7 +31,6 @@
 #ifndef IPFHEADER_INCLUDED
 #define IPFHEADER_INCLUDED
 
-#include "config.hpp"
 #include <cstdio>
 
 #pragma pack(push, 1)

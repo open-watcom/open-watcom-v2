@@ -32,7 +32,6 @@
 #ifndef TOCREF_INCLUDED
 #define TOCREF_INCLUDED
 
-#include "config.hpp"
 #include <cstdio>
 #include <set>
 #include "xref.hpp"

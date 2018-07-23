@@ -31,7 +31,6 @@
 #ifndef PAGE_INCLUDED
 #define PAGE_INCLUDED
 
-#include "config.hpp"
 #include <cstdio>
 #include <string>
 #include <vector>

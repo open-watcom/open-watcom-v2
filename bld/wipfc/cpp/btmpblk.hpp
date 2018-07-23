@@ -31,7 +31,6 @@
 #ifndef BITMAPBLOCK_INCLUDED
 #define BITMAPBLOCK_INCLUDED
 
-#include "config.hpp"
 #include <cstdio>
 #include <vector>
 

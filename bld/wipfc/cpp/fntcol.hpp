@@ -31,7 +31,6 @@
 #ifndef FNTCOL_INCLUDED
 #define FNTCOL_INCLUDED
 
-#include "config.hpp"
 #include <cstdio>
 #include <vector>
 #include "fnt.hpp"

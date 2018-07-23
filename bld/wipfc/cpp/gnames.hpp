@@ -35,7 +35,6 @@
 #ifndef GNAMES_INCLUDED
 #define GNAMES_INCLUDED
 
-#include "config.hpp"
 #include <map>
 #include "gdword.hpp"
 #include "ptrops.hpp"

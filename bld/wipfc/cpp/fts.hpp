@@ -32,7 +32,6 @@
 #ifndef FTSELEMENT_INCLUDED
 #define FTSELEMENT_INCLUDED
 
-#include "config.hpp"
 #include <cstdio>
 #include <string>
 #include <vector>

@@ -32,7 +32,6 @@
 #ifndef EXTFILES_INCLUDED
 #define EXTFILES_INCLUDED
 
-#include "config.hpp"
 #include <cstdio>
 #include <map>
 #include <string>

@@ -31,7 +31,6 @@
 #ifndef TOC_INCLUDED
 #define TOC_INCLUDED
 
-#include "config.hpp"
 #include <cstdio>
 #include <cstring>
 

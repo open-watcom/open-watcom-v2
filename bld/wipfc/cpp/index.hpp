@@ -31,7 +31,6 @@
 #ifndef INDEX_INCLUDED
 #define INDEX_INCLUDED
 
-#include "config.hpp"
 #include <cstdio>
 #include <cstring>
 #include <string>

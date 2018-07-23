@@ -34,7 +34,6 @@
 #ifndef HPN_INCLUDED
 #define HPN_INCLUDED
 
-#include "config.hpp"
 #include <vector>
 #include "tag.hpp"
 

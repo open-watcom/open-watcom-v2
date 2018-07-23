@@ -35,7 +35,6 @@
 #ifndef LM_INCLUDED
 #define LM_INCLUDED
 
-#include "config.hpp"
 #include "tag.hpp"
 
 class Lm : public Element {

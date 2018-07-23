@@ -41,7 +41,6 @@
 #ifndef ACVIEWPORT_INCLUDED
 #define ACVIEWPORT_INCLUDED
 
-#include "config.hpp"
 #include "element.hpp"
 #include "toc.hpp"
 

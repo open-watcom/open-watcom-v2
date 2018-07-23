@@ -39,7 +39,6 @@
 #ifndef I1_INCLUDED
 #define I1_INCLUDED
 
-#include "config.hpp"
 #include <cstdio>
 #include <memory>
 #include "element.hpp"

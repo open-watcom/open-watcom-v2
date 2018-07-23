@@ -35,7 +35,6 @@
 #ifndef RM_INCLUDED
 #define RM_INCLUDED
 
-#include "config.hpp"
 #include "tag.hpp"
 
 class Rm : public Element {

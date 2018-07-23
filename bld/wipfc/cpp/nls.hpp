@@ -31,7 +31,6 @@
 #ifndef NLS_INCLUDED
 #define NLS_INCLUDED
 
-#include "config.hpp"
 #include <cstdio>
 #include <map>
 #include <string>

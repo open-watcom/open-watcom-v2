@@ -35,7 +35,6 @@
 #ifndef ICMD_INCLUDED
 #define ICMD_INCLUDED
 
-#include "config.hpp"
 #include <cstdio>
 #include <memory>
 #include "element.hpp"

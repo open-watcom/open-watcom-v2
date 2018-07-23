@@ -34,7 +34,6 @@
 #ifndef CELL_INCLUDED
 #define CELL_INCLUDED
 
-#include "config.hpp"
 #include <cstdio>
 #include <vector>
 #include "element.hpp"
