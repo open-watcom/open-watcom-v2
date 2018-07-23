@@ -11,24 +11,25 @@ void readFTS( FILE *in, FILE *out )
 {
     fputs( "\nFull Text Serach\n", out );
     if( Hdr.searchSize ) {
-        if( Hdr.recSize )
+        if( IsFTS16Data( Hdr ) ) {
             processFTS16( in, out );
-        else
+        } else {
             processFTS8( in, out );
-    }
-    else
+        }
+    } else {
         fputs( "  No full text serach data found\n", out );
+    }
 }
 /*****************************************************************************/
 static void processFTS8( FILE *in, FILE *out )
 {
     FTS8Data    d;
-    uint32_t    nextPos = Hdr.searchOffset;
+    uint32_t    nextPos = FTSDataOffset( Hdr );
     size_t      count1 = 0;
     size_t      count2 = 0;
     size_t      items = 1;
     uint16_t    word;
-    while( nextPos < Hdr.searchOffset + Hdr.searchSize ) {
+    while( nextPos < FTSDataOffset( Hdr ) + Hdr.searchSize ) {
         fseek( in, nextPos, SEEK_SET );
         fread( &d, sizeof( FTS8Data ), 1, in );
         nextPos += d.size;
@@ -152,12 +153,12 @@ static void processFTS8( FILE *in, FILE *out )
 static void processFTS16( FILE *in, FILE *out )
 {
     FTS16Data   d;
-    uint32_t    nextPos = Hdr.searchOffset;
+    uint32_t    nextPos = FTSDataOffset( Hdr );
     size_t      count1 = 0;
     size_t      count2 = 0;
     size_t      items = 1;
     uint16_t    word;
-    while( nextPos < Hdr.searchOffset + Hdr.searchSize ) {
+    while( nextPos < FTSDataOffset( Hdr ) + Hdr.searchSize ) {
         fseek( in, nextPos, SEEK_SET );
         fread( &d, sizeof( FTS16Data ), 1, in );
         nextPos += d.size;

@@ -57,8 +57,7 @@ struct IpfHeader {
     STD1::uint16_t  icmdCount;          // number of icmd index items
     STD1::uint32_t  icmdOffset;         // file offset to icmd index items
     STD1::uint32_t  icmdSize;           // size of icmd index table
-    STD1::uint32_t  searchOffset:31;    // file offset to full text search table
-    STD1::uint32_t  recSize:1;          // if high bit set, size of search record size is 16-bit
+    STD1::uint32_t  searchOffset;       // file offset to full text search table; if high bit set, size of search record size is 16-bit
     STD1::uint32_t  searchSize;         // size of full text search table
     STD1::uint16_t  cellCount;          // number of cells
     STD1::uint32_t  cellOffsetOffset;   // file offset to array of file offsets to cells
@@ -73,6 +72,7 @@ struct IpfHeader {
     STD1::uint32_t  extOffset;          // file offset to extended data block
     STD1::uint8_t   reserved[ 12 ];     // reserved for future use
     char            title[ 48 ];        // title of database
+
     IpfHeader();
     void write( std::FILE *out ) const;
 };
@@ -94,11 +94,15 @@ struct IpfExtHeader {
     STD1::uint32_t  ctrlOffset;         // file offset to button control data
     STD1::uint32_t  ctrlSize;           // size of button control data
     STD1::uint32_t  reserved[ 4 ];      // reserved for future use
+
     IpfExtHeader() { std::memset( this, 0, sizeof( IpfExtHeader) ); };
     STD1::uint32_t write( std::FILE *out ) const;
 };
 
 #pragma pack(pop)
+
+#define IsFTS16Data(x)      (((x).searchOffset & (1L << 31)) != 0)
+#define FTSDataOffset(x)    ((x).searchOffset & 0x7fffffffL)
 
 #endif //IPFHEADER_INCLUDED
 

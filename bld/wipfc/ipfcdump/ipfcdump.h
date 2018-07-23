@@ -27,8 +27,7 @@ typedef struct {
     uint16_t    icmdCount;          // number of icmd index items
     uint32_t    icmdOffset;         // file offset to icmd index items
     uint32_t    icmdSize;           // size of icmd index table
-    uint32_t    searchOffset:31;    // file offset to full text search table
-    uint32_t    recSize:1;          // if high bit set, size of search record size is 16-bit
+    uint32_t    searchOffset;       // file offset to full text search table; if high bit set, size of search record size is 16-bit
     uint32_t    searchSize;         // size of full text search table
     uint16_t    cellCount;          // number of words
     uint32_t    cellOffsetOffset;   // file offset to array of file offsets to cells
@@ -64,6 +63,9 @@ typedef struct {
     uint32_t    ctrlSize;            // size of button control data
     uint32_t    reserved[4];         // reserved for future use
 } IpfExtHeader;
+
+#define IsFTS16Data(x)      (((x).searchOffset & (1L <<31)) != 0)
+#define FTSDataOffset(x)    ((x).searchOffset & 0x7fffffffL)
 
 typedef struct {
     uint8_t     size;

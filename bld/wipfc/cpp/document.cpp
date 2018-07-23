@@ -436,7 +436,7 @@ void Document::build()
     std::for_each( pages.begin(), pages.end(), std::mem_fun( &Page::buildLocalDictionary ) );
     std::for_each( cells.begin(), cells.end(), std::mem_fun( &Cell::build ) );
     if( compiler.searchable() && dict->buildFTS() ) {   //build FTS from GlobalDictionary
-        hdr->recSize = true;
+        hdr->searchOffset |= 1L << 31;
     }
 }
 /***************************************************************************/
@@ -476,7 +476,7 @@ void Document::write( std::FILE *out )
     hdr->cellOffsetOffset = writeCellOffsets( out );
     eHdr->childPagesOffset = writeChildWindows( out );
     if( compiler.searchable() ) {
-        hdr->searchOffset = dict->writeFTS( out, hdr->recSize );
+        hdr->searchOffset = dict->writeFTS( out, IsFTS16Data( *hdr ) );
         hdr->searchSize = dict->ftsLength();
     }
     hdr->extOffset = eHdr->write( out );

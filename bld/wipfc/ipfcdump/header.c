@@ -35,8 +35,8 @@ void readHeader( FILE *in, FILE *out )
     fprintf( out, "  IpfHeader.icmdCount:        %8.4x (%hu)\n", Hdr.icmdCount, Hdr.icmdCount );
     fprintf( out, "  IpfHeader.icmdOffset:       %8.8x (%lu)\n", Hdr.icmdOffset, Hdr.icmdOffset );
     fprintf( out, "  IpfHeader.icmdSize:         %8.8x (%lu)\n", Hdr.icmdSize, Hdr.icmdSize );
-    fprintf( out, "  IpfHeader.searchOffset:     %8.8x (%lu)\n", Hdr.searchOffset, Hdr.searchOffset );
-    fprintf( out, "            Size of search record is %s-bit\n", ( Hdr.recSize ? "16" : "8" ) );
+    fprintf( out, "  IpfHeader.searchOffset:     %8.8x (%lu)\n", FTSDataOffset( Hdr ), FTSDataOffset( Hdr ) );
+    fprintf( out, "            Size of search record is %s-bit\n", IsFTS16Data( Hdr ) ? "16" : "8" );
     fprintf( out, "  IpfHeader.searchSize:       %8.8x (%lu)\n", Hdr.searchSize, Hdr.searchSize );
     fprintf( out, "  IpfHeader.cellCount:        %8.4x (%hu)\n", Hdr.cellCount, Hdr.cellCount );
     fprintf( out, "  IpfHeader.cellOffsetOffset: %8.8x (%lu)\n", Hdr.cellOffsetOffset, Hdr.cellOffsetOffset );
