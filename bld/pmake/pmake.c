@@ -45,6 +45,7 @@
 #include <setjmp.h>
 #include <stdarg.h>
 #include "wio.h"
+#include "bool.h"
 #include "watcom.h"
 #include "pmake.h"
 #include "iopath.h"
@@ -63,9 +64,6 @@
 #define ALL_TARGET              "all"
 
 #define COOKIE          "pmake"
-
-#define TARGET_NOT_USED 0
-#define TARGET_USED     1
 
 #define SKIP_SPACES(p)  while( isspace(*(p)) ) ++(p)
 #define SKIP_NOSPACE(p) while( *(p) != '\0' && !isspace(*(p)) ) ++(p)
@@ -149,7 +147,9 @@ static void ResetMatches( void )
     target_list *curr;
 
     for( curr = Options.targ_list; curr != NULL; curr = curr->next ) {
-        curr->used = TARGET_NOT_USED;
+        if( curr->flags == TARGET_USED ) {
+            curr->flags = TARGET_NOT_USED;
+        }
     }
 }
 
@@ -183,13 +183,12 @@ static unsigned CompareTargets( const char *line )
     SKIP_SPACES( line );
     while( *line != '\0' ) {
         for( curr = Options.targ_list; curr != NULL; curr = curr->next ) {
-            if( curr->used == TARGET_NOT_USED ) {
-                size_t len = strlen( curr->string );
+            if( curr->flags == TARGET_NOT_USED ) {
+                size_t len = curr->len;
                 if( strnicmp( line, curr->string, len ) == 0 ) {
-                    if( line[len] == '\0' || isspace( line[len] ) ) {
-                        line += len;
-                        curr->used = TARGET_USED;
-                        break;
+                    unsigned char c = line[len];
+                    if( c == '\0' || isspace( c ) ) {
+                        curr->flags = TARGET_USED;
                     }
                 }
             }
@@ -230,7 +229,7 @@ static void InitQueue( const char *cwd )
     qp = MAlloc( sizeof( *qp ) + len );
     qp->next = NULL;
     qp->depth = 0;
-    memcpy( qp->name, cwd, len + 1 );
+    StringCopy( qp->name, cwd );
     QueueHead = qp;
     QueueTail = qp;
 }
@@ -333,37 +332,45 @@ static const char *RelativePath( const char *oldpath, const char *newpath )
 
 #define MAX_EVAL_DEPTH  64
 
-static int TrueTarget( void )
+static bool TrueTarget( void )
 {
     target_list *curr;
-    char        eval_stk[MAX_EVAL_DEPTH];
+    bool        eval_stk[MAX_EVAL_DEPTH];
     int         sp;
 
-    eval_stk[0] = TARGET_NOT_USED;
+    eval_stk[0] = false;
     sp = -1;
     for( curr = Options.targ_list; curr != NULL; curr = curr->next ) {
-        if( stricmp( curr->string, ".and" ) == 0 ) {
+        switch( curr->flags ) {
+        case TARGET_OPERATOR_AND:
             if( sp < 1 )
                 error( "too few elements on expr stack" );
             --sp;
             eval_stk[sp] &= eval_stk[sp + 1];
-        } else if( stricmp( curr->string, ".or" ) == 0 ) {
+            break;
+        case TARGET_OPERATOR_OR:
             if( sp < 1 )
                 error( "too few elements on expr stack" );
             --sp;
             eval_stk[sp] |= eval_stk[sp + 1];
-        } else if( stricmp( curr->string, ".not" ) == 0 ) {
+            break;
+        case TARGET_OPERATOR_NOT:
             if( sp < 0 )
                 error( "too few elements on expr stack" );
             eval_stk[sp] = !eval_stk[sp];
-        } else {
-            if( stricmp( curr->string, ALL_TARGET ) == 0 ) {
-                curr->used = TARGET_USED;
-            }
+            break;
+        case TARGET_ALL:
             if( ++sp >= MAX_EVAL_DEPTH ) {
                 error( "expr stack depth exceeds max of %u", MAX_EVAL_DEPTH );
             }
-            eval_stk[sp] = curr->used;
+            eval_stk[sp] = true;
+            break;
+        default:
+            if( ++sp >= MAX_EVAL_DEPTH ) {
+                error( "expr stack depth exceeds max of %u", MAX_EVAL_DEPTH );
+            }
+            eval_stk[sp] = ( curr->flags == TARGET_USED );
+            break;
         }
     }
     while( sp > 0 ) {
@@ -433,15 +440,12 @@ static void ProcessDirectoryQueue( void )
 {
     DIR                 *dirh;
     struct dirent       *dp;
-    char                *makefile;
+    const char          *makefile;
 #ifdef __UNIX__
-    struct stat          buf;
+    struct stat         buf;
 #endif
 
     makefile = Options.makefile;
-    if( makefile == NULL ) {
-        makefile = DEFAULT_MAKE_FILE;
-    }
     while( QueueHead != NULL ) {
         /* process directory */
         dirh = opendir( "." );
@@ -537,10 +541,9 @@ static void DoIt( void )
 {
     target_list **owner;
     target_list *curr;
+    char        *arg;
 
     memset( &Options, 0, sizeof( Options ) );
-    Options.command = MAlloc( sizeof( DEFAULT_MAKE_CMD ) );
-    StringCopy( Options.command, DEFAULT_MAKE_CMD );
     Options.levels = INT_MAX;
     SKIP_SPACES( CmdLine );
     if( *CmdLine == '\0' || *CmdLine == '?' ) {
@@ -566,12 +569,14 @@ static void DoIt( void )
             Options.display = 1;
             break;
         case 'f':
-            MFree( Options.makefile );
-            Options.makefile = GetString();
-            if( Options.makefile == NULL ) {
+            arg = GetString();
+            if( arg == NULL ) {
                 Options.want_help = 1;
                 return;
             }
+            MFree( Options.makefile );
+            Options.makefile = MAlloc( strlen( arg ) + 1 );
+            StringCopy( Options.makefile, arg );
             break;
         case 'i':
             Options.ignore_errors = 1;
@@ -580,12 +585,14 @@ static void DoIt( void )
             Options.levels = GetNumber( 1 );
             break;
         case 'm':
-            MFree( Options.command );
-            Options.command = GetString();
-            if( Options.command == NULL ) {
+            arg = GetString();
+            if( arg == NULL ) {
                 Options.want_help = 1;
                 return;
             }
+            MFree( Options.command );
+            Options.command = MAlloc( strlen( arg ) + 1 );
+            StringCopy( Options.command, arg );
             break;
         case 'o':
             Options.optimize = 1;
@@ -607,6 +614,8 @@ static void DoIt( void )
     if( !Options.notargets ) {
         owner = &Options.targ_list;
         for( ;; ) {
+            target_flags    flags;
+
             SKIP_SPACES( CmdLine );
             if( *CmdLine == '\0' )
                 break;
@@ -616,9 +625,38 @@ static void DoIt( void )
                 }
                 break;
             }
-            curr = MAlloc( sizeof( *Options.targ_list ) );
+            arg = GetString();
+            if( stricmp( arg, ".and" ) == 0 ) {
+                flags = TARGET_OPERATOR_AND;
+            } else if( stricmp( arg, ".or" ) == 0 ) {
+                flags = TARGET_OPERATOR_OR;
+            } else if( stricmp( arg, ".not" ) == 0 ) {
+                flags = TARGET_OPERATOR_NOT;
+            } else if( stricmp( arg, ALL_TARGET ) == 0 ) {
+                flags = TARGET_ALL;
+            } else {
+                flags = TARGET_NOT_USED;
+            }
+            switch( flags ) {
+            case TARGET_OPERATOR_AND:
+            case TARGET_OPERATOR_OR:
+            case TARGET_OPERATOR_NOT:
+            case TARGET_ALL:
+                curr = MAlloc( sizeof( *Options.targ_list ) - 1 );
+                curr->len = 0;
+                break;
+            case TARGET_NOT_USED:
+            default:
+                {
+                    size_t len = strlen( arg );
+                    curr = MAlloc( sizeof( *Options.targ_list ) + len );
+                    StringCopy( curr->string, arg );
+                    curr->len = len;
+                }
+                break;
+            }
+            curr->flags = flags;
             curr->next = NULL;
-            curr->string = GetString();
             *owner = curr;
             owner = &curr->next;
         }
@@ -626,12 +664,25 @@ static void DoIt( void )
     if( Options.targ_list == NULL ) {
         Options.targ_list = MAlloc( sizeof( *Options.targ_list ) );
         Options.targ_list->next = NULL;
-        Options.targ_list->string = MAlloc( sizeof( ALL_TARGET ) );
-        StringCopy( Options.targ_list->string, ALL_TARGET );
+        Options.targ_list->flags = TARGET_ALL;
+        Options.targ_list->len = 0;
     }
     SKIP_SPACES( CmdLine );
-    Options.cmd_args = CmdLine;
+    Options.cmd_args = MAlloc( strlen( CmdLine ) + 1 );
+    StringCopy( Options.cmd_args, CmdLine );
     /* end of command line processing */
+
+    /* setup default value if not defined on command line */
+    if( Options.makefile == NULL || *Options.makefile == '\0' ) {
+        MFree( Options.makefile );
+        Options.makefile = MAlloc( sizeof( DEFAULT_MAKE_FILE ) );
+        StringCopy( Options.makefile, DEFAULT_MAKE_FILE );
+    }
+    if( Options.command == NULL || *Options.command == '\0' ) {
+        MFree( Options.command );
+        Options.command = MAlloc( sizeof( DEFAULT_MAKE_CMD ) );
+        StringCopy( Options.command, DEFAULT_MAKE_CMD );
+    }
 
     /* start directory tree processing */
     NumDirectories = 0;
@@ -670,11 +721,7 @@ pmake_data *PMakeBuild( char *cmd )
 
 void PMakeCommand( pmake_data *data, char *cmd )
 {
-    if( data->makefile == NULL ) {
-        sprintf( cmd, "%s %s", data->command, data->cmd_args );
-    } else {
-        sprintf( cmd, "%s -f %s %s", data->command, data->makefile, data->cmd_args );
-    }
+    sprintf( cmd, "%s -f %s %s", data->command, data->makefile, data->cmd_args );
 }
 
 void PMakeCleanup( pmake_data *data )
@@ -698,5 +745,9 @@ void PMakeCleanup( pmake_data *data )
     if( data->makefile != NULL ) {
         MFree( data->makefile );
         data->makefile = NULL;
+    }
+    if( data->cmd_args != NULL ) {
+        MFree( data->cmd_args );
+        data->cmd_args = NULL;
     }
 }

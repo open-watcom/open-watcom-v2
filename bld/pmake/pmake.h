@@ -31,20 +31,28 @@
 
 #define PMAKE_COMMAND_SIZE  512
 
-typedef struct pmake_list       pmake_list;
-struct pmake_list {
-    pmake_list          *next;
+typedef enum {
+    TARGET_NOT_USED,
+    TARGET_USED,
+    TARGET_ALL,
+    TARGET_OPERATOR_AND,
+    TARGET_OPERATOR_OR,
+    TARGET_OPERATOR_NOT
+} target_flags;
+
+typedef struct pmake_list {
+    struct pmake_list   *next;
     unsigned            priority;
     unsigned            depth;
     char                dir_name[1];    /* variable sized */
-};
+} pmake_list;
 
-typedef struct target_list      target_list;
-struct target_list {
-    target_list         *next;
-    char                *string;
-    char                used;
-};
+typedef struct target_list {
+    struct target_list  *next;
+    size_t              len;
+    target_flags        flags;
+    char                string[1];      /* variable sized */
+} target_list;
 
 typedef struct {
     unsigned    verbose : 1;
@@ -58,7 +66,7 @@ typedef struct {
     unsigned    ignore_errors : 1;
     unsigned    levels;
     char        *command;
-    const char  *cmd_args;
+    char        *cmd_args;
     char        *makefile;
     pmake_list  *dir_list;
     target_list *targ_list;
