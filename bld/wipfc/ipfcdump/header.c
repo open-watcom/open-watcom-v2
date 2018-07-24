@@ -35,8 +35,8 @@ void readHeader( FILE *in, FILE *out )
     fprintf( out, "  IpfHeader.icmdCount:        %8.4x (%hu)\n", Hdr.icmdCount, Hdr.icmdCount );
     fprintf( out, "  IpfHeader.icmdOffset:       %8.8x (%lu)\n", Hdr.icmdOffset, Hdr.icmdOffset );
     fprintf( out, "  IpfHeader.icmdSize:         %8.8x (%lu)\n", Hdr.icmdSize, Hdr.icmdSize );
-    fprintf( out, "  IpfHeader.searchOffset:     %8.8x (%lu)\n", FTSDataOffset( Hdr ), FTSDataOffset( Hdr ) );
-    fprintf( out, "            Size of search record is %s-bit\n", IsFTS16Data( Hdr ) ? "16" : "8" );
+    fprintf( out, "  IpfHeader.searchOffset:     %8.8x (%lu)\n", dataOffsetFTS( &Hdr ), dataOffsetFTS( &Hdr ) );
+    fprintf( out, "            Size of search record is %s-bit\n", isBigFTS( &Hdr ) ? "16" : "8" );
     fprintf( out, "  IpfHeader.searchSize:       %8.8x (%lu)\n", Hdr.searchSize, Hdr.searchSize );
     fprintf( out, "  IpfHeader.cellCount:        %8.4x (%hu)\n", Hdr.cellCount, Hdr.cellCount );
     fprintf( out, "  IpfHeader.cellOffsetOffset: %8.8x (%lu)\n", Hdr.cellOffsetOffset, Hdr.cellOffsetOffset );
@@ -72,4 +72,14 @@ void readHeader( FILE *in, FILE *out )
     fprintf( out, "  IpfExtHeader.ctrlSize:         %8.8x (%lu)\n", eHdr.ctrlSize, eHdr.ctrlSize );
     fprintf( out, "  IpfExtHeader.reserved:         %8.8x %8.8x %8.8x %8.8x\n",
         eHdr.reserved[0], eHdr.reserved[1], eHdr.reserved[2], eHdr.reserved[3] );
+}
+
+int isBigFTS( IpfHeader *hdr )
+{
+    return( (hdr->searchOffset & (1L <<31)) != 0 );
+}
+
+uint32_t dataOffsetFTS( IpfHeader *hdr )
+{
+    return( hdr->searchOffset & 0x7fffffffL );
 }

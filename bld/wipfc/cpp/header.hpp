@@ -75,6 +75,8 @@ struct IpfHeader {
 
     IpfHeader();
     void write( std::FILE *out ) const;
+    bool isBigFTS();
+    void setBigFTS( bool );
 };
 
 // Extended header info
@@ -100,9 +102,6 @@ struct IpfExtHeader {
 };
 
 #pragma pack(pop)
-
-#define IsFTS16Data(x)      (((x).searchOffset & (1L << 31)) != 0)
-#define FTSDataOffset(x)    ((x).searchOffset & 0x7fffffffL)
 
 #endif //IPFHEADER_INCLUDED
 

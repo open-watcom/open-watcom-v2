@@ -45,7 +45,7 @@ public:
     void onPage( std::size_t i );
     void build();
     //Only valid after build is run
-    bool bigFTS() { return dataSize + 2 > UINT8_MAX; };
+    bool isBigFTS() { return dataSize + 2 > UINT8_MAX; };
     std::size_t write( std::FILE* out, bool big ) const;
 private:
     FTSElement( const FTSElement& rhs );            //no copy

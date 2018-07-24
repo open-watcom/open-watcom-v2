@@ -35,6 +35,7 @@
 #include "errors.hpp"
 
 IpfHeader::IpfHeader()
+/********************/
 {
     std::memset( this, 0, sizeof( IpfHeader ) );
     id[ 0 ] = 'H';
@@ -46,19 +47,33 @@ IpfHeader::IpfHeader()
     version_lo = 2;
     maxLocalIndex = 245;
 };
-/*****************************************************************************/
+
 void IpfHeader::write( std::FILE *out ) const
+/*******************************************/
 {
     std::fseek( out, 0, SEEK_SET ); //exception: this element has a fixed position
-    if( std::fwrite( this, sizeof( IpfHeader ), 1, out ) != 1 )
+    if( std::fwrite( this, sizeof( IpfHeader ), 1, out ) != 1 ) {
         throw FatalError( ERR_WRITE );
+    }
 }
-/*****************************************************************************/
+
+bool IpfHeader::isBigFTS()
+/************************/
+{
+    return( (searchOffset & (1L << 31)) != 0 );
+}
+
+void IpfHeader::setBigFTS( bool big )
+/***********************************/
+{
+    searchOffset |= static_cast< STD1::uint32_t >( big ) << 31;
+}
+
 STD1::uint32_t IpfExtHeader::write( std::FILE *out ) const
+/********************************************************/
 {
     STD1::uint32_t start( std::ftell( out ) );
     if( std::fwrite( this, sizeof( IpfExtHeader ), 1, out ) != 1 )
         throw FatalError( ERR_WRITE );
     return start;
 }
-

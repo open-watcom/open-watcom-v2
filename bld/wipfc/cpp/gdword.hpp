@@ -54,7 +54,7 @@ public:
     void setPages( std::size_t count ) { fts.setPages( count ); };
     void onPage( std::size_t i ) { fts.onPage( i ); };
     void buildFTS() { fts.build(); };
-    bool bigFTS() { return fts.bigFTS(); };
+    bool isBigFTS() { return fts.isBigFTS(); };
     std::size_t writeFTS( std::FILE* out, bool big ) { return fts.write( out, big ); };
 private:
     GlobalDictionaryWord( const GlobalDictionaryWord& rhs );            //no copy

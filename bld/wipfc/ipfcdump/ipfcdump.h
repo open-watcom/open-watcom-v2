@@ -626,29 +626,30 @@ typedef struct {
 } ChildPages;
 #pragma pack(pop)
 
-        void    readHeader( FILE *, FILE * );
-        void    readGNames( FILE *, FILE * );
-        void    readExtFiles( FILE *, FILE * );
-        void    readNLS( FILE *, FILE * );
-        void    readFonts( FILE *, FILE * );
-        void    readControls( FILE *, FILE * );
-        void    readStrings( FILE *, FILE * );
-        void    readTOC( FILE *, FILE * );
-        char   *getPosString( uint8_t );
-        char   *getDPosString( uint8_t );
-        void    readDictionary( FILE *, FILE * );
-        void    readPanels( FILE *, FILE * );
-        void    readCells( FILE *, FILE * );
-        void    readIndex( FILE *, FILE * );
-        void    readIcmdIndex( FILE *, FILE * );
-        void    readFTS( FILE *, FILE *);
-        void    readBitMaps( FILE *, FILE * );
-        void    readChildPages( FILE *, FILE * );
-        size_t  readDictString( FILE *, wchar_t * );
-const   char   *bstring( uint8_t );
+extern void         readHeader( FILE *, FILE * );
+extern void         readGNames( FILE *, FILE * );
+extern void         readExtFiles( FILE *, FILE * );
+extern void         readNLS( FILE *, FILE * );
+extern void         readFonts( FILE *, FILE * );
+extern void         readControls( FILE *, FILE * );
+extern void         readStrings( FILE *, FILE * );
+extern void         readTOC( FILE *, FILE * );
+extern char         *getPosString( uint8_t );
+extern char         *getDPosString( uint8_t );
+extern void         readDictionary( FILE *, FILE * );
+extern void         readPanels( FILE *, FILE * );
+extern void         readCells( FILE *, FILE * );
+extern void         readIndex( FILE *, FILE * );
+extern void         readIcmdIndex( FILE *, FILE * );
+extern void         readFTS( FILE *, FILE *);
+extern void         readBitMaps( FILE *, FILE * );
+extern void         readChildPages( FILE *, FILE * );
+extern size_t       readDictString( FILE *, wchar_t * );
+extern const char   *bstring( uint8_t );
+extern int          isBigFTS( IpfHeader *hdr );
+extern uint32_t     dataOffsetFTS( IpfHeader *hdr );
 
 //Global variables
-extern IpfHeader Hdr;
+extern IpfHeader    Hdr;
 extern IpfExtHeader eHdr;
-extern wchar_t **Vocabulary;
-
+extern wchar_t      **Vocabulary;

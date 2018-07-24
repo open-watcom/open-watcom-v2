@@ -92,8 +92,9 @@ bool GlobalDictionary::buildFTS()
     bool big( false );
     for( ConstWordIter itr = words.begin(); itr != words.end(); ++itr ) {
         (*itr)->buildFTS();
-        if( (*itr)->bigFTS() )
+        if( (*itr)->isBigFTS() ) {
             big = true;
+        }
     }
     return big;
 }
