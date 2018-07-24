@@ -39,7 +39,7 @@
 
 class Xmp : public Tag {
 public:
-    Xmp( Document* d, Element *p, const std::wstring* f, unsigned int r, \
+    Xmp( Document* d, Element *p, const std::wstring* f, unsigned int r,
         unsigned int c ) : Tag( d, p, f, r, c, Tag::SPACES ) { };
     ~Xmp() { };
     Lexer::Token parse( Lexer* lexer );
@@ -51,7 +51,7 @@ private:
 
 class EXmp : public Tag {
 public:
-    EXmp( Document* d, Element *p, const std::wstring* f, unsigned int r, \
+    EXmp( Document* d, Element *p, const std::wstring* f, unsigned int r,
         unsigned int c ) : Tag( d, p, f, r, c ) { };
     ~EXmp() { };
     void buildText( Cell* cell );

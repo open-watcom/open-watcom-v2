@@ -106,13 +106,13 @@ Lexer::Token CtrlDef::parse( Lexer* lexer )
                 break;
             }
             else if( lexer->tagId() == Lexer::PBUTTON ) {
-                PButton* pb( new PButton( document, 0, document->dataName(), \
+                PButton* pb( new PButton( document, 0, document->dataName(),
                     document->dataLine(), document->dataCol() ) );
                 appendChild( pb );
                 tok = pb->parse( lexer );
             }
             else if( lexer->tagId() == Lexer::CTRL ) {
-                Ctrl* ctrl( new Ctrl( document, 0, document->dataName(), \
+                Ctrl* ctrl( new Ctrl( document, 0, document->dataName(),
                     document->dataLine(), document->dataCol() ) );
                 appendChild( ctrl );
                 tok = ctrl->parse( lexer );

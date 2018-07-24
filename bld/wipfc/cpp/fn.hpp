@@ -44,7 +44,7 @@ class GlobalDictionaryWord; //forward references
 
 class Fn : public Tag {
 public:
-    Fn( Document* d, Element *p, const std::wstring* f, unsigned int r, \
+    Fn( Document* d, Element *p, const std::wstring* f, unsigned int r,
         unsigned int c ) : Tag( d, p, f, r, c ), id( 0 ) { };
     ~Fn() { };
     Lexer::Token parse( Lexer* lexer );

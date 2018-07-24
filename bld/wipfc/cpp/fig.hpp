@@ -39,7 +39,7 @@
 
 class Fig : public Tag {
 public:
-    Fig( Document* d, Element *p, const std::wstring* f, unsigned int r, \
+    Fig( Document* d, Element *p, const std::wstring* f, unsigned int r,
         unsigned int c ) : Tag( d, p, f, r, c, Tag::LITERAL ) { };
     ~Fig() { };
     Lexer::Token parse( Lexer* lexer );
@@ -51,7 +51,7 @@ private:
 
 class EFig : public Tag {
 public:
-    EFig( Document* d, Element *p, const std::wstring* f, unsigned int r, \
+    EFig( Document* d, Element *p, const std::wstring* f, unsigned int r,
         unsigned int c ) : Tag( d, p, f, r, c ) { };
     ~EFig() { };
     void buildText( Cell* cell );

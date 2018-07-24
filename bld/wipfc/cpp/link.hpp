@@ -72,7 +72,7 @@ public:
         LAUNCH,
         INFORM
     };
-    Link( Document* d, Element *p, const std::wstring* f, unsigned int r, \
+    Link( Document* d, Element *p, const std::wstring* f, unsigned int r,
         unsigned int c, WsHandling ws = Tag::NONE ) : Tag( d, p, f, r, c, ws ),
         refid( 0 ), res( 0 ), x( 0 ), y( 0 ), cx( 0 ), cy( 0 ), type( TOPIC ),
         automatic( false ), child( false ), dependent( false ), doGroup( false ),
@@ -122,7 +122,7 @@ private:
 
 class ELink : public Tag {
 public:
-    ELink( Document* d, Element *p, const std::wstring* f, unsigned int r, \
+    ELink( Document* d, Element *p, const std::wstring* f, unsigned int r,
     unsigned int c, WsHandling ws = Tag::NONE ) : Tag( d, p, f, r, c, ws ) { };
     ~ELink() { };
     void buildText( Cell* cell );

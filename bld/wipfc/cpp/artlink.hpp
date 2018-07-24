@@ -39,7 +39,7 @@
 
 class Artlink : public Tag {
 public:
-    Artlink( Document* d, Element *p, const std::wstring* f, unsigned int r, \
+    Artlink( Document* d, Element *p, const std::wstring* f, unsigned int r,
         unsigned int c ) : Tag( d, p, f, r, c ) { };
     ~Artlink() { };
     Lexer::Token parse( Lexer* lexer );
@@ -51,7 +51,7 @@ private:
 
 class EArtlink : public Tag {
 public:
-    EArtlink( Document* d, Element *p, const std::wstring* f, unsigned int r, \
+    EArtlink( Document* d, Element *p, const std::wstring* f, unsigned int r,
         unsigned int c ) : Tag( d, p, f, r, c ) { };
     ~EArtlink() { };
     void buildText( Cell* cell ) { (void)cell; };

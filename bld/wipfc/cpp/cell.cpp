@@ -98,7 +98,7 @@ STD1::uint32_t Cell::write( std::FILE* out ) const
         throw FatalError( ERR_WRITE );
     if( std::fwrite( &text[0], sizeof( STD1::uint8_t ), text.size(), out ) != text.size() )
         throw FatalError( ERR_WRITE );
-    if( !localDictionary.empty() && \
+    if( !localDictionary.empty() &&
         std::fwrite( &localDictionary[0],
                      sizeof( STD1::uint16_t ),
                      localDictionary.size(),

@@ -409,7 +409,7 @@ void Link::doTopic( Cell* cell )
                     document->addXRef( res, xref );
                 }
                 std::vector< STD1::uint8_t > esc;
-                esc.reserve( 7 + sizeof( PageOrigin ) + sizeof( PageSize ) + \
+                esc.reserve( 7 + sizeof( PageOrigin ) + sizeof( PageSize ) +
                     sizeof( PageStyle ) + sizeof( PageGroup ) );
                 esc.push_back( 0xFF );      //ESC
                 esc.push_back( 4 );         //size
