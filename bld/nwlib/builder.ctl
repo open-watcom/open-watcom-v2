@@ -54,6 +54,7 @@ set PROJDIR=<CWD>
     <CCCMD> ntx64.dll/wlibd.dll     <OWRELROOT>/binnt64/
     <CCCMD> linuxx64/wlib.exe       <OWRELROOT>/binl64/wlib
     <CCCMD> linuxarm/wlib.exe       <OWRELROOT>/arml/wlib
+    <CCCMD> osxx64/wlib.exe         <OWRELROOT>/osx64/wlib
 
 [ BLOCK . . ]
 

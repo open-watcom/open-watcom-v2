@@ -67,6 +67,8 @@ set PROJDIR=<CWD>
 
     <CCCMD> linuxarm/wrc.exe        <OWRELROOT>/arml/wrc
     <CCCMD> linuxarm/*.uni          <OWRELROOT>/arml/
+    <CCCMD> osxx64/wrc.exe          <OWRELROOT>/osx64/wrc
+    <CCCMD> osxx64/*.uni            <OWRELROOT>/osx64/
 
 [ BLOCK . . ]
 

@@ -36,6 +36,7 @@ set PROJDIR=<CWD>
     <CCCMD> ntx64/dmpobj.exe     <OWRELROOT>/binnt64/
     <CCCMD> linuxx64/dmpobj.exe  <OWRELROOT>/binl64/dmpobj
     <CCCMD> linuxarm/dmpobj.exe  <OWRELROOT>/arml/dmpobj
+    <CCCMD> osxx64/dmpobj.exe    <OWRELROOT>/osx64/dmpobj
 
 [ BLOCK . . ]
 

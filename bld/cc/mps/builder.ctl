@@ -61,6 +61,8 @@ set PROJDIR=<CWD>
     <CCCMD> linuxx64/wccmps01.int               <OWRELROOT>/binl64/
     <CCCMD> linuxarm/<OWOBJDIR>/wccmps.exe      <OWRELROOT>/arml/wccmps
     <CCCMD> linuxarm/wccmps01.int               <OWRELROOT>/arml/
+    <CCCMD> osxx64/<OWOBJDIR>/wccmps.exe        <OWRELROOT>/osx64/wccmps
+    <CCCMD> osxx64/wccmps01.int                 <OWRELROOT>/osx64/
 
 [ BLOCK . . ]
 

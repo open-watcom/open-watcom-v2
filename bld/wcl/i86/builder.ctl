@@ -41,6 +41,7 @@ set PROJDIR=<CWD>
     <CCCMD> ntx64/wcl.exe         <OWRELROOT>/binnt64/
     <CCCMD> linuxx64/wcl.exe      <OWRELROOT>/binl64/wcl
     <CCCMD> linuxarm/wcl.exe      <OWRELROOT>/arml/wcl
+    <CCCMD> osxx64/wcl.exe        <OWRELROOT>/osx64/wcl
 
 [ BLOCK . . ]
 
