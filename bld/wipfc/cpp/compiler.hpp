@@ -59,7 +59,7 @@ public:
     //add a file name to the set of file names
     std::wstring* addFileName( std::wstring* name );
     //set the output file name
-    void setOutputFile( std::string& name ) { outFileName = name; };
+    void setOutputFile( std::string& name );
     //set the warning level
     void setWarningLevel( int wl ) { warningLevel = wl; };
     //set the current locale
@@ -98,7 +98,7 @@ public:
 private:
     Compiler( const Compiler &rhs );            //no copy constructor
     Compiler& operator=( const Compiler &rhs ); //no assignment
-    std::string outFileName;
+    std::wstring outFileName;
     std::auto_ptr< Lexer > lexer;
     std::vector< IpfData* > inFiles;            //a stack of files being parsed
     typedef std::vector< IpfData* >::iterator InFilesIter;

@@ -77,6 +77,10 @@ std::wstring* Compiler::addFileName( std::wstring* name )
         delete name;
     return *status.first;
 }
+void Compiler::setOutputFile( std::string& name )
+{
+    def_mbtow_string( name, outFileName );
+}
 /*****************************************************************************/
 int Compiler::compile()
 {
@@ -85,7 +89,9 @@ int Compiler::compile()
     doc->setOutputType( outType );
     doc->parse( lexer.get() );
     doc->build();
-    std::FILE* out( std::fopen( outFileName.c_str() , "wb" ) );
+    std::string outfname;
+    def_wtomb_string( outFileName, outfname );
+    std::FILE* out( std::fopen( outfname.c_str() , "wb" ) );
     if( !out )
         throw FatalIOError( ERR_OPEN, L"for inf or hlp output" );
     try {
@@ -102,25 +108,24 @@ int Compiler::compile()
     std::fclose( out );
     if( xref ) {
         //TODO: convert to ostream when streams and strings mature
-        std::string fname( outFileName );
-        fname.erase( fname.rfind( '.' ) );
-        fname += ".log";
-        out = std::fopen( fname.c_str(), "w" );
-        if( !out )
+        std::string logfname;
+        def_wtomb_string( outFileName, logfname );
+        logfname.erase( logfname.rfind( '.' ) );
+        logfname += ".log";
+        std::FILE *logfp = std::fopen( logfname.c_str(), "w" );
+        if( !logfp )
             throw FatalIOError( ERR_OPEN, L"for log output" );
         try {
-            std::fprintf( out, "Summary for %s\n\n", outFileName.c_str() );
-            doc->summary( out );
-        }
-        catch( FatalError& e ) {
+            std::fprintf( logfp, "Summary for %s\n\n", outfname.c_str() );
+            doc->summary( logfp );
+        } catch( FatalError& e ) {
             retval = EXIT_FAILURE;
             printError( e.code );
-        }
-        catch( FatalIOError& e ) {
+        } catch( FatalIOError& e ) {
             retval = EXIT_FAILURE;
             printError( e.code, e.fname );
         }
-        std::fclose( out );
+        std::fclose( logfp );
     }
     return retval;
 }
