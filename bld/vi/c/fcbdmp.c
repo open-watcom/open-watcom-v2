@@ -32,7 +32,9 @@
 
 #include "vi.h"
 #include "win.h"
+#if !defined(__OSX__)
 #include <malloc.h>
+#endif
 
 #if !defined( NDEBUG ) && !defined( __WIN__ )
 

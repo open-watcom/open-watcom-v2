@@ -33,7 +33,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#if !defined(__OSX__)
 #include <malloc.h>
+#endif
 #include <setjmp.h>
 #if defined( __WATCOMC__ ) || !defined( __UNIX__ )
 #include <process.h>

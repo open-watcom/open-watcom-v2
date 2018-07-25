@@ -463,7 +463,7 @@ static void doTouch( void )
         }
         _splitpath2( item, sp_buf, &drive, &dir, NULL, NULL );
         number_of_successful_touches = 0;
-#ifdef __LINUX__
+#if defined(__LINUX__) || defined(__OSX__)
         strcpy( full_name, item );
         ndir = NULL;
         number_of_successful_touches += doTouchFile( full_name, ndir, &stamp );

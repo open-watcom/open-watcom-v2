@@ -6,6 +6,11 @@ ncurses_autodepends = .AUTODEPEND
 !include defrule.mif
 !include deftarg.mif
 
+!ifeq host_os osx
+# To work around duplicate inlined symbols, e.g. __sputc
+c_flags += -std=gnu89
+!endif
+
 .c: ../c
 
 ncurses_objs = &
