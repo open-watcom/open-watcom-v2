@@ -136,9 +136,9 @@ static void processCommandLine(int argc, char **argv, Compiler& c)
                         std::cout << "xx_YY is the root name of a localization file" << std::endl;
                         std::cout << "with the full name xx_YY.nls\nSee en_US.nls for an example." << std::endl;
                         info = true;
-                    }
-                    else
+                    } else {
                         c.setLocalization( argv[++count] );
+                    }
                     break;
                 case 'O':
                 case 'o':
@@ -157,9 +157,9 @@ static void processCommandLine(int argc, char **argv, Compiler& c)
                     if (argv[count][2] == '?') {
                         std::cout << "-wN where N is one of 1, 2, or 3" << std::endl;
                         info = true;
-                    }
-                    else
+                    } else {
                         c.setWarningLevel( std::atoi( argv[count] + 2 ));
+                    }
                     break;
                 case 'X':
                 case 'x':
@@ -169,11 +169,11 @@ static void processCommandLine(int argc, char **argv, Compiler& c)
                     usage();
                     break;
             }
-        }
-        else if( !inIndex )
+        } else if( !inIndex ) {
             inIndex = count;
-        else
+        } else {
             std::cout << "Warning: extra filename '" << argv[count] << "' will be ignored" << std::endl;
+        }
     }
     if( inIndex ) {
         std::string fullpath( canonicalPath( argv[ inIndex ] ) );
@@ -181,14 +181,14 @@ static void processCommandLine(int argc, char **argv, Compiler& c)
         if( !outIndex ) {
             std::string outFile( fullpath );
             outFile.erase( outFile.rfind( '.' ) );
-            if( c.outputType() == Compiler::INF )
+            if( c.outputType() == Compiler::INF ) {
                 outFile += ".inf";
-            else
+            } else {
                 outFile += ".hlp";
+            }
             c.setOutputFile( outFile );
         }
-    }
-    else {
+    } else {
         std::cout << "Fatal Error: You must specify an input file" << std::endl;
         std::exit( EXIT_FAILURE );
     }
@@ -196,8 +196,9 @@ static void processCommandLine(int argc, char **argv, Compiler& c)
         std::string fullpath( canonicalPath( argv[ outIndex ] ) );
         c.setOutputFile( fullpath );
     }
-    if( info )
+    if( info ) {
         std::exit( EXIT_SUCCESS );
+    }
 }
 /*****************************************************************************/
 static void usage()

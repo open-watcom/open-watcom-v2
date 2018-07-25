@@ -69,24 +69,23 @@ void FTSElement::onPage( std::size_t i )
 /***************************************************************************/
 void FTSElement::build()
 {
-    if( pageCount == 0 )
+    if( pageCount == 0 ) {
         comp = NONE;
-    else if( pageCount == maxPage )
+    } else if( pageCount == maxPage ) {
         comp = ALL;
-    else {
+    } else {
+        PageIter lnz;
+        PageIter fnz;
         std::size_t score[5];
         score[0] = pageCount * sizeof( STD1::uint16_t );
         score[1] = ( maxPage - pageCount ) * sizeof( STD1::uint16_t );
         //find the last non-zero byte
-        PageIter lnz( pages.end() - 1 );
-        while( lnz != pages.begin() && *lnz == 0 )
-            --lnz;
+        for( lnz = pages.end() - 1; lnz != pages.begin() && *lnz == 0; --lnz )
+            ;
         pages.erase( lnz + 1, pages.end() );    //remove bytes containing 0's from end
         score[2] = pages.size() * sizeof( STD1::uint8_t );
         //find first non-zero byte
-        PageIter fnz( pages.begin() );
-        while( fnz != pages.end() && *fnz == 0 ) {
-            ++fnz;
+        for( fnz = pages.begin(); fnz != pages.end() && *fnz == 0; ++fnz ) {
             ++firstPage;
         }
         score[3] = ( score[2] - firstPage ) * sizeof( STD1::uint8_t ) + sizeof( STD1::uint16_t );
@@ -97,9 +96,9 @@ void FTSElement::build()
             //rle encoding is 3 bytes
             encode( rle );
             score[4] = ( rle.size() + 1 ) * sizeof( STD1::uint8_t );
-        }
-        else
+        } else {
             score[4] = static_cast< std::size_t >( -1 );
+        }
         std::size_t index = 0;
         dataSize = score[0];
         for( std::size_t count = 1; count < sizeof( score ) / sizeof( score[0] ); ++count ) {
@@ -108,17 +107,16 @@ void FTSElement::build()
                 index = count;
             }
         }
-        if( index == 0 )    //in order of preference (complexity)
+        if( index == 0 ) {  //in order of preference (complexity)
             comp = PRESENT;
-        else if( index == 1 )
+        } else if( index == 1 ) {
             comp = ABSENT;
-        else if( index == 2 )
+        } else if( index == 2 ) {
             comp = TRUNC;
-        else if( index == 3 ) {
+        } else if( index == 3 ) {
             comp = DBL_TRUNC;
             pages.erase( pages.begin(), fnz );  //truncate front
-        }
-        else if( index == 4 ) {
+        } else if( index == 4 ) {
             comp = RLE;
             pages = rle;
         }
@@ -133,17 +131,16 @@ void FTSElement::encode( std::vector< STD1::uint8_t >& rle )
     std::vector< STD1::uint8_t > dif;
     ConstPageIter tst( pages.begin() );
     ConstPageIter itr( pages.begin() + 1 );
-    bool same( *itr == *tst  && *( itr + 1) == *tst  );
+    bool same( *itr == *tst  && *( itr + 1 ) == *tst );
     std::size_t sameCount( 2 );
-    while( itr != pages.end() ) {
+    for( ; itr != pages.end(); ++itr ) {
         if( same ) {
             if( *itr != *tst ) {
                 --sameCount;
                 if( sameCount < 0x80 ) {
                     rle.push_back( static_cast< STD1::uint8_t >( sameCount ) );
                     rle.push_back( *tst );
-                }
-                else {
+                } else {
                     //sameCount will never exceed 65536 because the number of pages
                     //must be less than 65536 (it's stored in a STD1::uint16_t)
                     rle.push_back( 0x80 );
@@ -153,28 +150,27 @@ void FTSElement::encode( std::vector< STD1::uint8_t >& rle )
                 }
                 tst = itr;
                 same = false;
-            }
-            else
+            } else {
                 ++sameCount;
-        }
-        else {
+            }
+        } else {
             if( *itr == *tst && itr + 1 != pages.end() && *( itr + 1 ) == *tst ) {
                 std::vector< STD1::uint8_t >::const_iterator byte( dif.begin() );
-                std::size_t difSize( dif.size() );
+                std::size_t difSize;
                 STD1::uint8_t code( 0xFF );
-                while( difSize > 128 ) {
+                for( difSize = dif.size(); difSize > 128; difSize -= 128 ) {
                     rle.push_back( code );
                     for( std::size_t count = 0; count <= 128; ++count ) {
                         rle.push_back( *byte );
                         ++byte;
                     }
-                    difSize -= 128;
                 }
                 if( difSize > 0 ) {
-                    if( difSize > 1 )
+                    if( difSize > 1 ) {
                         code = static_cast< STD1::uint8_t >( difSize - 1 ) | 0x80;
-                    else
+                    } else {
                         code = 0;
+                    }
                     rle.push_back( code );
                     for( std::size_t count = 0; count < difSize; ++count ) {
                         rle.push_back( *byte );
@@ -184,44 +180,40 @@ void FTSElement::encode( std::vector< STD1::uint8_t >& rle )
                 }
                 same = true;
                 sameCount = 2;
-            }
-            else {
+            } else {
                 dif.push_back( *tst );
                 tst = itr;
             }
         }
-        ++itr;
     }
     if( same ) {
         --sameCount;
         if( sameCount < 0x80 ) {
             rle.push_back( static_cast< STD1::uint8_t >( sameCount ) );
             rle.push_back( *tst );
-        }
-        else {
+        } else {
             rle.push_back( 0x80 );
             rle.push_back( *tst );
             rle.push_back( static_cast< STD1::uint8_t >( sameCount ) );
             rle.push_back( static_cast< STD1::uint8_t >( sameCount >> 8 ) );
         }
-    }
-    else {
+    } else {
         dif.push_back( *tst );
         std::vector< STD1::uint8_t >::const_iterator byte( dif.begin() );
-        std::size_t difSize( dif.size() );
+        std::size_t difSize;
         STD1::uint8_t code( 0xFF );
-        while( difSize > 128 ) {
+        for( difSize = dif.size(); difSize > 128; difSize -= 128 ) {
             rle.push_back( code );
             for( std::size_t count = 0; count <= 128; ++count ) {
                 rle.push_back( *byte );
                 ++byte;
             }
-            difSize -= 128;
         }
-        if( difSize > 1 )
+        if( difSize > 1 ) {
             code = static_cast< STD1::uint8_t >( difSize - 1 ) | 0x80;
-        else
+        } else {
             code = 0;
+        }
         rle.push_back( code );
         for( std::size_t count = 0; count < difSize; ++count ) {
             rle.push_back( *byte );
@@ -241,65 +233,66 @@ std::size_t FTSElement::write( std::FILE *out, bool big ) const
             if( std::fwrite( &hdr, sizeof( FTS16Header ), 1, out ) != 1 )
                 throw FatalError( ERR_WRITE );
             written = hdr.size;
-        }
-        else if( comp == RLE ) {
+        } else if( comp == RLE ) {
             hdr.size += static_cast< STD1::uint16_t >( pages.size() + 1 );
             if( std::fwrite( &hdr, sizeof( FTS16Header ), 1, out ) != 1 ||
                 std::fputc( 0x01, out ) == EOF ||
-                std::fwrite( &pages[0], sizeof( STD1::uint8_t ), pages.size(), out ) != pages.size() )
+                std::fwrite( &pages[0], sizeof( STD1::uint8_t ), pages.size(), out ) != pages.size() ) {
                 throw FatalError( ERR_WRITE );
+            }
             written = hdr.size;
-        }
-        else if( comp == PRESENT ) {
+        } else if( comp == PRESENT ) {
             std::vector< STD1::uint16_t > pg;
             pg.reserve( pageCount );
             STD1::uint16_t index( 0 );
             for( ConstPageIter itr = pages.begin(); itr != pages.end(); ++itr ) {
                 for( STD1::uint8_t mask = 0x80; mask != 0; mask >>= 1, ++index ) {
-                    if( *itr & mask )
+                    if( *itr & mask ) {
                         pg.push_back( index );
+                    }
                 }
             }
             hdr.size += static_cast< STD1::uint16_t >( pg.size() * sizeof( STD1::uint16_t ) );
             if( std::fwrite( &hdr, sizeof( FTS16Header ), 1, out ) != 1 ||
-                std::fwrite( &pg[0], sizeof( STD1::uint16_t ), pg.size(), out ) != pg.size() )
+                std::fwrite( &pg[0], sizeof( STD1::uint16_t ), pg.size(), out ) != pg.size() ) {
                 throw FatalError( ERR_WRITE );
+            }
             written = hdr.size;
-        }
-        else if ( comp == ABSENT ) {
+        } else if ( comp == ABSENT ) {
             std::vector< STD1::uint16_t > pg;
             pg.reserve( maxPage - pageCount );
             STD1::uint16_t index( 0 );
             for( ConstPageIter itr = pages.begin(); itr != pages.end(); ++itr ) {
                 for( STD1::uint8_t mask = 0x80; mask != 0; mask >>= 1, ++index ) {
-                    if( !( *itr & mask ) && index < maxPage )
+                    if( !( *itr & mask ) && index < maxPage ) {
                         pg.push_back( index );
+                    }
                 }
             }
             hdr.size += static_cast< STD1::uint16_t >( pg.size() * sizeof( STD1::uint16_t ) );
             if( std::fwrite( &hdr, sizeof( FTS16Header ), 1, out ) != 1 ||
-                std::fwrite( &pg[0], sizeof( STD1::uint16_t ), pg.size(), out ) != pg.size() )
+                std::fwrite( &pg[0], sizeof( STD1::uint16_t ), pg.size(), out ) != pg.size() ) {
                 throw FatalError( ERR_WRITE );
+            }
             written = hdr.size;
-        }
-        else if ( comp ==  TRUNC ) {
+        } else if ( comp ==  TRUNC ) {
             hdr.size += static_cast< STD1::uint16_t >( pages.size() * sizeof( STD1::uint8_t ) );
             if( std::fwrite( &hdr, sizeof( FTS16Header ), 1, out ) != 1 ||
-                std::fwrite( &pages[0], sizeof( STD1::uint8_t ), pages.size(), out ) != pages.size() )
+                std::fwrite( &pages[0], sizeof( STD1::uint8_t ), pages.size(), out ) != pages.size() ) {
                 throw FatalError( ERR_WRITE );
+            }
             written = hdr.size;
-        }
-        else if ( comp == DBL_TRUNC ) {
+        } else if ( comp == DBL_TRUNC ) {
             hdr.size += static_cast< STD1::uint16_t >( pages.size() * sizeof( STD1::uint8_t ) +
-                        sizeof( STD1::uint16_t ));
+                        sizeof( STD1::uint16_t ) );
             if( std::fwrite( &hdr, sizeof( FTS16Header ), 1, out ) != 1 ||
                 std::fwrite( &firstPage, sizeof( STD1::uint16_t ), 1, out ) != 1 ||
-                std::fwrite( &pages[0], sizeof( STD1::uint8_t ), pages.size(), out ) != pages.size() )
+                std::fwrite( &pages[0], sizeof( STD1::uint8_t ), pages.size(), out ) != pages.size() ) {
                 throw FatalError( ERR_WRITE );
+            }
             written = hdr.size;
         }
-    }
-    else {
+    } else {
         FTS8Header hdr;
         hdr.size = sizeof( FTS8Header );
         hdr.compression = comp;
@@ -307,61 +300,63 @@ std::size_t FTSElement::write( std::FILE *out, bool big ) const
             if( std::fwrite( &hdr, sizeof( FTS8Header ), 1, out ) != 1 )
                 throw FatalError( ERR_WRITE );
             written = hdr.size;
-        }
-        else if( comp == RLE ) {
+        } else if( comp == RLE ) {
             hdr.size += static_cast< STD1::uint8_t >( ( pages.size() + 1 ) * sizeof( STD1::uint8_t ) );
             if( std::fwrite( &hdr, sizeof( FTS8Header ), 1, out ) != 1 ||
                 std::fputc( 0x01, out ) == EOF ||
-                std::fwrite( &pages[0], sizeof( STD1::uint8_t ), pages.size(), out ) != pages.size() )
+                std::fwrite( &pages[0], sizeof( STD1::uint8_t ), pages.size(), out ) != pages.size() ) {
                 throw FatalError( ERR_WRITE );
+            }
             written = hdr.size;
-        }
-        else if( comp == PRESENT ) {
+        } else if( comp == PRESENT ) {
             std::vector< STD1::uint16_t > pg;
             pg.reserve( pageCount );
             STD1::uint16_t index( 0 );
             for( ConstPageIter itr = pages.begin(); itr != pages.end(); ++itr ) {
                 for( STD1::uint8_t mask = 0x80; mask != 0; mask >>= 1, ++index ) {
-                    if( *itr & mask )
+                    if( *itr & mask ) {
                         pg.push_back( index );
+                    }
                 }
             }
             hdr.size += static_cast< STD1::uint8_t >( pg.size() * sizeof( STD1::uint16_t ) );
             if( std::fwrite( &hdr, sizeof( FTS8Header ), 1, out ) != 1 ||
-                std::fwrite( &pg[0], sizeof( STD1::uint16_t ), pg.size(), out ) != pg.size() )
+                std::fwrite( &pg[0], sizeof( STD1::uint16_t ), pg.size(), out ) != pg.size() ) {
                 throw FatalError( ERR_WRITE );
+            }
             written = hdr.size;
-        }
-        else if ( comp == ABSENT ) {
+        } else if ( comp == ABSENT ) {
             std::vector< STD1::uint16_t > pg;
             pg.reserve( maxPage - pageCount );
             STD1::uint16_t index( 0 );
             for( ConstPageIter itr = pages.begin(); itr != pages.end(); ++itr ) {
                 for( STD1::uint8_t mask = 0x80; mask != 0; mask >>= 1, ++index ) {
-                    if( !( *itr & mask ) && index < maxPage )
+                    if( !( *itr & mask ) && index < maxPage ) {
                         pg.push_back( index );
+                    }
                 }
             }
             hdr.size += static_cast< STD1::uint8_t >( pg.size() * sizeof( STD1::uint16_t ) );
             if( std::fwrite( &hdr, sizeof( FTS8Header ), 1, out ) != 1 ||
-                std::fwrite( &pg[0], sizeof( STD1::uint16_t ), pg.size(), out ) != pg.size() )
+                std::fwrite( &pg[0], sizeof( STD1::uint16_t ), pg.size(), out ) != pg.size() ) {
                 throw FatalError( ERR_WRITE );
+            }
             written = hdr.size;
-        }
-        else if ( comp ==  TRUNC ) {
+        } else if ( comp ==  TRUNC ) {
             hdr.size += static_cast< STD1::uint8_t >( pages.size() * sizeof( STD1::uint8_t ) );
             if( std::fwrite( &hdr, sizeof( FTS8Header ), 1, out ) != 1 ||
-                std::fwrite( &pages[0], sizeof( STD1::uint8_t ), pages.size(), out ) != pages.size() )
+                std::fwrite( &pages[0], sizeof( STD1::uint8_t ), pages.size(), out ) != pages.size() ) {
                 throw FatalError( ERR_WRITE );
+            }
             written = hdr.size;
-        }
-        else if ( comp == DBL_TRUNC ) {
+        } else if ( comp == DBL_TRUNC ) {
             hdr.size += static_cast< STD1::uint8_t >( pages.size() * sizeof( STD1::uint8_t ) +
                         sizeof( STD1::uint16_t ) );
             if( std::fwrite( &hdr, sizeof( FTS8Header ), 1, out ) != 1 ||
                 std::fwrite( &firstPage, sizeof( STD1::uint16_t ), 1, out ) != 1 ||
-                std::fwrite( &pages[0], sizeof( STD1::uint8_t ), pages.size(), out ) != pages.size() )
+                std::fwrite( &pages[0], sizeof( STD1::uint8_t ), pages.size(), out ) != pages.size() ) {
                 throw FatalError( ERR_WRITE );
+            }
             written = hdr.size;
         }
     }
