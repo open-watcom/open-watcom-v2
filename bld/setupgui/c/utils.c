@@ -33,7 +33,9 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
+#if !defined(__OSX__)
 #include <malloc.h>
+#endif
 #include <ctype.h>
 #include <setjmp.h>
 #include <limits.h>

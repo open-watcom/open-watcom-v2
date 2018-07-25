@@ -34,7 +34,9 @@
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
+#if !defined(__OSX__)
 #include <malloc.h>
+#endif
 #include "ctags.h"
 
 #define isWSorCtrlZ(x)  (isspace( x ) || (x == 0x1A))

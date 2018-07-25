@@ -30,7 +30,9 @@
 
 #include <stdlib.h>
 #include <string.h>
+#if !defined(__OSX__)
 #include <malloc.h>
+#endif
 #include <setjmp.h>
 #include "wio.h"
 #include "ms2wlink.h"
