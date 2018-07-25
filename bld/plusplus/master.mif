@@ -101,10 +101,12 @@ extra_c_flags_maindrv  = -Dwpp_drv -DDLL_NAME=$(dllname)
 
 !ifndef bootstrap
 !ifneq host_os linux
+!ifneq host_os osx
 # Using -os generates ENTER/LEAVE and Linux is too brain damaged
 # to handle ENTER instructions properly. Since GCC doesn't generate
 # ENTER, this is supposed to be a "feature".
 extra_c_flags_cmdlnany = -os
+!endif
 !endif
 extra_c_flags_cscan_386 = -4r
 extra_c_flags_cscan    = $(extra_c_flags_cscan_$(host_cpu))
