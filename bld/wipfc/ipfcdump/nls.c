@@ -16,16 +16,17 @@ void readNLS( FILE *in, FILE *out )
         fseek( in, Hdr.nlsOffset, SEEK_SET );
         for( total = 0; total < Hdr.nlsSize; total += hdr.size ) {
             fread( &hdr, sizeof(NlsHeader), 1, in );
-            if( hdr.type == CONTROL )
+            if( hdr.type == CONTROL ) {
                 processCountry(in, out, &hdr );
-            else if( hdr.format == 0 )
+            } else if( hdr.format == 0 ) {
                 processSBCS( in, out, &hdr );
-            else
+            } else {
                 processDBCS( in, out, &hdr );
             }
         }
-    else
+    } else {
         fputs("\n  NLS Data is not present\n", out);
+    }
 }
 /*****************************************************************************/
 static void processCountry( FILE *in, FILE *out, NlsHeader *hdr )
@@ -40,8 +41,9 @@ static void processCountry( FILE *in, FILE *out, NlsHeader *hdr )
     fprintf( out, "    NlsCountryDef.value:    %4.4x (%hu)\n", c.value, c.value );
     fprintf( out, "    NlsCountryDef.code:     %4.4x (%hu)\n", c.code, c.code );
     fprintf( out, "    NlsCountryDef.page:     %4.4x (%hu)\n", c.page, c.page );
-    if( hdr->size > 10 )
+    if( hdr->size > 10 ) {
         fprintf(out, "    NlsCountryDef.reserved: %4.4x (%hu)\n", c.reserved, c.reserved );
+    }
 }
 /*****************************************************************************/
 static void processSBCS( FILE *in, FILE *out, NlsHeader *hdr )
@@ -56,18 +58,21 @@ static void processSBCS( FILE *in, FILE *out, NlsHeader *hdr )
     fprintf( out, "    SbcsNlsGrammarDef.bits:\n");
     for( count = 0; count < 32; count++ ) {
         fprintf(out, "%s ", bstring( s.bits[ count ] ) );
-        if( !( ( count + 1 ) & 7 ) )
+        if( !( ( count + 1 ) & 7 ) ) {
             fputc( '\n', out );
+        }
     }
     if( count & 7 )
         fputc( '\n', out );
     for( count = 0; count < 32; count++ ) {
         fprintf( out, "%2.2x ", s.bits[ count ] );
-        if( !( ( count + 1 ) & 7 ) )
+        if( !( ( count + 1 ) & 7 ) ) {
             fputc( '\n', out );
+        }
     }
-    if( count & 7 )
+    if( count & 7 ) {
         fputc('\n', out );
+    }
 }
 /*****************************************************************************/
 static void processDBCS( FILE *in, FILE *out, NlsHeader *hdr )

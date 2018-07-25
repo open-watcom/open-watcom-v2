@@ -12,20 +12,20 @@ void readIndex( FILE *in, FILE *out )
     if( Hdr.indexCount ) {
         fseek( in, Hdr.indexOffset, SEEK_SET );
         processIndex( in, out, Hdr.indexCount );
-    }
-    else
+    } else {
         fputs( "  No index data is present\n", out );
+    }
 }
 /*****************************************************************************/
-void readIcmdIndex( FILE *in, FILE *out) 
+void readIcmdIndex( FILE *in, FILE *out)
 {
     fputs( "\nIcmd Index\n", out );
     if( Hdr.icmdCount ) {
         fseek(in, Hdr.icmdOffset, SEEK_SET );
         processIndex( in, out, Hdr.icmdCount );
-    }
-    else
+    } else {
         fputs( "  No Icmd index data is present\n", out );
+    }
 }
 /*****************************************************************************/
 static void processIndex( FILE *in, FILE *out, size_t items )

@@ -13,8 +13,8 @@ void readStrings( FILE *in, FILE *out )
             bytes += readDictString( in, text );
             fprintf( out, "  %ls\n", text );
         }
-    }
-    else
+    } else {
         fputs( "  There are no strings\n", out );
+    }
 }
 

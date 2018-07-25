@@ -46,9 +46,9 @@ void readControls( FILE *in, FILE *out )
                 fputc( '\n', out );
             }
         }
-    }
-    else
+    } else {
         fputs("  No panel controls found\n", out);
+    }
 }
 /*****************************************************************************/
 size_t readCtrlString( FILE *in, wchar_t *buffer )

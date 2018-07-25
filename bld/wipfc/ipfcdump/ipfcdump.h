@@ -64,9 +64,6 @@ typedef struct {
     uint32_t    reserved[4];         // reserved for future use
 } IpfExtHeader;
 
-#define IsFTS16Data(x)      (((x).searchOffset & (1L <<31)) != 0)
-#define FTSDataOffset(x)    ((x).searchOffset & 0x7fffffffL)
-
 typedef struct {
     uint8_t     size;
     //variable length data follows:

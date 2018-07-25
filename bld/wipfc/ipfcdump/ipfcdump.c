@@ -48,8 +48,7 @@ static int parseFile( char *filename )
         fclose( out );
         fclose( in );
         return( EXIT_SUCCESS );
-    }
-    else {
+    } else {
         fprintf(stderr, "Cannot open %s\n\a", filename);
         return( EXIT_FAILURE );
     }

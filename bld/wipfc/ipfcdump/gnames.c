@@ -22,9 +22,9 @@ void readGNames( FILE *in, FILE *out )
             }
             free(name);
         }
-    }
-    else
+    } else {
         fputs("  No global names found\n", out);
+    }
 }
 
 

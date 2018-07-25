@@ -32,9 +32,9 @@ static void readPanelNumbers( FILE *in, FILE *out )
             }
             free( resnum );
         }
-    }
-    else
+    } else {
         fputs( "  There are no numbered panels\n", out );
+    }
 }
 /*****************************************************************************/
 static void readPanelNames( FILE *in, FILE *out )
@@ -57,7 +57,7 @@ static void readPanelNames( FILE *in, FILE *out )
             }
             free( name );
         }
-    }
-    else
+    } else {
         fputs( "  There are no named panels\n", out );
+    }
 }

@@ -189,52 +189,48 @@ void readBitMaps( FILE *in, FILE *out )
             btmp = fopen( name, "wb" );
             snprintf( name, sizeof(name) / sizeof(char), "btmp%4.4u.lzw", count1 );
             lzw = fopen( name, "w" );
-            if( bm.hdr.size && bm.hdr.size > bm.hdr.bitsOffset )
+            if( bm.hdr.size && bm.hdr.size > bm.hdr.bitsOffset ) {
                 bytesLeft = bm.hdr.size - bm.hdr.bitsOffset /* sizeof(BitMap) */;
-            else {
+            } else {
                 bm.hdr.size = sizeof( BitMap );
                 if (bm.hdr.info.bitsPerPixel == 1 ) {
                     bytesLeft = bm.hdr.info.width / 8;
                     bytesLeft = bytesLeft & 3 ? ( bytesLeft & ~3 ) + 4 : bytesLeft;
                     bytesLeft *= bm.hdr.info.height;
                     bm.hdr.size += bytesLeft + 2 * sizeof( RGB );
-                }
-                else if( bm.hdr.info.bitsPerPixel == 4 ) {
+                } else if( bm.hdr.info.bitsPerPixel == 4 ) {
                     bytesLeft = bm.hdr.info.width / 2;
                     bytesLeft = bytesLeft & 3 ? ( bytesLeft & ~3 ) + 4 : bytesLeft;
                     bytesLeft *= bm.hdr.info.height;
                     bm.hdr.size += bytesLeft + 16 * sizeof( RGB );
-                }
-                else if( bm.hdr.info.bitsPerPixel == 8 ) {
+                } else if( bm.hdr.info.bitsPerPixel == 8 ) {
                     bytesLeft = bm.hdr.info.width & 3 ? ( bm.hdr.info.width & ~3 ) + 4 : bm.hdr.info.width;
                     bytesLeft *= bm.hdr.info.height;
                     bm.hdr.size += bytesLeft + 256 * sizeof( RGB );
-                }
-                else if( bm.hdr.info.bitsPerPixel == 15 || bm.hdr.info.bitsPerPixel == 16 ) {
+                } else if( bm.hdr.info.bitsPerPixel == 15 || bm.hdr.info.bitsPerPixel == 16 ) {
                     bytesLeft = bm.hdr.info.width * 2;
                     bytesLeft = bytesLeft & 3 ? ( bytesLeft & ~3 ) + 4 : bytesLeft;
                     bytesLeft *= bm.hdr.info.height;
                     bm.hdr.size += bytesLeft;
-                }
-                else if( bm.hdr.info.bitsPerPixel == 24 ) {
+                } else if( bm.hdr.info.bitsPerPixel == 24 ) {
                     bytesLeft = bm.hdr.info.width * 3;
                     bytesLeft = bytesLeft & 3 ? ( bytesLeft & ~3 ) + 4 : bytesLeft;
                     bytesLeft *= bm.hdr.info.height;
                     bm.hdr.size += bytesLeft;
-                }
-                else if( bm.hdr.info.bitsPerPixel == 32 ) {
+                } else if( bm.hdr.info.bitsPerPixel == 32 ) {
                     bytesLeft = bm.hdr.info.width * 4 * bm.hdr.info.height;
                     bm.hdr.size += bytesLeft;
                 }
             }
             bm.hdr.type[ 0 ] = toupper( bm.hdr.type[ 0 ] );
             bm.hdr.bitsOffset = sizeof( BitMap );
-            if( bm.hdr.info.bitsPerPixel == 1 )
+            if( bm.hdr.info.bitsPerPixel == 1 ) {
                 bm.hdr.bitsOffset += 2 * sizeof( RGB );
-            else if( bm.hdr.info.bitsPerPixel == 4 )
+            } else if( bm.hdr.info.bitsPerPixel == 4 ) {
                 bm.hdr.bitsOffset += 16 * sizeof( RGB );
-            else if( bm.hdr.info.bitsPerPixel == 8 )
+            } else if( bm.hdr.info.bitsPerPixel == 8 ) {
                 bm.hdr.bitsOffset += 256 * sizeof( RGB );
+            }
             bm.hdr.size = bytesLeft + bm.hdr.bitsOffset;
             fwrite( &bm, sizeof( BitMap ), 1, btmp );
             fprintf( lzw, "Bitmap #%u at offset %8.8x\n", count1, nextMap );
@@ -266,8 +262,7 @@ void readBitMaps( FILE *in, FILE *out )
                 fputs( "Color Palette\n", lzw );
                 blockToHex( ( unsigned char * )&rgb[ 0 ], 2 * sizeof( RGB ), lzw );
 #endif
-            }
-            else if( bm.hdr.info.bitsPerPixel == 4 ) {
+            } else if( bm.hdr.info.bitsPerPixel == 4 ) {
 #ifdef COLOR_PAL
                 unsigned int count;
                 fread( rgb, sizeof( RGB ), 16, in );
@@ -283,8 +278,7 @@ void readBitMaps( FILE *in, FILE *out )
                 fputs( "Color Palette\n", lzw );
                 blockToHex( ( unsigned char * )&rgb[ 0 ], 16 * sizeof( RGB ), lzw );
 #endif
-            }
-            else if( bm.hdr.info.bitsPerPixel == 8 ) {
+            } else if( bm.hdr.info.bitsPerPixel == 8 ) {
 #ifdef COLOR_PAL
                 unsigned int count;
                 fread( rgb, sizeof( RGB ), 256, in );
@@ -300,9 +294,9 @@ void readBitMaps( FILE *in, FILE *out )
                 fputs("Color Palette\n", lzw);
                 blockToHex((unsigned char*)&rgb[0], 256 * sizeof(RGB), lzw);
 #endif
-            }
-            else
+            } else {
                 fputs("    No color palette for this bit depth\n", out);
+            }
             fread( &size, sizeof( uint32_t ), 1, in );
             nextMap = ftell( in ) + size;
             fread( &blockSize, sizeof( uint16_t ), 1, in );
@@ -341,9 +335,9 @@ void readBitMaps( FILE *in, FILE *out )
                         len = blockSize;
                     fwrite( expanded, sizeof( uint8_t ), len, btmp );
                     bytesLeft -= len;
-                }
-                else
+                } else {
                     fwrite( compressed, sizeof( uint8_t ), bmb.size - 1, btmp );
+                }
 #else
                 fseek( in, bmb.size - 1, SEEK_CUR );
 #endif
@@ -363,7 +357,7 @@ void readBitMaps( FILE *in, FILE *out )
         free(compressed);
         free(expanded);
 #endif
-    }
-    else
+    } else {
         fputs("  There are no bitmaps\n", out);
+    }
 }
