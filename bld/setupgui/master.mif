@@ -54,9 +54,9 @@ objs +=             &
     dopatch.obj
 !endif
 
-#                     i_dos i_linux i_nt i_os2 i_win i_wini86 i_win386
-#=====================================================================
-!inject setupio.obj   i_dos i_linux i_nt i_os2                i_win386
+#                     i_dos i_linux i_nt i_os2 i_win i_wini86 i_win386 i_osx
+#===========================================================================
+!inject setupio.obj   i_dos i_linux i_nt i_os2                i_win386 i_osx
 !inject setupiod.obj                                 i_wini86
 !inject os2util.obj                      i_os2
 !inject winutil.obj                 i_nt i_os2 i_win
@@ -78,6 +78,7 @@ objs += loadfind.obj
 
 libs_dos   = $(gui_lib) $(ui_lib) $(wres_lib)
 libs_linux = $(gui_lib) $(ui_lib) $(wres_lib)
+libs_osx   = $(gui_lib) $(ui_lib) $(wres_lib)
 libs_nt    = $(gui_lib) $(ui_lib) $(wres_lib)
 libs_os2   = $(gui_lib) $(ui_lib) $(wres_lib)
 
@@ -85,12 +86,14 @@ libs_os2   = $(gui_lib) $(ui_lib) $(wres_lib)
 
 libs_dos    += ../ziplib/osi386/ziplib.lib
 libs_linux  += ../ziplib/linux$(host_cpu)/ziplib.lib
+libs_osx    += ../ziplib/osx$(host_cpu)/ziplib.lib
 libs_nt     += ../ziplib/osi$(host_cpu)/ziplib.lib
 libs_os2    += ../ziplib/osi386/ziplib.lib
 libs_win386 += ../ziplib/osi386/ziplib.lib
 
 libs_dos    += ../zlib/osi386/zlib.lib
 libs_linux  += ../zlib/osi$(host_cpu)/zlib.lib
+libs_osx    += ../zlib/osi$(host_cpu)/zlib.lib
 libs_nt     += ../zlib/osi$(host_cpu)/zlib.lib
 libs_os2    += ../zlib/osi386/zlib.lib
 libs_win386 += ../zlib/osi386/zlib.lib
@@ -149,6 +152,8 @@ dep_res1 = ../h/setup.h gui.rc
 !else ifeq host_os dos
 dep_res1 = ../h/setup.h gui.rc
 !else ifeq host_os linux
+dep_res1 = ../h/setup.h gui.rc
+!else ifeq host_os osx
 dep_res1 = ../h/setup.h gui.rc
 !else
 dep_res1 = ../h/setup.h setup.ico disk.ico gui.rc
