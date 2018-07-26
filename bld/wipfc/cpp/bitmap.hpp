@@ -73,7 +73,7 @@ private:
         STD1::uint8_t   red;
         STD1::uint8_t   reserved;
         void read( std::FILE* in );
-        };
+    };
     struct RGB {
         STD1::uint8_t   blue;
         STD1::uint8_t   green;
