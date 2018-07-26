@@ -31,13 +31,11 @@
 
 #include <string.h>
 #include <ctype.h>
-#if !defined(__OSX__)
-#include <malloc.h>
-#endif
 #if defined( __WATCOMC__ ) || !defined( __UNIX__ )
 #include <process.h>
 #endif
 #include "wio.h"
+#include "walloca.h"
 #include "ms2wlink.h"
 #include "command.h"
 

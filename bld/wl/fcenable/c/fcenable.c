@@ -33,9 +33,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#if !defined(__OSX__)
-#include <malloc.h>
-#endif
 #include <setjmp.h>
 #if defined( __WATCOMC__ ) || !defined( __UNIX__ )
 #include <process.h>
@@ -46,6 +43,7 @@
 #include <sys/utime.h>
 #endif
 #include "wio.h"
+#include "walloca.h"
 #include "fcenable.h"
 #include "banner.h"
 

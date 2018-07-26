@@ -30,9 +30,6 @@
 
 
 #include <stdlib.h>
-#if !defined(__OSX__)
-#include <malloc.h>
-#endif
 #include "fcenable.h"
 
 #ifdef TRMEM

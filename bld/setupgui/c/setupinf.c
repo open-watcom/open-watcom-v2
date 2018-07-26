@@ -33,9 +33,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#if !defined(__OSX__)
-#include <malloc.h>
-#endif
 #include <stdarg.h>
 #include <ctype.h>
 #ifdef __UNIX__

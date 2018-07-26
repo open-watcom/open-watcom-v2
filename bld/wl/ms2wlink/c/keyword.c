@@ -32,9 +32,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
-#if !defined(__OSX__)
-#include <malloc.h>
-#endif
+#include "walloca.h"
 #include "ms2wlink.h"
 #include "command.h"
 
