@@ -64,8 +64,12 @@ Compiler::~Compiler()
 /*****************************************************************************/
 void Compiler::setInputFile( std::string& name )
 {
-    std::wstring* wname( new std::wstring() );
-    def_mbtow_string( name, *wname );
+    def_mbtow_string( name, inFileName );
+}
+/*****************************************************************************/
+void Compiler::startInput()
+{
+    std::wstring* wname( new std::wstring( inFileName ) );
     wname = addFileName( wname );
     inFiles.push_back( new IpfFile( wname ) );
 }
@@ -85,6 +89,7 @@ void Compiler::setOutputFile( std::string& name )
 int Compiler::compile()
 {
     int retval( EXIT_SUCCESS );
+    startInput();
     std::auto_ptr< Document > doc( new Document( *this, loc ) );
     doc->setOutputType( outType );
     doc->parse( lexer.get() );

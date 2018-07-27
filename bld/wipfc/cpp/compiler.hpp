@@ -54,8 +54,10 @@ public:
     Compiler();
     ~Compiler();
     int compile();
-    //set the inital source file name
+    //set the initial source file name
     void setInputFile( std::string& name );
+    //initialize first source file
+    void startInput();
     //add a file name to the set of file names
     std::wstring* addFileName( std::wstring* name );
     //set the output file name
@@ -98,6 +100,7 @@ public:
 private:
     Compiler( const Compiler &rhs );            //no copy constructor
     Compiler& operator=( const Compiler &rhs ); //no assignment
+    std::wstring inFileName;
     std::wstring outFileName;
     std::auto_ptr< Lexer > lexer;
     std::vector< IpfData* > inFiles;            //a stack of files being parsed
