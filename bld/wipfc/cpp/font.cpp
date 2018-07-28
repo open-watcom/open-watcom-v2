@@ -51,7 +51,7 @@
 Lexer::Token Font::parse( Lexer* lexer )
 {
     FontEntry fnt;
-    fnt.codePage = document->codePage();
+    fnt.setCodePage( document->codePage() );
     bool isDefault( false );
     Lexer::Token tok( document->getNextToken() );
     while( tok != Lexer::TAGEND ) {
@@ -63,25 +63,27 @@ Lexer::Token Font::parse( Lexer* lexer )
             if( key == L"facename" ) {
                 if( value == L"default" ) {
                     index = 0;
-                    fnt.height = 0;
-                    fnt.width = 0;
+                    fnt.setHeight( 0 );
+                    fnt.setWidth( 0 );
                     isDefault = true;
-                } else if( wtomb_cstring( fnt.faceName, value.c_str(), sizeof( fnt.faceName ) - 1 ) == static_cast< std::size_t >( -1 ) ) {
-                    throw( ERR_T_CONV );
+                } else {
+                    fnt.setFaceName( value );
                 }
             } else if( key == L"size" ) {
                 wchar_t *end;
-                fnt.height = static_cast< STD1::uint16_t >( std::wcstoul( value.c_str(), &end, 10 ) );
+                STD1::uint16_t height = static_cast< STD1::uint16_t >( std::wcstoul( value.c_str(), &end, 10 ) );
                 ++end;
-                fnt.width =  static_cast< STD1::uint16_t >( std::wcstoul( end, &end, 10 ) );
-                if( fnt.height == 0 || fnt.width == 0 ) {
+                STD1::uint16_t width =  static_cast< STD1::uint16_t >( std::wcstoul( end, &end, 10 ) );
+                if( height == 0 || width == 0 ) {
                     index = 0;
-                    fnt.height = 0;
-                    fnt.width = 0;
+                    height = 0;
+                    width = 0;
                     isDefault = true;
                 }
+                fnt.setWidth( width );
+                fnt.setHeight( height );
             } else if( key == L"codepage" ) {
-                fnt.codePage = static_cast< STD1::uint16_t >( std::wcstoul( value.c_str(), 0, 10 ) );
+                fnt.setCodePage( static_cast< STD1::uint16_t >( std::wcstoul( value.c_str(), 0, 10 ) ) );
             } else {
                 document->printError( ERR1_ATTRNOTDEF );
             }

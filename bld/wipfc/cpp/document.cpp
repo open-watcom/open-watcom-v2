@@ -206,16 +206,7 @@ Document::Document( Compiler& c, const char* loc ) :
     spacing( true )
 {
     fonts.reset( new FontCollection( codePage() ) );
-    FontEntry fnt;
-    char buffer[ sizeof( fnt.faceName ) ];
-    std::size_t size( wtomb_cstring( buffer, cgraphicFontFaceName().c_str(), sizeof( buffer ) - 1 ) );
-    if( size == static_cast< std::size_t >( -1 ) )
-        throw FatalError( ERR_T_CONV );
-    std::strncpy( fnt.faceName, buffer, sizeof( fnt.faceName ) );
-    fnt.height = cgraphicFontHeight();
-    fnt.width = cgraphicFontWidth();
-    fnt.codePage = codePage();
-    addFont( fnt );
+    addFont( cgraphicFont() );
 
 }
 /***************************************************************************/

@@ -189,6 +189,8 @@ void Nls::readNLS( std::FILE *nls )
     wchar_t     value[256];
     char        *p;
     bool        doGrammar( false );
+
+    _cgraphicFont.setCodePage( country.codePage );
     while( std::fgets( sbuffer, sizeof( sbuffer ), nls ) ) {
         std::size_t len( std::strlen( sbuffer ) );
         killEOL( sbuffer + len - 1 );
@@ -242,11 +244,11 @@ void Nls::readNLS( std::FILE *nls )
             } else if( std::strcmp( sbuffer, "cgraphicFontFaceName" ) == 0 ) {
                 std::wstring text( value );
                 killQuotes( text );
-                cgraphicFontFace = text;
+                _cgraphicFont.setFaceName( text );
             } else if( std::strcmp( sbuffer, "cgraphicFontWidth" ) == 0 ) {
-                cgraphicFontW = static_cast< int >( std::wcstol( value, 0, 10 ) );
+                _cgraphicFont.setWidth( static_cast< int >( std::wcstol( value, 0, 10 ) ) );
             } else if( std::strcmp( sbuffer, "cgraphicFontHeight" ) == 0 ) {
-                cgraphicFontH = static_cast< int >( std::wcstol( value, 0, 10 ) );
+                _cgraphicFont.setHeight( static_cast< int >( std::wcstol( value, 0, 10 ) ) );
             } else {
                 // error: unknown keyword
             }

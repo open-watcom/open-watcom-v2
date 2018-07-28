@@ -171,9 +171,7 @@ public:
     const std::wstring& caution() const { return nls->caution(); };
     const std::wstring& reference() const { return nls->reference(); };
     //const std::wstring& grammar() const { return nls->grammar(); };
-    const std::wstring& cgraphicFontFaceName() const { return nls->cgraphicFontFaceName(); };
-    int cgraphicFontWidth() const { return nls->cgraphicFontWidth(); };
-    int cgraphicFontHeight() const { return nls->cgraphicFontHeight(); };
+    const FontEntry& cgraphicFont() const { return nls->cgraphicFont(); };
     wchar_t olChar( unsigned int level ) const { return nls->olChars()[ level % nls->olChars().size() ]; };
     const std::wstring& olClose( unsigned int level ) const { return nls->olClose()[ level % 2 ]; };
     const std::wstring& ulBullet( unsigned int level ) const { return nls->ulBullets()[ level % 3 ]; };

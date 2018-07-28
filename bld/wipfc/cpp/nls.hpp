@@ -35,6 +35,7 @@
 #include <map>
 #include <string>
 #include <vector>
+#include "fnt.hpp"
 
 class Nls {
 public:
@@ -54,9 +55,7 @@ public:
     const std::wstring& reference() const { return referenceText; };
     const std::wstring& grammar() const { return grammarChars; };
     //graphics font characteristics
-    const std::wstring& cgraphicFontFaceName() const { return cgraphicFontFace; };
-    int cgraphicFontWidth() const { return cgraphicFontW; };
-    int cgraphicFontHeight() const { return cgraphicFontH; };
+    const FontEntry& cgraphicFont() const { return _cgraphicFont; };
     //localized bullets
     const std::wstring& olChars() const { return olCh; };
     const std::wstring* olClose() const { return olClosers; };
@@ -115,10 +114,8 @@ private:
     std::wstring warningText;
     std::wstring referenceText;
     std::wstring grammarChars;
-    std::wstring cgraphicFontFace;
+    FontEntry _cgraphicFont;
     STD1::uint32_t bytes;
-    int cgraphicFontW;
-    int cgraphicFontH;
     std::wstring olCh;
     std::wstring olClosers[ 2 ];
     std::wstring ulBul[ 3 ];

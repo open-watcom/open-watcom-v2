@@ -34,40 +34,38 @@
 #include "errors.hpp"
 
 FontCollection::FontCollection( STD1::uint16_t cp ) : bytes( 0 )
+/**************************************************************/
 {
-    fonts.reserve( 14 );
-    FontEntry fnt;
-    std::strncpy( fnt.faceName, "System Proportional", sizeof( fnt.faceName ));
-    fnt.height = 0;
-    fnt.width = 0;
-    fnt.codePage = cp;
+    fonts.reserve( MAX_FONTS );
     try {
-        add( fnt );                 //set the default font
+        add( FontEntry( L"System Proportional", 0, 0, cp ) );   //set the default font
     }
     catch( Class2Error &e ) {
     }
 }
-/****************************************************************************/
+
 std::size_t FontCollection::add( const FontEntry& fnt )
+/*****************************************************/
 {
     std::size_t index( 0 );
     for( ConstFontIter itr = fonts.begin(); itr != fonts.end(); ++itr, ++index ) {
-        if( *itr == fnt )
-            return index;
+        if( *itr == fnt ) {
+            return( index );
+        }
     }
-    if( fonts.size() < 15 )
-        fonts.push_back( fnt );
-    else
+    if( fonts.size() >= MAX_FONTS )
         throw Class2Error( ERR2_FONTS );
-    return fonts.size() - 1;
+    fonts.push_back( fnt );
+    return( fonts.size() - 1 );
 }
-/****************************************************************************/
+
 STD1::uint32_t FontCollection::write( std::FILE *out )
+/****************************************************/
 {
     STD1::uint32_t start( std::ftell( out ) );
     for( FontIter itr = fonts.begin(); itr != fonts.end(); ++itr ) {
         bytes += itr->write( out );
     }
-    return start;
+    return( start );
 
 }

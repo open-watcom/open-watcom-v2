@@ -34,26 +34,24 @@
 #include <cstring>
 #include <cstdio>
 
-#pragma pack(push, 1)
+#define MAX_FACENAME_SIZE   33
 
 // Font Entry
 struct FontEntry {
-    char            faceName[ 33 ]; //null terminated
-    STD1::uint16_t  height;         //reversed from docs
-    STD1::uint16_t  width;
-    STD1::uint16_t  codePage;
     FontEntry() { std::memset( this, 0, sizeof( FontEntry ) ); };
+    FontEntry( const std::wstring& faceName, STD1::uint16_t width, STD1::uint16_t height, STD1::uint16_t codePage )
+        : _faceName( faceName ), _width( width ), _height( height ), _codePage( codePage ) {}
+    void setFaceName( const std::wstring& faceName ) { _faceName = faceName; }
+    void setHeight( STD1::uint16_t height ) { _height = height; }
+    void setWidth( STD1::uint16_t width ) { _width = width; }
+    void setCodePage( STD1::uint16_t codePage ) { _codePage = codePage; }
     STD1::uint32_t write( std::FILE *out ) const;
-    bool operator==( const FontEntry &rhs ) const
-    {
-        return std::strncmp( faceName, rhs.faceName, 33 ) == 0 &&
-            height == rhs.height &&
-            width == rhs.width &&
-            codePage == rhs.codePage;
-    };
+    bool operator==( const FontEntry &rhs ) const;
+private:
+    std::wstring    _faceName;
+    STD1::uint16_t  _height;        //reversed from docs
+    STD1::uint16_t  _width;
+    STD1::uint16_t  _codePage;
 };
 
-#pragma pack(pop)
-
 #endif //FNT_INCLUDED
-

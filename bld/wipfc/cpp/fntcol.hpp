@@ -36,6 +36,8 @@
 #include "fnt.hpp"
 #include "errors.hpp"
 
+#define MAX_FONTS       14
+
 class FontCollection
 {
 public:
