@@ -48,7 +48,7 @@ FontCollection::FontCollection( STD1::uint16_t cp ) : bytes( 0 )
     }
 }
 /****************************************************************************/
-std::size_t FontCollection::add( FontEntry& fnt )
+std::size_t FontCollection::add( const FontEntry& fnt )
 {
     std::size_t index( 0 );
     for( ConstFontIter itr = fonts.begin(); itr != fonts.end(); ++itr, ++index ) {

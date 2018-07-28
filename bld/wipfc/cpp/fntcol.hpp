@@ -41,7 +41,7 @@ class FontCollection
 public:
     FontCollection( STD1::uint16_t cp );
     //returns the index of the font in the list
-    std::size_t add( FontEntry& fnt );
+    std::size_t add( const FontEntry& fnt );
     //the number of bytes written by the collection
     STD1::uint32_t length() { return bytes; };
     //the number of fonts in the collection

@@ -154,7 +154,7 @@ public:
     STD1::uint16_t extFileIndex( std::wstring& str ) { return extfiles->index( str ); };
 
     //To FontCollection
-    std::size_t addFont( FontEntry& fnt ) { return fonts->add( fnt ); };
+    std::size_t addFont( const FontEntry& fnt ) { return fonts->add( fnt ); };
 
     //To GlobalDictionary
     GlobalDictionaryWord * addWord( GlobalDictionaryWord* word ) { return dict->insert( word ); };
