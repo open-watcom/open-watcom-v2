@@ -331,19 +331,20 @@ STD1::uint32_t Nls::write( std::FILE *out )
 STD1::uint32_t Nls::CountryDef::write( std::FILE *out ) const
 {
     STD1::uint32_t start( std::ftell( out ) );
-    if( std::fwrite( &size, sizeof( STD1::uint16_t ), 1, out ) != 1 )
+    if( std::fwrite( &size, sizeof( size ), 1, out ) != 1 )
         throw FatalError( ERR_WRITE );
-    if( std::fwrite( &type, sizeof( STD1::uint8_t ), 1, out ) != 1 )
+    STD1::uint8_t _type = static_cast< STD1::uint8_t >( type );
+    if( std::fwrite( &_type, sizeof( _type ), 1, out ) != 1 )
         throw FatalError( ERR_WRITE );
-    if( std::fwrite( &format, sizeof( STD1::uint8_t ), 1, out ) != 1 )
+    if( std::fwrite( &format, sizeof( format ), 1, out ) != 1 )
         throw FatalError( ERR_WRITE );
-    if( std::fwrite( &value, sizeof( STD1::uint16_t ), 1, out ) != 1 )
+    if( std::fwrite( &value, sizeof( value ), 1, out ) != 1 )
         throw FatalError( ERR_WRITE );
-    if( std::fwrite( &country, sizeof( STD1::uint16_t ), 1, out ) != 1 )
+    if( std::fwrite( &country, sizeof( country ), 1, out ) != 1 )
         throw FatalError( ERR_WRITE );
-    if( std::fwrite( &codePage, sizeof( STD1::uint16_t ), 1, out ) != 1 )
+    if( std::fwrite( &codePage, sizeof( codePage ), 1, out ) != 1 )
         throw FatalError( ERR_WRITE );
-    if( std::fwrite( &reserved, sizeof( STD1::uint16_t ), 1, out ) != 1 )
+    if( std::fwrite( &reserved, sizeof( reserved ), 1, out ) != 1 )
         throw FatalError( ERR_WRITE );
     return( start );
 }
@@ -366,11 +367,12 @@ void Nls::SbcsGrammarDef::setDefaultBits( WIPFC::NLSRecType rectype )
 STD1::uint32_t Nls::SbcsGrammarDef::write( std::FILE *out ) const
 {
     STD1::uint32_t start( std::ftell( out ) );
-    if( std::fwrite( &size, sizeof( STD1::uint16_t ), 1, out ) != 1 )
+    if( std::fwrite( &size, sizeof( size ), 1, out ) != 1 )
         throw FatalError( ERR_WRITE );
-    if( std::fwrite( &type, sizeof( STD1::uint8_t ), 1, out ) != 1 )
+    STD1::uint8_t _type = static_cast< STD1::uint8_t >( type );
+    if( std::fwrite( &_type, sizeof( _type ), 1, out ) != 1 )
         throw FatalError( ERR_WRITE );
-    if( std::fwrite( &format, sizeof( STD1::uint8_t ), 1, out ) != 1 )
+    if( std::fwrite( &format, sizeof( format ), 1, out ) != 1 )
         throw FatalError( ERR_WRITE );
     if( std::fwrite( bits, sizeof( STD1::uint8_t ), sizeof( bits ) / sizeof( bits[0] ), out ) != sizeof( bits ) / sizeof( bits[0] ) )
         throw FatalError( ERR_WRITE );
@@ -380,12 +382,13 @@ STD1::uint32_t Nls::SbcsGrammarDef::write( std::FILE *out ) const
 STD1::uint32_t Nls::DbcsGrammarDef::write( std::FILE *out )
 {
     STD1::uint32_t start( std::ftell( out ) );
-    size = 4 + static_cast< STD1::uint16_t >( ranges.size() * sizeof( STD1::uint16_t ) );
-    if( std::fwrite( &size, sizeof( STD1::uint16_t ), 1, out ) != 1 )
+    size = static_cast< STD1::uint16_t >( sizeof( STD1::uint16_t ) + 2 * sizeof( STD1::uint8_t ) + ranges.size() * sizeof( STD1::uint16_t ) );
+    if( std::fwrite( &size, sizeof( size ), 1, out ) != 1 )
         throw FatalError( ERR_WRITE );
-    if( std::fwrite( &type, sizeof( STD1::uint8_t ), 1, out ) != 1 )
+    STD1::uint8_t _type = static_cast< STD1::uint8_t >( type );
+    if( std::fwrite( &_type, sizeof( _type ), 1, out ) != 1 )
         throw FatalError( ERR_WRITE );
-    if( std::fwrite( &format, sizeof( STD1::uint8_t ), 1, out ) != 1 )
+    if( std::fwrite( &format, sizeof( format ), 1, out ) != 1 )
         throw FatalError( ERR_WRITE );
     for( std::vector< STD1::uint16_t >::const_iterator itr = ranges.begin(); itr != ranges.end(); ++itr ) {
         if( std::fwrite( &(*itr), sizeof( STD1::uint16_t), 1, out ) != 1 ) {
