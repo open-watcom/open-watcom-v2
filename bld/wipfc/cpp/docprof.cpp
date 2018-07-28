@@ -94,9 +94,9 @@ void DocProf::build( Controls* ctrls, StringTable* strs )
     else
         ctrls->setCover( 0 );   //may be modified by :ctrl. tag later
     if( !objName.empty() )
-        strs->addString( objName );
+        strs->add( objName );
     if( !dll.empty() )
-        strs->addString( dll );
+        strs->add( dll );
     if( !objInfo.empty() )
-        strs->addString( objInfo );
+        strs->add( objInfo );
 }

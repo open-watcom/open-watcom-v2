@@ -180,7 +180,7 @@ public:
     wchar_t entity( const std::wstring& key ) { return nls->entity( key ); };
 
     //To Strings
-    void addString( std::wstring& str ) { strings->addString( str ); };
+    void addString( const std::wstring& str ) { strings->add( str ); };
 
 private:
     Document( const Document &rhs );            //no copy constructor

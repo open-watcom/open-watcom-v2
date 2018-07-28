@@ -39,7 +39,7 @@ class Synonym {
 public:
     Synonym() : offset( 0 ) { };
     ~Synonym() { };
-    void add( std::string& txt ) { synonyms.push_back( txt ); };
+    void add( const std::string& txt ) { synonyms.push_back( txt ); };
     void write( std::FILE* out );
     unsigned long int location() const { return offset; };
 private:
