@@ -46,10 +46,10 @@
 
 Nls::Nls( const char *loc ) : bytes( 0 ), useDBCS( false )
 {
-    sbcsG.type = GRAPHIC;
-    dbcsG.type = GRAPHIC;
-    sbcsT.setDefaultBits( TEXT );
-    sbcsG.setDefaultBits( GRAPHIC );
+    sbcsG.type = WIPFC::GRAPHIC;
+    dbcsG.type = WIPFC::GRAPHIC;
+    sbcsT.setDefaultBits( WIPFC::TEXT );
+    sbcsG.setDefaultBits( WIPFC::GRAPHIC );
     setLocalization( loc );
 }
 
@@ -348,7 +348,7 @@ STD1::uint32_t Nls::CountryDef::write( std::FILE *out ) const
     return( start );
 }
 /*****************************************************************************/
-void Nls::SbcsGrammarDef::setDefaultBits( NlsRecType rectype )
+void Nls::SbcsGrammarDef::setDefaultBits( WIPFC::NLSRecType rectype )
 {
     static const unsigned char defbits[2][32] = {
         { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xff, 0xc0,
@@ -360,7 +360,7 @@ void Nls::SbcsGrammarDef::setDefaultBits( NlsRecType rectype )
           0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
           0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff }
     };
-    std::memcpy( this->bits, &defbits[rectype - 1][0], 32 );
+    std::memcpy( this->bits, &defbits[rectype - WIPFC::TEXT][0], 32 );
 }
 /*****************************************************************************/
 STD1::uint32_t Nls::SbcsGrammarDef::write( std::FILE *out ) const
