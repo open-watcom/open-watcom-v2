@@ -46,4 +46,6 @@ private:
     void killQuotes( std::string& value );
 };
 
+extern class Env    Environment;
+
 #endif //ENV_INCLUDED

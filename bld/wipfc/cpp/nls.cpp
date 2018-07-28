@@ -44,8 +44,6 @@
 #include "uniutil.hpp"
 
 
-extern class Env Environment;
-
 Nls::Nls( const char *loc ) : bytes( 0 ), useDBCS( false )
 {
     sbcsG.type = GRAPHIC;

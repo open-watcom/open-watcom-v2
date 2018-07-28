@@ -184,7 +184,6 @@
 #include "clibext.h"
 #endif
 
-extern Env Environment;
 
 Document::Document( Compiler& c, const char* loc ) :
     compiler( c ),
