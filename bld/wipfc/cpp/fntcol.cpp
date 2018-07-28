@@ -30,6 +30,7 @@
 
 
 #include "wipfc.hpp"
+#include <string>
 #include "fntcol.hpp"
 #include "errors.hpp"
 

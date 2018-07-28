@@ -49,8 +49,8 @@ struct FontEntry {
     bool operator==( const FontEntry &rhs ) const;
 private:
     std::wstring    _faceName;
-    STD1::uint16_t  _height;        //reversed from docs
     STD1::uint16_t  _width;
+    STD1::uint16_t  _height;        //reversed from docs
     STD1::uint16_t  _codePage;
 };
 
