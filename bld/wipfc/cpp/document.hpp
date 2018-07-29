@@ -74,23 +74,23 @@ public:
 
     //set the output file type
     void setOutputType( Compiler::OutputType t )
-        { t == Compiler::INF ? hdr->flags = 0x01 : hdr->flags = 0x10; };
-    bool isInf() const { return hdr->flags == 0x01; };
+        { t == Compiler::INF ? _hdr->flags = 0x01 : _hdr->flags = 0x10; };
+    bool isInf() const { return _hdr->flags == 0x01; };
     //set the lowest header level for which new pages are made
-    void setHeaderCutOff( unsigned int co ) { maxHeaderLevel = co; };
-    unsigned int headerCutOff() const { return maxHeaderLevel; };
+    void setHeaderCutOff( unsigned int co ) { _maxHeaderLevel = co; };
+    unsigned int headerCutOff() const { return _maxHeaderLevel; };
     //track the current left margin
-    void setLeftMargin( unsigned char lm ) { currentLeftMargin = lm; } ;
-    unsigned char leftMargin() const { return currentLeftMargin; };
+    void setLeftMargin( unsigned char lm ) { _currentLeftMargin = lm; } ;
+    unsigned char leftMargin() const { return _currentLeftMargin; };
     //store a graphics file name
     void addBitmap( std::wstring& bmn );
     STD1::uint32_t bitmapByName( std::wstring& bmn );
     //toggle automatic insertion of spaces (for parsing)
-    void toggleAutoSpacing() { spacing = !spacing; };
-    bool autoSpacing() const { return spacing; };
-    void setLastPrintable( Lexer::Token tok, Text* t ) { lastPrintableToken = tok; lastPrintableItem = t; };
-    Text* lastText() { return lastPrintableItem; };
-    Lexer::Token lastToken() const { return lastPrintableToken; };
+    void toggleAutoSpacing() { _spacing = !_spacing; };
+    bool autoSpacing() const { return _spacing; };
+    void setLastPrintable( Lexer::Token tok, Text* t ) { _lastPrintableToken = tok; _lastPrintableItem = t; };
+    Text* lastText() { return _lastPrintableItem; };
+    Lexer::Token lastToken() const { return _lastPrintableToken; };
     //add a resource number to TOC index mapping
     void addRes( word key, TocRef& value );
     //add a name/id to TOC index mapping
@@ -103,22 +103,22 @@ public:
     //add a cell to the cell collection
     void addCell( Cell* cell);
     //add a TOC file offset to the collection
-    void addTOCOffset( dword o ) { tocOffsets.push_back( o ); };
+    void addTOCOffset( dword o ) { _tocOffsets.push_back( o ); };
     //add a Cell file offset to the collection
-    void addCellOffset( dword o ) { cellOffsets.push_back( o ); };
+    void addCellOffset( dword o ) { _cellOffsets.push_back( o ); };
     //add a synonym entry
     void addSynonym( std::wstring& key, Synonym* value );
     //get a synonym entry
     Synonym* synonym( const std::wstring& key );
     //add a primary index entry
-    void addIndex( I1* i ) { index.push_back( i ); };
+    void addIndex( I1* i ) { _index.push_back( i ); };
     void addIndexId( std::wstring& key, I1* value );
     //get a primary index entry
     I1* indexById( const std::wstring& key );
     //add an icmd entry
-    void addCmdIndex( ICmd* i ) { icmd.push_back( i ); };
+    void addCmdIndex( ICmd* i ) { _icmd.push_back( i ); };
     //get the maximum size of a local dictionary in a cell
-    std::size_t maxLocalDictionarySize() const { return hdr->maxLocalIndex; };
+    std::size_t maxLocalDictionarySize() const { return _hdr->maxLocalIndex; };
     //parse a command
     Lexer::Token processCommand( Lexer* lexer, Tag* parent );
     //get a TOC index from the resource number to TOC index map
@@ -135,124 +135,124 @@ public:
     STD1::uint16_t getGroupById( const std::wstring& i );
 
     //To Compiler
-    std::wstring* addFileName( std::wstring* name ) { return compiler.addFileName( name ); };
-    void printError( ErrCode c ) const { compiler.printError( c ); };
-    void printError( ErrCode c, const std::wstring& txt ) const { compiler.printError( c, txt ); };
+    std::wstring* addFileName( std::wstring* name ) { return _compiler.addFileName( name ); };
+    void printError( ErrCode c ) const { _compiler.printError( c ); };
+    void printError( ErrCode c, const std::wstring& txt ) const { _compiler.printError( c, txt ); };
     void printError( ErrCode c, const std::wstring* name, unsigned int row, unsigned int col ) const
-        { compiler.printError( c, name, row, col ); };
+        { _compiler.printError( c, name, row, col ); };
     void printError( ErrCode c, const std::wstring* name, unsigned int row, unsigned int col, const std::wstring& txt ) const
-        { compiler.printError( c, name, row, col, txt ); };
-    Lexer::Token getNextToken() { return compiler.getNextToken(); };
-    void setBlockParsing( bool yn ) { compiler.setBlockParsing( yn ); };
-    bool blockParsing() { return compiler.blockParsing(); };
-    void pushInput( IpfData* blk ) { compiler.pushInput( blk ); };
-    void popInput() { compiler.popInput(); };
-    const std::wstring* dataName() const { return compiler.dataName(); };
-    unsigned int dataLine() const { return compiler.dataLine(); };
-    unsigned int lexerLine() const { return compiler.lexerLine(); };
-    unsigned int dataCol() const { return compiler.dataCol(); };
-    unsigned int lexerCol() const { return compiler.lexerCol(); };
+        { _compiler.printError( c, name, row, col, txt ); };
+    Lexer::Token getNextToken() { return _compiler.getNextToken(); };
+    void setBlockParsing( bool yn ) { _compiler.setBlockParsing( yn ); };
+    bool blockParsing() { return _compiler.blockParsing(); };
+    void pushInput( IpfData* blk ) { _compiler.pushInput( blk ); };
+    void popInput() { _compiler.popInput(); };
+    const std::wstring* dataName() const { return _compiler.dataName(); };
+    unsigned int dataLine() const { return _compiler.dataLine(); };
+    unsigned int lexerLine() const { return _compiler.lexerLine(); };
+    unsigned int dataCol() const { return _compiler.dataCol(); };
+    unsigned int lexerCol() const { return _compiler.lexerCol(); };
 
     //To ExternalFiles
-    void addExtFile( std::wstring& str ) { extfiles->addFile( str ); };
-    STD1::uint16_t extFileIndex( std::wstring& str ) { return extfiles->index( str ); };
+    void addExtFile( std::wstring& str ) { _extfiles->addFile( str ); };
+    STD1::uint16_t extFileIndex( std::wstring& str ) { return _extfiles->index( str ); };
 
     //To FontCollection
-    std::size_t addFont( const FontEntry& fnt ) { return fonts->add( fnt ); };
+    std::size_t addFont( const FontEntry& fnt ) { return _fonts->add( fnt ); };
 
     //To GlobalDictionary
-    GlobalDictionaryWord * addWord( GlobalDictionaryWord* wordent ) { return dict->insert( wordent ); };
-    STD1::uint16_t findIndex( const std::wstring& wordtxt ) { return dict->findIndex( wordtxt ); };
+    GlobalDictionaryWord * addWord( GlobalDictionaryWord* wordent ) { return _dict->insert( wordent ); };
+    STD1::uint16_t findIndex( const std::wstring& wordtxt ) { return _dict->findIndex( wordtxt ); };
 
     //To GNames
     void addGNameOrId( GlobalDictionaryWord* key, word value )
-        { gnames->insert( key, value ); };
+        { _gnames->insert( key, value ); };
 
     //To Nls
-    STD1::uint16_t codePage() const { return nls->codePage(); };
-    const std::wstring& note() const { return nls->note(); };
-    const std::wstring& warning() const { return nls->warning(); };
-    const std::wstring& caution() const { return nls->caution(); };
-    const std::wstring& reference() const { return nls->reference(); };
-    //const std::wstring& grammar() const { return nls->grammar(); };
-    const FontEntry& cgraphicFont() const { return nls->cgraphicFont(); };
-    wchar_t olChar( unsigned int level ) const { return nls->olChars()[ level % nls->olChars().size() ]; };
-    const std::wstring& olClose( unsigned int level ) const { return nls->olClose()[ level % 2 ]; };
-    const std::wstring& ulBullet( unsigned int level ) const { return nls->ulBullets()[ level % 3 ]; };
-    wchar_t entity( const std::wstring& key ) { return nls->entity( key ); };
+    STD1::uint16_t codePage() const { return _nls->codePage(); };
+    const std::wstring& note() const { return _nls->note(); };
+    const std::wstring& warning() const { return _nls->warning(); };
+    const std::wstring& caution() const { return _nls->caution(); };
+    const std::wstring& reference() const { return _nls->reference(); };
+    //const std::wstring& grammar() const { return _nls->grammar(); };
+    const FontEntry& cgraphicFont() const { return _nls->cgraphicFont(); };
+    wchar_t olChar( unsigned int level ) const { return _nls->olChars()[level % _nls->olChars().size()]; };
+    const std::wstring& olClose( unsigned int level ) const { return _nls->olClose()[level % 2]; };
+    const std::wstring& ulBullet( unsigned int level ) const { return _nls->ulBullets()[level % 3]; };
+    wchar_t entity( const std::wstring& key ) { return _nls->entity( key ); };
 
     //To Strings
-    void addString( const std::wstring& str ) { strings->add( str ); };
+    void addString( const std::wstring& str ) { _strings->add( str ); };
 
 private:
     Document( const Document &rhs );            //no copy constructor
     Document& operator=( const Document &rhs ); //no assignment
-    Compiler& compiler;
-    std::auto_ptr< Nls > nls;
-    std::auto_ptr< IpfHeader > hdr;
-    std::auto_ptr< IpfExtHeader > eHdr;
-    std::auto_ptr< StringTable > strings;
-    std::auto_ptr< ExternalFiles > extfiles;
-    std::auto_ptr< Controls > controls;
-    std::auto_ptr< FontCollection > fonts;
-    std::auto_ptr< GNames > gnames;
-    std::auto_ptr< GlobalDictionary > dict;
+    Compiler& _compiler;
+    std::auto_ptr< Nls > _nls;
+    std::auto_ptr< IpfHeader > _hdr;
+    std::auto_ptr< IpfExtHeader > _eHdr;
+    std::auto_ptr< StringTable > _strings;
+    std::auto_ptr< ExternalFiles > _extfiles;
+    std::auto_ptr< Controls > _controls;
+    std::auto_ptr< FontCollection > _fonts;
+    std::auto_ptr< GNames > _gnames;
+    std::auto_ptr< GlobalDictionary > _dict;
 
-    std::vector< Page* > pages;
+    std::vector< Page* > _pages;
     typedef std::vector< Page* >::iterator PageIter;
     typedef std::vector< Page* >::const_iterator ConstPageIter;
 
-    std::vector< Cell* > cells;
+    std::vector< Cell* > _cells;
     typedef std::vector< Cell* >::iterator CellIter;
     typedef std::vector< Cell* >::const_iterator ConstCellIter;
 
-    std::map< std::wstring, dword > bitmapNames;
+    std::map< std::wstring, dword > _bitmapNames;
     typedef std::map< std::wstring, dword >::iterator BitmapNameIter;
     typedef std::map< std::wstring, dword >::const_iterator ConstBitmapNameIter;
 
-    std::map< word, TocRef > resMap;
+    std::map< word, TocRef > _resMap;
     typedef std::map< word, TocRef >::iterator ResMapIter;
     typedef std::map< word, TocRef >::const_iterator ConstResMapIter;
 
-    std::map< GlobalDictionaryWord*, TocRef, ptrLess< GlobalDictionaryWord* > > nameMap;
+    std::map< GlobalDictionaryWord*, TocRef, ptrLess< GlobalDictionaryWord* > > _nameMap;
     typedef std::map< GlobalDictionaryWord*, TocRef, ptrLess< GlobalDictionaryWord* > >::iterator NameMapIter;
     typedef std::map< GlobalDictionaryWord*, TocRef, ptrLess< GlobalDictionaryWord* > >::const_iterator ConstNameMapIter;
 
-    std::map< std::wstring, Synonym* > synonyms;    //each Synonym is owned by an ISym tag
+    std::map< std::wstring, Synonym* > _synonyms;    //each Synonym is owned by an ISym tag
     typedef std::map< std::wstring, Synonym* >::iterator SynIter;
     typedef std::map< std::wstring, Synonym* >::const_iterator ConstSynIter;
 
-    std::map< std::wstring, std::wstring > nameIts;
+    std::map< std::wstring, std::wstring > _nameIts;
     typedef std::map< std::wstring, std::wstring >::iterator NameItIter;
     typedef std::map< std::wstring, std::wstring >::const_iterator ConstNameItIter;
 
-    std::vector< I1* > index;
+    std::vector< I1* > _index;
     typedef std::vector< I1* >::iterator IndexIter;
     typedef std::vector< I1* >::const_iterator ConstIndexIter;
-    std::map< std::wstring, I1* > indexMap;
+    std::map< std::wstring, I1* > _indexMap;
     typedef std::map< std::wstring, I1* >::iterator IndexMapIter;
     typedef std::map< std::wstring, I1* >::const_iterator ConstIndexMapIter;
 
-    std::vector< ICmd* > icmd;
+    std::vector< ICmd* > _icmd;
     typedef std::vector< ICmd* >::iterator ICmdIter;
     typedef std::vector< ICmd* >::const_iterator ConstICmdIter;
 
-    std::vector< dword > tocOffsets;
+    std::vector< dword > _tocOffsets;
     typedef std::vector< dword >::iterator TocOffsetIter;
     typedef std::vector< dword >::const_iterator ConstTocOffsetIter;
 
-    std::vector< dword > cellOffsets;
+    std::vector< dword > _cellOffsets;
     typedef std::vector< dword >::iterator CellOffsetIter;
     typedef std::vector< dword >::const_iterator ConstCellOffsetIter;
 
-    std::FILE *tmpBitmaps;  // temporary file for bitmaps
-    Text* lastPrintableItem;
-    unsigned int maxHeaderLevel;
-    unsigned int headerLevel;
-    unsigned char currentLeftMargin;
-    Lexer::Token lastPrintableToken;
-    bool inDoc;             //true if parsing between userdoc and euserdoc
-    bool spacing;           //true if automatically inserting spaces
+    std::FILE *_tmpBitmaps;  // temporary file for bitmaps
+    Text* _lastPrintableItem;
+    unsigned int _maxHeaderLevel;
+    unsigned int _headerLevel;
+    unsigned char _currentLeftMargin;
+    Lexer::Token _lastPrintableToken;
+    bool _inDoc;             //true if parsing between userdoc and euserdoc
+    bool _spacing;           //true if automatically inserting spaces
     void makeBitmaps();
     void makeIndexes();
     STD1::uint32_t writeBitmaps( std::FILE* out );

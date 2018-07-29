@@ -186,35 +186,35 @@
 
 
 Document::Document( Compiler& c, const char* loc ) :
-    compiler( c ),
-    nls( new Nls( loc ) ),
-    hdr( new IpfHeader() ),
-    eHdr( new IpfExtHeader() ),
-    strings( new StringTable() ),
-    extfiles( new ExternalFiles() ),
-    controls( new Controls() ),
-    gnames( new GNames() ),
-    dict( new GlobalDictionary() ),
-    tmpBitmaps( NULL ),
-    lastPrintableItem( 0 ),
-    maxHeaderLevel( 3 ),
-    headerLevel( 1 ),
-    currentLeftMargin( 1 ),
-    lastPrintableToken( Lexer::END ),
-    inDoc( false ),
-    spacing( true )
+    _compiler( c ),
+    _nls( new Nls( loc ) ),
+    _hdr( new IpfHeader() ),
+    _eHdr( new IpfExtHeader() ),
+    _strings( new StringTable() ),
+    _extfiles( new ExternalFiles() ),
+    _controls( new Controls() ),
+    _gnames( new GNames() ),
+    _dict( new GlobalDictionary() ),
+    _tmpBitmaps( NULL ),
+    _lastPrintableItem( 0 ),
+    _maxHeaderLevel( 3 ),
+    _headerLevel( 1 ),
+    _currentLeftMargin( 1 ),
+    _lastPrintableToken( Lexer::END ),
+    _inDoc( false ),
+    _spacing( true )
 {
-    fonts.reset( new FontCollection( codePage() ) );
+    _fonts.reset( new FontCollection( codePage() ) );
     addFont( cgraphicFont() );
 }
 /***************************************************************************/
 Document::~Document()
 {
-    if( tmpBitmaps != NULL )
-        std::fclose( tmpBitmaps );
-    for( CellIter itr = cells.begin(); itr != cells.end(); ++itr )
+    if( _tmpBitmaps != NULL )
+        std::fclose( _tmpBitmaps );
+    for( CellIter itr = _cells.begin(); itr != _cells.end(); ++itr )
         delete *itr;
-    for( PageIter itr = pages.begin(); itr != pages.end(); ++itr ) {
+    for( PageIter itr = _pages.begin(); itr != _pages.end(); ++itr ) {
         delete *itr;
     }
 }
@@ -224,10 +224,10 @@ void Document::parse( Lexer* lexer )
 {
     Lexer::Token tok;
 
-    while( (tok = getNextToken()) != Lexer::END && !inDoc ) {
+    while( (tok = getNextToken()) != Lexer::END && !_inDoc ) {
         //only comments and whitespace are allowed before :userdoc tag
         if( tok == Lexer::TAG && lexer->tagId() == Lexer::USERDOC ) {
-            inDoc = true;
+            _inDoc = true;
             while( (tok = getNextToken()) != Lexer::TAGEND ) {
                 if( tok == Lexer::ATTRIBUTE ) {
                     printError( ERR1_ATTRNOTDEF );
@@ -260,15 +260,15 @@ void Document::parse( Lexer* lexer )
         if( tok == Lexer::TAG) {
             if( lexer->tagId() == Lexer::TITLE ) {
                 Title title( this );
-                tok = title.parse( lexer, hdr.get() );
+                tok = title.parse( lexer, _hdr.get() );
             } else if( lexer->tagId() == Lexer::DOCPROF ) {
                 DocProf dp( this );
                 tok = dp.parse( lexer );
-                dp.build( controls.get(), strings.get() );
+                dp.build( _controls.get(), _strings.get() );
             } else if( lexer->tagId() == Lexer::CTRLDEF ) {
                 CtrlDef cd( this );
                 tok = cd.parse( lexer );
-                cd.build( controls.get() );
+                cd.build( _controls.get() );
             } else if( lexer->tagId() == Lexer::H1 || lexer->tagId() == Lexer::FN ) {
                 break;
             } else if( lexer->tagId() == Lexer::EUSERDOC ) {
@@ -331,7 +331,7 @@ void Document::parse( Lexer* lexer )
                 addPage( pg );
                 tok = fn->parse( lexer );
             } else if( lexer->tagId() == Lexer::EUSERDOC ) {
-                inDoc = false;
+                _inDoc = false;
                 // should be Lexer::TAGEND
                 while( (tok = getNextToken()) != Lexer::TAGEND ) {
                     if( tok == Lexer::ATTRIBUTE ) {
@@ -366,18 +366,18 @@ void Document::parse( Lexer* lexer )
             tok = getNextToken();
         }
     }
-    if( inDoc )
+    if( _inDoc )
         throw FatalError( ERR_DOCBODY );
     for( ; tok != Lexer::END; tok = getNextToken() ) {
         if( tok != Lexer::WHITESPACE ) {
             printError( ERR1_TAILTEXT );
         }
     }
-    if( pages.size() > 65535 )
+    if( _pages.size() > 65535 )
         throw FatalError( ERR_LARGETOC );
-    if( dict->size() > 64000 ) {
+    if( _dict->size() > 64000 ) {
         throw FatalError( ERR_DOCLARGE );
-    } else if ( dict->size() == 0 ) {
+    } else if ( _dict->size() == 0 ) {
         throw FatalError( ERR_DOCSMALL );
     }
 }
@@ -387,7 +387,7 @@ void Document::build()
 {
     //build the TOC
     unsigned int visiblePages = 0;
-    for( PageIter itr = pages.begin(); itr != pages.end(); ++itr ) {
+    for( PageIter itr = _pages.begin(); itr != _pages.end(); ++itr ) {
         ( *itr )->buildTOC();
         if( ( *itr )->isVisible() ) {
             ++visiblePages;
@@ -395,82 +395,82 @@ void Document::build()
     }
     if( !visiblePages )
         throw FatalError( ERR_INVISIBLETOC );
-    tocOffsets.reserve( pages.size() );
-    dict->convert( pages.size() );  //number each page
-    extfiles->convert();            //number each external file
+    _tocOffsets.reserve( _pages.size() );
+    _dict->convert( _pages.size() );  //number each page
+    _extfiles->convert();            //number each external file
     makeBitmaps();                  //process images
     //for each page, linearize the DOM tree it contains and build local dictionary
-    std::for_each( pages.begin(), pages.end(), std::mem_fun( &Page::linearize ) );
+    std::for_each( _pages.begin(), _pages.end(), std::mem_fun( &Page::linearize ) );
     makeIndexes();
-    std::for_each( pages.begin(), pages.end(), std::mem_fun( &Page::buildLocalDictionary ) );
-    std::for_each( cells.begin(), cells.end(), std::mem_fun( &Cell::build ) );
-    if( compiler.searchable() ) {
-        hdr->setBigFTS( dict->buildFTS() ); //build FTS from GlobalDictionary
+    std::for_each( _pages.begin(), _pages.end(), std::mem_fun( &Page::buildLocalDictionary ) );
+    std::for_each( _cells.begin(), _cells.end(), std::mem_fun( &Cell::build ) );
+    if( _compiler.searchable() ) {
+        _hdr->setBigFTS( _dict->buildFTS() ); //build FTS from GlobalDictionary
     }
 }
 /***************************************************************************/
 // Write the file
 void Document::write( std::FILE *out )
 {
-    hdr->write( out );   //write the header
-    hdr->panelCount = static_cast< word >( resMap.size() );
-    hdr->panelOffset = writeResMap( out );
-    hdr->nameCount = !isInf() ? static_cast< word >( nameMap.size() ) : 0;
-    hdr->nameOffset = writeNameMap( out );
-    eHdr->gNameOffset = gnames->write( out );
-    eHdr->gNameCount = gnames->size();
-    hdr->imageOffset = writeBitmaps( out );
-    hdr->tocCount = static_cast< word >( pages.size() );
-    hdr->tocOffset = writeTOCs( out );
-    hdr->tocOffsetOffset = writeTOCOffsets( out );
+    _hdr->write( out );   //write the header
+    _hdr->panelCount = static_cast< word >( _resMap.size() );
+    _hdr->panelOffset = writeResMap( out );
+    _hdr->nameCount = !isInf() ? static_cast< word >( _nameMap.size() ) : 0;
+    _hdr->nameOffset = writeNameMap( out );
+    _eHdr->gNameOffset = _gnames->write( out );
+    _eHdr->gNameCount = _gnames->size();
+    _hdr->imageOffset = writeBitmaps( out );
+    _hdr->tocCount = static_cast< word >( _pages.size() );
+    _hdr->tocOffset = writeTOCs( out );
+    _hdr->tocOffsetOffset = writeTOCOffsets( out );
     writeSynonyms( out );
-    hdr->indexOffset = writeIndex( out );
-    hdr->icmdOffset = writeICmd( out );
-    hdr->nlsOffset = nls->write( out );
-    hdr->nlsSize = nls->length();
-    eHdr->stringsOffset = strings->write( out );
-    eHdr->stringsSize = static_cast< word >( strings->length() );
-    eHdr->dbOffset = extfiles->write( out );
-    eHdr->dbCount = static_cast< word >( extfiles->size() );
-    eHdr->dbSize = extfiles->length();
-    eHdr->fontOffset = fonts->write( out );
-    eHdr->fontCount = static_cast< word >( fonts->size() );
-    eHdr->ctrlOffset = controls->write( out );
-    eHdr->ctrlSize = controls->length();
-    hdr->dictOffset = dict->write( out );
-    hdr->dictSize = dict->length();
-    hdr->dictCount = dict->size();
+    _hdr->indexOffset = writeIndex( out );
+    _hdr->icmdOffset = writeICmd( out );
+    _hdr->nlsOffset = _nls->write( out );
+    _hdr->nlsSize = _nls->length();
+    _eHdr->stringsOffset = _strings->write( out );
+    _eHdr->stringsSize = static_cast< word >( _strings->length() );
+    _eHdr->dbOffset = _extfiles->write( out );
+    _eHdr->dbCount = static_cast< word >( _extfiles->size() );
+    _eHdr->dbSize = _extfiles->length();
+    _eHdr->fontOffset = _fonts->write( out );
+    _eHdr->fontCount = static_cast< word >( _fonts->size() );
+    _eHdr->ctrlOffset = _controls->write( out );
+    _eHdr->ctrlSize = _controls->length();
+    _hdr->dictOffset = _dict->write( out );
+    _hdr->dictSize = _dict->length();
+    _hdr->dictCount = _dict->size();
     writeCells( out );
-    hdr->cellCount = static_cast< word >( cells.size() );
-    hdr->cellOffsetOffset = writeCellOffsets( out );
-    eHdr->childPagesOffset = writeChildWindows( out );
-    if( compiler.searchable() ) {
-        bool big = hdr->isBigFTS();
-        hdr->searchOffset = dict->writeFTS( out, big );
-        hdr->setBigFTS( big );
-        hdr->searchSize = dict->ftsLength();
+    _hdr->cellCount = static_cast< word >( _cells.size() );
+    _hdr->cellOffsetOffset = writeCellOffsets( out );
+    _eHdr->childPagesOffset = writeChildWindows( out );
+    if( _compiler.searchable() ) {
+        bool big = _hdr->isBigFTS();
+        _hdr->searchOffset = _dict->writeFTS( out, big );
+        _hdr->setBigFTS( big );
+        _hdr->searchSize = _dict->ftsLength();
     }
-    hdr->extOffset = eHdr->write( out );
-    hdr->write( out );   //rewrite the header to update the offsets
+    _hdr->extOffset = _eHdr->write( out );
+    _hdr->write( out );   //rewrite the header to update the offsets
 }
 /***************************************************************************/
 void Document::summary( std::FILE* out )
 {
     //TODO: use ostream when streams and strings mature
-    std::fprintf( out, "Number of pages:          %u\n", static_cast< unsigned int >( pages.size() ) );
-    std::fprintf( out, "Pages defined by name:    %u\n", static_cast< unsigned int >( nameMap.size() ) );
-    std::fprintf( out, "Pages defined by number:  %u\n", static_cast< unsigned int >( resMap.size() ) );
-    std::fprintf( out, "Words in dictionary:      %u\n", dict->size() );
-    std::fprintf( out, "Number of index entries:  %u\n", static_cast< unsigned int >( index.size() ) );
-    std::fprintf( out, "Global index entries:     %u\n", eHdr->gIndexCount );
-    std::fprintf( out, "Number of fonts used:     %u\n", static_cast< unsigned int >( fonts->size() ) );
-    std::fprintf( out, "Number of External files: %u\n", extfiles->size() );
+    std::fprintf( out, "Number of pages:          %u\n", static_cast< unsigned int >( _pages.size() ) );
+    std::fprintf( out, "Pages defined by name:    %u\n", static_cast< unsigned int >( _nameMap.size() ) );
+    std::fprintf( out, "Pages defined by number:  %u\n", static_cast< unsigned int >( _resMap.size() ) );
+    std::fprintf( out, "Words in dictionary:      %u\n", _dict->size() );
+    std::fprintf( out, "Number of index entries:  %u\n", static_cast< unsigned int >( _index.size() ) );
+    std::fprintf( out, "Global index entries:     %u\n", _eHdr->gIndexCount );
+    std::fprintf( out, "Number of fonts used:     %u\n", static_cast< unsigned int >( _fonts->size() ) );
+    std::fprintf( out, "Number of External files: %u\n", _extfiles->size() );
     std::fprintf( out, "\nIdentifier Cross-reference\n" );
-    for( ConstResMapIter itr( resMap.begin() ); itr != resMap.end(); ++itr ) {
+    for( ConstResMapIter itr( _resMap.begin() ); itr != _resMap.end(); ++itr ) {
         std::fprintf( out, "%5u:", itr->first );
         itr->second.write( out );
     }
-    for( ConstNameMapIter itr( nameMap.begin() ); itr != nameMap.end(); ++itr ) {
+    for( ConstNameMapIter itr( _nameMap.begin() ); itr != _nameMap.end(); ++itr ) {
         std::fprintf( out, "%ls:\n      ", itr->first->getText().c_str() );
         itr->second.write( out );
     }
@@ -478,13 +478,13 @@ void Document::summary( std::FILE* out )
 /***************************************************************************/
 void Document::addBitmap( std::wstring& bmn )
 {
-    bitmapNames.insert( std::map< std::wstring, unsigned long int >::value_type( bmn, 0 ) );
+    _bitmapNames.insert( std::map< std::wstring, unsigned long int >::value_type( bmn, 0 ) );
 }
 /***************************************************************************/
 STD1::uint32_t Document::bitmapByName( std::wstring& bmn )
 {
-    BitmapNameIter itr( bitmapNames.find( bmn ) );
-    if( itr == bitmapNames.end() )
+    BitmapNameIter itr( _bitmapNames.find( bmn ) );
+    if( itr == _bitmapNames.end() )
         return 0;
     return itr->second;
 }
@@ -493,8 +493,8 @@ void Document::addRes( word key, TocRef& value )
 {
     if( !key ) {
         throw Class3Error( ERR3_MISSINGRES );
-    } else if( resMap.find( key ) == resMap.end() ) {   //add it to the list
-        resMap.insert( std::map< word, TocRef >::value_type( key, value ) );
+    } else if( _resMap.find( key ) == _resMap.end() ) {   //add it to the list
+        _resMap.insert( std::map< word, TocRef >::value_type( key, value ) );
     } else {
         throw Class3Error( ERR3_DUPRES );
     }
@@ -502,8 +502,8 @@ void Document::addRes( word key, TocRef& value )
 /***************************************************************************/
 void Document::addNameOrId( GlobalDictionaryWord* key, TocRef& value )
 {
-    if( nameMap.find( key ) == nameMap.end() ) {    //add it to the list
-        nameMap.insert( std::map< GlobalDictionaryWord*, TocRef, ptrLess< GlobalDictionaryWord* > >::value_type( key, value ) );
+    if( _nameMap.find( key ) == _nameMap.end() ) {    //add it to the list
+        _nameMap.insert( std::map< GlobalDictionaryWord*, TocRef, ptrLess< GlobalDictionaryWord* > >::value_type( key, value ) );
     } else {
         throw Class3Error( ERR3_DUPID );
     }
@@ -511,45 +511,45 @@ void Document::addNameOrId( GlobalDictionaryWord* key, TocRef& value )
 /***************************************************************************/
 void Document::addXRef( word res, XRef& xref )
 {
-    ResMapIter itr( resMap.find( res ) );
-    if( itr == resMap.end() )
+    ResMapIter itr( _resMap.find( res ) );
+    if( itr == _resMap.end() )
         throw Class1Error( ERR1_NORES );
     itr->second.addXRef( xref );
 }
 /***************************************************************************/
 void Document::addXRef( GlobalDictionaryWord* id, XRef& xref )
 {
-    NameMapIter itr( nameMap.find( id ) );
-    if( itr == nameMap.end() )
+    NameMapIter itr( _nameMap.find( id ) );
+    if( itr == _nameMap.end() )
         throw Class1Error( ERR1_NOID );
     itr->second.addXRef( xref );
 }
 /***************************************************************************/
 void Document::addPage( Page* page )
 {
-    page->setIndex( static_cast< word >( pages.size() ) );
-    pages.push_back( page );
+    page->setIndex( static_cast< word >( _pages.size() ) );
+    _pages.push_back( page );
 }
 /***************************************************************************/
 void Document::addCell( Cell* cell )
 {
-    cell->setIndex( cells.size() );
-    cells.push_back( cell );
+    cell->setIndex( _cells.size() );
+    _cells.push_back( cell );
 }
 /***************************************************************************/
 void Document::makeIndexes()
 {
-    std::sort( index.begin(), index.end(), ptrLess< I1* >() );
-    std::sort( icmd.begin(), icmd.end(), ptrLess< ICmd* >() );
-    std::for_each( pages.begin(), pages.end(), std::mem_fun( &Page::buildIndex ) );
+    std::sort( _index.begin(), _index.end(), ptrLess< I1* >() );
+    std::sort( _icmd.begin(), _icmd.end(), ptrLess< ICmd* >() );
+    std::for_each( _pages.begin(), _pages.end(), std::mem_fun( &Page::buildIndex ) );
 }
 /***************************************************************************/
 void Document::makeBitmaps()
 {
-    if( !bitmapNames.empty() ) {
+    if( !_bitmapNames.empty() ) {
         //could use tmpfile...
-        tmpBitmaps = std::tmpfile();
-        if( tmpBitmaps == NULL )
+        _tmpBitmaps = std::tmpfile();
+        if( _tmpBitmaps == NULL )
             throw FatalIOError( ERR_OPEN, L"(temporary file for bitmaps)" );
         //get IPFCARTWORK from env
         std::string env( Environment.value( "IPFCARTWORK" ) );
@@ -566,7 +566,7 @@ void Document::makeBitmaps()
             paths.push_back( env.substr( idx1, idx2 - idx1 ) );
         }
         try {
-            for( BitmapNameIter itr = bitmapNames.begin(); itr != bitmapNames.end(); ++itr ) {
+            for( BitmapNameIter itr = _bitmapNames.begin(); itr != _bitmapNames.end(); ++itr ) {
                 std::string fname;
                 def_wtomb_string( itr->first, fname );
                 for( std::size_t count = 0; count < paths.size(); ++count ) {
@@ -584,7 +584,7 @@ void Document::makeBitmaps()
                         std::printf( "Processing bitmap %s\n", fullname.c_str() );
 #endif
                         Bitmap bm( fullname );
-                        itr->second = bm.write( tmpBitmaps );
+                        itr->second = bm.write( _tmpBitmaps );
                         break;
                     }
                     catch( FatalError& e ) {
@@ -599,13 +599,13 @@ void Document::makeBitmaps()
             }
         }
         catch( FatalError& e ) {
-            std::fclose( tmpBitmaps );
-            tmpBitmaps = NULL;
+            std::fclose( _tmpBitmaps );
+            _tmpBitmaps = NULL;
             throw e;
         }
         catch( FatalIOError& e ) {
-            std::fclose( tmpBitmaps );
-            tmpBitmaps = NULL;
+            std::fclose( _tmpBitmaps );
+            _tmpBitmaps = NULL;
             throw e;
         }
     }
@@ -614,23 +614,23 @@ void Document::makeBitmaps()
 STD1::uint32_t Document::writeBitmaps( std::FILE* out )
 {
     dword offset = 0;
-    if( !bitmapNames.empty() && tmpBitmaps != NULL ) {
+    if( !_bitmapNames.empty() && _tmpBitmaps != NULL ) {
         offset = std::ftell( out );
-        std::fseek( tmpBitmaps, 0L, SEEK_END );
+        std::fseek( _tmpBitmaps, 0L, SEEK_END );
         dword length;
-        std::fseek( tmpBitmaps, 0L, SEEK_SET );
+        std::fseek( _tmpBitmaps, 0L, SEEK_SET );
         std::vector< byte > buffer( BUFSIZ );
         //copy the temporary file into this one
         try {
-            for( length = std::ftell( tmpBitmaps ); length > BUFSIZ; length -= BUFSIZ ) {
-                if( std::fread( &buffer[0], sizeof( byte ), BUFSIZ, tmpBitmaps ) != BUFSIZ )
+            for( length = std::ftell( _tmpBitmaps ); length > BUFSIZ; length -= BUFSIZ ) {
+                if( std::fread( &buffer[0], sizeof( byte ), BUFSIZ, _tmpBitmaps ) != BUFSIZ )
                     throw FatalIOError( ERR_READ, L"(temporary file for bitmaps)" );
                 if( std::fwrite( &buffer[0], sizeof( byte ), BUFSIZ, out ) != BUFSIZ ) {
                     throw FatalError( ERR_WRITE );
                 }
             }
             if( length ) {
-                if( std::fread( &buffer[0], sizeof( byte ), length, tmpBitmaps ) != length )
+                if( std::fread( &buffer[0], sizeof( byte ), length, _tmpBitmaps ) != length )
                     throw FatalIOError( ERR_READ, L"(temporary file for bitmaps)" );
                 if( std::fwrite( &buffer[0], sizeof( byte ), length, out ) != length ) {
                     throw FatalError( ERR_WRITE );
@@ -638,17 +638,17 @@ STD1::uint32_t Document::writeBitmaps( std::FILE* out )
             }
         }
         catch( FatalError& e ) {
-            std::fclose( tmpBitmaps );
-            tmpBitmaps = NULL;
+            std::fclose( _tmpBitmaps );
+            _tmpBitmaps = NULL;
             throw e;
         }
         catch( FatalIOError& e ) {
-            std::fclose( tmpBitmaps );
-            tmpBitmaps = NULL;
+            std::fclose( _tmpBitmaps );
+            _tmpBitmaps = NULL;
             throw e;
         }
-        std::fclose( tmpBitmaps );
-        tmpBitmaps = NULL;
+        std::fclose( _tmpBitmaps );
+        _tmpBitmaps = NULL;
     }
     return offset;
 }
@@ -656,15 +656,15 @@ STD1::uint32_t Document::writeBitmaps( std::FILE* out )
 STD1::uint32_t Document::writeResMap( std::FILE* out )
 {
     dword offset = 0;
-    if( !resMap.empty() ) {
+    if( !_resMap.empty() ) {
         offset = std::ftell( out );
         ConstResMapIter itr;
-        for( itr = resMap.begin(); itr != resMap.end(); ++itr ) {
+        for( itr = _resMap.begin(); itr != _resMap.end(); ++itr ) {
             if( std::fwrite( &itr->first, sizeof( word ), 1, out ) != 1 ) {
                 throw FatalError( ERR_WRITE );
             }
         }
-        for( itr = resMap.begin(); itr != resMap.end(); ++itr ) {
+        for( itr = _resMap.begin(); itr != _resMap.end(); ++itr ) {
             word idx( itr->second.index() );
             if( std::fwrite( &idx, sizeof( word ), 1, out ) != 1 ) {
                 throw FatalError( ERR_WRITE );
@@ -677,16 +677,16 @@ STD1::uint32_t Document::writeResMap( std::FILE* out )
 STD1::uint32_t Document::writeNameMap( std::FILE* out )
 {
     dword offset = 0;
-    if( !isInf() && !nameMap.empty() ) {
+    if( !isInf() && !_nameMap.empty() ) {
         offset = std::ftell( out );
         ConstNameMapIter itr;
-        for( itr = nameMap.begin(); itr != nameMap.end(); ++itr ) {
+        for( itr = _nameMap.begin(); itr != _nameMap.end(); ++itr ) {
             word idx( itr->first->index() );
             if( std::fwrite( &idx, sizeof( word ), 1, out ) != 1 ) {
                 throw FatalError( ERR_WRITE );
             }
         }
-        for( itr = nameMap.begin(); itr != nameMap.end(); ++itr ) {
+        for( itr = _nameMap.begin(); itr != _nameMap.end(); ++itr ) {
             word idx( itr->second.index() );
             if( std::fwrite( &idx, sizeof( word ), 1, out ) != 1 ) {
                 throw FatalError( ERR_WRITE );
@@ -699,10 +699,10 @@ STD1::uint32_t Document::writeNameMap( std::FILE* out )
 STD1::uint32_t Document::writeTOCs( std::FILE* out )
 {
     dword offset = std::ftell( out );
-    hdr->tocSize = 0;
-    for( PageIter itr = pages.begin(); itr != pages.end(); ++itr ) {
+    _hdr->tocSize = 0;
+    for( PageIter itr = _pages.begin(); itr != _pages.end(); ++itr ) {
         addTOCOffset( ( *itr )->write( out ) );
-        hdr->tocSize += ( *itr )->tocSize();
+        _hdr->tocSize += ( *itr )->tocSize();
     }
     return offset;
 }
@@ -710,10 +710,10 @@ STD1::uint32_t Document::writeTOCs( std::FILE* out )
 STD1::uint32_t Document::writeTOCOffsets( std::FILE* out )
 {
     dword offset = 0;
-    if( !tocOffsets.empty() ) {
+    if( !_tocOffsets.empty() ) {
         offset = std::ftell( out );
-        if( std::fwrite( &tocOffsets[0], sizeof( dword ),
-          tocOffsets.size(), out ) != tocOffsets.size() ) {
+        if( std::fwrite( &_tocOffsets[0], sizeof( dword ),
+          _tocOffsets.size(), out ) != _tocOffsets.size() ) {
             throw FatalError( ERR_WRITE );
         }
     }
@@ -722,9 +722,9 @@ STD1::uint32_t Document::writeTOCOffsets( std::FILE* out )
 /**************************************************************************/
 void Document::writeCells( std::FILE* out )
 {
-    if( cells.size() > UINT16_MAX )
+    if( _cells.size() > UINT16_MAX )
         throw FatalError( ERR_LARGETOC );
-    for( CellIter itr = cells.begin(); itr != cells.end(); ++itr ) {
+    for( CellIter itr = _cells.begin(); itr != _cells.end(); ++itr ) {
         addCellOffset( (*itr)->write( out ) );
     }
 }
@@ -732,10 +732,10 @@ void Document::writeCells( std::FILE* out )
 STD1::uint32_t Document::writeCellOffsets( std::FILE* out )
 {
     dword offset = 0;
-    if( !cellOffsets.empty() ) {
+    if( !_cellOffsets.empty() ) {
         offset = std::ftell( out );
-        if( std::fwrite( &cellOffsets[0], sizeof( dword ),
-          cellOffsets.size(), out ) != cellOffsets.size() ) {
+        if( std::fwrite( &_cellOffsets[0], sizeof( dword ),
+          _cellOffsets.size(), out ) != _cellOffsets.size() ) {
             throw FatalError( ERR_WRITE );
         }
     }
@@ -745,30 +745,30 @@ STD1::uint32_t Document::writeCellOffsets( std::FILE* out )
 STD1::uint32_t Document::writeChildWindows( std::FILE* out )
 {
     dword offset = std::ftell( out );
-    eHdr->childPagesSize = 0;
-    for( PageIter itr = pages.begin(); itr != pages.end(); ++itr )
-        eHdr->childPagesSize += ( *itr )->writeChildren( out );
-    return eHdr->childPagesSize ? offset : 0;
+    _eHdr->childPagesSize = 0;
+    for( PageIter itr = _pages.begin(); itr != _pages.end(); ++itr )
+        _eHdr->childPagesSize += ( *itr )->writeChildren( out );
+    return _eHdr->childPagesSize ? offset : 0;
 }
 /***************************************************************************/
 void Document::writeSynonyms( std::FILE* out )
 {
-    for( SynIter itr = synonyms.begin(); itr != synonyms.end(); ++itr )
+    for( SynIter itr = _synonyms.begin(); itr != _synonyms.end(); ++itr )
         itr->second->write( out );
 }
 /***************************************************************************/
 STD1::uint32_t Document::writeIndex( std::FILE* out )
 {
     dword offset = 0;
-    hdr->indexCount = 0;
-    hdr->indexSize = 0;
-    eHdr->gIndexCount = 0;
-    if( !index.empty() ) {
+    _hdr->indexCount = 0;
+    _hdr->indexSize = 0;
+    _eHdr->gIndexCount = 0;
+    if( !_index.empty() ) {
         offset = std::ftell( out );
         dword count = 0;
         dword gcount = 0;
         dword size = 0;
-        for( IndexIter itr = index.begin(); itr != index.end(); ++itr ) {
+        for( IndexIter itr = _index.begin(); itr != _index.end(); ++itr ) {
             size += ( *itr )->write( out );
             count += ( *itr )->secondaryCount() + 1;
             if( ( *itr )->isGlobal() ) {
@@ -777,9 +777,9 @@ STD1::uint32_t Document::writeIndex( std::FILE* out )
         }
         if( count > UINT16_MAX )
             throw FatalError( ERR_LARGEINDEX );
-        hdr->indexCount = static_cast< word >( count );
-        hdr->indexSize = size;
-        eHdr->gIndexCount = gcount;
+        _hdr->indexCount = static_cast< word >( count );
+        _hdr->indexSize = size;
+        _eHdr->gIndexCount = gcount;
     }
     return offset;
 }
@@ -787,17 +787,17 @@ STD1::uint32_t Document::writeIndex( std::FILE* out )
 STD1::uint32_t Document::writeICmd( std::FILE* out )
 {
     dword offset = 0;
-    hdr->icmdCount = 0;
-    hdr->icmdSize = 0;
-    if( !icmd.empty() ) {
-        if( icmd.size() > UINT16_MAX )
+    _hdr->icmdCount = 0;
+    _hdr->icmdSize = 0;
+    if( !_icmd.empty() ) {
+        if( _icmd.size() > UINT16_MAX )
             throw FatalError( ERR_LARGEINDEX );
         offset = std::ftell( out );
         dword size = 0;
-        for( ICmdIter itr = icmd.begin(); itr != icmd.end(); ++itr )
+        for( ICmdIter itr = _icmd.begin(); itr != _icmd.end(); ++itr )
             size += ( *itr )->write( out );
-        hdr->icmdCount = static_cast< word >( icmd.size() );
-        hdr->icmdSize = size;
+        _hdr->icmdCount = static_cast< word >( _icmd.size() );
+        _hdr->icmdSize = size;
     }
     return offset;
 }
@@ -884,8 +884,8 @@ Lexer::Token Document::processCommand( Lexer* lexer, Tag* parent )
             lexer->text().find( L' ', idx3 + 5 ) );
         std::wstring txt( lexer->text().substr( idx3 + 5, idx4 - idx3 - 5 ) );
         killQuotes( txt );
-        if( !nls->isEntity( sym ) && nameIts.find( sym ) == nameIts.end() ) {   //add it to the list
-            nameIts.insert( std::map< std::wstring, std::wstring >::value_type( sym, txt ) );
+        if( !_nls->isEntity( sym ) && _nameIts.find( sym ) == _nameIts.end() ) {   //add it to the list
+            _nameIts.insert( std::map< std::wstring, std::wstring >::value_type( sym, txt ) );
         } else {
             printError( ERR3_DUPSYMBOL );
         }
@@ -898,8 +898,8 @@ Lexer::Token Document::processCommand( Lexer* lexer, Tag* parent )
 //get a TOC index from the resource number to TOC index map
 STD1::uint16_t Document::tocIndexByRes( word res )
 {
-    ResMapIter itr( resMap.find( res ) );
-    if( itr == resMap.end() )
+    ResMapIter itr( _resMap.find( res ) );
+    if( itr == _resMap.end() )
         throw Class1Error( ERR1_NORES );
     return itr->second.index();
 }
@@ -907,16 +907,16 @@ STD1::uint16_t Document::tocIndexByRes( word res )
 //get a TOC index from the id or name to TOC index map
 STD1::uint16_t Document::tocIndexById( GlobalDictionaryWord* id )
 {
-    NameMapIter itr( nameMap.find( id ) );
-    if( itr == nameMap.end() )
+    NameMapIter itr( _nameMap.find( id ) );
+    if( itr == _nameMap.end() )
         throw Class1Error( ERR1_NOID );
     return itr->second.index();
 }
 /***************************************************************************/
 void Document::addSynonym( std::wstring& key, Synonym* value )
 {
-    if( synonyms.find( key ) == synonyms.end() ) {  //add it to the list
-        synonyms.insert( std::map< std::wstring, Synonym* >::value_type( key, value ) );
+    if( _synonyms.find( key ) == _synonyms.end() ) {  //add it to the list
+        _synonyms.insert( std::map< std::wstring, Synonym* >::value_type( key, value ) );
     } else {
         throw Class3Error( ERR3_DUPSYN );
     }
@@ -924,16 +924,16 @@ void Document::addSynonym( std::wstring& key, Synonym* value )
 /***************************************************************************/
 Synonym* Document::synonym( const std::wstring& key )
 {
-    SynIter itr( synonyms.find( key ) );
-    if( itr == synonyms.end() )
+    SynIter itr( _synonyms.find( key ) );
+    if( itr == _synonyms.end() )
         throw Class3Error( ERR3_NOSYN );
     return itr->second;
 }
 /***************************************************************************/
 void Document::addIndexId( std::wstring& key, I1* value )
 {
-    if( indexMap.find( key ) == indexMap.end() ) {  //add it to the list
-        indexMap.insert( std::map< std::wstring, I1* >::value_type( key, value ) );
+    if( _indexMap.find( key ) == _indexMap.end() ) {  //add it to the list
+        _indexMap.insert( std::map< std::wstring, I1* >::value_type( key, value ) );
     } else {
         throw Class3Error( ERR3_DUPID );
     }
@@ -941,16 +941,16 @@ void Document::addIndexId( std::wstring& key, I1* value )
 /***************************************************************************/
 I1* Document::indexById( const std::wstring& key )
 {
-    IndexMapIter itr( indexMap.find( key ) );
-    if( itr == indexMap.end() )
+    IndexMapIter itr( _indexMap.find( key ) );
+    if( itr == _indexMap.end() )
         throw Class1Error( ERR1_NOID );
     return itr->second;
 }
 /***************************************************************************/
 const std::wstring* Document::nameit( const std::wstring& key )
 {
-    NameItIter itr( nameIts.find( key ) );
-    if( itr == nameIts.end() )
+    NameItIter itr( _nameIts.find( key ) );
+    if( itr == _nameIts.end() )
         return 0;
     return &(itr->second);
 }
@@ -965,9 +965,9 @@ std::wstring* Document::prepNameitName( const std::wstring& key )
 /***************************************************************************/
 STD1::uint16_t Document::getGroupById( const std::wstring& i )
 {
-    ControlGroup* grp( controls->getGroupById( i ) );
+    ControlGroup* grp( _controls->getGroupById( i ) );
     if( !grp ) {
-        compiler.printError( ERR1_NOID, i );
+        _compiler.printError( ERR1_NOID, i );
         return 0;
     } else {
         return grp->index() + 1;
