@@ -90,8 +90,9 @@ STD1::uint32_t Page::write( std::FILE* out )
             tocsize += sizeof( PageStyle );
         if( etoc.setGroup )
             tocsize += sizeof ( PageGroup );
-        if( etoc.setCtrl )
+        if( etoc.setCtrl ) {
             tocsize += sizeof( PageControls );
+        }
     }
     if( tocsize + title.size() > 255 ) {
         Hn* hn( static_cast< Hn* >( *( elements.begin() ) ) );
@@ -111,16 +112,18 @@ STD1::uint32_t Page::write( std::FILE* out )
             style.write( out );
         if( etoc.setGroup )
             group.write( out );
-        if( etoc.setCtrl )
+        if( etoc.setCtrl ) {
             controls.write( out );
+        }
     }
     if( std::fwrite( &cells[0], sizeof( word ), cells.size(), out ) != cells.size() )
         throw FatalError( ERR_WRITE );
     if( !title.empty() ){
         if( std::fwrite( title.c_str(), sizeof( byte ), title.size(), out ) != title.size() )
             throw FatalError( ERR_WRITE );
+        }
     }
-    return pos;
+    return( pos );
 }
 /***************************************************************************/
 // byte size
@@ -130,7 +133,7 @@ STD1::uint32_t Page::writeChildren( std::FILE* out ) const
 {
     dword bytes = 0;
     if( !children.empty() ) {
-        byte size_u8( 3 + static_cast< byte >( children.size() * sizeof( word ) ) );
+        byte size_u8 = 3 + static_cast< byte >( children.size() * sizeof( word ) );
         if( std::fputc( size_u8, out ) == EOF )
             throw FatalError( ERR_WRITE );
         ++bytes;
@@ -141,6 +144,5 @@ STD1::uint32_t Page::writeChildren( std::FILE* out ) const
             throw FatalError( ERR_WRITE );
         bytes += sizeof( word ) * children.size();
     }
-    return bytes;
+    return( bytes );
 }
-

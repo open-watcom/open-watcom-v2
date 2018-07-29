@@ -91,7 +91,7 @@ Lexer::Token Lines::parseAttributes( Lexer* lexer )
             document->printError( ERR1_TAGSYNTAX );
         }
     }
-    return document->getNextToken();
+    return( document->getNextToken() );
 }
 /*****************************************************************************/
 void Lines::buildText( Cell* cell )
