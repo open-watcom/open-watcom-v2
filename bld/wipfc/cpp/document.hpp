@@ -60,6 +60,10 @@ class Synonym;
 class Text;
 
 class Document {
+    typedef STD1::uint8_t   byte;
+    typedef STD1::uint16_t  word;
+    typedef STD1::uint32_t  dword;
+
 public:
     Document( Compiler& c, const char * loc );
     ~Document();
@@ -88,20 +92,20 @@ public:
     Text* lastText() { return lastPrintableItem; };
     Lexer::Token lastToken() const { return lastPrintableToken; };
     //add a resource number to TOC index mapping
-    void addRes( STD1::uint16_t key, TocRef& value );
+    void addRes( word key, TocRef& value );
     //add a name/id to TOC index mapping
     void addNameOrId( GlobalDictionaryWord* key, TocRef& value );
     //add a cross-reference to an identifier
-    void addXRef( STD1::uint16_t res, XRef& xref );
+    void addXRef( word res, XRef& xref );
     void addXRef( GlobalDictionaryWord* id, XRef& xref );
     //add a page to the page collection
     void addPage( Page* page );
     //add a cell to the cell collection
     void addCell( Cell* cell);
     //add a TOC file offset to the collection
-    void addTOCOffset( STD1::uint32_t o ) { tocOffsets.push_back( o ); };
+    void addTOCOffset( dword o ) { tocOffsets.push_back( o ); };
     //add a Cell file offset to the collection
-    void addCellOffset( STD1::uint32_t o ) { cellOffsets.push_back( o ); };
+    void addCellOffset( dword o ) { cellOffsets.push_back( o ); };
     //add a synonym entry
     void addSynonym( std::wstring& key, Synonym* value );
     //get a synonym entry
@@ -118,7 +122,7 @@ public:
     //parse a command
     Lexer::Token processCommand( Lexer* lexer, Tag* parent );
     //get a TOC index from the resource number to TOC index map
-    STD1::uint16_t tocIndexByRes( STD1::uint16_t res );
+    STD1::uint16_t tocIndexByRes( word res );
     //get a TOC index from the id or name to TOC index map
     STD1::uint16_t tocIndexById( GlobalDictionaryWord* id );
     //get a .nameit expansion
@@ -161,7 +165,7 @@ public:
     STD1::uint16_t findIndex( std::wstring& word ) { return dict->findIndex( word ); };
 
     //To GNames
-    void addGNameOrId( GlobalDictionaryWord* key, STD1::uint16_t value )
+    void addGNameOrId( GlobalDictionaryWord* key, word value )
         { gnames->insert( key, value ); };
 
     //To Nls
@@ -202,13 +206,13 @@ private:
     typedef std::vector< Cell* >::iterator CellIter;
     typedef std::vector< Cell* >::const_iterator ConstCellIter;
 
-    std::map< std::wstring, STD1::uint32_t > bitmapNames;
-    typedef std::map< std::wstring, STD1::uint32_t >::iterator BitmapNameIter;
-    typedef std::map< std::wstring, STD1::uint32_t >::const_iterator ConstBitmapNameIter;
+    std::map< std::wstring, dword > bitmapNames;
+    typedef std::map< std::wstring, dword >::iterator BitmapNameIter;
+    typedef std::map< std::wstring, dword >::const_iterator ConstBitmapNameIter;
 
-    std::map< STD1::uint16_t, TocRef > resMap;
-    typedef std::map< STD1::uint16_t, TocRef >::iterator ResMapIter;
-    typedef std::map< STD1::uint16_t, TocRef >::const_iterator ConstResMapIter;
+    std::map< word, TocRef > resMap;
+    typedef std::map< word, TocRef >::iterator ResMapIter;
+    typedef std::map< word, TocRef >::const_iterator ConstResMapIter;
 
     std::map< GlobalDictionaryWord*, TocRef, ptrLess< GlobalDictionaryWord* > > nameMap;
     typedef std::map< GlobalDictionaryWord*, TocRef, ptrLess< GlobalDictionaryWord* > >::iterator NameMapIter;
@@ -233,13 +237,13 @@ private:
     typedef std::vector< ICmd* >::iterator ICmdIter;
     typedef std::vector< ICmd* >::const_iterator ConstICmdIter;
 
-    std::vector< STD1::uint32_t > tocOffsets;
-    typedef std::vector< STD1::uint32_t >::iterator TocOffsetIter;
-    typedef std::vector< STD1::uint32_t >::const_iterator ConstTocOffsetIter;
+    std::vector< dword > tocOffsets;
+    typedef std::vector< dword >::iterator TocOffsetIter;
+    typedef std::vector< dword >::const_iterator ConstTocOffsetIter;
 
-    std::vector< STD1::uint32_t > cellOffsets;
-    typedef std::vector< STD1::uint32_t >::iterator CellOffsetIter;
-    typedef std::vector< STD1::uint32_t >::const_iterator ConstCellOffsetIter;
+    std::vector< dword > cellOffsets;
+    typedef std::vector< dword >::iterator CellOffsetIter;
+    typedef std::vector< dword >::const_iterator ConstCellOffsetIter;
 
     std::FILE *tmpBitmaps;  // temporary file for bitmaps
     Text* lastPrintableItem;

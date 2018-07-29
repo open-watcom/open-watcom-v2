@@ -34,14 +34,15 @@
 #include "fntcol.hpp"
 #include "errors.hpp"
 
-FontCollection::FontCollection( STD1::uint16_t cp ) : bytes( 0 )
-/**************************************************************/
+FontCollection::FontCollection( word cp ) : bytes( 0 )
+/****************************************************/
 {
     fonts.reserve( MAX_FONTS );
     try {
         add( FontEntry( L"System Proportional", 0, 0, cp ) );   //set the default font
     }
     catch( Class2Error &e ) {
+        (void)e;
     }
 }
 
@@ -63,7 +64,7 @@ std::size_t FontCollection::add( const FontEntry& fnt )
 STD1::uint32_t FontCollection::write( std::FILE *out )
 /****************************************************/
 {
-    STD1::uint32_t start( std::ftell( out ) );
+    dword start = std::ftell( out );
     for( FontIter itr = fonts.begin(); itr != fonts.end(); ++itr ) {
         bytes += itr->write( out );
     }

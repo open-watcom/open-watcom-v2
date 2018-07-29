@@ -40,8 +40,12 @@
 
 class FontCollection
 {
+    typedef STD1::uint8_t   byte;
+    typedef STD1::uint16_t  word;
+    typedef STD1::uint32_t  dword;
+
 public:
-    FontCollection( STD1::uint16_t cp );
+    FontCollection( word cp );
     //returns the index of the font in the list
     std::size_t add( const FontEntry& fnt );
     //the number of bytes written by the collection
@@ -55,7 +59,7 @@ private:
     std::vector< FontEntry > fonts;
     typedef std::vector< FontEntry >::iterator FontIter;
     typedef std::vector< FontEntry >::const_iterator ConstFontIter;
-    STD1::uint32_t bytes;
+    dword bytes;
 };
 
 #endif

@@ -49,45 +49,47 @@ Lexer::Token Lines::parse( Lexer* lexer )
         tok = document->getNextToken(); //consume '\n' if just after tag end
     while( tok != Lexer::END ) {
         if( parseInline( lexer, tok ) ) {
-            if( lexer->tagId() == Lexer::ELINES )
+            if( lexer->tagId() == Lexer::ELINES ) {
                 break;
-            else
+            } else {
                 parseCleanup( lexer, tok );
+            }
         }
     }
-    return tok;
+    return( tok );
 }
 /*****************************************************************************/
 Lexer::Token Lines::parseAttributes( Lexer* lexer )
 {
-    Lexer::Token tok( document->getNextToken() );
-    while( tok != Lexer::TAGEND ) {
+    Lexer::Token tok;
+
+    while( (tok = document->getNextToken()) != Lexer::TAGEND ) {
         if( tok == Lexer::ATTRIBUTE ) {
             std::wstring key;
             std::wstring value;
             splitAttribute( lexer->text(), key, value );
             if( key == L"align" ) {
-                if( value == L"left" )
+                if( value == L"left" ) {
                     alignment = LEFT;
-                else if( value == L"right" )
+                } else if( value == L"right" ) {
                     alignment = RIGHT;
-                else if( value == L"center" )
+                } else if( value == L"center" ) {
                     alignment = CENTER;
-                else
+                } else {
                     document->printError( ERR2_VALUE );
-            }
-            else
+                }
+            } else {
                 document->printError( ERR1_ATTRNOTDEF );
-        }
-        else if( tok == Lexer::FLAG )
+            }
+        } else if( tok == Lexer::FLAG ) {
             document->printError( ERR1_ATTRNOTDEF );
-        else if( tok == Lexer::ERROR_TAG )
+        } else if( tok == Lexer::ERROR_TAG ) {
             throw FatalError( ERR_SYNTAX );
-        else if( tok == Lexer::END )
+        } else if( tok == Lexer::END ) {
             throw FatalError( ERR_EOF );
-        else
+        } else {
             document->printError( ERR1_TAGSYNTAX );
-        tok = document->getNextToken();
+        }
     }
     return document->getNextToken();
 }
@@ -98,10 +100,11 @@ void Lines::buildText( Cell* cell )
     cell->addByte( 0xFF );  //esc
     cell->addByte( 0x03 );  //size
     cell->addByte( 0x1A );  //begin lines sequence
-    cell->addByte( alignment );
+    cell->addByte( static_cast< byte >( alignment ) );
     cell->addByte( 0xFC );  //toggle spacing
-    if( cell->textFull() )
+    if( cell->textFull() ) {
         printError( ERR1_LARGEPAGE );
+    }
 }
 /*****************************************************************************/
 void ELines::buildText( Cell* cell )
@@ -109,7 +112,8 @@ void ELines::buildText( Cell* cell )
     cell->addByte( 0xFF );  //esc
     cell->addByte( 0x02 );  //size
     cell->addByte( 0x1B );  //end lines sequence
-    if( cell->textFull() )
+    if( cell->textFull() ) {
         printError( ERR1_LARGEPAGE );
+    }
 }
 
