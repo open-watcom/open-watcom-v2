@@ -32,6 +32,7 @@
 #include "wipfc.hpp"
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
 #include "env.hpp"
 #include "cntrydef.hpp"
 #include "util.hpp"

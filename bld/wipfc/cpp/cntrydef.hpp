@@ -35,7 +35,7 @@
 #include <cstdio>
 #include <string>
 #include "nlsrecty.hpp"
-#include "cntrydef.hpp"
+
 
 class CountryDef {
     typedef STD1::uint8_t   byte;
