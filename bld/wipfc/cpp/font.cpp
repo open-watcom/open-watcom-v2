@@ -51,10 +51,11 @@
 Lexer::Token Font::parse( Lexer* lexer )
 {
     FontEntry fnt;
-    fnt.setCodePage( document->codePage() );
     bool isDefault( false );
-    Lexer::Token tok( document->getNextToken() );
-    while( tok != Lexer::TAGEND ) {
+    Lexer::Token tok;
+
+    fnt.setCodePage( document->codePage() );
+    while( (tok = document->getNextToken()) != Lexer::TAGEND ) {
         //parse attributes
         if( tok == Lexer::ATTRIBUTE ) {
             std::wstring key;
@@ -71,9 +72,9 @@ Lexer::Token Font::parse( Lexer* lexer )
                 }
             } else if( key == L"size" ) {
                 wchar_t *end;
-                STD1::uint16_t height = static_cast< STD1::uint16_t >( std::wcstoul( value.c_str(), &end, 10 ) );
+                word height = static_cast< word >( std::wcstoul( value.c_str(), &end, 10 ) );
                 ++end;
-                STD1::uint16_t width =  static_cast< STD1::uint16_t >( std::wcstoul( end, &end, 10 ) );
+                word width = static_cast< word >( std::wcstoul( end, &end, 10 ) );
                 if( height == 0 || width == 0 ) {
                     index = 0;
                     height = 0;
@@ -83,7 +84,7 @@ Lexer::Token Font::parse( Lexer* lexer )
                 fnt.setWidth( width );
                 fnt.setHeight( height );
             } else if( key == L"codepage" ) {
-                fnt.setCodePage( static_cast< STD1::uint16_t >( std::wcstoul( value.c_str(), 0, 10 ) ) );
+                fnt.setCodePage( static_cast< word >( std::wcstoul( value.c_str(), 0, 10 ) ) );
             } else {
                 document->printError( ERR1_ATTRNOTDEF );
             }
@@ -96,11 +97,10 @@ Lexer::Token Font::parse( Lexer* lexer )
         } else {
             document->printError( ERR1_TAGSYNTAX );
         }
-        tok = document->getNextToken();
     }
     if( !isDefault ) {
         try {
-            index = static_cast< unsigned char >( document->addFont( fnt ) );
+            index = static_cast< byte >( document->addFont( fnt ) );
         }
         catch( Class2Error& e ) {
             document->printError( e.code );

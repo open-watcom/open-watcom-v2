@@ -206,7 +206,6 @@ Document::Document( Compiler& c, const char* loc ) :
 {
     fonts.reset( new FontCollection( codePage() ) );
     addFont( cgraphicFont() );
-
 }
 /***************************************************************************/
 Document::~Document()

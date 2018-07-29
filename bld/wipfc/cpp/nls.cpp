@@ -244,9 +244,9 @@ void Nls::readNLS( std::FILE *nls )
                 killQuotes( text );
                 _cgraphicFont.setFaceName( text );
             } else if( std::strcmp( sbuffer, "cgraphicFontWidth" ) == 0 ) {
-                _cgraphicFont.setWidth( static_cast< int >( std::wcstol( value, 0, 10 ) ) );
+                _cgraphicFont.setWidth( static_cast< word >( std::wcstol( value, 0, 10 ) ) );
             } else if( std::strcmp( sbuffer, "cgraphicFontHeight" ) == 0 ) {
-                _cgraphicFont.setHeight( static_cast< int >( std::wcstol( value, 0, 10 ) ) );
+                _cgraphicFont.setHeight( static_cast< word >( std::wcstol( value, 0, 10 ) ) );
             } else {
                 // error: unknown keyword
             }

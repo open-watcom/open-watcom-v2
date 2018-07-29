@@ -118,8 +118,8 @@ STD1::uint32_t Page::write( std::FILE* out )
     }
     if( std::fwrite( &cells[0], sizeof( word ), cells.size(), out ) != cells.size() )
         throw FatalError( ERR_WRITE );
-    if( !title.empty() ){
-        if( std::fwrite( title.c_str(), sizeof( byte ), title.size(), out ) != title.size() )
+    if( !title.empty() ) {
+        if( std::fwrite( title.c_str(), sizeof( byte ), title.size(), out ) != title.size() ) {
             throw FatalError( ERR_WRITE );
         }
     }
