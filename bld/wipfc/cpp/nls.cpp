@@ -59,6 +59,16 @@ void Nls::setCodePage( word cp )
 #if !defined( __UNIX__ ) && !defined( __APPLE__ )
     _setmbcp( cp ); //doesn't do much of anything in OW
 #endif
+    readEntityFile( cp );
+}
+/*****************************************************************************/
+void Nls::readEntityFile( word cp )
+{
+    char        buffer[256 * 2];
+    wchar_t     text[256];
+    int         offset;
+    wchar_t     c;
+
     std::string path( Environment.value( "WIPFC" ) );
     if( path.length() )
         path += PATH_SEPARATOR;
@@ -74,16 +84,6 @@ void Nls::setCodePage( word cp )
     std::FILE* entty( std::fopen( path.c_str(), "r" ) );
     if( entty == NULL )
         throw FatalError( ERR_COUNTRY );
-    readEntityFile( entty );
-    std::fclose( entty );
-}
-/*****************************************************************************/
-void Nls::readEntityFile( std::FILE *entty )
-{
-    char    buffer[256 * 2];
-    wchar_t text[256];
-    int     offset;
-    wchar_t c;
     while( std::fgets( buffer, sizeof( buffer ), entty ) ) {
         std::size_t len = std::strlen( buffer );
         killEOL( buffer + len - 1 );
@@ -98,6 +98,7 @@ void Nls::readEntityFile( std::FILE *entty )
         text[len] = L'\0';
         _entityMap.insert( std::map< std::wstring, wchar_t >::value_type( text, c ) );
     }
+    std::fclose( entty );
 }
 /*****************************************************************************/
 void Nls::setLocalization( const char *loc)

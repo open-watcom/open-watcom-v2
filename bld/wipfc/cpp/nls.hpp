@@ -75,11 +75,9 @@ private:
     Nls& operator=( const Nls& rhs );   // no assignment
 
     void setCodePage( word cp );
-    void readEntityFile( std::FILE* aps );
+    void readEntityFile( word cp );
     void readNLS( std::FILE* nls );
     void processGrammar( wchar_t* value );
-    std::string readNlsConfFile( std::FILE *nlsconf, const char *loc );
-    std::string getNlsFileName( const char *loc );
 
     struct SbcsGrammarDef {             // Single-byte character set
         word                _size;          // 36
