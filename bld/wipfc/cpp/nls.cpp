@@ -78,12 +78,12 @@ std::string Nls::readNlsConfFile( std::FILE *nlsconf, const char *loc )
         if( p == NULL )
             continue;                       // skip incorrect lines
         p = skipWS( p );
-        country.country = static_cast< STD1::uint16_t >( std::strtoul( p, NULL, 10 ) );
+        country.country = static_cast< word >( std::strtoul( p, NULL, 10 ) );
         p = std::strtok( NULL, " \t" );     // get codepage
         if( p == NULL )
             continue;                       // skip incorrect lines
         p = skipWS( p );
-        country.codePage = static_cast< STD1::uint16_t >( std::strtoul( p, NULL, 10 ) );
+        country.codePage = static_cast< word >( std::strtoul( p, NULL, 10 ) );
         std::fclose( nlsconf );
         return( std::string( fn ) );
     }
@@ -108,7 +108,7 @@ std::string Nls::getNlsFileName( const char *loc )
 }
 
 /*****************************************************************************/
-void Nls::setCodePage( STD1::uint16_t cp )
+void Nls::setCodePage( word cp )
 {
 #if !defined( __UNIX__ ) && !defined( __APPLE__ )
     _setmbcp( cp ); //doesn't do much of anything in OW
@@ -279,8 +279,8 @@ void Nls::processGrammar( wchar_t *buffer )
             wchar_t chr2( tok[2] );
             for( wchar_t c = chr1; c <= chr2; ++c )
                 grammarChars += c;
-            dbcsT.ranges.push_back( static_cast< STD1::uint16_t >( chr1 ) );
-            dbcsT.ranges.push_back( static_cast< STD1::uint16_t >( chr2 ) );
+            dbcsT.ranges.push_back( static_cast< word >( chr1 ) );
+            dbcsT.ranges.push_back( static_cast< word >( chr2 ) );
             if( chr1 > 255 || chr2 > 255 ) {
                 useDBCS = true;
             }
@@ -288,8 +288,8 @@ void Nls::processGrammar( wchar_t *buffer )
             // single character "chr"
             wchar_t chr( tok[0] );
             grammarChars += chr;
-            dbcsT.ranges.push_back( static_cast< STD1::uint16_t >( chr ) );
-            dbcsT.ranges.push_back( static_cast< STD1::uint16_t >( chr ) );
+            dbcsT.ranges.push_back( static_cast< word >( chr ) );
+            dbcsT.ranges.push_back( static_cast< word >( chr ) );
             if( chr > 255 ) {
                 useDBCS = true;
             }
@@ -313,7 +313,7 @@ wchar_t Nls::entity( const std::wstring& key )
 STD1::uint32_t Nls::write( std::FILE *out )
 {
     bytes = country.size;
-    STD1::uint32_t start( country.write( out ) );
+    dword start = country.write( out );
     if( useDBCS ) {
         dbcsT.write( out );
         bytes += dbcsT.size;
@@ -330,10 +330,10 @@ STD1::uint32_t Nls::write( std::FILE *out )
 /*****************************************************************************/
 STD1::uint32_t Nls::CountryDef::write( std::FILE *out ) const
 {
-    STD1::uint32_t start( std::ftell( out ) );
+    dword start = std::ftell( out );
     if( std::fwrite( &size, sizeof( size ), 1, out ) != 1 )
         throw FatalError( ERR_WRITE );
-    STD1::uint8_t _type = static_cast< STD1::uint8_t >( type );
+    byte _type = static_cast< byte >( type );
     if( std::fwrite( &_type, sizeof( _type ), 1, out ) != 1 )
         throw FatalError( ERR_WRITE );
     if( std::fwrite( &format, sizeof( format ), 1, out ) != 1 )
@@ -366,32 +366,32 @@ void Nls::SbcsGrammarDef::setDefaultBits( WIPFC::NLSRecType rectype )
 /*****************************************************************************/
 STD1::uint32_t Nls::SbcsGrammarDef::write( std::FILE *out ) const
 {
-    STD1::uint32_t start( std::ftell( out ) );
+    dword start = std::ftell( out );
     if( std::fwrite( &size, sizeof( size ), 1, out ) != 1 )
         throw FatalError( ERR_WRITE );
-    STD1::uint8_t _type = static_cast< STD1::uint8_t >( type );
+    byte _type = static_cast< byte >( type );
     if( std::fwrite( &_type, sizeof( _type ), 1, out ) != 1 )
         throw FatalError( ERR_WRITE );
     if( std::fwrite( &format, sizeof( format ), 1, out ) != 1 )
         throw FatalError( ERR_WRITE );
-    if( std::fwrite( bits, sizeof( STD1::uint8_t ), sizeof( bits ) / sizeof( bits[0] ), out ) != sizeof( bits ) / sizeof( bits[0] ) )
+    if( std::fwrite( bits, sizeof( byte ), sizeof( bits ) / sizeof( bits[0] ), out ) != sizeof( bits ) / sizeof( bits[0] ) )
         throw FatalError( ERR_WRITE );
     return( start );
 }
 /*****************************************************************************/
 STD1::uint32_t Nls::DbcsGrammarDef::write( std::FILE *out )
 {
-    STD1::uint32_t start( std::ftell( out ) );
-    size = static_cast< STD1::uint16_t >( sizeof( STD1::uint16_t ) + 2 * sizeof( STD1::uint8_t ) + ranges.size() * sizeof( STD1::uint16_t ) );
+    dword start = std::ftell( out );
+    size = static_cast< word >( sizeof( word ) + 2 * sizeof( byte ) + ranges.size() * sizeof( word ) );
     if( std::fwrite( &size, sizeof( size ), 1, out ) != 1 )
         throw FatalError( ERR_WRITE );
-    STD1::uint8_t _type = static_cast< STD1::uint8_t >( type );
+    byte _type = static_cast< byte >( type );
     if( std::fwrite( &_type, sizeof( _type ), 1, out ) != 1 )
         throw FatalError( ERR_WRITE );
     if( std::fwrite( &format, sizeof( format ), 1, out ) != 1 )
         throw FatalError( ERR_WRITE );
-    for( std::vector< STD1::uint16_t >::const_iterator itr = ranges.begin(); itr != ranges.end(); ++itr ) {
-        if( std::fwrite( &(*itr), sizeof( STD1::uint16_t), 1, out ) != 1 ) {
+    for( std::vector< word >::const_iterator itr = ranges.begin(); itr != ranges.end(); ++itr ) {
+        if( std::fwrite( &(*itr), sizeof( word ), 1, out ) != 1 ) {
             throw FatalError( ERR_WRITE );
         }
     }

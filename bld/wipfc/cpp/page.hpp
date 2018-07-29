@@ -42,6 +42,10 @@ class Document; //forward reference
 class Cell;
 
 class Page {
+    typedef STD1::uint8_t   byte;
+    typedef STD1::uint16_t  word;
+    typedef STD1::uint32_t  dword;
+
 public:
     Page( Document* d, Element* head ) : document( d ), elements( 1, head ),
         idx( 0 ), searchable( true ) { };
@@ -52,7 +56,7 @@ public:
     //the page title
     void setTitle( std::string& t ) { title = t; };
     //copy data from the Hn or Fn tag
-    void setChildren( std::vector< STD1::uint16_t >& c ) { children = c; }
+    void setChildren( std::vector< word >& c ) { children = c; }
     void setTOC( TocEntry& t ) { toc = t; }
     void setETOC( ExtTocEntry& e ) { etoc = e; };
     void setOrigin( PageOrigin& o ) { origin = o; };
@@ -60,12 +64,12 @@ public:
     void setStyle( PageStyle& s ) { style = s; };
     void setGroup( PageGroup& g ) { group = g; };
     void SetControls( PageControls& c ) { controls = c; };
-    void setIndex( STD1::uint16_t i ) { idx = i; };
+    void setIndex( word i ) { idx = i; };
     void setSearchable( bool s ) { searchable = s; }
     //page appears in TOC
     bool isVisible() const { return !toc.hidden; };
     //index of page in TOC collection
-    STD1::uint16_t index() const { return idx; };
+    word index() const { return idx; };
     void buildTOC();
     void linearize() { ( *( elements.begin() ))->linearize( this ); };
     void buildIndex() { ( *( elements.begin() ))->buildIndex(); };
@@ -83,13 +87,13 @@ private:
     std::vector< Element* > elements;   //all elements on this page
     typedef std::vector< Element* >::iterator ElementIter;
     typedef std::vector< Element* >::const_iterator ConstElementIter;
-    std::vector< STD1::uint16_t > cells;
-    typedef std::vector< STD1::uint16_t >::iterator CellIter;
-    typedef std::vector< STD1::uint16_t >::const_iterator ConstCellIter;
+    std::vector< word > cells;
+    typedef std::vector< word >::iterator CellIter;
+    typedef std::vector< word >::const_iterator ConstCellIter;
     std::string title;                  //page title
-    std::vector< STD1::uint16_t > children;
-    typedef std::vector< STD1::uint16_t >::iterator ChildIter;
-    typedef std::vector< STD1::uint16_t >::const_iterator ConstChildxIter;
+    std::vector< word > children;
+    typedef std::vector< word >::iterator ChildIter;
+    typedef std::vector< word >::const_iterator ConstChildxIter;
     TocEntry toc;
     ExtTocEntry etoc;
     PageOrigin origin;
@@ -97,7 +101,7 @@ private:
     PageStyle style;
     PageGroup group;
     PageControls controls;
-    STD1::uint16_t idx;            //index in TOC
+    word idx;               // index in TOC
     bool searchable;
 };
 #endif

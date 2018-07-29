@@ -39,6 +39,10 @@
 #include "nlsrecty.hpp"
 
 class Nls {
+    typedef STD1::uint8_t   byte;
+    typedef STD1::uint16_t  word;
+    typedef STD1::uint32_t  dword;
+
 public:
     Nls( const char* loc );
     //set the locale
@@ -66,34 +70,34 @@ private:
     Nls( const Nls& rhs );              // no copy
     Nls& operator=( const Nls& rhs );   // no assignment
     struct CountryDef {
-        STD1::uint16_t      size;       // 12
+        word                size;       // 12
         WIPFC::NLSRecType   type;       // NLSRecType.CONTROL
-        STD1::uint8_t       format;     // 0
-        STD1::uint16_t      value;      // 256
-        STD1::uint16_t      country;
-        STD1::uint16_t      codePage;
-        STD1::uint16_t      reserved;   // 0
-        CountryDef() : size( sizeof( STD1::uint16_t ) + 2 * sizeof( STD1::uint8_t ) + 4 * sizeof( STD1::uint16_t ) ),
+        byte                format;     // 0
+        word                value;      // 256
+        word                country;
+        word                codePage;
+        word                reserved;   // 0
+        CountryDef() : size( sizeof( word ) + 2 * sizeof( byte ) + 4 * sizeof( word ) ),
             type( WIPFC::CONTROL ), format( 0 ), value( 256 ), country( 1 ), codePage( 850 ), reserved( 0 ) {};
         STD1::uint32_t write( std::FILE* out ) const;
     };
 
     struct SbcsGrammarDef {         // Single-byte character set
-        STD1::uint16_t      size;       // 36
+        word                size;       // 36
         WIPFC::NLSRecType   type;       // NLSRecType.TEXT, NLSRecType.GRAPHIC
-        STD1::uint8_t       format;     // 0
-        STD1::uint8_t       bits[32];   // high-order bit first
-        SbcsGrammarDef() : size( sizeof( STD1::uint16_t ) + 2 * sizeof( STD1::uint8_t ) + (sizeof( bits ) / sizeof( bits[0] )) * sizeof( STD1::uint8_t ) ),
+        byte                format;     // 0
+        byte                bits[32];   // high-order bit first
+        SbcsGrammarDef() : size( sizeof( word ) + 2 * sizeof( byte ) + (sizeof( bits ) / sizeof( bits[0] )) * sizeof( byte ) ),
             type( WIPFC::TEXT ), format( 0 ) {};
         void setDefaultBits( WIPFC::NLSRecType rectype );
         STD1::uint32_t write( std::FILE* out ) const;
     };
     struct DbcsGrammarDef {         // Double-byte character set
-        STD1::uint16_t      size;       // 4 + (# ranges * 4)
+        word                size;       // 4 + (# ranges * 4)
         WIPFC::NLSRecType   type;       // NLSRecType.TEXT, NLSRecType.GRAPHIC
-        STD1::uint8_t       format;     // 1
-        std::vector<STD1::uint16_t> ranges;
-        DbcsGrammarDef() : size( sizeof( STD1::uint16_t ) + 2 * sizeof( STD1::uint8_t ) ),
+        byte                format;     // 1
+        std::vector< word > ranges;
+        DbcsGrammarDef() : size( sizeof( word ) + 2 * sizeof( byte ) ),
             type( WIPFC::TEXT ), format( 1 ) {};
         STD1::uint32_t write( std::FILE* out );
     };
@@ -112,12 +116,12 @@ private:
     std::wstring referenceText;
     std::wstring grammarChars;
     FontEntry _cgraphicFont;
-    STD1::uint32_t bytes;
+    dword bytes;
     std::wstring olCh;
     std::wstring olClosers[2];
     std::wstring ulBul[3];
     bool useDBCS;
-    void setCodePage( STD1::uint16_t cp );
+    void setCodePage( word cp );
     void readEntityFile( std::FILE* aps );
     void readNLS( std::FILE* nls );
     void processGrammar( wchar_t* value );

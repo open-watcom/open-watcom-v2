@@ -46,14 +46,14 @@ void Page::buildLocalDictionary()
     bool autoSpacing( true );
     currentCell = new Cell( document->maxLocalDictionarySize() );
     document->addCell( currentCell );
-    cells.push_back( currentCell->index() );
+    cells.push_back( static_cast< word >( currentCell->index() ) );
     ++toc.cellCount;
     for( ElementIter itr = elements.begin(); itr != elements.end(); ++itr ) {
         std::pair< bool, bool > flags( ( *itr )->buildLocalDict( this ) );
         if( flags.first ) {
             currentCell = new Cell( document->maxLocalDictionarySize() );
             document->addCell( currentCell );
-            cells.push_back( currentCell->index() );
+            cells.push_back( static_cast< word >( currentCell->index() ) );
             ++toc.cellCount;
             if( !autoSpacing )          //autoSpacing can't cross a cell boundry
                 currentCell->addByte( 0xFC );   //so turn it off so we can turn
@@ -65,21 +65,21 @@ void Page::buildLocalDictionary()
     }
 }
 /***************************************************************************/
-bool Page::addWord( GlobalDictionaryWord* word )
+bool Page::addWord( GlobalDictionaryWord* Word )
 {
-    if( word ) {    //can be 0 for unrecognized entity references
+    if( Word ) {    //can be 0 for unrecognized entity references
         if( currentCell->dictFull() )
-            return true;
-        currentCell->addWord( word->index() );
-        word->onPage( idx );
+            return( true );
+        currentCell->addWord( Word->index() );
+        Word->onPage( idx );
     }
-    return false;
+    return( false );
 }
 /***************************************************************************/
 //Write a TOC entry
 STD1::uint32_t Page::write( std::FILE* out )
 {
-    std::size_t tocsize( sizeof( TocEntry ) + toc.cellCount * sizeof( STD1::uint16_t ) );
+    std::size_t tocsize( sizeof( TocEntry ) + toc.cellCount * sizeof( word ) );
     if( toc.extended ) {
         tocsize += sizeof( ExtTocEntry );
         if( etoc.setPos )
@@ -99,8 +99,8 @@ STD1::uint32_t Page::write( std::FILE* out )
         title.erase( 255 - tocsize );  //write only part of title
     }
     tocsize += title.size();
-    toc.size = static_cast< STD1::uint8_t >( tocsize );
-    STD1::uint32_t pos( toc.write( out ) );
+    toc.size = static_cast< byte >( tocsize );
+    dword pos = toc.write( out );
     if( toc.extended ) {
         etoc.write( out );
         if( etoc.setPos )
@@ -114,32 +114,32 @@ STD1::uint32_t Page::write( std::FILE* out )
         if( etoc.setCtrl )
             controls.write( out );
     }
-    if( std::fwrite( &cells[0], sizeof( STD1::uint16_t ), cells.size(), out ) != cells.size() )
+    if( std::fwrite( &cells[0], sizeof( word ), cells.size(), out ) != cells.size() )
         throw FatalError( ERR_WRITE );
     if( !title.empty() ){
-        if( std::fwrite( title.c_str(), sizeof( STD1::uint8_t ), title.size(), out ) != title.size() )
+        if( std::fwrite( title.c_str(), sizeof( byte ), title.size(), out ) != title.size() )
             throw FatalError( ERR_WRITE );
     }
     return pos;
 }
 /***************************************************************************/
-// STD1::uint8_t size
-// STD1::uint16_t parent_toc_index
-// STD1::uint16_t child_toc_index
+// byte size
+// word parent_toc_index
+// word child_toc_index
 STD1::uint32_t Page::writeChildren( std::FILE* out ) const
 {
-    STD1::uint32_t bytes( 0 );
+    dword bytes = 0;
     if( !children.empty() ) {
-        STD1::uint8_t size_u8( 3 + static_cast< STD1::uint8_t >( children.size() * sizeof( STD1::uint16_t ) ) );
+        byte size_u8( 3 + static_cast< byte >( children.size() * sizeof( word ) ) );
         if( std::fputc( size_u8, out ) == EOF )
             throw FatalError( ERR_WRITE );
         ++bytes;
-        if( std::fwrite( &idx, sizeof( STD1::uint16_t ), 1, out ) != 1 )
+        if( std::fwrite( &idx, sizeof( word ), 1, out ) != 1 )
             throw FatalError( ERR_WRITE );
-        bytes += sizeof( STD1::uint16_t );
-        if( std::fwrite( &children[0], sizeof( STD1::uint16_t ), children.size(), out ) != children.size() )
+        bytes += sizeof( word );
+        if( std::fwrite( &children[0], sizeof( word ), children.size(), out ) != children.size() )
             throw FatalError( ERR_WRITE );
-        bytes += sizeof( STD1::uint16_t ) * children.size();
+        bytes += sizeof( word ) * children.size();
     }
     return bytes;
 }
