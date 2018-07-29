@@ -44,67 +44,13 @@
 #include "uniutil.hpp"
 
 
-Nls::Nls( const char *loc ) : bytes( 0 ), useDBCS( false )
+Nls::Nls( const char *loc ) : _bytes( 0 ), _useDBCS( false )
 {
-    sbcsG.type = WIPFC::GRAPHIC;
-    dbcsG.type = WIPFC::GRAPHIC;
-    sbcsT.setDefaultBits( WIPFC::TEXT );
-    sbcsG.setDefaultBits( WIPFC::GRAPHIC );
+    _sbcsG._type = WIPFC::GRAPHIC;
+    _dbcsG._type = WIPFC::GRAPHIC;
+    _sbcsT.setDefaultBits( WIPFC::TEXT );
+    _sbcsG.setDefaultBits( WIPFC::GRAPHIC );
     setLocalization( loc );
-}
-
-std::string Nls::readNlsConfFile( std::FILE *nlsconf, const char *loc )
-{
-    char        buffer[256];
-    char        *p;
-    char        *fn;
-
-    while( std::fgets( buffer, sizeof( buffer ), nlsconf ) ) {
-        std::size_t len = std::strlen( buffer );
-        killEOL( buffer + len - 1 );
-        p = skipWS( buffer );
-        if( p[0] == '\0' )
-            continue;                       // skip blank lines
-        if( p[0] == '#' )
-            continue;                       // skip comment lines
-        p = std::strtok( buffer, " \t" );   // get locale
-        if( p == NULL || std::strcmp( p, loc ) != 0 )
-            continue;
-        p = std::strtok( NULL, " \t" );     // get nls file
-        if( p == NULL )
-            continue;                       // skip incorrect lines
-        fn = skipWS( p );
-        p = std::strtok( NULL, " \t" );     // get country
-        if( p == NULL )
-            continue;                       // skip incorrect lines
-        p = skipWS( p );
-        country.country = static_cast< word >( std::strtoul( p, NULL, 10 ) );
-        p = std::strtok( NULL, " \t" );     // get codepage
-        if( p == NULL )
-            continue;                       // skip incorrect lines
-        p = skipWS( p );
-        country.codePage = static_cast< word >( std::strtoul( p, NULL, 10 ) );
-        std::fclose( nlsconf );
-        return( std::string( fn ) );
-    }
-    // if error or locale not found then set default US
-    std::fclose( nlsconf );
-    country.country = 1;
-    country.codePage = 850;
-    return( std::string( "en_US.nls" ) );
-}
-
-std::string Nls::getNlsFileName( const char *loc )
-{
-    std::string path( Environment.value( "WIPFC" ) );
-
-    if( path.length() )
-        path += PATH_SEPARATOR;
-    path += "nlsconf.txt";
-    std::FILE *nlsconf = std::fopen( path.c_str(), "r" );
-    if( nlsconf == NULL )
-        throw FatalError( ERR_NLSCONF );
-    return( readNlsConfFile( nlsconf, loc ) );
 }
 
 /*****************************************************************************/
@@ -130,7 +76,6 @@ void Nls::setCodePage( word cp )
         throw FatalError( ERR_COUNTRY );
     readEntityFile( entty );
     std::fclose( entty );
-    country.codePage = cp;
 }
 /*****************************************************************************/
 void Nls::readEntityFile( std::FILE *entty )
@@ -146,12 +91,12 @@ void Nls::readEntityFile( std::FILE *entty )
         if( offset == -1 )
             throw FatalError( ERR_T_CONV );
         if( offset > 1 )
-            useDBCS = true;
+            _useDBCS = true;
         len = mbtow_cstring( text, buffer + offset, sizeof( text ) / sizeof( wchar_t ) - 1 );
         if( len == static_cast< std::size_t >( -1 ) )
             throw FatalError( ERR_T_CONV );
         text[len] = L'\0';
-        entityMap.insert( std::map< std::wstring, wchar_t >::value_type( text, c ) );
+        _entityMap.insert( std::map< std::wstring, wchar_t >::value_type( text, c ) );
     }
 }
 /*****************************************************************************/
@@ -167,7 +112,7 @@ void Nls::setLocalization( const char *loc)
     std::string path( Environment.value( "WIPFC" ) );
     if( path.length() )
         path += PATH_SEPARATOR;
-    path += getNlsFileName( loc );
+    path += _country.getNlsConfig( loc );
     std::FILE *nls = std::fopen( path.c_str(), "r" );
     if( nls == NULL )
         throw FatalError( ERR_LANG );
@@ -178,7 +123,7 @@ void Nls::setLocalization( const char *loc)
 #if defined( __UNIX__ ) || defined( __APPLE__ )
     std::setlocale( LC_ALL, loc );  //this doesn't really do anything in OW either
 #endif
-    setCodePage( country.codePage );
+    setCodePage( _country.getCodePage() );
 }
 /*****************************************************************************/
 void Nls::readNLS( std::FILE *nls )
@@ -188,7 +133,7 @@ void Nls::readNLS( std::FILE *nls )
     char        *p;
     bool        doGrammar( false );
 
-    _cgraphicFont.setCodePage( country.codePage );
+    _cgraphicFont.setCodePage( _country.getCodePage() );
     while( std::fgets( sbuffer, sizeof( sbuffer ), nls ) ) {
         std::size_t len( std::strlen( sbuffer ) );
         killEOL( sbuffer + len - 1 );
@@ -208,37 +153,37 @@ void Nls::readNLS( std::FILE *nls )
             } else if( std::strcmp( sbuffer, "Note" ) == 0 ) {
                 std::wstring text( value );
                 killQuotes( text );
-                noteText = text;
+                _noteText = text;
             } else if( std::strcmp( sbuffer, "Caution" ) == 0 ) {
                 std::wstring text( value );
                 killQuotes( text );
-                cautionText = text;
+                _cautionText = text;
             } else if( std::strcmp( sbuffer, "Warning" ) == 0 ) {
                 std::wstring text( value );
                 killQuotes( text );
-                warningText = text;
+                _warningText = text;
             } else if( std::strcmp( sbuffer, "Reference" ) == 0 ) {
                 std::wstring text( value );
                 killQuotes( text );
-                referenceText = text;
+                _referenceText = text;
             } else if( std::strcmp( sbuffer, "olChars" ) == 0 ) {
                 std::wstring text( value );
-                olCh = text;
+                _olCh = text;
             } else if( std::strcmp( sbuffer, "olClose1" ) == 0 ) {
                 std::wstring text( value );
-                olClosers[0] = text;
+                _olClosers[0] = text;
             } else if( std::strcmp( sbuffer, "olClose2" ) == 0 ) {
                 std::wstring text( value );
-                olClosers[1] = text;
+                _olClosers[1] = text;
             } else if( std::strcmp( sbuffer, "ulItemId1" ) == 0 ) {
                 std::wstring text( value );
-                ulBul[0] = text;
+                _ulBul[0] = text;
             } else if( std::strcmp( sbuffer, "ulItemId2" ) == 0 ) {
                 std::wstring text( value );
-                ulBul[1] = text;
+                _ulBul[1] = text;
             } else if( std::strcmp( sbuffer, "ulItemId3" ) == 0 ) {
                 std::wstring text( value );
-                ulBul[2] = text;
+                _ulBul[2] = text;
             } else if( std::strcmp( sbuffer, "cgraphicFontFaceName" ) == 0 ) {
                 std::wstring text( value );
                 killQuotes( text );
@@ -262,8 +207,8 @@ void Nls::readNLS( std::FILE *nls )
 /*****************************************************************************/
 void Nls::processGrammar( wchar_t *buffer )
 {
-    if( grammarChars.empty() ) {
-        grammarChars.reserve( 26 + 26 + 10 );
+    if( _grammarChars.empty() ) {
+        _grammarChars.reserve( 26 + 26 + 10 );
     }
 #if defined( _MSC_VER ) && ( _MSC_VER < 1910 ) && !defined( _WCSTOK_DEPRECATED )
     wchar_t* tok( std::wcstok( buffer, L"+" ) );
@@ -278,20 +223,20 @@ void Nls::processGrammar( wchar_t *buffer )
             wchar_t chr1( tok[0] );
             wchar_t chr2( tok[2] );
             for( wchar_t c = chr1; c <= chr2; ++c )
-                grammarChars += c;
-            dbcsT.ranges.push_back( static_cast< word >( chr1 ) );
-            dbcsT.ranges.push_back( static_cast< word >( chr2 ) );
+                _grammarChars += c;
+            _dbcsT._ranges.push_back( static_cast< word >( chr1 ) );
+            _dbcsT._ranges.push_back( static_cast< word >( chr2 ) );
             if( chr1 > 255 || chr2 > 255 ) {
-                useDBCS = true;
+                _useDBCS = true;
             }
         } else {
             // single character "chr"
             wchar_t chr( tok[0] );
-            grammarChars += chr;
-            dbcsT.ranges.push_back( static_cast< word >( chr ) );
-            dbcsT.ranges.push_back( static_cast< word >( chr ) );
+            _grammarChars += chr;
+            _dbcsT._ranges.push_back( static_cast< word >( chr ) );
+            _dbcsT._ranges.push_back( static_cast< word >( chr ) );
             if( chr > 255 ) {
-                useDBCS = true;
+                _useDBCS = true;
             }
         }
 #if defined( _MSC_VER ) && ( _MSC_VER < 1910 ) && !defined( _WCSTOK_DEPRECATED )
@@ -304,48 +249,27 @@ void Nls::processGrammar( wchar_t *buffer )
 /*****************************************************************************/
 wchar_t Nls::entity( const std::wstring& key )
 {
-    EntityIter pos( entityMap.find( key ) );
-    if( pos == entityMap.end() )
+    EntityIter pos( _entityMap.find( key ) );
+    if( pos == _entityMap.end() )
         throw Class2Error( ERR2_SYMBOL );
     return pos->second;
 }
 /*****************************************************************************/
 STD1::uint32_t Nls::write( std::FILE *out )
 {
-    bytes = country.size;
-    dword start = country.write( out );
-    if( useDBCS ) {
-        dbcsT.write( out );
-        bytes += dbcsT.size;
-        dbcsG.write( out );
-        bytes += dbcsG.size;
+    _bytes = _country.getSize();
+    dword start = _country.write( out );
+    if( _useDBCS ) {
+        _dbcsT.write( out );
+        _bytes += _dbcsT._size;
+        _dbcsG.write( out );
+        _bytes += _dbcsG._size;
     } else {
-        sbcsT.write( out );
-        bytes += sbcsT.size;
-        sbcsG.write( out );
-        bytes += sbcsG.size;
+        _sbcsT.write( out );
+        _bytes += _sbcsT._size;
+        _sbcsG.write( out );
+        _bytes += _sbcsG._size;
     }
-    return( start );
-}
-/*****************************************************************************/
-STD1::uint32_t Nls::CountryDef::write( std::FILE *out ) const
-{
-    dword start = std::ftell( out );
-    if( std::fwrite( &size, sizeof( size ), 1, out ) != 1 )
-        throw FatalError( ERR_WRITE );
-    byte _type = static_cast< byte >( type );
-    if( std::fwrite( &_type, sizeof( _type ), 1, out ) != 1 )
-        throw FatalError( ERR_WRITE );
-    if( std::fwrite( &format, sizeof( format ), 1, out ) != 1 )
-        throw FatalError( ERR_WRITE );
-    if( std::fwrite( &value, sizeof( value ), 1, out ) != 1 )
-        throw FatalError( ERR_WRITE );
-    if( std::fwrite( &country, sizeof( country ), 1, out ) != 1 )
-        throw FatalError( ERR_WRITE );
-    if( std::fwrite( &codePage, sizeof( codePage ), 1, out ) != 1 )
-        throw FatalError( ERR_WRITE );
-    if( std::fwrite( &reserved, sizeof( reserved ), 1, out ) != 1 )
-        throw FatalError( ERR_WRITE );
     return( start );
 }
 /*****************************************************************************/
@@ -361,20 +285,20 @@ void Nls::SbcsGrammarDef::setDefaultBits( WIPFC::NLSRecType rectype )
           0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
           0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff }
     };
-    std::memcpy( this->bits, &defbits[rectype - WIPFC::TEXT][0], 32 );
+    std::memcpy( this->_bits, &defbits[rectype - WIPFC::TEXT][0], 32 );
 }
 /*****************************************************************************/
 STD1::uint32_t Nls::SbcsGrammarDef::write( std::FILE *out ) const
 {
     dword start = std::ftell( out );
-    if( std::fwrite( &size, sizeof( size ), 1, out ) != 1 )
+    if( std::fwrite( &_size, sizeof( _size ), 1, out ) != 1 )
         throw FatalError( ERR_WRITE );
-    byte _type = static_cast< byte >( type );
-    if( std::fwrite( &_type, sizeof( _type ), 1, out ) != 1 )
+    byte type = static_cast< byte >( _type );
+    if( std::fwrite( &type, sizeof( type ), 1, out ) != 1 )
         throw FatalError( ERR_WRITE );
-    if( std::fwrite( &format, sizeof( format ), 1, out ) != 1 )
+    if( std::fwrite( &_format, sizeof( _format ), 1, out ) != 1 )
         throw FatalError( ERR_WRITE );
-    if( std::fwrite( bits, sizeof( byte ), sizeof( bits ) / sizeof( bits[0] ), out ) != sizeof( bits ) / sizeof( bits[0] ) )
+    if( std::fwrite( _bits, sizeof( byte ), sizeof( _bits ) / sizeof( _bits[0] ), out ) != sizeof( _bits ) / sizeof( _bits[0] ) )
         throw FatalError( ERR_WRITE );
     return( start );
 }
@@ -382,183 +306,18 @@ STD1::uint32_t Nls::SbcsGrammarDef::write( std::FILE *out ) const
 STD1::uint32_t Nls::DbcsGrammarDef::write( std::FILE *out )
 {
     dword start = std::ftell( out );
-    size = static_cast< word >( sizeof( word ) + 2 * sizeof( byte ) + ranges.size() * sizeof( word ) );
-    if( std::fwrite( &size, sizeof( size ), 1, out ) != 1 )
+    _size = static_cast< word >( sizeof( word ) + 2 * sizeof( byte ) + _ranges.size() * sizeof( word ) );
+    if( std::fwrite( &_size, sizeof( _size ), 1, out ) != 1 )
         throw FatalError( ERR_WRITE );
-    byte _type = static_cast< byte >( type );
-    if( std::fwrite( &_type, sizeof( _type ), 1, out ) != 1 )
+    byte type = static_cast< byte >( _type );
+    if( std::fwrite( &type, sizeof( type ), 1, out ) != 1 )
         throw FatalError( ERR_WRITE );
-    if( std::fwrite( &format, sizeof( format ), 1, out ) != 1 )
+    if( std::fwrite( &_format, sizeof( _format ), 1, out ) != 1 )
         throw FatalError( ERR_WRITE );
-    for( std::vector< word >::const_iterator itr = ranges.begin(); itr != ranges.end(); ++itr ) {
+    for( std::vector< word >::const_iterator itr = _ranges.begin(); itr != _ranges.end(); ++itr ) {
         if( std::fwrite( &(*itr), sizeof( word ), 1, out ) != 1 ) {
             throw FatalError( ERR_WRITE );
         }
     }
-    return start;
+    return( start );
 }
-/*
-The following table lists the 3-digit country code for the /COUNTRY or -d: nnn
-parameter, the numeric identifiers of code pages, and the APS filename of the
-IPFC command supported.
-
-+-------------------------------------------------------------------------+
-|Country               |Country Code|Code Pages        |APS File          |
-|----------------------+------------+------------------+------------------|
-|Arabic                |785         |0864              |APSY0864.APS      |
-|----------------------+------------+------------------+------------------|
-|Australia             |061         |0437, 0850        |APSYMBOL.APS      |
-|----------------------+------------+------------------+------------------|
-|Belgium               |032         |0437, 0850        |APSYMBOL.APS      |
-|----------------------+------------+------------------+------------------|
-|Brazil                |055         |0850, 0437        |APSYMBOL.APS      |
-|----------------------+------------+------------------+------------------|
-|Bulgaria              |359         |0915              |APSY0915.APS      |
-|----------------------+------------+------------------+------------------|
-|Canadian English      |001         |0437, 0850        |APSYMBOL.APS      |
-|----------------------+------------+------------------+------------------|
-|Canadian French       |002         |0863, 0850        |APSYMBOL.APS      |
-|----------------------+------------+------------------+------------------|
-|Catalan               |034         |0850, 0437        |APSYMBOL.APS      |
-|----------------------+------------+------------------+------------------|
-|Chinese (Simplified)  |086         |1381              |APSY1381.APS      |
-|----------------------+------------+------------------+------------------|
-|Chinese (Simplified)  |086         |1386              |APSY1386.APS      |
-|----------------------+------------+------------------+------------------|
-|Chinese (Traditional) |088         |0950              |APSY0950.APS      |
-|----------------------+------------+------------------+------------------|
-|Czech                 |421         |0852              |APSY0852.APS      |
-|----------------------+------------+------------------+------------------|
-|Denmark               |045         |0865, 0850        |APSYMBOL.APS      |
-|----------------------+------------+------------------+------------------|
-|Finland               |358         |0437, 0850        |APSYMBOL.APS      |
-|----------------------+------------+------------------+------------------|
-|France                |033         |0437, 0850        |APSYMBOL.APS      |
-|----------------------+------------+------------------+------------------|
-|Germany               |049         |0437, 0850        |APSYMBOL.APS      |
-|----------------------+------------+------------------+------------------|
-|Greece                |030         |0869              |APSY0869.APS      |
-|----------------------+------------+------------------+------------------|
-|Greece                |030         |0813              |APSY0813.APS      |
-|----------------------+------------+------------------+------------------|
-|Hebrew                |972         |0862              |APSY0862.APS      |
-|----------------------+------------+------------------+------------------|
-|Hungary               |036         |0852              |APSY0852.APS      |
-|----------------------+------------+------------------+------------------|
-|Italy                 |039         |0437, 0850        |APSYMBOL.APS      |
-|----------------------+------------+------------------+------------------|
-|Japan                 |081         |0932, 0437, 0850  |APSY0932.APS      |
-|----------------------+------------+------------------+------------------|
-|Korea                 |082         |0949, 0934        |APSY0949.APS      |
-|----------------------+------------+------------------+------------------|
-|Latin America         |003         |0437, 0850        |APSYMBOL.APS      |
-|----------------------+------------+------------------+------------------|
-|Lithuania             |370         |0921              |APSY0921.APS      |
-|----------------------+------------+------------------+------------------|
-|Netherlands           |031         |0437, 0850        |APSYMBOL.APS      |
-|----------------------+------------+------------------+------------------|
-|Norway                |047         |0865, 0850        |APSYMBOL.APS      |
-|----------------------+------------+------------------+------------------|
-|Poland                |048         |0852              |APSY0852.APS      |
-|----------------------+------------+------------------+------------------|
-|Portugal              |351         |0860, 0850        |APSYMBOL.APS      |
-|----------------------+------------+------------------+------------------|
-|Russia                |007         |0866              |APSY0866.APS      |
-|----------------------+------------+------------------+------------------|
-|Slovenia              |386         |0852              |APSY0852.APS      |
-|----------------------+------------+------------------+------------------|
-|Spain                 |034         |0437, 0850        |APSYMBOL.APS      |
-|----------------------+------------+------------------+------------------|
-|Sweden                |046         |0437, 0850        |APSYMBOL.APS      |
-|----------------------+------------+------------------+------------------|
-|Switzerland           |041         |0437, 0850        |APSYMBOL.APS      |
-|----------------------+------------+------------------+------------------|
-|Thailand              |066         |0874              |APSY0874.APS      |
-|----------------------+------------+------------------+------------------|
-|Turkey                |090         |0857              |APSY0857.APS      |
-|----------------------+------------+------------------+------------------|
-|United Kingdom        |044         |0437, 0850        |APSYMBOL.APS      |
-|----------------------+------------+------------------+------------------|
-|United States         |001         |0437, 0850        |APSYMBOL.APS      |
-+-------------------------------------------------------------------------+
-Note:  If there is an APSYxxxx.APS file that matches the code page you are
-    using to compile your IPF file (either specified or default), the IPFC
-    will use that file. Otherwise, it will use APSYMBOL.APS file that is
-    suitable for code page 437 or 850.
-
-The following table lists the 3-letter identifier for the /LANGUAGE and -l: xxx
-parameter of the IPFC command:
-
-+------------------------------------------------------------------------+
-|ID        |Language                      |NLS File                      |
-|----------+------------------------------+------------------------------|
-|ARA       |Arabic                        |IPFARA.NLS                    |
-|----------+------------------------------+------------------------------|
-|BGR       |Bulgarian                     |IPFBGR.NLS                    |
-|----------+------------------------------+------------------------------|
-|CAT       |Catalan                       |IPFCAT.NLS                    |
-|----------+------------------------------+------------------------------|
-|CHT       |Chinese (Traditional)         |IPFCHT.NLS                    |
-|----------+------------------------------+------------------------------|
-|CZE       |Czech                         |IPFCZE.NLS                    |
-|----------+------------------------------+------------------------------|
-|DAN       |Danish                        |IPFDAN.NLS                    |
-|----------+------------------------------+------------------------------|
-|DEU       |German                        |IPFDEU.NLS                    |
-|----------+------------------------------+------------------------------|
-|ELL       |Greek 813                     |IPFELL.NLS                    |
-|----------+------------------------------+------------------------------|
-|ENG       |English UP                    |IPFENG.NLS                    |
-|----------+------------------------------+------------------------------|
-|ENU       |English US                    |IPFENU.NLS                    |
-|----------+------------------------------+------------------------------|
-|ESP       |Spanish                       |IPFESP.NLS                    |
-|----------+------------------------------+------------------------------|
-|FIN       |Finnish                       |IPFFIN.NLS                    |
-|----------+------------------------------+------------------------------|
-|FRA       |French                        |IPFFRA.NLS                    |
-|----------+------------------------------+------------------------------|
-|FRC       |Canadian French               |IPFFRC.NLS                    |
-|----------+------------------------------+------------------------------|
-|GRK       |Greek 869                     |IPFGRK.NLS                    |
-|----------+------------------------------+------------------------------|
-|HEB       |Hebrew                        |IPFHEB.NLS                    |
-|----------+------------------------------+------------------------------|
-|HUN       |Hungarian                     |IPFHUN.NLS                    |
-|----------+------------------------------+------------------------------|
-|ITA       |Italian                       |IPFITA.NLS                    |
-|----------+------------------------------+------------------------------|
-|JPN       |Japanese                      |IPFJPN.NLS                    |
-|----------+------------------------------+------------------------------|
-|KOR       |Korean                        |IPFKOR.NLS                    |
-|----------+------------------------------+------------------------------|
-|LTU       |Lithuanian                    |IPFLTU.NLS                    |
-|----------+------------------------------+------------------------------|
-|NLD       |Dutch                         |IPFNLD.NLS                    |
-|----------+------------------------------+------------------------------|
-|NOR       |Norwegian                     |IPFNOR.NLS                    |
-|----------+------------------------------+------------------------------|
-|POL       |Polish                        |IPFPOL.NLS                    |
-|----------+------------------------------+------------------------------|
-|PRC       |Chinese (Simplified) 1381     |IPFPRC.NLS                    |
-|----------+------------------------------+------------------------------|
-|PRC       |Chinese (Simplified) 1386     |IPFGBK.NLS                    |
-|----------+------------------------------+------------------------------|
-|PTB       |Brazilian/Portuguese          |IPFPTB.NLS                    |
-|----------+------------------------------+------------------------------|
-|PTG       |Portuguese                    |IPFPTG.NLS                    |
-|----------+------------------------------+------------------------------|
-|RUS       |Russian                       |IPFRUS.NLS                    |
-|----------+------------------------------+------------------------------|
-|SLO       |Slovene                       |IPFSLO.NLS                    |
-|----------+------------------------------+------------------------------|
-|SVE       |Swedish                       |IPFSVE.NLS                    |
-|----------+------------------------------+------------------------------|
-|THI       |Thai                          |IPFTHI.NLS                    |
-|----------+------------------------------+------------------------------|
-|TRK       |Turkish                       |IPFTRK.NLS                    |
-|----------+------------------------------+------------------------------|
-|UND       |User defined                  |IPFUND.NLS                    |
-+------------------------------------------------------------------------+
-
-*/

@@ -1,0 +1,111 @@
+/****************************************************************************
+*
+*                            Open Watcom Project
+*
+* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
+*
+*  ========================================================================
+*
+*    This file contains Original Code and/or Modifications of Original
+*    Code as defined in and that are subject to the Sybase Open Watcom
+*    Public License version 1.0 (the 'License'). You may not use this file
+*    except in compliance with the License. BY USING THIS FILE YOU AGREE TO
+*    ALL TERMS AND CONDITIONS OF THE LICENSE. A copy of the License is
+*    provided with the Original Code and Modifications, and is also
+*    available at www.sybase.com/developer/opensource.
+*
+*    The Original Code and all software distributed under the License are
+*    distributed on an 'AS IS' basis, WITHOUT WARRANTY OF ANY KIND, EITHER
+*    EXPRESS OR IMPLIED, AND SYBASE AND ALL CONTRIBUTORS HEREBY DISCLAIM
+*    ALL SUCH WARRANTIES, INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF
+*    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR
+*    NON-INFRINGEMENT. Please see the License for the specific language
+*    governing rights and limitations under the License.
+*
+*  ========================================================================
+*
+* Description:  Country configuration data
+*
+****************************************************************************/
+
+
+#include "wipfc.hpp"
+#include <cstdio>
+#include <cstdlib>
+#include "env.hpp"
+#include "cntrydef.hpp"
+#include "util.hpp"
+#include "errors.hpp"
+
+
+std::string CountryDef::getNlsConfig( const char *loc )
+/*****************************************************/
+{
+    char        buffer[256];
+    char        *fn;
+
+    std::string path( Environment.value( "WIPFC" ) );
+    if( path.length() )
+        path += PATH_SEPARATOR;
+    path += "nlsconf.txt";
+    std::FILE *nlsconf = std::fopen( path.c_str(), "r" );
+    if( nlsconf == NULL )
+        throw FatalError( ERR_NLSCONF );
+    while( (fn = std::fgets( buffer, sizeof( buffer ), nlsconf )) != NULL ) {
+        std::size_t len = std::strlen( buffer );
+        killEOL( buffer + len - 1 );
+        char *p = skipWS( buffer );
+        if( p[0] == '\0' )
+            continue;                       // skip blank lines
+        if( p[0] == '#' )
+            continue;                       // skip comment lines
+        p = std::strtok( buffer, " \t" );   // get locale
+        if( p == NULL || std::strcmp( p, loc ) != 0 )
+            continue;
+        p = std::strtok( NULL, " \t" );     // get nls file
+        if( p == NULL )
+            continue;                       // skip incorrect lines
+        fn = skipWS( p );
+        p = std::strtok( NULL, " \t" );     // get country
+        if( p == NULL )
+            continue;                       // skip incorrect lines
+        p = skipWS( p );
+        _country = static_cast< word >( std::strtoul( p, NULL, 10 ) );
+        p = std::strtok( NULL, " \t" );     // get codepage
+        if( p == NULL )
+            continue;                       // skip incorrect lines
+        p = skipWS( p );
+        _codePage = static_cast< word >( std::strtoul( p, NULL, 10 ) );
+        break;
+    }
+    if( fn == NULL ) {
+        // if error or locale not found then set default US
+        _country = 1;
+        _codePage = 437;
+        fn = "en_US.nls";
+    }
+    std::fclose( nlsconf );
+    return( std::string( fn ) );
+}
+
+STD1::uint32_t CountryDef::write( std::FILE *out ) const
+/******************************************************/
+{
+    dword start = std::ftell( out );
+    if( std::fwrite( &_size, sizeof( _size ), 1, out ) != 1 )
+        throw FatalError( ERR_WRITE );
+    byte type = static_cast< byte >( _type );
+    if( std::fwrite( &type, sizeof( type ), 1, out ) != 1 )
+        throw FatalError( ERR_WRITE );
+    if( std::fwrite( &_format, sizeof( _format ), 1, out ) != 1 )
+        throw FatalError( ERR_WRITE );
+    if( std::fwrite( &_value, sizeof( _value ), 1, out ) != 1 )
+        throw FatalError( ERR_WRITE );
+    if( std::fwrite( &_country, sizeof( _country ), 1, out ) != 1 )
+        throw FatalError( ERR_WRITE );
+    if( std::fwrite( &_codePage, sizeof( _codePage ), 1, out ) != 1 )
+        throw FatalError( ERR_WRITE );
+    if( std::fwrite( &_reserved, sizeof( _reserved ), 1, out ) != 1 )
+        throw FatalError( ERR_WRITE );
+    return( start );
+}

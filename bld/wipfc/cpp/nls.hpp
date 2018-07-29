@@ -37,6 +37,7 @@
 #include <vector>
 #include "fnt.hpp"
 #include "nlsrecty.hpp"
+#include "cntrydef.hpp"
 
 class Nls {
     typedef STD1::uint8_t   byte;
@@ -47,87 +48,76 @@ public:
     Nls( const char* loc );
     //set the locale
     void setLocalization( const char *loc );
-    STD1::uint16_t codePage() const { return country.codePage; };
+    STD1::uint16_t codePage() const { return _country.getCodePage(); };
     //get localized text strings
-    const std::wstring& note() const { return noteText; };
-    const std::wstring& warning() const { return warningText; };
-    const std::wstring& caution() const { return cautionText; };
-    const std::wstring& reference() const { return referenceText; };
-    const std::wstring& grammar() const { return grammarChars; };
+    const std::wstring& note() const { return _noteText; };
+    const std::wstring& warning() const { return _warningText; };
+    const std::wstring& caution() const { return _cautionText; };
+    const std::wstring& reference() const { return _referenceText; };
+    const std::wstring& grammar() const { return _grammarChars; };
     //graphics font characteristics
     const FontEntry& cgraphicFont() const { return _cgraphicFont; };
     //localized bullets
-    const std::wstring& olChars() const { return olCh; };
-    const std::wstring* olClose() const { return olClosers; };
-    const std::wstring* ulBullets() const { return ulBul; };
+    const std::wstring& olChars() const { return _olCh; };
+    const std::wstring* olClose() const { return _olClosers; };
+    const std::wstring* ulBullets() const { return _ulBul; };
     //resolve an entity reference
     wchar_t entity( const std::wstring& key );
-    bool isEntity( const std::wstring& key ) { return entityMap.find( key ) != entityMap.end(); };
+    bool isEntity( const std::wstring& key ) { return _entityMap.find( key ) != _entityMap.end(); };
     //number of bytes written
-    STD1::uint32_t length() { return bytes; };
+    STD1::uint32_t length() { return _bytes; };
     STD1::uint32_t write( std::FILE* out );
 private:
-    Nls( const Nls& rhs );              // no copy
-    Nls& operator=( const Nls& rhs );   // no assignment
-    struct CountryDef {
-        word                size;       // 12
-        WIPFC::NLSRecType   type;       // NLSRecType.CONTROL
-        byte                format;     // 0
-        word                value;      // 256
-        word                country;
-        word                codePage;
-        word                reserved;   // 0
-        CountryDef() : size( sizeof( word ) + 2 * sizeof( byte ) + 4 * sizeof( word ) ),
-            type( WIPFC::CONTROL ), format( 0 ), value( 256 ), country( 1 ), codePage( 850 ), reserved( 0 ) {};
-        STD1::uint32_t write( std::FILE* out ) const;
-    };
-
-    struct SbcsGrammarDef {         // Single-byte character set
-        word                size;       // 36
-        WIPFC::NLSRecType   type;       // NLSRecType.TEXT, NLSRecType.GRAPHIC
-        byte                format;     // 0
-        byte                bits[32];   // high-order bit first
-        SbcsGrammarDef() : size( sizeof( word ) + 2 * sizeof( byte ) + (sizeof( bits ) / sizeof( bits[0] )) * sizeof( byte ) ),
-            type( WIPFC::TEXT ), format( 0 ) {};
-        void setDefaultBits( WIPFC::NLSRecType rectype );
-        STD1::uint32_t write( std::FILE* out ) const;
-    };
-    struct DbcsGrammarDef {         // Double-byte character set
-        word                size;       // 4 + (# ranges * 4)
-        WIPFC::NLSRecType   type;       // NLSRecType.TEXT, NLSRecType.GRAPHIC
-        byte                format;     // 1
-        std::vector< word > ranges;
-        DbcsGrammarDef() : size( sizeof( word ) + 2 * sizeof( byte ) ),
-            type( WIPFC::TEXT ), format( 1 ) {};
-        STD1::uint32_t write( std::FILE* out );
-    };
-
-    CountryDef country;
-    SbcsGrammarDef sbcsT;
-    SbcsGrammarDef sbcsG;
-    DbcsGrammarDef dbcsT;
-    DbcsGrammarDef dbcsG;
-    std::map< std::wstring, wchar_t > entityMap; //stuff from entity file
     typedef std::map< std::wstring, wchar_t >::iterator EntityIter;
     typedef std::map< std::wstring, wchar_t >::const_iterator ConstEntityIter;
-    std::wstring noteText;                  //stuff from nls file
-    std::wstring cautionText;
-    std::wstring warningText;
-    std::wstring referenceText;
-    std::wstring grammarChars;
-    FontEntry _cgraphicFont;
-    dword bytes;
-    std::wstring olCh;
-    std::wstring olClosers[2];
-    std::wstring ulBul[3];
-    bool useDBCS;
+
+    Nls( const Nls& rhs );              // no copy
+    Nls& operator=( const Nls& rhs );   // no assignment
+
     void setCodePage( word cp );
     void readEntityFile( std::FILE* aps );
     void readNLS( std::FILE* nls );
     void processGrammar( wchar_t* value );
     std::string readNlsConfFile( std::FILE *nlsconf, const char *loc );
     std::string getNlsFileName( const char *loc );
+
+    struct SbcsGrammarDef {             // Single-byte character set
+        word                _size;          // 36
+        WIPFC::NLSRecType   _type;          // NLSRecType.TEXT, NLSRecType.GRAPHIC
+        byte                _format;        // 0
+        byte                _bits[32];      // high-order bit first
+        SbcsGrammarDef() : _size( sizeof( word ) + 2 * sizeof( byte ) + (sizeof( _bits ) / sizeof( _bits[0] )) * sizeof( byte ) ),
+            _type( WIPFC::TEXT ), _format( 0 ) {};
+        void setDefaultBits( WIPFC::NLSRecType rectype );
+        STD1::uint32_t write( std::FILE* out ) const;
+    };
+    struct DbcsGrammarDef {             // Double-byte character set
+        word                _size;          // 4 + (# ranges * 4)
+        WIPFC::NLSRecType   _type;          // NLSRecType.TEXT, NLSRecType.GRAPHIC
+        byte                _format;        // 1
+        std::vector< word > _ranges;        // variable
+        DbcsGrammarDef() : _size( sizeof( word ) + 2 * sizeof( byte ) ),
+            _type( WIPFC::TEXT ), _format( 1 ) {};
+        STD1::uint32_t write( std::FILE* out );
+    };
+
+    CountryDef _country;
+    SbcsGrammarDef _sbcsT;
+    SbcsGrammarDef _sbcsG;
+    DbcsGrammarDef _dbcsT;
+    DbcsGrammarDef _dbcsG;
+    std::map< std::wstring, wchar_t > _entityMap; //stuff from entity file
+    std::wstring _noteText;                  //stuff from nls file
+    std::wstring _cautionText;
+    std::wstring _warningText;
+    std::wstring _referenceText;
+    std::wstring _grammarChars;
+    FontEntry _cgraphicFont;
+    dword _bytes;
+    std::wstring _olCh;
+    std::wstring _olClosers[2];
+    std::wstring _ulBul[3];
+    bool _useDBCS;
 };
 
 #endif //NLS_INCLUDED
-
