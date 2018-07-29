@@ -44,8 +44,7 @@ WhiteSpace::WhiteSpace( Document* d, Element* p, const std::wstring* f, unsigned
     else
         spaces = 0;
     if( w == Tag::SPACES ) {
-        GlobalDictionaryWord* word( new GlobalDictionaryWord( tx ) );
-        text = document->addWord( word );   //insert into global dictionary
+        text = document->addWord( new GlobalDictionaryWord( tx ) );   //insert into global dictionary
     }
 }
 /***************************************************************************/
@@ -54,8 +53,7 @@ Lexer::Token WhiteSpace::parse( Lexer* lexer )
     if( lexer->text()[0] != L'\n' ) {
         spaces = static_cast< unsigned char >( lexer->text().size() ); //number of spaces
         if( whiteSpace == Tag::SPACES ) {
-            GlobalDictionaryWord* word( new GlobalDictionaryWord( lexer->text() ) );
-            text = document->addWord( word );   //insert into global dictionary
+            text = document->addWord( new GlobalDictionaryWord( lexer->text() ) );   //insert into global dictionary
         }
     }
     if( whiteSpace != Tag::SPACES && !document->autoSpacing() ) {

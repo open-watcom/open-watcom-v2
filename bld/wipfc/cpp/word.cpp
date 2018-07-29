@@ -75,8 +75,7 @@ Lexer::Token Word::parse( Lexer* lexer )
             document->lastText()->setToggleSpacing();
         }
     }
-    GlobalDictionaryWord* word( new GlobalDictionaryWord( txt ) );
-    text = document->addWord( word );   //insert into global dictionary
+    text = document->addWord( new GlobalDictionaryWord( txt ) );   //insert into global dictionary
     document->setLastPrintable( Lexer::WORD, this );
     return tok;
 }

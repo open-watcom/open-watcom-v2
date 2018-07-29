@@ -38,13 +38,12 @@
 #include "gnames.hpp"
 #include "errors.hpp"
 
-void GNames::insert( GlobalDictionaryWord* word, STD1::uint16_t toc )
+void GNames::insert( GlobalDictionaryWord* wordent, STD1::uint16_t toc )
 {
-    NameIter itr( names.find( word ) );   //look up word in names
-    if( itr == names.end() )
-        names.insert( std::map< GlobalDictionaryWord*, STD1::uint16_t, ptrLess< GlobalDictionaryWord* > >::value_type( word, toc ) );
-    else
+    NameIter itr( names.find( wordent ) );   //look up word in names
+    if( itr != names.end() )
         throw Class3Error( ERR3_DUPID );
+    names.insert( std::map< GlobalDictionaryWord*, STD1::uint16_t, ptrLess< GlobalDictionaryWord* > >::value_type( wordent, toc ) );
 }
 /***************************************************************************/
 STD1::uint32_t GNames::write( std::FILE *out ) const

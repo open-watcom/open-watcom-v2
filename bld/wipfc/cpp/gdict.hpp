@@ -51,23 +51,27 @@
 #include "ptrops.hpp"
 
 class GlobalDictionary {
+    typedef STD1::uint8_t   byte;
+    typedef STD1::uint16_t  word;
+    typedef STD1::uint32_t  dword;
+
 public:
     GlobalDictionary() : bytes( 0 ), ftsBytes( 0 ) {};
     ~GlobalDictionary();
     //add a word to the collection
-    GlobalDictionaryWord* insert( GlobalDictionaryWord* word );
-    GlobalDictionaryWord* insert( std::wstring& word );
+    GlobalDictionaryWord* insert( GlobalDictionaryWord* wordent );
+    GlobalDictionaryWord* insert( const std::wstring& wordtxt );
     //after insertions are completed, assign an index to each element
     //of the collection as if it were an array
     void convert( std::size_t count );
     //get the index of a word in the collection
-    STD1::uint16_t findIndex( std::wstring& word );
-    STD1::uint16_t findIndex( GlobalDictionaryWord* word ) { return (*words.find( word ))->index(); };
+    STD1::uint16_t findIndex( GlobalDictionaryWord *wordent ) { return (*words.find( wordent ))->index(); };
+    STD1::uint16_t findIndex( const std::wstring& wordtxt );
     //get a word from the collection
-    GlobalDictionaryWord* findWord( GlobalDictionaryWord* word) { return *words.find( word ); };
-    GlobalDictionaryWord* findWord( std::wstring& word );
+    GlobalDictionaryWord* findWord( GlobalDictionaryWord *wordent ) { return *words.find( wordent ); };
+    GlobalDictionaryWord* findWord( const std::wstring& wordtxt );
     //the number of elements in the collection
-    STD1::uint16_t size() const { return static_cast< STD1::uint16_t >( words.size() ); };
+    STD1::uint16_t size() const { return static_cast< word >( words.size() ); };
     //the number of bytes written by the collection
     STD1::uint32_t length() const { return bytes; };
     //the number of bytes of FTS data written by the collection
@@ -81,8 +85,8 @@ private:
     std::set< GlobalDictionaryWord*, ptrLess< GlobalDictionaryWord* > > words;
     typedef std::set< GlobalDictionaryWord*, ptrLess< GlobalDictionaryWord* > >::const_iterator ConstWordIter;
     typedef std::set< GlobalDictionaryWord*, ptrLess< GlobalDictionaryWord* > >::iterator WordIter;
-    STD1::uint32_t bytes;
-    STD1::uint32_t ftsBytes;
+    dword bytes;
+    dword ftsBytes;
 };
 
 #endif //GLOBALDICTIONARY_INCLUDED

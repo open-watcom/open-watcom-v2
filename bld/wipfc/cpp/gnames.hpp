@@ -43,7 +43,7 @@ class GNames {
 public:
     GNames() { };
     ~GNames() { };
-    void insert( GlobalDictionaryWord* word, STD1::uint16_t toc );
+    void insert( GlobalDictionaryWord* wordent, STD1::uint16_t toc );
     //the number of names in the collection
     STD1::uint16_t size() const { return static_cast< STD1::uint16_t >( names.size() ); };
     STD1::uint32_t write( std::FILE *out ) const;

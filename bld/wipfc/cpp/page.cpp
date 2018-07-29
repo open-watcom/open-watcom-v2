@@ -65,13 +65,13 @@ void Page::buildLocalDictionary()
     }
 }
 /***************************************************************************/
-bool Page::addWord( GlobalDictionaryWord* Word )
+bool Page::addWord( GlobalDictionaryWord* wordent )
 {
-    if( Word ) {    //can be 0 for unrecognized entity references
+    if( wordent ) {    //can be 0 for unrecognized entity references
         if( currentCell->dictFull() )
             return( true );
-        currentCell->addWord( Word->index() );
-        Word->onPage( idx );
+        currentCell->addWord( wordent->index() );
+        wordent->onPage( idx );
     }
     return( false );
 }

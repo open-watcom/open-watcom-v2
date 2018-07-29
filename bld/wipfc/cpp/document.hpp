@@ -161,8 +161,8 @@ public:
     std::size_t addFont( const FontEntry& fnt ) { return fonts->add( fnt ); };
 
     //To GlobalDictionary
-    GlobalDictionaryWord * addWord( GlobalDictionaryWord* word ) { return dict->insert( word ); };
-    STD1::uint16_t findIndex( std::wstring& word ) { return dict->findIndex( word ); };
+    GlobalDictionaryWord * addWord( GlobalDictionaryWord* wordent ) { return dict->insert( wordent ); };
+    STD1::uint16_t findIndex( const std::wstring& wordtxt ) { return dict->findIndex( wordtxt ); };
 
     //To GNames
     void addGNameOrId( GlobalDictionaryWord* key, word value )

@@ -36,9 +36,8 @@
 
 Lexer::Token Punctuation::parse( Lexer* lexer )
 {
-    std::wstring txt( lexer->text() );  //get text from lexer
-    GlobalDictionaryWord* word( new GlobalDictionaryWord( txt ) );
-    text = document->addWord( word );   //insert into global dictionary
+    //get text from lexer and insert into global dictionary
+    text = document->addWord( new GlobalDictionaryWord( lexer->text() ) );
     Lexer::Token tok( document->getNextToken() );
     if( whiteSpace != Tag::SPACES && document->autoSpacing() ) {
         Lexer::Token t( document->lastToken() );

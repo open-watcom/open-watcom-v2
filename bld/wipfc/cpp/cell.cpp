@@ -47,22 +47,22 @@ void Cell::build()
         text.push_back( 0xFE );
 }
 /***************************************************************************/
-void Cell::addWord( STD1::uint16_t word )
+void Cell::addWord( STD1::uint16_t wordid )
 {
-    if( !std::binary_search( localDictionary.begin(), localDictionary.end(), word ) ) {
+    if( !std::binary_search( localDictionary.begin(), localDictionary.end(), wordid ) ) {
         LDIter itr(
-            //std::lower_bound( localDictionary.begin(), localDictionary.end(), word );
+            //std::lower_bound( localDictionary.begin(), localDictionary.end(), wordid );
             std::find_if( localDictionary.begin(), localDictionary.end(),
-                std::bind2nd( std::greater< STD1::uint16_t >(), word ) ) );
-        localDictionary.insert( itr, word );
+                std::bind2nd( std::greater< STD1::uint16_t >(), wordid ) ) );
+        localDictionary.insert( itr, wordid );
     }
 }
 /***************************************************************************/
-void Cell::addText( STD1::uint16_t word )
+void Cell::addText( STD1::uint16_t textid )
 {
     LDIter itr(
-        //std::lower_bound( localDictionary.begin(), localDictionary.end(), word );
-        std::find( localDictionary.begin(), localDictionary.end(), word ) );
+        //std::lower_bound( localDictionary.begin(), localDictionary.end(), textid );
+        std::find( localDictionary.begin(), localDictionary.end(), textid ) );
     std::size_t index = itr - localDictionary.begin();
     text.push_back( static_cast< STD1::uint8_t >( index ) );
 }

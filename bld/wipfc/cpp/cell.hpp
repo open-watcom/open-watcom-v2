@@ -43,9 +43,9 @@ public:
     Cell( std::size_t m) : maxDictSize( m ) { };
     ~Cell() { };
     //add a word to the local dictionary
-    void addWord( STD1::uint16_t word );
+    void addWord( STD1::uint16_t wordid );
     //add a word to the encoded text
-    void addText( STD1::uint16_t word );
+    void addText( STD1::uint16_t textid );
     //add a byte code to the encoded text
     void addByte( STD1::uint8_t c ) { text.push_back( c ); };
     //add an escape sequence to the encoded text

@@ -42,8 +42,7 @@ Text::Text( Document* d, Element* p, const std::wstring* f, unsigned int r,
             unsigned int c, const std::wstring& txt, bool ts ) :
             Element( d, p, f, r, c ), whiteSpace( Tag::NONE), toggleSpacing( ts )
 {
-    GlobalDictionaryWord* word( new GlobalDictionaryWord( txt ) );
-    text = document->addWord( word );   //insert into global dictionary
+    text = document->addWord( new GlobalDictionaryWord( txt ) );   //insert into global dictionary
 }
 /***************************************************************************/
 std::pair< bool, bool > Text::buildLocalDict( Page* page )
