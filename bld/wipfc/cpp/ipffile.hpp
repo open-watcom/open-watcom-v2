@@ -36,11 +36,12 @@
 
 class IpfFile : public IpfData {
 public:
-    IpfFile( const std::wstring* fname );
-    ~IpfFile() { if( stream ) std::fclose( stream ); };
+    IpfFile( const std::wstring* wfname );
+    IpfFile( const std::string& sfname, const std::wstring* wfname );
+    ~IpfFile() { if( _stream ) std::fclose( _stream ); };
     //Returns the file or buffer name for use in error messages
     virtual
-    const std::wstring* name() const { return fileName; };
+    const std::wstring* name() const { return _fileName; };
     //Read a character
     virtual
     std::wint_t get();
@@ -49,20 +50,20 @@ public:
     void unget( wchar_t ch );
     //Seek to beginning
     virtual
-    void reset() { std::rewind( stream ); };
+    void reset() { std::rewind( _stream ); };
     //Seek to position relative to beginning
     virtual
-    void setPos(long int offset) { std::fseek( stream, offset, SEEK_SET ); };
+    void setPos(long int offset) { std::fseek( _stream, offset, SEEK_SET ); };
     //Get the current position
     virtual
-    long int pos() { return std::ftell( stream ); };
+    long int pos() { return std::ftell( _stream ); };
 private:
     IpfFile( const IpfFile& rhs );              //no copy
     IpfFile& operator=( const IpfFile& rhs );   //no assignment
-    const std::wstring* fileName;
-    std::FILE* stream;
-    wchar_t ungottenChar;
-    bool ungotten;
+    const std::wstring* _fileName;
+    std::FILE* _stream;
+    wchar_t _ungottenChar;
+    bool _ungotten;
 };
 
 #endif

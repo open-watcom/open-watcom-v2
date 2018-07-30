@@ -35,13 +35,21 @@
 #include "uniutil.hpp"
 
 
-IpfFile::IpfFile( const std::wstring* fname ) : IpfData(), fileName ( fname ),
-    ungottenChar( WEOF ), ungotten( false )
+IpfFile::IpfFile( const std::wstring* wfname ) : IpfData(), _fileName( wfname ),
+    _ungottenChar( WEOF ), _ungotten( false )
 {
-    std::string buffer;
-    def_wtomb_string( *fname, buffer );
-    if( (stream = std::fopen( buffer.c_str(), "rb" )) == 0 ) {
-        throw FatalIOError( ERR_OPEN, *fileName );
+    std::string sfname;
+    def_wtomb_string( *_fileName, sfname );
+    if( (_stream = std::fopen( sfname.c_str(), "rb" )) == 0 ) {
+        throw FatalIOError( ERR_OPEN, *_fileName );
+    }
+}
+
+IpfFile::IpfFile( const std::string& sfname, const std::wstring* wfname ) : IpfData(), _fileName( wfname ),
+    _ungottenChar( WEOF ), _ungotten( false )
+{
+    if( (_stream = std::fopen( sfname.c_str(), "rb" )) == 0 ) {
+        throw FatalIOError( ERR_OPEN, *_fileName );
     }
 }
 /*****************************************************************************/
@@ -51,14 +59,14 @@ std::wint_t IpfFile::get()
 {
     std::wint_t     ch;
 
-    if( ungotten ) {
-        ch = ungottenChar;
-        ungotten = false;
+    if( _ungotten ) {
+        ch = _ungottenChar;
+        _ungotten = false;
     } else {
-        ch = read_wchar( stream );
+        ch = read_wchar( _stream );
     }
     if( ch == L'\r' ) {
-        ch = read_wchar( stream );
+        ch = read_wchar( _stream );
     }
     incCol();
     if( ch == L'\n' ) {
@@ -66,8 +74,8 @@ std::wint_t IpfFile::get()
         resetCol();
     } else if( ch == WEOF ) {
         ch = EOB;
-        if( !std::feof( stream ) ) {
-            throw FatalIOError( ERR_READ, *fileName );
+        if( !std::feof( _stream ) ) {
+            throw FatalIOError( ERR_READ, *_fileName );
         }
     }
     return( ch );
@@ -75,9 +83,9 @@ std::wint_t IpfFile::get()
 /*****************************************************************************/
 void IpfFile::unget( wchar_t ch )
 {
-    //std::ungetwc( ch, stream );
-    ungottenChar = ch;
-    ungotten = true;
+    //std::ungetwc( ch, _stream );
+    _ungottenChar = ch;
+    _ungotten = true;
     decCol();
     if( ch == L'\n' ) {
         decLine();
