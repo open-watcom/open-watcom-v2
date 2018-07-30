@@ -55,17 +55,17 @@ public:
     ~Compiler();
     int compile();
     //set the initial source file name
-    void setInputFile( std::string& name );
+    void setInputFile( const std::string& sfname );
     //initialize first source file
     void startInput();
     //add a file name to the set of file names
-    std::wstring* addFileName( std::wstring* name );
+    std::wstring* addFileName( std::wstring* wfname );
     //set the output file name
-    void setOutputFile( std::string& name );
+    void setOutputFile( const std::string& sfname );
     //set the warning level
     void setWarningLevel( int wl ) { _warningLevel = wl; };
     //set the current locale
-    void setLocalization( const char *ln ) { _loc = ln; };
+    void setLocalization( const char *loc ) { _loc = loc; };
     //set the output type (inf or hlp)
     void setOutputType( OutputType t ) { _outType = t; };
     OutputType outputType( ) { return _outType; };
@@ -100,8 +100,9 @@ public:
 private:
     Compiler( const Compiler &rhs );            //no copy constructor
     Compiler& operator=( const Compiler &rhs ); //no assignment
-    std::wstring _inFileName;
-    std::wstring _outFileName;
+    std::wstring _inFileNameW;
+    std::string _inFileName;
+    std::string _outFileName;
     std::auto_ptr< Lexer > _lexer;
     std::vector< IpfData* > _inFiles;            //a stack of files being parsed
     typedef std::vector< IpfData* >::iterator InFilesIter;

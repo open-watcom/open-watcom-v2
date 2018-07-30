@@ -58,20 +58,21 @@ Compiler::~Compiler()
 {
     while( _inFiles.size() )
         popInput();
-    for( FileNameIter iter = _fileNames.begin(); iter != _fileNames.end(); ++iter)
+    for( FileNameIter iter = _fileNames.begin(); iter != _fileNames.end(); ++iter )
         delete *iter;
 }
 /*****************************************************************************/
-void Compiler::setInputFile( std::string& name )
+void Compiler::setInputFile( const std::string& sfname )
 {
-    def_mbtow_string( name, _inFileName );
+    _inFileName = sfname;
+    def_mbtow_string( sfname, _inFileNameW );
 }
 /*****************************************************************************/
 void Compiler::startInput()
 {
-    std::wstring* wname( new std::wstring( _inFileName ) );
+    std::wstring* wname( new std::wstring( _inFileNameW ) );
     wname = addFileName( wname );
-    _inFiles.push_back( new IpfFile( wname ) );
+    _inFiles.push_back( new IpfFile( _inFileName, wname ) );
 }
 /*****************************************************************************/
 std::wstring* Compiler::addFileName( std::wstring* name )
@@ -81,22 +82,20 @@ std::wstring* Compiler::addFileName( std::wstring* name )
         delete name;
     return *status.first;
 }
-void Compiler::setOutputFile( std::string& name )
+void Compiler::setOutputFile( const std::string& sfname )
 {
-    def_mbtow_string( name, _outFileName );
+    _outFileName = sfname;
 }
 /*****************************************************************************/
 int Compiler::compile()
 {
     int retval( EXIT_SUCCESS );
-    startInput();
     std::auto_ptr< Document > doc( new Document( *this, _loc ) );
     doc->setOutputType( _outType );
+    startInput();
     doc->parse( _lexer.get() );
     doc->build();
-    std::string outfname;
-    def_wtomb_string( _outFileName, outfname );
-    std::FILE* out( std::fopen( outfname.c_str() , "wb" ) );
+    std::FILE* out( std::fopen( _outFileName.c_str() , "wb" ) );
     if( !out )
         throw FatalIOError( ERR_OPEN, L"for inf or hlp output" );
     try {
@@ -113,15 +112,14 @@ int Compiler::compile()
     std::fclose( out );
     if( _xref ) {
         //TODO: convert to ostream when streams and strings mature
-        std::string logfname;
-        def_wtomb_string( _outFileName, logfname );
+        std::string logfname( _outFileName );
         logfname.erase( logfname.rfind( '.' ) );
         logfname += ".log";
         std::FILE *logfp = std::fopen( logfname.c_str(), "w" );
         if( !logfp )
             throw FatalIOError( ERR_OPEN, L"for log output" );
         try {
-            std::fprintf( logfp, "Summary for %s\n\n", outfname.c_str() );
+            std::fprintf( logfp, "Summary for %s\n\n", _outFileName.c_str() );
             doc->summary( logfp );
         } catch( FatalError& e ) {
             retval = EXIT_FAILURE;
