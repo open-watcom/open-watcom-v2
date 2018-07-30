@@ -88,13 +88,17 @@ void Nls::readEntityFile( word cp )
         std::size_t len = std::strlen( buffer );
         killEOL( buffer + len - 1 );
         offset = mbtow_char( &c, buffer, len );
-        if( offset == -1 )
+        if( offset == -1 ) {
+            std::fclose( entty );
             throw FatalError( ERR_T_CONV );
+        }
         if( offset > 1 )
             _useDBCS = true;
         len = mbtow_cstring( text, buffer + offset, sizeof( text ) / sizeof( wchar_t ) - 1 );
-        if( len == static_cast< std::size_t >( -1 ) )
+        if( len == static_cast< std::size_t >( -1 ) ) {
+            std::fclose( entty );
             throw FatalError( ERR_T_CONV );
+        }
         text[len] = L'\0';
         _entityMap.insert( std::map< std::wstring, wchar_t >::value_type( text, c ) );
     }
@@ -114,16 +118,19 @@ void Nls::setLocalization( const char *loc)
     if( path.length() )
         path += PATH_SEPARATOR;
     path += _country.getNlsConfig( loc );
-    std::FILE *nls = std::fopen( path.c_str(), "r" );
-    if( nls == NULL )
-        throw FatalError( ERR_LANG );
-    readNLS( nls );
-    std::fclose( nls );
     // TODO! Following code must be replaced by setup MBCS<->UNICODE conversion tables
     // for mbtow_char and wtomb_char
 #if defined( __UNIX__ ) || defined( __APPLE__ )
     std::setlocale( LC_ALL, loc );  //this doesn't really do anything in OW either
 #endif
+#if !defined( __UNIX__ ) && !defined( __APPLE__ )
+    _setmbcp( _country.getCodePage() ); //doesn't do much of anything in OW
+#endif
+    std::FILE *nls = std::fopen( path.c_str(), "r" );
+    if( nls == NULL )
+        throw FatalError( ERR_LANG );
+    readNLS( nls );
+    std::fclose( nls );
     setCodePage( _country.getCodePage() );
 }
 /*****************************************************************************/
@@ -299,7 +306,7 @@ STD1::uint32_t Nls::SbcsGrammarDef::write( std::FILE *out ) const
         throw FatalError( ERR_WRITE );
     if( std::fwrite( &_format, sizeof( _format ), 1, out ) != 1 )
         throw FatalError( ERR_WRITE );
-    if( std::fwrite( _bits, sizeof( byte ), sizeof( _bits ) / sizeof( _bits[0] ), out ) != sizeof( _bits ) / sizeof( _bits[0] ) )
+    if( std::fwrite( _bits, sizeof( _bits[0] ), sizeof( _bits ) / sizeof( _bits[0] ), out ) != sizeof( _bits ) / sizeof( _bits[0] ) )
         throw FatalError( ERR_WRITE );
     return( start );
 }
