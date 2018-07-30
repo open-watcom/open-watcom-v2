@@ -43,22 +43,29 @@ class CountryDef {
     typedef STD1::uint32_t  dword;
 
 public:
-        CountryDef() : _size( sizeof( word ) + 2 * sizeof( byte ) + 4 * sizeof( word ) ),
-            _type( WIPFC::CONTROL ), _format( 0 ), _value( 256 ), _country( 1 ), _codePage( 850 ), _reserved( 0 ) {};
+    CountryDef() : _size( sizeof( word ) + 2 * sizeof( byte ) + 4 * sizeof( word ) ),
+        _type( WIPFC::CONTROL ), _format( 0 ), _value( 256 ), _country( 1 ),
+        _codePage( 850 ), _reserved( 0 ), _useDBCS( false ) {};
 
-        std::string getNlsConfig( const char *loc );
-        STD1::uint32_t write( std::FILE* out ) const;
-        STD1::uint16_t getCodePage() const { return( _codePage ); }
-        STD1::uint16_t getSize() const { return( _size ); }
+    void nlsConfig( const char *loc );
+    STD1::uint32_t write( std::FILE* out ) const;
+    STD1::uint16_t codePage() const { return( _codePage ); }
+    STD1::uint16_t size() const { return( _size ); }
+    std::string nlsFileName() const { return _nlsFileName; }
+    std::string entityFileName() const { return _entityFileName; }
+    bool useDBCS() const { return _useDBCS; }
 
 private:
-        word                _size;      // 12
-        WIPFC::NLSRecType   _type;      // 0 (NLSRecType::CONTROL)
-        byte                _format;    // 0
-        word                _value;     // 256
-        word                _country;   // from config file / 1
-        word                _codePage;  // from config file / 850
-        word                _reserved;  // 0
+    word                _size;      // 12
+    WIPFC::NLSRecType   _type;      // 0 (NLSRecType::CONTROL)
+    byte                _format;    // 0
+    word                _value;     // 256
+    word                _country;   // from config file / 1
+    word                _codePage;  // from config file / 850
+    word                _reserved;  // 0
+    bool                _useDBCS;
+    std::string         _nlsFileName;
+    std::string         _entityFileName;
 };
 
 #endif

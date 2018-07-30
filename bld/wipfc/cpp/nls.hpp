@@ -49,7 +49,7 @@ public:
     Nls( const char* loc );
     //set the locale
     void setLocalization( const char *loc );
-    STD1::uint16_t codePage() const { return _country.getCodePage(); };
+    STD1::uint16_t codePage() const { return _country.codePage(); };
     //get localized text strings
     const std::wstring& note() const { return _noteText; };
     const std::wstring& warning() const { return _warningText; };
@@ -75,9 +75,8 @@ private:
     Nls( const Nls& rhs );              // no copy
     Nls& operator=( const Nls& rhs );   // no assignment
 
-    void setCodePage( word cp );
-    void readEntityFile( word cp );
-    void readNLS( std::FILE* nls );
+    void readEntityFile( const std::string& sfname );
+    void readNLS( const std::string& sfname );
     void processGrammar( wchar_t* value );
 
     struct SbcsGrammarDef {             // Single-byte character set

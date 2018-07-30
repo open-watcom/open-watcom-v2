@@ -1,13 +1,13 @@
-# locale    nls file        country     codepage
-de_DE       de_DE.nls       49          850
-en_GB       en_GB.nls       44          850
-en_US       en_US.nls       1           850
-fr_CA       fr_CA.nls       2           850
-fr_FR       fr_FR.nls       33          850
-ja_JA       ja_JA.nls       81          932
-de_DE.UTF-8 deDEUTF8.nls    49          0
-en_GB.UTF-8 enGBUTF8.nls    44          0
-en_US.UTF-8 enUSUTF8.nls    1           0
-fr_CA.UTF-8 frCAUTF8.nls    2           0
-fr_FR.UTF-8 frFRUTF8.nls    33          0
-ja_JA.UTF-8 jaJAUTF8.nls    81          0
+# locale    nls file        entity file     country     codepage    DBCS
+de_DE       de_DE.nls       entity.txt      49          850         0
+en_GB       en_GB.nls       entity.txt      44          850         0
+en_US       en_US.nls       entity.txt      1           850         0
+fr_CA       fr_CA.nls       entity.txt      2           850         0
+fr_FR       fr_FR.nls       entity.txt      33          850         0
+ja_JA       ja_JA.nls       enti0932.txt    81          932         1
+de_DE.UTF-8 deDEUTF8.nls    enti0000.txt    49          0           0
+en_GB.UTF-8 enGBUTF8.nls    enti0000.txt    44          0           0
+en_US.UTF-8 enUSUTF8.nls    enti0000.txt    1           0           0
+fr_CA.UTF-8 frCAUTF8.nls    enti0000.txt    2           0           0
+fr_FR.UTF-8 frFRUTF8.nls    enti0000.txt    33          0           0
+ja_JA.UTF-8 jaJAUTF8.nls    enti0000.txt    81          0           0

@@ -44,7 +44,7 @@
 #include "uniutil.hpp"
 
 
-Nls::Nls( const char *loc ) : _bytes( 0 ), _useDBCS( false )
+Nls::Nls( const char *loc ) : _bytes( 0 )
 {
     _sbcsG._type = WIPFC::GRAPHIC;
     _dbcsG._type = WIPFC::GRAPHIC;
@@ -54,34 +54,14 @@ Nls::Nls( const char *loc ) : _bytes( 0 ), _useDBCS( false )
 }
 
 /*****************************************************************************/
-void Nls::setCodePage( word cp )
-{
-#if !defined( __UNIX__ ) && !defined( __APPLE__ )
-    _setmbcp( cp ); //doesn't do much of anything in OW
-#endif
-    readEntityFile( cp );
-}
-/*****************************************************************************/
-void Nls::readEntityFile( word cp )
+void Nls::readEntityFile( const std::string& sfname )
 {
     char        buffer[256 * 2];
     wchar_t     text[256];
     int         offset;
     wchar_t     c;
 
-    std::string path( Environment.value( "WIPFC" ) );
-    if( path.length() )
-        path += PATH_SEPARATOR;
-    path += "enti";
-    if( cp == 850 || cp == 437 ) {
-        path += "ty";
-    } else {
-        char code[6];
-        std::sprintf( code, "%4.4d", cp );
-        path.append( code, 4 );
-    }
-    path += ".txt";
-    std::FILE* entty( std::fopen( path.c_str(), "r" ) );
+    std::FILE* entty( std::fopen( sfname.c_str(), "r" ) );
     if( entty == NULL )
         throw FatalError( ERR_COUNTRY );
     while( std::fgets( buffer, sizeof( buffer ), entty ) ) {
@@ -92,8 +72,6 @@ void Nls::readEntityFile( word cp )
             std::fclose( entty );
             throw FatalError( ERR_T_CONV );
         }
-        if( offset > 1 )
-            _useDBCS = true;
         len = mbtow_cstring( text, buffer + offset, sizeof( text ) / sizeof( wchar_t ) - 1 );
         if( len == static_cast< std::size_t >( -1 ) ) {
             std::fclose( entty );
@@ -105,43 +83,17 @@ void Nls::readEntityFile( word cp )
     std::fclose( entty );
 }
 /*****************************************************************************/
-void Nls::setLocalization( const char *loc)
-{
-    // TODO! MBCS<->UNICODE conversion for mbtow_char and wtomb_char must be setup
-    // instead of existing code which rely on host OS locale support.
-    // By example proper characters encoding for US INF Documentation files is
-    // DOS codepage 850, but on Linux it is handled as ISO-8859-1 or UTF-8 in
-    // dependency how host locale are configured. It is wrong!
-    // Correct solution is to use DOS codepage 850 for US on any host OS.
-    // It requires to define appropriate MBCS<->UNICODE conversion tables as part of WIPFC.
-    std::string path( Environment.value( "WIPFC" ) );
-    if( path.length() )
-        path += PATH_SEPARATOR;
-    path += _country.getNlsConfig( loc );
-    // TODO! Following code must be replaced by setup MBCS<->UNICODE conversion tables
-    // for mbtow_char and wtomb_char
-#if defined( __UNIX__ ) || defined( __APPLE__ )
-    std::setlocale( LC_ALL, loc );  //this doesn't really do anything in OW either
-#endif
-#if !defined( __UNIX__ ) && !defined( __APPLE__ )
-    _setmbcp( _country.getCodePage() ); //doesn't do much of anything in OW
-#endif
-    std::FILE *nls = std::fopen( path.c_str(), "r" );
-    if( nls == NULL )
-        throw FatalError( ERR_LANG );
-    readNLS( nls );
-    std::fclose( nls );
-    setCodePage( _country.getCodePage() );
-}
-/*****************************************************************************/
-void Nls::readNLS( std::FILE *nls )
+void Nls::readNLS( const std::string& sfname )
 {
     char        sbuffer[256 * 2];
     wchar_t     value[256];
     char        *p;
     bool        doGrammar( false );
 
-    _cgraphicFont.setCodePage( _country.getCodePage() );
+    std::FILE *nls = std::fopen( sfname.c_str(), "r" );
+    if( nls == NULL )
+        throw FatalError( ERR_LANG );
+    _cgraphicFont.setCodePage( _country.codePage() );
     while( std::fgets( sbuffer, sizeof( sbuffer ), nls ) ) {
         std::size_t len( std::strlen( sbuffer ) );
         killEOL( sbuffer + len - 1 );
@@ -211,6 +163,29 @@ void Nls::readNLS( std::FILE *nls )
             // error: unknown keyword
         }
     }
+    std::fclose( nls );
+}
+/*****************************************************************************/
+void Nls::setLocalization( const char *loc)
+{
+    // TODO! MBCS<->UNICODE conversion for mbtow_char and wtomb_char must be setup
+    // instead of existing code which rely on host OS locale support.
+    // By example proper characters encoding for US INF Documentation files is
+    // DOS codepage 850, but on Linux it is handled as ISO-8859-1 or UTF-8 in
+    // dependency how host locale are configured. It is wrong!
+    // Correct solution is to use DOS codepage 850 for US on any host OS.
+    // It requires to define appropriate MBCS<->UNICODE conversion tables as part of WIPFC.
+    _country.nlsConfig( loc );
+    // TODO! Following code must be replaced by setup MBCS<->UNICODE conversion tables
+    // for mbtow_char and wtomb_char
+#if defined( __UNIX__ ) || defined( __APPLE__ )
+    std::setlocale( LC_ALL, loc );  //this doesn't really do anything in OW either
+#endif
+#if !defined( __UNIX__ ) && !defined( __APPLE__ )
+    _setmbcp( _country.codePage() ); //doesn't do much of anything in OW
+#endif
+    readNLS( _country.nlsFileName() );
+    readEntityFile( _country.entityFileName() );
 }
 /*****************************************************************************/
 void Nls::processGrammar( wchar_t *buffer )
@@ -234,18 +209,12 @@ void Nls::processGrammar( wchar_t *buffer )
                 _grammarChars += c;
             _dbcsT._ranges.push_back( static_cast< word >( chr1 ) );
             _dbcsT._ranges.push_back( static_cast< word >( chr2 ) );
-            if( chr1 > 255 || chr2 > 255 ) {
-                _useDBCS = true;
-            }
         } else {
             // single character "chr"
             wchar_t chr( tok[0] );
             _grammarChars += chr;
             _dbcsT._ranges.push_back( static_cast< word >( chr ) );
             _dbcsT._ranges.push_back( static_cast< word >( chr ) );
-            if( chr > 255 ) {
-                _useDBCS = true;
-            }
         }
 #if defined( _MSC_VER ) && ( _MSC_VER < 1910 ) && !defined( _WCSTOK_DEPRECATED )
         tok = std::wcstok( 0, L"+" );
@@ -265,9 +234,9 @@ wchar_t Nls::entity( const std::wstring& key )
 /*****************************************************************************/
 STD1::uint32_t Nls::write( std::FILE *out )
 {
-    _bytes = _country.getSize();
+    _bytes = _country.size();
     dword start = _country.write( out );
-    if( _useDBCS ) {
+    if( _country.useDBCS() ) {
         _dbcsT.write( out );
         _bytes += _dbcsT._size;
         _dbcsG.write( out );

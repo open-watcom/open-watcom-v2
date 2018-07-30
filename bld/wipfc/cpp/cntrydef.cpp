@@ -39,11 +39,12 @@
 #include "errors.hpp"
 
 
-std::string CountryDef::getNlsConfig( const char *loc )
-/*****************************************************/
+void CountryDef::nlsConfig( const char *loc )
+/*******************************************/
 {
     char        buffer[256];
-    char        *fn;
+    char        *fn1;
+    char        *fn2;
 
     std::string path( Environment.value( "WIPFC" ) );
     if( path.length() )
@@ -52,7 +53,7 @@ std::string CountryDef::getNlsConfig( const char *loc )
     std::FILE *nlsconf = std::fopen( path.c_str(), "r" );
     if( nlsconf == NULL )
         throw FatalError( ERR_NLSCONF );
-    while( (fn = std::fgets( buffer, sizeof( buffer ), nlsconf )) != NULL ) {
+    while( (fn1 = fn2 = std::fgets( buffer, sizeof( buffer ), nlsconf )) != NULL ) {
         std::size_t len = std::strlen( buffer );
         killEOL( buffer + len - 1 );
         char *p = skipWS( buffer );
@@ -66,27 +67,40 @@ std::string CountryDef::getNlsConfig( const char *loc )
         p = std::strtok( NULL, " \t" );     // get nls file
         if( p == NULL )
             continue;                       // skip incorrect lines
-        fn = skipWS( p );
+        fn1 = skipWS( p );
+        p = std::strtok( NULL, " \t" );     // get entity file
+        if( p == NULL )
+            continue;                       // skip incorrect lines
+        fn2 = skipWS( p );
         p = std::strtok( NULL, " \t" );     // get country
         if( p == NULL )
             continue;                       // skip incorrect lines
-        p = skipWS( p );
-        _country = static_cast< word >( std::strtoul( p, NULL, 10 ) );
+        _country = static_cast< word >( std::strtoul( skipWS( p ), NULL, 10 ) );
         p = std::strtok( NULL, " \t" );     // get codepage
         if( p == NULL )
             continue;                       // skip incorrect lines
-        p = skipWS( p );
-        _codePage = static_cast< word >( std::strtoul( p, NULL, 10 ) );
+        _codePage = static_cast< word >( std::strtoul( skipWS( p ), NULL, 10 ) );
+        _useDBCS = false;
+        p = std::strtok( NULL, " \t" );     // get dbcs flag
+        if( p != NULL ) {
+            _useDBCS = ( std::strtoul( skipWS( p ), NULL, 10 ) != 0 );
+        }
         break;
     }
-    if( fn == NULL ) {
+    std::fclose( nlsconf );
+    if( fn2 == NULL ) {
         // if error or locale not found then set default US
         _country = 1;
         _codePage = 437;
-        fn = "en_US.nls";
+        _useDBCS = false;
+        fn1 = "en_US.nls";
+        fn2 = "entity.txt";
     }
-    std::fclose( nlsconf );
-    return( std::string( fn ) );
+    path = Environment.value( "WIPFC" );
+    if( path.length() )
+        path += PATH_SEPARATOR;
+    _nlsFileName = path + std::string( fn1 );
+    _entityFileName = path + std::string( fn2 );
 }
 
 STD1::uint32_t CountryDef::write( std::FILE *out ) const
