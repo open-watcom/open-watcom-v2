@@ -58,8 +58,6 @@ void Nls::readEntityFile( const std::string& sfname )
 {
     char        buffer[256 * 2];
     wchar_t     text[256];
-    int         offset;
-    wchar_t     c;
 
     std::FILE* entty( std::fopen( sfname.c_str(), "r" ) );
     if( entty == NULL )
@@ -67,18 +65,12 @@ void Nls::readEntityFile( const std::string& sfname )
     while( std::fgets( buffer, sizeof( buffer ), entty ) ) {
         std::size_t len = std::strlen( buffer );
         killEOL( buffer + len - 1 );
-        offset = mbtow_char( &c, buffer, len );
-        if( offset == -1 ) {
-            std::fclose( entty );
-            throw FatalError( ERR_T_CONV );
-        }
-        len = mbtow_cstring( text, buffer + offset, sizeof( text ) / sizeof( wchar_t ) - 1 );
+        len = mbtow_cstring( text, buffer, sizeof( text ) / sizeof( wchar_t ) - 1 );
         if( len == static_cast< std::size_t >( -1 ) ) {
             std::fclose( entty );
             throw FatalError( ERR_T_CONV );
         }
-        text[len] = L'\0';
-        _entityMap.insert( std::map< std::wstring, wchar_t >::value_type( text, c ) );
+        _entityMap.insert( std::map< std::wstring, wchar_t >::value_type( std::wstring( text + 1 ), text[0] ) );
     }
     std::fclose( entty );
 }
@@ -86,8 +78,8 @@ void Nls::readEntityFile( const std::string& sfname )
 void Nls::readNLSFile( const std::string& sfname )
 {
     char        sbuffer[256 * 2];
-    wchar_t     value[256];
-    char        *p;
+    wchar_t     keyword[256];
+    wchar_t     *value;
     bool        doGrammar( false );
 
     std::FILE *nls = std::fopen( sfname.c_str(), "r" );
@@ -97,67 +89,58 @@ void Nls::readNLSFile( const std::string& sfname )
     while( std::fgets( sbuffer, sizeof( sbuffer ), nls ) ) {
         std::size_t len( std::strlen( sbuffer ) );
         killEOL( sbuffer + len - 1 );
-        if( sbuffer[0] == '\0' )
+        len = mbtow_cstring( keyword, sbuffer, sizeof( keyword ) / sizeof( wchar_t ) - 1 );
+        if( len == static_cast< std::size_t >( -1 ) )
+            throw FatalError( ERR_T_CONV );
+        if( keyword[0] == L'\0' )
             continue;               //skip blank lines
-        if( sbuffer[0] == '#' )
+        if( keyword[0] == L'#' )
             continue;               //skip comments
-        if( (p = std::strchr( sbuffer, '=' )) != NULL ) {
-            *p++ = '\0';
-            mbtow_cstring( value, p, sizeof( value ) / sizeof( wchar_t ) - 1 );
+        if( (value = std::wcschr( keyword, L'=' )) != NULL ) {
+            *value++ = L'\0';
             if( doGrammar ) {
-                if( std::strcmp( sbuffer, "Words" ) == 0 ) {
+                if( std::wcscmp( keyword, L"Words" ) == 0 ) {
                     processGrammar( value );
-                } else if ( std::strcmp( sbuffer, "RemoveNL" ) == 0 ) {
-                    //FIXME: exclude these values from s/dbcs table?
+                } else if ( std::wcscmp( keyword, L"RemoveNL" ) == 0 ) {
+                    //FIXME: exclude these values from sbcs/dbcs table?
                 }
-            } else if( std::strcmp( sbuffer, "Note" ) == 0 ) {
-                std::wstring text( value );
-                killQuotes( text );
-                _noteText = text;
-            } else if( std::strcmp( sbuffer, "Caution" ) == 0 ) {
-                std::wstring text( value );
-                killQuotes( text );
-                _cautionText = text;
-            } else if( std::strcmp( sbuffer, "Warning" ) == 0 ) {
-                std::wstring text( value );
-                killQuotes( text );
-                _warningText = text;
-            } else if( std::strcmp( sbuffer, "Reference" ) == 0 ) {
-                std::wstring text( value );
-                killQuotes( text );
-                _referenceText = text;
-            } else if( std::strcmp( sbuffer, "olChars" ) == 0 ) {
-                std::wstring text( value );
-                _olCh = text;
-            } else if( std::strcmp( sbuffer, "olClose1" ) == 0 ) {
-                std::wstring text( value );
-                _olClosers[0] = text;
-            } else if( std::strcmp( sbuffer, "olClose2" ) == 0 ) {
-                std::wstring text( value );
-                _olClosers[1] = text;
-            } else if( std::strcmp( sbuffer, "ulItemId1" ) == 0 ) {
-                std::wstring text( value );
-                _ulBul[0] = text;
-            } else if( std::strcmp( sbuffer, "ulItemId2" ) == 0 ) {
-                std::wstring text( value );
-                _ulBul[1] = text;
-            } else if( std::strcmp( sbuffer, "ulItemId3" ) == 0 ) {
-                std::wstring text( value );
-                _ulBul[2] = text;
-            } else if( std::strcmp( sbuffer, "cgraphicFontFaceName" ) == 0 ) {
-                std::wstring text( value );
-                killQuotes( text );
-                _cgraphicFont.setFaceName( text );
-            } else if( std::strcmp( sbuffer, "cgraphicFontWidth" ) == 0 ) {
+            } else if( std::wcscmp( keyword, L"Note" ) == 0 ) {
+                killQuotes( value );
+                _noteText = std::wstring( value );
+            } else if( std::wcscmp( keyword, L"Caution" ) == 0 ) {
+                killQuotes( value );
+                _cautionText = std::wstring( value );
+            } else if( std::wcscmp( keyword, L"Warning" ) == 0 ) {
+                killQuotes( value );
+                _warningText = std::wstring( value );
+            } else if( std::wcscmp( keyword, L"Reference" ) == 0 ) {
+                killQuotes( value );
+                _referenceText = std::wstring( value );
+            } else if( std::wcscmp( keyword, L"olChars" ) == 0 ) {
+                _olCh = std::wstring( value );
+            } else if( std::wcscmp( keyword, L"olClose1" ) == 0 ) {
+                _olClosers[0] = std::wstring( value );
+            } else if( std::wcscmp( keyword, L"olClose2" ) == 0 ) {
+                _olClosers[1] = std::wstring( value );
+            } else if( std::wcscmp( keyword, L"ulItemId1" ) == 0 ) {
+                _ulBul[0] = std::wstring( value );
+            } else if( std::wcscmp( keyword, L"ulItemId2" ) == 0 ) {
+                _ulBul[1] = std::wstring( value );
+            } else if( std::wcscmp( keyword, L"ulItemId3" ) == 0 ) {
+                _ulBul[2] = std::wstring( value );
+            } else if( std::wcscmp( keyword, L"cgraphicFontFaceName" ) == 0 ) {
+                killQuotes( value );
+                _cgraphicFont.setFaceName( std::wstring( value ) );
+            } else if( std::wcscmp( keyword, L"cgraphicFontWidth" ) == 0 ) {
                 _cgraphicFont.setWidth( static_cast< word >( std::wcstol( value, 0, 10 ) ) );
-            } else if( std::strcmp( sbuffer, "cgraphicFontHeight" ) == 0 ) {
+            } else if( std::wcscmp( keyword, L"cgraphicFontHeight" ) == 0 ) {
                 _cgraphicFont.setHeight( static_cast< word >( std::wcstol( value, 0, 10 ) ) );
             } else {
                 // error: unknown keyword
             }
-        } else if( std::strcmp( sbuffer, "Grammar" ) == 0 ) {
+        } else if( std::wcscmp( keyword, L"Grammar" ) == 0 ) {
             doGrammar = true;
-        } else if( std::strcmp( sbuffer, "eGrammar" ) == 0 ) {
+        } else if( std::wcscmp( keyword, L"eGrammar" ) == 0 ) {
             doGrammar = false;
         } else {
             // error: unknown keyword
