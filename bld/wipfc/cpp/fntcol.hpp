@@ -45,21 +45,22 @@ class FontCollection
     typedef STD1::uint32_t  dword;
 
 public:
-    FontCollection( word cp );
+    FontCollection( word maxFontCount );
     //returns the index of the font in the list
     std::size_t add( const FontEntry& fnt );
     //the number of bytes written by the collection
-    STD1::uint32_t length() { return bytes; };
+    STD1::uint32_t length() { return _bytes; };
     //the number of fonts in the collection
-    std::size_t size() { return fonts.size(); };
-    STD1::uint32_t write( std::FILE * out );
+    std::size_t size() { return _fonts.size(); };
+    STD1::uint32_t write( std::FILE *out, word defCodePage );
 private:
     FontCollection( const FontCollection& rhs );            //no copy
     FontCollection& operator=( const FontCollection& rhs ); //no assigment
-    std::vector< FontEntry > fonts;
+    std::vector< FontEntry > _fonts;
     typedef std::vector< FontEntry >::iterator FontIter;
     typedef std::vector< FontEntry >::const_iterator ConstFontIter;
-    dword bytes;
+    dword _bytes;
+    word _maxFontCount;
 };
 
 #endif

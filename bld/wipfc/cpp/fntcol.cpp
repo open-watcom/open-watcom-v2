@@ -34,12 +34,12 @@
 #include "fntcol.hpp"
 #include "errors.hpp"
 
-FontCollection::FontCollection( word cp ) : bytes( 0 )
-/****************************************************/
+FontCollection::FontCollection( word maxFontCount ) : _bytes( 0 ), _maxFontCount( maxFontCount )
+/**********************************************************************************************/
 {
-    fonts.reserve( MAX_FONTS );
+    _fonts.reserve( _maxFontCount );
     try {
-        add( FontEntry( L"System Proportional", 0, 0, cp ) );   //set the default font
+        add( FontEntry( L"System Proportional", 0, 0 ) );   //set the default font
     }
     catch( Class2Error &e ) {
         (void)e;
@@ -50,23 +50,23 @@ std::size_t FontCollection::add( const FontEntry& fnt )
 /*****************************************************/
 {
     std::size_t index( 0 );
-    for( ConstFontIter itr = fonts.begin(); itr != fonts.end(); ++itr, ++index ) {
+    for( ConstFontIter itr = _fonts.begin(); itr != _fonts.end(); ++itr, ++index ) {
         if( *itr == fnt ) {
             return( index );
         }
     }
-    if( fonts.size() >= MAX_FONTS )
+    if( _fonts.size() >= _maxFontCount )
         throw Class2Error( ERR2_FONTS );
-    fonts.push_back( fnt );
-    return( fonts.size() - 1 );
+    _fonts.push_back( fnt );
+    return( _fonts.size() - 1 );
 }
 
-STD1::uint32_t FontCollection::write( std::FILE *out )
-/****************************************************/
+STD1::uint32_t FontCollection::write( std::FILE *out, word defCodePage )
+/**********************************************************************/
 {
     dword start = std::ftell( out );
-    for( FontIter itr = fonts.begin(); itr != fonts.end(); ++itr ) {
-        bytes += itr->write( out );
+    for( FontIter itr = _fonts.begin(); itr != _fonts.end(); ++itr ) {
+        _bytes += itr->write( out, defCodePage );
     }
     return( start );
 

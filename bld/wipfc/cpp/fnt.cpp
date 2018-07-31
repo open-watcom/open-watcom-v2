@@ -35,21 +35,23 @@
 #include "uniutil.hpp"
 
 
-STD1::uint32_t FontEntry::write( std::FILE *out ) const
+STD1::uint32_t FontEntry::write( std::FILE *out, word defCodePage ) const
 {
     char            faceName[MAX_FACENAME_SIZE];    //null terminated
     std::string     buffer;
+    word            codePage;
 
     wtomb_string( _faceName, buffer );
     std::strncpy( faceName, buffer.c_str(), MAX_FACENAME_SIZE );
     faceName[MAX_FACENAME_SIZE - 1] = '\0';
-    if( std::fwrite( faceName, sizeof( faceName ), 1, out) != 1 )
+    if( std::fwrite( faceName, sizeof( faceName ), 1, out ) != 1 )
         throw FatalError( ERR_WRITE );
-    if( std::fwrite( &_height, sizeof( _height ), 1, out) != 1 )
+    if( std::fwrite( &_height, sizeof( _height ), 1, out ) != 1 )
         throw FatalError( ERR_WRITE );
-    if( std::fwrite( &_width, sizeof( _width ), 1, out) != 1 )
+    if( std::fwrite( &_width, sizeof( _width ), 1, out ) != 1 )
         throw FatalError( ERR_WRITE );
-    if( std::fwrite( &_codePage, sizeof( _codePage ), 1, out) != 1 )
+    codePage = ( _codePage == DEFAULT_CODEPAGE ) ? defCodePage : _codePage;
+    if( std::fwrite( &codePage, sizeof( codePage ), 1, out ) != 1 )
         throw FatalError( ERR_WRITE );
     return( sizeof( faceName ) + sizeof( _height ) + sizeof( _width ) + sizeof( _codePage ) );
 }

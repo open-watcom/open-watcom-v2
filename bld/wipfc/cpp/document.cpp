@@ -193,6 +193,7 @@ Document::Document( Compiler& c, const char* loc ) :
     _strings( new StringTable() ),
     _extfiles( new ExternalFiles() ),
     _controls( new Controls() ),
+    _fonts( new FontCollection( MAX_FONTS ) ),
     _gnames( new GNames() ),
     _dict( new GlobalDictionary() ),
     _tmpBitmaps( NULL ),
@@ -204,7 +205,6 @@ Document::Document( Compiler& c, const char* loc ) :
     _inDoc( false ),
     _spacing( true )
 {
-    _fonts.reset( new FontCollection( codePage() ) );
     addFont( cgraphicFont() );
 }
 /***************************************************************************/
@@ -433,7 +433,7 @@ void Document::write( std::FILE *out )
     _eHdr->dbOffset = _extfiles->write( out );
     _eHdr->dbCount = static_cast< word >( _extfiles->size() );
     _eHdr->dbSize = _extfiles->length();
-    _eHdr->fontOffset = _fonts->write( out );
+    _eHdr->fontOffset = _fonts->write( out, _nls->codePage() );
     _eHdr->fontCount = static_cast< word >( _fonts->size() );
     _eHdr->ctrlOffset = _controls->write( out );
     _eHdr->ctrlSize = _controls->length();

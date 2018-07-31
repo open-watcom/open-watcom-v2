@@ -35,23 +35,31 @@
 #include <cstdio>
 
 #define MAX_FACENAME_SIZE   33
+#define DEFAULT_CODEPAGE    static_cast< word >( -1 )
 
 // Font Entry
 struct FontEntry {
-    FontEntry() { std::memset( this, 0, sizeof( FontEntry ) ); };
-    FontEntry( const std::wstring& faceName, STD1::uint16_t width, STD1::uint16_t height, STD1::uint16_t codePage )
+private:
+    typedef STD1::uint8_t   byte;
+    typedef STD1::uint16_t  word;
+    typedef STD1::uint32_t  dword;
+
+public:
+    FontEntry() { std::memset( this, 0, sizeof( FontEntry ) ); _codePage = DEFAULT_CODEPAGE; };
+    FontEntry( const std::wstring& faceName, word width, word height, word codePage = DEFAULT_CODEPAGE )
         : _faceName( faceName ), _width( width ), _height( height ), _codePage( codePage ) {}
     void setFaceName( const std::wstring& faceName ) { _faceName = faceName; }
-    void setHeight( STD1::uint16_t height ) { _height = height; }
-    void setWidth( STD1::uint16_t width ) { _width = width; }
-    void setCodePage( STD1::uint16_t codePage ) { _codePage = codePage; }
-    STD1::uint32_t write( std::FILE *out ) const;
+    void setHeight( word height ) { _height = height; }
+    void setWidth( word width ) { _width = width; }
+    void setCodePage( word codePage ) { _codePage = codePage; }
+    STD1::uint32_t write( std::FILE *out, word defCodePage ) const;
     bool operator==( const FontEntry &rhs ) const;
+
 private:
     std::wstring    _faceName;
-    STD1::uint16_t  _width;
-    STD1::uint16_t  _height;        //reversed from docs
-    STD1::uint16_t  _codePage;
+    word            _width;
+    word            _height;        //reversed from docs
+    word            _codePage;
 };
 
 #endif //FNT_INCLUDED

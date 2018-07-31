@@ -115,7 +115,6 @@ private:
     std::wstring _olCh;
     std::wstring _olClosers[2];
     std::wstring _ulBul[3];
-    bool _useDBCS;
 };
 
 #endif //NLS_INCLUDED
