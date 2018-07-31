@@ -54,9 +54,9 @@ public:
     Compiler();
     ~Compiler();
     int compile();
-    //set the initial source file name
+    //set the input source file name
     void setInputFile( const std::string& sfname );
-    //initialize first source file
+    //initialize first(top) source file
     void startInput();
     //add a file name to the set of file names
     std::wstring* addFileName( std::wstring* wfname );

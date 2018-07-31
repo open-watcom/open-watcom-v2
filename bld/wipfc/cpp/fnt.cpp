@@ -53,7 +53,7 @@ STD1::uint32_t FontEntry::write( std::FILE *out, word defCodePage ) const
     codePage = ( _codePage == DEFAULT_CODEPAGE ) ? defCodePage : _codePage;
     if( std::fwrite( &codePage, sizeof( codePage ), 1, out ) != 1 )
         throw FatalError( ERR_WRITE );
-    return( sizeof( faceName ) + sizeof( _height ) + sizeof( _width ) + sizeof( _codePage ) );
+    return( sizeof( faceName ) + sizeof( _height ) + sizeof( _width ) + sizeof( codePage ) );
 }
 
 bool FontEntry::operator==( const FontEntry &rhs ) const

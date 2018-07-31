@@ -169,7 +169,6 @@ public:
         { _gnames->insert( key, value ); };
 
     //To Nls
-    STD1::uint16_t codePage() const { return _nls->codePage(); };
     const std::wstring& note() const { return _nls->note(); };
     const std::wstring& warning() const { return _nls->warning(); };
     const std::wstring& caution() const { return _nls->caution(); };

@@ -65,12 +65,12 @@ Compiler::~Compiler()
 void Compiler::setInputFile( const std::string& sfname )
 {
     _inFileName = sfname;
-    def_mbtow_string( sfname, _inFileNameW );
+    def_mbtow_string( _inFileName, _inFileNameW );
 }
 /*****************************************************************************/
 void Compiler::startInput()
 {
-    std::wstring* wname( new std::wstring( _inFileNameW ) );
+    std::wstring* wname( &_inFileNameW );
     wname = addFileName( wname );
     _inFiles.push_back( new IpfFile( _inFileName, wname ) );
 }
@@ -90,6 +90,7 @@ void Compiler::setOutputFile( const std::string& sfname )
 int Compiler::compile()
 {
     int retval( EXIT_SUCCESS );
+    // init document and set locale for input/output data
     std::auto_ptr< Document > doc( new Document( *this, _loc ) );
     doc->setOutputType( _outType );
     startInput();
@@ -110,6 +111,7 @@ int Compiler::compile()
         printError( e.code, e.fname );
     }
     std::fclose( out );
+    //TODO locale should be restored to original value
     if( _xref ) {
         //TODO: convert to ostream when streams and strings mature
         std::string logfname( _outFileName );
