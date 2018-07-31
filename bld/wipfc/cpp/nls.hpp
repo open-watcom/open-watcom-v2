@@ -76,7 +76,7 @@ private:
     Nls& operator=( const Nls& rhs );   // no assignment
 
     void readEntityFile( const std::string& sfname );
-    void readNLS( const std::string& sfname );
+    void readNLSFile( const std::string& sfname );
     void processGrammar( wchar_t* value );
 
     struct SbcsGrammarDef {             // Single-byte character set

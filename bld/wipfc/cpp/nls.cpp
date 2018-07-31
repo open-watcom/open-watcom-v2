@@ -83,7 +83,7 @@ void Nls::readEntityFile( const std::string& sfname )
     std::fclose( entty );
 }
 /*****************************************************************************/
-void Nls::readNLS( const std::string& sfname )
+void Nls::readNLSFile( const std::string& sfname )
 {
     char        sbuffer[256 * 2];
     wchar_t     value[256];
@@ -184,7 +184,7 @@ void Nls::setLocalization( const char *loc)
 #if !defined( __UNIX__ ) && !defined( __APPLE__ )
     _setmbcp( _country.codePage() ); //doesn't do much of anything in OW
 #endif
-    readNLS( _country.nlsFileName() );
+    readNLSFile( _country.nlsFileName() );
     readEntityFile( _country.entityFileName() );
 }
 /*****************************************************************************/
