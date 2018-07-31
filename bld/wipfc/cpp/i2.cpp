@@ -54,16 +54,16 @@ Lexer::Token I2::parse( Lexer* lexer )
         if( tok == Lexer::WORD )
             txt += lexer->text();
         else if( tok == Lexer::ENTITY ) {
-            const std::wstring* exp( document->nameit( lexer->text() ) );
+            const std::wstring* exp( _document->nameit( lexer->text() ) );
             if( exp )
                 txt += *exp;
             else {
                 try {
-                    wchar_t ch( document->entity( lexer->text() ) );
+                    wchar_t ch( _document->entity( lexer->text() ) );
                     txt += ch;
                 }
                 catch( Class2Error& e ) {
-                    document->printError( e.code );
+                    _document->printError( e.code );
                 }
             }
         }
@@ -71,24 +71,24 @@ Lexer::Token I2::parse( Lexer* lexer )
             txt += lexer->text();
         else if( tok == Lexer::WHITESPACE ) {
             if( lexer->text()[0] == L'\n' ) {
-                tok = document->getNextToken();
+                tok = _document->getNextToken();
                 break;
             }
             txt+= lexer->text();
         }
         else
             break;
-        tok = document->getNextToken();
+        tok = _document->getNextToken();
     }
     if( txt.empty() )
-        document->printError( ERR2_INOTEXT );
+        _document->printError( ERR2_INOTEXT );
     index->setText( txt );
     return tok;
 }
 /*****************************************************************************/
 Lexer::Token I2::parseAttributes( Lexer* lexer )
 {
-    Lexer::Token tok( document->getNextToken() );
+    Lexer::Token tok( _document->getNextToken() );
     while( tok != Lexer::TAGEND ) {
         if( tok == Lexer::ATTRIBUTE ) {
             std::wstring key;
@@ -99,42 +99,42 @@ Lexer::Token I2::parseAttributes( Lexer* lexer )
             else if( key == L"sortkey" )
                 index->setSortKey( value );
             else
-                document->printError( ERR1_ATTRNOTDEF );
+                _document->printError( ERR1_ATTRNOTDEF );
         }
         else if( tok == Lexer::FLAG ) {
             if( lexer->text() == L"global" ) {
-                if( !document->isInf() )    //only for hlp files
+                if( !_document->isInf() )    //only for hlp files
                     index->setGlobal();
             }
             else
-                document->printError( ERR1_ATTRNOTDEF );
+                _document->printError( ERR1_ATTRNOTDEF );
         }
         else if( tok == Lexer::ERROR_TAG )
             throw FatalError( ERR_SYNTAX );
         else if( tok == Lexer::END )
             throw FatalError( ERR_EOF );
         else
-            document->printError( ERR1_TAGSYNTAX );
-        tok = document->getNextToken();
+            _document->printError( ERR1_TAGSYNTAX );
+        tok = _document->getNextToken();
     }
     if( refid.empty() )
-        document->printError( ERR1_NOREFID );
-    return document->getNextToken(); //consume TAGEND
+        _document->printError( ERR1_NOREFID );
+    return _document->getNextToken(); //consume TAGEND
 }
 /*****************************************************************************/
 void I2::buildIndex()
 {
     try {
-        XRef xref( fileName, row );
+        XRef xref( _fileName, _row );
         if( parentRes ) {
-            index->setTOC( document->tocIndexByRes( parentRes ) );
-            document->addXRef( parentRes, xref );
+            index->setTOC( _document->tocIndexByRes( parentRes ) );
+            _document->addXRef( parentRes, xref );
         }
         else if( parentId ) {
-            index->setTOC( document->tocIndexById( parentId ) );
-            document->addXRef( parentId, xref );
+            index->setTOC( _document->tocIndexById( parentId ) );
+            _document->addXRef( parentId, xref );
         }
-        I1* i1( document->indexById( refid ) );
+        I1* i1( _document->indexById( refid ) );
         i1->addSecondary( index.get() );
     }
     catch( Class1Error& e ) {

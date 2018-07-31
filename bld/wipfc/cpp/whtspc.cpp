@@ -44,7 +44,7 @@ WhiteSpace::WhiteSpace( Document* d, Element* p, const std::wstring* f, unsigned
     else
         spaces = 0;
     if( w == Tag::SPACES ) {
-        text = document->addWord( new GlobalDictionaryWord( tx ) );   //insert into global dictionary
+        text = _document->addWord( new GlobalDictionaryWord( tx ) );   //insert into global dictionary
     }
 }
 /***************************************************************************/
@@ -53,17 +53,17 @@ Lexer::Token WhiteSpace::parse( Lexer* lexer )
     if( lexer->text()[0] != L'\n' ) {
         spaces = static_cast< unsigned char >( lexer->text().size() ); //number of spaces
         if( whiteSpace == Tag::SPACES ) {
-            text = document->addWord( new GlobalDictionaryWord( lexer->text() ) );   //insert into global dictionary
+            text = _document->addWord( new GlobalDictionaryWord( lexer->text() ) );   //insert into global dictionary
         }
     }
-    if( whiteSpace != Tag::SPACES && !document->autoSpacing() ) {
-        document->toggleAutoSpacing();
-        Lexer::Token t( document->lastToken() );
+    if( whiteSpace != Tag::SPACES && !_document->autoSpacing() ) {
+        _document->toggleAutoSpacing();
+        Lexer::Token t( _document->lastToken() );
         if( t == Lexer::WORD || t == Lexer::ENTITY || t == Lexer::PUNCTUATION )
-            document->lastText()->setToggleSpacing();
+            _document->lastText()->setToggleSpacing();
     }
-    document->setLastPrintable( Lexer::WHITESPACE, this );
-    return document->getNextToken();
+    _document->setLastPrintable( Lexer::WHITESPACE, this );
+    return _document->getNextToken();
 }
 /***************************************************************************/
 void WhiteSpace::buildText( Cell* cell )
@@ -72,7 +72,7 @@ void WhiteSpace::buildText( Cell* cell )
         if( whiteSpace == Tag::SPACES && text ) {
             Text::buildText( cell );
         }
-        else if( col == 1 ) {
+        else if( _col == 1 ) {
             for( unsigned char count = 0; count < spaces / 2; ++count )
                 cell->addByte( 0xFE );
             if( spaces & 1 ) {

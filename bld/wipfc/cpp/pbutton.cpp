@@ -43,7 +43,7 @@
 
 Lexer::Token PButton::parse( Lexer* lexer )
 {
-    Lexer::Token tok( document->getNextToken() );
+    Lexer::Token tok( _document->getNextToken() );
     while( tok != Lexer::TAGEND ) {
         if( tok == Lexer::ATTRIBUTE ) {
             std::wstring key;
@@ -59,24 +59,24 @@ Lexer::Token PButton::parse( Lexer* lexer )
                     id == L"CONTENTS" ||
                     id == L"BACK" ||
                     id == L"FORWARD" )
-                    document->printError( ERR3_DUPID, id );
+                    _document->printError( ERR3_DUPID, id );
             }
             else if( key == L"res" )
                 res = std::wcstoul( value.c_str(), 0, 10 );
             else if( key == L"text" )
                 text = value;
             else
-                document->printError( ERR1_ATTRNOTDEF );
+                _document->printError( ERR1_ATTRNOTDEF );
         }
         else if ( tok == Lexer::FLAG )
-            document->printError( ERR1_ATTRNOTDEF );
+            _document->printError( ERR1_ATTRNOTDEF );
         else if( tok == Lexer::END )
             throw FatalError( ERR_EOF );
         else
-            document->printError( ERR1_TAGSYNTAX );
-        tok = document->getNextToken();
+            _document->printError( ERR1_TAGSYNTAX );
+        tok = _document->getNextToken();
     }
-    return document->getNextToken();
+    return _document->getNextToken();
 }
 /***************************************************************************/
 void PButton::build( Controls* ctrls)

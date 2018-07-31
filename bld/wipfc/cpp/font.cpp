@@ -54,8 +54,7 @@ Lexer::Token Font::parse( Lexer* lexer )
     bool isDefault( false );
     Lexer::Token tok;
 
-    fnt.setCodePage( document->codePage() );
-    while( (tok = document->getNextToken()) != Lexer::TAGEND ) {
+    while( (tok = _document->getNextToken()) != Lexer::TAGEND ) {
         //parse attributes
         if( tok == Lexer::ATTRIBUTE ) {
             std::wstring key;
@@ -63,7 +62,7 @@ Lexer::Token Font::parse( Lexer* lexer )
             splitAttribute( lexer->text(), key, value );
             if( key == L"facename" ) {
                 if( value == L"default" ) {
-                    index = 0;
+                    _index = 0;
                     fnt.setHeight( 0 );
                     fnt.setWidth( 0 );
                     isDefault = true;
@@ -76,7 +75,7 @@ Lexer::Token Font::parse( Lexer* lexer )
                 ++end;
                 word width = static_cast< word >( std::wcstoul( end, &end, 10 ) );
                 if( height == 0 || width == 0 ) {
-                    index = 0;
+                    _index = 0;
                     height = 0;
                     width = 0;
                     isDefault = true;
@@ -86,27 +85,27 @@ Lexer::Token Font::parse( Lexer* lexer )
             } else if( key == L"codepage" ) {
                 fnt.setCodePage( static_cast< word >( std::wcstoul( value.c_str(), 0, 10 ) ) );
             } else {
-                document->printError( ERR1_ATTRNOTDEF );
+                _document->printError( ERR1_ATTRNOTDEF );
             }
         } else if( tok == Lexer::FLAG ) {
-            document->printError( ERR1_ATTRNOTDEF );
+            _document->printError( ERR1_ATTRNOTDEF );
         } else if( tok == Lexer::ERROR_TAG ) {
             throw FatalError( ERR_SYNTAX );
         } else if( tok == Lexer::END ) {
             throw FatalError( ERR_EOF );
         } else {
-            document->printError( ERR1_TAGSYNTAX );
+            _document->printError( ERR1_TAGSYNTAX );
         }
     }
     if( !isDefault ) {
         try {
-            index = static_cast< byte >( document->addFont( fnt ) );
+            _index = static_cast< byte >( _document->addFont( fnt ) );
         }
         catch( Class2Error& e ) {
-            document->printError( e.code );
+            _document->printError( e.code );
         }
     }
-    return document->getNextToken();
+    return _document->getNextToken();
 }
 
 /***************************************************************************/
@@ -115,7 +114,7 @@ void Font::buildText( Cell* cell )
     cell->addByte( 0xFF );  //esc
     cell->addByte( 0x03 );  //size
     cell->addByte( 0x19 );  //set font
-    cell->addByte( index );
+    cell->addByte( _index );
     if( cell->textFull() ) {
         printError( ERR1_LARGEPAGE );
     }

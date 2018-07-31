@@ -48,14 +48,14 @@ Lexer::Token Fig::parse( Lexer* lexer )
 {
     Lexer::Token tok( parseAttributes( lexer ) );
     if( tok == Lexer::WHITESPACE && lexer->text()[0] == L'\n' )
-        tok = document->getNextToken(); //consume '\n' if just after tag end
+        tok = _document->getNextToken(); //consume '\n' if just after tag end
     while( tok != Lexer::END && !( tok == Lexer::TAG && lexer->tagId() == Lexer::EUSERDOC)) {
         if( parseInline( lexer, tok ) ) {
             if( lexer->tagId() == Lexer::EFIG )
                 break;
             else if( lexer->tagId() == Lexer::FIGCAP ) {
-                Element* elt( new Figcap( document, this, document->dataName(),
-                    document->dataLine(), document->dataCol() ) );
+                Element* elt( new Figcap( _document, this, _document->dataName(),
+                    _document->dataLine(), _document->dataCol() ) );
                 appendChild( elt );
                 tok = elt->parse( lexer );
             }

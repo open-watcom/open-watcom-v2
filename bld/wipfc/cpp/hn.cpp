@@ -70,7 +70,7 @@
 
 Hn::~Hn()
 {
-    if( document->isInf() ) {
+    if( _document->isInf() ) {
         delete id;
         delete name;
     }
@@ -80,39 +80,39 @@ Lexer::Token Hn::parse( Lexer* lexer )
 {
     Lexer::Token tok( parseAttributes( lexer ) );
     if( tok == Lexer::WHITESPACE )  //current line is empty
-        tok = document->getNextToken();
+        tok = _document->getNextToken();
     //get the rest of the line as the title
-    unsigned int startLine( document->dataLine() );
+    unsigned int startLine( _document->dataLine() );
     std::wstring tmp;
-    while(  document->dataLine() == startLine ) {
+    while(  _document->dataLine() == startLine ) {
         if( tok == Lexer::WHITESPACE ||
             tok == Lexer::WORD ||
             tok == Lexer::PUNCTUATION ) {
             tmp += lexer->text();
         }
         else if( tok == Lexer::ENTITY ) {
-            const std::wstring* exp( document->nameit( lexer->text() ) );
+            const std::wstring* exp( _document->nameit( lexer->text() ) );
             if( exp )
                 tmp += *exp;
             else {
                 try {
-                    wchar_t ch( document->entity( lexer->text() ) );
+                    wchar_t ch( _document->entity( lexer->text() ) );
                     tmp += ch;
                 }
                 catch( Class2Error& e ) {
-                    document->printError( e.code );
+                    _document->printError( e.code );
                 }
             }
         }
         else if( tok == Lexer::END )
             throw FatalError( ERR_EOF );
-        tok = document->getNextToken();
+        tok = _document->getNextToken();
     }
     //convert to mbs, max 255 char
     wtomb_string( tmp, title );
     if( title.size() > 255 )
         title.erase( 255 );
-    tok = document->getNextToken();
+    tok = _document->getNextToken();
     while( tok != Lexer::END && !( tok == Lexer::TAG && lexer->tagId() == Lexer::EUSERDOC ) ) {
         if( parseInline( lexer, tok ) ) {
             switch( lexer->tagId() ) {
@@ -123,16 +123,16 @@ Lexer::Token Hn::parse( Lexer* lexer )
                     return tok;;
                 if( toc.nestLevel == 1 )
                     toc.hasChildren = 1;
-                if( document->headerCutOff() >= 2 ) {
-                    Hn* h2( new Hn( document, NULL, document->dataName(),
-                        document->lexerLine(), document->lexerCol(), 2 ) );
-                    Page* pg( new Page( document, h2 ) );
-                    document->addPage( pg );
+                if( _document->headerCutOff() >= 2 ) {
+                    Hn* h2( new Hn( _document, NULL, _document->dataName(),
+                        _document->lexerLine(), _document->lexerCol(), 2 ) );
+                    Page* pg( new Page( _document, h2 ) );
+                    _document->addPage( pg );
                     tok = h2->parse( lexer );
                 }
                 else {
-                    Hn* h2( new Hn( document, this, document->dataName(),
-                        document->lexerLine(), document->lexerCol(), 2 ) );
+                    Hn* h2( new Hn( _document, this, _document->dataName(),
+                        _document->lexerLine(), _document->lexerCol(), 2 ) );
                     appendChild( h2 );
                     tok = h2->parse( lexer );
                 }
@@ -143,17 +143,17 @@ Lexer::Token Hn::parse( Lexer* lexer )
                 if( toc.nestLevel == 2 )
                     toc.hasChildren = 1;
                 if( toc.nestLevel < 2 )
-                    document->printError( ERR1_HEADNEST );
-                if( document->headerCutOff() >= 3 ) {
-                    Hn* h3( new Hn( document, NULL, document->dataName(),
-                        document->lexerLine(), document->lexerCol(), 3 ) );
-                    Page* pg( new Page( document, h3 ) );
-                    document->addPage( pg );
+                    _document->printError( ERR1_HEADNEST );
+                if( _document->headerCutOff() >= 3 ) {
+                    Hn* h3( new Hn( _document, NULL, _document->dataName(),
+                        _document->lexerLine(), _document->lexerCol(), 3 ) );
+                    Page* pg( new Page( _document, h3 ) );
+                    _document->addPage( pg );
                     tok = h3->parse( lexer );
                 }
                 else {
-                    Hn* h3( new Hn( document, this, document->dataName(),
-                        document->lexerLine(), document->lexerCol(), 3 ) );
+                    Hn* h3( new Hn( _document, this, _document->dataName(),
+                        _document->lexerLine(), _document->lexerCol(), 3 ) );
                     appendChild( h3 );
                     tok = h3->parse( lexer );
                 }
@@ -164,17 +164,17 @@ Lexer::Token Hn::parse( Lexer* lexer )
                 if( toc.nestLevel == 3 )
                     toc.hasChildren = 1;
                 if( toc.nestLevel < 3 )
-                    document->printError( ERR1_HEADNEST );
-                if( document->headerCutOff() >= 4 ) {
-                    Hn* h4( new Hn( document, NULL, document->dataName(),
-                        document->lexerLine(), document->lexerCol(), 4 ) );
-                    Page* pg( new Page( document, h4 ) );
-                    document->addPage( pg );
+                    _document->printError( ERR1_HEADNEST );
+                if( _document->headerCutOff() >= 4 ) {
+                    Hn* h4( new Hn( _document, NULL, _document->dataName(),
+                        _document->lexerLine(), _document->lexerCol(), 4 ) );
+                    Page* pg( new Page( _document, h4 ) );
+                    _document->addPage( pg );
                     tok = h4->parse( lexer );
                 }
                 else {
-                    Hn* h4( new Hn( document, this, document->dataName(),
-                        document->lexerLine(), document->lexerCol(), 4 ) );
+                    Hn* h4( new Hn( _document, this, _document->dataName(),
+                        _document->lexerLine(), _document->lexerCol(), 4 ) );
                     appendChild( h4 );
                     tok = h4->parse( lexer );
                 }
@@ -185,17 +185,17 @@ Lexer::Token Hn::parse( Lexer* lexer )
                 if( toc.nestLevel == 4 )
                     toc.hasChildren = 1;
                 if( toc.nestLevel < 4 )
-                    document->printError( ERR1_HEADNEST );
-                if( document->headerCutOff() >= 5 ) {
-                    Hn* h5( new Hn( document, NULL, document->dataName(),
-                        document->lexerLine(), document->lexerCol(), 5 ) );
-                    Page* pg( new Page( document, h5 ) );
-                    document->addPage( pg );
+                    _document->printError( ERR1_HEADNEST );
+                if( _document->headerCutOff() >= 5 ) {
+                    Hn* h5( new Hn( _document, NULL, _document->dataName(),
+                        _document->lexerLine(), _document->lexerCol(), 5 ) );
+                    Page* pg( new Page( _document, h5 ) );
+                    _document->addPage( pg );
                     tok = h5->parse( lexer );
                 }
                 else {
-                    Hn* h5( new Hn( document, this, document->dataName(),
-                        document->lexerLine(), document->lexerCol(), 5 ) );
+                    Hn* h5( new Hn( _document, this, _document->dataName(),
+                        _document->lexerLine(), _document->lexerCol(), 5 ) );
                     appendChild( h5 );
                     tok = h5->parse( lexer );
                 }
@@ -206,17 +206,17 @@ Lexer::Token Hn::parse( Lexer* lexer )
                 if( toc.nestLevel == 5 )
                     toc.hasChildren = 1;
                 if( toc.nestLevel < 5 )
-                    document->printError( ERR1_HEADNEST );
-                if( document->headerCutOff() >= 6 ) {
-                    Hn* h6( new Hn( document, NULL, document->dataName(),
-                        document->lexerLine(), document->lexerCol(), 6 ) );
-                    Page* pg( new Page( document, h6 ) );
-                    document->addPage( pg );
+                    _document->printError( ERR1_HEADNEST );
+                if( _document->headerCutOff() >= 6 ) {
+                    Hn* h6( new Hn( _document, NULL, _document->dataName(),
+                        _document->lexerLine(), _document->lexerCol(), 6 ) );
+                    Page* pg( new Page( _document, h6 ) );
+                    _document->addPage( pg );
                     tok = h6->parse( lexer );
                 }
                 else {
-                    Hn* h6( new Hn( document, this, document->dataName(),
-                        document->lexerLine(), document->lexerCol(), 6 ) );
+                    Hn* h6( new Hn( _document, this, _document->dataName(),
+                        _document->lexerLine(), _document->lexerCol(), 6 ) );
                     appendChild( h6 );
                     tok = h6->parse( lexer );
                 }
@@ -225,8 +225,8 @@ Lexer::Token Hn::parse( Lexer* lexer )
                 return tok;
             case Lexer::I1:
                 {
-                    I1* i1( new I1( document, NULL, document->dataName(),
-                        document->lexerLine(), document->lexerCol() ) );
+                    I1* i1( new I1( _document, NULL, _document->dataName(),
+                        _document->lexerLine(), _document->lexerCol() ) );
                     if( res )
                         i1->setRes( res );
                     else if( id )
@@ -239,8 +239,8 @@ Lexer::Token Hn::parse( Lexer* lexer )
                 break;
             case Lexer::I2:
                 {
-                    I2* i2( new I2( document, NULL, document->dataName(),
-                        document->lexerLine(), document->lexerCol() ) );
+                    I2* i2( new I2( _document, NULL, _document->dataName(),
+                        _document->lexerLine(), _document->lexerCol() ) );
                     if( res )
                         i2->setRes( res );
                     else if( id )
@@ -253,8 +253,8 @@ Lexer::Token Hn::parse( Lexer* lexer )
                 break;
             case Lexer::ICMD:
                 {
-                    ICmd* icmd( new ICmd( document, NULL, document->dataName(),
-                        document->lexerLine(), document->lexerCol() ) );
+                    ICmd* icmd( new ICmd( _document, NULL, _document->dataName(),
+                        _document->lexerLine(), _document->lexerCol() ) );
                     if( res )
                         icmd->setRes( res );
                     else if( id )
@@ -267,8 +267,8 @@ Lexer::Token Hn::parse( Lexer* lexer )
                 break;
             case Lexer::ISYN:
                 {
-                    Element* elt( new ISyn( document, NULL, document->dataName(),
-                        document->lexerLine(), document->lexerCol() ) );
+                    Element* elt( new ISyn( _document, NULL, _document->dataName(),
+                        _document->lexerLine(), _document->lexerCol() ) );
                     appendChild( elt );
                     tok = elt->parse( lexer );
                 }
@@ -286,7 +286,7 @@ Lexer::Token Hn::parse( Lexer* lexer )
 /***************************************************************************/
 Lexer::Token Hn::parseAttributes( Lexer* lexer )
 {
-    Lexer::Token tok( document->getNextToken() );
+    Lexer::Token tok( _document->getNextToken() );
     bool xorg( false );
     bool yorg( false );
     bool dx( false );
@@ -300,21 +300,21 @@ Lexer::Token Hn::parseAttributes( Lexer* lexer )
             if( key == L"res" ) {
                 res = static_cast< STD1::uint16_t >( std::wcstoul( value.c_str(), 0, 10 ) );
                 if( res < 1 || res > 64000 )
-                    document->printError( ERR2_VALUE );
+                    _document->printError( ERR2_VALUE );
                 if( Hide::hiding() )
-                    document->printError( ERR1_HIDERES );
+                    _document->printError( ERR1_HIDERES );
             }
             else if( key == L"id" ) {
                 id = new GlobalDictionaryWord( value );
                 id->toUpper();              //convert to upper case
-                if( !document->isInf() )
-                    id = document->addWord( id );
+                if( !_document->isInf() )
+                    id = _document->addWord( id );
             }
             else if( key == L"name" ) {
                 name = new GlobalDictionaryWord( value );
                 name->toUpper();            //convert to upper case
-                if( !document->isInf() )
-                    name = document->addWord( name );
+                if( !_document->isInf() )
+                    name = _document->addWord( name );
             }
             else if( key == L"tutorial" ) {
                 toc.extended = 1;
@@ -337,7 +337,7 @@ Lexer::Token Hn::parseAttributes( Lexer* lexer )
                     origin.xpos = ExtTocEntry::DYNAMIC_RIGHT;
                 }
                 else if( value == L"top" || value == L"bottom" )
-                    document->printError( ERR2_VALUE );
+                    _document->printError( ERR2_VALUE );
                 else {
                     wchar_t *end;
                     unsigned long int x( std::wcstoul( value.c_str(), &end, 10 ) );
@@ -351,10 +351,10 @@ Lexer::Token Hn::parseAttributes( Lexer* lexer )
                     else if( *end == L'p' )
                         origin.xPosType = ExtTocEntry::ABSOLUTE_POINTS;
                     else
-                        document->printError( ERR2_VALUE );
+                        _document->printError( ERR2_VALUE );
                 }
                 if( dx && origin.xPosType == ExtTocEntry::DYNAMIC && size.widthType != ExtTocEntry::RELATIVE_PERCENT )
-                    document->printError( ERR3_MIXEDUNITS );
+                    _document->printError( ERR3_MIXEDUNITS );
             }
             else if( key == L"y" ) {
                 yorg = true;
@@ -372,7 +372,7 @@ Lexer::Token Hn::parseAttributes( Lexer* lexer )
                     origin.ypos = ExtTocEntry::DYNAMIC_BOTTOM;
                 }
                 else if( value == L"left" || value == L"right" )
-                    document->printError( ERR2_VALUE );
+                    _document->printError( ERR2_VALUE );
                 else {
                     wchar_t *end;
                     unsigned long int y( std::wcstoul( value.c_str(), &end, 10 ) );
@@ -386,10 +386,10 @@ Lexer::Token Hn::parseAttributes( Lexer* lexer )
                     else if( *end == L'p' )
                         origin.yPosType = ExtTocEntry::ABSOLUTE_POINTS;
                     else
-                        document->printError( ERR2_VALUE );
+                        _document->printError( ERR2_VALUE );
                 }
                 if( dy && origin.yPosType == ExtTocEntry::DYNAMIC && size.heightType != ExtTocEntry::RELATIVE_PERCENT )
-                    document->printError( ERR3_MIXEDUNITS );
+                    _document->printError( ERR3_MIXEDUNITS );
             }
             else if( key == L"width" ) {
                 dx = true;
@@ -399,7 +399,7 @@ Lexer::Token Hn::parseAttributes( Lexer* lexer )
                     value == L"right" ||
                     value == L"top" ||
                     value == L"bottom" )
-                    document->printError( ERR2_VALUE );
+                    _document->printError( ERR2_VALUE );
                 else {
                     wchar_t *end;
                     unsigned long int width = std::wcstoul( value.c_str(), &end, 10 );
@@ -413,10 +413,10 @@ Lexer::Token Hn::parseAttributes( Lexer* lexer )
                     else if( *end == L'p' )
                         size.widthType = ExtTocEntry::ABSOLUTE_POINTS;
                     else
-                        document->printError( ERR2_VALUE );
+                        _document->printError( ERR2_VALUE );
                 }
                 if( xorg && origin.xPosType == ExtTocEntry::DYNAMIC && size.widthType != ExtTocEntry::RELATIVE_PERCENT )
-                    document->printError( ERR3_MIXEDUNITS );
+                    _document->printError( ERR3_MIXEDUNITS );
             }
             else if( key == L"height" ) {
                 dy = true;
@@ -426,7 +426,7 @@ Lexer::Token Hn::parseAttributes( Lexer* lexer )
                     value == L"right" ||
                     value == L"top" ||
                     value == L"bottom" )
-                    document->printError( ERR2_VALUE );
+                    _document->printError( ERR2_VALUE );
                 else {
                     wchar_t *end;
                     unsigned long int height = std::wcstoul( value.c_str(), &end, 10 );
@@ -440,10 +440,10 @@ Lexer::Token Hn::parseAttributes( Lexer* lexer )
                     else if( *end == L'p' )
                         size.heightType = ExtTocEntry::ABSOLUTE_POINTS;
                     else
-                        document->printError( ERR2_VALUE );
+                        _document->printError( ERR2_VALUE );
                 }
                 if( yorg && origin.yPosType == ExtTocEntry::DYNAMIC && size.heightType != ExtTocEntry::RELATIVE_PERCENT )
-                    document->printError( ERR3_MIXEDUNITS );
+                    _document->printError( ERR3_MIXEDUNITS );
             }
             else if( key == L"group" ) {
                 toc.extended = 1;
@@ -467,7 +467,7 @@ Lexer::Token Hn::parseAttributes( Lexer* lexer )
                     style.word |= PageStyle::MINMAX;
                 }
                 else if( value != L"none" )
-                    document->printError( ERR2_VALUE );
+                    _document->printError( ERR2_VALUE );
             }
             else if( key == L"scroll" ) {
                 toc.extended = 1;
@@ -480,7 +480,7 @@ Lexer::Token Hn::parseAttributes( Lexer* lexer )
                     style.word |= PageStyle::VSCROLL;
                 }
                 else if( value != L"none" )
-                    document->printError( ERR2_VALUE );
+                    _document->printError( ERR2_VALUE );
             }
             else if( key == L"rules" ) {
                 toc.extended = 1;
@@ -489,7 +489,7 @@ Lexer::Token Hn::parseAttributes( Lexer* lexer )
                 else if( value == L"sizeborder" )
                     style.word |= PageStyle::SIZEBORDER;
                 else if( value != L"none" )
-                    document->printError( ERR2_VALUE );
+                    _document->printError( ERR2_VALUE );
             }
             else if( key == L"toc" ) {
                 wchar_t ch[2];
@@ -497,9 +497,9 @@ Lexer::Token Hn::parseAttributes( Lexer* lexer )
                 ch[1] = L'\0';
                 int tmp( static_cast< int >( std::wcstol( ch, 0, 10 ) ) );
                 if( tmp < 1 || tmp > 6 )
-                    document->printError( ERR2_VALUE );
+                    _document->printError( ERR2_VALUE );
                 else
-                    document->setHeaderCutOff( static_cast< unsigned int >( tmp ) );
+                    _document->setHeaderCutOff( static_cast< unsigned int >( tmp ) );
             }
             else if( key == L"ctrlarea" ) {
                 if( value == L"page" ) {
@@ -512,10 +512,10 @@ Lexer::Token Hn::parseAttributes( Lexer* lexer )
             else if( key == L"ctrlrefid" ) {
                 toc.extended = 1;
                 std::transform( value.begin(), value.end(), value.begin(), std::towupper );
-                controls.word |= document->getGroupById( value );
+                controls.word |= _document->getGroupById( value );
             }
             else
-                document->printError( ERR1_ATTRNOTDEF );
+                _document->printError( ERR1_ATTRNOTDEF );
         }
         else if( tok == Lexer::FLAG ) {
             if( lexer->text() == L"global" )
@@ -539,22 +539,22 @@ Lexer::Token Hn::parseAttributes( Lexer* lexer )
             else if( lexer->text() == L"hide" )
                 toc.hidden = 1;
             else
-                document->printError( ERR1_ATTRNOTDEF );
+                _document->printError( ERR1_ATTRNOTDEF );
         }
         else if( tok == Lexer::ERROR_TAG )
             throw FatalError( ERR_SYNTAX );
         else if( tok == Lexer::END )
             throw FatalError( ERR_EOF );
         else
-            document->printError( ERR1_TAGSYNTAX );
-        tok = document->getNextToken();
+            _document->printError( ERR1_TAGSYNTAX );
+        tok = _document->getNextToken();
     }
-    return document->getNextToken(); //consume TAGEND
+    return _document->getNextToken(); //consume TAGEND
 }
 /***************************************************************************/
 void Hn::buildTOC( Page* page )
 {
-    if( !parent ) {     //root element of a page
+    if( !_parent ) {     //root element of a page
         page->setChildren( childTOCs );
         page->setTitle( title );
         page->setTOC( toc );
@@ -566,10 +566,10 @@ void Hn::buildTOC( Page* page )
         page->SetControls( controls );
         //FIXME: need the index of the parent?
         //page->setSearchable( !nosearch );
-        TocRef tr( fileName, row, page->index() );
-        if( res || !document->isInf() ) {
+        TocRef tr( _fileName, _row, page->index() );
+        if( res || !_document->isInf() ) {
             try {
-                document->addRes( res, tr );
+                _document->addRes( res, tr );
             }
             catch ( Class3Error& e ) {
                 printError( e.code );
@@ -577,7 +577,7 @@ void Hn::buildTOC( Page* page )
         }
         if( id ) {
             try {
-                document->addNameOrId( id, tr );
+                _document->addNameOrId( id, tr );
             }
             catch( Class3Error& e ) {
                 printError( e.code );
@@ -585,16 +585,16 @@ void Hn::buildTOC( Page* page )
         }
         if( name ) {
             try {
-                document->addNameOrId( name, tr );
+                _document->addNameOrId( name, tr );
             }
             catch( Class3Error& e ) {
                 printError( e.code );
             }
         }
-        if( global && !document->isInf() ) {
+        if( global && !_document->isInf() ) {
             if( id ) {
                 try {
-                    document->addGNameOrId( id, page->index() );
+                    _document->addGNameOrId( id, page->index() );
                 }
                 catch( Class3Error& e ) {
                     printError( e.code );
@@ -602,7 +602,7 @@ void Hn::buildTOC( Page* page )
             }
             if( name ) {
                 try {
-                    document->addGNameOrId( name, page->index() );
+                    _document->addGNameOrId( name, page->index() );
                 }
                 catch( Class3Error& e ) {
                     printError( e.code );
@@ -639,7 +639,7 @@ void Hn::buildText( Cell* cell )
 /***************************************************************************/
 void Hn::linearize( Page* page )
 {
-    if( document->headerCutOff() < toc.nestLevel )
+    if( _document->headerCutOff() < toc.nestLevel )
         page->addElement( this );
     for( ConstChildrenIter iter = children.begin(); iter != children.end(); ++iter )
         ( *iter )->linearize( page );

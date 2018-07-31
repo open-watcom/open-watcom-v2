@@ -49,37 +49,37 @@ ICmd::ICmd( Document* d, Element* p, const std::wstring* f, unsigned int r, unsi
 /*****************************************************************************/
 Lexer::Token ICmd::parse( Lexer* lexer )
 {
-    Lexer::Token tok( document->getNextToken() );
+    Lexer::Token tok( _document->getNextToken() );
     (void)lexer;
     while( tok != Lexer::TAGEND ) {
         if( tok == Lexer::ATTRIBUTE )
-            document->printError( ERR1_ATTRNOTDEF );
+            _document->printError( ERR1_ATTRNOTDEF );
         else if( tok == Lexer::FLAG )
-            document->printError( ERR1_ATTRNOTDEF );
+            _document->printError( ERR1_ATTRNOTDEF );
         else if( tok == Lexer::ERROR_TAG )
             throw FatalError( ERR_SYNTAX );
         else if( tok == Lexer::END )
             throw FatalError( ERR_EOF );
         else
-            document->printError( ERR1_TAGSYNTAX );
-        tok = document->getNextToken();
+            _document->printError( ERR1_TAGSYNTAX );
+        tok = _document->getNextToken();
     }
-    tok = document->getNextToken();    //consume TAGEND
+    tok = _document->getNextToken();    //consume TAGEND
     std::wstring txt;
     while( tok != Lexer::END && !( tok == Lexer::TAG && lexer->tagId() == Lexer::EUSERDOC)) {
         if( tok == Lexer::WORD )
             txt += lexer->text();
         else if( tok == Lexer::ENTITY ) {
-            const std::wstring* exp( document->nameit( lexer->text() ) );
+            const std::wstring* exp( _document->nameit( lexer->text() ) );
             if( exp )
                 txt += *exp;
             else {
                 try {
-                    wchar_t ch( document->entity( lexer->text() ) );
+                    wchar_t ch( _document->entity( lexer->text() ) );
                     txt += ch;
                 }
                 catch( Class2Error& e ) {
-                    document->printError( e.code );
+                    _document->printError( e.code );
                 }
             }
         }
@@ -87,17 +87,17 @@ Lexer::Token ICmd::parse( Lexer* lexer )
             txt += lexer->text();
         else if( tok == Lexer::WHITESPACE ) {
             if( lexer->text()[0] == L'\n' ) {
-                tok = document->getNextToken();
+                tok = _document->getNextToken();
                 break;
             }
             txt+= lexer->text();
         }
         else
             break;
-        tok = document->getNextToken();
+        tok = _document->getNextToken();
     }
     if( txt.empty() )
-        document->printError( ERR2_INOTEXT );
+        _document->printError( ERR2_INOTEXT );
     index->setText( txt );
     return tok;
 }
@@ -105,14 +105,14 @@ Lexer::Token ICmd::parse( Lexer* lexer )
 void ICmd::buildIndex()
 {
     try {
-        XRef xref( fileName, row );
+        XRef xref( _fileName, _row );
         if( parentRes ) {
-            index->setTOC( document->tocIndexByRes( parentRes ) );
-            document->addXRef( parentRes, xref );
+            index->setTOC( _document->tocIndexByRes( parentRes ) );
+            _document->addXRef( parentRes, xref );
         }
         else if( parentId ) {
-            index->setTOC( document->tocIndexById( parentId ) );
-            document->addXRef( parentId, xref );
+            index->setTOC( _document->tocIndexById( parentId ) );
+            _document->addXRef( parentId, xref );
         }
     }
     catch( Class1Error& e ) {

@@ -46,7 +46,7 @@
 
 Lexer::Token Ctrl::parse( Lexer* lexer )
 {
-    Lexer::Token tok( document->getNextToken() );
+    Lexer::Token tok( _document->getNextToken() );
     while( tok != Lexer::TAGEND ) {
         if( tok == Lexer::ATTRIBUTE ) {
             std::wstring key;
@@ -61,7 +61,7 @@ Lexer::Token Ctrl::parse( Lexer* lexer )
                 std::transform( controls.begin(), controls.end(), controls.begin(), std::towupper );
             }
             else
-                document->printError( ERR1_ATTRNOTDEF );
+                _document->printError( ERR1_ATTRNOTDEF );
         }
         else if ( tok == Lexer::FLAG ) {
             if( lexer->text() == L"page" )
@@ -69,17 +69,17 @@ Lexer::Token Ctrl::parse( Lexer* lexer )
             else if( lexer->text() == L"coverpage" )
                 coverpage = true;
             else
-                document->printError( ERR1_ATTRNOTDEF );
+                _document->printError( ERR1_ATTRNOTDEF );
         }
         else if( tok == Lexer::ERROR_TAG )
             throw FatalError( ERR_SYNTAX );
         else if( tok == Lexer::END )
             throw FatalError( ERR_EOF );
         else
-            document->printError( ERR1_TAGSYNTAX );
-        tok = document->getNextToken();
+            _document->printError( ERR1_TAGSYNTAX );
+        tok = _document->getNextToken();
     }
-    return document->getNextToken();
+    return _document->getNextToken();
 }
 /***************************************************************************/
 void Ctrl::build( Controls* ctrls)

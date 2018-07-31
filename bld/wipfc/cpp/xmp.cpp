@@ -46,7 +46,7 @@ Lexer::Token Xmp::parse( Lexer* lexer )
 {
     Lexer::Token tok( parseAttributes( lexer ) );
     if( tok == Lexer::WHITESPACE && lexer->text()[0] == L'\n' )
-        tok = document->getNextToken(); //consume '\n' if just after tag end
+        tok = _document->getNextToken(); //consume '\n' if just after tag end
     while( tok != Lexer::END && !( tok == Lexer::TAG && lexer->tagId() == Lexer::EUSERDOC)) {
         if( parseInline( lexer, tok ) ) {
             if( lexer->tagId() == Lexer::EXMP )

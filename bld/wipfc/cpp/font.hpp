@@ -47,14 +47,14 @@ class Font : public Element {
 
 public:
     Font( Document* d, Element *p, const std::wstring* f, unsigned int r, unsigned int c ) :
-        Element( d, p, f, r, c ), index( 0 ) { };
+        Element( d, p, f, r, c ), _index( 0 ) { };
     ~Font() { };
     Lexer::Token parse( Lexer* lexer );
     void buildText( Cell* cell );
 private:
     Font( const Font& rhs );            //no copy
     Font& operator=( const Font& rhs ); //no assignment
-    byte index;                 //index of this item in the font collection
+    byte _index;                 //index of this item in the font collection
 };
 
 #endif

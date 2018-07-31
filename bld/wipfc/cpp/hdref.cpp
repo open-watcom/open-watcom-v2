@@ -47,7 +47,7 @@ Lexer::Token Hdref::parse( Lexer* lexer )
 {
     std::wstring refid;
     std::wstring res;
-    Lexer::Token tok( document->getNextToken() );
+    Lexer::Token tok( _document->getNextToken() );
     while( tok != Lexer::TAGEND ) {
         //parse attributes
         if( tok == Lexer::ATTRIBUTE ) {
@@ -59,17 +59,17 @@ Lexer::Token Hdref::parse( Lexer* lexer )
             else if( key == L"refid" )
                 refid = value;
             else
-                document->printError( ERR1_ATTRNOTDEF );
+                _document->printError( ERR1_ATTRNOTDEF );
         }
         else if( tok == Lexer::FLAG )
-            document->printError( ERR1_ATTRNOTDEF );
+            _document->printError( ERR1_ATTRNOTDEF );
         else if( tok == Lexer::ERROR_TAG )
             throw FatalError( ERR_SYNTAX );
         else if( tok == Lexer::END )
             throw FatalError( ERR_EOF );
         else
-            document->printError( ERR1_TAGSYNTAX );
-        tok = document->getNextToken();
+            _document->printError( ERR1_TAGSYNTAX );
+        tok = _document->getNextToken();
     }
     std::wstring temp( L":link reftype=hd" );
     if( !refid.empty() ) {
@@ -81,24 +81,24 @@ Lexer::Token Hdref::parse( Lexer* lexer )
         temp += res;
     }
     temp += L'.';
-    temp += document->reference();
+    temp += _document->reference();
     temp += L":elink.";
     if( !refid.empty() || !res.empty() ) {
         std::wstring* fname( new std::wstring() );
-        prepBufferName( fname, *( document->dataName() ) );
-        fname = document->addFileName( fname );
-        document->pushInput( new IpfBuffer( fname, document->dataLine(), document->dataCol(), temp ) );
-        bool oldBlockParsing( document->blockParsing() );
-        document->setBlockParsing( true );
-        tok = document->getNextToken(); //first token from buffer
+        prepBufferName( fname, *( _document->dataName() ) );
+        fname = _document->addFileName( fname );
+        _document->pushInput( new IpfBuffer( fname, _document->dataLine(), _document->dataCol(), temp ) );
+        bool oldBlockParsing( _document->blockParsing() );
+        _document->setBlockParsing( true );
+        tok = _document->getNextToken(); //first token from buffer
         while( tok != Lexer::END ) {
             if( parseInline( lexer, tok ) )
                 parseCleanup( lexer, tok );
         }
-        document->setBlockParsing( oldBlockParsing );
-        document->popInput();
+        _document->setBlockParsing( oldBlockParsing );
+        _document->popInput();
     }
-    return document->getNextToken();    //next token from stream
+    return _document->getNextToken();    //next token from stream
 }
 /*****************************************************************************/
 void Hdref::prepBufferName( std::wstring* buffer, const std::wstring& fname )

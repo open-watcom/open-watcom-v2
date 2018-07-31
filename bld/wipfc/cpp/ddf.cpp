@@ -50,7 +50,7 @@ Lexer::Token Ddf::parse( Lexer* lexer )
 /***************************************************************************/
 Lexer::Token Ddf::parseAttributes( Lexer* lexer )
 {
-    Lexer::Token tok( document->getNextToken() );
+    Lexer::Token tok( _document->getNextToken() );
     while( tok != Lexer::TAGEND ) {
         if( tok == Lexer::ATTRIBUTE ) {
             std::wstring key;
@@ -59,29 +59,29 @@ Lexer::Token Ddf::parseAttributes( Lexer* lexer )
             if( key == L"res" ) {
                 res = static_cast< STD1::uint16_t >( std::wcstoul( value.c_str(), 0, 10 ) );
                 if( res < 1 || res > 64000 )
-                    document->printError( ERR2_VALUE );
+                    _document->printError( ERR2_VALUE );
             }
             else
-                document->printError( ERR1_ATTRNOTDEF );
+                _document->printError( ERR1_ATTRNOTDEF );
         }
         else if( tok == Lexer::FLAG ) {
-            document->printError( ERR1_ATTRNOTDEF );
+            _document->printError( ERR1_ATTRNOTDEF );
         }
         else if( tok == Lexer::ERROR_TAG )
             throw FatalError( ERR_SYNTAX );
         else if( tok == Lexer::END )
             throw FatalError( ERR_EOF );
-        tok = document->getNextToken();
+        tok = _document->getNextToken();
     }
-    return document->getNextToken(); //consume TAGEND;
+    return _document->getNextToken(); //consume TAGEND;
 }
 /***************************************************************************/
 void Ddf::buildText( Cell* cell )
 {
     try {
-//        STD1::uint16_t tocIndex( document->tocIndexByRes( res ) );
-        XRef xref( fileName, row );
-        document->addXRef( res, xref );
+//        STD1::uint16_t tocIndex( _document->tocIndexByRes( res ) );
+        XRef xref( _fileName, _row );
+        _document->addXRef( res, xref );
         cell->addByte( 0xFF );  //ESC
         cell->addByte( 0x04 );  //size
         cell->addByte( 0x20 );  //ddf

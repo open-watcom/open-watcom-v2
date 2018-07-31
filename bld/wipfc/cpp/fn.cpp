@@ -65,7 +65,7 @@ Lexer::Token Fn::parse( Lexer* lexer )
 /***************************************************************************/
 Lexer::Token Fn::parseAttributes( Lexer* lexer )
 {
-    Lexer::Token tok( document->getNextToken() );
+    Lexer::Token tok( _document->getNextToken() );
     while( tok != Lexer::TAGEND ) {
         if( tok == Lexer::ATTRIBUTE ) {
             std::wstring key;
@@ -74,33 +74,33 @@ Lexer::Token Fn::parseAttributes( Lexer* lexer )
             if( key == L"id" ) {
                 id = new GlobalDictionaryWord( value );
                 id->toUpper();          //to uppercase
-                if( !document->isInf() )
-                    id = document->addWord( id );
+                if( !_document->isInf() )
+                    id = _document->addWord( id );
             }
             else
-                document->printError( ERR1_ATTRNOTDEF );
+                _document->printError( ERR1_ATTRNOTDEF );
         }
         else if( tok == Lexer::FLAG )
-                document->printError( ERR1_ATTRNOTDEF );
+                _document->printError( ERR1_ATTRNOTDEF );
         else if( tok == Lexer::ERROR_TAG )
             throw FatalError( ERR_SYNTAX );
         else if( tok == Lexer::END )
             throw FatalError( ERR_EOF );
         else
-            document->printError( ERR1_TAGSYNTAX );
-        tok = document->getNextToken();
+            _document->printError( ERR1_TAGSYNTAX );
+        tok = _document->getNextToken();
     }
     if( !id )
-        document->printError( ERR1_NOFNID );
-    return document->getNextToken();    //consume TAGEND
+        _document->printError( ERR1_NOFNID );
+    return _document->getNextToken();    //consume TAGEND
 }
 /***************************************************************************/
 void Fn::buildTOC( Page* page )
 {
     page->setTOC( toc );
     if( id ) {
-        TocRef tr( fileName, row, page->index() );
-        document->addNameOrId( id, tr );
+        TocRef tr( _fileName, _row, page->index() );
+        _document->addNameOrId( id, tr );
     }
 }
 

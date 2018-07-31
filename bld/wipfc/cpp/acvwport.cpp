@@ -52,18 +52,18 @@ Lexer::Token AcViewport::parse( Lexer* lexer )
     Lexer::Token tok( parseAttributes( lexer ) );
     if( objectId == 0 ) {
         std::wstring txt( L"objectid" );
-        document->printError( ERR2_VALUE, txt );
+        _document->printError( ERR2_VALUE, txt );
     }
     if( objectName.empty() ) {
         std::wstring txt( L"objectname" );
-        document->printError( ERR2_VALUE, txt );
+        _document->printError( ERR2_VALUE, txt );
     }
     return tok;
 }
 /***************************************************************************/
 Lexer::Token AcViewport::parseAttributes( Lexer* lexer )
 {
-    Lexer::Token tok( document->getNextToken() );
+    Lexer::Token tok( _document->getNextToken() );
     bool xorg( false );
     bool yorg( false );
     bool dx( false );
@@ -94,7 +94,7 @@ Lexer::Token AcViewport::parseAttributes( Lexer* lexer )
                     origin.xPosType = ExtTocEntry::DYNAMIC;
                     origin.xpos = ExtTocEntry::DYNAMIC_RIGHT;
                 } else if( value == L"top" || value == L"bottom" ) {
-                    document->printError( ERR2_VALUE );
+                    _document->printError( ERR2_VALUE );
                 } else {
                     wchar_t *end;
                     unsigned long int x( std::wcstoul( value.c_str(), &end, 10 ) );
@@ -108,11 +108,11 @@ Lexer::Token AcViewport::parseAttributes( Lexer* lexer )
                     } else if( *end == L'p' ) {
                         origin.xPosType = ExtTocEntry::ABSOLUTE_POINTS;
                     } else {
-                        document->printError( ERR2_VALUE );
+                        _document->printError( ERR2_VALUE );
                     }
                 }
                 if( dx && origin.xPosType == ExtTocEntry::DYNAMIC && size.widthType != ExtTocEntry::RELATIVE_PERCENT ) {
-                    document->printError( ERR3_MIXEDUNITS );
+                    _document->printError( ERR3_MIXEDUNITS );
                 }
             } else if( key == L"vpy" ) {
                 doOrigin = true;
@@ -127,7 +127,7 @@ Lexer::Token AcViewport::parseAttributes( Lexer* lexer )
                     origin.yPosType = ExtTocEntry::DYNAMIC;
                     origin.ypos = ExtTocEntry::DYNAMIC_BOTTOM;
                 } else if( value == L"left" || value == L"right" ) {
-                    document->printError( ERR2_VALUE );
+                    _document->printError( ERR2_VALUE );
                 } else {
                     wchar_t *end;
                     unsigned long int y( std::wcstoul( value.c_str(), &end, 10 ) );
@@ -141,11 +141,11 @@ Lexer::Token AcViewport::parseAttributes( Lexer* lexer )
                     } else if( *end == L'p' ) {
                         origin.yPosType = ExtTocEntry::ABSOLUTE_POINTS;
                     } else {
-                        document->printError( ERR2_VALUE );
+                        _document->printError( ERR2_VALUE );
                     }
                 }
                 if( dy && origin.yPosType == ExtTocEntry::DYNAMIC && size.heightType != ExtTocEntry::RELATIVE_PERCENT )
-                    document->printError( ERR3_MIXEDUNITS );
+                    _document->printError( ERR3_MIXEDUNITS );
             } else if( key == L"vpcx" ) {
                 doSize = true;
                 dx = true;
@@ -154,7 +154,7 @@ Lexer::Token AcViewport::parseAttributes( Lexer* lexer )
                     value == L"right" ||
                     value == L"top" ||
                     value == L"bottom" ) {
-                    document->printError( ERR2_VALUE );
+                    _document->printError( ERR2_VALUE );
                 } else {
                     wchar_t *end;
                     unsigned long int width = std::wcstoul( value.c_str(), &end, 10 );
@@ -168,11 +168,11 @@ Lexer::Token AcViewport::parseAttributes( Lexer* lexer )
                     } else if( *end == L'p' ) {
                         size.widthType = ExtTocEntry::ABSOLUTE_POINTS;
                     } else {
-                        document->printError( ERR2_VALUE );
+                        _document->printError( ERR2_VALUE );
                     }
                 }
                 if( xorg && origin.xPosType == ExtTocEntry::DYNAMIC && size.widthType != ExtTocEntry::RELATIVE_PERCENT )
-                    document->printError( ERR3_MIXEDUNITS );
+                    _document->printError( ERR3_MIXEDUNITS );
             } else if( key == L"vpcy" ) {
                 doSize = true;
                 dy = true;
@@ -181,7 +181,7 @@ Lexer::Token AcViewport::parseAttributes( Lexer* lexer )
                     value == L"right" ||
                     value == L"top" ||
                     value == L"bottom" ) {
-                    document->printError( ERR2_VALUE );
+                    _document->printError( ERR2_VALUE );
                 } else {
                     wchar_t *end;
                     unsigned long int height = std::wcstoul( value.c_str(), &end, 10 );
@@ -195,24 +195,24 @@ Lexer::Token AcViewport::parseAttributes( Lexer* lexer )
                     } else if( *end == L'p' ) {
                         size.heightType = ExtTocEntry::ABSOLUTE_POINTS;
                     } else {
-                        document->printError( ERR2_VALUE );
+                        _document->printError( ERR2_VALUE );
                     }
                 }
                 if( yorg && origin.yPosType == ExtTocEntry::DYNAMIC && size.heightType != ExtTocEntry::RELATIVE_PERCENT )
-                    document->printError( ERR3_MIXEDUNITS );
+                    _document->printError( ERR3_MIXEDUNITS );
             } else {
-                document->printError( ERR1_ATTRNOTDEF );
+                _document->printError( ERR1_ATTRNOTDEF );
             }
         } else if( tok == Lexer::FLAG ) {
-            document->printError( ERR1_ATTRNOTDEF );
+            _document->printError( ERR1_ATTRNOTDEF );
         } else if( tok == Lexer::ERROR_TAG ) {
             throw FatalError( ERR_SYNTAX );
         } else if( tok == Lexer::END ) {
             throw FatalError( ERR_EOF );
         }
-        tok = document->getNextToken();
+        tok = _document->getNextToken();
     }
-    return document->getNextToken(); //consume TAGEND;
+    return _document->getNextToken(); //consume TAGEND;
 }
 /***************************************************************************/
 void AcViewport::buildText( Cell* cell )

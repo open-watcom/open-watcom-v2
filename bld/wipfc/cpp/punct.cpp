@@ -37,16 +37,16 @@
 Lexer::Token Punctuation::parse( Lexer* lexer )
 {
     //get text from lexer and insert into global dictionary
-    text = document->addWord( new GlobalDictionaryWord( lexer->text() ) );
-    Lexer::Token tok( document->getNextToken() );
-    if( whiteSpace != Tag::SPACES && document->autoSpacing() ) {
-        Lexer::Token t( document->lastToken() );
+    text = _document->addWord( new GlobalDictionaryWord( lexer->text() ) );
+    Lexer::Token tok( _document->getNextToken() );
+    if( whiteSpace != Tag::SPACES && _document->autoSpacing() ) {
+        Lexer::Token t( _document->lastToken() );
         if( t == Lexer::WORD || t == Lexer::ENTITY || t == Lexer::PUNCTUATION ) {
-            document->toggleAutoSpacing();
-            document->lastText()->setToggleSpacing();
+            _document->toggleAutoSpacing();
+            _document->lastText()->setToggleSpacing();
         }
     }
-    document->setLastPrintable( Lexer::PUNCTUATION, this );
+    _document->setLastPrintable( Lexer::PUNCTUATION, this );
     return tok;
 }
 

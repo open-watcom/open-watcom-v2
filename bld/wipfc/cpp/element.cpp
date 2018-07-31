@@ -36,12 +36,12 @@
 
 void Element::printError( ErrCode c ) const
 {
-    document->printError( c, fileName, row, col );
+    _document->printError( c, _fileName, _row, _col );
 }
 /***************************************************************************/
 void Element::printError( ErrCode c, const std::wstring& txt ) const
 {
-    document->printError( c, fileName, row, col, txt );
+    _document->printError( c, _fileName, _row, _col, txt );
 }
 /***************************************************************************/
 void Element::linearize( Page* page )
@@ -52,8 +52,8 @@ void Element::linearize( Page* page )
 Element* Element::rootElement()
 {
     Element* root( this );
-    while( root->parent ) //find root element
-        root = root->parent;
+    while( root->_parent ) //find root element
+        root = root->_parent;
     return root;
 }
 

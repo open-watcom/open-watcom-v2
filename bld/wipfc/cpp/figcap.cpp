@@ -50,31 +50,31 @@ Lexer::Token Figcap::parse( Lexer* lexer )
     while( tok != Lexer::END ) {
         //may contain inline, not block
         if( tok == Lexer::WORD ) {
-            Word* word( new Word( document, this, document->dataName(),
-                document->dataLine(), document->dataCol() ) );
+            Word* word( new Word( _document, this, _document->dataName(),
+                _document->dataLine(), _document->dataCol() ) );
             appendChild( word );
             tok = word->parse( lexer );
         }
         else if( tok == Lexer::ENTITY ) {
-            Entity* entity( new Entity( document, this, document->dataName(),
-                document->dataLine(), document->dataCol() ) );
+            Entity* entity( new Entity( _document, this, _document->dataName(),
+                _document->dataLine(), _document->dataCol() ) );
             appendChild( entity );
             tok = entity->parse( lexer );
         }
         else if( tok == Lexer::PUNCTUATION ) {
-            Punctuation* punct( new Punctuation( document, this, document->dataName(),
-                document->dataLine(), document->dataCol() ) );
+            Punctuation* punct( new Punctuation( _document, this, _document->dataName(),
+                _document->dataLine(), _document->dataCol() ) );
             appendChild( punct );
             tok = punct->parse( lexer );
         }
         else if( tok == Lexer::WHITESPACE ) {
-            WhiteSpace* ws( new WhiteSpace( document, this, document->dataName(),
-                document->dataLine(), document->dataCol(), Tag::LITERAL ) );
+            WhiteSpace* ws( new WhiteSpace( _document, this, _document->dataName(),
+                _document->dataLine(), _document->dataCol(), Tag::LITERAL ) );
             appendChild( ws );
             tok = ws->parse( lexer );
         }
         else if( tok == Lexer::COMMAND )
-            tok = document->processCommand( lexer, this );
+            tok = _document->processCommand( lexer, this );
         else if( tok == Lexer::TAG ) {
             if( lexer->tagId() == Lexer::EUSERDOC || lexer->tagId() == Lexer::EFIG )
                 break;
@@ -82,12 +82,12 @@ Lexer::Token Figcap::parse( Lexer* lexer )
                 parseCleanup( lexer, tok );
         }
         else if( tok == Lexer::ERROR_TAG ) {
-            document->printError( ERR1_TAGNOTDEF );
-            tok = document->getNextToken();
+            _document->printError( ERR1_TAGNOTDEF );
+            tok = _document->getNextToken();
         }
         else if( tok == Lexer::ERROR_ENTITY ) {
-            document->printError( ERR1_TAGNOTDEF );
-            tok = document->getNextToken();
+            _document->printError( ERR1_TAGNOTDEF );
+            tok = _document->getNextToken();
         }
     }
     return tok;

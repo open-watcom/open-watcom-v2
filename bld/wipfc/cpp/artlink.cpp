@@ -45,8 +45,8 @@ Lexer::Token Artlink::parse( Lexer* lexer )
     while( tok != Lexer::END ) {
         if( tok == Lexer::TAG ) {
             if( lexer->tagId() == Lexer::LINK ) {
-                Link* link( new Link( document, this, document->dataName(),
-                            document->lexerLine(), document->lexerCol() ) );
+                Link* link( new Link( _document, this, _document->dataName(),
+                            _document->lexerLine(), _document->lexerCol() ) );
                 appendChild( link );
                 link->setNoEndTag();
                 link->setHypergraphic();
@@ -60,7 +60,7 @@ Lexer::Token Artlink::parse( Lexer* lexer )
         else {
             if( tok != Lexer::WHITESPACE )
                 printError( ERR1_TAGCONTEXT );
-            tok = document->getNextToken();
+            tok = _document->getNextToken();
         }
     }
     return tok;

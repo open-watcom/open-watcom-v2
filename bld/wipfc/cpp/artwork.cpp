@@ -49,22 +49,22 @@ Lexer::Token Artwork::parse( Lexer* lexer )
 {
     Lexer::Token tok( parseAttributes( lexer ) );
     if( name.empty() )
-        document->printError( ERR1_NOFILENAME );
+        _document->printError( ERR1_NOFILENAME );
     else
-        document->addBitmap( name );
+        _document->addBitmap( name );
     if( linkfile && !linkfile->empty() ) {
         //push the file on the stack and parse
-        linkfile = document->addFileName( linkfile );
-        document->pushInput( new IpfFile( linkfile ) );
-        //tok = document->getNextToken();
+        linkfile = _document->addFileName( linkfile );
+        _document->pushInput( new IpfFile( linkfile ) );
+        //tok = _document->getNextToken();
     }
     while( tok != Lexer::END && !( tok == Lexer::TAG && lexer->tagId() == Lexer::EUSERDOC)) {
         if( tok == Lexer::WHITESPACE )
-            tok = document->getNextToken();
+            tok = _document->getNextToken();
         else if( tok == Lexer::COMMAND ) {
             if( lexer->cmdId() != Lexer::COMMENT )
                 break;
-            tok = document->getNextToken();
+            tok = _document->getNextToken();
         }
         else if( tok == Lexer::TAG ) {
             if( lexer->tagId() == Lexer::ARTLINK )
@@ -72,12 +72,12 @@ Lexer::Token Artwork::parse( Lexer* lexer )
             break;
         }
         else if( tok == Lexer::ERROR_TAG ) {
-            document->printError( ERR1_TAGNOTDEF );
-            tok = document->getNextToken();
+            _document->printError( ERR1_TAGNOTDEF );
+            tok = _document->getNextToken();
         }
         else if( tok == Lexer::ERROR_ENTITY ) {
-            document->printError( ERR1_TAGNOTDEF );
-            tok = document->getNextToken();
+            _document->printError( ERR1_TAGNOTDEF );
+            tok = _document->getNextToken();
         }
         else
             break;
@@ -87,7 +87,7 @@ Lexer::Token Artwork::parse( Lexer* lexer )
 /***************************************************************************/
 Lexer::Token Artwork::parseAttributes( Lexer* lexer )
 {
-    Lexer::Token tok( document->getNextToken() );
+    Lexer::Token tok( _document->getNextToken() );
     while( tok != Lexer::TAGEND ) {
         if( tok == Lexer::ATTRIBUTE ) {
             std::wstring key;
@@ -109,14 +109,14 @@ Lexer::Token Artwork::parseAttributes( Lexer* lexer )
                     flags |= Artwork::CENTER;
                 }
                 else
-                    document->printError( ERR2_VALUE );
+                    _document->printError( ERR2_VALUE );
             }
             else if( key == L"linkfile" ) {
                 linkfile = new std::wstring( value );
                 hypergraphic = true;
             }
             else
-                document->printError( ERR1_ATTRNOTDEF );
+                _document->printError( ERR1_ATTRNOTDEF );
         }
         else if( tok == Lexer::FLAG ) {
             if( lexer->text() == L"fit" )
@@ -124,20 +124,20 @@ Lexer::Token Artwork::parseAttributes( Lexer* lexer )
             else if( lexer->text() == L"runin" )
                 flags |= Artwork::RUNIN;
             else
-                document->printError( ERR1_ATTRNOTDEF );
+                _document->printError( ERR1_ATTRNOTDEF );
         }
         else if( tok == Lexer::ERROR_TAG )
             throw FatalError( ERR_SYNTAX );
         else if( tok == Lexer::END )
             throw FatalError( ERR_EOF );
-        tok = document->getNextToken();
+        tok = _document->getNextToken();
     }
-    return document->getNextToken(); //consume TAGEND;
+    return _document->getNextToken(); //consume TAGEND;
 }
 /***************************************************************************/
 void Artwork::buildText( Cell* cell )
 {
-    STD1::uint32_t index( document->bitmapByName( name ) );  //get file offset of graphic
+    STD1::uint32_t index( _document->bitmapByName( name ) );  //get file offset of graphic
     std::vector< STD1::uint8_t > esc;
     esc.push_back( 0xFF );      //esc
     if( !hypergraphic ) {

@@ -39,44 +39,44 @@
 Lexer::Token Word::parse( Lexer* lexer )
 {
     std::wstring txt( lexer->text() );  //get text from lexer
-    Lexer::Token tok( document->getNextToken() );
+    Lexer::Token tok( _document->getNextToken() );
     while( tok != Lexer::END && !( tok == Lexer::TAG && lexer->tagId() == Lexer::EUSERDOC) ) {
         if( tok == Lexer::WORD )
             txt += lexer->text();       //part of a compound ...-word-entity-word-...
         else if( tok == Lexer::ENTITY ) {
-            const std::wstring* exp( document->nameit( lexer->text() ) );
+            const std::wstring* exp( _document->nameit( lexer->text() ) );
             if( exp ) {
-                std::wstring* name( document->prepNameitName( lexer->text() ) );
-                IpfBuffer* buffer( new IpfBuffer( name, document->dataLine(), document->dataCol(), *exp ) );
-                document->pushInput( buffer );
+                std::wstring* name( _document->prepNameitName( lexer->text() ) );
+                IpfBuffer* buffer( new IpfBuffer( name, _document->dataLine(), _document->dataCol(), *exp ) );
+                _document->pushInput( buffer );
             }
             else {
                 try {
-                    wchar_t entity( document->entity( lexer->text() ) );
+                    wchar_t entity( _document->entity( lexer->text() ) );
                     if ( std::iswpunct( entity ) )
                         break;
                     else
                         txt += entity;
                 }
                 catch( Class2Error& e ) {
-                    document->printError( e.code );
+                    _document->printError( e.code );
                     break;
                 }
             }
         }
         else
             break;
-        tok = document->getNextToken();
+        tok = _document->getNextToken();
     }
-    if( whiteSpace != Tag::SPACES && document->autoSpacing() ) {
-        Lexer::Token t( document->lastToken() );
+    if( whiteSpace != Tag::SPACES && _document->autoSpacing() ) {
+        Lexer::Token t( _document->lastToken() );
         if( t == Lexer::WORD || t == Lexer::ENTITY || t == Lexer::PUNCTUATION ) {
-            document->toggleAutoSpacing();
-            document->lastText()->setToggleSpacing();
+            _document->toggleAutoSpacing();
+            _document->lastText()->setToggleSpacing();
         }
     }
-    text = document->addWord( new GlobalDictionaryWord( txt ) );   //insert into global dictionary
-    document->setLastPrintable( Lexer::WORD, this );
+    text = _document->addWord( new GlobalDictionaryWord( txt ) );   //insert into global dictionary
+    _document->setLastPrintable( Lexer::WORD, this );
     return tok;
 }
 

@@ -44,7 +44,7 @@
 
 Lexer::Token ISyn::parse( Lexer* lexer )
 {
-    Lexer::Token tok( document->getNextToken() );
+    Lexer::Token tok( _document->getNextToken() );
     while( tok != Lexer::TAGEND ) {
         if( tok == Lexer::ATTRIBUTE ) {
             std::wstring key;
@@ -54,21 +54,21 @@ Lexer::Token ISyn::parse( Lexer* lexer )
                 root = value;
             }
             else
-                document->printError( ERR1_ATTRNOTDEF );
+                _document->printError( ERR1_ATTRNOTDEF );
         }
         else if( tok == Lexer::FLAG ) {
-            document->printError( ERR1_ATTRNOTDEF );
+            _document->printError( ERR1_ATTRNOTDEF );
         }
         else if( tok == Lexer::ERROR_TAG )
             throw FatalError( ERR_SYNTAX );
         else if( tok == Lexer::END )
             throw FatalError( ERR_EOF );
         else
-            document->printError( ERR1_TAGSYNTAX );
-        tok = document->getNextToken();
+            _document->printError( ERR1_TAGSYNTAX );
+        tok = _document->getNextToken();
     }
-    tok = document->getNextToken(); //consume TAGEND
-    unsigned int currentLine = document->dataLine();
+    tok = _document->getNextToken(); //consume TAGEND
+    unsigned int currentLine = _document->dataLine();
     while( tok != Lexer::END && !( tok == Lexer::TAG && lexer->tagId() == Lexer::EUSERDOC)) {
         if( tok == Lexer::WORD ) {
             char buffer[ 256 ];
@@ -79,17 +79,17 @@ Lexer::Token ISyn::parse( Lexer* lexer )
             syn->add( txt );
         }
         else if( tok == Lexer::WHITESPACE )
-            tok = document->getNextToken();
+            tok = _document->getNextToken();
         else
             break;
-        if( document->dataLine() > currentLine )
+        if( _document->dataLine() > currentLine )
             break;
     }
     try {
-        document->addSynonym( root, syn.get() );
+        _document->addSynonym( root, syn.get() );
     }
     catch( Class3Error& e ) {
-        document->printError( e.code );
+        _document->printError( e.code );
         }
     return tok;
 }

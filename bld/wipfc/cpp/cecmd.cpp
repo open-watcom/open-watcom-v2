@@ -44,48 +44,48 @@ Lexer::Token CeCmd::parse( Lexer* lexer )
 {
     std::wstring temp;
     std::wstring* fname( new std::wstring() );
-    prepBufferName( fname, *( document->dataName() ) );
-    fname = document->addFileName( fname );
-    bool oldBlockParsing( document->blockParsing() );
-    IpfBuffer* buffer( new IpfBuffer( fname, document->dataLine(), document->dataCol(), lexer->text() ) );
-    document->pushInput( buffer );
-    document->setBlockParsing( true );
-    Lexer::Token tok( document->getNextToken() );
+    prepBufferName( fname, *( _document->dataName() ) );
+    fname = _document->addFileName( fname );
+    bool oldBlockParsing( _document->blockParsing() );
+    IpfBuffer* buffer( new IpfBuffer( fname, _document->dataLine(), _document->dataCol(), lexer->text() ) );
+    _document->pushInput( buffer );
+    _document->setBlockParsing( true );
+    Lexer::Token tok( _document->getNextToken() );
     while( tok != Lexer::END ) {
         if( tok == Lexer::WHITESPACE ) {
-            WhiteSpace* ws( new WhiteSpace( document, this,
-                document->dataName(), document->dataLine(), document->dataCol(), whiteSpace ) );
+            WhiteSpace* ws( new WhiteSpace( _document, this,
+                _document->dataName(), _document->dataLine(), _document->dataCol(), whiteSpace ) );
             appendChild( ws );
             tok = ws->parse( lexer );
         }
         else if( tok == Lexer::WORD ) {
-            Word* word( new Word( document, this,
-                    document->dataName(), document->dataLine(), document->dataCol() ) );
+            Word* word( new Word( _document, this,
+                    _document->dataName(), _document->dataLine(), _document->dataCol() ) );
             appendChild( word );
             tok = word->parse( lexer );
         }
         else if( tok == Lexer::ENTITY ) {
-            Entity* entity( new Entity( document, this,
-                    document->dataName(), document->dataLine(), document->dataCol() ) );
+            Entity* entity( new Entity( _document, this,
+                    _document->dataName(), _document->dataLine(), _document->dataCol() ) );
             appendChild( entity );
             tok = entity->parse( lexer );
         }
         else if (tok == Lexer::PUNCTUATION ) {
-            Punctuation* punct( new Punctuation( document, this,
-                    document->dataName(), document->dataLine(), document->dataCol() ) );
+            Punctuation* punct( new Punctuation( _document, this,
+                    _document->dataName(), _document->dataLine(), _document->dataCol() ) );
             appendChild( punct );
             tok = punct->parse( lexer );
         }
         else if( tok != Lexer::END ) {
-            document->printError( ERR1_TAGCONTEXT );
-            tok = document->getNextToken();
+            _document->printError( ERR1_TAGCONTEXT );
+            tok = _document->getNextToken();
         }
     }
-    appendChild( new BrCmd( document, this,
-        document->dataName(), document->dataLine(), document->dataCol() ) );
-    document->setBlockParsing( oldBlockParsing );
-    document->popInput();
-    return document->getNextToken();
+    appendChild( new BrCmd( _document, this,
+        _document->dataName(), _document->dataLine(), _document->dataCol() ) );
+    _document->setBlockParsing( oldBlockParsing );
+    _document->popInput();
+    return _document->getNextToken();
 }
 /*****************************************************************************/
 void CeCmd::buildText( Cell* cell )

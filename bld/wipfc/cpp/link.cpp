@@ -74,7 +74,7 @@
 
 Link::~Link()
 {
-    if( document->isInf() )
+    if( _document->isInf() )
         delete refid;
 }
 /***************************************************************************/
@@ -105,7 +105,7 @@ Lexer::Token Link::parse( Lexer* lexer )
 /***************************************************************************/
 Lexer::Token Link::parseAttributes( Lexer* lexer )
 {
-    Lexer::Token tok( document->getNextToken() );
+    Lexer::Token tok( _document->getNextToken() );
     bool xorg( false );
     bool yorg( false );
     bool dx( false );
@@ -122,7 +122,7 @@ Lexer::Token Link::parseAttributes( Lexer* lexer )
                 else if( value == L"fn" ) {
                     Hn* root( static_cast< Hn* >( rootElement() ) );
                     if( root->isSplit() )
-                        document->printError( ERR3_FNNOSPLIT );
+                        _document->printError( ERR3_FNNOSPLIT );
                     type = FOOTNOTE;
                 }
                 else if( value == L"launch" )
@@ -132,23 +132,23 @@ Lexer::Token Link::parseAttributes( Lexer* lexer )
                     noElink = true;
                 }
                 else
-                    document->printError( ERR2_VALUE );
+                    _document->printError( ERR2_VALUE );
             }
             else if( key == L"res" )
                 res = static_cast< STD1::uint16_t >( std::wcstoul( value.c_str(), 0, 10 ) );
             else if( key == L"refid" ) {
                 refid = new GlobalDictionaryWord( value );
                 refid->toUpper();           //to uppercase
-                if( !document->isInf() )
-                    refid = document->addWord( refid );
+                if( !_document->isInf() )
+                    refid = _document->addWord( refid );
             }
             else if( key == L"database" ) {
                 database = value;
                 try {
-                    document->addExtFile( value );
+                    _document->addExtFile( value );
                 }
                 catch( Class1Error& e ) {
-                    document->printError( e.code );
+                    _document->printError( e.code );
                 }
             }
             else if( key == L"object" )
@@ -175,7 +175,7 @@ Lexer::Token Link::parseAttributes( Lexer* lexer )
                     origin.xpos = ExtTocEntry::DYNAMIC_RIGHT;
                 }
                 else if( value == L"top" || value == L"bottom" )
-                    document->printError( ERR2_VALUE );
+                    _document->printError( ERR2_VALUE );
                 else {
                     wchar_t *end;
                     unsigned long int xpos( std::wcstoul( value.c_str(), &end, 10 ) );
@@ -189,10 +189,10 @@ Lexer::Token Link::parseAttributes( Lexer* lexer )
                     else if( *end == L'p' )
                         origin.xPosType = ExtTocEntry::ABSOLUTE_POINTS;
                     else
-                        document->printError( ERR2_VALUE );
+                        _document->printError( ERR2_VALUE );
                 }
                 if( dx && origin.xPosType == ExtTocEntry::DYNAMIC && size.widthType != ExtTocEntry::RELATIVE_PERCENT )
-                    document->printError( ERR3_MIXEDUNITS );
+                    _document->printError( ERR3_MIXEDUNITS );
             }
             else if( key == L"vpy" ) {
                 doOrigin = true;
@@ -210,7 +210,7 @@ Lexer::Token Link::parseAttributes( Lexer* lexer )
                     origin.ypos = ExtTocEntry::DYNAMIC_BOTTOM;
                 }
                 else if( value == L"left" || value == L"right" )
-                    document->printError( ERR2_VALUE );
+                    _document->printError( ERR2_VALUE );
                 else {
                     wchar_t *end;
                     unsigned long int ypos( std::wcstoul( value.c_str(), &end, 10 ) );
@@ -224,10 +224,10 @@ Lexer::Token Link::parseAttributes( Lexer* lexer )
                     else if( *end == L'p' )
                         origin.yPosType = ExtTocEntry::ABSOLUTE_POINTS;
                     else
-                        document->printError( ERR2_VALUE );
+                        _document->printError( ERR2_VALUE );
                 }
                 if( dy && origin.yPosType == ExtTocEntry::DYNAMIC && size.heightType != ExtTocEntry::RELATIVE_PERCENT )
-                    document->printError( ERR3_MIXEDUNITS );
+                    _document->printError( ERR3_MIXEDUNITS );
             }
             else if( key == L"vpcx" ) {
                 doSize = true;
@@ -237,7 +237,7 @@ Lexer::Token Link::parseAttributes( Lexer* lexer )
                     value == L"right" ||
                     value == L"top" ||
                     value == L"bottom" )
-                    document->printError( ERR2_VALUE );
+                    _document->printError( ERR2_VALUE );
                 else {
                     wchar_t *end;
                     unsigned long int width( std::wcstoul( value.c_str(), &end, 10 ) );
@@ -251,10 +251,10 @@ Lexer::Token Link::parseAttributes( Lexer* lexer )
                     else if( *end == L'p' )
                         size.widthType = ExtTocEntry::ABSOLUTE_POINTS;
                     else
-                        document->printError( ERR2_VALUE );
+                        _document->printError( ERR2_VALUE );
                 }
                 if( xorg && origin.xPosType == ExtTocEntry::DYNAMIC && size.widthType != ExtTocEntry::RELATIVE_PERCENT )
-                    document->printError( ERR3_MIXEDUNITS );
+                    _document->printError( ERR3_MIXEDUNITS );
             }
             else if( key == L"vpcy" ) {
                 doSize = true;
@@ -264,7 +264,7 @@ Lexer::Token Link::parseAttributes( Lexer* lexer )
                     value == L"right" ||
                     value == L"top" ||
                     value == L"bottom" )
-                    document->printError( ERR2_VALUE );
+                    _document->printError( ERR2_VALUE );
                 else {
                     wchar_t *end;
                     unsigned long int height( std::wcstoul( value.c_str(), &end, 10 ) );
@@ -278,10 +278,10 @@ Lexer::Token Link::parseAttributes( Lexer* lexer )
                     else if( *end == L'p' )
                         size.heightType = ExtTocEntry::ABSOLUTE_POINTS;
                     else
-                        document->printError( ERR2_VALUE );
+                        _document->printError( ERR2_VALUE );
                 }
                 if( yorg && origin.yPosType == ExtTocEntry::DYNAMIC && size.heightType != ExtTocEntry::RELATIVE_PERCENT )
-                    document->printError( ERR3_MIXEDUNITS );
+                    _document->printError( ERR3_MIXEDUNITS );
             }
             else if( key == L"x" ) {
                 hypergraphic = true;
@@ -317,7 +317,7 @@ Lexer::Token Link::parseAttributes( Lexer* lexer )
                     style.word |= PageStyle::MINMAX;
                 }
                 else if( value != L"none" )
-                    document->printError( ERR2_VALUE );
+                    _document->printError( ERR2_VALUE );
             }
             else if( key == L"scroll" ) {
                 doStyle = true;
@@ -330,7 +330,7 @@ Lexer::Token Link::parseAttributes( Lexer* lexer )
                     style.word |= PageStyle::VSCROLL;
                 }
                 else if( value != L"none" )
-                    document->printError( ERR2_VALUE );
+                    _document->printError( ERR2_VALUE );
             }
             else if( key == L"rules" ) {
                 doStyle = true;
@@ -339,15 +339,15 @@ Lexer::Token Link::parseAttributes( Lexer* lexer )
                 else if( value == L"sizeborder" )
                     style.word |= PageStyle::SIZEBORDER;
                 else if( value != L"none" )
-                    document->printError( ERR2_VALUE );
+                    _document->printError( ERR2_VALUE );
             }
             else
-                document->printError( ERR1_ATTRNOTDEF );
+                _document->printError( ERR1_ATTRNOTDEF );
         }
         else if( tok == Lexer::FLAG ) {
             if( lexer->text() == L"auto" ) {
                 if( type == FOOTNOTE )
-                    document->printError( ERR3_FNNOAUTO );
+                    _document->printError( ERR3_FNNOAUTO );
                 else {
                     automatic = true;
                     noElink = true;
@@ -362,15 +362,15 @@ Lexer::Token Link::parseAttributes( Lexer* lexer )
             else if( lexer->text() == L"child" )
                 child = true;
             else
-                document->printError( ERR1_ATTRNOTDEF );
+                _document->printError( ERR1_ATTRNOTDEF );
         }
         else if( tok == Lexer::ERROR_TAG )
             throw FatalError( ERR_SYNTAX );
         else if( tok == Lexer::END )
             throw FatalError( ERR_EOF );
-        tok = document->getNextToken();
+        tok = _document->getNextToken();
     }
-    return document->getNextToken();    //consume TAGEND
+    return _document->getNextToken();    //consume TAGEND
 }
 /***************************************************************************/
 void Link::buildText( Cell* cell )
@@ -398,15 +398,15 @@ void Link::doTopic( Cell* cell )
     if( refid || res ) {                    //either refid or res is required
         if( database.empty() ) {            //jump to internal link
             try {
-                XRef xref( fileName, row );
+                XRef xref( _fileName, _row );
                 STD1::uint16_t tocIndex;
                 if( refid ) {
-                    tocIndex = document->tocIndexById( refid );
-                    document->addXRef( refid, xref );
+                    tocIndex = _document->tocIndexById( refid );
+                    _document->addXRef( refid, xref );
                 }
                 else {
-                    tocIndex = document->tocIndexByRes( res );
-                    document->addXRef( res, xref );
+                    tocIndex = _document->tocIndexByRes( res );
+                    _document->addXRef( res, xref );
                 }
                 std::vector< STD1::uint8_t > esc;
                 esc.reserve( 7 + sizeof( PageOrigin ) + sizeof( PageSize ) +
@@ -507,7 +507,7 @@ void Link::doTopic( Cell* cell )
                 else
                     esc.push_back( 0x16 );  //full bitmap
             }
-            STD1::uint16_t index( document->extFileIndex( database ) );
+            STD1::uint16_t index( _document->extFileIndex( database ) );
             esc.push_back( static_cast< STD1::uint8_t >( index ) );
             //esc.push_back( static_cast< STD1::uint8_t >( index >> 8 ) );
             std::string tmp;
@@ -545,15 +545,15 @@ void Link::doFootnote( Cell* cell )
 {
     if( refid || res ) {                    //refid is required
         try {
-            XRef xref( fileName, row );
+            XRef xref( _fileName, _row );
             std::size_t tocIndex;
             if( refid ) {
-                tocIndex = document->tocIndexById( refid );
-                document->addXRef( refid, xref );
+                tocIndex = _document->tocIndexById( refid );
+                _document->addXRef( refid, xref );
             }
             else {
-                tocIndex = document->tocIndexByRes( res );
-                document->addXRef( res, xref );
+                tocIndex = _document->tocIndexByRes( res );
+                _document->addXRef( res, xref );
             }
             std::vector< STD1::uint8_t > esc;
             esc.reserve( 5 );

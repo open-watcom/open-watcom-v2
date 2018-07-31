@@ -46,7 +46,7 @@ Lexer::Token Lines::parse( Lexer* lexer )
 {
     Lexer::Token tok( parseAttributes( lexer ) );
     if( tok == Lexer::WHITESPACE && lexer->text()[0] == L'\n' )
-        tok = document->getNextToken(); //consume '\n' if just after tag end
+        tok = _document->getNextToken(); //consume '\n' if just after tag end
     while( tok != Lexer::END ) {
         if( parseInline( lexer, tok ) ) {
             if( lexer->tagId() == Lexer::ELINES ) {
@@ -63,7 +63,7 @@ Lexer::Token Lines::parseAttributes( Lexer* lexer )
 {
     Lexer::Token tok;
 
-    while( (tok = document->getNextToken()) != Lexer::TAGEND ) {
+    while( (tok = _document->getNextToken()) != Lexer::TAGEND ) {
         if( tok == Lexer::ATTRIBUTE ) {
             std::wstring key;
             std::wstring value;
@@ -76,22 +76,22 @@ Lexer::Token Lines::parseAttributes( Lexer* lexer )
                 } else if( value == L"center" ) {
                     alignment = CENTER;
                 } else {
-                    document->printError( ERR2_VALUE );
+                    _document->printError( ERR2_VALUE );
                 }
             } else {
-                document->printError( ERR1_ATTRNOTDEF );
+                _document->printError( ERR1_ATTRNOTDEF );
             }
         } else if( tok == Lexer::FLAG ) {
-            document->printError( ERR1_ATTRNOTDEF );
+            _document->printError( ERR1_ATTRNOTDEF );
         } else if( tok == Lexer::ERROR_TAG ) {
             throw FatalError( ERR_SYNTAX );
         } else if( tok == Lexer::END ) {
             throw FatalError( ERR_EOF );
         } else {
-            document->printError( ERR1_TAGSYNTAX );
+            _document->printError( ERR1_TAGSYNTAX );
         }
     }
-    return( document->getNextToken() );
+    return( _document->getNextToken() );
 }
 /*****************************************************************************/
 void Lines::buildText( Cell* cell )
