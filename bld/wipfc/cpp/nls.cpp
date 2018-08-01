@@ -85,7 +85,6 @@ void Nls::readNLSFile( const std::string& sfname )
     std::FILE *nls = std::fopen( sfname.c_str(), "r" );
     if( nls == NULL )
         throw FatalError( ERR_LANG );
-    _cgraphicFont.setCodePage( _country.codePage() );
     while( std::fgets( sbuffer, sizeof( sbuffer ), nls ) ) {
         std::size_t len( std::strlen( sbuffer ) );
         killEOL( sbuffer + len - 1 );
