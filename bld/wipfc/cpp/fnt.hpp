@@ -37,6 +37,8 @@
 #define MAX_FACENAME_SIZE   33
 #define DEFAULT_CODEPAGE    static_cast< word >( -1 )
 
+class Document;     // forward reference
+
 // Font Entry
 struct FontEntry {
 private:
@@ -52,7 +54,7 @@ public:
     void setHeight( word height ) { _height = height; }
     void setWidth( word width ) { _width = width; }
     void setCodePage( word codePage ) { _codePage = codePage; }
-    STD1::uint32_t write( std::FILE *out, word defCodePage ) const;
+    STD1::uint32_t write( std::FILE *out, Document *document ) const;
     bool operator==( const FontEntry &rhs ) const;
 
 private:

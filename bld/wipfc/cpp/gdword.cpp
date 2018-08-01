@@ -40,7 +40,9 @@
 #include <cstdlib>
 #include "gdword.hpp"
 #include "errors.hpp"
-#include "uniutil.hpp"
+#include "document.hpp"
+#include "util.hpp"
+
 
 void GlobalDictionaryWord::toUpper()
 {
@@ -51,11 +53,11 @@ void GlobalDictionaryWord::toUpper()
     }
 }
 /***************************************************************************/
-std::size_t GlobalDictionaryWord::writeWord( std::FILE* out ) const
+std::size_t GlobalDictionaryWord::writeWord( std::FILE* out, Document *document ) const
 {
     char buffer[ 255 ];     // max len 254 + null
     std::size_t written;
-    std::size_t length( wtomb_cstring( buffer, _text.c_str(), sizeof( buffer ) - 1 ) );
+    std::size_t length( document->wtomb_cstring( buffer, _text.c_str(), sizeof( buffer ) - 1 ) );
     if( length == ERROR_CNV )
         throw FatalError( ERR_T_CONV );
     if( std::fputc( static_cast< byte >( length + 1 ), out ) == EOF ||

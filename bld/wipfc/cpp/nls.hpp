@@ -68,6 +68,13 @@ public:
     //number of bytes written
     STD1::uint32_t length() { return _bytes; };
     STD1::uint32_t write( std::FILE* out );
+    // UNICODE<->MBCS conversion
+    std::wint_t  read_wchar( std::FILE *fp );
+    std::size_t  wtomb_cstring( char *mbc, const wchar_t *wc, std::size_t len );
+    std::size_t  mbtow_cstring( wchar_t *wc, const char *mbc, std::size_t len );
+    void         wtomb_string( const std::wstring& input, std::string& output );
+    void         mbtow_string( const std::string& input, std::wstring& output );
+
 private:
     typedef std::map< std::wstring, wchar_t >::iterator EntityIter;
     typedef std::map< std::wstring, wchar_t >::const_iterator ConstEntityIter;

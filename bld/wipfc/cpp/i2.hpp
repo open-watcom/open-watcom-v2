@@ -56,7 +56,7 @@ public:
     void setRes( STD1::uint16_t r ) { parentRes = r; };
     void setIdOrName( GlobalDictionaryWord* w ) { parentId = w; };
     bool isGlobal() const { return index->isGlobal(); };
-    std::size_t write( std::FILE* out ) { return index->write( out ); };
+    std::size_t write( std::FILE* out ) { return index->write( out, _document ); };
 private:
     I2( const I2& rhs );                //no copy
     I2& operator=( const I2& rhs );     //no assignment

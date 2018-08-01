@@ -32,8 +32,10 @@
 #include "wipfc.hpp"
 #include "controls.hpp"
 #include "errors.hpp"
+#include "document.hpp"
 
-STD1::uint32_t Controls::write( std::FILE* out )
+
+STD1::uint32_t Controls::write( std::FILE* out, Document *document )
 {
     STD1::uint32_t start( std::ftell( out ) );
     STD1::uint16_t value( static_cast< STD1::uint16_t >( controls.size() ) );
@@ -48,7 +50,7 @@ STD1::uint32_t Controls::write( std::FILE* out )
     if( std::fwrite( &value, sizeof( STD1::uint16_t ), 1, out) != 1 )
         throw FatalError( ERR_WRITE );
     for( ConstControlIter itr = controls.begin(); itr != controls.end(); ++itr ) {
-        bytes += itr->write( out );
+        bytes += itr->write( out, document );
     }
     for( ConstGroupIter itr = groups.begin(); itr != groups.end(); ++itr ) {
         bytes += itr->write( out );

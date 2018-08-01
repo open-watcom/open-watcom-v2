@@ -33,7 +33,8 @@
 #include <cwctype>
 #include "index.hpp"
 #include "errors.hpp"
-#include "uniutil.hpp"
+#include "document.hpp"
+
 
 IndexItem::IndexItem( Type t )
 {
@@ -104,17 +105,17 @@ int IndexItem::wstricmp( const wchar_t *s, const wchar_t *t ) const
 //  char sortText[size2]                //sort key text
 //char indexText[size or size-size2];   //index word [not zero-terminated]
 //unsigned long synonyms[synonymCount]; //32 bit file offsets to synonyms referencing this word
-std::size_t IndexItem::write( std::FILE* out )
+std::size_t IndexItem::write( std::FILE* out, Document *document )
 {
     std::string buffer1;
     std::string buffer2;
     std::size_t length1( 0 );
     std::size_t length2( 0 );
     if( hdr.sortKey ) {
-        wtomb_string( sortKey, buffer1 );
+        document->wtomb_string( sortKey, buffer1 );
         length1 = buffer1.size();
     }
-    wtomb_string( text, buffer2 );
+    document->wtomb_string( text, buffer2 );
     length2 = buffer2.size();
     if( length1 + length2 > 254 ) {
         length2 = length1 > 254 ? 0 : 254 - length1;

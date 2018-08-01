@@ -100,7 +100,7 @@ public:
 private:
     Compiler( const Compiler &rhs );            //no copy constructor
     Compiler& operator=( const Compiler &rhs ); //no assignment
-    std::wstring _inFileNameW;
+    std::wstring *_inFileNameW;
     std::string _inFileName;
     std::string _outFileName;
     std::auto_ptr< Lexer > _lexer;

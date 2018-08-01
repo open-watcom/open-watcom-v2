@@ -32,16 +32,16 @@
 #include "wipfc.hpp"
 #include "errors.hpp"
 #include "fnt.hpp"
-#include "uniutil.hpp"
+#include "document.hpp"
 
 
-STD1::uint32_t FontEntry::write( std::FILE *out, word defCodePage ) const
+STD1::uint32_t FontEntry::write( std::FILE *out, Document *document ) const
 {
     char            faceName[MAX_FACENAME_SIZE];    //null terminated
     std::string     buffer;
     word            codePage;
 
-    wtomb_string( _faceName, buffer );
+    document->wtomb_string( _faceName, buffer );
     std::strncpy( faceName, buffer.c_str(), MAX_FACENAME_SIZE );
     faceName[MAX_FACENAME_SIZE - 1] = '\0';
     if( std::fwrite( faceName, sizeof( faceName ), 1, out ) != 1 )
@@ -50,7 +50,7 @@ STD1::uint32_t FontEntry::write( std::FILE *out, word defCodePage ) const
         throw FatalError( ERR_WRITE );
     if( std::fwrite( &_width, sizeof( _width ), 1, out ) != 1 )
         throw FatalError( ERR_WRITE );
-    codePage = ( _codePage == DEFAULT_CODEPAGE ) ? defCodePage : _codePage;
+    codePage = ( _codePage == DEFAULT_CODEPAGE ) ? document->codePage() : _codePage;
     if( std::fwrite( &codePage, sizeof( codePage ), 1, out ) != 1 )
         throw FatalError( ERR_WRITE );
     return( sizeof( faceName ) + sizeof( _height ) + sizeof( _width ) + sizeof( codePage ) );

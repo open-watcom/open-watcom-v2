@@ -38,6 +38,8 @@
 
 #define MAX_FONTS       14
 
+class Document;     // forward reference
+
 class FontCollection
 {
     typedef STD1::uint8_t   byte;
@@ -52,7 +54,7 @@ public:
     STD1::uint32_t length() { return _bytes; };
     //the number of fonts in the collection
     std::size_t size() { return _fonts.size(); };
-    STD1::uint32_t write( std::FILE *out, word defCodePage );
+    STD1::uint32_t write( std::FILE *out, Document *document );
 private:
     FontCollection( const FontCollection& rhs );            //no copy
     FontCollection& operator=( const FontCollection& rhs ); //no assigment

@@ -66,7 +66,7 @@
 #include "page.hpp"
 #include "tocref.hpp"
 #include "util.hpp"
-#include "uniutil.hpp"
+
 
 Hn::~Hn()
 {
@@ -109,7 +109,7 @@ Lexer::Token Hn::parse( Lexer* lexer )
         tok = _document->getNextToken();
     }
     //convert to mbs, max 255 char
-    wtomb_string( tmp, title );
+    _document->wtomb_string( tmp, title );
     if( title.size() > 255 )
         title.erase( 255 );
     tok = _document->getNextToken();
@@ -616,7 +616,7 @@ void Hn::buildText( Cell* cell )
 {
     if( etoc.setTutor ) {
         std::string tmp;
-        wtomb_string( tutorial, tmp );
+        _document->wtomb_string( tutorial, tmp );
         std::size_t size1( tmp.size() );
         if( size1 > 253 ) {
             tmp.erase( 253 );

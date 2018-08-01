@@ -49,6 +49,7 @@
 #include "bckptr.h"
 #include "feprotos.h"
 
+
 extern  int             TempId;
 extern  unsigned_16     TypeIdx;
 
@@ -70,10 +71,6 @@ extern  void            exit(int);
 extern  void            VDefLabel(l *);
 extern  void            InitDbgInfo();
 extern  void            FiniDbgInfo();
-extern  void            TargTypeInit();
-
-
-
 
 
 extern  cg_init_info    BEInit( cg_switches cg_data, cg_target_switches tg_data,

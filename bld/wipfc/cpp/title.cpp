@@ -37,7 +37,7 @@
 #include "title.hpp"
 #include "lexer.hpp"
 #include "document.hpp"
-#include "uniutil.hpp"
+
 
 Lexer::Token Title::parse( Lexer* lexer, IpfHeader* hdr )
 {
@@ -82,7 +82,7 @@ Lexer::Token Title::parse( Lexer* lexer, IpfHeader* hdr )
         tok = document->getNextToken();
     }
     char title[TITLE_SIZE + 1];
-    std::size_t len = wtomb_cstring( title, txt.c_str(), sizeof( title ) - 1 );
+    std::size_t len = document->wtomb_cstring( title, txt.c_str(), sizeof( title ) - 1 );
     if( len > TITLE_SIZE - 1 )
         document->printError( ERR2_TEXTTOOLONG );
     std::strncpy( hdr->title, title, TITLE_SIZE - 1 );

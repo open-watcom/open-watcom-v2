@@ -34,7 +34,8 @@
 #include <cstdlib>
 #include "extfiles.hpp"
 #include "errors.hpp"
-#include "uniutil.hpp"
+#include "document.hpp"
+
 
 void ExternalFiles::addFile( std::wstring& str )
 {
@@ -54,14 +55,14 @@ void ExternalFiles::convert()
     }
 }
 /***************************************************************************/
-STD1::uint32_t ExternalFiles::write( std::FILE *out )
+STD1::uint32_t ExternalFiles::write( std::FILE *out, Document *document )
 {
     if( table.empty() )
         return 0;
     STD1::uint32_t start( std::ftell( out ) );
     for( ConstTableIter itr = table.begin(); itr != table.end(); ++itr ) {
         std::string buffer;
-        wtomb_string( itr->first, buffer );
+        document->wtomb_string( itr->first, buffer );
         std::size_t length( buffer.size() );
         if( length > 255 ) {
             buffer.erase( 255 );

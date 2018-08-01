@@ -129,6 +129,9 @@ public:
     const std::wstring* nameit( const std::wstring& key );
     std::wstring* prepNameitName( const std::wstring& key );
 
+    std::wstring * addStartInput( std::string& sfname, std::wstring *wfname );
+    void pushFileInput( std::wstring *wfname );
+
     //Forwarding functions
 
     //To Controls
@@ -179,6 +182,13 @@ public:
     const std::wstring& olClose( unsigned int level ) const { return _nls->olClose()[level % 2]; };
     const std::wstring& ulBullet( unsigned int level ) const { return _nls->ulBullets()[level % 3]; };
     wchar_t entity( const std::wstring& key ) { return _nls->entity( key ); };
+    // UNICODE<->MBCS conversion
+    STD1::uint16_t codePage() { return _nls->codePage(); };
+    std::wint_t  read_wchar( std::FILE *fp ){ return _nls->read_wchar( fp ); };
+    std::size_t  wtomb_cstring( char *mbc, const wchar_t *wc, std::size_t len ){ return _nls->wtomb_cstring( mbc, wc, len ); };
+    std::size_t  mbtow_cstring( wchar_t *wc, const char *mbc, std::size_t len ){ return _nls->mbtow_cstring( wc, mbc, len ); };
+    void         wtomb_string( const std::wstring& input, std::string& output ){ _nls->wtomb_string( input, output ); };
+    void         mbtow_string( const std::string& input, std::wstring& output ){ _nls->mbtow_string( input, output ); };
 
     //To Strings
     void addString( const std::wstring& str ) { _strings->add( str ); };

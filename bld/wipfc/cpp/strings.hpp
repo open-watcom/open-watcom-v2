@@ -38,13 +38,16 @@
 #include <string>
 #include <vector>
 
+
+class Document;     // forward reference
+
 class StringTable {
 public:
     StringTable() : bytes( 0 ) { table.reserve( 3 ); };
     void add( const std::wstring& str ) { table.push_back( str ); };
     //the number of bytes written to disk
     STD1::uint32_t length() const { return bytes; };
-    STD1::uint32_t write( std::FILE *out );
+    STD1::uint32_t write( std::FILE *out, Document *document );
 private:
     std::vector< std::wstring > table;
     typedef std::vector< std::wstring >::iterator TableIter;

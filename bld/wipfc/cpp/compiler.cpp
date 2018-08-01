@@ -40,7 +40,8 @@
 #include "ipfbuff.hpp"
 #include "ipffile.hpp"
 #include "lexer.hpp"
-#include "uniutil.hpp"
+#include "util.hpp"
+
 
 Compiler::Compiler():
     _lexer( new Lexer() ),
@@ -50,7 +51,8 @@ Compiler::Compiler():
     _parseContinuously( true ),
     _printBanner( true ),
     _search( true ),
-    _xref( false )
+    _xref( false ),
+    _inFileName( NULL )
 {
 }
 /*****************************************************************************/
@@ -64,15 +66,9 @@ Compiler::~Compiler()
 /*****************************************************************************/
 void Compiler::setInputFile( const std::string& sfname )
 {
+    std::wstring *name = new std::wstring();
     _inFileName = sfname;
-    def_mbtow_string( _inFileName, _inFileNameW );
-}
-/*****************************************************************************/
-void Compiler::startInput()
-{
-    std::wstring* wname( &_inFileNameW );
-    wname = addFileName( wname );
-    _inFiles.push_back( new IpfFile( _inFileName, wname ) );
+    def_mbtow_string( _inFileName, *_inFileNameW );
 }
 /*****************************************************************************/
 std::wstring* Compiler::addFileName( std::wstring* name )
@@ -93,7 +89,7 @@ int Compiler::compile()
     // init document and set locale for input/output data
     std::auto_ptr< Document > doc( new Document( *this, _loc ) );
     doc->setOutputType( _outType );
-    startInput();
+    _inFileNameW = doc->addStartInput( _inFileName, _inFileNameW );
     doc->parse( _lexer.get() );
     doc->build();
     std::FILE* out( std::fopen( _outFileName.c_str() , "wb" ) );

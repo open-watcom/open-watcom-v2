@@ -37,6 +37,8 @@
 #include "ctrlbtn.hpp"
 #include "ctrlgrp.hpp"
 
+class Document;     // forward reference
+
 class Controls {
 public:
     Controls() : bytes( 8 ), coverGroup( 0 ) { };
@@ -57,7 +59,7 @@ public:
     ControlGroup* getGroupById( const std::wstring& i );
     void setCover( STD1::uint16_t c ) { coverGroup = c; };
     STD1::uint32_t length() const { return bytes; };
-    STD1::uint32_t write( std::FILE *out );
+    STD1::uint32_t write( std::FILE *out, Document *d );
 private:
     Controls( const Controls& rhs );            //no copy
     Controls& operator=( const Controls& rhs ); //no assignment

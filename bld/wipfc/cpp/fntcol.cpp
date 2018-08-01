@@ -33,6 +33,8 @@
 #include <string>
 #include "fntcol.hpp"
 #include "errors.hpp"
+#include "document.hpp"
+
 
 FontCollection::FontCollection( word maxFontCount ) : _bytes( 0 ), _maxFontCount( maxFontCount )
 /**********************************************************************************************/
@@ -61,12 +63,12 @@ std::size_t FontCollection::add( const FontEntry& fnt )
     return( _fonts.size() - 1 );
 }
 
-STD1::uint32_t FontCollection::write( std::FILE *out, word defCodePage )
-/**********************************************************************/
+STD1::uint32_t FontCollection::write( std::FILE *out, Document *document )
+/************************************************************************/
 {
     dword start = std::ftell( out );
     for( FontIter itr = _fonts.begin(); itr != _fonts.end(); ++itr ) {
-        _bytes += itr->write( out, defCodePage );
+        _bytes += itr->write( out, document );
     }
     return( start );
 

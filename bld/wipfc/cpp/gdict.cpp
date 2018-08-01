@@ -35,6 +35,7 @@
 #include <cstdlib>
 #include "gdict.hpp"
 #include "errors.hpp"
+#include "document.hpp"
 
 GlobalDictionary::~GlobalDictionary()
 {
@@ -78,11 +79,11 @@ GlobalDictionaryWord* GlobalDictionary::findWord( const std::wstring& wordtxt )
     return( findWord( &wordent ) );
 }
 /***************************************************************************/
-STD1::uint32_t GlobalDictionary::write( std::FILE *out )
+STD1::uint32_t GlobalDictionary::write( std::FILE *out, Document *document )
 {
     dword start = std::ftell( out );
     for( ConstWordIter itr = words.begin(); itr != words.end(); ++itr )
-        bytes += (*itr)->writeWord( out );
+        bytes += (*itr)->writeWord( out, document );
     return( start );
 }
 /***************************************************************************/

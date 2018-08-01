@@ -55,7 +55,7 @@ Lexer::Token Artwork::parse( Lexer* lexer )
     if( linkfile && !linkfile->empty() ) {
         //push the file on the stack and parse
         linkfile = _document->addFileName( linkfile );
-        _document->pushInput( new IpfFile( linkfile ) );
+        _document->pushFileInput( linkfile );
         //tok = _document->getNextToken();
     }
     while( tok != Lexer::END && !( tok == Lexer::TAG && lexer->tagId() == Lexer::EUSERDOC)) {

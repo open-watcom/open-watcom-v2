@@ -178,7 +178,6 @@
 #include "synonym.hpp"
 #include "title.hpp"
 #include "util.hpp"
-#include "uniutil.hpp"
 
 #ifndef HAVE_CONFIG_H
 #include "clibext.h"
@@ -428,16 +427,16 @@ void Document::write( std::FILE *out )
     _hdr->icmdOffset = writeICmd( out );
     _hdr->nlsOffset = _nls->write( out );
     _hdr->nlsSize = _nls->length();
-    _eHdr->stringsOffset = _strings->write( out );
+    _eHdr->stringsOffset = _strings->write( out, this );
     _eHdr->stringsSize = static_cast< word >( _strings->length() );
-    _eHdr->dbOffset = _extfiles->write( out );
+    _eHdr->dbOffset = _extfiles->write( out, this );
     _eHdr->dbCount = static_cast< word >( _extfiles->size() );
     _eHdr->dbSize = _extfiles->length();
-    _eHdr->fontOffset = _fonts->write( out, _nls->codePage() );
+    _eHdr->fontOffset = _fonts->write( out, this );
     _eHdr->fontCount = static_cast< word >( _fonts->size() );
-    _eHdr->ctrlOffset = _controls->write( out );
+    _eHdr->ctrlOffset = _controls->write( out, this );
     _eHdr->ctrlSize = _controls->length();
-    _hdr->dictOffset = _dict->write( out );
+    _hdr->dictOffset = _dict->write( out, this );
     _hdr->dictSize = _dict->length();
     _hdr->dictCount = _dict->size();
     writeCells( out );
@@ -852,7 +851,7 @@ Lexer::Token Document::processCommand( Lexer* lexer, Tag* parent )
             }
 #endif
             try {
-                IpfFile* ipff( new IpfFile( fname ) );
+                IpfFile* ipff( new IpfFile( this, fname ) );
                 fname = addFileName( fname );
                 pushInput( ipff );
                 break;
@@ -972,4 +971,16 @@ STD1::uint16_t Document::getGroupById( const std::wstring& i )
     } else {
         return grp->index() + 1;
     }
+}
+
+std::wstring * Document::addStartInput( std::string& sfname, std::wstring *wfname )
+{
+    wfname = addFileName( wfname );
+    pushInput( new IpfFile( this, sfname, wfname ) );
+    return wfname;
+}
+
+void Document::pushFileInput( std::wstring *wfname )
+{
+    pushInput( new IpfFile( this, wfname ) );
 }

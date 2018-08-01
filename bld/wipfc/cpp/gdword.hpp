@@ -36,6 +36,8 @@
 #include <vector>
 #include "fts.hpp"
 
+class Document;     // forward reference
+
 class GlobalDictionaryWord {
     typedef STD1::uint8_t   byte;
     typedef STD1::uint16_t  word;
@@ -50,7 +52,7 @@ public:
     void setIndex( word index ) { _index = index; };
     STD1::uint16_t index() const { return _index; };
     const std::wstring& getText() const { return _text; };
-    std::size_t writeWord( std::FILE* out ) const;
+    std::size_t writeWord( std::FILE* out, Document *document ) const;
     bool operator==( const GlobalDictionaryWord& rhs ) const { return _text == rhs._text; };
     bool operator==( const std::wstring& rhs ) const { return _text == rhs; };
     bool operator<( const GlobalDictionaryWord& rhs ) const;

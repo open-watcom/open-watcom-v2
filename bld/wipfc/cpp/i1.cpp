@@ -176,9 +176,9 @@ std::size_t I1::write( std::FILE* out )
             printError( e.code );
         }
     }
-    std::size_t written( primary->write( out ) );
+    std::size_t written( primary->write( out, _document ) );
     std::sort( secondary.begin(), secondary.end(), ptrLess< IndexItem* >() );
     for( IndexIter itr = secondary.begin(); itr != secondary.end(); ++itr )
-        written += ( *itr )->write( out );
+        written += ( *itr )->write( out, _document );
     return written;
 }

@@ -78,7 +78,7 @@ Lexer::Token CtrlDef::parse( Lexer* lexer )
                 {
                 std::wstring* fname( new std::wstring( lexer->text() ) );
                 fname = document->addFileName( fname );
-                document->pushInput( new IpfFile( fname ) );
+                document->pushFileInput( fname );
                 break;
                 }
             default:

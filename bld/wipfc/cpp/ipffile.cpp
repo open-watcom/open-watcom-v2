@@ -32,11 +32,12 @@
 #include <cstdlib>
 #include "ipffile.hpp"
 #include "errors.hpp"
-#include "uniutil.hpp"
+#include "document.hpp"
+#include "util.hpp"
 
 
-IpfFile::IpfFile( const std::wstring* wfname ) : IpfData(), _fileName( wfname ),
-    _ungottenChar( WEOF ), _ungotten( false )
+IpfFile::IpfFile( Document *document, const std::wstring* wfname ) : IpfData(), _document( document ),
+    _fileName( wfname ), _ungottenChar( WEOF ), _ungotten( false )
 {
     std::string sfname;
     def_wtomb_string( *_fileName, sfname );
@@ -45,8 +46,8 @@ IpfFile::IpfFile( const std::wstring* wfname ) : IpfData(), _fileName( wfname ),
     }
 }
 
-IpfFile::IpfFile( const std::string& sfname, const std::wstring* wfname ) : IpfData(), _fileName( wfname ),
-    _ungottenChar( WEOF ), _ungotten( false )
+IpfFile::IpfFile( Document *document, const std::string& sfname, const std::wstring* wfname ) : IpfData(),
+    _document( document ), _fileName( wfname ), _ungottenChar( WEOF ), _ungotten( false )
 {
     if( (_stream = std::fopen( sfname.c_str(), "rb" )) == 0 ) {
         throw FatalIOError( ERR_OPEN, *_fileName );
@@ -63,10 +64,10 @@ std::wint_t IpfFile::get()
         ch = _ungottenChar;
         _ungotten = false;
     } else {
-        ch = read_wchar( _stream );
+        ch = _document->read_wchar( _stream );
     }
     if( ch == L'\r' ) {
-        ch = read_wchar( _stream );
+        ch = _document->read_wchar( _stream );
     }
     incCol();
     if( ch == L'\n' ) {

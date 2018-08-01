@@ -1,22 +1,30 @@
 proj_name = awk
 
+#ow = 1
+
 !ifndef awk_autodepends
 awk_autodepends = .autodepend
 !endif
 
+additional_cleanup = ytab.*
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
+
+.HOLD
+
+.EXTENSIONS : .y .key .gh
 
 inc_dirs = -I"../h"
 
 .c: ../c
 
 objs = &
+    proctab.obj &
     b.obj &
     main.obj &
     parse.obj &
-    proctab.obj &
     tran.obj &
     lib.obj &
     run.obj &
@@ -25,16 +33,30 @@ objs = &
     missin95.obj
 
 !ifdef __WATCOM_TOOLS__
-extra_c_flags_ytab = -wcd=118 -wcd=202
+extra_c_flags_ytab = -pil
+#extra_c_flags_proctab = -pcl -fo=.i
+#extra_c_flags_ytab = -pcl -fo=.i
 !endif
 
 !include exetarg.mif
 
+!ifdef ow
+proctab.c : ytab.h ./maketab.exe
+    @%make echo_execute
+    $(noecho)$]@ > proctab.c
+!else
 proctab.c : ./maketab.exe ../h/ytab.h
     $(noecho)copy $]@ ytab.h
     @%make echo_execute
     $(noecho)$[@ > proctab.c
+!endif
 
 ./maketab.exe : ../c/maketab.c
     @%make echo_bldcl
     $(bld_cl) $[@ -I"../h" $(bld_clflags) $(bld_ldflags)
+
+awk_yacc_options = -db -de -v -dp -ds # -ds -de -v -dp -ds # -d -db -dd
+
+ytab.c ytab.h : ../h/awkgram.y ../c/yydriver.c
+    @%make echo_yacc
+    $(yacc) $(awk_yacc_options) $< >yaccout.txt #>$(nulldevice)

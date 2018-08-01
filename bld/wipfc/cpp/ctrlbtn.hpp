@@ -34,6 +34,8 @@
 #include <cstdio>
 #include <string>
 
+class Document;     // forward reference
+
 class ControlButton {
 public:
     ControlButton() : res( 0 ), idx( 0 ) {};
@@ -45,7 +47,7 @@ public:
     void setText( std::wstring& t ) { txt = t; };
     void setIndex( STD1::uint16_t i ) { idx = i; };
     STD1::uint16_t index() { return idx; };
-    STD1::uint32_t write( std::FILE* out ) const;
+    STD1::uint32_t write( std::FILE* out, Document *d ) const;
 private:
     STD1::uint16_t res;     //message number
     STD1::uint16_t idx;     //array index of this item
