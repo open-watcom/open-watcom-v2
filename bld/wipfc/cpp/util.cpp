@@ -55,7 +55,7 @@ void killQuotes( char * text )
 {
     if( *text == '"' || *text == '\'' ) {
         char quote = *text;
-        std::memmove( text, text + 1, std::strlen( text ) * sizeof( char ) );
+        std::memmove( text, text + 1, std::strlen( text ) * sizeof( *text ) );
         char *end( std::strrchr( text, quote ) );
         if ( end )
             *end = '\0';
@@ -67,7 +67,7 @@ void killQuotes( wchar_t * text )
 {
     if( *text == L'"' || *text == '\'' ) {
         wchar_t quote = *text;
-        std::memmove( text, text + 1, std::wcslen( text ) * sizeof( wchar_t ) );
+        std::memmove( text, text + 1, std::wcslen( text ) * sizeof( *text ) );
         wchar_t *end( std::wcsrchr( text, quote ) );
         if ( end )
             *end = L'\0';

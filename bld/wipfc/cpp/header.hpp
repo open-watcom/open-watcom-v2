@@ -33,6 +33,8 @@
 
 #include <cstdio>
 
+#define TITLE_SIZE      48
+
 #pragma pack(push, 1)
 
 struct IpfHeader {
@@ -71,7 +73,7 @@ struct IpfHeader {
     STD1::uint32_t  nlsSize;            // size of NLS table
     STD1::uint32_t  extOffset;          // file offset to extended data block
     STD1::uint8_t   reserved[ 12 ];     // reserved for future use
-    char            title[ 48 ];        // title of database
+    char            title[TITLE_SIZE];  // title of database
 
     IpfHeader();
     void write( std::FILE *out ) const;

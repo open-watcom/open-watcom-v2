@@ -31,6 +31,8 @@
 #ifndef UNIUTIL_INCLUDED
 #define UNIUTIL_INCLUDED
 
+#define ERROR_CNV   static_cast<std::size_t>( -1 )
+
 extern int          wtomb_char( char *mbc, wchar_t wc );
 extern int          mbtow_char( wchar_t *wc, const char *mbc, std::size_t len );
 extern std::wint_t  read_wchar( std::FILE *fp );

@@ -52,45 +52,45 @@ Lexer::Token ISyn::parse( Lexer* lexer )
             splitAttribute( lexer->text(), key, value );
             if( key == L"root" ) {
                 root = value;
-            }
-            else
+            } else {
                 _document->printError( ERR1_ATTRNOTDEF );
-        }
-        else if( tok == Lexer::FLAG ) {
+            }
+        } else if( tok == Lexer::FLAG ) {
             _document->printError( ERR1_ATTRNOTDEF );
-        }
-        else if( tok == Lexer::ERROR_TAG )
+        } else if( tok == Lexer::ERROR_TAG ) {
             throw FatalError( ERR_SYNTAX );
-        else if( tok == Lexer::END )
+        } else if( tok == Lexer::END ) {
             throw FatalError( ERR_EOF );
-        else
+        } else {
             _document->printError( ERR1_TAGSYNTAX );
+        }
         tok = _document->getNextToken();
     }
     tok = _document->getNextToken(); //consume TAGEND
     unsigned int currentLine = _document->dataLine();
-    while( tok != Lexer::END && !( tok == Lexer::TAG && lexer->tagId() == Lexer::EUSERDOC)) {
+    while( tok != Lexer::END && !( tok == Lexer::TAG && lexer->tagId() == Lexer::EUSERDOC ) ) {
         if( tok == Lexer::WORD ) {
-            char buffer[ 256 ];
+            char buffer[ 256 ];     // max len 255 + null
             std::size_t length( wtomb_cstring( buffer, lexer->text().c_str(), sizeof( buffer ) - 1 ) );
-            if( length == static_cast< std::size_t >( -1 ) )
+            if( length == ERROR_CNV )
                 throw FatalError( ERR_T_CONV );
             std::string txt( buffer );
             syn->add( txt );
-        }
-        else if( tok == Lexer::WHITESPACE )
+        } else if( tok == Lexer::WHITESPACE ) {
             tok = _document->getNextToken();
-        else
+        } else {
             break;
-        if( _document->dataLine() > currentLine )
+        }
+        if( _document->dataLine() > currentLine ) {
             break;
+        }
     }
     try {
         _document->addSynonym( root, syn.get() );
     }
     catch( Class3Error& e ) {
         _document->printError( e.code );
-        }
+    }
     return tok;
 }
 

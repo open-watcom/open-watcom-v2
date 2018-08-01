@@ -53,13 +53,11 @@ void GlobalDictionaryWord::toUpper()
 /***************************************************************************/
 std::size_t GlobalDictionaryWord::writeWord( std::FILE* out ) const
 {
-    char buffer[ 256 ];
+    char buffer[ 255 ];     // max len 254 + null
     std::size_t written;
     std::size_t length( wtomb_cstring( buffer, _text.c_str(), sizeof( buffer ) - 1 ) );
-    if( length == static_cast< std::size_t >( -1 ) )
+    if( length == ERROR_CNV )
         throw FatalError( ERR_T_CONV );
-    if( length > 254 )
-        length = 254;
     if( std::fputc( static_cast< byte >( length + 1 ), out ) == EOF ||
         ( written = std::fwrite( buffer, sizeof( char ), length, out ) ) != length )
         throw FatalError( ERR_WRITE );

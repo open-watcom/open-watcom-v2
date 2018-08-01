@@ -81,9 +81,12 @@ Lexer::Token Title::parse( Lexer* lexer, IpfHeader* hdr )
         }
         tok = document->getNextToken();
     }
-    if( txt.size() > 47 )
+    char title[TITLE_SIZE + 1]
+    std::size_t len = wtomb_cstring( title, txt.c_str(), sizeof( title ) - 1 );
+    if( len > TITLE_SIZE - 1 )
         document->printError( ERR2_TEXTTOOLONG );
-    wtomb_cstring( hdr->title, txt.c_str(), sizeof( hdr->title ) - 1 );
+    strncpy( hdr->title, title, TITLE_SIZE - 1 );
+    hdr->title[TITLE_SIZE - 1] = '\0';
     return tok;
 }
 

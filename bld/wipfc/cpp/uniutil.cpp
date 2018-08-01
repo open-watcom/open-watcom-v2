@@ -94,7 +94,7 @@ std::size_t wtomb_cstring( char *dst_mbc, const wchar_t *src_wc, std::size_t len
     while( len > 0 && *src_wc != L'\0' ) {
         bytes = wtomb_char( mbc, *src_wc );
         if( bytes == -1 || (unsigned)bytes > len )
-            return( static_cast<std::size_t>( -1 ) );
+            return( ERROR_CNV );
         std::memcpy( dst_mbc, mbc, bytes );
         dst_mbc += bytes;
         dst_len += bytes;
@@ -114,7 +114,7 @@ std::size_t mbtow_cstring( wchar_t *dst_wc, const char *src_mbc, std::size_t len
     while( len > 0 && *src_mbc != '\0' ) {
         bytes = mbtow_char( dst_wc, src_mbc, MB_LEN_MAX );
         if( bytes == -1 )
-            return( static_cast<std::size_t>( -1 ) );
+            return( ERROR_CNV );
         dst_wc++;
         dst_len++;
         len--;

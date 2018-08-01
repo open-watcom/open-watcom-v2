@@ -65,8 +65,8 @@ void Nls::readEntityFile( const std::string& sfname )
     while( std::fgets( buffer, sizeof( buffer ), entty ) ) {
         std::size_t len = std::strlen( buffer );
         killEOL( buffer + len - 1 );
-        len = mbtow_cstring( text, buffer, sizeof( text ) / sizeof( wchar_t ) - 1 );
-        if( len == static_cast< std::size_t >( -1 ) ) {
+        len = mbtow_cstring( text, buffer, sizeof( text ) / sizeof( text[0] ) - 1 );
+        if( len == ERROR_CNV ) {
             std::fclose( entty );
             throw FatalError( ERR_T_CONV );
         }
@@ -89,8 +89,8 @@ void Nls::readNLSFile( const std::string& sfname )
     while( std::fgets( sbuffer, sizeof( sbuffer ), nls ) ) {
         std::size_t len( std::strlen( sbuffer ) );
         killEOL( sbuffer + len - 1 );
-        len = mbtow_cstring( keyword, sbuffer, sizeof( keyword ) / sizeof( wchar_t ) - 1 );
-        if( len == static_cast< std::size_t >( -1 ) )
+        len = mbtow_cstring( keyword, sbuffer, sizeof( keyword ) / sizeof( keyword[0] ) - 1 );
+        if( len == ERROR_CNV )
             throw FatalError( ERR_T_CONV );
         if( keyword[0] == L'\0' )
             continue;               //skip blank lines

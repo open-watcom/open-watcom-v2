@@ -41,10 +41,10 @@ STD1::uint32_t StringTable::write( std::FILE *out )
         return 0L;
     STD1::uint32_t start( std::ftell( out ) );
     for( ConstTableIter itr = table.begin(); itr != table.end(); ++itr ) {
-        char buffer[ 256 ];
+        char buffer[ 256 ];     // max len 255 + null
         std::size_t written;
         std::size_t length( wtomb_cstring( buffer, itr->c_str(), sizeof( buffer ) - 1 ) );
-        if( length == static_cast< std::size_t >( -1 ) )
+        if( length == ERROR_CNV )
             throw FatalError( ERR_T_CONV );
         if( std::fputc( static_cast< STD1::uint8_t >( length + 1 ), out ) == EOF ||
             ( written = std::fwrite( buffer, sizeof( char ), length, out ) ) != length)
