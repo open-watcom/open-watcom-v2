@@ -39,48 +39,48 @@
 IndexItem::IndexItem( Type t )
 {
     if( t == PRIMARY )
-        hdr.primary = 1;
+        _hdr.primary = 1;
     else if( t == SECONDARY )
-        hdr.secondary = 1;
+        _hdr.secondary = 1;
 }
 /***************************************************************************/
 bool IndexItem::operator==( const IndexItem& rhs ) const
 {
-    if( sortKey.empty() ) {
-        if( rhs.sortKey.empty() )
-            return wstricmp( text.c_str(), rhs.text.c_str() ) == 0;
+    if( _sortKey.empty() ) {
+        if( rhs._sortKey.empty() )
+            return wstricmp( _text.c_str(), rhs._text.c_str() ) == 0;
         else
-            return wstricmp( text.c_str(), rhs.sortKey.c_str() ) == 0;
+            return wstricmp( _text.c_str(), rhs._sortKey.c_str() ) == 0;
     }
     else {
-        if( rhs.sortKey.empty() )
-            return wstricmp( sortKey.c_str(), rhs.text.c_str() ) == 0;
+        if( rhs._sortKey.empty() )
+            return wstricmp( _sortKey.c_str(), rhs._text.c_str() ) == 0;
         else
-            return wstricmp( sortKey.c_str(), rhs.sortKey.c_str() ) == 0;
+            return wstricmp( _sortKey.c_str(), rhs._sortKey.c_str() ) == 0;
     }
 }
 /***************************************************************************/
 bool IndexItem::operator==( const std::wstring& rhs ) const
 {
-    if( sortKey.empty() )
-        return wstricmp( text.c_str(), rhs.c_str() ) == 0;
+    if( _sortKey.empty() )
+        return wstricmp( _text.c_str(), rhs.c_str() ) == 0;
     else
-        return wstricmp( sortKey.c_str(), rhs.c_str() ) == 0;
+        return wstricmp( _sortKey.c_str(), rhs.c_str() ) == 0;
 }
 /***************************************************************************/
 bool IndexItem::operator<( const IndexItem& rhs ) const
 {
-    if( sortKey.empty() ) {
-        if( rhs.sortKey.empty() )
-            return wstricmp( text.c_str(), rhs.text.c_str() ) < 0;
+    if( _sortKey.empty() ) {
+        if( rhs._sortKey.empty() )
+            return wstricmp( _text.c_str(), rhs._text.c_str() ) < 0;
         else
-            return wstricmp( text.c_str(), rhs.sortKey.c_str() ) < 0;
+            return wstricmp( _text.c_str(), rhs._sortKey.c_str() ) < 0;
     }
     else {
-        if( rhs.sortKey.empty() )
-            return wstricmp( sortKey.c_str(), rhs.text.c_str() ) < 0;
+        if( rhs._sortKey.empty() )
+            return wstricmp( _sortKey.c_str(), rhs._text.c_str() ) < 0;
         else
-            return wstricmp( sortKey.c_str(), rhs.sortKey.c_str() ) < 0;
+            return wstricmp( _sortKey.c_str(), rhs._sortKey.c_str() ) < 0;
     }
 }
 /***************************************************************************/
@@ -111,24 +111,24 @@ std::size_t IndexItem::write( std::FILE* out, Document *document )
     std::string buffer2;
     std::size_t length1( 0 );
     std::size_t length2( 0 );
-    if( hdr.sortKey ) {
-        document->wtomb_string( sortKey, buffer1 );
+    if( _hdr.sortKey ) {
+        document->wtomb_string( _sortKey, buffer1 );
         length1 = buffer1.size();
     }
-    document->wtomb_string( text, buffer2 );
+    document->wtomb_string( _text, buffer2 );
     length2 = buffer2.size();
     if( length1 + length2 > 254 ) {
         length2 = length1 > 254 ? 0 : 254 - length1;
     }
-    else if( hdr.sortKey )
-        hdr.size = static_cast< STD1::uint8_t >( length1 + length2 + 1 );
+    else if( _hdr.sortKey )
+        _hdr.size = static_cast< STD1::uint8_t >( length1 + length2 + 1 );
     else
-        hdr.size = static_cast< STD1::uint8_t >( length2 );
-    hdr.synonymCount = static_cast< STD1::uint8_t >( synonyms.size() );
-    if( std::fwrite( &hdr, sizeof( IndexHeader ), 1, out ) != 1 )
+        _hdr.size = static_cast< STD1::uint8_t >( length2 );
+    _hdr.synonymCount = static_cast< STD1::uint8_t >( _synonyms.size() );
+    if( std::fwrite( &_hdr, sizeof( IndexHeader ), 1, out ) != 1 )
         throw FatalError( ERR_WRITE );
     std::size_t written( sizeof( IndexHeader ) );
-    if( hdr.sortKey ) {
+    if( _hdr.sortKey ) {
         if( std::fputc( length1, out ) == EOF ||
             std::fwrite( buffer1.data(), sizeof( char ), length1, out ) != length1 )
             throw FatalError( ERR_WRITE );
@@ -137,9 +137,9 @@ std::size_t IndexItem::write( std::FILE* out, Document *document )
     if( std::fwrite( buffer2.data(), sizeof( char ), length2, out ) != length2 )
         throw FatalError( ERR_WRITE );
     written += length2;
-    if( !synonyms.empty() &&
-        std::fwrite( &synonyms[0], sizeof( STD1::uint32_t ), synonyms.size(), out ) != synonyms.size() )
+    if( !_synonyms.empty() &&
+        std::fwrite( &_synonyms[0], sizeof( STD1::uint32_t ), _synonyms.size(), out ) != _synonyms.size() )
         throw FatalError( ERR_WRITE );
-    written += synonyms.size() * sizeof( STD1::uint32_t );
+    written += _synonyms.size() * sizeof( STD1::uint32_t );
     return written;
 }

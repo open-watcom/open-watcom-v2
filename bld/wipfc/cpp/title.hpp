@@ -40,13 +40,13 @@ struct IpfHeader;
 
 class Title {
 public:
-    Title ( Document* d) : document( d ) { };
+    Title ( Document* d) : _document( d ) { };
     ~Title() { };
     Lexer::Token parse( Lexer* lexer, IpfHeader* hdr );
 private:
     Title( const Title& rhs );              //no copy
     Title& operator=( const Title& rhs );   //no assignment
-    Document* document;
+    Document* _document;
 };
 
 #endif //TITLE_INCLUDED

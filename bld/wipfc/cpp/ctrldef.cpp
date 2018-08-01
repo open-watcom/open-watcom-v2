@@ -41,35 +41,35 @@
 
 CtrlDef::~CtrlDef()
 {
-    for( ConstChildrenIter itr = children.begin(); itr != children.end(); ++itr ) {
+    for( ConstChildrenIter itr = _children.begin(); itr != _children.end(); ++itr ) {
         delete *itr;
     }
 }
 /***************************************************************************/
 Lexer::Token CtrlDef::parse( Lexer* lexer )
 {
-    Lexer::Token tok( document->getNextToken() );
+    Lexer::Token tok( _document->getNextToken() );
     while( tok != Lexer::TAGEND ) {
         if( tok == Lexer::ATTRIBUTE )
-            document->printError( ERR1_ATTRNOTDEF );
+            _document->printError( ERR1_ATTRNOTDEF );
         else if( tok == Lexer::FLAG )
-            document->printError( ERR1_ATTRNOTDEF );
+            _document->printError( ERR1_ATTRNOTDEF );
         else if( tok == Lexer::ERROR_TAG )
             throw FatalError( ERR_SYNTAX );
         else if( tok == Lexer::END )
             throw FatalError( ERR_EOF );
         else
-            document->printError( ERR1_TAGSYNTAX );
-        tok = document->getNextToken();
+            _document->printError( ERR1_TAGSYNTAX );
+        tok = _document->getNextToken();
     }
-    tok = document->getNextToken();
+    tok = _document->getNextToken();
     while( tok != Lexer::END && !( tok == Lexer::TAG && lexer->tagId() == Lexer::EUSERDOC)) {
         if( tok == Lexer::WORD ||
             tok == Lexer::ENTITY ||
             tok == Lexer::PUNCTUATION )
-            document->printError( ERR1_HEADTEXT );
+            _document->printError( ERR1_HEADTEXT );
         else if( tok == Lexer::WHITESPACE )
-            tok = document->getNextToken();
+            tok = _document->getNextToken();
         else if( tok == Lexer::COMMAND ) {
             switch( lexer->cmdId() ) {
             case Lexer::COMMENT:
@@ -77,64 +77,64 @@ Lexer::Token CtrlDef::parse( Lexer* lexer )
             case Lexer::IMBED:
                 {
                 std::wstring* fname( new std::wstring( lexer->text() ) );
-                fname = document->addFileName( fname );
-                document->pushFileInput( fname );
+                fname = _document->addFileName( fname );
+                _document->pushFileInput( fname );
                 break;
                 }
             default:
-                document->printError( ERR1_TAGCONTEXT );
+                _document->printError( ERR1_TAGCONTEXT );
                 break;
             }
-            tok = document->getNextToken();
+            tok = _document->getNextToken();
         }
         else if( tok == Lexer::TAG ) {
             if( lexer->tagId() == Lexer::ECTRLDEF ) {
-                tok = document->getNextToken();
+                tok = _document->getNextToken();
                 while( tok != Lexer::TAGEND ) {
                     if( tok == Lexer::ATTRIBUTE )
-                        document->printError( ERR1_ATTRNOTDEF );
+                        _document->printError( ERR1_ATTRNOTDEF );
                     else if( tok == Lexer::FLAG )
-                        document->printError( ERR1_ATTRNOTDEF );
+                        _document->printError( ERR1_ATTRNOTDEF );
                     else if( tok == Lexer::ERROR_TAG )
                         throw FatalError( ERR_SYNTAX );
                     else if( tok == Lexer::END )
                         throw FatalError( ERR_EOF );
                     else
-                        document->printError( ERR1_TAGSYNTAX );
-                    tok = document->getNextToken();
+                        _document->printError( ERR1_TAGSYNTAX );
+                    tok = _document->getNextToken();
                 }
                 break;
             }
             else if( lexer->tagId() == Lexer::PBUTTON ) {
-                PButton* pb( new PButton( document, 0, document->dataName(),
-                    document->dataLine(), document->dataCol() ) );
+                PButton* pb( new PButton( _document, 0, _document->dataName(),
+                    _document->dataLine(), _document->dataCol() ) );
                 appendChild( pb );
                 tok = pb->parse( lexer );
             }
             else if( lexer->tagId() == Lexer::CTRL ) {
-                Ctrl* ctrl( new Ctrl( document, 0, document->dataName(),
-                    document->dataLine(), document->dataCol() ) );
+                Ctrl* ctrl( new Ctrl( _document, 0, _document->dataName(),
+                    _document->dataLine(), _document->dataCol() ) );
                 appendChild( ctrl );
                 tok = ctrl->parse( lexer );
             }
             else
-                document->printError( ERR1_TAGCONTEXT );
+                _document->printError( ERR1_TAGCONTEXT );
         }
         else if( tok == Lexer::ERROR_TAG ) {
-            document->printError( ERR1_TAGNOTDEF );
-            tok = document->getNextToken();
+            _document->printError( ERR1_TAGNOTDEF );
+            tok = _document->getNextToken();
         }
         else if( tok == Lexer::ERROR_ENTITY ) {
-            document->printError( ERR1_TAGNOTDEF );
-            tok = document->getNextToken();
+            _document->printError( ERR1_TAGNOTDEF );
+            tok = _document->getNextToken();
         }
     }
-    return document->getNextToken();
+    return _document->getNextToken();
 }
 /***************************************************************************/
 void CtrlDef::build( Controls* ctrls )
 {
-    for( ConstChildrenIter itr = children.begin(); itr != children.end(); ++itr )
+    for( ConstChildrenIter itr = _children.begin(); itr != _children.end(); ++itr )
         (*itr)->build( ctrls );
 }
 

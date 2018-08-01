@@ -48,12 +48,12 @@ public:
     };
     IndexItem( Type t );
     ~IndexItem() { };
-    void setGlobal() { hdr.global = 1; };
-    bool isGlobal() const { return hdr.global; };
-    void setSortKey( std::wstring& key ) { hdr.sortKey = 1; sortKey = key; };
-    void setText( std::wstring& t ) { text = t; };
-    void setTOC( STD1::uint16_t t ) { hdr.tocPanelIndex = t; };
-    void addSynonym( STD1::uint32_t t ) { synonyms.push_back( t ); };
+    void setGlobal() { _hdr.global = 1; };
+    bool isGlobal() const { return _hdr.global; };
+    void setSortKey( std::wstring& key ) { _hdr.sortKey = 1; _sortKey = key; };
+    void setText( std::wstring& t ) { _text = t; };
+    void setTOC( STD1::uint16_t t ) { _hdr.tocPanelIndex = t; };
+    void addSynonym( STD1::uint32_t t ) { _synonyms.push_back( t ); };
     std::size_t write( std::FILE* out, Document *document );
     bool operator==( const IndexItem& rhs ) const;
     bool operator==( const std::wstring& rhs ) const;
@@ -74,10 +74,10 @@ private:
         IndexHeader() { std::memset( this, 0, sizeof( IndexItem ) ); };
     };
 #pragma pack(pop)
-    IndexHeader hdr;
-    std::wstring sortKey;
-    std::wstring text;
-    std::vector< STD1::uint32_t > synonyms;
+    IndexHeader _hdr;
+    std::wstring _sortKey;
+    std::wstring _text;
+    std::vector< STD1::uint32_t > _synonyms;
     typedef std::vector< STD1::uint32_t >::iterator SynIter;
     typedef std::vector< STD1::uint32_t >::const_iterator ConstSynIter;
     int wstricmp( const wchar_t *s, const wchar_t *t ) const;

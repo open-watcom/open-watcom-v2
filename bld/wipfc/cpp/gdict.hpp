@@ -58,7 +58,7 @@ class GlobalDictionary {
     typedef STD1::uint32_t  dword;
 
 public:
-    GlobalDictionary() : bytes( 0 ), ftsBytes( 0 ) {};
+    GlobalDictionary() : _bytes( 0 ), _ftsBytes( 0 ) {};
     ~GlobalDictionary();
     //add a word to the collection
     GlobalDictionaryWord* insert( GlobalDictionaryWord* wordent );
@@ -67,28 +67,28 @@ public:
     //of the collection as if it were an array
     void convert( std::size_t count );
     //get the index of a word in the collection
-    STD1::uint16_t findIndex( GlobalDictionaryWord *wordent ) { return (*words.find( wordent ))->index(); };
+    STD1::uint16_t findIndex( GlobalDictionaryWord *wordent ) { return (*_words.find( wordent ))->index(); };
     STD1::uint16_t findIndex( const std::wstring& wordtxt );
     //get a word from the collection
-    GlobalDictionaryWord* findWord( GlobalDictionaryWord *wordent ) { return *words.find( wordent ); };
+    GlobalDictionaryWord* findWord( GlobalDictionaryWord *wordent ) { return *_words.find( wordent ); };
     GlobalDictionaryWord* findWord( const std::wstring& wordtxt );
     //the number of elements in the collection
-    STD1::uint16_t size() const { return static_cast< word >( words.size() ); };
+    STD1::uint16_t size() const { return static_cast< word >( _words.size() ); };
     //the number of bytes written by the collection
-    STD1::uint32_t length() const { return bytes; };
+    STD1::uint32_t length() const { return _bytes; };
     //the number of bytes of FTS data written by the collection
-    STD1::uint32_t ftsLength() const { return ftsBytes; };
+    STD1::uint32_t ftsLength() const { return _ftsBytes; };
     STD1::uint32_t write( std::FILE* out, Document *document );
     bool buildFTS();
     STD1::uint32_t writeFTS( std::FILE* out, bool big );
 private:
     GlobalDictionary( const GlobalDictionary& rhs );            //no copy
     GlobalDictionary operator= ( const GlobalDictionary& rhs ); //no assigment
-    std::set< GlobalDictionaryWord*, ptrLess< GlobalDictionaryWord* > > words;
+    std::set< GlobalDictionaryWord*, ptrLess< GlobalDictionaryWord* > > _words;
     typedef std::set< GlobalDictionaryWord*, ptrLess< GlobalDictionaryWord* > >::const_iterator ConstWordIter;
     typedef std::set< GlobalDictionaryWord*, ptrLess< GlobalDictionaryWord* > >::iterator WordIter;
-    dword bytes;
-    dword ftsBytes;
+    dword _bytes;
+    dword _ftsBytes;
 };
 
 #endif //GLOBALDICTIONARY_INCLUDED

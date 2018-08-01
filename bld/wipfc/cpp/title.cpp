@@ -41,37 +41,37 @@
 
 Lexer::Token Title::parse( Lexer* lexer, IpfHeader* hdr )
 {
-    Lexer::Token tok( document->getNextToken() );
+    Lexer::Token tok( _document->getNextToken() );
     while ( tok != Lexer::TAGEND ) {
         if( tok == Lexer::ATTRIBUTE )
-            document->printError( ERR1_ATTRNOTDEF );
+            _document->printError( ERR1_ATTRNOTDEF );
         else if( tok == Lexer::FLAG )
-            document->printError( ERR1_ATTRNOTDEF );
+            _document->printError( ERR1_ATTRNOTDEF );
         else if( tok == Lexer::END )
             throw FatalError( ERR_EOF );
         else
-            document->printError( ERR1_TAGSYNTAX );
-        tok = document->getNextToken();
+            _document->printError( ERR1_TAGSYNTAX );
+        tok = _document->getNextToken();
     }
     std::wstring txt;
-    unsigned int startLine( document->dataLine() );
-    tok = document->getNextToken();
-    while(  document->dataLine() == startLine ) {
+    unsigned int startLine( _document->dataLine() );
+    tok = _document->getNextToken();
+    while(  _document->dataLine() == startLine ) {
         if( tok == Lexer::WHITESPACE ||
             tok == Lexer::WORD ||
             tok == Lexer::PUNCTUATION ) {
             txt += lexer->text();
         } else if( tok == Lexer::ENTITY ) {
-            const std::wstring* exp( document->nameit( lexer->text() ) );
+            const std::wstring* exp( _document->nameit( lexer->text() ) );
             if( exp ) {
                 txt += *exp;
             } else {
                 try {
-                    wchar_t ch( document->entity( lexer->text() ) );
+                    wchar_t ch( _document->entity( lexer->text() ) );
                     txt += ch;
                 }
                 catch( Class2Error& e ) {
-                    document->printError( e.code );
+                    _document->printError( e.code );
                 }
             }
         } else if( tok == Lexer::END ) {
@@ -79,12 +79,12 @@ Lexer::Token Title::parse( Lexer* lexer, IpfHeader* hdr )
         } else {
             break;
         }
-        tok = document->getNextToken();
+        tok = _document->getNextToken();
     }
     char title[TITLE_SIZE + 1];
-    std::size_t len = document->wtomb_cstring( title, txt.c_str(), sizeof( title ) - 1 );
+    std::size_t len = _document->wtomb_cstring( title, txt.c_str(), sizeof( title ) - 1 );
     if( len > TITLE_SIZE - 1 )
-        document->printError( ERR2_TEXTTOOLONG );
+        _document->printError( ERR2_TEXTTOOLONG );
     std::strncpy( hdr->title, title, TITLE_SIZE - 1 );
     hdr->title[TITLE_SIZE - 1] = '\0';
     return tok;

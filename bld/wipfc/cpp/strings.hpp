@@ -43,16 +43,16 @@ class Document;     // forward reference
 
 class StringTable {
 public:
-    StringTable() : bytes( 0 ) { table.reserve( 3 ); };
-    void add( const std::wstring& str ) { table.push_back( str ); };
+    StringTable() : _bytes( 0 ) { _table.reserve( 3 ); };
+    void add( const std::wstring& str ) { _table.push_back( str ); };
     //the number of bytes written to disk
-    STD1::uint32_t length() const { return bytes; };
+    STD1::uint32_t length() const { return _bytes; };
     STD1::uint32_t write( std::FILE *out, Document *document );
 private:
-    std::vector< std::wstring > table;
+    std::vector< std::wstring > _table;
     typedef std::vector< std::wstring >::iterator TableIter;
     typedef std::vector< std::wstring >::const_iterator ConstTableIter;
-    STD1::uint32_t bytes;
+    STD1::uint32_t _bytes;
 };
 
 #endif //STRINGS_INCLUDED

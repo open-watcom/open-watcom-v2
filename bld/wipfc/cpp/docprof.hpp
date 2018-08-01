@@ -53,19 +53,19 @@ public:
         PAGE,
         BOTH
     };
-    DocProf( Document* d) : document( d ), headerCutOff( 3 ), area( COVERPAGE ) { };
+    DocProf( Document* d) : _document( d ), _headerCutOff( 3 ), _area( COVERPAGE ) { };
     ~DocProf() { };
     Lexer::Token parse( Lexer* lexer );
     void build( Controls* ctrls, StringTable* strs );
 private:
     DocProf( const DocProf& rhs );              //no copy
     DocProf& operator=( const DocProf& rhs );   //no assignment
-    Document* document;
-    unsigned int headerCutOff;
-    std::wstring dll;
-    std::wstring objName;
-    std::wstring objInfo;
-    enum CtrlArea area;
+    Document* _document;
+    unsigned int _headerCutOff;
+    std::wstring _dll;
+    std::wstring _objName;
+    std::wstring _objInfo;
+    enum CtrlArea _area;
 };
 
 #endif //DOCPROF_INCLUDED
