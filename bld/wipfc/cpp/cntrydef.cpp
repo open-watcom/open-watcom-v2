@@ -43,8 +43,8 @@ void CountryDef::nlsConfig( const char *loc )
 /*******************************************/
 {
     char        buffer[256];
-    char        *fn1;
-    char        *fn2;
+    const char  *fn1;
+    const char  *fn2;
 
     std::string path( Environment.value( "WIPFC" ) );
     if( path.length() )

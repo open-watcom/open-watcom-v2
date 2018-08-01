@@ -52,7 +52,7 @@ Compiler::Compiler():
     _printBanner( true ),
     _search( true ),
     _xref( false ),
-    _inFileName( NULL )
+    _inFileNameW( NULL )
 {
 }
 /*****************************************************************************/
@@ -66,7 +66,7 @@ Compiler::~Compiler()
 /*****************************************************************************/
 void Compiler::setInputFile( const std::string& sfname )
 {
-    std::wstring *name = new std::wstring();
+    _inFileNameW = new std::wstring();
     _inFileName = sfname;
     def_mbtow_string( _inFileName, *_inFileNameW );
 }

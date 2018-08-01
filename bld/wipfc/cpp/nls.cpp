@@ -32,6 +32,7 @@
 #include "wipfc.hpp"
 #include <cstdlib>
 #include <cstring>
+#include <climits>
 #if defined( __UNIX__ ) || defined( __APPLE__ )
     #include <clocale>
 #else

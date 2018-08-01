@@ -84,8 +84,8 @@ STD1::uint16_t FTSElement::getPages( std::vector< word >& pg, bool absent ) cons
     }
     for( ConstPageIter itr = _pages.begin(); itr != _pages.end(); ++itr ) {
         for( byte mask = 0x80; mask != 0; mask >>= 1 ) {
-            if( absent && !(*itr & mask) && index < _maxPage
-              || !absent && (*itr & mask) ) {
+            if( ( absent && (*itr & mask) == 0 && index < _maxPage )
+              || ( !absent && (*itr & mask) ) ) {
                 pg.push_back( index );
             }
             ++index;
