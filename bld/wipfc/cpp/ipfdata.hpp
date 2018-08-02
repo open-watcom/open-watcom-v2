@@ -37,17 +37,17 @@
 
 class IpfData {
 public:
-    IpfData() : lineNum( 1 ), charNum( 1 ) { };
-    IpfData( unsigned int line, unsigned int col ) : lineNum( line ), charNum( col ) { };
+    IpfData() : _lineNum( 1 ), _charNum( 1 ) { };
+    IpfData( unsigned int line, unsigned int col ) : _lineNum( line ), _charNum( col ) { };
     virtual
     ~IpfData() { };
-    unsigned int currentLine() const { return lineNum; };
-    void incLine() { ++lineNum; };
-    void decLine() { --lineNum; };
-    unsigned int currentCol() const { return charNum; };
-    void incCol() { ++charNum; };
-    void decCol() { --charNum; };
-    void resetCol() { charNum = 1; };
+    unsigned int currentLine() const { return _lineNum; };
+    void incLine() { ++_lineNum; };
+    void decLine() { --_lineNum; };
+    unsigned int currentCol() const { return _charNum; };
+    void incCol() { ++_charNum; };
+    void decCol() { --_charNum; };
+    void resetCol() { _charNum = 1; };
     //Returns the file or buffer name for use in error messages
     virtual
     const std::wstring* name() const = 0;
@@ -69,8 +69,8 @@ public:
 private:
     IpfData( const IpfData& rhs );              //no copy
     IpfData& operator=( const IpfData& rhs );   //no assignment
-    unsigned int lineNum;
-    unsigned int charNum;
+    unsigned int _lineNum;
+    unsigned int _charNum;
 };
 
 #endif //IPFDATA_INCLUDED
