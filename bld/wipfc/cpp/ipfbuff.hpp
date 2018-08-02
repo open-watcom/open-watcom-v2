@@ -41,7 +41,7 @@ public:
     ~IpfBuffer() { };
     //Returns the file or buffer name for use in error messages
     virtual
-    const std::wstring* name() const { return fileName; };
+    const std::wstring* name() const { return _fileName; };
     //Read a character
     virtual
     std::wint_t get();
@@ -50,21 +50,21 @@ public:
     void unget( wchar_t ch );
     //Seek to beginning
     virtual
-    void reset() { head = buffer.begin(); };
+    void reset() { _head = _buffer.begin(); };
     //Seek to position relative to beginning
     virtual
-    void setPos(long int offset) { if( head + offset < tail ) head += offset; };
+    void setPos(long int offset) { if( _head + offset < _tail ) _head += offset; };
     //Get the current position
     virtual
-    long int pos() { return static_cast< long int >( head - buffer.begin() ); };
+    long int pos() { return static_cast< long int >( _head - _buffer.begin() ); };
 private:
     IpfBuffer( const IpfBuffer& rhs );              //no copy
     IpfBuffer& operator=( const IpfBuffer& rhs );   //no assignment
-    const std::wstring* fileName;
-    std::wstring buffer;
-    std::wstring::iterator head;
-    std::wstring::iterator tail;
-    wchar_t ungotCh;
+    const std::wstring* _fileName;
+    std::wstring _buffer;
+    std::wstring::iterator _head;
+    std::wstring::iterator _tail;
+    wchar_t _ungotCh;
 };
 
 #endif //IPFBUFFER_INCLUDED

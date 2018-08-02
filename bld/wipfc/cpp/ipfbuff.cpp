@@ -37,23 +37,23 @@ IpfBuffer::IpfBuffer( const std::wstring* fname,    //originiating file
     unsigned int col,
     const std::wstring& text ) :
     IpfData( line, col ),
-    fileName( fname ),
-    buffer( text ),
-    ungotCh( EOB )
+    _fileName( fname ),
+    _buffer( text ),
+    _ungotCh( EOB )
 {
-    head = buffer.begin();
-    tail = buffer.end();
+    _head = _buffer.begin();
+    _tail = _buffer.end();
 }
 /*****************************************************************************/
 IpfBuffer::IpfBuffer( const std::wstring* fname,    //originating file
     const std::wstring& text ) :                    //text to substitute
     IpfData(),
-    fileName( fname ),
-    buffer( text ),
-    ungotCh( EOB )
+    _fileName( fname ),
+    _buffer( text ),
+    _ungotCh( EOB )
 {
-    head = buffer.begin();
-    tail = buffer.end();
+    _head = _buffer.begin();
+    _tail = _buffer.end();
 }
 /*****************************************************************************/
 //Read a character
@@ -61,13 +61,12 @@ IpfBuffer::IpfBuffer( const std::wstring* fname,    //originating file
 std::wint_t IpfBuffer::get()
 {
     wchar_t ch = EOB;
-    if ( ungotCh != EOB ) {
-        ch = ungotCh;
-        ungotCh = EOB;
-    }
-    else if( head != tail ) {
-        ch = *head;
-        ++head;
+    if ( _ungotCh != EOB ) {
+        ch = _ungotCh;
+        _ungotCh = EOB;
+    } else if( _head != _tail ) {
+        ch = *_head;
+        ++_head;
         incCol();
         if( ch == L'\n' ) {
             incLine();
@@ -79,14 +78,14 @@ std::wint_t IpfBuffer::get()
 /*****************************************************************************/
 void IpfBuffer::unget( wchar_t ch )
 {
-    if( head > buffer.begin() ) {
-        --head;
+    if( _head > _buffer.begin() ) {
+        --_head;
         decCol();
-        *head = ch;
-        if( ch == L'\n' )
+        *_head = ch;
+        if( ch == L'\n' ) {
             decLine();
+        }
+    } else {
+        _ungotCh = ch;
     }
-    else
-        ungotCh = ch;
 }
-

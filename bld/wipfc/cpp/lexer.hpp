@@ -73,28 +73,28 @@ public:
     //get the next token from the input stream
     Token lex( IpfData* input );
     //get the actual text associated with the token
-    const std::wstring& text() const { return buffer; };
+    const std::wstring& text() const { return _buffer; };
     //parsing inside a tag
-    bool isInTag() const { return inTag; };
+    bool isInTag() const { return _inTag; };
     //which tag?
-    TagId tagId() const { return tagCode; };
+    TagId tagId() const { return _tagCode; };
     //which command?
-    CmdId cmdId() const { return cmdCode; };
+    CmdId cmdId() const { return _cmdCode; };
     //get the position at the start of the current token
-    unsigned int currentLine() const { return lineNum; };
-    unsigned int currentCol() const { return charNum; };
+    unsigned int currentLine() const { return _lineNum; };
+    unsigned int currentCol() const { return _charNum; };
 private:
     Lexer( const Lexer& rhs );              //no copy
     Lexer& operator=( const Lexer& rhs );   //no assignment
-    std::wstring buffer;
-    std::map< std::wstring, TagId > tagIdMap;
+    std::wstring _buffer;
+    std::map< std::wstring, TagId > _tagIdMap;
     typedef std::map< std::wstring, TagId >::iterator TagIdMapIter;
     typedef std::map< std::wstring, TagId >::const_iterator ConstTagIdMapIter;
-    unsigned int charNum;
-    unsigned int lineNum;
-    TagId tagCode;
-    CmdId cmdCode;
-    bool inTag;         //we are between ':' and '.' inside a tag
+    unsigned int _charNum;
+    unsigned int _lineNum;
+    TagId _tagCode;
+    CmdId _cmdCode;
+    bool _inTag;         //we are between ':' and '.' inside a tag
     //if the token is a tag, find the id
     void getTagId();
     //if the token is a command, find the id

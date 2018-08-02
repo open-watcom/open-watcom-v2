@@ -36,12 +36,12 @@
 #include "errors.hpp"
 #include "ipfdata.hpp"
 
-Lexer::Lexer() : charNum( 0 ), lineNum( 0 ), tagCode( BADTAG ), cmdCode( BADCMD ),
-    inTag( false )
+Lexer::Lexer() : _charNum( 0 ), _lineNum( 0 ), _tagCode( BADTAG ), _cmdCode( BADCMD ),
+    _inTag( false )
 {
-    buffer.reserve( 256 );
+    _buffer.reserve( 256 );
     #undef PICK
-    #define PICK(a,b) tagIdMap.insert( std::map< std::wstring, TagId >::value_type( b, a ) );
+    #define PICK(a,b) _tagIdMap.insert( std::map< std::wstring, TagId >::value_type( b, a ) );
     #include "tags.hpp"
 }
 /*****************************************************************************/
@@ -55,211 +55,194 @@ Lexer::Token Lexer::lex( IpfData* input )
         wchar_t ch;
         wchar_t quoteChar = L'\0';
         bool inQuote( false );
-        buffer.clear();
-        charNum = input->currentCol();
-        lineNum = input->currentLine();
+        _buffer.clear();
+        _charNum = input->currentCol();
+        _lineNum = input->currentLine();
         while( ( ch = input->get() ) != EOB ) {
-            buffer.push_back( ch );
-            if( inTag ) {
+            _buffer.push_back( ch );
+            if( _inTag ) {
                 if( type == END ) { //first char after tag name
                     if( ch == L'.' ) {
                         type = TAGEND;
-                        inTag = false;
+                        _inTag = false;
                         break;
-                    }
-                    else if( std::iswspace( ch ) ) //ignore leading whitespace
-                        buffer.erase( buffer.size() - 1 );
-                    else if( std::iswalpha( ch ) ) {
+                    } else if( std::iswspace( ch ) ) {  //ignore leading whitespace
+                        _buffer.erase( _buffer.size() - 1 );
+                    } else if( std::iswalpha( ch ) ) {
                         type = FLAG;    //tentatively
                         inQuote = false;
                     }
-                }
-                else {
+                } else {
                     if( !inQuote && ch == L'.' ) {
                         input->unget( ch );
-                        buffer.erase( buffer.size() - 1 );
+                        _buffer.erase( _buffer.size() - 1 );
                         break;
-                    }
-                    else if( !inQuote && ch == L':' ) {
+                    } else if( !inQuote && ch == L':' ) {
                         //syntax error
                         type = ERROR_TAG;
                         break;
-                    }
-                    else if ( type == FLAG ) {
-                        if( ch == L'=' )
+                    } else if ( type == FLAG ) {
+                        if( ch == L'=' ) {
                             type = ATTRIBUTE;
-                        else if( std::iswspace( ch ) ) {
-                            buffer.erase( buffer.size() - 1 );
+                        } else if( std::iswspace( ch ) ) {
+                            _buffer.erase( _buffer.size() - 1 );
                             break;
                         }
-                    }
-                    else if ( type == ATTRIBUTE ) {
+                    } else if ( type == ATTRIBUTE ) {
                         if( ch == L'\'' || ch == '\"' ) {
                             if( !inQuote ) {
                                 inQuote = true;
                                 quoteChar = ch;
-                            }
-                            else if( ch == quoteChar ) {
+                            } else if( ch == quoteChar ) {
                                 inQuote = false;
                             }
-                        }
-                        else if( !inQuote && std::iswspace( ch ) ) {
-                            buffer.erase( buffer.size() - 1 );
+                        } else if( !inQuote && std::iswspace( ch ) ) {
+                            _buffer.erase( _buffer.size() - 1 );
                             break;
                         }
-                    }
-                    else if( std::iswspace( ch ) ) {
+                    } else if( std::iswspace( ch ) ) {
                         //ignore trailing space
-                        buffer.erase( buffer.size() - 1 );
+                        _buffer.erase( _buffer.size() - 1 );
                         break;
                     }
                 }
-            }
-            else {
+            } else {
                 if( type == END ) {
                     //first character of token
                     if( std::iswspace( ch ) ) {
                         type = WHITESPACE;
                         if( ch == L'\n' )   //don't concatenate spaces
                             break;
-                    }
-                    else if ( ch == L':' ) {
+                    } else if ( ch == L':' ) {
                         wchar_t ch2( input->get() );
                         input->unget( ch2 );
                         if( std::iswalpha( ch2 ) ) {
                             type = TAG;
-                            inTag = true;
-                        }
-                        else {
+                            _inTag = true;
+                        } else {
                             type = PUNCTUATION;
                             break;
                         }
-                    }
-                    else if ( ch == L'&' ) {
+                    } else if ( ch == L'&' ) {
                         wchar_t ch2( input->get() );
                         input->unget( ch2 );
-                        if( std::iswalnum( ch2 ) )
+                        if( std::iswalnum( ch2 ) ) {
                             type = ENTITY;
-                        else
+                        } else {
                             type = WORD;
-                    }
-                    else if ( ch == L'.' ) {
-                        if( charNum == 1 )
+                        }
+                    } else if ( ch == L'.' ) {
+                        if( _charNum == 1 ) {
                             type = COMMAND;
-                        else {
+                        } else {
                             type = PUNCTUATION;
                             break;
                         }
-                    }
-                    else if ( std::iswpunct( ch ) ) {
+                    } else if ( std::iswpunct( ch ) ) {
                         //single character, but not '.' or '&' or ':'
                         type = PUNCTUATION;
                         break;
-                    }
-                    else //if ( std::iswalnum( ch ) )
+                    } else {    //if ( std::iswalnum( ch ) )
                         type = WORD;
-                }
-                else {
+                    }
+                } else {
                     if( type == COMMAND ) {
                         if( ch == L'\n' ) {
                             break;
                         }
-                    }
-                    else if( ch == L':' || ch == L'&' ) {
+                    } else if( ch == L':' || ch == L'&' ) {
                         //beginning of another token
                         input->unget( ch );
-                        buffer.erase( buffer.size() - 1 );
+                        _buffer.erase( _buffer.size() - 1 );
                         if( type == ENTITY )
                             type = ERROR_ENTITY;    //'.' not found
                         break;
-                    }
-                    else if( type == ENTITY ) {
+                    } else if( type == ENTITY ) {
                         if( ch == L'.' )
                             //end of entity
                             break;
                         if( !std::iswalnum( ch ) ) {
                             //non-fatal malformed entity
                             input->unget( ch );
-                            buffer.erase( buffer.size() - 1 );
+                            _buffer.erase( _buffer.size() - 1 );
                             type = ERROR_ENTITY;
                             break;
                         }
-                    }
-                    else if( type == WHITESPACE &&
+                    } else if( type == WHITESPACE &&
                            ( !std::iswspace( ch ) || ch == L'\n' ) ) {
                         //end of whitespace
                         //don't concatenate \n's
                         input->unget( ch );
-                        buffer.erase( buffer.size() - 1 );
+                        _buffer.erase( _buffer.size() - 1 );
                         break;
-                    }
-                    else if( type == WORD &&
+                    } else if( type == WORD &&
                         ( std::iswspace( ch ) || std::iswpunct( ch ) ) ) {
                         //!std::iswalnum( ch )
                         //end of token
                         input->unget( ch );
-                        buffer.erase( buffer.size() - 1 );
+                        _buffer.erase( _buffer.size() - 1 );
                         break;
                     }
                 }
 
             }
         }
-        if ( type == TAG )
+        if( type == TAG ) {
             getTagId();
-        else if ( type == COMMAND )
+        } else if( type == COMMAND ) {
             getCmdId();
+        }
     }
     return type;
 }
 /*****************************************************************************/
 void Lexer::getTagId()
 {
-    TagIdMapIter pos( tagIdMap.find( buffer ) );
-    if( pos != tagIdMap.end() )
-        tagCode = pos->second;
-    else
-        tagCode = BADTAG;
+    TagIdMapIter pos( _tagIdMap.find( _buffer ) );
+    if( pos != _tagIdMap.end() ) {
+        _tagCode = pos->second;
+    } else {
+        _tagCode = BADTAG;
+    }
 }
 /*****************************************************************************/
 void Lexer::getCmdId()
 {
-    if( buffer.find( L".*", 0, 2 ) == 0 ) {
-        cmdCode = COMMENT;
-        buffer.erase( 0, 2 );
-    }
-    else if( buffer.find( L".br", 0, 3 ) == 0 )
-        cmdCode = BREAK;
-    else if( buffer.find( L".ce", 0, 3 ) == 0 ) {
+    if( _buffer.find( L".*", 0, 2 ) == 0 ) {
+        _cmdCode = COMMENT;
+        _buffer.erase( 0, 2 );
+    } else if( _buffer.find( L".br", 0, 3 ) == 0 ) {
+        _cmdCode = BREAK;
+    } else if( _buffer.find( L".ce", 0, 3 ) == 0 ) {
         std::size_t cut( 0 );
-        cmdCode = CENTER;
-        buffer.erase( 0, 3 );
-        for( cut = 0; cut <= buffer.length() && buffer[ cut ] == L' '; ++cut )
+        _cmdCode = CENTER;
+        _buffer.erase( 0, 3 );
+        for( cut = 0; cut <= _buffer.length() && _buffer[ cut ] == L' '; ++cut )
              ;
-        if( cut )
-            buffer.erase( 0, cut );     //trim leading spaces
-    }
-    else if( buffer.find( L".im", 0, 3 ) == 0 ) {
+        if( cut ) {
+            _buffer.erase( 0, cut );     //trim leading spaces
+        }
+    } else if( _buffer.find( L".im", 0, 3 ) == 0 ) {
         std::size_t cut( 0 );
-        cmdCode = IMBED;
-        buffer.erase( 0, 3 );
-        buffer.erase( buffer.size() - 1 );  //trim '/n'
-        for( cut = 0; cut <= buffer.length() && buffer[cut] == L' '; ++cut )
+        _cmdCode = IMBED;
+        _buffer.erase( 0, 3 );
+        _buffer.erase( _buffer.size() - 1 );  //trim '/n'
+        for( cut = 0; cut <= _buffer.length() && _buffer[cut] == L' '; ++cut )
              ;
-        if( cut )
-            buffer.erase( 0, cut );     //trim leading spaces
-    }
-    else if( buffer.find( L".nameit", 0, 7 ) == 0 ) {
-        cmdCode = NAMEIT;
+        if( cut ) {
+            _buffer.erase( 0, cut );     //trim leading spaces
+        }
+    } else if( _buffer.find( L".nameit", 0, 7 ) == 0 ) {
+        _cmdCode = NAMEIT;
         std::size_t cut( 0 );
-        buffer.erase( 0, 7 );
-        buffer.erase( buffer.size() - 1 );  //trim '/n'
-        for( cut = 0; cut <= buffer.length() && buffer[cut] == L' '; ++cut )
+        _buffer.erase( 0, 7 );
+        _buffer.erase( _buffer.size() - 1 );  //trim '/n'
+        for( cut = 0; cut <= _buffer.length() && _buffer[cut] == L' '; ++cut )
              ;
-        if( cut )
-            buffer.erase( 0, cut );     //trim leading spaces
+        if( cut ) {
+            _buffer.erase( 0, cut );     //trim leading spaces
+        }
+    } else {
+        _cmdCode = BADCMD;
     }
-    else
-        cmdCode = BADCMD;
 }
-
