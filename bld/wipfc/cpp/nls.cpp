@@ -45,6 +45,7 @@
 
 
 Nls::Nls( const char *loc ) : _bytes( 0 )
+/***************************************/
 {
     _sbcsG._type = WIPFC::GRAPHIC;
     _dbcsG._type = WIPFC::GRAPHIC;
@@ -150,22 +151,7 @@ void Nls::readNLSFile( const std::string& sfname )
 /*****************************************************************************/
 void Nls::setLocalization( const char *loc)
 {
-    // TODO! MBCS<->UNICODE conversion for mbtow_char and wtomb_char must be setup
-    // instead of existing code which rely on host OS locale support.
-    // By example proper characters encoding for US INF Documentation files is
-    // DOS codepage 850, but on Linux it is handled as ISO-8859-1 or UTF-8 in
-    // dependency how host locale are configured. It is wrong!
-    // Correct solution is to use DOS codepage 850 for US on any host OS.
-    // It requires to define appropriate MBCS<->UNICODE conversion tables as part of WIPFC.
-    _country.nlsConfig( loc );
-    // TODO! Following code must be replaced by setup MBCS<->UNICODE conversion tables
-    // for mbtow_char and wtomb_char
-#if defined( __UNIX__ ) || defined( __APPLE__ )
-    std::setlocale( LC_ALL, loc );  //this doesn't really do anything in OW either
-#endif
-#if !defined( __UNIX__ ) && !defined( __APPLE__ )
-    _setmbcp( _country.codePage() ); //doesn't do much of anything in OW
-#endif
+    set_document_data_codepage( loc );
     readNLSFile( _country.nlsFileName() );
     readEntityFile( _country.entityFileName() );
 }
@@ -281,12 +267,35 @@ STD1::uint32_t Nls::DbcsGrammarDef::write( std::FILE *out )
     return( start );
 }
 
+//
+// Following code is responsible for document data conversion UNICODE<->MBCS
+//  in dependency on required code page (default is cp=850)
+//
+// TODO! MBCS<->UNICODE conversion for mbtow_char and wtomb_char must be setup
+// instead of existing code which rely on host OS locale support.
+// By example proper characters encoding for US INF Documentation files is
+// DOS codepage 850, but on Linux it is handled as ISO-8859-1 or UTF-8 in
+// dependency how host locale are configured. It is wrong!
+// Correct solution is to use DOS codepage 850 for US on any host OS.
+// It requires to define appropriate MBCS<->UNICODE conversion tables as part of WIPFC.
+
+void Nls::set_document_data_codepage( const char *loc )
+/*****************************************************/
+{
+    _country.nlsConfig( loc );
+    // TODO! It is wrong code, but we doesn't have any better for now
+#if defined( __UNIX__ ) || defined( __APPLE__ )
+    std::setlocale( LC_ALL, loc );
+#else
+    _setmbcp( _country.codePage() );
+#endif
+}
+
 static int wtomb_char( char *mbc, wchar_t wc )
 /********************************************/
 {
     // TODO! must be converted by selected UNICODE->MBCS conversion table
-    // which is independent from the host OS locale
-    // conversion must be selected by Nls::setLocalization
+    // which is independent from the host user locale
     return( std::wctomb( mbc, wc ) );
 }
 
@@ -294,8 +303,7 @@ static int mbtow_char( wchar_t *wc, const char *mbc, std::size_t len )
 /********************************************************************/
 {
     // TODO! must be converted by selected MBCS->UNICODE conversion table
-    // which in independent from the host OS locale
-    // conversion must be selected by Nls::setLocalization
+    // which is independent from the host user locale
     return( std::mbtowc( wc, mbc, len ) );
 }
 

@@ -33,6 +33,9 @@
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
+#if defined( __UNIX__ ) || defined( __APPLE__ )
+    #include <clocale>
+#endif
 #include "banner.h"
 #include "compiler.hpp"
 #include "env.hpp"
@@ -56,6 +59,9 @@ static void printBanner( void )
 int main(int argc, char **argv)
 {
     int retval( EXIT_FAILURE );
+#if defined( __UNIX__ ) || defined( __APPLE__ )
+    std::setlocale( LC_ALL, "" );  // setup locale defined by user profile
+#endif
     Environment.add( "WIPFC" );
     if( Environment.value( "WIPFC" ).empty() ) {
         printBanner();

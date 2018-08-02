@@ -79,7 +79,7 @@ void killQuotes( std::string& val )
     if ( val[0] == '"' || val[0] == '\'' )
         {
         val.erase( 0, 1 );
-        if( val[ val.size() - 1 ] == '"' || val[ val.size() - 1 ] == '\'' )
+        if( val[val.size() - 1] == '"' || val[val.size() - 1] == '\'' )
             val.erase( val.size() - 1, 1 );
         }
 }
@@ -90,7 +90,7 @@ void killQuotes( std::wstring& val )
     if ( val[0] == L'"' || val[0] == L'\'' )
         {
         val.erase( 0, 1 );
-        if( val[ val.size() - 1 ] == L'"' || val[ val.size() - 1 ] == L'\'' )
+        if( val[val.size() - 1] == L'"' || val[val.size() - 1] == L'\'' )
             val.erase( val.size() - 1, 1 );
         }
 }
@@ -182,19 +182,24 @@ wchar_t *skipWS( wchar_t *text )
     return( text );
 }
 
+
+// this conversion must use user profile locale/codepage
+// it is used for command line arguments and for file path/name
 void def_wtomb_string( const std::wstring& input, std::string& output )
 /*********************************************************************/
 {
     for( std::size_t index = 0; index < input.size(); ++index ) {
-        char ch[ MB_LEN_MAX + 1 ];
-        int  bytes( std::wctomb( &ch[ 0 ], input[ index ] ) );
+        char ch[MB_LEN_MAX + 1];
+        int  bytes( std::wctomb( &ch[0], input[index] ) );
         if( bytes == -1 )
             throw FatalError( ERR_T_CONV );
-        ch[ bytes ] = '\0';
+        ch[bytes] = '\0';
         output += ch;
     }
 }
 
+// this conversion must use user profile locale/codepage
+// it is used for command line arguments and for file path/name
 void def_mbtow_string( const std::string& input, std::wstring& output )
 /*********************************************************************/
 {
