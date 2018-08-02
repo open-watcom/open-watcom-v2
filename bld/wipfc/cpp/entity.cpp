@@ -66,14 +66,14 @@ Lexer::Token Entity::parse( Lexer* lexer )
                 tok = _document->getNextToken();
             }
         }
-        if( whiteSpace != Tag::SPACES && _document->autoSpacing() ) {
+        if( _whiteSpace != Tag::SPACES && _document->autoSpacing() ) {
             Lexer::Token t( _document->lastToken() );
             if( t == Lexer::WORD || t == Lexer::ENTITY || t == Lexer::PUNCTUATION ) {
                 _document->toggleAutoSpacing();
                 _document->lastText()->setToggleSpacing();
             }
         }
-        text = _document->addWord( new GlobalDictionaryWord( txt ) );   //insert into global dictionary
+        _text = _document->addWord( new GlobalDictionaryWord( txt ) );   //insert into global dictionary
     }
     catch( Class2Error& e ) {
         _document->printError( e.code );

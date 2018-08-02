@@ -77,8 +77,7 @@ Lexer::Token CtrlDef::parse( Lexer* lexer )
             case Lexer::IMBED:
                 {
                 std::wstring* fname( new std::wstring( lexer->text() ) );
-                fname = _document->addFileName( fname );
-                _document->pushFileInput( fname );
+                fname = _document->pushFileInput( fname );
                 break;
                 }
             default:

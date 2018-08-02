@@ -58,8 +58,8 @@ Lexer::Token Lm::parse( Lexer* lexer )
                     tmp = 1;
                 if( tmp > 255 )
                     tmp = 255;
-                margin = static_cast< STD1::uint8_t >( tmp );
-                _document->setLeftMargin( margin );
+                _margin = static_cast< STD1::uint8_t >( tmp );
+                _document->setLeftMargin( _margin );
             }
             else
                 _document->printError( ERR1_ATTRNOTDEF );
@@ -82,8 +82,9 @@ void Lm::buildText( Cell* cell )
     cell->addByte( 0xFF );  //esc
     cell->addByte( 0x03 );  //size
     cell->addByte( 0x02 );  //set left margin
-    cell->addByte( margin );
-    if( cell->textFull() )
+    cell->addByte( _margin );
+    if( cell->textFull() ) {
         printError( ERR1_LARGEPAGE );
+    }
 }
 

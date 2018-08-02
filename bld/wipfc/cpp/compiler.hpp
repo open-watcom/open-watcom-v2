@@ -45,6 +45,7 @@
 #include "lexer.hpp"
 #include "ptrops.hpp"
 
+
 class Compiler {
 public:
     enum OutputType {
@@ -56,8 +57,6 @@ public:
     int compile();
     //set the input source file name
     void setInputFile( const std::string& sfname );
-    //initialize first(top) source file
-    void startInput();
     //add a file name to the set of file names
     std::wstring* addFileName( std::wstring* wfname );
     //set the output file name

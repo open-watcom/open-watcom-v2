@@ -388,7 +388,7 @@ Lexer::Token TableRow::parse( Lexer* lexer )
             } else {  //it's blank
                 std::wstring blank( colWidth[ count2 ], L' ' );
                 appendChild( new WhiteSpace( _document, this, _document->dataName(),
-                    _document->lexerLine(), _document->lexerCol(), blank, whiteSpace ) );
+                    _document->lexerLine(), _document->lexerCol(), blank, _whiteSpace ) );
             }
             if( count2 < colWidth.size() - 1 ) {
                 appendChild( new Word( _document, this, _document->dataName(),
@@ -419,7 +419,7 @@ Lexer::Token TableCol::parse( Lexer* lexer )
                 if( spaces > 0 ) {
                     std::wstring txt( spaces, L' ' );
                     WhiteSpace* ws( new WhiteSpace( _document, this, _document->dataName(),
-                        _document->lexerLine(), _document->lexerCol(), txt, whiteSpace ) );
+                        _document->lexerLine(), _document->lexerCol(), txt, _whiteSpace ) );
                     appendData( cellLine, ws );
                 }
                 currentLine = _document->dataLine();
@@ -485,7 +485,7 @@ Lexer::Token TableCol::parse( Lexer* lexer )
                     if( spaces > 0 ) {
                         std::wstring spacetxt( spaces, L' ' );
                         WhiteSpace* ws( new WhiteSpace( _document, this, _document->dataName(),
-                            _document->lexerLine(), _document->lexerCol(), spacetxt, whiteSpace ) );
+                            _document->lexerLine(), _document->lexerCol(), spacetxt, _whiteSpace ) );
                         appendData( cellLine, ws );
                     }
                     std::list< Element* > lst;
@@ -512,7 +512,7 @@ Lexer::Token TableCol::parse( Lexer* lexer )
                 if( spaces > 0 ) {
                     std::wstring spacetxt( spaces, L' ' );
                     WhiteSpace* ws( new WhiteSpace( _document, this, _document->dataName(),
-                        _document->lexerLine(), _document->lexerCol(), spacetxt, whiteSpace ) );
+                        _document->lexerLine(), _document->lexerCol(), spacetxt, _whiteSpace ) );
                     appendData( cellLine, ws );
                 }
                 currentLine = _document->dataLine();
@@ -569,7 +569,7 @@ Lexer::Token TableCol::parse( Lexer* lexer )
                         if( spaces > 0 ) {
                             std::wstring spacetxt( spaces, L' ' );
                             WhiteSpace* ws( new WhiteSpace( _document, this, _document->dataName(),
-                                _document->lexerLine(), _document->lexerCol(), spacetxt, whiteSpace ) );
+                                _document->lexerLine(), _document->lexerCol(), spacetxt, _whiteSpace ) );
                             appendData( cellLine, ws );
                         }
                         std::list< Element* > lst;
@@ -595,7 +595,7 @@ Lexer::Token TableCol::parse( Lexer* lexer )
                     if( spaces > 0 ) {
                         std::wstring spacetxt( spaces, L' ' );
                         WhiteSpace* ws( new WhiteSpace( _document, this, _document->dataName(),
-                            _document->lexerLine(), _document->lexerCol(), spacetxt, whiteSpace ) );
+                            _document->lexerLine(), _document->lexerCol(), spacetxt, _whiteSpace ) );
                         appendData( cellLine, ws );
                     }
                     std::list< Element* > lst;
@@ -631,7 +631,7 @@ Lexer::Token TableCol::parse( Lexer* lexer )
                     if( spaces > 0 ) {
                         std::wstring spacetxt( spaces, L' ' );
                         WhiteSpace* ws( new WhiteSpace( _document, this, _document->dataName(),
-                            _document->lexerLine(), _document->lexerCol(), spacetxt, whiteSpace ) );
+                            _document->lexerLine(), _document->lexerCol(), spacetxt, _whiteSpace ) );
                         appendData( cellLine, ws );
                     }
                     std::list< Element* > lst;
@@ -645,7 +645,7 @@ Lexer::Token TableCol::parse( Lexer* lexer )
                         whitespacetxt.erase( spaces );        //trim text
                     }
                     WhiteSpace* ws( new WhiteSpace( _document, this, _document->dataName(),
-                        _document->lexerLine(), _document->lexerCol(), whitespacetxt, whiteSpace ) );
+                        _document->lexerLine(), _document->lexerCol(), whitespacetxt, _whiteSpace ) );
                     appendData( cellLine, ws );
                     spaces -= whitespacetxt.size();
                 }
@@ -662,7 +662,7 @@ Lexer::Token TableCol::parse( Lexer* lexer )
                     if( whitespacetxt.size() > spaces )
                         whitespacetxt.erase( spaces );            //trim text
                     WhiteSpace* ws( new WhiteSpace( _document, this, _document->dataName(),
-                        _document->lexerLine(), _document->lexerCol(), whitespacetxt, whiteSpace ) );
+                        _document->lexerLine(), _document->lexerCol(), whitespacetxt, _whiteSpace ) );
                     appendData( cellLine, ws );
                     spaces -= whitespacetxt.size();
                 }
@@ -880,7 +880,7 @@ Lexer::Token TableCol::parse( Lexer* lexer )
                 if( spaces > 0 ) {
                     std::wstring spacetxt( spaces, L' ' );
                     WhiteSpace* ws( new WhiteSpace( _document, this, _document->dataName(),
-                        _document->lexerLine(), _document->lexerCol(), spacetxt, whiteSpace ) );
+                        _document->lexerLine(), _document->lexerCol(), spacetxt, _whiteSpace ) );
                     appendData( cellLine, ws );
                 }
                 break;

@@ -39,14 +39,14 @@
 class Ddf : public Element {
 public:
     Ddf( Document* d, Element *p, const std::wstring* f, unsigned int r, unsigned int c ) :
-        Element( d, p, f, r, c ), res( 0 ) { };
+        Element( d, p, f, r, c ), _res( 0 ) { };
     ~Ddf() { };
     Lexer::Token parse( Lexer* lexer );
     void buildText( Cell* cell );
 private:
     Ddf( const Ddf& rhs );              //no copy
     Ddf& operator=( const Ddf& rhs );   //no assignment
-    STD1::uint16_t res;
+    STD1::uint16_t _res;
     Lexer::Token parseAttributes( Lexer* lexer );
 };
 

@@ -54,7 +54,7 @@ Lexer::Token CeCmd::parse( Lexer* lexer )
     while( tok != Lexer::END ) {
         if( tok == Lexer::WHITESPACE ) {
             WhiteSpace* ws( new WhiteSpace( _document, this,
-                _document->dataName(), _document->dataLine(), _document->dataCol(), whiteSpace ) );
+                _document->dataName(), _document->dataLine(), _document->dataCol(), _whiteSpace ) );
             appendChild( ws );
             tok = ws->parse( lexer );
         }

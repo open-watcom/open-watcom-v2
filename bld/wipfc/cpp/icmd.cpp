@@ -41,8 +41,8 @@
 #include "xref.hpp"
 
 ICmd::ICmd( Document* d, Element* p, const std::wstring* f, unsigned int r, unsigned int c ) :
-    Element( d, p, f, r, c ), index( new IndexItem( IndexItem::CMD ) ),
-            parentId( 0 ), parentRes( 0 )
+    Element( d, p, f, r, c ), _index( new IndexItem( IndexItem::CMD ) ),
+            _parentId( 0 ), _parentRes( 0 )
 {
     d->addCmdIndex( this );
 }
@@ -98,7 +98,7 @@ Lexer::Token ICmd::parse( Lexer* lexer )
     }
     if( txt.empty() )
         _document->printError( ERR2_INOTEXT );
-    index->setText( txt );
+    _index->setText( txt );
     return tok;
 }
 /*****************************************************************************/
@@ -106,13 +106,13 @@ void ICmd::buildIndex()
 {
     try {
         XRef xref( _fileName, _row );
-        if( parentRes ) {
-            index->setTOC( _document->tocIndexByRes( parentRes ) );
-            _document->addXRef( parentRes, xref );
+        if( _parentRes ) {
+            _index->setTOC( _document->tocIndexByRes( _parentRes ) );
+            _document->addXRef( _parentRes, xref );
         }
-        else if( parentId ) {
-            index->setTOC( _document->tocIndexById( parentId ) );
-            _document->addXRef( parentId, xref );
+        else if( _parentId ) {
+            _index->setTOC( _document->tocIndexById( _parentId ) );
+            _document->addXRef( _parentId, xref );
         }
     }
     catch( Class1Error& e ) {

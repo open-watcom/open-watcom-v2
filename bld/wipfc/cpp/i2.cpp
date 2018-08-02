@@ -82,7 +82,7 @@ Lexer::Token I2::parse( Lexer* lexer )
     }
     if( txt.empty() )
         _document->printError( ERR2_INOTEXT );
-    index->setText( txt );
+    _index->setText( txt );
     return tok;
 }
 /*****************************************************************************/
@@ -95,16 +95,16 @@ Lexer::Token I2::parseAttributes( Lexer* lexer )
             std::wstring value;
             splitAttribute( lexer->text(), key, value );
             if( key == L"refid" )
-                refid = value;
+                _refid = value;
             else if( key == L"sortkey" )
-                index->setSortKey( value );
+                _index->setSortKey( value );
             else
                 _document->printError( ERR1_ATTRNOTDEF );
         }
         else if( tok == Lexer::FLAG ) {
             if( lexer->text() == L"global" ) {
                 if( !_document->isInf() )    //only for hlp files
-                    index->setGlobal();
+                    _index->setGlobal();
             }
             else
                 _document->printError( ERR1_ATTRNOTDEF );
@@ -117,7 +117,7 @@ Lexer::Token I2::parseAttributes( Lexer* lexer )
             _document->printError( ERR1_TAGSYNTAX );
         tok = _document->getNextToken();
     }
-    if( refid.empty() )
+    if( _refid.empty() )
         _document->printError( ERR1_NOREFID );
     return _document->getNextToken(); //consume TAGEND
 }
@@ -126,16 +126,16 @@ void I2::buildIndex()
 {
     try {
         XRef xref( _fileName, _row );
-        if( parentRes ) {
-            index->setTOC( _document->tocIndexByRes( parentRes ) );
-            _document->addXRef( parentRes, xref );
+        if( _parentRes ) {
+            _index->setTOC( _document->tocIndexByRes( _parentRes ) );
+            _document->addXRef( _parentRes, xref );
         }
-        else if( parentId ) {
-            index->setTOC( _document->tocIndexById( parentId ) );
-            _document->addXRef( parentId, xref );
+        else if( _parentId ) {
+            _index->setTOC( _document->tocIndexById( _parentId ) );
+            _document->addXRef( _parentId, xref );
         }
-        I1* i1( _document->indexById( refid ) );
-        i1->addSecondary( index.get() );
+        I1* i1( _document->indexById( _refid ) );
+        i1->addSecondary( _index.get() );
     }
     catch( Class1Error& e ) {
         printError( e.code );

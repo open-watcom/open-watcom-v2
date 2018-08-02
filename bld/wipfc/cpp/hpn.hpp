@@ -43,16 +43,16 @@ public:
         unsigned int c, unsigned int l );
     ~Hpn() { };
     static
-    std::vector< STD1::uint8_t >& levels() { return levelStack; };
+    std::vector< STD1::uint8_t >& levels() { return _levelStack; };
     Lexer::Token parse( Lexer* lexer );
     void buildText( Cell* cell );
 private:
     Hpn( const Hpn& rhs );              //no copy
     Hpn& operator=( const Hpn& rhs );   //no assignment
     static
-    std::vector< STD1::uint8_t > levelStack;
-    STD1::uint8_t level;
-    STD1::uint8_t previousLevel;
+    std::vector< STD1::uint8_t > _levelStack;
+    STD1::uint8_t _level;
+    STD1::uint8_t _previousLevel;
 };
 
 class EHpn : public Element {
@@ -65,8 +65,8 @@ public:
 private:
     EHpn( const EHpn& rhs );            //no copy
     EHpn& operator=( const EHpn& rhs ); //no assignment
-    STD1::uint8_t level;
-    STD1::uint8_t previousLevel;
+    STD1::uint8_t _level;
+    STD1::uint8_t _previousLevel;
 };
 
 #endif // HPN_INCLUDED

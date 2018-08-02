@@ -204,7 +204,47 @@ Document::Document( Compiler& c, const char* loc ) :
     _inDoc( false ),
     _spacing( true )
 {
+    std::string env;
+    std::string::size_type idx1;
+    std::string::size_type idx2;
+    std::string separators( PATH_LIST_SEPARATORS );
+    std::string path;
+
     addFont( cgraphicFont() );
+    //get IPFCARTWORK from env
+    env = Environment.value( "IPFCARTWORK" );
+    ipfcartwork_paths.push_back( "" );
+    idx1 = 0;
+    idx2 = env.find_first_of( separators, idx1 );
+    path = env.substr( idx1, idx2 - idx1 );
+    if( !path.empty() )
+        path += PATH_SEPARATOR;
+    ipfcartwork_paths.push_back( path );
+    while( idx2 != std::string::npos ) {
+        idx1 = idx2 + 1;
+        idx2 = env.find_first_of( separators, idx1 );
+        path = env.substr( idx1, idx2 - idx1 );
+        if( !path.empty() )
+            path += PATH_SEPARATOR;
+        ipfcartwork_paths.push_back( path );
+    }
+    //get IPFCIMBED from env
+    env = Environment.value( "IPFCIMBED" );
+    ipfcimbed_paths.push_back( "" );
+    idx1 = 0;
+    idx2 = env.find_first_of( separators, idx1 );
+    path = env.substr( idx1, idx2 - idx1 );
+    if( !path.empty() )
+        path += PATH_SEPARATOR;
+    ipfcimbed_paths.push_back( path );
+    while( idx2 != std::string::npos ) {
+        idx1 = idx2 + 1;
+        idx2 = env.find_first_of( separators, idx1 );
+        path = env.substr( idx1, idx2 - idx1 );
+        if( !path.empty() )
+            path += PATH_SEPARATOR;
+        ipfcimbed_paths.push_back( path );
+    }
 }
 /***************************************************************************/
 Document::~Document()
@@ -216,6 +256,8 @@ Document::~Document()
     for( PageIter itr = _pages.begin(); itr != _pages.end(); ++itr ) {
         delete *itr;
     }
+    ipfcartwork_paths.resize( 0 );
+    ipfcimbed_paths.resize( 0 );
 }
 /***************************************************************************/
 // Reads the input file and builds the DOM tree
@@ -550,28 +592,12 @@ void Document::makeBitmaps()
         _tmpBitmaps = std::tmpfile();
         if( _tmpBitmaps == NULL )
             throw FatalIOError( ERR_OPEN, L"(temporary file for bitmaps)" );
-        //get IPFCARTWORK from env
-        std::string env( Environment.value( "IPFCARTWORK" ) );
-        std::vector< std::string > paths;
-        std::string cwd;    //empty string for current directory
-        paths.push_back( cwd );
-        std::string separators( PATH_LIST_SEPARATORS );
-        std::string::size_type idx1( 0 );
-        std::string::size_type idx2( env.find_first_of( separators, idx1 ) );
-        paths.push_back( env.substr( idx1, idx2 - idx1 ) );
-        while( idx2 != std::string::npos ) {
-            idx1 = idx2 + 1;
-            idx2 = env.find_first_of( separators, idx1 );
-            paths.push_back( env.substr( idx1, idx2 - idx1 ) );
-        }
         try {
             for( BitmapNameIter itr = _bitmapNames.begin(); itr != _bitmapNames.end(); ++itr ) {
                 std::string fname;
                 def_wtomb_string( itr->first, fname );
-                for( std::size_t count = 0; count < paths.size(); ++count ) {
-                    std::string fullname( paths[ count ] );
-                    if( !fullname.empty() )
-                        fullname += PATH_SEPARATOR;
+                for( std::size_t count = 0; count < ipfcartwork_paths.size(); ++count ) {
+                    std::string fullname( ipfcartwork_paths[count] );
                     fullname += fname;
 #if !defined( __UNIX__ ) && !defined( __APPLE__ )
                     if( fullname.size() > PATH_MAX ) {
@@ -587,7 +613,7 @@ void Document::makeBitmaps()
                         break;
                     }
                     catch( FatalError& e ) {
-                        if( count == paths.size() - 1 ) {
+                        if( count == ipfcartwork_paths.size() - 1 ) {
                             throw FatalIOError( e.code, itr->first );
                         }
                     }
@@ -823,48 +849,30 @@ Lexer::Token Document::processCommand( Lexer* lexer, Tag* parent )
         parent->appendChild( cecmd );
         return cecmd->parse( lexer );
     } else if( lexer->cmdId() == Lexer::IMBED ) {
-        std::string env( Environment.value( "IPFCIMBED" ) );
-        std::vector< std::wstring > paths;
-        std::wstring cwd;   //empty string for current directory
-        paths.push_back( cwd );
-        std::string separators( PATH_LIST_SEPARATORS );
-        std::string::size_type idx1( 0 );
-        std::string::size_type idx2( env.find_first_of( separators, idx1 ) );
-        std::wstring fbuffer;
-        def_mbtow_string( env.substr( idx1, idx2 - idx1 ), fbuffer );
-        paths.push_back( fbuffer );
-        while( idx2 != std::string::npos ) {
-            idx1 = idx2 + 1;
-            idx2 = env.find_first_of( separators, idx1 );
-            fbuffer.clear();
-            def_mbtow_string( env.substr( idx1, idx2 - idx1 ), fbuffer );
-            paths.push_back( fbuffer );
-        }
-        for( std::size_t count = 0; count < paths.size(); ++count ) {
-            std::wstring* fname( new std::wstring( paths[ count ] ) );
-            if( !fname->empty() )
-                *fname += PATH_SEPARATOR;
-            *fname += lexer->text();
+        for( std::size_t count = 0; count < ipfcimbed_paths.size(); ++count ) {
+            std::string sname;
+            def_wtomb_string( lexer->text(), sname );
+            std::string sfname( ipfcimbed_paths[count] + sname );
 #if !defined( __UNIX__ ) && !defined( __APPLE__ )
-            if( fname->size() > PATH_MAX ) {
+            if( sfname.size() > PATH_MAX ) {
                 throw FatalError( ERR_PATH_MAX );
             }
 #endif
+            std::wstring* wfname( new std::wstring() );
+            def_mbtow_string( sfname, *wfname );
             try {
-                IpfFile* ipff( new IpfFile( this, fname ) );
-                fname = addFileName( fname );
-                pushInput( ipff );
+                pushFileInput( sfname, wfname );
                 break;
             }
             catch( FatalError& e ) {
-                delete fname;
-                if( count == paths.size() - 1 ) {
+                delete wfname;
+                if( count == ipfcimbed_paths.size() - 1 ) {
                     throw e;
                 }
             }
             catch( FatalIOError& e ) {
-                delete fname;
-                if( count == paths.size() - 1 ) {
+                delete wfname;
+                if( count == ipfcimbed_paths.size() - 1 ) {
                     throw e;
                 }
             }
@@ -958,7 +966,7 @@ std::wstring* Document::prepNameitName( const std::wstring& key )
 {
     std::wstring* name( new std::wstring( L"Expansion of .nameit " ) );
     name->append( key );
-    name = addFileName( name );
+    name = _compiler.addFileName( name );
     return name;
 }
 /***************************************************************************/
@@ -973,14 +981,20 @@ STD1::uint16_t Document::getGroupById( const std::wstring& i )
     }
 }
 
-std::wstring * Document::addStartInput( std::string& sfname, std::wstring *wfname )
+std::wstring * Document::pushFileInput( std::wstring *wfname )
 {
-    wfname = addFileName( wfname );
-    pushInput( new IpfFile( this, sfname, wfname ) );
-    return wfname;
+    IpfFile *ipff = new IpfFile( this, wfname );
+    wfname = _compiler.addFileName( wfname );
+    ipff->setName( wfname );
+    _compiler.pushInput( ipff );
+    return( wfname );
 }
 
-void Document::pushFileInput( std::wstring *wfname )
+std::wstring * Document::pushFileInput( std::string& sfname, std::wstring *wfname )
 {
-    pushInput( new IpfFile( this, wfname ) );
+    IpfFile *ipff = new IpfFile( this, sfname, wfname );
+    wfname = _compiler.addFileName( wfname );
+    ipff->setName( wfname );
+    _compiler.pushInput( ipff );
+    return( wfname );
 }

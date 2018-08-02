@@ -40,17 +40,17 @@
 #include "errors.hpp"
 
 
-std::vector< STD1::uint8_t > Hpn::levelStack;
+std::vector< STD1::uint8_t > Hpn::_levelStack;
 
 Hpn::Hpn( Document* d, Element *p, const std::wstring* f, unsigned int r,
           unsigned int c, unsigned int l ) : Element( d, p, f, r, c ),
-          level( static_cast< STD1::uint8_t >( l ) ), previousLevel( 0 )
+          _level( static_cast< STD1::uint8_t >( l ) ), _previousLevel( 0 )
 {
-    if( !levelStack.empty() ) {
-        previousLevel = levelStack[ levelStack.size() - 1 ];
+    if( !_levelStack.empty() ) {
+        _previousLevel = _levelStack[_levelStack.size() - 1];
         d->printError( ERR2_NEST );
     }
-    levelStack.push_back( level );
+    _levelStack.push_back( _level );
 }
 /***************************************************************************/
 Lexer::Token Hpn::parse( Lexer* lexer )
@@ -58,16 +58,17 @@ Lexer::Token Hpn::parse( Lexer* lexer )
     Lexer::Token tok( _document->getNextToken() );
     (void)lexer;
     while( tok != Lexer::TAGEND ) {
-        if( tok == Lexer::ATTRIBUTE )
+        if( tok == Lexer::ATTRIBUTE ) {
             _document->printError( ERR1_ATTRNOTDEF );
-        else if( tok == Lexer::FLAG )
+        } else if( tok == Lexer::FLAG ) {
             _document->printError( ERR1_ATTRNOTDEF );
-        else if( tok == Lexer::ERROR_TAG )
+        } else if( tok == Lexer::ERROR_TAG ) {
             throw FatalError( ERR_SYNTAX );
-        else if( tok == Lexer::END )
+        } else if( tok == Lexer::END ) {
             throw FatalError( ERR_EOF );
-        else
+        } else {
             _document->printError( ERR1_TAGSYNTAX );
+        }
         tok = _document->getNextToken();
     }
     return _document->getNextToken();    //consume TAGEND
@@ -75,47 +76,50 @@ Lexer::Token Hpn::parse( Lexer* lexer )
 /***************************************************************************/
 void Hpn::buildText( Cell* cell )
 {
-    if( previousLevel ) {
+    if( _previousLevel ) {
         //kill the previous level
         cell->addByte( 0xFF );      //esc
         cell->addByte( 0x03 );      //size
-        if( previousLevel != 4 && previousLevel < 8 )
+        if( _previousLevel != 4 && _previousLevel < 8 ) {
             cell->addByte( 0x04 );  //change style
-        else
+        } else {
             cell->addByte( 0x0D );  //special text color
+        }
         cell->addByte( 0x00 );      //default
     }
     cell->addByte( 0xFF );          //esc
     cell->addByte( 0x03 );          //size
-    if( level != 4 && level < 8 ) {
+    if( _level != 4 && _level < 8 ) {
         cell->addByte( 0x04 );      //change style
-        if( level < 4 )
-            cell->addByte( static_cast< STD1::uint8_t >( level ) );
-        else
-            cell->addByte( static_cast< STD1::uint8_t >( level - 1) );
-    }
-    else {
+        if( _level < 4 ) {
+            cell->addByte( static_cast< STD1::uint8_t >( _level ) );
+        } else {
+            cell->addByte( static_cast< STD1::uint8_t >( _level - 1) );
+        }
+    } else {
         cell->addByte( 0x0D );      //special text color
-        if( level == 4 )
+        if( _level == 4 ) {
             cell->addByte( 0x01 );
-        else
-            cell->addByte( static_cast< STD1::uint8_t >( level - 6) );
+        } else {
+            cell->addByte( static_cast< STD1::uint8_t >( _level - 6) );
+        }
     }
-    if( cell->textFull() )
+    if( cell->textFull() ) {
         printError( ERR1_LARGEPAGE );
+    }
 }
 /***************************************************************************/
 EHpn::EHpn( Document* d, Element *p, const std::wstring* f, unsigned int r,
             unsigned int c, unsigned int l ) : Element ( d, p, f, r, c ),
-            level( static_cast< STD1::uint8_t >( l ) ), previousLevel( 0 )
+            _level( static_cast< STD1::uint8_t >( l ) ), _previousLevel( 0 )
 {
-    std::vector< STD1::uint8_t >& levelStack( Hpn::levels() );
-    if( levelStack[ levelStack.size() - 1 ] != l )
+    std::vector< STD1::uint8_t >& _levelStack( Hpn::levels() );
+    if( _levelStack[_levelStack.size() - 1] != l )
         d->printError( ERR2_NEST );
-    levelStack.pop_back();
-    if( !levelStack.empty() ) {
+    _levelStack.pop_back();
+    if( !_levelStack.empty() ) {
         d->printError( ERR1_TAGCONTEXT );
-        previousLevel = levelStack[ levelStack.size() - 1 ];
+        _previousLevel = _levelStack[_levelStack.size() - 1];
     }
 }
 /***************************************************************************/
@@ -124,16 +128,17 @@ Lexer::Token EHpn::parse( Lexer* lexer )
     Lexer::Token tok( _document->getNextToken() );
     (void)lexer;
     while( tok != Lexer::TAGEND ) {
-        if( tok == Lexer::ATTRIBUTE )
+        if( tok == Lexer::ATTRIBUTE ) {
             _document->printError( ERR1_ATTRNOTDEF );
-        else if( tok == Lexer::FLAG )
+        } else if( tok == Lexer::FLAG ) {
             _document->printError( ERR1_ATTRNOTDEF );
-        else if( tok == Lexer::ERROR_TAG )
+        } else if( tok == Lexer::ERROR_TAG ) {
             throw FatalError( ERR_SYNTAX );
-        else if( tok == Lexer::END )
+        } else if( tok == Lexer::END ) {
             throw FatalError( ERR_EOF );
-        else
+        } else {
             _document->printError( ERR1_TAGSYNTAX );
+        }
         tok = _document->getNextToken();
     }
     return _document->getNextToken();    //consume TAGEND
@@ -143,29 +148,32 @@ void EHpn::buildText( Cell* cell )
 {
     cell->addByte( 0xFF );          //esc
     cell->addByte( 0x03 );          //size
-    if( level != 4 && level < 8 )
+    if( _level != 4 && _level < 8 ) {
         cell->addByte( 0x04 );      //change style
-    else
+    } else {
         cell->addByte( 0x0D );      //special text color
+    }
     cell->addByte( 0x00 );          //default
-    if( previousLevel ) {
+    if( _previousLevel ) {
         cell->addByte( 0xFF );      //esc
         cell->addByte( 0x03 );      //size
-        if( previousLevel != 4 && previousLevel < 8 ) {
+        if( _previousLevel != 4 && _previousLevel < 8 ) {
             cell->addByte( 0x04 );  //change style
-            if( previousLevel < 4 )
-                cell->addByte( static_cast< STD1::uint8_t >( previousLevel ) );
-            else
-                cell->addByte( static_cast< STD1::uint8_t >( previousLevel - 1) );
-        }
-        else {
+            if( _previousLevel < 4 ) {
+                cell->addByte( static_cast< STD1::uint8_t >( _previousLevel ) );
+            } else {
+                cell->addByte( static_cast< STD1::uint8_t >( _previousLevel - 1) );
+            }
+        } else {
             cell->addByte( 0x0D );  //special text color
-            if( previousLevel == 4 )
+            if( _previousLevel == 4 ) {
                 cell->addByte( 0x01 );
-            else
-                cell->addByte( static_cast< STD1::uint8_t >( previousLevel - 6) );
+            } else {
+                cell->addByte( static_cast< STD1::uint8_t >( _previousLevel - 6) );
+            }
         }
     }
-    if( cell->textFull() )
+    if( cell->textFull() ) {
         printError( ERR1_LARGEPAGE );
+    }
 }

@@ -44,15 +44,16 @@
 #include "util.hpp"
 
 
-bool Hide::hide( false );
+bool Hide::_hide( false );
 
 Hide::Hide( Document* d, Element *p, const std::wstring* f, unsigned int r,
           unsigned int c ) : Element( d, p, f, r, c )
 {
-    if( hide )
+    if( _hide ) {
         d->printError( ERR2_NEST );
-    else
-        hide = true;
+    } else {
+        _hide = true;
+    }
 }
 /***************************************************************************/
 Lexer::Token Hide::parse( Lexer* lexer )
@@ -71,19 +72,19 @@ Lexer::Token Hide::parse( Lexer* lexer )
                     value.erase( index, 1 );
                     index = value.find( L'\'', index );
                 }
-                keyPhrase = value;
+                _keyPhrase = value;
+            } else {
+                _document->printError( ERR1_ATTRNOTDEF );
             }
-            else
+        } else if( tok == Lexer::FLAG ) {
                 _document->printError( ERR1_ATTRNOTDEF );
-        }
-        else if( tok == Lexer::FLAG )
-                _document->printError( ERR1_ATTRNOTDEF );
-        else if( tok == Lexer::ERROR_TAG )
+        } else if( tok == Lexer::ERROR_TAG ) {
             throw FatalError( ERR_SYNTAX );
-        else if( tok == Lexer::END )
+        } else if( tok == Lexer::END ) {
             throw FatalError( ERR_EOF );
-        else
+        } else {
             _document->printError( ERR1_TAGSYNTAX );
+        }
         tok = _document->getNextToken();
     }
     return _document->getNextToken(); //consume TAGEND
@@ -93,7 +94,7 @@ Lexer::Token Hide::parse( Lexer* lexer )
 void Hide::buildText( Cell* cell )
 {
     std::string tmp;
-    _document->wtomb_string( keyPhrase, tmp );
+    _document->wtomb_string( _keyPhrase, tmp );
     std::size_t size( tmp.size() );
     if( size > 253 ) {
         tmp.erase( 253 );
@@ -105,11 +106,12 @@ void Hide::buildText( Cell* cell )
     esc.push_back( 0x02 );  //size
     esc.push_back( 0x17 );  //begin hide
     for( unsigned int count1 = 0; count1 < size; count1++ )
-        esc.push_back( static_cast< STD1::uint8_t >( tmp[ count1 ] ) );
+        esc.push_back( static_cast< STD1::uint8_t >( tmp[count1] ) );
     esc[1] = static_cast< STD1::uint8_t >( esc.size() - 1 );
     cell->addEsc( esc );
-    if( cell->textFull() )
+    if( cell->textFull() ) {
         printError( ERR1_LARGEPAGE );
+    }
 }
 /***************************************************************************/
 EHide::EHide( Document* d, Element *p, const std::wstring* f, unsigned int r,
@@ -146,7 +148,8 @@ void EHide::buildText( Cell* cell )
     cell->addByte( 0xFF );  //esc
     cell->addByte( 0x02 );  //size
     cell->addByte( 0x18 );  //end hide
-    if( cell->textFull() )
+    if( cell->textFull() ) {
         printError( ERR1_LARGEPAGE );
+    }
 }
 

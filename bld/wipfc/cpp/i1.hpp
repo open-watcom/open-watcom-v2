@@ -53,29 +53,29 @@ public:
     Lexer::Token parse( Lexer* lexer );
     void buildIndex();
     void buildText( Cell* cell ) { (void)cell; };
-    void setRes( STD1::uint16_t r ) { parentRes = r; };
-    void setIdOrName( GlobalDictionaryWord* w ) { parentId = w; };
-    void addSecondary( IndexItem* i ) { secondary.push_back( i ); };
+    void setRes( STD1::uint16_t r ) { _parentRes = r; };
+    void setIdOrName( GlobalDictionaryWord* w ) { _parentId = w; };
+    void addSecondary( IndexItem* i ) { _secondary.push_back( i ); };
     STD1::uint16_t secondaryCount() const
-        { return static_cast< STD1::uint16_t >( secondary.size() ); };
-    bool isGlobal() const { return primary->isGlobal(); };
+        { return static_cast< STD1::uint16_t >( _secondary.size() ); };
+    bool isGlobal() const { return _primary->isGlobal(); };
     std::size_t write( std::FILE* out );
-    bool operator==( const I1& rhs ) const{ return *primary == *rhs.primary; };
-    bool operator==( const std::wstring& rhs ) const { return *primary == rhs; };
-    bool operator<( const I1& rhs ) const { return *primary < *rhs.primary; };
+    bool operator==( const I1& rhs ) const{ return *_primary == *rhs._primary; };
+    bool operator==( const std::wstring& rhs ) const { return *_primary == rhs; };
+    bool operator<( const I1& rhs ) const { return *_primary < *rhs._primary; };
 private:
     I1( const I1& rhs );                //no copy
     I1& operator=( const I1& rhs );     //no assignment
-    std::auto_ptr< IndexItem > primary;
-    std::vector< IndexItem* > secondary;
+    std::auto_ptr< IndexItem > _primary;
+    std::vector< IndexItem* > _secondary;
     typedef std::vector< IndexItem* >::iterator IndexIter;
     typedef std::vector< IndexItem* >::const_iterator ConstIndexIter;
-    std::vector< std::wstring > synRoots;
+    std::vector< std::wstring > _synRoots;
     typedef std::vector< std::wstring >::iterator SynIter;
     typedef std::vector< std::wstring >::const_iterator ConstSynIter;
-    std::wstring id;
-    GlobalDictionaryWord* parentId;
-    STD1::uint16_t parentRes;
+    std::wstring _id;
+    GlobalDictionaryWord* _parentId;
+    STD1::uint16_t _parentRes;
     Lexer::Token parseAttributes( Lexer* lexer );
 };
 

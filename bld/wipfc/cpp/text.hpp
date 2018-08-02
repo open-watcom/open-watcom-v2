@@ -40,19 +40,19 @@ class Text : public Element {
 public:
     Text( Document* d, Element* p, const std::wstring* f, unsigned int r,
         unsigned int c, Tag::WsHandling w = Tag::NONE, bool ts = false) :
-        Element( d, p, f, r, c ), text( 0 ), whiteSpace( w ),
-        toggleSpacing( ts ) { };
+        Element( d, p, f, r, c ), _text( 0 ), _whiteSpace( w ),
+        _toggleSpacing( ts ) { };
     Text( Document* d, Element* p, const std::wstring* f, unsigned int r,
         unsigned int c, const std::wstring& txt, bool ts );
     ~Text() { };
     std::pair< bool, bool > buildLocalDict( Page* page );
     void buildText( Cell* cell );
-    void setToggleSpacing() { toggleSpacing = true; };
-    void clearToggleSpacing() { toggleSpacing = false; };
+    void setToggleSpacing() { _toggleSpacing = true; };
+    void clearToggleSpacing() { _toggleSpacing = false; };
 protected:
-    GlobalDictionaryWord* text;
-    Tag::WsHandling whiteSpace;
-    bool toggleSpacing;
+    GlobalDictionaryWord* _text;
+    Tag::WsHandling _whiteSpace;
+    bool _toggleSpacing;
 private:
     Text( const Text& rhs );            //no copy
     Text& operator=( const Text& rhs ); //no assignment

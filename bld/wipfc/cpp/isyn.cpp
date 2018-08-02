@@ -51,7 +51,7 @@ Lexer::Token ISyn::parse( Lexer* lexer )
             std::wstring value;
             splitAttribute( lexer->text(), key, value );
             if( key == L"root" ) {
-                root = value;
+                _root = value;
             } else {
                 _document->printError( ERR1_ATTRNOTDEF );
             }
@@ -75,7 +75,7 @@ Lexer::Token ISyn::parse( Lexer* lexer )
             if( length == ERROR_CNV )
                 throw FatalError( ERR_T_CONV );
             std::string txt( buffer );
-            syn->add( txt );
+            _syn->add( txt );
         } else if( tok == Lexer::WHITESPACE ) {
             tok = _document->getNextToken();
         } else {
@@ -86,7 +86,7 @@ Lexer::Token ISyn::parse( Lexer* lexer )
         }
     }
     try {
-        _document->addSynonym( root, syn.get() );
+        _document->addSynonym( _root, _syn.get() );
     }
     catch( Class3Error& e ) {
         _document->printError( e.code );

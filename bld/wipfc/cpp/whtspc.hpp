@@ -37,7 +37,7 @@ class WhiteSpace : public Text {
 public:
     WhiteSpace( Document* d, Element* p, const std::wstring* f, unsigned int r,
         unsigned int c, Tag::WsHandling w = Tag::NONE ) : Text( d, p, f, r, c, w ),
-        spaces( 0 ) { };
+        _spaces( 0 ) { };
     WhiteSpace( Document* d, Element* p, const std::wstring* f, unsigned int r,
         unsigned int c, const std::wstring& tx, Tag::WsHandling w = Tag::NONE,
         bool ts = false );
@@ -47,13 +47,13 @@ public:
 private:
     WhiteSpace( const WhiteSpace& rhs );            //no copy
     WhiteSpace& operator=( const WhiteSpace& rhs ); //no assignment
-    unsigned char spaces;
+    unsigned char _spaces;
 };
 
 class LiteralWhiteSpace : public Element {
 public:
     LiteralWhiteSpace( Document* d, Element* p, const std::wstring* f, unsigned int r,
-        unsigned int c, bool ts = false ) : Element( d, p, f, r, c ), toggleSpacing( ts ) { };
+        unsigned int c, bool ts = false ) : Element( d, p, f, r, c ), _toggleSpacing( ts ) { };
     ~LiteralWhiteSpace() { } ;
     Lexer::Token parse( Lexer* lexer ) { (void)lexer; return Lexer::END; };
     std::pair< bool, bool > buildLocalDict( Page* page );
@@ -61,7 +61,7 @@ public:
 private:
     LiteralWhiteSpace( const LiteralWhiteSpace& rhs );              //no copy
     LiteralWhiteSpace& operator=( const LiteralWhiteSpace& rhs );   //no assignment
-    bool toggleSpacing;
+    bool _toggleSpacing;
 };
 
 #endif //WHITESPACE_INCLUDED

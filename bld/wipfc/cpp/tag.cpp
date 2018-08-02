@@ -72,7 +72,7 @@
 
 Tag::~Tag()
 {
-    for( ChildrenIter itr = children.begin(); itr != children.end(); ++itr ) {
+    for( ChildrenIter itr = _children.begin(); itr != _children.end(); ++itr ) {
         delete *itr;
     }
 }
@@ -107,25 +107,25 @@ bool Tag::parseInline( Lexer* lexer, Lexer::Token& tok )
     bool notHandled( false );
     if( tok == Lexer::WORD ) {
         Word* word( new Word( _document, this, _document->dataName(),
-            _document->lexerLine(), _document->lexerCol(), whiteSpace ) );
+            _document->lexerLine(), _document->lexerCol(), _whiteSpace ) );
         appendChild( word );
         tok = word->parse( lexer );
     }
     else if( tok == Lexer::ENTITY ) {
         Entity* entity( new Entity( _document, this, _document->dataName(),
-            _document->lexerLine(), _document->lexerCol(), whiteSpace ) );
+            _document->lexerLine(), _document->lexerCol(), _whiteSpace ) );
         appendChild( entity );
         tok = entity->parse( lexer );
     }
     else if( tok == Lexer::PUNCTUATION ) {
         Punctuation* punct( new Punctuation( _document, this, _document->dataName(),
-            _document->lexerLine(), _document->lexerCol(), whiteSpace ) );
+            _document->lexerLine(), _document->lexerCol(), _whiteSpace ) );
         appendChild( punct );
         tok = punct->parse( lexer );
     }
     else if( tok == Lexer::WHITESPACE ) {
         WhiteSpace* ws( new WhiteSpace( _document, this, _document->dataName(),
-        _document->lexerLine(), _document->lexerCol(), whiteSpace ) );
+        _document->lexerLine(), _document->lexerCol(), _whiteSpace ) );
         appendChild( ws );
         tok = ws->parse( lexer );
     }
@@ -346,7 +346,7 @@ bool Tag::parseInline( Lexer* lexer, Lexer::Token& tok )
         case Lexer::LINK:
             {
                 Element* elt( new Link( _document, this, _document->dataName(),
-                    _document->lexerLine(), _document->lexerCol(), whiteSpace ) );
+                    _document->lexerLine(), _document->lexerCol(), _whiteSpace ) );
                 appendChild( elt );
                 tok = elt->parse( lexer );
             }
@@ -640,10 +640,11 @@ bool Tag::parseListBlock( Lexer* lexer, Lexer::Token& tok )
 /***************************************************************************/
 void Tag::parseCleanup( Lexer* lexer, Lexer::Token& tok )
 {
-    if( lexer->tagId() == Lexer::BADTAG )
+    if( lexer->tagId() == Lexer::BADTAG ) {
         _document->printError( ERR1_TAGNOTDEF );
-    else
+    } else {
         _document->printError( ERR1_TAGCONTEXT );
+    }
     while( tok != Lexer::TAGEND )
         tok = _document->getNextToken();
     tok = _document->getNextToken();
@@ -651,18 +652,20 @@ void Tag::parseCleanup( Lexer* lexer, Lexer::Token& tok )
 /***************************************************************************/
 void Tag::buildIndex()
 {
-    std::for_each( children.begin(), children.end(), std::mem_fun( &Element::buildIndex ) );
+    std::for_each( _children.begin(), _children.end(), std::mem_fun( &Element::buildIndex ) );
 }
 /***************************************************************************/
 void Tag::linearize( Page* page )
 {
     page->addElement( this );
-    for( ConstChildrenIter iter = children.begin(); iter != children.end(); ++iter )
+    for( ConstChildrenIter iter = _children.begin(); iter != _children.end(); ++iter ) {
         ( *iter )->linearize( page );
+    }
 }
 /***************************************************************************/
 void Tag::linearizeChildren( Page* page )
 {
-    for( ConstChildrenIter iter = children.begin(); iter != children.end(); ++iter )
+    for( ConstChildrenIter iter = _children.begin(); iter != _children.end(); ++iter ) {
         ( *iter )->linearize( page );
+    }
 }

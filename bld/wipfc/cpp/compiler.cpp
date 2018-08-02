@@ -60,8 +60,9 @@ Compiler::~Compiler()
 {
     while( _inFiles.size() )
         popInput();
-    for( FileNameIter iter = _fileNames.begin(); iter != _fileNames.end(); ++iter )
+    for( FileNameIter iter = _fileNames.begin(); iter != _fileNames.end(); ++iter ) {
         delete *iter;
+    }
 }
 /*****************************************************************************/
 void Compiler::setInputFile( const std::string& sfname )
@@ -89,7 +90,7 @@ int Compiler::compile()
     // init document and set locale for input/output data
     std::auto_ptr< Document > doc( new Document( *this, _loc ) );
     doc->setOutputType( _outType );
-    _inFileNameW = doc->addStartInput( _inFileName, _inFileNameW );
+    _inFileNameW = doc->pushFileInput( _inFileName, _inFileNameW );
     doc->parse( _lexer.get() );
     doc->build();
     std::FILE* out( std::fopen( _outFileName.c_str() , "wb" ) );

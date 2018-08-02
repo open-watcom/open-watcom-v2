@@ -61,8 +61,9 @@ STD1::uint32_t Controls::write( std::FILE* out, Document *document )
 ControlButton* Controls::getButtonById( const std::wstring& i )
 {
     for( ControlIter itr = controls.begin(); itr != controls.end(); ++itr ) {
-        if( itr->id() == i )
+        if( itr->id() == i ) {
             return &(*itr);
+        }
     }
     return 0;
 }
@@ -70,8 +71,9 @@ ControlButton* Controls::getButtonById( const std::wstring& i )
 ControlGroup* Controls::getGroupById( const std::wstring& i )
 {
     for( GroupIter itr = groups.begin(); itr != groups.end(); ++itr ) {
-        if( itr->id() == i )
+        if( itr->id() == i ) {
             return &(*itr);
+        }
     }
     return 0;
 }

@@ -48,10 +48,10 @@
 #include "util.hpp"
 
 I1::I1( Document* d, Element* p, const std::wstring* f, unsigned int r, unsigned int c ) :
-    Element( d, p, f, r, c ), primary( new IndexItem( IndexItem::PRIMARY ) ),
-            parentId( 0 ), parentRes( 0 )
+    Element( d, p, f, r, c ), _primary( new IndexItem( IndexItem::PRIMARY ) ),
+            _parentId( 0 ), _parentRes( 0 )
 {
-    d->addIndex( this );
+    _document->addIndex( this );
 }
 /*****************************************************************************/
 Lexer::Token I1::parse( Lexer* lexer )
@@ -92,7 +92,7 @@ Lexer::Token I1::parse( Lexer* lexer )
         _document->printError( ERR2_INOTEXT );
     else if( txt.size() > 255 )
         _document->printError( ERR2_TEXTTOOLONG );
-    primary->setText( txt );
+    _primary->setText( txt );
     return tok;
 }
 /*****************************************************************************/
@@ -105,9 +105,9 @@ Lexer::Token I1::parseAttributes( Lexer* lexer )
             std::wstring value;
             splitAttribute( lexer->text(), key, value );
             if( key == L"id" ) {
-                id = value;
+                _id = value;
                 try {
-                    _document->addIndexId( id, this );
+                    _document->addIndexId( _id, this );
                 }
                 catch( Class3Error& e ) {
                     _document->printError( e.code );
@@ -117,20 +117,20 @@ Lexer::Token I1::parseAttributes( Lexer* lexer )
                 std::wstring::size_type idx1( 0 );
                 std::wstring::size_type idx2( value.find( L' ' ) );
                 while( idx1 != std::wstring::npos ) { //split value on ' '
-                    synRoots.push_back( value.substr( idx1, idx2 - idx1 ) );
+                    _synRoots.push_back( value.substr( idx1, idx2 - idx1 ) );
                     idx1 = idx2 == std::wstring::npos ? std::wstring::npos : idx2 + 1;
                     idx2 = value.find( L' ', idx1 );
                 }
             }
             else if( key == L"sortkey" )
-                primary->setSortKey( value );
+                _primary->setSortKey( value );
             else
                 _document->printError( ERR1_ATTRNOTDEF );
         }
         else if( tok == Lexer::FLAG ) {
             if( lexer->text() == L"global" ) {
                 if( !_document->isInf() )    //only for hlp files
-                    primary->setGlobal();
+                    _primary->setGlobal();
             }
             else
                 _document->printError( ERR1_ATTRNOTDEF );
@@ -150,13 +150,13 @@ void I1::buildIndex()
 {
     try {
         XRef xref( _fileName, _row );
-        if( parentRes ) {
-            primary->setTOC( _document->tocIndexByRes( parentRes ) );
-            _document->addXRef( parentRes, xref );
+        if( _parentRes ) {
+            _primary->setTOC( _document->tocIndexByRes( _parentRes ) );
+            _document->addXRef( _parentRes, xref );
         }
-        else if( parentId ) {
-            primary->setTOC( _document->tocIndexById( parentId ) );
-            _document->addXRef( parentId, xref );
+        else if( _parentId ) {
+            _primary->setTOC( _document->tocIndexById( _parentId ) );
+            _document->addXRef( _parentId, xref );
         }
     }
     catch( Class1Error& e ) {
@@ -166,19 +166,19 @@ void I1::buildIndex()
 /*****************************************************************************/
 std::size_t I1::write( std::FILE* out )
 {
-    for( ConstSynIter itr = synRoots.begin(); itr != synRoots.end(); ++itr ) {
+    for( ConstSynIter itr = _synRoots.begin(); itr != _synRoots.end(); ++itr ) {
         //convert roots into offsets
         try {
             Synonym* syn( _document->synonym( *itr ) );
-            primary->addSynonym( syn->location() );
+            _primary->addSynonym( syn->location() );
         }
         catch( Class3Error& e ) {
             printError( e.code );
         }
     }
-    std::size_t written( primary->write( out, _document ) );
-    std::sort( secondary.begin(), secondary.end(), ptrLess< IndexItem* >() );
-    for( IndexIter itr = secondary.begin(); itr != secondary.end(); ++itr )
+    std::size_t written( _primary->write( out, _document ) );
+    std::sort( _secondary.begin(), _secondary.end(), ptrLess< IndexItem* >() );
+    for( IndexIter itr = _secondary.begin(); itr != _secondary.end(); ++itr )
         written += ( *itr )->write( out, _document );
     return written;
 }

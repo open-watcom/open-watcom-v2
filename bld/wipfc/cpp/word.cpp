@@ -41,41 +41,41 @@ Lexer::Token Word::parse( Lexer* lexer )
     std::wstring txt( lexer->text() );  //get text from lexer
     Lexer::Token tok( _document->getNextToken() );
     while( tok != Lexer::END && !( tok == Lexer::TAG && lexer->tagId() == Lexer::EUSERDOC) ) {
-        if( tok == Lexer::WORD )
+        if( tok == Lexer::WORD ) {
             txt += lexer->text();       //part of a compound ...-word-entity-word-...
-        else if( tok == Lexer::ENTITY ) {
+        } else if( tok == Lexer::ENTITY ) {
             const std::wstring* exp( _document->nameit( lexer->text() ) );
             if( exp ) {
                 std::wstring* name( _document->prepNameitName( lexer->text() ) );
                 IpfBuffer* buffer( new IpfBuffer( name, _document->dataLine(), _document->dataCol(), *exp ) );
                 _document->pushInput( buffer );
-            }
-            else {
+            } else {
                 try {
                     wchar_t entity( _document->entity( lexer->text() ) );
-                    if ( std::iswpunct( entity ) )
+                    if ( std::iswpunct( entity ) ) {
                         break;
-                    else
+                    } else {
                         txt += entity;
+                    }
                 }
                 catch( Class2Error& e ) {
                     _document->printError( e.code );
                     break;
                 }
             }
-        }
-        else
+        } else {
             break;
+        }
         tok = _document->getNextToken();
     }
-    if( whiteSpace != Tag::SPACES && _document->autoSpacing() ) {
+    if( _whiteSpace != Tag::SPACES && _document->autoSpacing() ) {
         Lexer::Token t( _document->lastToken() );
         if( t == Lexer::WORD || t == Lexer::ENTITY || t == Lexer::PUNCTUATION ) {
             _document->toggleAutoSpacing();
             _document->lastText()->setToggleSpacing();
         }
     }
-    text = _document->addWord( new GlobalDictionaryWord( txt ) );   //insert into global dictionary
+    _text = _document->addWord( new GlobalDictionaryWord( txt ) );   //insert into global dictionary
     _document->setLastPrintable( Lexer::WORD, this );
     return tok;
 }

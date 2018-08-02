@@ -43,19 +43,19 @@ public:
     };
     Tag( Document* d, Element* p, const std::wstring* f, unsigned int r,
          unsigned int c, WsHandling ws = NONE ) :
-         Element( d, p, f, r, c ), whiteSpace( ws ) { };
+         Element( d, p, f, r, c ), _whiteSpace( ws ) { };
     ~Tag();
     //add an element to the container of elements within this tag
-    void appendChild( Element* e ) { children.push_back( e ); };
+    void appendChild( Element* e ) { _children.push_back( e ); };
     Lexer::Token parse( Lexer* lexer );
     void buildIndex();
     void linearize( Page* page );
     void linearizeChildren( Page* page );
 protected:
-    std::list< Element* > children;
+    std::list< Element* > _children;
     typedef std::list< Element* >::iterator ChildrenIter;
     typedef std::list< Element* >::const_iterator ConstChildrenIter;
-    WsHandling whiteSpace;
+    WsHandling _whiteSpace;
     virtual
     Lexer::Token parseAttributes( Lexer* lexer );
     bool parseInline( Lexer* lexer, Lexer::Token& tok );

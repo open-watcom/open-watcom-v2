@@ -47,21 +47,21 @@
 class AcViewport : public Element {
 public:
     AcViewport( Document* d, Element *p, const std::wstring* f, unsigned int r, unsigned int c ) :
-        Element( d, p, f, r, c ), objectId( 0 ), doOrigin( false ), doSize( false ) { };
+        Element( d, p, f, r, c ), _objectId( 0 ), _doOrigin( false ), _doSize( false ) { };
     ~AcViewport() { };
     Lexer::Token parse( Lexer* lexer );
     void buildText( Cell* cell );
 private:
     AcViewport( const AcViewport& rhs );              //no copy
     AcViewport& operator=( const AcViewport& rhs );   //no assignment
-    std::wstring dll;
-    std::wstring objectName;
-    std::wstring objectInfo;
-    STD1::uint16_t objectId;
-    PageOrigin origin;
-    PageSize size;
-    bool doOrigin;
-    bool doSize;
+    std::wstring _dll;
+    std::wstring _objectName;
+    std::wstring _objectInfo;
+    STD1::uint16_t _objectId;
+    PageOrigin _origin;
+    PageSize _size;
+    bool _doOrigin;
+    bool _doSize;
     Lexer::Token parseAttributes( Lexer* lexer );
 };
 

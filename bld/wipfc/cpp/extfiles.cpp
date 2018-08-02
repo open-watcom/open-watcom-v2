@@ -69,7 +69,7 @@ STD1::uint32_t ExternalFiles::write( std::FILE *out, Document *document )
             length = 255;
         }
         std::size_t written;
-        if( std::fputc( static_cast< STD1::uint8_t >( length + 1 ), out) == EOF ||
+        if( std::fputc( static_cast< STD1::uint8_t >( length + 1 ), out ) == EOF ||
             ( written = std::fwrite( buffer.data(), sizeof( char ), length, out ) ) != length )
             throw FatalError( ERR_WRITE );
         _bytes += static_cast< STD1::uint32_t >( written + 1 );

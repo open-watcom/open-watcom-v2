@@ -40,14 +40,14 @@
 class Rm : public Element {
 public:
     Rm( Document* d, Element *p, const std::wstring* f, unsigned int r, unsigned int c ) :
-        Element( d, p, f, r, c ), margin( 1 ) { };
+        Element( d, p, f, r, c ), _margin( 1 ) { };
     ~Rm() { };
     Lexer::Token parse( Lexer* lexer );
     void buildText( Cell* cell );
 private:
     Rm( const Rm& rhs );                //no copy
     Rm& operator=( const Rm& rhs );     //no assignment
-    STD1::uint8_t margin;               //in characters
+    STD1::uint8_t _margin;              //in characters
 };
 
 #endif //RM_INCLUDED

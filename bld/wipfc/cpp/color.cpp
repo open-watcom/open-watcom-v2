@@ -54,12 +54,12 @@ Lexer::Token Color::parse( Lexer* lexer )
             std::wstring value;
             splitAttribute( lexer->text(), key, value );
             if( key == L"fc" ) {
-                foreground = parseColor( value );
-                setForeground = true;
+                _foreground = parseColor( value );
+                _setForeground = true;
             }
             else if( key == L"bc" ) {
-                background = parseColor( value );
-                setBackground = true;
+                _background = parseColor( value );
+                _setBackground = true;
             }
             else
                 _document->printError( ERR1_ATTRNOTDEF );
@@ -122,18 +122,19 @@ Color::ColorName Color::parseColor( std::wstring& name )
 // 14 for background
 void Color::buildText( Cell* cell )
 {
-    if( setForeground ) {
+    if( _setForeground ) {
         cell->addByte( 0xFF );  //esc
         cell->addByte( 0x03 );  //size
         cell->addByte( 0x13 );  //set foreground color
-        cell->addByte( static_cast< STD1::uint8_t >( foreground ) );
+        cell->addByte( static_cast< STD1::uint8_t >( _foreground ) );
     }
-    if( setBackground ) {
+    if( _setBackground ) {
         cell->addByte( 0xFF );  //esc
         cell->addByte( 0x03 );  //size
         cell->addByte( 0x14 );  //set background color
-        cell->addByte( static_cast< STD1::uint8_t >( background ) );
+        cell->addByte( static_cast< STD1::uint8_t >( _background ) );
     }
-    if( cell->textFull() )
+    if( cell->textFull() ) {
         printError( ERR1_LARGEPAGE );
+    }
 }

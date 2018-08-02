@@ -35,6 +35,7 @@
 #include "document.hpp"
 #include "util.hpp"
 
+
 STD1::uint32_t ControlButton::write( std::FILE *out, Document *document ) const
 {
     STD1::uint32_t bytes( sizeof( STD1::uint16_t ) * 2 );
@@ -56,4 +57,3 @@ STD1::uint32_t ControlButton::write( std::FILE *out, Document *document ) const
     bytes += length + 1;
     return bytes;
 }
-

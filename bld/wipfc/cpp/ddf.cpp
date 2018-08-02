@@ -43,7 +43,7 @@
 Lexer::Token Ddf::parse( Lexer* lexer )
 {
     Lexer::Token tok( parseAttributes( lexer ) );
-    if( !res )
+    if( !_res )
         printError( ERR1_NODDFRES );
     return tok;
 }
@@ -57,8 +57,8 @@ Lexer::Token Ddf::parseAttributes( Lexer* lexer )
             std::wstring value;
             splitAttribute( lexer->text(), key, value );
             if( key == L"res" ) {
-                res = static_cast< STD1::uint16_t >( std::wcstoul( value.c_str(), 0, 10 ) );
-                if( res < 1 || res > 64000 )
+                _res = static_cast< STD1::uint16_t >( std::wcstoul( value.c_str(), 0, 10 ) );
+                if( _res < 1 || _res > 64000 )
                     _document->printError( ERR2_VALUE );
             }
             else
@@ -79,14 +79,14 @@ Lexer::Token Ddf::parseAttributes( Lexer* lexer )
 void Ddf::buildText( Cell* cell )
 {
     try {
-//        STD1::uint16_t tocIndex( _document->tocIndexByRes( res ) );
+//        STD1::uint16_t tocIndex( _document->tocIndexByRes( _res ) );
         XRef xref( _fileName, _row );
-        _document->addXRef( res, xref );
+        _document->addXRef( _res, xref );
         cell->addByte( 0xFF );  //ESC
         cell->addByte( 0x04 );  //size
         cell->addByte( 0x20 );  //ddf
-        cell->addByte( static_cast< STD1::uint8_t >( res ) );
-        cell->addByte( static_cast< STD1::uint8_t >( res >> 8 ) );
+        cell->addByte( static_cast< STD1::uint8_t >( _res ) );
+        cell->addByte( static_cast< STD1::uint8_t >( _res >> 8 ) );
         if( cell->textFull() )
             printError( ERR1_LARGEPAGE );
     }

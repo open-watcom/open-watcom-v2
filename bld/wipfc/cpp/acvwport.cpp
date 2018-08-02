@@ -49,11 +49,11 @@
 Lexer::Token AcViewport::parse( Lexer* lexer )
 {
     Lexer::Token tok( parseAttributes( lexer ) );
-    if( objectId == 0 ) {
+    if( _objectId == 0 ) {
         std::wstring txt( L"objectid" );
         _document->printError( ERR2_VALUE, txt );
     }
-    if( objectName.empty() ) {
+    if( _objectName.empty() ) {
         std::wstring txt( L"objectname" );
         _document->printError( ERR2_VALUE, txt );
     }
@@ -73,80 +73,80 @@ Lexer::Token AcViewport::parseAttributes( Lexer* lexer )
             std::wstring value;
             splitAttribute( lexer->text(), key, value );
             if( key == L"dll" ) {
-                dll = value;
+                _dll = value;
             } else if( key == L"objectname" ) {
-                objectName = value;
+                _objectName = value;
             } else if( key == L"objectinfo" ) {
-                objectInfo = value;
+                _objectInfo = value;
             } else if( key == L"objectid" ) {
-                objectId = static_cast< STD1::uint16_t >( std::wcstoul( value.c_str(), 0, 10 ) );
+                _objectId = static_cast< STD1::uint16_t >( std::wcstoul( value.c_str(), 0, 10 ) );
             } else if( key == L"vpx" ) {
-                doOrigin = true;
+                _doOrigin = true;
                 xorg = true;
                 if( value == L"left" ) {
-                    origin.xPosType = ExtTocEntry::DYNAMIC;
-                    origin.xpos = ExtTocEntry::DYNAMIC_LEFT;
+                    _origin.xPosType = ExtTocEntry::DYNAMIC;
+                    _origin.xpos = ExtTocEntry::DYNAMIC_LEFT;
                 } else if( value == L"center" ) {
-                    origin.xPosType = ExtTocEntry::DYNAMIC;
-                    origin.xpos = ExtTocEntry::DYNAMIC_CENTER;
+                    _origin.xPosType = ExtTocEntry::DYNAMIC;
+                    _origin.xpos = ExtTocEntry::DYNAMIC_CENTER;
                 } else if( value == L"right" ) {
-                    origin.xPosType = ExtTocEntry::DYNAMIC;
-                    origin.xpos = ExtTocEntry::DYNAMIC_RIGHT;
+                    _origin.xPosType = ExtTocEntry::DYNAMIC;
+                    _origin.xpos = ExtTocEntry::DYNAMIC_RIGHT;
                 } else if( value == L"top" || value == L"bottom" ) {
                     _document->printError( ERR2_VALUE );
                 } else {
                     wchar_t *end;
                     unsigned long int x( std::wcstoul( value.c_str(), &end, 10 ) );
-                    origin.xpos = static_cast< STD1::uint16_t >( x );
+                    _origin.xpos = static_cast< STD1::uint16_t >( x );
                     if( *end == L'c' ) {
-                        origin.xPosType = ExtTocEntry::ABSOLUTE_CHAR;
+                        _origin.xPosType = ExtTocEntry::ABSOLUTE_CHAR;
                     } else if( *end == L'%' ) {
-                        origin.xPosType = ExtTocEntry::RELATIVE_PERCENT;
+                        _origin.xPosType = ExtTocEntry::RELATIVE_PERCENT;
                     } else if( *end == L'x' ) {
-                        origin.xPosType = ExtTocEntry::ABSOLUTE_PIXEL;
+                        _origin.xPosType = ExtTocEntry::ABSOLUTE_PIXEL;
                     } else if( *end == L'p' ) {
-                        origin.xPosType = ExtTocEntry::ABSOLUTE_POINTS;
+                        _origin.xPosType = ExtTocEntry::ABSOLUTE_POINTS;
                     } else {
                         _document->printError( ERR2_VALUE );
                     }
                 }
-                if( dx && origin.xPosType == ExtTocEntry::DYNAMIC && size.widthType != ExtTocEntry::RELATIVE_PERCENT ) {
+                if( dx && _origin.xPosType == ExtTocEntry::DYNAMIC && _size.widthType != ExtTocEntry::RELATIVE_PERCENT ) {
                     _document->printError( ERR3_MIXEDUNITS );
                 }
             } else if( key == L"vpy" ) {
-                doOrigin = true;
+                _doOrigin = true;
                 yorg = true;
                 if( value == L"top" ) {
-                    origin.yPosType = ExtTocEntry::DYNAMIC;
-                    origin.ypos = ExtTocEntry::DYNAMIC_TOP;
+                    _origin.yPosType = ExtTocEntry::DYNAMIC;
+                    _origin.ypos = ExtTocEntry::DYNAMIC_TOP;
                 } else if( value == L"center" ) {
-                    origin.yPosType = ExtTocEntry::DYNAMIC;
-                    origin.ypos = ExtTocEntry::DYNAMIC_CENTER;
+                    _origin.yPosType = ExtTocEntry::DYNAMIC;
+                    _origin.ypos = ExtTocEntry::DYNAMIC_CENTER;
                 } else if( value == L"bottom" ) {
-                    origin.yPosType = ExtTocEntry::DYNAMIC;
-                    origin.ypos = ExtTocEntry::DYNAMIC_BOTTOM;
+                    _origin.yPosType = ExtTocEntry::DYNAMIC;
+                    _origin.ypos = ExtTocEntry::DYNAMIC_BOTTOM;
                 } else if( value == L"left" || value == L"right" ) {
                     _document->printError( ERR2_VALUE );
                 } else {
                     wchar_t *end;
                     unsigned long int y( std::wcstoul( value.c_str(), &end, 10 ) );
-                    origin.ypos = static_cast< STD1::uint16_t >( y );
+                    _origin.ypos = static_cast< STD1::uint16_t >( y );
                     if( *end == L'c' ) {
-                        origin.yPosType = ExtTocEntry::ABSOLUTE_CHAR;
+                        _origin.yPosType = ExtTocEntry::ABSOLUTE_CHAR;
                     } else if( *end == L'%' ) {
-                        origin.yPosType = ExtTocEntry::RELATIVE_PERCENT;
+                        _origin.yPosType = ExtTocEntry::RELATIVE_PERCENT;
                     } else if( *end == L'x' ) {
-                        origin.yPosType = ExtTocEntry::ABSOLUTE_PIXEL;
+                        _origin.yPosType = ExtTocEntry::ABSOLUTE_PIXEL;
                     } else if( *end == L'p' ) {
-                        origin.yPosType = ExtTocEntry::ABSOLUTE_POINTS;
+                        _origin.yPosType = ExtTocEntry::ABSOLUTE_POINTS;
                     } else {
                         _document->printError( ERR2_VALUE );
                     }
                 }
-                if( dy && origin.yPosType == ExtTocEntry::DYNAMIC && size.heightType != ExtTocEntry::RELATIVE_PERCENT )
+                if( dy && _origin.yPosType == ExtTocEntry::DYNAMIC && _size.heightType != ExtTocEntry::RELATIVE_PERCENT )
                     _document->printError( ERR3_MIXEDUNITS );
             } else if( key == L"vpcx" ) {
-                doSize = true;
+                _doSize = true;
                 dx = true;
                 if( value == L"left" ||
                     value == L"center" ||
@@ -157,23 +157,23 @@ Lexer::Token AcViewport::parseAttributes( Lexer* lexer )
                 } else {
                     wchar_t *end;
                     unsigned long int width = std::wcstoul( value.c_str(), &end, 10 );
-                    size.width = static_cast< STD1::uint16_t >( width );
+                    _size.width = static_cast< STD1::uint16_t >( width );
                     if( *end == L'c' ) {
-                        size.widthType = ExtTocEntry::ABSOLUTE_CHAR;
+                        _size.widthType = ExtTocEntry::ABSOLUTE_CHAR;
                     } else if( *end == L'%' ) {
-                        size.widthType = ExtTocEntry::RELATIVE_PERCENT;
+                        _size.widthType = ExtTocEntry::RELATIVE_PERCENT;
                     } else if( *end == L'x' ) {
-                        size.widthType = ExtTocEntry::ABSOLUTE_PIXEL;
+                        _size.widthType = ExtTocEntry::ABSOLUTE_PIXEL;
                     } else if( *end == L'p' ) {
-                        size.widthType = ExtTocEntry::ABSOLUTE_POINTS;
+                        _size.widthType = ExtTocEntry::ABSOLUTE_POINTS;
                     } else {
                         _document->printError( ERR2_VALUE );
                     }
                 }
-                if( xorg && origin.xPosType == ExtTocEntry::DYNAMIC && size.widthType != ExtTocEntry::RELATIVE_PERCENT )
+                if( xorg && _origin.xPosType == ExtTocEntry::DYNAMIC && _size.widthType != ExtTocEntry::RELATIVE_PERCENT )
                     _document->printError( ERR3_MIXEDUNITS );
             } else if( key == L"vpcy" ) {
-                doSize = true;
+                _doSize = true;
                 dy = true;
                 if( value == L"left" ||
                     value == L"center" ||
@@ -184,20 +184,20 @@ Lexer::Token AcViewport::parseAttributes( Lexer* lexer )
                 } else {
                     wchar_t *end;
                     unsigned long int height = std::wcstoul( value.c_str(), &end, 10 );
-                    size.height = static_cast< STD1::uint16_t >( height );
+                    _size.height = static_cast< STD1::uint16_t >( height );
                     if( *end == L'c' ) {
-                        size.heightType = ExtTocEntry::ABSOLUTE_CHAR;
+                        _size.heightType = ExtTocEntry::ABSOLUTE_CHAR;
                     } else if( *end == L'%' ) {
-                        size.heightType = ExtTocEntry::RELATIVE_PERCENT;
+                        _size.heightType = ExtTocEntry::RELATIVE_PERCENT;
                     } else if( *end == L'x' ) {
-                        size.heightType = ExtTocEntry::ABSOLUTE_PIXEL;
+                        _size.heightType = ExtTocEntry::ABSOLUTE_PIXEL;
                     } else if( *end == L'p' ) {
-                        size.heightType = ExtTocEntry::ABSOLUTE_POINTS;
+                        _size.heightType = ExtTocEntry::ABSOLUTE_POINTS;
                     } else {
                         _document->printError( ERR2_VALUE );
                     }
                 }
-                if( yorg && origin.yPosType == ExtTocEntry::DYNAMIC && size.heightType != ExtTocEntry::RELATIVE_PERCENT )
+                if( yorg && _origin.yPosType == ExtTocEntry::DYNAMIC && _size.heightType != ExtTocEntry::RELATIVE_PERCENT )
                     _document->printError( ERR3_MIXEDUNITS );
             } else {
                 _document->printError( ERR1_ATTRNOTDEF );
@@ -216,61 +216,61 @@ Lexer::Token AcViewport::parseAttributes( Lexer* lexer )
 /***************************************************************************/
 void AcViewport::buildText( Cell* cell )
 {
-    if( objectId && !objectName.empty() ) {
+    if( _objectId && !_objectName.empty() ) {
         std::vector< STD1::uint8_t > esc;
-        esc.reserve( 3 + 4 + objectName.size() + 1 + dll.size() + 1 +
-            objectInfo.size() + 1 + 2 + sizeof( PageOrigin ) + sizeof( PageSize ) );
+        esc.reserve( 3 + 4 + _objectName.size() + 1 + _dll.size() + 1 +
+            _objectInfo.size() + 1 + 2 + sizeof( PageOrigin ) + sizeof( PageSize ) );
         esc.push_back( 0xFF );          //ESC
         esc.push_back( 2 );             //size
         esc.push_back( 0x21 );          //type
         esc.push_back( 0 );             //reserved
-        esc.push_back( static_cast< STD1::uint8_t >( objectName.size() + 1 +
-            dll.size() + 1 + objectInfo.size() + 1 ) );
-        esc.push_back( static_cast< STD1::uint8_t >( objectId ) );
-        esc.push_back( static_cast< STD1::uint8_t >( objectId >> 8 ) );
-        esc.push_back( static_cast< STD1::uint8_t >( objectName.size() + 1 ) );
-        if( !objectName.empty() ) {
+        esc.push_back( static_cast< STD1::uint8_t >( _objectName.size() + 1 +
+            _dll.size() + 1 + _objectInfo.size() + 1 ) );
+        esc.push_back( static_cast< STD1::uint8_t >( _objectId ) );
+        esc.push_back( static_cast< STD1::uint8_t >( _objectId >> 8 ) );
+        esc.push_back( static_cast< STD1::uint8_t >( _objectName.size() + 1 ) );
+        if( !_objectName.empty() ) {
             std::string buffer;
-            _document->wtomb_string( objectName, buffer );
+            _document->wtomb_string( _objectName, buffer );
             std::size_t bytes( buffer.size() );
             for( std::size_t count1 = 0; count1 < bytes; ++count1 ) {
                 esc.push_back( static_cast< STD1::uint8_t >( buffer[ count1 ] ) );
             }
         }
-        esc.push_back( static_cast< STD1::uint8_t >( dll.size() + 1 ) );
-        if( !dll.empty() ) {
+        esc.push_back( static_cast< STD1::uint8_t >( _dll.size() + 1 ) );
+        if( !_dll.empty() ) {
             std::string buffer;
-            _document->wtomb_string( dll, buffer );
+            _document->wtomb_string( _dll, buffer );
             std::size_t bytes( buffer.size() );
             for( std::size_t count1 = 0; count1 < bytes; ++count1 ) {
                 esc.push_back( static_cast< STD1::uint8_t >( buffer[ count1 ] ) );
             }
         }
-        esc.push_back( static_cast< STD1::uint8_t >( objectInfo.size() + 1 ) );
-        if( !objectInfo.empty() ) {
+        esc.push_back( static_cast< STD1::uint8_t >( _objectInfo.size() + 1 ) );
+        if( !_objectInfo.empty() ) {
             std::string buffer;
-            _document->wtomb_string( objectInfo, buffer );
+            _document->wtomb_string( _objectInfo, buffer );
             std::size_t bytes( buffer.size() );
             for( std::size_t count1 = 0; count1 < bytes; ++count1 ) {
                 esc.push_back( static_cast< STD1::uint8_t >( buffer[ count1 ] ) );
             }
         }
-        if( doOrigin || doSize ) {
+        if( _doOrigin || _doSize ) {
             STD1::uint8_t flag( 0xC0 );
-            if( doOrigin )
+            if( _doOrigin )
                 flag |= 0x01;
-            if( doSize )
+            if( _doSize )
                 flag |= 0x02;
             esc.push_back( flag );
             esc.push_back( 0 );
-            if( doOrigin ) {
-                STD1::uint8_t* src = reinterpret_cast< STD1::uint8_t* >( &origin );
+            if( _doOrigin ) {
+                STD1::uint8_t* src = reinterpret_cast< STD1::uint8_t* >( &_origin );
                 for( std::size_t count1 = 0; count1 < sizeof( PageOrigin ); ++count1, ++src ) {
                     esc.push_back( *src );
                 }
             }
-            if( doSize ) {
-                STD1::uint8_t* src = reinterpret_cast< STD1::uint8_t* >( &size );
+            if( _doSize ) {
+                STD1::uint8_t* src = reinterpret_cast< STD1::uint8_t* >( &_size );
                 for( std::size_t count1 = 0; count1 < sizeof( PageSize ); ++count1, ++src ) {
                     esc.push_back( *src );
                 }

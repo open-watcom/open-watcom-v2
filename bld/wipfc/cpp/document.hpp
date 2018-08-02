@@ -51,6 +51,7 @@
 #include "strings.hpp"
 #include "tocref.hpp"
 
+
 class Cell; //forward reference
 class Page;
 class Tag;
@@ -129,8 +130,8 @@ public:
     const std::wstring* nameit( const std::wstring& key );
     std::wstring* prepNameitName( const std::wstring& key );
 
-    std::wstring * addStartInput( std::string& sfname, std::wstring *wfname );
-    void pushFileInput( std::wstring *wfname );
+    std::wstring * pushFileInput( std::wstring *wfname );
+    std::wstring * pushFileInput( std::string& sfname, std::wstring *wfname );
 
     //Forwarding functions
 
@@ -275,6 +276,9 @@ private:
     void writeSynonyms( std::FILE* out );
     STD1::uint32_t writeIndex( std::FILE* out );
     STD1::uint32_t writeICmd( std::FILE* out );
+
+    std::vector< std::string > ipfcartwork_paths;
+    std::vector< std::string > ipfcimbed_paths;
 };
 
 #endif //DOCUMENT_INCLUDED

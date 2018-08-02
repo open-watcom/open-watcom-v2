@@ -40,16 +40,16 @@
 class Lm : public Element {
 public:
     Lm( Document* d, Element *p, const std::wstring* f, unsigned int r, unsigned int c ) :
-        Element( d, p, f, r, c ), margin( 1 ) { };
+        Element( d, p, f, r, c ), _margin( 1 ) { };
     Lm( Document* d, Element *p, const std::wstring* f, unsigned int r, unsigned int c,
-        unsigned char m ) : Element( d, p, f, r, c ), margin( m ) { };
+        unsigned char m ) : Element( d, p, f, r, c ), _margin( m ) { };
     ~Lm() { };
     Lexer::Token parse( Lexer* lexer );
     void buildText( Cell* cell );
 private:
     Lm( const Lm& rhs );                //no copy
     Lm& operator=( const Lm& rhs );     //no assignment
-    STD1::uint8_t margin;
+    STD1::uint8_t _margin;
 };
 
 #endif //LM_INCLUDED

@@ -641,6 +641,7 @@ void Hn::linearize( Page* page )
 {
     if( _document->headerCutOff() < toc.nestLevel )
         page->addElement( this );
-    for( ConstChildrenIter iter = children.begin(); iter != children.end(); ++iter )
+    for( ConstChildrenIter iter = _children.begin(); iter != _children.end(); ++iter ) {
         ( *iter )->linearize( page );
+    }
 }

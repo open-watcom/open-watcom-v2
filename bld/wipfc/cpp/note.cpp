@@ -84,7 +84,7 @@ Lexer::Token Note::parse( Lexer* lexer )
         _document->lexerCol(), temp ) );
     bool oldBlockParsing( _document->blockParsing() );
     _document->setBlockParsing( true );
-    whiteSpace = Tag::LITERAL;
+    _whiteSpace = Tag::LITERAL;
     appendChild( new P( _document, this, _document->dataName(), _document->lexerLine(),
         _document->lexerCol() ) );
     tok = _document->getNextToken(); //first token from buffer
@@ -92,7 +92,7 @@ Lexer::Token Note::parse( Lexer* lexer )
         if( parseInline( lexer, tok ) )
             parseCleanup( lexer, tok );
     }
-    whiteSpace = Tag::NONE;
+    _whiteSpace = Tag::NONE;
     _document->setBlockParsing( oldBlockParsing );
     _document->popInput();
     appendChild( new WhiteSpace( _document, this, _document->dataName(), _document->lexerLine(),
