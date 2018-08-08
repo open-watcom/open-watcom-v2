@@ -38,49 +38,53 @@
 
 IndexItem::IndexItem( Type t )
 {
-    if( t == PRIMARY )
+    if( t == PRIMARY ) {
         _hdr.primary = 1;
-    else if( t == SECONDARY )
+    } else if( t == SECONDARY ) {
         _hdr.secondary = 1;
+    }
 }
 /***************************************************************************/
 bool IndexItem::operator==( const IndexItem& rhs ) const
 {
     if( _sortKey.empty() ) {
-        if( rhs._sortKey.empty() )
+        if( rhs._sortKey.empty() ) {
             return wstricmp( _text.c_str(), rhs._text.c_str() ) == 0;
-        else
+        } else {
             return wstricmp( _text.c_str(), rhs._sortKey.c_str() ) == 0;
-    }
-    else {
-        if( rhs._sortKey.empty() )
+        }
+    } else {
+        if( rhs._sortKey.empty() ) {
             return wstricmp( _sortKey.c_str(), rhs._text.c_str() ) == 0;
-        else
+        } else {
             return wstricmp( _sortKey.c_str(), rhs._sortKey.c_str() ) == 0;
+        }
     }
 }
 /***************************************************************************/
 bool IndexItem::operator==( const std::wstring& rhs ) const
 {
-    if( _sortKey.empty() )
+    if( _sortKey.empty() ) {
         return wstricmp( _text.c_str(), rhs.c_str() ) == 0;
-    else
+    } else {
         return wstricmp( _sortKey.c_str(), rhs.c_str() ) == 0;
+    }
 }
 /***************************************************************************/
 bool IndexItem::operator<( const IndexItem& rhs ) const
 {
     if( _sortKey.empty() ) {
-        if( rhs._sortKey.empty() )
+        if( rhs._sortKey.empty() ) {
             return wstricmp( _text.c_str(), rhs._text.c_str() ) < 0;
-        else
+        } else {
             return wstricmp( _text.c_str(), rhs._sortKey.c_str() ) < 0;
-    }
-    else {
-        if( rhs._sortKey.empty() )
+        }
+    } else {
+        if( rhs._sortKey.empty() ) {
             return wstricmp( _sortKey.c_str(), rhs._text.c_str() ) < 0;
-        else
+        } else {
             return wstricmp( _sortKey.c_str(), rhs._sortKey.c_str() ) < 0;
+        }
     }
 }
 /***************************************************************************/
@@ -119,11 +123,11 @@ std::size_t IndexItem::write( std::FILE* out, Document *document )
     length2 = buffer2.size();
     if( length1 + length2 > 254 ) {
         length2 = length1 > 254 ? 0 : 254 - length1;
-    }
-    else if( _hdr.sortKey )
+    } else if( _hdr.sortKey ) {
         _hdr.size = static_cast< STD1::uint8_t >( length1 + length2 + 1 );
-    else
+    } else {
         _hdr.size = static_cast< STD1::uint8_t >( length2 );
+    }
     _hdr.synonymCount = static_cast< STD1::uint8_t >( _synonyms.size() );
     if( std::fwrite( &_hdr, sizeof( IndexHeader ), 1, out ) != 1 )
         throw FatalError( ERR_WRITE );

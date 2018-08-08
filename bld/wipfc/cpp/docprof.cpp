@@ -38,50 +38,51 @@
 
 Lexer::Token DocProf::parse( Lexer* lexer )
 {
-    Lexer::Token tok( _document->getNextToken() );
-    while( tok != Lexer::TAGEND ) {
+    Lexer::Token tok;
+
+    while( (tok = _document->getNextToken()) != Lexer::TAGEND ) {
         if( tok == Lexer::ATTRIBUTE ) {
             std::wstring key;
             std::wstring value;
             splitAttribute( lexer->text(), key, value );
-            if ( key == L"toc" ) {
+            if( key == L"toc" ) {
                 wchar_t ch[ 2 ];
                 ch[ 0 ] = value[ value.size() - 1 ];    //last number is critical value
                 ch[ 1 ] = L'\0';
                 int tmp( static_cast<int>( std::wcstol( ch, 0, 10 ) ) );
-                if( tmp < 1 || tmp > 6 )
+                if( tmp < 1 || tmp > 6 ) {
                     _document->printError( ERR2_VALUE );
-                else
+                } else {
                     _headerCutOff = static_cast< unsigned int >( tmp );
-            }
-            else if( key == L"objectname" )
+                }
+            } else if( key == L"objectname" ) {
                 _objName = value;
-            else if( key == L"dll" )
+            } else if( key == L"dll" ) {
                 _dll = value;
-            else if ( key == L"objectinfo" )
+            } else if( key == L"objectinfo" ) {
                 _objInfo = value ;
-            else if( key == L"ctrlarea" ) {
-                if( value == L"none" )
+            } else if( key == L"ctrlarea" ) {
+                if( value == L"none" ) {
                     _area = NONE;
-                else if( value == L"coverpage" )
+                } else if( value == L"coverpage" ) {
                     _area = COVERPAGE;
-                else if( value == L"page" )
+                } else if( value == L"page" ) {
                     _area = PAGE;
-                else if( value == L"both" )
+                } else if( value == L"both" ) {
                     _area = BOTH;
-                else
+                } else {
                     _document->printError( ERR2_VALUE );
-            }
-            else
+                }
+            } else {
                 _document->printError( ERR1_ATTRNOTDEF );
-        }
-        else if ( tok == Lexer::FLAG )
+            }
+        } else if( tok == Lexer::FLAG ) {
             _document->printError( ERR1_ATTRNOTDEF );
-        else if( tok == Lexer::END )
+        } else if( tok == Lexer::END ) {
             throw FatalError( ERR_EOF );
-        else
+        } else {
             _document->printError( ERR1_TAGSYNTAX );
-        tok = _document->getNextToken();
+        }
     }
     return _document->getNextToken();
 }
@@ -89,14 +90,16 @@ Lexer::Token DocProf::parse( Lexer* lexer )
 void DocProf::build( Controls* ctrls, StringTable* strs )
 {
     _document->setHeaderCutOff( _headerCutOff );
-    if( _area == NONE || _area == PAGE )
+    if( _area == NONE || _area == PAGE ) {
         ctrls->setCover( 0xFFFF );
-    else
+    } else {
         ctrls->setCover( 0 );   //may be modified by :ctrl. tag later
+    }
     if( !_objName.empty() )
         strs->add( _objName );
     if( !_dll.empty() )
         strs->add( _dll );
-    if( !_objInfo.empty() )
+    if( !_objInfo.empty() ) {
         strs->add( _objInfo );
+    }
 }

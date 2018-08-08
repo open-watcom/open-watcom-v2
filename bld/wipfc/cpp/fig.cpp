@@ -51,16 +51,16 @@ Lexer::Token Fig::parse( Lexer* lexer )
         tok = _document->getNextToken(); //consume '\n' if just after tag end
     while( tok != Lexer::END && !( tok == Lexer::TAG && lexer->tagId() == Lexer::EUSERDOC)) {
         if( parseInline( lexer, tok ) ) {
-            if( lexer->tagId() == Lexer::EFIG )
+            if( lexer->tagId() == Lexer::EFIG ) {
                 break;
-            else if( lexer->tagId() == Lexer::FIGCAP ) {
-                Element* elt( new Figcap( _document, this, _document->dataName(),
-                    _document->dataLine(), _document->dataCol() ) );
-                appendChild( elt );
-                tok = elt->parse( lexer );
-            }
-            else
+            } else if( lexer->tagId() == Lexer::FIGCAP ) {
+                Figcap *figcap = new Figcap( _document, this, _document->dataName(),
+                    _document->dataLine(), _document->dataCol() );
+                appendChild( figcap );
+                tok = figcap->parse( lexer );
+            } else {
                 parseCleanup( lexer, tok );
+            }
         }
     }
     return tok;
@@ -74,8 +74,9 @@ void Fig::buildText( Cell* cell )
     cell->addByte( 0x1A );  //begin fig sequence
     cell->addByte( 0x01 );  //left align
     cell->addByte( 0xFC );  //toggle spacing
-    if( cell->textFull() )
+    if( cell->textFull() ) {
         printError( ERR1_LARGEPAGE );
+    }
 }
 /*****************************************************************************/
 void EFig::buildText( Cell* cell )
@@ -83,8 +84,9 @@ void EFig::buildText( Cell* cell )
     cell->addByte( 0xFF );  //esc
     cell->addByte( 0x02 );  //size
     cell->addByte( 0x1B );  //end fig sequence
-    if( cell->textFull() )
+    if( cell->textFull() ) {
         printError( ERR1_LARGEPAGE );
+    }
 }
 
 

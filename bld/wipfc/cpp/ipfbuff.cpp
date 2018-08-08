@@ -61,7 +61,7 @@ IpfBuffer::IpfBuffer( const std::wstring* fname,    //originating file
 std::wint_t IpfBuffer::get()
 {
     wchar_t ch = EOB;
-    if ( _ungotCh != EOB ) {
+    if( _ungotCh != EOB ) {
         ch = _ungotCh;
         _ungotCh = EOB;
     } else if( _head != _tail ) {

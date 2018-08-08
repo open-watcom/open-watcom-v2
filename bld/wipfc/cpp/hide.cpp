@@ -58,8 +58,9 @@ Hide::Hide( Document* d, Element *p, const std::wstring* f, unsigned int r,
 /***************************************************************************/
 Lexer::Token Hide::parse( Lexer* lexer )
 {
-    Lexer::Token tok( _document->getNextToken() );
-    while( tok != Lexer::TAGEND ) {
+    Lexer::Token tok;
+
+    while( (tok = _document->getNextToken()) != Lexer::TAGEND ) {
         //parse attributes
         if( tok == Lexer::ATTRIBUTE ) {
             std::wstring key;
@@ -85,7 +86,6 @@ Lexer::Token Hide::parse( Lexer* lexer )
         } else {
             _document->printError( ERR1_TAGSYNTAX );
         }
-        tok = _document->getNextToken();
     }
     return _document->getNextToken(); //consume TAGEND
 }
@@ -117,28 +117,31 @@ void Hide::buildText( Cell* cell )
 EHide::EHide( Document* d, Element *p, const std::wstring* f, unsigned int r,
             unsigned int c ) : Element ( d, p, f, r, c )
 {
-    if( Hide::hiding() )
+    if( Hide::hiding() ) {
         Hide::clear();
-    else
+    } else {
         d->printError( ERR2_NEST );
+    }
 }
 /***************************************************************************/
 Lexer::Token EHide::parse( Lexer* lexer )
 {
-    Lexer::Token tok( _document->getNextToken() );
+    Lexer::Token tok;
+
     (void)lexer;
-    while( tok != Lexer::TAGEND ) {
-        if( tok == Lexer::ATTRIBUTE )
+
+    while( (tok = _document->getNextToken()) != Lexer::TAGEND ) {
+        if( tok == Lexer::ATTRIBUTE ) {
             _document->printError( ERR1_ATTRNOTDEF );
-        else if( tok == Lexer::FLAG )
+        } else if( tok == Lexer::FLAG ) {
             _document->printError( ERR1_ATTRNOTDEF );
-        else if( tok == Lexer::ERROR_TAG )
+        } else if( tok == Lexer::ERROR_TAG ) {
             throw FatalError( ERR_SYNTAX );
-        else if( tok == Lexer::END )
+        } else if( tok == Lexer::END ) {
             throw FatalError( ERR_EOF );
-        else
+        } else {
             _document->printError( ERR1_TAGSYNTAX );
-        tok = _document->getNextToken();
+        }
     }
     return _document->getNextToken();    //consume TAGEND
 }

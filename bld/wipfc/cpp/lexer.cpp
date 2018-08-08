@@ -81,14 +81,14 @@ Lexer::Token Lexer::lex( IpfData* input )
                         //syntax error
                         type = ERROR_TAG;
                         break;
-                    } else if ( type == FLAG ) {
+                    } else if( type == FLAG ) {
                         if( ch == L'=' ) {
                             type = ATTRIBUTE;
                         } else if( std::iswspace( ch ) ) {
                             _buffer.erase( _buffer.size() - 1 );
                             break;
                         }
-                    } else if ( type == ATTRIBUTE ) {
+                    } else if( type == ATTRIBUTE ) {
                         if( ch == L'\'' || ch == '\"' ) {
                             if( !inQuote ) {
                                 inQuote = true;
@@ -113,7 +113,7 @@ Lexer::Token Lexer::lex( IpfData* input )
                         type = WHITESPACE;
                         if( ch == L'\n' )   //don't concatenate spaces
                             break;
-                    } else if ( ch == L':' ) {
+                    } else if( ch == L':' ) {
                         wchar_t ch2( input->get() );
                         input->unget( ch2 );
                         if( std::iswalpha( ch2 ) ) {
@@ -123,7 +123,7 @@ Lexer::Token Lexer::lex( IpfData* input )
                             type = PUNCTUATION;
                             break;
                         }
-                    } else if ( ch == L'&' ) {
+                    } else if( ch == L'&' ) {
                         wchar_t ch2( input->get() );
                         input->unget( ch2 );
                         if( std::iswalnum( ch2 ) ) {
@@ -131,18 +131,18 @@ Lexer::Token Lexer::lex( IpfData* input )
                         } else {
                             type = WORD;
                         }
-                    } else if ( ch == L'.' ) {
+                    } else if( ch == L'.' ) {
                         if( _charNum == 1 ) {
                             type = COMMAND;
                         } else {
                             type = PUNCTUATION;
                             break;
                         }
-                    } else if ( std::iswpunct( ch ) ) {
+                    } else if( std::iswpunct( ch ) ) {
                         //single character, but not '.' or '&' or ':'
                         type = PUNCTUATION;
                         break;
-                    } else {    //if ( std::iswalnum( ch ) )
+                    } else {    //if( std::iswalnum( ch ) )
                         type = WORD;
                     }
                 } else {

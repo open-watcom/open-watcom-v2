@@ -40,7 +40,7 @@ public:
     CeCmd ( Document* d, Element* p, const std::wstring* f, unsigned int r, unsigned int c ) :
         Tag( d, p, f, r, c ) {};
     ~CeCmd() { };
-    Lexer::Token parse( Lexer* lexer );
+    void parseCommand( Lexer* lexer );
     void buildText( Cell* cell );
 private:
     static void prepBufferName( std::wstring* buffer, const std::wstring& fname );

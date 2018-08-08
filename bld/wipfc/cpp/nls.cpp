@@ -101,7 +101,7 @@ void Nls::readNLSFile( const std::string& sfname )
             if( doGrammar ) {
                 if( std::wcscmp( keyword, L"Words" ) == 0 ) {
                     processGrammar( value );
-                } else if ( std::wcscmp( keyword, L"RemoveNL" ) == 0 ) {
+                } else if( std::wcscmp( keyword, L"RemoveNL" ) == 0 ) {
                     //FIXME: exclude these values from sbcs/dbcs table?
                 }
             } else if( std::wcscmp( keyword, L"Note" ) == 0 ) {
@@ -192,7 +192,7 @@ void Nls::processGrammar( wchar_t *buffer )
     }
 }
 /*****************************************************************************/
-wchar_t Nls::entity( const std::wstring& key )
+wchar_t Nls::entityChar( const std::wstring& key )
 {
     EntityIter pos( _entityMap.find( key ) );
     if( pos == _entityMap.end() )

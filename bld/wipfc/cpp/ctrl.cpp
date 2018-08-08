@@ -46,8 +46,9 @@
 
 Lexer::Token Ctrl::parse( Lexer* lexer )
 {
-    Lexer::Token tok( _document->getNextToken() );
-    while( tok != Lexer::TAGEND ) {
+    Lexer::Token tok;
+
+    while( (tok = _document->getNextToken()) != Lexer::TAGEND ) {
         if( tok == Lexer::ATTRIBUTE ) {
             std::wstring key;
             std::wstring value;
@@ -55,29 +56,27 @@ Lexer::Token Ctrl::parse( Lexer* lexer )
             if( key == L"ctrlid" ) {
                 ctrlid = value;
                 std::transform( ctrlid.begin(), ctrlid.end(), ctrlid.begin(), std::towupper );
-            }
-            else if( key == L"controls" ) {
+            } else if( key == L"controls" ) {
                 controls = value;
                 std::transform( controls.begin(), controls.end(), controls.begin(), std::towupper );
+            } else {
+                _document->printError( ERR1_ATTRNOTDEF );
             }
-            else
-                _document->printError( ERR1_ATTRNOTDEF );
-        }
-        else if ( tok == Lexer::FLAG ) {
-            if( lexer->text() == L"page" )
+        } else if( tok == Lexer::FLAG ) {
+            if( lexer->text() == L"page" ) {
                 page = true;
-            else if( lexer->text() == L"coverpage" )
+            } else if( lexer->text() == L"coverpage" ) {
                 coverpage = true;
-            else
+            } else {
                 _document->printError( ERR1_ATTRNOTDEF );
-        }
-        else if( tok == Lexer::ERROR_TAG )
+            }
+        } else if( tok == Lexer::ERROR_TAG ) {
             throw FatalError( ERR_SYNTAX );
-        else if( tok == Lexer::END )
+        } else if( tok == Lexer::END ) {
             throw FatalError( ERR_EOF );
-        else
+        } else {
             _document->printError( ERR1_TAGSYNTAX );
-        tok = _document->getNextToken();
+        }
     }
     return _document->getNextToken();
 }
@@ -92,34 +91,35 @@ void Ctrl::build( Controls* ctrls)
                 std::wstring::size_type p2( controls.find( L' ', p1 ) );
                 std::wstring temp( controls.substr( p1, p2 - p1 ) );
                 ControlButton* btn( ctrls->getButtonById( temp ) ); //check if button is present
-                if( btn )
+                if( btn ) {
                     grp.addButtonIndex( btn->index() );
-                else {
-                    if( temp == L"ESC" )
+                } else {
+                    if( temp == L"ESC" ) {
                         grp.addButtonIndex( 0 );
-                    else if( temp == L"SEARCH" )
+                    } else if( temp == L"SEARCH" ) {
                         grp.addButtonIndex( 1 );
-                    else if( temp == L"PRINT" )
+                    } else if( temp == L"PRINT" ) {
                         grp.addButtonIndex( 2 );
-                    else if( temp == L"INDEX" )
+                    } else if( temp == L"INDEX" ) {
                         grp.addButtonIndex( 3 );
-                    else if( temp == L"CONTENTS" )
+                    } else if( temp == L"CONTENTS" ) {
                         grp.addButtonIndex( 4 );
-                    else if( temp == L"BACK" )
+                    } else if( temp == L"BACK" ) {
                         grp.addButtonIndex( 5 );
-                    else if( temp == L"FORWARD" )
+                    } else if( temp == L"FORWARD" ) {
                         grp.addButtonIndex( 6 );
-                    else
+                    } else {
                         printError( ERR3_NOBUTTON, temp );
+                    }
                 }
                 p1 = p2 == std::wstring::npos ? std::wstring::npos : p2 + 1;
             }
-        ctrls->addGroup( grp );
-        if( coverpage )
-            ctrls->setCover( ctrls->group()->index() + 1);
+            ctrls->addGroup( grp );
+            if( coverpage ) {
+                ctrls->setCover( ctrls->group()->index() + 1);
+            }
         }
-    }
-    else
+    } else {
         printError( ERR3_DUPID, ctrlid );
+    }
 }
-

@@ -89,9 +89,9 @@ STD1::uint32_t BitmapBlock::compress( std::FILE* in )
             character = static_cast< STD1::uint16_t >( *itr );
             ++bytesIn;
             codeIndex = findMatch( code, prefix, append, stringCode, character );
-            if( code[codeIndex] != UNDEFINED )
+            if( code[codeIndex] != UNDEFINED ) {
                 stringCode = code[codeIndex];
-            else {
+            } else {
                 if( nextCode <= maxCode ) {
                     code[codeIndex] = nextCode++;
                     prefix[codeIndex] = stringCode;
@@ -115,9 +115,9 @@ STD1::uint32_t BitmapBlock::compress( std::FILE* in )
                                 bytesOut = 0;
 //                                oldCompRatio = 100;
                                 std::fill( code.begin(), code.end(), UNDEFINED );
-                            }
-//                            else
+//                            } else {
 //                                oldCompRatio = newCompRatio;
+                            }
                         }
 //                        checkPoint = bytesIn + checkCount;    // Set new checkpoint
                     }
@@ -292,16 +292,17 @@ STD1::uint16_t BitmapBlock::getCode( InputIter& in )
         if( in != data.end() ) {
             bitBuffer |= static_cast< STD1::uint32_t >( *in ) << ( 24 - bitCount );
             ++in;
-        }
-        else
+        } else {
             //bitBuffer |= 0;
             bitBuffer |= static_cast< STD1::uint32_t >( EOF ) << ( 24 - bitCount );
+        }
         bitCount += 8;
     }
-    if( in != data.end() )
+    if( in != data.end() ) {
         retval = static_cast< STD1::uint16_t >( bitBuffer >> ( 32 - bitsPerCode ) );
-    else
+    } else {
         retval = TERMINATE;
+    }
     //retval = static_cast< STD1::uint16_t >( bitBuffer >> ( 32 - bitsPerCode ) );
     bitBuffer <<= bitsPerCode;
     bitCount -= bitsPerCode;

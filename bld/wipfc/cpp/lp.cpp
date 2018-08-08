@@ -56,7 +56,8 @@ void Lp::buildText( Cell* cell )
     cell->addByte( 0x02 );  //set left margin
     cell->addByte( indent );
     cell->addByte( 0xFA );
-    if( cell->textFull() )
+    if( cell->textFull() ) {
         printError( ERR1_LARGEPAGE );
+    }
 }
 

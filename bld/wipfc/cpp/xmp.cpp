@@ -51,9 +51,8 @@ Lexer::Token Xmp::parse( Lexer* lexer )
         if( parseInline( lexer, tok ) ) {
             if( lexer->tagId() == Lexer::EXMP )
                 break;
-            else
-                parseCleanup( lexer, tok );
-            }
+            parseCleanup( lexer, tok );
+        }
     }
     return tok;
 }
@@ -63,8 +62,9 @@ void Xmp::buildText( Cell* cell )
     cell->addByte( 0xFF );  //esc
     cell->addByte( 0x02 );  //size
     cell->addByte( 0x0B );  //begin monospaced
-    if( cell->textFull() )
+    if( cell->textFull() ) {
         printError( ERR1_LARGEPAGE );
+    }
 }
 /*****************************************************************************/
 void EXmp::buildText( Cell* cell )
@@ -72,7 +72,8 @@ void EXmp::buildText( Cell* cell )
     cell->addByte( 0xFF );  //esc
     cell->addByte( 0x02 );  //size
     cell->addByte( 0x0C );  //end monospaced
-    if( cell->textFull() )
+    if( cell->textFull() ) {
         printError( ERR1_LARGEPAGE );
+    }
 }
 

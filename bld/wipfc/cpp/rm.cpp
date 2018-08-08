@@ -45,8 +45,9 @@
 
 Lexer::Token Rm::parse( Lexer* lexer )
 {
-    Lexer::Token tok( _document->getNextToken() );
-    while( tok != Lexer::TAGEND ) {
+    Lexer::Token tok;
+
+    while( (tok = _document->getNextToken()) != Lexer::TAGEND ) {
         //parse attributes
         if( tok == Lexer::ATTRIBUTE ) {
             std::wstring key;
@@ -59,19 +60,18 @@ Lexer::Token Rm::parse( Lexer* lexer )
                 if( tmp > 255 )
                     tmp = 255;
                 _margin = static_cast< STD1::uint8_t >( tmp );
+            } else {
+                _document->printError( ERR1_ATTRNOTDEF );
             }
-            else
+        } else if( tok == Lexer::FLAG ) {
                 _document->printError( ERR1_ATTRNOTDEF );
-        }
-        else if( tok == Lexer::FLAG )
-                _document->printError( ERR1_ATTRNOTDEF );
-        else if( tok == Lexer::ERROR_TAG )
+        } else if( tok == Lexer::ERROR_TAG ) {
             throw FatalError( ERR_SYNTAX );
-        else if( tok == Lexer::END )
+        } else if( tok == Lexer::END ) {
             throw FatalError( ERR_EOF );
-        else
+        } else {
             _document->printError( ERR1_TAGSYNTAX );
-        tok = _document->getNextToken();
+        }
     }
     return _document->getNextToken();
 }

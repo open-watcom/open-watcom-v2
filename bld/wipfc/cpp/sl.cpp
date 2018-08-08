@@ -58,81 +58,82 @@ Lexer::Token Sl::parse( Lexer* lexer )
             switch( lexer->tagId() ) {
             case Lexer::DL:
                 {
-                    Element* elt( new Dl( _document, this, _document->dataName(),
+                    Dl *dl = new Dl( _document, this, _document->dataName(),
                         _document->dataLine(), _document->dataCol(), nestLevel + 1,
-                        indent == 1 ? 4 : indent + 4 ) );
-                    appendChild( elt );
-                    tok = elt->parse( lexer );
+                        indent == 1 ? 4 : indent + 4 );
+                    appendChild( dl );
+                    tok = dl->parse( lexer );
                     needLine = true;
                 }
                 break;
             case Lexer::OL:
                 {
-                    Element* elt( new Ol( _document, this, _document->dataName(),
+                    Ol *ol = new Ol( _document, this, _document->dataName(),
                         _document->dataLine(), _document->dataCol(),
-                        nestLevel + 1, indent == 1 ? 4 : indent + 4 ) );
-                    appendChild( elt );
-                    tok = elt->parse( lexer );
+                        nestLevel + 1, indent == 1 ? 4 : indent + 4 );
+                    appendChild( ol );
+                    tok = ol->parse( lexer );
                     needLine = true;
                 }
                 break;
             case Lexer::LI:
                 {
-                    Element* elt( new SlLi( _document, this, _document->dataName(),
+                    SlLi *slli = new SlLi( _document, this, _document->dataName(),
                         _document->dataLine(), _document->dataCol(),
                         itemCount++, nestLevel, indent, veryCompact ||
-                        ( compact && !needLine ) ) );
-                    appendChild( elt );
-                    tok = elt->parse( lexer );
+                        ( compact && !needLine ) );
+                    appendChild( slli );
+                    tok = slli->parse( lexer );
                     needLine = false;
                 }
                 break;
             case Lexer::LP:
                 {
-                    Element* elt( new Lp( _document, this, _document->dataName(),
-                        _document->dataLine(), _document->dataCol(), indent ) );
-                    appendChild( elt );
-                    tok = elt->parse( lexer );
+                    Lp *lp = new Lp( _document, this, _document->dataName(),
+                        _document->dataLine(), _document->dataCol(), indent );
+                    appendChild( lp );
+                    tok = lp->parse( lexer );
                 }
                 break;
             case Lexer::PARML:
                 {
-                    Element* elt( new Parml( _document, this, _document->dataName(),
+                    Parml *parml = new Parml( _document, this, _document->dataName(),
                         _document->dataLine(), _document->dataCol(), nestLevel + 1,
-                        indent == 1 ? 4 : indent + 4 ) );
-                    appendChild( elt );
-                    tok = elt->parse( lexer );
+                        indent == 1 ? 4 : indent + 4 );
+                    appendChild( parml );
+                    tok = parml->parse( lexer );
                     needLine = true;
                 }
                 break;
             case Lexer::SL:
                 {
-                    Element* elt( new Sl( _document, this, _document->dataName(),
+                    Sl *sl = new Sl( _document, this, _document->dataName(),
                         _document->dataLine(), _document->dataCol(),
-                        nestLevel + 1, indent == 1 ? 4 : indent + 4 ) );
-                    appendChild( elt );
-                    tok = elt->parse( lexer );
+                        nestLevel + 1, indent == 1 ? 4 : indent + 4 );
+                    appendChild( sl );
+                    tok = sl->parse( lexer );
                     needLine = true;
                 }
                 break;
             case Lexer::ESL:
                 {
-                    Element* elt( new ESl( _document, this, _document->dataName(),
-                        _document->dataLine(), _document->dataCol() ) );
-                    appendChild( elt );
-                    tok = elt->parse( lexer );
-                    if( !nestLevel )
+                    ESl *esl = new ESl( _document, this, _document->dataName(),
+                        _document->dataLine(), _document->dataCol() );
+                    appendChild( esl );
+                    tok = esl->parse( lexer );
+                    if( !nestLevel ) {
                         appendChild( new BrCmd( _document, this, _document->dataName(),
                             _document->dataLine(), _document->dataCol() ) );
+                    }
                     return tok;
                 }
             case Lexer::UL:
                 {
-                    Element* elt( new Ul( _document, this, _document->dataName(),
+                    Ul *ul = new Ul( _document, this, _document->dataName(),
                         _document->dataLine(), _document->dataCol(),
-                        nestLevel + 1, indent == 1 ? 4 : indent + 4 ) );
-                    appendChild( elt );
-                    tok = elt->parse( lexer );
+                        nestLevel + 1, indent == 1 ? 4 : indent + 4 );
+                    appendChild( ul );
+                    tok = ul->parse( lexer );
                     needLine = true;
                 }
                 break;
@@ -147,26 +148,28 @@ Lexer::Token Sl::parse( Lexer* lexer )
 /***************************************************************************/
 Lexer::Token Sl::parseAttributes( Lexer* lexer )
 {
-    Lexer::Token tok( _document->getNextToken() );
+    Lexer::Token tok;
+
     (void)lexer;
-    while( tok != Lexer::TAGEND ) {
-        if( tok == Lexer::ATTRIBUTE )
+
+    while( (tok = _document->getNextToken()) != Lexer::TAGEND ) {
+        if( tok == Lexer::ATTRIBUTE ) {
             _document->printError( ERR1_ATTRNOTDEF );
-        else if( tok == Lexer::FLAG ) {
-            if( lexer->text() == L"compact" )
+        } else if( tok == Lexer::FLAG ) {
+            if( lexer->text() == L"compact" ) {
                 compact = true;
-            else if( lexer->text() == L"verycompact" )
+            } else if( lexer->text() == L"verycompact" ) {
                 veryCompact = true;
-            else
+            } else {
                 _document->printError( ERR1_ATTRNOTDEF );
-        }
-        else if( tok == Lexer::ERROR_TAG )
+            }
+        } else if( tok == Lexer::ERROR_TAG ) {
             throw FatalError( ERR_SYNTAX );
-        else if( tok == Lexer::END )
+        } else if( tok == Lexer::END ) {
             throw FatalError( ERR_EOF );
-        else
+        } else {
             _document->printError( ERR1_TAGSYNTAX );
-        tok = _document->getNextToken();
+        }
     }
     return _document->getNextToken();    //consume TAGEND
 }
@@ -177,8 +180,9 @@ void ESl::buildText( Cell* cell )
     cell->addByte( 0x03 );  //size
     cell->addByte( 0x02 );  //set left margin
     cell->addByte( 1 );
-    if( cell->textFull() )
+    if( cell->textFull() ) {
         printError( ERR1_LARGEPAGE );
+    }
 }
 /***************************************************************************/
 Lexer::Token SlLi::parse( Lexer* lexer )
@@ -186,16 +190,16 @@ Lexer::Token SlLi::parse( Lexer* lexer )
     Lexer::Token tok( parseAttributes( lexer ) );
     while( tok != Lexer::END && !( tok == Lexer::TAG && lexer->tagId() == Lexer::EUSERDOC ) ) {
         if( parseInline( lexer, tok ) ) {
-            if( lexer->tagId() == Lexer::LI )
+            if( lexer->tagId() == Lexer::LI ) {
                 break;
-            else if( lexer->tagId() == Lexer::LP ) {
-                Element* elt( new P( _document, this, _document->dataName(),
-                    _document->dataLine(), _document->dataCol() ) );
-                appendChild( elt );
-                tok = elt->parse( lexer );
+            } else if( lexer->tagId() == Lexer::LP ) {
+                P *p = new P( _document, this, _document->dataName(),
+                    _document->dataLine(), _document->dataCol() );
+                appendChild( p );
+                tok = p->parse( lexer );
+            } else if( parseBlock( lexer, tok ) ) {
+                break;
             }
-            else if( parseBlock( lexer, tok ) )
-                break;
         }
     }
     return tok;
@@ -207,11 +211,13 @@ void SlLi::buildText( Cell* cell )
     cell->addByte( 0x03 );  //size
     cell->addByte( 0x02 );  //set left margin
     cell->addByte( indent );
-    if( compact )
+    if( compact ) {
         cell->addByte( 0xFD );
-    else
+    } else {
         cell->addByte( 0xFA );
-    if( cell->textFull() )
+    }
+    if( cell->textFull() ) {
         printError( ERR1_LARGEPAGE );
+    }
 }
 

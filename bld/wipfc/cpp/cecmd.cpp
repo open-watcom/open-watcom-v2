@@ -40,7 +40,7 @@
 #include "whtspc.hpp"
 #include "word.hpp"
 
-Lexer::Token CeCmd::parse( Lexer* lexer )
+void CeCmd::parseCommand( Lexer* lexer )
 {
     std::wstring temp;
     std::wstring* fname( new std::wstring() );
@@ -57,26 +57,22 @@ Lexer::Token CeCmd::parse( Lexer* lexer )
                 _document->dataName(), _document->dataLine(), _document->dataCol(), _whiteSpace ) );
             appendChild( ws );
             tok = ws->parse( lexer );
-        }
-        else if( tok == Lexer::WORD ) {
+        } else if( tok == Lexer::WORD ) {
             Word* word( new Word( _document, this,
                     _document->dataName(), _document->dataLine(), _document->dataCol() ) );
             appendChild( word );
             tok = word->parse( lexer );
-        }
-        else if( tok == Lexer::ENTITY ) {
+        } else if( tok == Lexer::ENTITY ) {
             Entity* entity( new Entity( _document, this,
                     _document->dataName(), _document->dataLine(), _document->dataCol() ) );
             appendChild( entity );
             tok = entity->parse( lexer );
-        }
-        else if (tok == Lexer::PUNCTUATION ) {
+        } else if( tok == Lexer::PUNCTUATION ) {
             Punctuation* punct( new Punctuation( _document, this,
                     _document->dataName(), _document->dataLine(), _document->dataCol() ) );
             appendChild( punct );
             tok = punct->parse( lexer );
-        }
-        else if( tok != Lexer::END ) {
+        } else if( tok != Lexer::END ) {
             _document->printError( ERR1_TAGCONTEXT );
             tok = _document->getNextToken();
         }
@@ -85,14 +81,14 @@ Lexer::Token CeCmd::parse( Lexer* lexer )
         _document->dataName(), _document->dataLine(), _document->dataCol() ) );
     _document->setBlockParsing( oldBlockParsing );
     _document->popInput();
-    return _document->getNextToken();
 }
 /*****************************************************************************/
 void CeCmd::buildText( Cell* cell )
 {
     cell->addByte( 0xFB );
-    if( cell->textFull() )
+    if( cell->textFull() ) {
         printError( ERR1_LARGEPAGE );
+    }
 }
 /*****************************************************************************/
 void CeCmd::prepBufferName( std::wstring* buffer, const std::wstring& fname )

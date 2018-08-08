@@ -54,38 +54,32 @@ Lexer::Token Figcap::parse( Lexer* lexer )
                 _document->dataLine(), _document->dataCol() ) );
             appendChild( word );
             tok = word->parse( lexer );
-        }
-        else if( tok == Lexer::ENTITY ) {
+        } else if( tok == Lexer::ENTITY ) {
             Entity* entity( new Entity( _document, this, _document->dataName(),
                 _document->dataLine(), _document->dataCol() ) );
             appendChild( entity );
             tok = entity->parse( lexer );
-        }
-        else if( tok == Lexer::PUNCTUATION ) {
+        } else if( tok == Lexer::PUNCTUATION ) {
             Punctuation* punct( new Punctuation( _document, this, _document->dataName(),
                 _document->dataLine(), _document->dataCol() ) );
             appendChild( punct );
             tok = punct->parse( lexer );
-        }
-        else if( tok == Lexer::WHITESPACE ) {
+        } else if( tok == Lexer::WHITESPACE ) {
             WhiteSpace* ws( new WhiteSpace( _document, this, _document->dataName(),
                 _document->dataLine(), _document->dataCol(), Tag::LITERAL ) );
             appendChild( ws );
             tok = ws->parse( lexer );
-        }
-        else if( tok == Lexer::COMMAND )
-            tok = _document->processCommand( lexer, this );
-        else if( tok == Lexer::TAG ) {
+        } else if( tok == Lexer::COMMAND ) {
+            _document->parseCommand( lexer, this );
+            tok = _document->getNextToken();
+        } else if( tok == Lexer::TAG ) {
             if( lexer->tagId() == Lexer::EUSERDOC || lexer->tagId() == Lexer::EFIG )
                 break;
-            else
-                parseCleanup( lexer, tok );
-        }
-        else if( tok == Lexer::ERROR_TAG ) {
+            parseCleanup( lexer, tok );
+        } else if( tok == Lexer::ERROR_TAG ) {
             _document->printError( ERR1_TAGNOTDEF );
             tok = _document->getNextToken();
-        }
-        else if( tok == Lexer::ERROR_ENTITY ) {
+        } else if( tok == Lexer::ERROR_ENTITY ) {
             _document->printError( ERR1_TAGNOTDEF );
             tok = _document->getNextToken();
         }

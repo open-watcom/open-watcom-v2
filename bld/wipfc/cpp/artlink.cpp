@@ -51,13 +51,12 @@ Lexer::Token Artlink::parse( Lexer* lexer )
                 link->setNoEndTag();
                 link->setHypergraphic();
                 tok = link->parse( lexer );
-            }
-            else if( lexer->tagId() == Lexer::EARTLINK || lexer->tagId() == Lexer::EUSERDOC )
+            } else if( lexer->tagId() == Lexer::EARTLINK || lexer->tagId() == Lexer::EUSERDOC ) {
                 break;
-            else
+            } else {
                 parseCleanup( lexer, tok );
-        }
-        else {
+            }
+        } else {
             if( tok != Lexer::WHITESPACE )
                 printError( ERR1_TAGCONTEXT );
             tok = _document->getNextToken();

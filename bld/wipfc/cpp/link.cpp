@@ -85,19 +85,19 @@ Lexer::Token Link::parse( Lexer* lexer )
         while( tok != Lexer::END && !( tok == Lexer::TAG && lexer->tagId() == Lexer::EUSERDOC) ) {
             //inline except: elink, artlink, eartlink, artwork, hdref
             if( tok == Lexer::TAG ) {
-                if( lexer->tagId() == Lexer::ELINK )
+                if( lexer->tagId() == Lexer::ELINK ) {
                     break;
-                else if( lexer->tagId() == Lexer::ARTLINK ||
+                } else if( lexer->tagId() == Lexer::ARTLINK ||
                          lexer->tagId() == Lexer::EARTLINK ||
                          lexer->tagId() == Lexer::ARTWORK ||
                          lexer->tagId() == Lexer::HDREF ) {
                     parseCleanup( lexer, tok );
-                }
-                else if( parseInline( lexer, tok ) )
+                } else if( parseInline( lexer, tok ) ) {
                     parseCleanup( lexer, tok );
-            }
-            else if( parseInline( lexer, tok ) )
+                }
+            } else if( parseInline( lexer, tok ) ) {
                 parseCleanup( lexer, tok );
+            }
         }
     }
     return tok;
@@ -105,44 +105,42 @@ Lexer::Token Link::parse( Lexer* lexer )
 /***************************************************************************/
 Lexer::Token Link::parseAttributes( Lexer* lexer )
 {
-    Lexer::Token tok( _document->getNextToken() );
+    Lexer::Token tok;
     bool xorg( false );
     bool yorg( false );
     bool dx( false );
     bool dy( false );
-    while( tok != Lexer::TAGEND ) {
+
+    while( (tok = _document->getNextToken()) != Lexer::TAGEND ) {
         //parse attributes
         if( tok == Lexer::ATTRIBUTE ) {
             std::wstring key;
             std::wstring value;
             splitAttribute( lexer->text(), key, value );
             if( key == L"reftype" ) {
-                if( value == L"hd" )
+                if( value == L"hd" ) {
                     type = TOPIC;
-                else if( value == L"fn" ) {
+                } else if( value == L"fn" ) {
                     Hn* root( static_cast< Hn* >( rootElement() ) );
                     if( root->isSplit() )
                         _document->printError( ERR3_FNNOSPLIT );
                     type = FOOTNOTE;
-                }
-                else if( value == L"launch" )
+                } else if( value == L"launch" ) {
                     type = LAUNCH;
-                else if( value == L"inform" ) {
+                } else if( value == L"inform" ) {
                     type = INFORM;
                     noElink = true;
-                }
-                else
+                } else {
                     _document->printError( ERR2_VALUE );
-            }
-            else if( key == L"res" )
+                }
+            } else if( key == L"res" ) {
                 res = static_cast< STD1::uint16_t >( std::wcstoul( value.c_str(), 0, 10 ) );
-            else if( key == L"refid" ) {
+            } else if( key == L"refid" ) {
                 refid = new GlobalDictionaryWord( value );
                 refid->toUpper();           //to uppercase
                 if( !_document->isInf() )
                     refid = _document->addWord( refid );
-            }
-            else if( key == L"database" ) {
+            } else if( key == L"database" ) {
                 database = value;
                 try {
                     _document->addExtFile( value );
@@ -150,225 +148,210 @@ Lexer::Token Link::parseAttributes( Lexer* lexer )
                 catch( Class1Error& e ) {
                     _document->printError( e.code );
                 }
-            }
-            else if( key == L"object" )
+            } else if( key == L"object" ) {
                 object = value;
-            else if( key == L"data" )
+            } else if( key == L"data" ) {
                 data = value;
-            else if( key == L"group" ) {
+            } else if( key == L"group" ) {
                 group.id = static_cast< STD1::uint16_t >( std::wcstoul( value.c_str(), 0, 10 ) );
                 doGroup = true;
-            }
-            else if( key == L"vpx" ) {
+            } else if( key == L"vpx" ) {
                 doOrigin = true;
                 xorg = true;
                 if( value == L"left" ) {
                     origin.xPosType = ExtTocEntry::DYNAMIC;
                     origin.xpos = ExtTocEntry::DYNAMIC_LEFT;
-                }
-                else if( value == L"center" ) {
+                } else if( value == L"center" ) {
                     origin.xPosType = ExtTocEntry::DYNAMIC;
                     origin.xpos = ExtTocEntry::DYNAMIC_CENTER;
-                }
-                else if( value == L"right" ) {
+                } else if( value == L"right" ) {
                     origin.xPosType = ExtTocEntry::DYNAMIC;
                     origin.xpos = ExtTocEntry::DYNAMIC_RIGHT;
-                }
-                else if( value == L"top" || value == L"bottom" )
+                } else if( value == L"top" || value == L"bottom" ) {
                     _document->printError( ERR2_VALUE );
-                else {
+                } else {
                     wchar_t *end;
                     unsigned long int xpos( std::wcstoul( value.c_str(), &end, 10 ) );
                     origin.xpos = static_cast< STD1::uint16_t >( xpos );
-                    if( *end == L'c' )
+                    if( *end == L'c' ) {
                         origin.xPosType = ExtTocEntry::ABSOLUTE_CHAR;
-                    else if( *end == L'%' )
+                    } else if( *end == L'%' ) {
                         origin.xPosType = ExtTocEntry::RELATIVE_PERCENT;
-                    else if( *end == L'x' )
+                    } else if( *end == L'x' ) {
                         origin.xPosType = ExtTocEntry::ABSOLUTE_PIXEL;
-                    else if( *end == L'p' )
+                    } else if( *end == L'p' ) {
                         origin.xPosType = ExtTocEntry::ABSOLUTE_POINTS;
-                    else
+                    } else {
                         _document->printError( ERR2_VALUE );
+                    }
                 }
                 if( dx && origin.xPosType == ExtTocEntry::DYNAMIC && size.widthType != ExtTocEntry::RELATIVE_PERCENT )
                     _document->printError( ERR3_MIXEDUNITS );
-            }
-            else if( key == L"vpy" ) {
+            } else if( key == L"vpy" ) {
                 doOrigin = true;
                 yorg = true;
                 if( value == L"top" ) {
                     origin.yPosType = ExtTocEntry::DYNAMIC;
                     origin.ypos = ExtTocEntry::DYNAMIC_TOP;
-                }
-                else if( value == L"center" ) {
+                } else if( value == L"center" ) {
                     origin.yPosType = ExtTocEntry::DYNAMIC;
                     origin.ypos = ExtTocEntry::DYNAMIC_CENTER;
-                }
-                else if( value == L"bottom" ) {
+                } else if( value == L"bottom" ) {
                     origin.yPosType = ExtTocEntry::DYNAMIC;
                     origin.ypos = ExtTocEntry::DYNAMIC_BOTTOM;
-                }
-                else if( value == L"left" || value == L"right" )
+                } else if( value == L"left" || value == L"right" ) {
                     _document->printError( ERR2_VALUE );
-                else {
+                } else {
                     wchar_t *end;
                     unsigned long int ypos( std::wcstoul( value.c_str(), &end, 10 ) );
                     origin.ypos = static_cast< STD1::uint16_t >( ypos );
-                    if( *end == L'c' )
+                    if( *end == L'c' ) {
                         origin.yPosType = ExtTocEntry::ABSOLUTE_CHAR;
-                    else if( *end == L'%' )
+                    } else if( *end == L'%' ) {
                         origin.yPosType = ExtTocEntry::RELATIVE_PERCENT;
-                    else if( *end == L'x' )
+                    } else if( *end == L'x' ) {
                         origin.yPosType = ExtTocEntry::ABSOLUTE_PIXEL;
-                    else if( *end == L'p' )
+                    } else if( *end == L'p' ) {
                         origin.yPosType = ExtTocEntry::ABSOLUTE_POINTS;
-                    else
+                    } else {
                         _document->printError( ERR2_VALUE );
+                    }
                 }
-                if( dy && origin.yPosType == ExtTocEntry::DYNAMIC && size.heightType != ExtTocEntry::RELATIVE_PERCENT )
+                if( dy && origin.yPosType == ExtTocEntry::DYNAMIC && size.heightType != ExtTocEntry::RELATIVE_PERCENT ) {
                     _document->printError( ERR3_MIXEDUNITS );
-            }
-            else if( key == L"vpcx" ) {
+                }
+            } else if( key == L"vpcx" ) {
                 doSize = true;
                 dx = true;
                 if( value == L"left" ||
                     value == L"center" ||
                     value == L"right" ||
                     value == L"top" ||
-                    value == L"bottom" )
+                    value == L"bottom" ) {
                     _document->printError( ERR2_VALUE );
-                else {
+                } else {
                     wchar_t *end;
                     unsigned long int width( std::wcstoul( value.c_str(), &end, 10 ) );
                     size.width = static_cast< STD1::uint16_t >( width );
-                    if( *end == L'c' )
+                    if( *end == L'c' ) {
                         size.widthType = ExtTocEntry::ABSOLUTE_CHAR;
-                    else if( *end == L'%' )
+                    } else if( *end == L'%' ) {
                         size.widthType = ExtTocEntry::RELATIVE_PERCENT;
-                    else if( *end == L'x' )
+                    } else if( *end == L'x' ) {
                         size.widthType = ExtTocEntry::ABSOLUTE_PIXEL;
-                    else if( *end == L'p' )
+                    } else if( *end == L'p' ) {
                         size.widthType = ExtTocEntry::ABSOLUTE_POINTS;
-                    else
+                    } else {
                         _document->printError( ERR2_VALUE );
+                    }
                 }
                 if( xorg && origin.xPosType == ExtTocEntry::DYNAMIC && size.widthType != ExtTocEntry::RELATIVE_PERCENT )
                     _document->printError( ERR3_MIXEDUNITS );
-            }
-            else if( key == L"vpcy" ) {
+            } else if( key == L"vpcy" ) {
                 doSize = true;
                 dy = true;
                 if( value == L"left" ||
                     value == L"center" ||
                     value == L"right" ||
                     value == L"top" ||
-                    value == L"bottom" )
+                    value == L"bottom" ) {
                     _document->printError( ERR2_VALUE );
-                else {
+                } else {
                     wchar_t *end;
                     unsigned long int height( std::wcstoul( value.c_str(), &end, 10 ) );
                     size.height = static_cast< STD1::uint16_t >( height );
-                    if( *end == L'c' )
+                    if( *end == L'c' ) {
                         size.heightType = ExtTocEntry::ABSOLUTE_CHAR;
-                    else if( *end == L'%' )
+                    } else if( *end == L'%' ) {
                         size.heightType = ExtTocEntry::RELATIVE_PERCENT;
-                    else if( *end == L'x' )
+                    } else if( *end == L'x' ) {
                         size.heightType = ExtTocEntry::ABSOLUTE_PIXEL;
-                    else if( *end == L'p' )
+                    } else if( *end == L'p' ) {
                         size.heightType = ExtTocEntry::ABSOLUTE_POINTS;
-                    else
+                    } else {
                         _document->printError( ERR2_VALUE );
+                    }
                 }
-                if( yorg && origin.yPosType == ExtTocEntry::DYNAMIC && size.heightType != ExtTocEntry::RELATIVE_PERCENT )
+                if( yorg && origin.yPosType == ExtTocEntry::DYNAMIC && size.heightType != ExtTocEntry::RELATIVE_PERCENT ) {
                     _document->printError( ERR3_MIXEDUNITS );
-            }
-            else if( key == L"x" ) {
+                }
+            } else if( key == L"x" ) {
                 hypergraphic = true;
                 x = static_cast< STD1::uint16_t >( std::wcstoul( value.c_str(), 0, 10 ) );
-            }
-            else if( key == L"y" ) {
+            } else if( key == L"y" ) {
                 hypergraphic = true;
                 y = static_cast< STD1::uint16_t >( std::wcstoul( value.c_str(), 0, 10 ) );
-            }
-            else if( key == L"cx" ) {
+            } else if( key == L"cx" ) {
                 hypergraphic = true;
                 cx = static_cast< STD1::uint16_t >( std::wcstoul( value.c_str(), 0, 10 ) );
-            }
-            else if( key == L"cy" ) {
+            } else if( key == L"cy" ) {
                 hypergraphic = true;
                 cy = static_cast< STD1::uint16_t >( std::wcstoul( value.c_str(), 0, 10 ) );
-            }
-            else if( key == L"titlebar" ) {
+            } else if( key == L"titlebar" ) {
                 doStyle = true;
-                if( value == L"yes" )
+                if( value == L"yes" ) {
                     style.word |= PageStyle::TITLEBAR;
-                else if( value == L"sysmenu" ) {
+                } else if( value == L"sysmenu" ) {
                     style.word |= PageStyle::TITLEBAR;
                     style.word |= PageStyle::SYSMENU;
-                }
-                else if( value == L"minmax" ) {
+                } else if( value == L"minmax" ) {
                     style.word |= PageStyle::TITLEBAR;
                     style.word |= PageStyle::MINMAX;
-                }
-                else if( value == L"both" ) {
+                } else if( value == L"both" ) {
                     style.word |= PageStyle::TITLEBAR;
                     style.word |= PageStyle::SYSMENU;
                     style.word |= PageStyle::MINMAX;
-                }
-                else if( value != L"none" )
+                } else if( value != L"none" ) {
                     _document->printError( ERR2_VALUE );
-            }
-            else if( key == L"scroll" ) {
-                doStyle = true;
-                if( value == L"horizontal" )
-                    style.word |= PageStyle::HSCROLL;
-                else if( value == L"vertical" )
-                    style.word |= PageStyle::VSCROLL;
-                else if( value == L"both" ) {
-                    style.word |= PageStyle::HSCROLL;
-                    style.word |= PageStyle::VSCROLL;
                 }
-                else if( value != L"none" )
-                    _document->printError( ERR2_VALUE );
-            }
-            else if( key == L"rules" ) {
+            } else if( key == L"scroll" ) {
                 doStyle = true;
-                if( value == L"border" )
+                if( value == L"horizontal" ) {
+                    style.word |= PageStyle::HSCROLL;
+                } else if( value == L"vertical" ) {
+                    style.word |= PageStyle::VSCROLL;
+                } else if( value == L"both" ) {
+                    style.word |= PageStyle::HSCROLL;
+                    style.word |= PageStyle::VSCROLL;
+                } else if( value != L"none" ) {
+                    _document->printError( ERR2_VALUE );
+                }
+            } else if( key == L"rules" ) {
+                doStyle = true;
+                if( value == L"border" ) {
                     style.word |= PageStyle::BORDER;
-                else if( value == L"sizeborder" )
+                } else if( value == L"sizeborder" ) {
                     style.word |= PageStyle::SIZEBORDER;
-                else if( value != L"none" )
+                } else if( value != L"none" ) {
                     _document->printError( ERR2_VALUE );
-            }
-            else
+                }
+            } else {
                 _document->printError( ERR1_ATTRNOTDEF );
-        }
-        else if( tok == Lexer::FLAG ) {
+            }
+        } else if( tok == Lexer::FLAG ) {
             if( lexer->text() == L"auto" ) {
-                if( type == FOOTNOTE )
+                if( type == FOOTNOTE ) {
                     _document->printError( ERR3_FNNOAUTO );
-                else {
+                } else {
                     automatic = true;
                     noElink = true;
                 }
-            }
-            else if( lexer->text() == L"viewport" )
+            } else if( lexer->text() == L"viewport" ) {
                 viewport = true;
-            else if( lexer->text() == L"dependent" )
+            } else if( lexer->text() == L"dependent" ) {
                 dependent = true;
-            else if( lexer->text() == L"split" )
+            } else if( lexer->text() == L"split" ) {
                 split = true;
-            else if( lexer->text() == L"child" )
+            } else if( lexer->text() == L"child" ) {
                 child = true;
-            else
+            } else {
                 _document->printError( ERR1_ATTRNOTDEF );
-        }
-        else if( tok == Lexer::ERROR_TAG )
+            }
+        } else if( tok == Lexer::ERROR_TAG ) {
             throw FatalError( ERR_SYNTAX );
-        else if( tok == Lexer::END )
+        } else if( tok == Lexer::END ) {
             throw FatalError( ERR_EOF );
-        tok = _document->getNextToken();
+        }
     }
     return _document->getNextToken();    //consume TAGEND
 }
@@ -403,8 +386,7 @@ void Link::doTopic( Cell* cell )
                 if( refid ) {
                     tocIndex = _document->tocIndexById( refid );
                     _document->addXRef( refid, xref );
-                }
-                else {
+                } else {
                     tocIndex = _document->tocIndexByRes( res );
                     _document->addXRef( res, xref );
                 }
@@ -413,13 +395,14 @@ void Link::doTopic( Cell* cell )
                     sizeof( PageStyle ) + sizeof( PageGroup ) );
                 esc.push_back( 0xFF );      //ESC
                 esc.push_back( 4 );         //size
-                if( !hypergraphic )
+                if( !hypergraphic ) {
                     esc.push_back( 0x05 );  //text link
-                else {
-                    if( x || y || cx || cy )
+                } else {
+                    if( x || y || cx || cy ) {
                         esc.push_back( 0x01 );  //partial bitmap
-                    else
+                    } else {
                         esc.push_back( 0x04 );  //full bitmap
+                    }
                 }
                 esc.push_back( static_cast< STD1::uint8_t >( tocIndex ) );
                 esc.push_back( static_cast< STD1::uint8_t >( tocIndex >> 8 ) );
@@ -486,26 +469,27 @@ void Link::doTopic( Cell* cell )
                 }
                 esc[ 1 ] = static_cast< STD1::uint8_t >( esc.size() - 1 );
                 cell->addEsc( esc );
-                if( cell->textFull() )
+                if( cell->textFull() ) {
                     printError( ERR1_LARGEPAGE );
+                }
             }
             catch( Class1Error& e ) {
                 printError( e.code );
             }
-        }
-        else {                              //jump to external link
+        } else {                              //jump to external link
             std::vector< STD1::uint8_t > esc;
             esc.reserve( 7 );
             esc.push_back( 0xFF );          //ESC
             esc.push_back( 4 );             //size
-            if( !hypergraphic )
+            if( !hypergraphic ) {
                 esc.push_back( 0x1F );      //text link
-            else {
+            } else {
                 esc.push_back( 0x0F );      //hypergraphic link
-                if( x || y || cx || cy )
+                if( x || y || cx || cy ) {
                     esc.push_back( 0x17 );  //partial bitmap
-                else
+                } else {
                     esc.push_back( 0x16 );  //full bitmap
+                }
             }
             STD1::uint16_t index( _document->extFileIndex( database ) );
             esc.push_back( static_cast< STD1::uint8_t >( index ) );
@@ -536,9 +520,9 @@ void Link::doTopic( Cell* cell )
                 printError( ERR1_LARGEPAGE );
             }
         }
-    }
-    else
+    } else {
         printError( ERR1_NOREFID );
+    }
 }
 /***************************************************************************/
 void Link::doFootnote( Cell* cell )
@@ -550,8 +534,7 @@ void Link::doFootnote( Cell* cell )
             if( refid ) {
                 tocIndex = _document->tocIndexById( refid );
                 _document->addXRef( refid, xref );
-            }
-            else {
+            } else {
                 tocIndex = _document->tocIndexByRes( res );
                 _document->addXRef( res, xref );
             }
@@ -559,13 +542,14 @@ void Link::doFootnote( Cell* cell )
             esc.reserve( 5 );
             esc.push_back( 0xFF );          //ESC
             esc.push_back( 4 );             //size
-            if( !hypergraphic )
+            if( !hypergraphic ) {
                 esc.push_back( 0x07 );      //text link
-            else {
-                if( x || y || cx || cy )
+            } else {
+                if( x || y || cx || cy ) {
                     esc.push_back( 0x02 );  //partial bitmap
-                else
+                } else {
                     esc.push_back( 0x05 );  //full bitmap
+                }
             }
             esc.push_back( static_cast< STD1::uint8_t >( tocIndex ) );
             esc.push_back( static_cast< STD1::uint8_t >( tocIndex >> 8 ) );
@@ -581,15 +565,16 @@ void Link::doFootnote( Cell* cell )
             }
             esc[ 1 ] = static_cast< STD1::uint8_t >( esc.size() - 1 );
             cell->addEsc( esc );
-            if( cell->textFull() )
+            if( cell->textFull() ) {
                 printError( ERR1_LARGEPAGE );
+            }
         }
         catch( Class1Error& e ) {
             printError( e.code );
         }
-    }
-    else
+    } else {
         printError( ERR1_NOREFID );
+    }
 }
 /***************************************************************************/
 void Link::doLaunch( Cell* cell )
@@ -599,14 +584,15 @@ void Link::doLaunch( Cell* cell )
         esc.reserve( 6 );
         esc.push_back( 0xFF );          //ESC
         esc.push_back( 3 );             //size
-        if ( !hypergraphic )
+        if( !hypergraphic ) {
             esc.push_back( 0x10 );      //text link
-        else {
+        } else {
             esc.push_back( 0x0F );      //hypergraphic link
-            if( x || y || cx || cy )
+            if( x || y || cx || cy ) {
                 esc.push_back( 0x08 );  //partial bitmap
-            else
+            } else {
                 esc.push_back( 0x07 );  //full bitmap
+            }
         }
         esc.push_back( 0x00 );          //blank byte
         if( hypergraphic && ( x || y || cx || cy ) ) {
@@ -632,11 +618,12 @@ void Link::doLaunch( Cell* cell )
             esc.push_back( static_cast< STD1::uint8_t >( buffer[ count1 ] ) );
         esc[ 1 ] = static_cast< STD1::uint8_t >( esc.size() - 1 );
         cell->addEsc( esc );
-        if( cell->textFull() )
+        if( cell->textFull() ) {
             printError( ERR1_LARGEPAGE );
-    }
-    else
+        }
+    } else {
         printError( ERR2_VALUE );
+    }
 }
 /***************************************************************************/
 void Link::doInform( Cell* cell )
@@ -646,18 +633,19 @@ void Link::doInform( Cell* cell )
         esc.reserve( 5 );
         esc.push_back( 0xFF );          //ESC
         esc.push_back( 4 );             //size
-        if( !hypergraphic )
+        if( !hypergraphic ) {
             esc.push_back( 0x16 );      //text link
-        else {
+        } else {
             esc.push_back( 0x0F );      //hypergraphic link
-            if( x || y || cx || cy )
+            if( x || y || cx || cy ) {
                 esc.push_back( 0x10 );  //partial bitmap
-            else
+            } else {
                 esc.push_back( 0x09 );  //full bitmap
+            }
         }
         esc.push_back( static_cast< STD1::uint8_t >( res ) );
         esc.push_back( static_cast< STD1::uint8_t >( res >> 8 ) );
-        if ( hypergraphic && ( x || y || cx || cy ) ) {
+        if( hypergraphic && ( x || y || cx || cy ) ) {
             esc.push_back( static_cast< STD1::uint8_t >( x ) );
             esc.push_back( static_cast< STD1::uint8_t >( x >> 8 ) );
             esc.push_back( static_cast< STD1::uint8_t >( y ) );
@@ -669,11 +657,12 @@ void Link::doInform( Cell* cell )
         }
         esc[ 1 ] = static_cast< STD1::uint8_t >( esc.size() - 1 );
         cell->addEsc( esc );
-        if( cell->textFull() )
+        if( cell->textFull() ) {
             printError( ERR1_LARGEPAGE );
-    }
-    else
+        }
+    } else {
         printError( ERR2_VALUE );
+    }
 }
 /***************************************************************************/
 void ELink::buildText( Cell* cell )
@@ -681,6 +670,7 @@ void ELink::buildText( Cell* cell )
     cell->addByte( 0xFF );
     cell->addByte( 0x02 );
     cell->addByte( 0x08 );
-    if( cell->textFull() )
+    if( cell->textFull() ) {
         printError( ERR1_LARGEPAGE );
+    }
 }

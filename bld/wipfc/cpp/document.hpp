@@ -121,7 +121,7 @@ public:
     //get the maximum size of a local dictionary in a cell
     std::size_t maxLocalDictionarySize() const { return _hdr->maxLocalIndex; };
     //parse a command
-    Lexer::Token processCommand( Lexer* lexer, Tag* parent );
+    void parseCommand( Lexer* lexer, Tag* parent );
     //get a TOC index from the resource number to TOC index map
     STD1::uint16_t tocIndexByRes( word res );
     //get a TOC index from the id or name to TOC index map
@@ -182,7 +182,7 @@ public:
     wchar_t olChar( unsigned int level ) const { return _nls->olChars()[level % _nls->olChars().size()]; };
     const std::wstring& olClose( unsigned int level ) const { return _nls->olClose()[level % 2]; };
     const std::wstring& ulBullet( unsigned int level ) const { return _nls->ulBullets()[level % 3]; };
-    wchar_t entity( const std::wstring& key ) { return _nls->entity( key ); };
+    wchar_t entityChar( const std::wstring& key ) { return _nls->entityChar( key ); };
     // UNICODE<->MBCS conversion
     STD1::uint16_t codePage() { return _nls->codePage(); };
     std::wint_t  read_wchar( std::FILE *fp ){ return _nls->read_wchar( fp ); };

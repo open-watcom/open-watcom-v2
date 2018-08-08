@@ -51,12 +51,10 @@ Lexer::Token Word::parse( Lexer* lexer )
                 _document->pushInput( buffer );
             } else {
                 try {
-                    wchar_t entity( _document->entity( lexer->text() ) );
-                    if ( std::iswpunct( entity ) ) {
+                    wchar_t entityChar( _document->entityChar( lexer->text() ) );
+                    if( std::iswpunct( entityChar ) )
                         break;
-                    } else {
-                        txt += entity;
-                    }
+                    txt += entityChar;
                 }
                 catch( Class2Error& e ) {
                     _document->printError( e.code );

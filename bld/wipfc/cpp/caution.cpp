@@ -48,8 +48,9 @@ Lexer::Token Caution::parse( Lexer* lexer )
     std::wstring* fname( new std::wstring() );
     prepBufferName( fname, *( _document->dataName() ) );
     fname = _document->addFileName( fname );
-    Lexer::Token tok( _document->getNextToken() );
-    while( tok != Lexer::TAGEND ) {
+    Lexer::Token tok;
+
+    while( (tok = _document->getNextToken()) != Lexer::TAGEND ) {
         if( tok == Lexer::ATTRIBUTE ) {
             std::wstring key;
             std::wstring value;
@@ -58,19 +59,18 @@ Lexer::Token Caution::parse( Lexer* lexer )
                 temp = L":hp2.";
                 temp += value;
                 temp += L":ehp2.\n";
-            }
-            else
+            } else {
                 _document->printError( ERR1_ATTRNOTDEF );
-        }
-        else if( tok == Lexer::FLAG )
+            }
+        } else if( tok == Lexer::FLAG ) {
             _document->printError( ERR1_ATTRNOTDEF );
-        else if( tok == Lexer::ERROR_TAG )
+        } else if( tok == Lexer::ERROR_TAG ) {
             throw FatalError( ERR_SYNTAX );
-        else if( tok == Lexer::END )
+        } else if( tok == Lexer::END ) {
             throw FatalError( ERR_EOF );
-        else
+        } else {
             _document->printError( ERR1_TAGSYNTAX );
-        tok = _document->getNextToken();
+        }
     }
     if( temp.empty() ) {
         temp = L":hp2.";
@@ -94,20 +94,21 @@ Lexer::Token Caution::parse( Lexer* lexer )
     tok = _document->getNextToken(); //next token from main stream
     while( tok != Lexer::END && !( tok == Lexer::TAG && lexer->tagId() == Lexer::EUSERDOC)) {
         if( parseInline( lexer, tok ) ) {
-            if( lexer->tagId() == Lexer::ECAUTION )
-                    break;
-            else if( lexer->tagId() == Lexer::H1 ||
+            if( lexer->tagId() == Lexer::ECAUTION ) {
+                break;
+            } else if( lexer->tagId() == Lexer::H1 ||
                 lexer->tagId() == Lexer::H2 ||
                 lexer->tagId() == Lexer::H3 ||
                 lexer->tagId() == Lexer::H4 ||
                 lexer->tagId() == Lexer::H5 ||
                 lexer->tagId() == Lexer::H6 ||
                 lexer->tagId() == Lexer::ACVIEWPORT ||
-                lexer->tagId() == Lexer::FN )
+                lexer->tagId() == Lexer::FN ) {
+                parseCleanup( lexer, tok );
+            } else if( parseBlock( lexer, tok ) ) {
+                if( parseListBlock( lexer, tok ) ) {
                     parseCleanup( lexer, tok );
-            else if( parseBlock( lexer, tok ) ) {
-                if( parseListBlock( lexer, tok ) )
-                    parseCleanup( lexer, tok );
+                }
             }
         }
     }
@@ -117,8 +118,9 @@ Lexer::Token Caution::parse( Lexer* lexer )
 void ECaution::buildText( Cell* cell )
 {
     cell->addByte( 0xFA );  //line break
-    if( cell->textFull() )
+    if( cell->textFull() ) {
         printError( ERR1_LARGEPAGE );
+    }
 }
 /*****************************************************************************/
 void Caution::prepBufferName( std::wstring* buffer, const std::wstring& fname )

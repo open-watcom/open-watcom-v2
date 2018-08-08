@@ -68,20 +68,20 @@ Lexer::Token Dl::parse( Lexer* lexer )
                 switch( lexer->tagId() ) {
                 case Lexer::DL:
                     {
-                        Element* elt( new Dl( _document, this, _document->dataName(),
+                        Dl *dl = new Dl( _document, this, _document->dataName(),
                             _document->dataLine(), _document->dataCol(), nestLevel + 1,
-                            indent == 1 ? 4 : indent + 3 ) );
-                        appendChild( elt );
-                        tok = elt->parse( lexer );
+                            indent == 1 ? 4 : indent + 3 );
+                        appendChild( dl );
+                        tok = dl->parse( lexer );
                     }
                     break;
                 case Lexer::OL:
                     {
-                        Element* elt( new Ol( _document, this, _document->dataName(),
+                        Ol *ol = new Ol( _document, this, _document->dataName(),
                             _document->dataLine(), _document->dataCol(),
-                            nestLevel + 1, indent == 1 ? 4 : indent + 3 ) );
-                        appendChild( elt );
-                        tok = elt->parse( lexer );
+                            nestLevel + 1, indent == 1 ? 4 : indent + 3 );
+                        appendChild( ol );
+                        tok = ol->parse( lexer );
                     }
                     break;
                 case Lexer::DTHD:
@@ -92,8 +92,7 @@ Lexer::Token Dl::parse( Lexer* lexer )
                             _document->lexerLine(), _document->lexerCol(), indent );
                         appendChild( dthd );
                         tok = dthd->parse( lexer );
-                    }
-                    else {
+                    } else {
                         _document->printError( ERR1_TAGCONTEXT );
                         while( tok != Lexer::TAGEND )
                             tok = _document->getNextToken();
@@ -103,13 +102,12 @@ Lexer::Token Dl::parse( Lexer* lexer )
                 case Lexer::DDHD:
                     if( needDdHd ) {
                         needDdHd = false;
-                        Element* elt( new DdHd( _document, this, _document->dataName(),
+                        DdHd *ddhd = new DdHd( _document, this, _document->dataName(),
                             _document->lexerLine(), _document->lexerCol(), indent,
-                            dthd->length() >= tabSize ? dthd->length() : tabSize ) );
-                        appendChild( elt );
-                        tok = elt->parse( lexer );
-                    }
-                    else {
+                            dthd->length() >= tabSize ? dthd->length() : tabSize );
+                        appendChild( ddhd );
+                        tok = ddhd->parse( lexer );
+                    } else {
                         _document->printError( ERR1_DLHEADMATCH );
                         while( tok != Lexer::TAGEND )
                             tok = _document->getNextToken();
@@ -130,52 +128,52 @@ Lexer::Token Dl::parse( Lexer* lexer )
                     if( needDdHd ) {
                         _document->printError( ERR1_DLHEADMATCH );
                         needDdHd = false;
-                    }
-                    else {
-                        Element* elt( new Dt( _document, this, _document->dataName(),
+                    } else {
+                        Dt *dt =  new Dt( _document, this, _document->dataName(),
                             _document->lexerLine(), _document->lexerCol(), indent,
-                            tabSize, breakage, compact && !first ) );
-                        appendChild( elt );
-                        tok = elt->parse( lexer );
+                            tabSize, breakage, compact && !first );
+                        appendChild( dt );
+                        tok = dt->parse( lexer );
                         first = false;
                     }
                     break;
                 case Lexer::EDL:
                     {
-                        Element* elt( new EDl( _document, this, _document->dataName(),
-                            _document->lexerLine(), _document->lexerCol() ) );
-                        appendChild( elt );
-                        tok = elt->parse( lexer );
-                        if( !nestLevel )
+                        EDl *edl = new EDl( _document, this, _document->dataName(),
+                            _document->lexerLine(), _document->lexerCol() );
+                        appendChild( edl );
+                        tok = edl->parse( lexer );
+                        if( !nestLevel ) {
                             appendChild( new BrCmd( _document, this, _document->dataName(),
                                 _document->dataLine(), _document->dataCol() ) );
+                        }
                         return tok;
                     }
                 case Lexer::PARML:
                     {
-                        Element* elt( new Parml( _document, this, _document->dataName(),
+                        Parml *parml = new Parml( _document, this, _document->dataName(),
                             _document->dataLine(), _document->dataCol(), nestLevel + 1,
-                            indent == 1 ? 4 : indent + 3 ) );
-                        appendChild( elt );
-                        tok = elt->parse( lexer );
+                            indent == 1 ? 4 : indent + 3 );
+                        appendChild( parml );
+                        tok = parml->parse( lexer );
                     }
                     break;
                 case Lexer::SL:
                     {
-                        Element* elt( new Sl( _document, this, _document->dataName(),
+                        Sl *sl = new Sl( _document, this, _document->dataName(),
                             _document->dataLine(), _document->dataCol(),
-                            0, indent == 1 ? 4 : indent + 3 ) );
-                        appendChild( elt );
-                        tok = elt->parse( lexer );
+                            0, indent == 1 ? 4 : indent + 3 );
+                        appendChild( sl );
+                        tok = sl->parse( lexer );
                     }
                     break;
                 case Lexer::UL:
                     {
-                        Element* elt( new Ul( _document, this, _document->dataName(),
+                        Ul *ul = new Ul( _document, this, _document->dataName(),
                             _document->dataLine(), _document->dataCol(),
-                            nestLevel + 1, indent == 1 ? 4 : indent + 3 ) );
-                        appendChild( elt );
-                        tok = elt->parse( lexer );
+                            nestLevel + 1, indent == 1 ? 4 : indent + 3 );
+                        appendChild( ul );
+                        tok = ul->parse( lexer );
                     }
                     break;
                 default:
@@ -190,41 +188,41 @@ Lexer::Token Dl::parse( Lexer* lexer )
 /***************************************************************************/
 Lexer::Token Dl::parseAttributes( Lexer* lexer )
 {
-    Lexer::Token tok( _document->getNextToken() );
-    while( tok != Lexer::TAGEND ) {
+    Lexer::Token tok;
+
+    while( (tok = _document->getNextToken()) != Lexer::TAGEND ) {
         if( tok == Lexer::ATTRIBUTE ) {
             std::wstring key;
             std::wstring value;
             splitAttribute( lexer->text(), key, value );
             if( key == L"tsize" ) {
                 tabSize = static_cast< unsigned char >( std::wcstoul( value.c_str(), 0, 10 ) );
-            }
-            else if( key == L"break" ) {
-                if( value == L"none" )
+            } else if( key == L"break" ) {
+                if( value == L"none" ) {
                     breakage = NONE;
-                else if( value == L"fit" )
+                } else if( value == L"fit" ) {
                     breakage = FIT;
-                else if( value == L"all" )
+                } else if( value == L"all" ) {
                     breakage = ALL;
-                else
+                } else {
                     _document->printError( ERR2_VALUE );
+                }
+            } else {
+                _document->printError( ERR1_ATTRNOTDEF );
             }
-            else
-                _document->printError( ERR1_ATTRNOTDEF );
-        }
-        else if( tok == Lexer::FLAG ) {
-            if( lexer->text() == L"compact" )
+        } else if( tok == Lexer::FLAG ) {
+            if( lexer->text() == L"compact" ) {
                 compact = true;
-            else
+            } else {
                 _document->printError( ERR1_ATTRNOTDEF );
-        }
-        else if( tok == Lexer::ERROR_TAG )
+            }
+        } else if( tok == Lexer::ERROR_TAG ) {
             throw FatalError( ERR_SYNTAX );
-        else if( tok == Lexer::END )
+        } else if( tok == Lexer::END ) {
             throw FatalError( ERR_EOF );
-        else
+        } else {
             _document->printError( ERR1_TAGSYNTAX );
-        tok = _document->getNextToken();
+        }
     }
     return _document->getNextToken();    //consume TAGEND
 }
@@ -235,8 +233,9 @@ void EDl::buildText( Cell* cell )
     cell->addByte( 0x03 );  //size
     cell->addByte( 0x02 );  //set left margin
     cell->addByte( 1 );
-    if( cell->textFull() )
+    if( cell->textFull() ) {
         printError( ERR1_LARGEPAGE );
+    }
 }
 /***************************************************************************/
 Lexer::Token DtHd::parse( Lexer* lexer )
@@ -259,9 +258,9 @@ Lexer::Token DtHd::parse( Lexer* lexer )
                     IpfBuffer* buffer( new IpfBuffer( name, _document->dataLine(), _document->dataCol(), *txt ) );
                     _document->pushInput( buffer );
                     tok = _document->getNextToken();
-                }
-                else
+                } else {
                     ++textLength;
+                }
             }
             break;
         case Lexer::PUNCTUATION:
@@ -270,8 +269,9 @@ Lexer::Token DtHd::parse( Lexer* lexer )
         default:
             break;
         }
-        if( parseInline( lexer, tok ) )
+        if( parseInline( lexer, tok ) ) {
             break;
+        }
     }
     return tok;
 }
@@ -293,12 +293,13 @@ Lexer::Token Dt::parse( Lexer* lexer )
     Lexer::Token tok( parseAttributes( lexer ) );
     appendChild( new Lm( _document, this, _document->dataName(),
         _document->lexerLine(), _document->lexerCol(), indent ) );
-    if( compact )
+    if( compact ) {
         appendChild( new BrCmd( _document, this, _document->dataName(),
             _document->lexerLine(), _document->lexerCol() ) );
-    else
+    } else {
         appendChild( new P( _document, this, _document->dataName(),
             _document->lexerLine(), _document->lexerCol() ) );
+    }
     while( tok != Lexer::END && !( tok == Lexer::TAG && lexer->tagId() == Lexer::EUSERDOC ) ) {
         switch( tok ) {
         case Lexer::WORD:
@@ -312,9 +313,9 @@ Lexer::Token Dt::parse( Lexer* lexer )
                     IpfBuffer* buffer( new IpfBuffer( name, _document->dataLine(), _document->dataCol(), *txt ) );
                     _document->pushInput( buffer );
                     tok = _document->getNextToken();
-                }
-                else
+                } else {
                     ++textLength;
+                }
             }
             break;
         case Lexer::PUNCTUATION:
@@ -329,22 +330,23 @@ Lexer::Token Dt::parse( Lexer* lexer )
         }
         if( parseInline( lexer, tok ) ) {
             if( lexer->tagId() == Lexer::DD ) {
-                Element* ent;
-                if( breakage == Dl::NONE )  //keep on same line
-                    ent = new Dd( _document, this, _document->dataName(),
+                Dd *dd;
+                if( breakage == Dl::NONE ) {    //keep on same line
+                    dd = new Dd( _document, this, _document->dataName(),
                         _document->lexerLine(), _document->lexerCol(), indent, tabSize, false );
-                else if( breakage == Dl::FIT )
-                    ent = new Dd( _document, this, _document->dataName(),
+                } else if( breakage == Dl::FIT ) {
+                    dd = new Dd( _document, this, _document->dataName(),
                         _document->lexerLine(), _document->lexerCol(), indent, tabSize,
                         textLength >= tabSize );
-                else                        //place on next line
-                    ent = new Dd( _document, this, _document->dataName(),
+                } else {                        //place on next line
+                    dd = new Dd( _document, this, _document->dataName(),
                         _document->lexerLine(), _document->lexerCol(), indent, tabSize, true );
-                appendChild( ent );
-                tok = ent->parse( lexer );
-            }
-            else
+                }
+                appendChild( dd );
+                tok = dd->parse( lexer );
+            } else {
                 break;
+            }
         }
     }
     return tok;

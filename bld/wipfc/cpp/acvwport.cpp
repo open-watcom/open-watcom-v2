@@ -62,12 +62,13 @@ Lexer::Token AcViewport::parse( Lexer* lexer )
 /***************************************************************************/
 Lexer::Token AcViewport::parseAttributes( Lexer* lexer )
 {
-    Lexer::Token tok( _document->getNextToken() );
+    Lexer::Token tok;
     bool xorg( false );
     bool yorg( false );
     bool dx( false );
     bool dy( false );
-    while( tok != Lexer::TAGEND ) {
+
+    while( (tok = _document->getNextToken()) != Lexer::TAGEND ) {
         if( tok == Lexer::ATTRIBUTE ) {
             std::wstring key;
             std::wstring value;
@@ -209,7 +210,6 @@ Lexer::Token AcViewport::parseAttributes( Lexer* lexer )
         } else if( tok == Lexer::END ) {
             throw FatalError( ERR_EOF );
         }
-        tok = _document->getNextToken();
     }
     return _document->getNextToken(); //consume TAGEND;
 }

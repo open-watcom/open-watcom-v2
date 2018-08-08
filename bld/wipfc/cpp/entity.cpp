@@ -47,22 +47,21 @@ Lexer::Token Entity::parse( Lexer* lexer )
         return _document->getNextToken();
     }
     try {
-        wchar_t entity( _document->entity( lexer->text() ) );    //lookup entity
-        std::wstring txt(1, entity );
+        wchar_t entityChar( _document->entityChar( lexer->text() ) );    //lookup entity
+        std::wstring txt( 1, entityChar );
         tok = _document->getNextToken();
-        if( !std::iswpunct( entity ) ) {
+        if( !std::iswpunct( entityChar ) ) {
             while( tok != Lexer::END && !( tok == Lexer::TAG && lexer->tagId() == Lexer::EUSERDOC) ) {
-                if( tok == Lexer::WORD )
+                if( tok == Lexer::WORD ) {
                     txt += lexer->text();       //part of a compound ...-word-entity-word-...
-                else if( tok == Lexer::ENTITY ) {
-                    entity = _document->entity( lexer->text() );
-                    if ( std::iswpunct( entity ) )
+                } else if( tok == Lexer::ENTITY ) {
+                    entityChar = _document->entityChar( lexer->text() );
+                    if( std::iswpunct( entityChar ) )
                         break;
-                    else
-                        txt+= entity;
-                }
-                else
+                    txt += entityChar;
+                } else {
                     break;
+                }
                 tok = _document->getNextToken();
             }
         }

@@ -52,8 +52,7 @@ Lexer::Token Fn::parse( Lexer* lexer )
         if( lexer->tagId() == Lexer::EFN ) {
             tok = Tag::parseAttributes( lexer );
             break;
-        }
-        else if( parseInline( lexer, tok ) ) {
+        } else if( parseInline( lexer, tok ) ) {
             if( parseBlock( lexer, tok ) ) {
                 if( parseListBlock( lexer, tok ) )
                     parseCleanup( lexer, tok );
@@ -65,8 +64,9 @@ Lexer::Token Fn::parse( Lexer* lexer )
 /***************************************************************************/
 Lexer::Token Fn::parseAttributes( Lexer* lexer )
 {
-    Lexer::Token tok( _document->getNextToken() );
-    while( tok != Lexer::TAGEND ) {
+    Lexer::Token tok;
+
+    while( (tok = _document->getNextToken()) != Lexer::TAGEND ) {
         if( tok == Lexer::ATTRIBUTE ) {
             std::wstring key;
             std::wstring value;
@@ -76,19 +76,18 @@ Lexer::Token Fn::parseAttributes( Lexer* lexer )
                 id->toUpper();          //to uppercase
                 if( !_document->isInf() )
                     id = _document->addWord( id );
+            } else {
+                _document->printError( ERR1_ATTRNOTDEF );
             }
-            else
+        } else if( tok == Lexer::FLAG ) {
                 _document->printError( ERR1_ATTRNOTDEF );
-        }
-        else if( tok == Lexer::FLAG )
-                _document->printError( ERR1_ATTRNOTDEF );
-        else if( tok == Lexer::ERROR_TAG )
+        } else if( tok == Lexer::ERROR_TAG ) {
             throw FatalError( ERR_SYNTAX );
-        else if( tok == Lexer::END )
+        } else if( tok == Lexer::END ) {
             throw FatalError( ERR_EOF );
-        else
+        } else {
             _document->printError( ERR1_TAGSYNTAX );
-        tok = _document->getNextToken();
+        }
     }
     if( !id )
         _document->printError( ERR1_NOFNID );

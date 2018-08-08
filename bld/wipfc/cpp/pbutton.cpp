@@ -43,8 +43,9 @@
 
 Lexer::Token PButton::parse( Lexer* lexer )
 {
-    Lexer::Token tok( _document->getNextToken() );
-    while( tok != Lexer::TAGEND ) {
+    Lexer::Token tok;
+
+    while( (tok = _document->getNextToken()) != Lexer::TAGEND ) {
         if( tok == Lexer::ATTRIBUTE ) {
             std::wstring key;
             std::wstring value;
@@ -60,21 +61,20 @@ Lexer::Token PButton::parse( Lexer* lexer )
                     id == L"BACK" ||
                     id == L"FORWARD" )
                     _document->printError( ERR3_DUPID, id );
-            }
-            else if( key == L"res" )
+            } else if( key == L"res" ) {
                 res = std::wcstoul( value.c_str(), 0, 10 );
-            else if( key == L"text" )
+            } else if( key == L"text" ) {
                 text = value;
-            else
+            } else {
                 _document->printError( ERR1_ATTRNOTDEF );
-        }
-        else if ( tok == Lexer::FLAG )
+            }
+        } else if( tok == Lexer::FLAG ) {
             _document->printError( ERR1_ATTRNOTDEF );
-        else if( tok == Lexer::END )
+        } else if( tok == Lexer::END ) {
             throw FatalError( ERR_EOF );
-        else
+        } else {
             _document->printError( ERR1_TAGSYNTAX );
-        tok = _document->getNextToken();
+        }
     }
     return _document->getNextToken();
 }

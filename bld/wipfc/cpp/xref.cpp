@@ -39,9 +39,10 @@ void XRef::write( std::FILE* out ) const
 /*****************************************************************************/
 bool XRef::operator <( const XRef& rhs ) const
 {
-    if( *fileName == *rhs.fileName )
+    if( *fileName == *rhs.fileName ) {
         return lineNumber < rhs.lineNumber;
-    else
+    } else {
         return *fileName < *rhs.fileName;
+    }
 }
 

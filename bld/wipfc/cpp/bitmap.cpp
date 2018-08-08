@@ -88,14 +88,15 @@ Bitmap::Bitmap( std::string& fname ) : dataSize( sizeof( STD1::uint16_t ) ), blo
         if( bmfh.type[0] != 'B' || bmfh.type[1] != 'M' )
             throw Class1Error( ERR1_BADFMT );
         bmfh.type[0] = 'b';
-        if ( bmfh.bmihSize == sizeof( BitmapInfoHeader16 ) + sizeof( STD1::uint32_t ) )
+        if( bmfh.bmihSize == sizeof( BitmapInfoHeader16 ) + sizeof( STD1::uint32_t ) ) {
             readHeader16( in );
-        else if (bmfh.bmihSize == sizeof( BitmapInfoHeaderWin32 ) + sizeof( STD1::uint32_t ) )
+        } else if( bmfh.bmihSize == sizeof( BitmapInfoHeaderWin32 ) + sizeof( STD1::uint32_t ) ) {
             readHeaderW32( in );
-        else if (bmfh.bmihSize == sizeof( BitmapInfoHeaderOS22x ) + sizeof( STD1::uint32_t ) )
+        } else if( bmfh.bmihSize == sizeof( BitmapInfoHeaderOS22x ) + sizeof( STD1::uint32_t ) ) {
             readHeaderOS2( in );
-        else
+        } else {
             throw Class1Error( ERR1_BADFMT );
+        }
         findBlockSize( bmih.width, bmih.height, bmih.bitsPerPixel );
         compress( in );
         for( DataIter itr = data.begin(); itr != data.end(); ++itr ) {
@@ -227,8 +228,7 @@ void Bitmap::readHeaderW32( std::FILE* in )
         }
         bmfh.size -= static_cast< STD1::uint32_t >( rgbSize * ( sizeof( RGBA ) - sizeof( RGB ) ) );
         bmfh.bitsOffset -= static_cast< STD1::uint32_t >( rgbSize * ( sizeof( RGBA ) - sizeof( RGB ) ) );
-    }
-    else if (bmihW32.compression == 3) {
+    } else if( bmihW32.compression == 3 ) {
         //read and discard 3 items
         RGBA tmp1;
         tmp1.read( in );
@@ -264,8 +264,7 @@ void Bitmap::readHeaderOS2( std::FILE* in )
             RGB tmp;
             for( std::size_t count1 = bmihOS22x.usedColors; count1 < rgbSize; ++count1 )
                 rgb.push_back( tmp );
-        }
-        else {
+        } else {
             for( std::size_t count1 = 0; count1 < rgbSize; ++count1 ) {
                 RGBA tmp1;
                 tmp1.read( in );
@@ -275,8 +274,7 @@ void Bitmap::readHeaderOS2( std::FILE* in )
         }
         bmfh.bitsOffset = static_cast< STD1::uint32_t >( sizeof( BitmapFileHeader ) + sizeof( BitmapInfoHeader16 ) + 3 * rgb.size() );
         bmfh.size = bmfh.bitsOffset + bmihOS22x.imageSize;
-    }
-    else if (bmihOS22x.compression == 3) {
+    } else if( bmihOS22x.compression == 3 ) {
         //read and discard 3 items
         RGBA tmp1;
         tmp1.read( in );

@@ -56,8 +56,9 @@ void killQuotes( char * text )
         char quote = *text;
         std::memmove( text, text + 1, std::strlen( text ) * sizeof( *text ) );
         char *end( std::strrchr( text, quote ) );
-        if ( end )
+        if( end ) {
             *end = '\0';
+        }
     }
 }
 
@@ -68,31 +69,32 @@ void killQuotes( wchar_t * text )
         wchar_t quote = *text;
         std::memmove( text, text + 1, std::wcslen( text ) * sizeof( *text ) );
         wchar_t *end( std::wcsrchr( text, quote ) );
-        if ( end )
+        if( end ) {
             *end = L'\0';
+        }
     }
 }
 
 void killQuotes( std::string& val )
 /*********************************/
 {
-    if ( val[0] == '"' || val[0] == '\'' )
-        {
+    if( val[0] == '"' || val[0] == '\'' ) {
         val.erase( 0, 1 );
-        if( val[val.size() - 1] == '"' || val[val.size() - 1] == '\'' )
+        if( val[val.size() - 1] == '"' || val[val.size() - 1] == '\'' ) {
             val.erase( val.size() - 1, 1 );
         }
+    }
 }
 
 void killQuotes( std::wstring& val )
 /**********************************/
 {
-    if ( val[0] == L'"' || val[0] == L'\'' )
-        {
+    if( val[0] == L'"' || val[0] == L'\'' ) {
         val.erase( 0, 1 );
-        if( val[val.size() - 1] == L'"' || val[val.size() - 1] == L'\'' )
+        if( val[val.size() - 1] == L'"' || val[val.size() - 1] == L'\'' ) {
             val.erase( val.size() - 1, 1 );
         }
+    }
 }
 
 void splitAttribute( const std::wstring& text, std::wstring& key, std::wstring& value )

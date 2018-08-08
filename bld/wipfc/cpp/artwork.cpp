@@ -84,8 +84,9 @@ Lexer::Token Artwork::parse( Lexer* lexer )
 /***************************************************************************/
 Lexer::Token Artwork::parseAttributes( Lexer* lexer )
 {
-    Lexer::Token tok( _document->getNextToken() );
-    while( tok != Lexer::TAGEND ) {
+    Lexer::Token tok;
+
+    while( (tok = _document->getNextToken()) != Lexer::TAGEND ) {
         if( tok == Lexer::ATTRIBUTE ) {
             std::wstring key;
             std::wstring value;
@@ -124,7 +125,6 @@ Lexer::Token Artwork::parseAttributes( Lexer* lexer )
         } else if( tok == Lexer::END ) {
             throw FatalError( ERR_EOF );
         }
-        tok = _document->getNextToken();
     }
     return _document->getNextToken(); //consume TAGEND;
 }

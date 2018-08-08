@@ -40,18 +40,18 @@ void Env::add( const std::string& key )
         std::string val( env );
         killQuotes( val );
         data.insert( std::map< std::string, std::string >::value_type( key, val ) );
-    }
-    else
+    } else {
         data.insert( std::map< std::string, std::string >::value_type( key, "" ) );
+    }
 }
 /*****************************************************************************/
 void Env::killQuotes( std::string& val )
 {
-    if ( val[0] == '"' || val[0] == '\'' )
-        {
+    if( val[0] == '"' || val[0] == '\'' ) {
         val.erase( 0, 1 );
-        if( val[ val.size() - 1 ] == '"' || val[ val.size() - 1 ] == '\'' )
+        if( val[ val.size() - 1 ] == '"' || val[ val.size() - 1 ] == '\'' ) {
             val.erase( val.size() - 1, 1 );
         }
+    }
 }
 

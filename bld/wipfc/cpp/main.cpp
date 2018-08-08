@@ -112,7 +112,7 @@ We support the version 2 flags
 */
 static void processCommandLine(int argc, char **argv, Compiler& c)
 {
-    if (argc < 2)
+    if( argc < 2 )
         usage();
     int inIndex( 0 );
     int outIndex( 0 );
@@ -129,7 +129,7 @@ static void processCommandLine(int argc, char **argv, Compiler& c)
                 case 'd':
                     std::cout << "Country code and code page selection are not supported." << std::endl;
                     std::cout << "Use the 'l' option to select a localization file instead." << std::endl;
-                    if (argv[count][2] == '?')
+                    if( argv[count][2] == '?' )
                         info = true;
                     break;
                 case 'I':
@@ -138,7 +138,7 @@ static void processCommandLine(int argc, char **argv, Compiler& c)
                     break;
                 case 'L':
                 case 'l':
-                    if (argv[count][2] == '?') {
+                    if( argv[count][2] == '?' ) {
                         std::cout << "xx_YY is the root name of a localization file" << std::endl;
                         std::cout << "with the full name xx_YY.nls\nSee en_US.nls for an example." << std::endl;
                         info = true;
@@ -160,7 +160,7 @@ static void processCommandLine(int argc, char **argv, Compiler& c)
                     break;
                 case 'w':
                 case 'W':
-                    if (argv[count][2] == '?') {
+                    if( argv[count][2] == '?' ) {
                         std::cout << "-wN where N is one of 1, 2, or 3" << std::endl;
                         info = true;
                     } else {

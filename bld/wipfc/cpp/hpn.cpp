@@ -55,9 +55,11 @@ Hpn::Hpn( Document* d, Element *p, const std::wstring* f, unsigned int r,
 /***************************************************************************/
 Lexer::Token Hpn::parse( Lexer* lexer )
 {
-    Lexer::Token tok( _document->getNextToken() );
+    Lexer::Token tok;
+
     (void)lexer;
-    while( tok != Lexer::TAGEND ) {
+
+    while( (tok = _document->getNextToken()) != Lexer::TAGEND ) {
         if( tok == Lexer::ATTRIBUTE ) {
             _document->printError( ERR1_ATTRNOTDEF );
         } else if( tok == Lexer::FLAG ) {
@@ -69,7 +71,6 @@ Lexer::Token Hpn::parse( Lexer* lexer )
         } else {
             _document->printError( ERR1_TAGSYNTAX );
         }
-        tok = _document->getNextToken();
     }
     return _document->getNextToken();    //consume TAGEND
 }
@@ -125,9 +126,11 @@ EHpn::EHpn( Document* d, Element *p, const std::wstring* f, unsigned int r,
 /***************************************************************************/
 Lexer::Token EHpn::parse( Lexer* lexer )
 {
-    Lexer::Token tok( _document->getNextToken() );
+    Lexer::Token tok;
+
     (void)lexer;
-    while( tok != Lexer::TAGEND ) {
+
+    while( (tok = _document->getNextToken()) != Lexer::TAGEND ) {
         if( tok == Lexer::ATTRIBUTE ) {
             _document->printError( ERR1_ATTRNOTDEF );
         } else if( tok == Lexer::FLAG ) {
@@ -139,7 +142,6 @@ Lexer::Token EHpn::parse( Lexer* lexer )
         } else {
             _document->printError( ERR1_TAGSYNTAX );
         }
-        tok = _document->getNextToken();
     }
     return _document->getNextToken();    //consume TAGEND
 }

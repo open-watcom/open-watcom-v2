@@ -284,8 +284,7 @@ void Document::parse( Lexer* lexer )
             }
         } else if( tok == Lexer::COMMAND ) {
             if( lexer->cmdId() == Lexer::NAMEIT || lexer->cmdId() == Lexer::COMMENT ) {
-                tok = processCommand( lexer, 0 );
-                continue;
+                parseCommand( lexer, 0 );
             } else {
                 printError( ERR1_TAGCONTEXT );
             }
@@ -321,10 +320,10 @@ void Document::parse( Lexer* lexer )
         } else if( tok == Lexer::COMMAND ) {
             if( lexer->cmdId() == Lexer::BREAK ) {
                 printError( ERR1_TAGCONTEXT );
-                tok = getNextToken();
             } else {
-                tok = processCommand( lexer, NULL );
+                parseCommand( lexer, NULL );
             }
+            tok = getNextToken();
         } else {
             if( tok != Lexer::WHITESPACE )
                 printError( ERR1_HEADTEXT );
@@ -396,11 +395,11 @@ void Document::parse( Lexer* lexer )
             }
         } else if( tok == Lexer::COMMAND ) {
             if( lexer->cmdId() == Lexer::COMMENT || lexer->cmdId() == Lexer::IMBED ) {
-                tok = processCommand( lexer, NULL );
+                parseCommand( lexer, NULL );
             } else {
                 printError( ERR1_TAGCONTEXT );
-                tok = getNextToken();
             }
+            tok = getNextToken();
         } else {
             if( tok != Lexer::WHITESPACE )
                 printError( ERR1_HEADTEXT );
@@ -418,7 +417,7 @@ void Document::parse( Lexer* lexer )
         throw FatalError( ERR_LARGETOC );
     if( _dict->size() > 64000 ) {
         throw FatalError( ERR_DOCLARGE );
-    } else if ( _dict->size() == 0 ) {
+    } else if( _dict->size() == 0 ) {
         throw FatalError( ERR_DOCSMALL );
     }
 }
@@ -838,7 +837,7 @@ STD1::uint32_t Document::writeICmd( std::FILE* out )
 * .ce (center) no tags, but text and both entity types
 * Version 2.0 only supports .*, .br, .im
 */
-Lexer::Token Document::processCommand( Lexer* lexer, Tag* parent )
+void Document::parseCommand( Lexer* lexer, Tag* parent )
 {
     if( lexer->cmdId() == Lexer::COMMENT ) {
         //do nothing
@@ -847,7 +846,7 @@ Lexer::Token Document::processCommand( Lexer* lexer, Tag* parent )
     } else if( lexer->cmdId() == Lexer::CENTER ) {
         CeCmd* cecmd( new CeCmd( this, parent, dataName(), dataLine(), dataCol() ) );
         parent->appendChild( cecmd );
-        return cecmd->parse( lexer );
+        cecmd->parseCommand( lexer );
     } else if( lexer->cmdId() == Lexer::IMBED ) {
         for( std::size_t count = 0; count < ipfcimbed_paths.size(); ++count ) {
             std::string sname;
@@ -899,7 +898,6 @@ Lexer::Token Document::processCommand( Lexer* lexer, Tag* parent )
     } else {
         printError( ERR1_CMDNOTDEF );
     }
-    return getNextToken();
 }
 /***************************************************************************/
 //get a TOC index from the resource number to TOC index map

@@ -51,8 +51,9 @@ Lexer::Token Note::parse( Lexer* lexer )
     std::wstring* fname( new std::wstring() );
     prepBufferName( fname, *( _document->dataName() ) );
     fname = _document->addFileName( fname );
-    Lexer::Token tok( _document->getNextToken() );
-    while( tok != Lexer::TAGEND ) {
+    Lexer::Token tok;
+
+    while( (tok = _document->getNextToken()) != Lexer::TAGEND ) {
         if( tok == Lexer::ATTRIBUTE ) {
             std::wstring key;
             std::wstring value;
@@ -61,19 +62,18 @@ Lexer::Token Note::parse( Lexer* lexer )
                 temp = L":hp2.";
                 temp += value;
                 temp += L":ehp2.";
-            }
-            else
+            } else {
                 _document->printError( ERR1_ATTRNOTDEF );
-        }
-        else if( tok == Lexer::FLAG )
+            }
+        } else if( tok == Lexer::FLAG ) {
             _document->printError( ERR1_ATTRNOTDEF );
-        else if( tok == Lexer::ERROR_TAG )
+        } else if( tok == Lexer::ERROR_TAG ) {
             throw FatalError( ERR_SYNTAX );
-        else if( tok == Lexer::END )
+        } else if( tok == Lexer::END ) {
             throw FatalError( ERR_EOF );
-        else
+        } else {
             _document->printError( ERR1_TAGSYNTAX );
-        tok = _document->getNextToken();
+        }
     }
     if( temp.empty() ) {
         temp = L":hp2.";

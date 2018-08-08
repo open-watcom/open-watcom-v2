@@ -42,17 +42,18 @@
 
 Lexer::Token Title::parse( Lexer* lexer, IpfHeader* hdr )
 {
-    Lexer::Token tok( _document->getNextToken() );
-    while ( tok != Lexer::TAGEND ) {
-        if( tok == Lexer::ATTRIBUTE )
+    Lexer::Token tok;
+
+    while( (tok = _document->getNextToken()) != Lexer::TAGEND ) {
+        if( tok == Lexer::ATTRIBUTE ) {
             _document->printError( ERR1_ATTRNOTDEF );
-        else if( tok == Lexer::FLAG )
+        } else if( tok == Lexer::FLAG ) {
             _document->printError( ERR1_ATTRNOTDEF );
-        else if( tok == Lexer::END )
+        } else if( tok == Lexer::END ) {
             throw FatalError( ERR_EOF );
-        else
+        } else {
             _document->printError( ERR1_TAGSYNTAX );
-        tok = _document->getNextToken();
+        }
     }
     std::wstring txt;
     unsigned int startLine( _document->dataLine() );
@@ -68,8 +69,8 @@ Lexer::Token Title::parse( Lexer* lexer, IpfHeader* hdr )
                 txt += *exp;
             } else {
                 try {
-                    wchar_t ch( _document->entity( lexer->text() ) );
-                    txt += ch;
+                    wchar_t entityChar( _document->entityChar( lexer->text() ) );
+                    txt += entityChar;
                 }
                 catch( Class2Error& e ) {
                     _document->printError( e.code );

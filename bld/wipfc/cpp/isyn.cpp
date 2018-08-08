@@ -44,8 +44,9 @@
 
 Lexer::Token ISyn::parse( Lexer* lexer )
 {
-    Lexer::Token tok( _document->getNextToken() );
-    while( tok != Lexer::TAGEND ) {
+    Lexer::Token tok;
+
+    while( (tok = _document->getNextToken()) != Lexer::TAGEND ) {
         if( tok == Lexer::ATTRIBUTE ) {
             std::wstring key;
             std::wstring value;
@@ -64,7 +65,6 @@ Lexer::Token ISyn::parse( Lexer* lexer )
         } else {
             _document->printError( ERR1_TAGSYNTAX );
         }
-        tok = _document->getNextToken();
     }
     tok = _document->getNextToken(); //consume TAGEND
     unsigned int currentLine = _document->dataLine();
