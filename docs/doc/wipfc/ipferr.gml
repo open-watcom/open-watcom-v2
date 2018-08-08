@@ -32,11 +32,11 @@ successfully, this error is generated.
 A syntax error has occurred. Usually, this is because an end-of-tag delimiter is missing.
 .note "Invalid country code or codepage"
 The appropriate file of entity references cannot be found or cannot be read. Usually, this is because the 
-WIPFC environment variable is pointing to the wrong place.
+WIPFC environment variable is not setup or is pointing to the wrong place.
 .note "Invalid language code"
 The appropriate nls file cannot be found or cannot be read. Usually, this is because the WIPFC environment
-variable is pointing to the wrong place.
-.note "Missing userdoc or euserdoc"
+variable is not setup or is pointing to the wrong place.
+.note "Missing :userdoc or :euserdoc"
 The document is not correctly formed. The userdoc and euserdoc tags are required.
 .note "Too many unique words--the document is too big"
 A document can contain a maximum of 64000 unique words.
@@ -48,6 +48,9 @@ A document cannot have more than 65535 pages.
 The document cannot have more than 65535 index entries.
 .note "The document has no visible table of contents entries"
 At least one of the pages must be visible. Don't hide them all.
+.note "Cannot open nls configuration file"
+A NLS configuration file cannot be opened. Usually, this is because the WIPFC environment variable is not
+setup or is pointing to the wrong place.
 .endnote
 .*
 .section Level 1 Warnings
