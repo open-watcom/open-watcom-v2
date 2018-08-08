@@ -131,7 +131,19 @@ int Compiler::compile()
     }
     return retval;
 }
+
 /*****************************************************************************/
+static unsigned levelCode( ErrCode c )
+{
+    if( c > ERR2_LAST )
+        return c - ERR2_LAST + 300;
+    if( c > ERR1_LAST )
+        return c - ERR1_LAST + 200;
+    if( c > ERR_LAST )
+        return c - ERR_LAST + 100;
+    return c;
+}
+
 //Error message format is <fullfilename:line:col> errnum: text [optional info]
 void Compiler::printError( ErrCode c ) const
 {
@@ -154,7 +166,7 @@ void Compiler::printError( ErrCode c ) const
             _inFiles.size() ? dataName()->c_str() : L"(no current file)",
             lexerLine(), lexerCol(),
             c > ERR_LAST ? "Warning" : "Fatal Error",
-            static_cast< unsigned int >( c ),
+            levelCode( c ),
             ErrText[ c ] );
     }
 }
@@ -181,7 +193,7 @@ void Compiler::printError( ErrCode c, const std::wstring& txt ) const
             _inFiles.size() ? dataName()->c_str() : L"(no current file)",
             lexerLine(), lexerCol(),
             c > ERR_LAST ? "Warning" : "Fatal Error",
-            static_cast< unsigned int >( c ),
+            levelCode( c ),
             ErrText[ c ], txt.c_str() );
     }
 }
@@ -208,7 +220,7 @@ void Compiler::printError( ErrCode c, const std::wstring* name, unsigned int row
         std::fprintf( stdout, "<%ls:%u:%u> %s %02u: %s\n",
             name->c_str(), row, col,
             c > ERR_LAST ? "Warning" : "Fatal Error",
-            static_cast< unsigned int >( c ),
+            levelCode( c ),
             ErrText[ c ] );
     }
 }
@@ -235,7 +247,7 @@ void Compiler::printError( ErrCode c, const std::wstring* name, unsigned int row
         std::fprintf( stdout, "<%ls:%u:%u> %s %02u: %s %ls\n",
             name->c_str(), row, col,
             c > ERR_LAST ? "Warning" : "Fatal Error",
-            static_cast< unsigned int >( c ),
+            levelCode( c ),
             ErrText[ c ], txt.c_str() );
     }
 }

@@ -45,8 +45,8 @@ PICK( ERR_DOCSMALL, "The document has no words" )
 PICK( ERR_LARGETOC, "The document has too many pages" )
 PICK( ERR_LARGEINDEX, "The document has too many index or icmd entries" )
 PICK( ERR_INVISIBLETOC, "The document has no visible table of contents entries" )
-PICK( ERR_BADTOKEN, "Internal error--unrecognized token" )
 PICK( ERR_NLSCONF, "Cannot open nls configuration file" )
+PICK( ERR_BADTOKEN, "Internal error--unrecognized token" )
 PICK( ERR_LAST, "Last fatal error code" )
 /*
 Fatal errors
