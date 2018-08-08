@@ -129,7 +129,7 @@ Lexer::Token Dl::parse( Lexer* lexer )
                         _document->printError( ERR1_DLHEADMATCH );
                         needDdHd = false;
                     } else {
-                        Dt *dt =  new Dt( _document, this, _document->dataName(),
+                        Dt *dt = new Dt( _document, this, _document->dataName(),
                             _document->lexerLine(), _document->lexerCol(), indent,
                             tabSize, breakage, compact && !first );
                         appendChild( dt );
@@ -371,4 +371,3 @@ Lexer::Token Dd::parse( Lexer* lexer )
     }
     return tok;
 }
-

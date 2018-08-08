@@ -272,8 +272,9 @@ Lexer::Token Hn::parse( Lexer* lexer )
                 break;
             default:
                 if( parseBlock( lexer, tok ) ) {
-                    if( parseListBlock( lexer, tok ) )
+                    if( parseListBlock( lexer, tok ) ) {
                         parseCleanup( lexer, tok );
+                    }
                 }
             }
         }

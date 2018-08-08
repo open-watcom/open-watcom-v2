@@ -604,12 +604,12 @@ bool Tag::parseListBlock( Lexer* lexer, Lexer::Token& tok )
             }
             break;
         case Lexer::PARML:
-                {
-                    Parml *parml = new Parml( _document, this, _document->dataName(),
-                        _document->dataLine(), _document->dataCol(), 0, _document->leftMargin() );
-                    appendChild( parml );
-                    tok = parml->parse( lexer );
-                }
+            {
+                Parml *parml = new Parml( _document, this, _document->dataName(),
+                    _document->dataLine(), _document->dataCol(), 0, _document->leftMargin() );
+                appendChild( parml );
+                tok = parml->parse( lexer );
+            }
             break;
         case Lexer::SL:
             {
