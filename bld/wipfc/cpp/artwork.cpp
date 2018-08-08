@@ -60,24 +60,23 @@ Lexer::Token Artwork::parse( Lexer* lexer )
     }
     while( tok != Lexer::END && !( tok == Lexer::TAG && lexer->tagId() == Lexer::EUSERDOC)) {
         if( tok == Lexer::WHITESPACE ) {
-            tok = _document->getNextToken();
+            // nothing to do
         } else if( tok == Lexer::COMMAND ) {
-            if( lexer->cmdId() != Lexer::COMMENT )
+            if( lexer->cmdId() != Lexer::COMMENT ) {
                 break;
-            tok = _document->getNextToken();
+            }
         } else if( tok == Lexer::TAG ) {
             if( lexer->tagId() == Lexer::ARTLINK )
                 _hypergraphic = true;
             break;
         } else if( tok == Lexer::ERROR_TAG ) {
             _document->printError( ERR1_TAGNOTDEF );
-            tok = _document->getNextToken();
         } else if( tok == Lexer::ERROR_ENTITY ) {
             _document->printError( ERR1_TAGNOTDEF );
-            tok = _document->getNextToken();
         } else {
             break;
         }
+        tok = _document->getNextToken();
     }
     return tok;
 }

@@ -43,8 +43,9 @@ Lexer::Token Lp::parse( Lexer* lexer )
     Lexer::Token tok( parseAttributes( lexer ) );
     while( tok != Lexer::END && !( tok == Lexer::TAG && lexer->tagId() == Lexer::EUSERDOC ) ) {
         //may contain inline, not block
-        if( parseInline( lexer, tok ) )
+        if( parseInline( lexer, tok ) ) {
             break;
+        }
     }
     return tok;
 }

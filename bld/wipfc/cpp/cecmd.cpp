@@ -72,7 +72,7 @@ void CeCmd::parseCommand( Lexer* lexer )
                     _document->dataName(), _document->dataLine(), _document->dataCol() ) );
             appendChild( punct );
             tok = punct->parse( lexer );
-        } else if( tok != Lexer::END ) {
+        } else {
             _document->printError( ERR1_TAGCONTEXT );
             tok = _document->getNextToken();
         }

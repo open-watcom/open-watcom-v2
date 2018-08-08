@@ -54,8 +54,9 @@ Lexer::Token Fn::parse( Lexer* lexer )
             break;
         } else if( parseInline( lexer, tok ) ) {
             if( parseBlock( lexer, tok ) ) {
-                if( parseListBlock( lexer, tok ) )
+                if( parseListBlock( lexer, tok ) ) {
                     parseCleanup( lexer, tok );
+                }
             }
         }
     }

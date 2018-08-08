@@ -89,8 +89,9 @@ Lexer::Token Note::parse( Lexer* lexer )
         _document->lexerCol() ) );
     tok = _document->getNextToken(); //first token from buffer
     while( tok != Lexer::END ) {
-        if( parseInline( lexer, tok ) )
+        if( parseInline( lexer, tok ) ) {
             parseCleanup( lexer, tok );
+        }
     }
     _whiteSpace = Tag::NONE;
     _document->setBlockParsing( oldBlockParsing );
@@ -99,8 +100,9 @@ Lexer::Token Note::parse( Lexer* lexer )
         _document->lexerCol(), L"  ", Tag::LITERAL, false ) );
     tok = _document->getNextToken(); //next token from main stream
     while( tok != Lexer::END && !( tok == Lexer::TAG && lexer->tagId() == Lexer::EUSERDOC)) {
-        if( parseInline( lexer, tok ) )
+        if( parseInline( lexer, tok ) ) {
             break;
+        }
     }
     return tok;
 }
