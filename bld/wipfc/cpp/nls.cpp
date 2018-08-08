@@ -42,6 +42,7 @@
 #include "env.hpp"
 #include "nls.hpp"
 #include "util.hpp"
+#include "ipffile.hpp"
 
 
 Nls::Nls( const char *loc ) : _bytes( 0 )
@@ -54,153 +55,155 @@ Nls::Nls( const char *loc ) : _bytes( 0 )
     setLocalization( loc );
 }
 
-/*****************************************************************************/
 void Nls::readEntityFile( const std::string& sfname )
+/***************************************************/
 {
-    char        buffer[256 * 2];
-    wchar_t     text[256];
+    std::wstring    wfname;
+    std::wstring    wbuffer;
 
-    std::FILE* entty( std::fopen( sfname.c_str(), "r" ) );
-    if( entty == NULL )
+    def_mbtow_string( sfname, wfname );
+    IpfFile *ipff = new IpfFile( sfname, &wfname );
+    if( ipff == NULL )
         throw FatalError( ERR_COUNTRY );
-    while( std::fgets( buffer, sizeof( buffer ), entty ) ) {
-        std::size_t len = std::strlen( buffer );
-        killEOL( buffer + len - 1 );
-        len = mbtow_cstring( text, buffer, sizeof( text ) / sizeof( text[0] ) - 1 );
-        if( len == ERROR_CNV ) {
-            std::fclose( entty );
-            throw FatalError( ERR_T_CONV );
-        }
-        _entityMap.insert( std::map< std::wstring, wchar_t >::value_type( std::wstring( text + 1 ), text[0] ) );
-    }
-    std::fclose( entty );
-}
-/*****************************************************************************/
-void Nls::readNLSFile( const std::string& sfname )
-{
-    char        sbuffer[256 * 2];
-    wchar_t     keyword[256];
-    wchar_t     *value;
-    bool        doGrammar( false );
-
-    std::FILE *nls = std::fopen( sfname.c_str(), "r" );
-    if( nls == NULL )
-        throw FatalError( ERR_LANG );
-    while( std::fgets( sbuffer, sizeof( sbuffer ), nls ) ) {
-        std::size_t len( std::strlen( sbuffer ) );
-        killEOL( sbuffer + len - 1 );
-        len = mbtow_cstring( keyword, sbuffer, sizeof( keyword ) / sizeof( keyword[0] ) - 1 );
-        if( len == ERROR_CNV )
-            throw FatalError( ERR_T_CONV );
-        if( keyword[0] == L'\0' )
+    while( ipff->gets( wbuffer ) ) {
+        if( wbuffer[0] == L'\0' )
             continue;               //skip blank lines
-        if( keyword[0] == L'#' )
+        wchar_t c = wbuffer[0];
+        wbuffer.erase( 0, 1 );
+        _entityMap.insert( std::map< std::wstring, wchar_t >::value_type( wbuffer, c ) );
+    }
+    delete ipff;
+}
+
+void Nls::readNLSFile( const std::string& sfname )
+/************************************************/
+{
+    bool                    doGrammar( false );
+    std::wstring            wfname;
+    std::wstring            wbuffer;
+    std::string::size_type  pos;
+
+    def_mbtow_string( sfname, wfname );
+    IpfFile *ipff = new IpfFile( sfname, &wfname );
+    while( ipff->gets( wbuffer ) ) {
+        if( wbuffer[0] == L'\0' )
+            continue;               //skip blank lines
+        if( wbuffer[0] == L'#' )
             continue;               //skip comments
-        if( (value = std::wcschr( keyword, L'=' )) != NULL ) {
-            *value++ = L'\0';
+        if( (pos = wbuffer.find( L'=' )) != std::wstring::npos ) {
+            std::wstring keyword = wbuffer.substr( 0, pos );
+            std::wstring value = wbuffer.substr( pos + 1 );
             if( doGrammar ) {
-                if( std::wcscmp( keyword, L"Words" ) == 0 ) {
+                if( keyword == L"Words" ) {
                     processGrammar( value );
-                } else if( std::wcscmp( keyword, L"RemoveNL" ) == 0 ) {
+                } else if ( keyword == L"RemoveNL" ) {
                     //FIXME: exclude these values from sbcs/dbcs table?
                 }
-            } else if( std::wcscmp( keyword, L"Note" ) == 0 ) {
+            } else if( keyword == L"Note" ) {
                 killQuotes( value );
-                _noteText = std::wstring( value );
-            } else if( std::wcscmp( keyword, L"Caution" ) == 0 ) {
+                _noteText = value;
+            } else if( keyword == L"Caution" ) {
                 killQuotes( value );
-                _cautionText = std::wstring( value );
-            } else if( std::wcscmp( keyword, L"Warning" ) == 0 ) {
+                _cautionText = value;
+            } else if( keyword == L"Warning" ) {
                 killQuotes( value );
-                _warningText = std::wstring( value );
-            } else if( std::wcscmp( keyword, L"Reference" ) == 0 ) {
+                _warningText = value;
+            } else if( keyword == L"Reference" ) {
                 killQuotes( value );
-                _referenceText = std::wstring( value );
-            } else if( std::wcscmp( keyword, L"olChars" ) == 0 ) {
-                _olCh = std::wstring( value );
-            } else if( std::wcscmp( keyword, L"olClose1" ) == 0 ) {
-                _olClosers[0] = std::wstring( value );
-            } else if( std::wcscmp( keyword, L"olClose2" ) == 0 ) {
-                _olClosers[1] = std::wstring( value );
-            } else if( std::wcscmp( keyword, L"ulItemId1" ) == 0 ) {
-                _ulBul[0] = std::wstring( value );
-            } else if( std::wcscmp( keyword, L"ulItemId2" ) == 0 ) {
-                _ulBul[1] = std::wstring( value );
-            } else if( std::wcscmp( keyword, L"ulItemId3" ) == 0 ) {
-                _ulBul[2] = std::wstring( value );
-            } else if( std::wcscmp( keyword, L"cgraphicFontFaceName" ) == 0 ) {
+                _referenceText = value;
+            } else if( keyword == L"olChars" ) {
+                _olCh = value;
+            } else if( keyword == L"olClose1" ) {
+                _olClosers[0] = value;
+            } else if( keyword == L"olClose2" ) {
+                _olClosers[1] = value;
+            } else if( keyword == L"ulItemId1" ) {
+                _ulBul[0] = value;
+            } else if( keyword == L"ulItemId2" ) {
+                _ulBul[1] = value;
+            } else if( keyword == L"ulItemId3" ) {
+                _ulBul[2] = value;
+            } else if( keyword == L"cgraphicFontFaceName" ) {
                 killQuotes( value );
-                _cgraphicFont.setFaceName( std::wstring( value ) );
-            } else if( std::wcscmp( keyword, L"cgraphicFontWidth" ) == 0 ) {
-                _cgraphicFont.setWidth( static_cast< word >( std::wcstol( value, 0, 10 ) ) );
-            } else if( std::wcscmp( keyword, L"cgraphicFontHeight" ) == 0 ) {
-                _cgraphicFont.setHeight( static_cast< word >( std::wcstol( value, 0, 10 ) ) );
+                _cgraphicFont.setFaceName( value );
+            } else if( keyword == L"cgraphicFontWidth" ) {
+                _cgraphicFont.setWidth( static_cast< word >( std::wcstol( value.c_str(), 0, 10 ) ) );
+            } else if( keyword == L"cgraphicFontHeight" ) {
+                _cgraphicFont.setHeight( static_cast< word >( std::wcstol( value.c_str(), 0, 10 ) ) );
             } else {
                 // error: unknown keyword
             }
-        } else if( std::wcscmp( keyword, L"Grammar" ) == 0 ) {
+        } else if( wbuffer == L"Grammar" ) {
             doGrammar = true;
-        } else if( std::wcscmp( keyword, L"eGrammar" ) == 0 ) {
+        } else if( wbuffer == L"eGrammar" ) {
             doGrammar = false;
         } else {
             // error: unknown keyword
         }
     }
-    std::fclose( nls );
+    delete ipff;
 }
-/*****************************************************************************/
-void Nls::setLocalization( const char *loc)
+
+void Nls::setLocalization( const char *loc )
+/******************************************/
 {
     set_document_data_codepage( loc );
     readNLSFile( _country.nlsFileName() );
     readEntityFile( _country.entityFileName() );
 }
-/*****************************************************************************/
-void Nls::processGrammar( wchar_t *buffer )
+
+void Nls::addGrammarItem( wchar_t chr1, wchar_t chr2 )
+/****************************************************/
+{
+    for( wchar_t c = chr1; c <= chr2; ++c )
+        _grammarChars += c;
+    _dbcsT._ranges.push_back( static_cast< word >( chr1 ) );
+    _dbcsT._ranges.push_back( static_cast< word >( chr2 ) );
+}
+
+void Nls::processGrammar( const std::wstring& wbuffer )
+/*****************************************************/
 {
     if( _grammarChars.empty() ) {
         _grammarChars.reserve( 26 + 26 + 10 );
     }
-#if defined( _MSC_VER ) && ( _MSC_VER < 1910 ) && !defined( _WCSTOK_DEPRECATED )
-    wchar_t* tok( std::wcstok( buffer, L"+" ) );
-#else
-    wchar_t* p;
-    wchar_t* tok( std::wcstok( buffer, L"+", &p ) );
-#endif
-    while( tok ) {
-        if( std::wcslen( tok ) > 1 ) {
+    std::wstring::size_type pos;
+    std::wstring::size_type start = 0;
+    while( (pos = wbuffer.find( L'+', start )) != std::wstring::npos ) {
+        if( pos - start > 1 ) {
             // characters range "chr1-chr2"
             // change this loop if we use RegExp
-            wchar_t chr1( tok[0] );
-            wchar_t chr2( tok[2] );
-            for( wchar_t c = chr1; c <= chr2; ++c )
-                _grammarChars += c;
-            _dbcsT._ranges.push_back( static_cast< word >( chr1 ) );
-            _dbcsT._ranges.push_back( static_cast< word >( chr2 ) );
+            addGrammarItem( wbuffer[start + 0], wbuffer[start + 2] );
         } else {
             // single character "chr"
-            wchar_t chr( tok[0] );
-            _grammarChars += chr;
-            _dbcsT._ranges.push_back( static_cast< word >( chr ) );
-            _dbcsT._ranges.push_back( static_cast< word >( chr ) );
+            addGrammarItem( wbuffer[start + 0], wbuffer[start + 0] );
         }
-#if defined( _MSC_VER ) && ( _MSC_VER < 1910 ) && !defined( _WCSTOK_DEPRECATED )
-        tok = std::wcstok( 0, L"+" );
-#else
-        tok = std::wcstok( 0, L"+", &p );
-#endif
+        start = pos + 1;
+    }
+    pos = wbuffer.length();
+    if( pos > start ) {
+        if( pos - start > 1 ) {
+            // characters range "chr1-chr2"
+            // change this loop if we use RegExp
+            addGrammarItem( wbuffer[start + 0], wbuffer[start + 2] );
+        } else {
+            // single character "chr"
+            addGrammarItem( wbuffer[start + 0], wbuffer[start + 0] );
+        }
     }
 }
-/*****************************************************************************/
+
 wchar_t Nls::entityChar( const std::wstring& key )
+/************************************************/
 {
     EntityIter pos( _entityMap.find( key ) );
     if( pos == _entityMap.end() )
         throw Class2Error( ERR2_SYMBOL );
     return pos->second;
 }
-/*****************************************************************************/
+
 STD1::uint32_t Nls::write( std::FILE *out )
+/*****************************************/
 {
     _bytes = _country.size();
     dword start = _country.write( out );
@@ -217,8 +220,9 @@ STD1::uint32_t Nls::write( std::FILE *out )
     }
     return( start );
 }
-/*****************************************************************************/
+
 void Nls::SbcsGrammarDef::setDefaultBits( WIPFC::NLSRecType rectype )
+/*******************************************************************/
 {
     static const unsigned char defbits[2][32] = {
         { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xff, 0xc0,
@@ -232,8 +236,9 @@ void Nls::SbcsGrammarDef::setDefaultBits( WIPFC::NLSRecType rectype )
     };
     std::memcpy( this->_bits, &defbits[rectype - WIPFC::TEXT][0], 32 );
 }
-/*****************************************************************************/
+
 STD1::uint32_t Nls::SbcsGrammarDef::write( std::FILE *out ) const
+/***************************************************************/
 {
     dword start = std::ftell( out );
     if( std::fwrite( &_size, sizeof( _size ), 1, out ) != 1 )
@@ -247,8 +252,9 @@ STD1::uint32_t Nls::SbcsGrammarDef::write( std::FILE *out ) const
         throw FatalError( ERR_WRITE );
     return( start );
 }
-/*****************************************************************************/
+
 STD1::uint32_t Nls::DbcsGrammarDef::write( std::FILE *out )
+/*********************************************************/
 {
     dword start = std::ftell( out );
     _size = static_cast< word >( sizeof( word ) + 2 * sizeof( byte ) + _ranges.size() * sizeof( word ) );
@@ -299,38 +305,6 @@ static int wtomb_char( char *mbc, wchar_t wc )
     return( std::wctomb( mbc, wc ) );
 }
 
-static int mbtow_char( wchar_t *wc, const char *mbc, std::size_t len )
-/********************************************************************/
-{
-    // TODO! must be converted by selected MBCS->UNICODE conversion table
-    // which is independent from the host user locale
-    return( std::mbtowc( wc, mbc, len ) );
-}
-
-std::wint_t Nls::read_wchar( std::FILE *fp )
-/******************************************/
-{
-    wchar_t ch;
-
-#if defined( __UNIX__ ) || defined( __APPLE__ )
-    // TODO! read MBCS character and convert it to UNICODE by mbtow_char
-    ch = std::fgetwc( fp );
-#else
-    char    mbc[ MB_LEN_MAX ];
-    if( std::fread( &mbc[0], sizeof( char ), 1, fp ) != 1 )
-        return( WEOF );
-    if( _ismbblead( mbc[0] ) ) {
-        if( std::fread( &mbc[1], sizeof( char ), 1, fp ) != 1 ) {
-            return( WEOF );
-        }
-    }
-    if( mbtow_char( &ch, mbc, MB_CUR_MAX ) < 0 ) {
-        throw FatalError( ERR_T_CONV );
-    }
-#endif
-    return( ch );
-}
-
 std::size_t Nls::wtomb_cstring( char *dst_mbc, const wchar_t *src_wc, std::size_t len )
 /*************************************************************************************/
 {
@@ -352,25 +326,6 @@ std::size_t Nls::wtomb_cstring( char *dst_mbc, const wchar_t *src_wc, std::size_
     return( dst_len );
 }
 
-std::size_t Nls::mbtow_cstring( wchar_t *dst_wc, const char *src_mbc, std::size_t len )
-/*************************************************************************************/
-{
-    std::size_t dst_len = 0;
-    int         bytes;
-
-    while( len > 0 && *src_mbc != '\0' ) {
-        bytes = mbtow_char( dst_wc, src_mbc, MB_LEN_MAX );
-        if( bytes == -1 )
-            return( ERROR_CNV );
-        dst_wc++;
-        dst_len++;
-        len--;
-        src_mbc += bytes;
-    }
-    *dst_wc = L'\0';
-    return( dst_len );
-}
-
 void Nls::wtomb_string( const std::wstring& input, std::string& output )
 /**********************************************************************/
 {
@@ -381,19 +336,5 @@ void Nls::wtomb_string( const std::wstring& input, std::string& output )
             throw FatalError( ERR_T_CONV );
         ch[ bytes ] = '\0';
         output += ch;
-    }
-}
-
-void Nls::mbtow_string( const std::string& input, std::wstring& output )
-/**********************************************************************/
-{
-    int consumed;
-
-    for( std::size_t index = 0; index < input.size(); index += consumed ) {
-        wchar_t wch;
-        consumed = mbtow_char( &wch, input.data() + index, MB_CUR_MAX );
-        if( consumed == -1 )
-            throw FatalError( ERR_T_CONV );
-        output += wch;
     }
 }

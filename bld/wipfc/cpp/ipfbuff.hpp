@@ -48,15 +48,6 @@ public:
     //Un-read a character
     virtual
     void unget( wchar_t ch );
-    //Seek to beginning
-    virtual
-    void reset() { _head = _buffer.begin(); };
-    //Seek to position relative to beginning
-    virtual
-    void setPos(long int offset) { if( _head + offset < _tail ) _head += offset; };
-    //Get the current position
-    virtual
-    long int pos() { return static_cast< long int >( _head - _buffer.begin() ); };
 private:
     IpfBuffer( const IpfBuffer& rhs );              //no copy
     IpfBuffer& operator=( const IpfBuffer& rhs );   //no assignment

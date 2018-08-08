@@ -38,8 +38,8 @@ class Document;     // forward reference
 
 class IpfFile : public IpfData {
 public:
-    IpfFile( Document *document, const std::wstring* wfname );
-    IpfFile( Document *document, const std::string& sfname, const std::wstring* wfname );
+    IpfFile( const std::wstring* wfname );
+    IpfFile( const std::string& sfname, const std::wstring* wfname );
     ~IpfFile() { if( _stream ) std::fclose( _stream ); };
     //Set the file name for use in error messages
     void setName( const std::wstring* fileName ) { _fileName = fileName; }
@@ -52,19 +52,16 @@ public:
     //Un-read a character
     virtual
     void unget( wchar_t ch );
-    //Seek to beginning
-    virtual
-    void reset() { std::rewind( _stream ); };
-    //Seek to position relative to beginning
-    virtual
-    void setPos(long int offset) { std::fseek( _stream, offset, SEEK_SET ); };
-    //Get the current position
-    virtual
-    long int pos() { return std::ftell( _stream ); };
+    const wchar_t *gets( std::wstring& wbuffer );
+
 private:
     IpfFile( const IpfFile& rhs );              //no copy
     IpfFile& operator=( const IpfFile& rhs );   //no assignment
-    Document *_document;
+    std::wint_t  getwc();
+    // MBCS->UNICODE conversion
+    std::size_t  mbtow_cstring( wchar_t *wc, const char *mbc, std::size_t len );
+    void         mbtow_string( const std::string& input, std::wstring& output );
+
     const std::wstring* _fileName;
     std::FILE* _stream;
     wchar_t _ungottenChar;

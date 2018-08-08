@@ -69,11 +69,8 @@ public:
     STD1::uint32_t length() { return _bytes; };
     STD1::uint32_t write( std::FILE* out );
     // UNICODE<->MBCS conversion
-    std::wint_t  read_wchar( std::FILE *fp );
     std::size_t  wtomb_cstring( char *mbc, const wchar_t *wc, std::size_t len );
-    std::size_t  mbtow_cstring( wchar_t *wc, const char *mbc, std::size_t len );
     void         wtomb_string( const std::wstring& input, std::string& output );
-    void         mbtow_string( const std::string& input, std::wstring& output );
 
 private:
     typedef std::map< std::wstring, wchar_t >::iterator EntityIter;
@@ -85,7 +82,8 @@ private:
     void set_document_data_codepage( const char *loc );
     void readEntityFile( const std::string& sfname );
     void readNLSFile( const std::string& sfname );
-    void processGrammar( wchar_t* value );
+    void addGrammarItem( wchar_t chr1, wchar_t chr2 );
+    void processGrammar( const std::wstring& value );
 
     struct SbcsGrammarDef {             // Single-byte character set
         word                _size;          // 36

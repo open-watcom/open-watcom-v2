@@ -57,15 +57,6 @@ public:
     //Un-read a character
     virtual
     void unget( wchar_t ch ) = 0;
-    //Seek to beginning
-    virtual
-    void reset() = 0;
-    //Seek to position relative to beginning
-    virtual
-    void setPos( long int offset ) = 0;
-    //Get the current position
-    virtual
-    long int pos() = 0;
 private:
     IpfData( const IpfData& rhs );              //no copy
     IpfData& operator=( const IpfData& rhs );   //no assignment

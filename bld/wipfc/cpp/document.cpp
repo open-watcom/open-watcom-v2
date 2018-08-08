@@ -981,7 +981,7 @@ STD1::uint16_t Document::getGroupById( const std::wstring& i )
 
 std::wstring * Document::pushFileInput( std::wstring *wfname )
 {
-    IpfFile *ipff = new IpfFile( this, wfname );
+    IpfFile *ipff = new IpfFile( wfname );
     wfname = _compiler.addFileName( wfname );
     ipff->setName( wfname );
     _compiler.pushInput( ipff );
@@ -990,7 +990,7 @@ std::wstring * Document::pushFileInput( std::wstring *wfname )
 
 std::wstring * Document::pushFileInput( std::string& sfname, std::wstring *wfname )
 {
-    IpfFile *ipff = new IpfFile( this, sfname, wfname );
+    IpfFile *ipff = new IpfFile( sfname, wfname );
     wfname = _compiler.addFileName( wfname );
     ipff->setName( wfname );
     _compiler.pushInput( ipff );
