@@ -48,7 +48,7 @@ struct BitmapInfoHeaderWin32 {
     STD1::uint32_t yResolution;
     STD1::uint32_t usedColors;
     STD1::uint32_t importantColors;
-    void read( std::FILE* in );
+    void read( std::FILE* bmfpi );
     //possibly followed by rgb quads
 };
 
@@ -72,7 +72,7 @@ struct BitmapInfoHeaderOS22x {
     STD1::uint32_t size2;
     STD1::uint32_t colorEncoding;
     STD1::uint32_t identifier;
-    void read( std::FILE* in );
+    void read( std::FILE* bmfpi );
     //possibly followed by rgb triples
 };
 
@@ -80,38 +80,38 @@ struct BitmapInfoHeaderOS22x {
 
 Bitmap::Bitmap( std::string& fname ) : dataSize( sizeof( STD1::uint16_t ) ), blockSize( 0 )
 {
-    std::FILE* in( std::fopen( fname.c_str(), "rb" ) );
-    if( !in )
+    std::FILE* bmfpi( std::fopen( fname.c_str(), "rb" ) );
+    if( !bmfpi )
         throw FatalError( ERR_OPENIMG );
     try {
-        bmfh.read( in );
+        bmfh.read( bmfpi );
         if( bmfh.type[0] != 'B' || bmfh.type[1] != 'M' )
             throw Class1Error( ERR1_BADFMT );
         bmfh.type[0] = 'b';
         if( bmfh.bmihSize == sizeof( BitmapInfoHeader16 ) + sizeof( STD1::uint32_t ) ) {
-            readHeader16( in );
+            readHeader16( bmfpi );
         } else if( bmfh.bmihSize == sizeof( BitmapInfoHeaderWin32 ) + sizeof( STD1::uint32_t ) ) {
-            readHeaderW32( in );
+            readHeaderW32( bmfpi );
         } else if( bmfh.bmihSize == sizeof( BitmapInfoHeaderOS22x ) + sizeof( STD1::uint32_t ) ) {
-            readHeaderOS2( in );
+            readHeaderOS2( bmfpi );
         } else {
             throw Class1Error( ERR1_BADFMT );
         }
         findBlockSize( bmih.width, bmih.height, bmih.bitsPerPixel );
-        compress( in );
+        compress( bmfpi );
         for( DataIter itr = data.begin(); itr != data.end(); ++itr ) {
             dataSize += itr->totalSize();
         }
     }
     catch( FatalError& e ) {
-        std::fclose( in );
+        std::fclose( bmfpi );
         throw e;
     }
     catch( Class1Error& e ) {
-        std::fclose( in );
+        std::fclose( bmfpi );
         throw e;
     }
-    std::fclose( in );
+    std::fclose( bmfpi );
 }
 /***************************************************************************/
 /*
@@ -122,93 +122,104 @@ unsigned long size;         //starting with next field, used to SEEK_CUR to next
 STD1::uint16_t blockSize;
 BitmapBlock[];
 */
-STD1::uint32_t Bitmap::write( std::FILE* out ) const
+STD1::uint32_t Bitmap::write( std::FILE* bmfpo ) const
 {
-    STD1::uint32_t offset( std::ftell( out ) );
-    bmfh.write( out );
-    bmih.write( out );
+    STD1::uint32_t offset( std::ftell( bmfpo ) );
+    bmfh.write( bmfpo );
+    bmih.write( bmfpo );
     if( !rgb.empty() ) {
-        if( std::fwrite( &rgb[0], sizeof( RGB ), rgb.size(), out ) != rgb.size() )
+        if( std::fwrite( &rgb[0], sizeof( RGB ), rgb.size(), bmfpo ) != rgb.size() ) {
             throw FatalError( ERR_WRITE );
+        }
     }
-    if( std::fwrite( &dataSize, sizeof( STD1::uint32_t ), 1, out ) != 1 )
+    if( std::fwrite( &dataSize, sizeof( STD1::uint32_t ), 1, bmfpo ) != 1 )
         throw FatalError( ERR_WRITE );
-    if( std::fwrite( &blockSize, sizeof( STD1::uint16_t ), 1, out ) != 1 )
+    if( std::fwrite( &blockSize, sizeof( STD1::uint16_t ), 1, bmfpo ) != 1 )
         throw FatalError( ERR_WRITE );
     for( ConstDataIter itr = data.begin(); itr != data.end(); ++itr )
-        itr->write( out );
+        itr->write( bmfpo );
     return offset;
 }
 /***************************************************************************/
-void Bitmap::BitmapFileHeader::read( std::FILE* in )
+void Bitmap::BitmapFileHeader::read( std::FILE* bmfpi )
 {
-    if( std::fread( this, sizeof( BitmapFileHeader ), 1, in ) != 1 )
+    if( std::fread( this, sizeof( BitmapFileHeader ), 1, bmfpi ) != 1 ) {
         throw FatalError( ERR_READ );
-}
-/***************************************************************************/
-void Bitmap::BitmapFileHeader::write( std::FILE* out ) const
-{
-    if( std::fwrite( this, sizeof( BitmapFileHeader ), 1, out ) != 1 )
-        throw FatalError( ERR_WRITE );
-}
-/***************************************************************************/
-void Bitmap::BitmapInfoHeader16::read( std::FILE* in )
-{
-    if( std::fread( this, sizeof( BitmapInfoHeader16 ), 1, in ) != 1 )
-        throw FatalError( ERR_READ );
-}
-/***************************************************************************/
-void Bitmap::BitmapInfoHeader16::write( std::FILE* out ) const
-{
-    if( std::fwrite( this, sizeof( BitmapInfoHeader16 ), 1, out ) != 1 )
-        throw FatalError( ERR_WRITE );
-}
-/***************************************************************************/
-void BitmapInfoHeaderWin32::read( std::FILE* in )
-{
-    if( std::fread( this, sizeof( BitmapInfoHeaderWin32 ), 1, in ) != 1 )
-        throw FatalError( ERR_READ );
-}
-/***************************************************************************/
-void BitmapInfoHeaderOS22x::read( std::FILE* in )
-{
-    if( std::fread( this, sizeof( BitmapInfoHeaderOS22x ), 1, in ) != 1 )
-        throw FatalError( ERR_READ );
-}
-/***************************************************************************/
-void Bitmap::RGB::read( std::FILE* in )
-{
-    if( std::fread( this, sizeof( RGB ), 1, in ) != 1 )
-        throw FatalError( ERR_READ );
-}
-/***************************************************************************/
-void Bitmap::RGB::write( std::FILE* out ) const
-{
-    if( std::fwrite( this, sizeof( RGB ), 1, out ) != 1 )
-        throw FatalError( ERR_WRITE );
-}
-/***************************************************************************/
-void Bitmap::RGBA::read( std::FILE* in )
-{
-    if( std::fread( this, sizeof( RGBA ), 1, in ) != 1 )
-        throw FatalError( ERR_READ );
-}
-/***************************************************************************/
-void Bitmap::readHeader16( std::FILE* in )
-{
-    bmih.read( in );
-    if( bmih.bitsPerPixel <= 8 ) {
-        std::size_t rgbSize( 1 << bmih.bitsPerPixel );
-        rgb.resize( rgbSize );
-        if( std::fread( &rgb[0], sizeof( RGB ), rgbSize, in ) != rgbSize )
-            throw FatalError( ERR_READ );
     }
 }
 /***************************************************************************/
-void Bitmap::readHeaderW32( std::FILE* in )
+void Bitmap::BitmapFileHeader::write( std::FILE* bmfpo ) const
+{
+    if( std::fwrite( this, sizeof( BitmapFileHeader ), 1, bmfpo ) != 1 ) {
+        throw FatalError( ERR_WRITE );
+    }
+}
+/***************************************************************************/
+void Bitmap::BitmapInfoHeader16::read( std::FILE* bmfpi )
+{
+    if( std::fread( this, sizeof( BitmapInfoHeader16 ), 1, bmfpi ) != 1 ) {
+        throw FatalError( ERR_READ );
+    }
+}
+/***************************************************************************/
+void Bitmap::BitmapInfoHeader16::write( std::FILE* bmfpo ) const
+{
+    if( std::fwrite( this, sizeof( BitmapInfoHeader16 ), 1, bmfpo ) != 1 ) {
+        throw FatalError( ERR_WRITE );
+    }
+}
+/***************************************************************************/
+void BitmapInfoHeaderWin32::read( std::FILE* bmfpi )
+{
+    if( std::fread( this, sizeof( BitmapInfoHeaderWin32 ), 1, bmfpi ) != 1 ) {
+        throw FatalError( ERR_READ );
+    }
+}
+/***************************************************************************/
+void BitmapInfoHeaderOS22x::read( std::FILE* bmfpi )
+{
+    if( std::fread( this, sizeof( BitmapInfoHeaderOS22x ), 1, bmfpi ) != 1 ) {
+        throw FatalError( ERR_READ );
+    }
+}
+/***************************************************************************/
+void Bitmap::RGB::read( std::FILE* bmfpi )
+{
+    if( std::fread( this, sizeof( RGB ), 1, bmfpi ) != 1 ) {
+        throw FatalError( ERR_READ );
+    }
+}
+/***************************************************************************/
+void Bitmap::RGB::write( std::FILE* bmfpo ) const
+{
+    if( std::fwrite( this, sizeof( RGB ), 1, bmfpo ) != 1 ) {
+        throw FatalError( ERR_WRITE );
+    }
+}
+/***************************************************************************/
+void Bitmap::RGBA::read( std::FILE* bmfpi )
+{
+    if( std::fread( this, sizeof( RGBA ), 1, bmfpi ) != 1 ) {
+        throw FatalError( ERR_READ );
+    }
+}
+/***************************************************************************/
+void Bitmap::readHeader16( std::FILE* bmfpi )
+{
+    bmih.read( bmfpi );
+    if( bmih.bitsPerPixel <= 8 ) {
+        std::size_t rgbSize( 1 << bmih.bitsPerPixel );
+        rgb.resize( rgbSize );
+        if( std::fread( &rgb[0], sizeof( RGB ), rgbSize, bmfpi ) != rgbSize ) {
+            throw FatalError( ERR_READ );
+        }
+    }
+}
+/***************************************************************************/
+void Bitmap::readHeaderW32( std::FILE* bmfpi )
 {
     BitmapInfoHeaderWin32 bmihW32;
-    bmihW32.read( in );
+    bmihW32.read( bmfpi );
     bmih.width = static_cast< STD1::uint16_t >( bmihW32.width );
     bmih.height = static_cast< STD1::uint16_t >( bmihW32.height );
     bmih.planes = bmihW32.planes;
@@ -222,7 +233,7 @@ void Bitmap::readHeaderW32( std::FILE* in )
         rgb.reserve( rgbSize );
         for( std::size_t count1 = 0; count1 < rgbSize; ++count1 ) {
             RGBA tmp1;
-            tmp1.read( in );
+            tmp1.read( bmfpi );
             RGB tmp2( tmp1 );
             rgb.push_back( tmp2 );
         }
@@ -231,18 +242,18 @@ void Bitmap::readHeaderW32( std::FILE* in )
     } else if( bmihW32.compression == 3 ) {
         //read and discard 3 items
         RGBA tmp1;
-        tmp1.read( in );
-        tmp1.read( in );
-        tmp1.read( in );
+        tmp1.read( bmfpi );
+        tmp1.read( bmfpi );
+        tmp1.read( bmfpi );
         bmfh.size -= 3 * sizeof( RGBA );
         bmfh.bitsOffset -= 3 * sizeof( RGBA );
     }
 }
 /***************************************************************************/
-void Bitmap::readHeaderOS2( std::FILE* in )
+void Bitmap::readHeaderOS2( std::FILE* bmfpi )
 {
     BitmapInfoHeaderOS22x bmihOS22x;
-    bmihOS22x.read( in );
+    bmihOS22x.read( bmfpi );
     bmih.width = static_cast< STD1::uint16_t >( bmihOS22x.width );
     bmih.height = static_cast< STD1::uint16_t >( bmihOS22x.height );
     bmih.planes = bmihOS22x.planes;
@@ -257,17 +268,18 @@ void Bitmap::readHeaderOS2( std::FILE* in )
         if( bmihOS22x.usedColors ) {
             for( std::size_t count1 = 0; count1 < bmihOS22x.usedColors; ++count1 ) {
                 RGBA tmp1;
-                tmp1.read( in );
+                tmp1.read( bmfpi );
                 RGB tmp2( tmp1 );
                 rgb.push_back( tmp2 );
             }
             RGB tmp;
-            for( std::size_t count1 = bmihOS22x.usedColors; count1 < rgbSize; ++count1 )
+            for( std::size_t count1 = bmihOS22x.usedColors; count1 < rgbSize; ++count1 ) {
                 rgb.push_back( tmp );
+            }
         } else {
             for( std::size_t count1 = 0; count1 < rgbSize; ++count1 ) {
                 RGBA tmp1;
-                tmp1.read( in );
+                tmp1.read( bmfpi );
                 RGB tmp2( tmp1 );
                 rgb.push_back( tmp2 );
             }
@@ -277,9 +289,9 @@ void Bitmap::readHeaderOS2( std::FILE* in )
     } else if( bmihOS22x.compression == 3 ) {
         //read and discard 3 items
         RGBA tmp1;
-        tmp1.read( in );
-        tmp1.read( in );
-        tmp1.read( in );
+        tmp1.read( bmfpi );
+        tmp1.read( bmfpi );
+        tmp1.read( bmfpi );
         bmfh.size -= 3 * sizeof( RGBA );
         bmfh.bitsOffset -= 3 * sizeof( RGBA );
     }
@@ -318,11 +330,12 @@ void Bitmap::findBlockSize( std::size_t width, std::size_t height, std::size_t b
     std::printf( "  width=%u bitsPerPixel=%u, bytesPerRow=%u\n", width, bitsPerPixel, bytesPerRow );
     std::printf( "  calculated blockSize=%u\n", blockSize );
 #endif
-    if( totalSize < static_cast< STD1::uint32_t >( blockSize ))
+    if( totalSize < static_cast< STD1::uint32_t >( blockSize )) {
         blockSize = static_cast< STD1::uint16_t >( totalSize );
+    }
 }
 /***************************************************************************/
-void Bitmap::compress( std::FILE* in )
+void Bitmap::compress( std::FILE* bmfpi )
 {
 #ifdef CHECKCOMP
     unsigned int    count( 1 );
@@ -339,7 +352,6 @@ void Bitmap::compress( std::FILE* in )
 #else
         data.push_back( BitmapBlock( blockSize, 0 ) );
 #endif
-        bytes += data[ data.size() - 1 ].compress( in );
+        bytes += data[ data.size() - 1 ].compress( bmfpi );
     }
 }
-

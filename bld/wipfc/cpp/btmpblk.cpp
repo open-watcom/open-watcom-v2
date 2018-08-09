@@ -44,13 +44,13 @@ BitmapBlock::BitmapBlock( STD1::uint16_t b, STD1::uint8_t t ) :
 {
 }
 /***************************************************************************/
-void BitmapBlock::write( std::FILE* out ) const
+void BitmapBlock::write( std::FILE* bmfpo ) const
 {
-    if( std::fwrite( &size, sizeof( STD1::uint16_t ), 1, out ) != 1 )
+    if( std::fwrite( &size, sizeof( STD1::uint16_t ), 1, bmfpo ) != 1 )
         throw FatalError( ERR_WRITE );
-    if( std::fputc( type, out ) == EOF )
+    if( std::fputc( type, bmfpo ) == EOF )
         throw FatalError( ERR_WRITE );
-    if( std::fwrite( &data[0], sizeof( STD1::uint8_t ), data.size(), out ) != data.size() ) {
+    if( std::fwrite( &data[0], sizeof( STD1::uint8_t ), data.size(), bmfpo ) != data.size() ) {
         throw FatalError( ERR_WRITE );
     }
 }
@@ -60,12 +60,12 @@ void BitmapBlock::write( std::FILE* out ) const
     1. Mark R. Nelson, October 1989
     2. Shawn M. Regan, January 1990
 */
-STD1::uint32_t BitmapBlock::compress( std::FILE* in )
+STD1::uint32_t BitmapBlock::compress( std::FILE* bmfpi )
 {
     std::size_t block;
     if( type ) {
         std::vector< STD1::uint8_t > buffer( blockSize );
-        block = std::fread( &buffer[0], sizeof( STD1::uint8_t ), blockSize, in );
+        block = std::fread( &buffer[0], sizeof( STD1::uint8_t ), blockSize, bmfpi );
         if( !block )
             throw FatalError( ERR_READ );       //should have seen EOF elsewhere
         if( block < blockSize ) {
@@ -137,19 +137,19 @@ STD1::uint32_t BitmapBlock::compress( std::FILE* in )
             std::cout<< "    Expanded data size is not equal to the original" << std::endl;
         std::cout << "    Index Original Restored" << std::endl;
         std::size_t index( 0 );
-        InputIter in( buffer.begin() );
-        OutputIter out( buffer2.begin() );
-        while( in != buffer.end() ) {
-            if( *in != *out )
-                std::printf( "    %5u %8x %8x\n", index, *in, *out );
-            ++in;
-            ++out;
+        InputIter iitr( buffer.begin() );
+        OutputIter oitr( buffer2.begin() );
+        while( iitr != buffer.end() ) {
+            if( *iitr != *oitr )
+                std::printf( "    %5u %8x %8x\n", index, *iitr, *oitr );
+            ++iitr;
+            ++oitr;
             ++index;
         }
 #endif
     } else {
         data.resize( blockSize );
-        block = std::fread( &data[0], sizeof( STD1::uint8_t ), blockSize, in );
+        block = std::fread( &data[0], sizeof( STD1::uint8_t ), blockSize, bmfpi );
         if( !block )
             throw FatalError( ERR_READ );       //should have seen EOF elsewhere
         if( block < blockSize )

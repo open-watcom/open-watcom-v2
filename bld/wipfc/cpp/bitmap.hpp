@@ -40,7 +40,7 @@ class Bitmap {
 public:
     Bitmap( std::string& f );
     ~Bitmap() { };
-    STD1::uint32_t write( std::FILE* out ) const;
+    STD1::uint32_t write( std::FILE* bmfpo ) const;
 private:
     Bitmap( const Bitmap& rhs );            //no copy
     Bitmap& operator=( const Bitmap& rhs ); //no assignment
@@ -52,8 +52,8 @@ private:
         STD1::int16_t  yHotspot;
         STD1::uint32_t bitsOffset;      //offset to bitmap data
         STD1::uint32_t bmihSize;        //size of BitmapInfoHeader16 + this entry
-        void read( std::FILE* in );
-        void write( std::FILE* out ) const;
+        void read( std::FILE* bmfpi );
+        void write( std::FILE* bmfpo ) const;
         //followed by BitmapInfoHeaderXX
     };
     // win16 or os/2 1.x
@@ -63,8 +63,8 @@ private:
         STD1::uint16_t height;
         STD1::uint16_t planes;
         STD1::uint16_t bitsPerPixel;
-        void read( std::FILE* in );
-        void write( std::FILE* out ) const;
+        void read( std::FILE* bmfpi );
+        void write( std::FILE* bmfpo ) const;
         //followed by rgb triples if <= 8bpp
     };
     struct RGBA {
@@ -72,7 +72,7 @@ private:
         STD1::uint8_t   green;
         STD1::uint8_t   red;
         STD1::uint8_t   reserved;
-        void read( std::FILE* in );
+        void read( std::FILE* bmfpi );
     };
     struct RGB {
         STD1::uint8_t   blue;
@@ -81,8 +81,8 @@ private:
         RGB() : blue( 0 ), green( 0 ), red( 0 ) { };
         RGB( RGBA& rhs ) : blue( rhs.blue ), green( rhs.green ), red( rhs.red ) { };
         RGB& operator=( RGBA& rhs ) { blue = rhs.blue; green = rhs.green; red = rhs.red; return *this; };
-        void read( std::FILE* in );
-        void write( std::FILE* out ) const;
+        void read( std::FILE* bmfpi );
+        void write( std::FILE* bmfpo ) const;
     };
 #pragma pack(pop)
     BitmapFileHeader bmfh;              //read BitmapFileHeader
@@ -94,11 +94,11 @@ private:
     std::vector< BitmapBlock > data;    //and all of the data blocks
     typedef std::vector< BitmapBlock >::iterator DataIter;
     typedef std::vector< BitmapBlock >::const_iterator ConstDataIter;
-    void readHeader16( std::FILE* in );
-    void readHeaderW32( std::FILE* in );
-    void readHeaderOS2( std::FILE* in );
+    void readHeader16( std::FILE* bmfpi );
+    void readHeaderW32( std::FILE* bmfpi );
+    void readHeaderOS2( std::FILE* bmfpi );
     void findBlockSize( std::size_t width, std::size_t height, std::size_t bitsPerPixel );
-    void compress( std::FILE* in );
+    void compress( std::FILE* bmfpi );
 };
 
 #endif //BITMAP_INCLUDED

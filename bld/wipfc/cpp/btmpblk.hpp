@@ -39,8 +39,8 @@ class BitmapBlock {
 public:
     BitmapBlock() { };
     BitmapBlock( STD1::uint16_t b, STD1::uint8_t t );
-    void write( std::FILE* out ) const;
-    STD1::uint32_t compress( std::FILE* in );
+    void write( std::FILE* bmfpo ) const;
+    STD1::uint32_t compress( std::FILE* bmfpi );
     unsigned int totalSize() const
     { return static_cast< unsigned int >( sizeof( STD1::uint16_t ) + ( data.size() + 1 ) * sizeof( STD1::uint8_t ) ); };
 private:
