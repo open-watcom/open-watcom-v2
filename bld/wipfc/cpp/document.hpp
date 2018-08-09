@@ -50,6 +50,7 @@
 #include "nls.hpp"
 #include "strings.hpp"
 #include "tocref.hpp"
+#include "title.hpp"
 
 
 class Cell; //forward reference
@@ -132,6 +133,7 @@ public:
 
     std::wstring * pushFileInput( std::wstring *wfname );
     std::wstring * pushFileInput( std::string& sfname, std::wstring *wfname );
+    void setTitle( std::wstring& title ) { _title = title; };
 
     //Forwarding functions
 
@@ -260,6 +262,10 @@ private:
     Lexer::Token _lastPrintableToken;
     bool _inDoc;             //true if parsing between userdoc and euserdoc
     bool _spacing;           //true if automatically inserting spaces
+    std::vector< std::string > _ipfcartwork_paths;
+    std::vector< std::string > _ipfcimbed_paths;
+    std::wstring _title;
+
     void makeBitmaps();
     void makeIndexes();
     STD1::uint32_t writeBitmaps( std::FILE* out );
@@ -273,9 +279,6 @@ private:
     void writeSynonyms( std::FILE* out );
     STD1::uint32_t writeIndex( std::FILE* out );
     STD1::uint32_t writeICmd( std::FILE* out );
-
-    std::vector< std::string > ipfcartwork_paths;
-    std::vector< std::string > ipfcimbed_paths;
 };
 
 #endif //DOCUMENT_INCLUDED

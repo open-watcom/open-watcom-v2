@@ -94,12 +94,15 @@ STD1::uint32_t Page::write( std::FILE* out )
             tocsize += sizeof( PageControls );
         }
     }
-    if( tocsize + _title.size() > 255 ) {
+    // convert title to mb
+    std::string title;
+    _document->wtomb_string( _title, title );
+    if( tocsize + title.size() > 255 ) {
         Hn* hn( static_cast< Hn* >( *( _elements.begin() ) ) );
         hn->printError( ERR2_TEXTTOOLONG );
-        _title.erase( 255 - tocsize );  //write only part of title
+        title.erase( 255 - tocsize );  //write only part of title
     }
-    tocsize += _title.size();
+    tocsize += title.size();
     _toc.size = static_cast< byte >( tocsize );
     dword pos = _toc.write( out );
     if( _toc.extended ) {
@@ -118,8 +121,8 @@ STD1::uint32_t Page::write( std::FILE* out )
     }
     if( std::fwrite( &_cells[0], sizeof( word ), _cells.size(), out ) != _cells.size() )
         throw FatalError( ERR_WRITE );
-    if( !_title.empty() ) {
-        if( std::fwrite( _title.c_str(), sizeof( byte ), _title.size(), out ) != _title.size() ) {
+    if( !title.empty() ) {
+        if( std::fwrite( title.c_str(), sizeof( byte ), title.size(), out ) != title.size() ) {
             throw FatalError( ERR_WRITE );
         }
     }

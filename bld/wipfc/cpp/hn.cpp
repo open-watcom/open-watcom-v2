@@ -71,8 +71,8 @@
 Hn::~Hn()
 {
     if( _document->isInf() ) {
-        delete id;
-        delete name;
+        delete _id;
+        delete _name;
     }
 }
 /***************************************************************************/
@@ -107,10 +107,7 @@ Lexer::Token Hn::parse( Lexer* lexer )
         }
         tok = _document->getNextToken();
     }
-    //convert to mbs, max 255 char
-    _document->wtomb_string( tmp, title );
-    if( title.size() > 255 )
-        title.erase( 255 );
+    _title = tmp;
     tok = _document->getNextToken();
     while( tok != Lexer::END && !( tok == Lexer::TAG && lexer->tagId() == Lexer::EUSERDOC ) ) {
         if( parseInline( lexer, tok ) ) {
@@ -118,10 +115,10 @@ Lexer::Token Hn::parse( Lexer* lexer )
             case Lexer::H1:
                 return tok;
             case Lexer::H2:
-                if( toc.nestLevel >= 2 )
+                if( _toc.nestLevel >= 2 )
                     return tok;;
-                if( toc.nestLevel == 1 )
-                    toc.hasChildren = 1;
+                if( _toc.nestLevel == 1 )
+                    _toc.hasChildren = 1;
                 if( _document->headerCutOff() >= 2 ) {
                     Hn* h2( new Hn( _document, NULL, _document->dataName(),
                         _document->lexerLine(), _document->lexerCol(), 2 ) );
@@ -136,11 +133,11 @@ Lexer::Token Hn::parse( Lexer* lexer )
                 }
                 break;
             case Lexer::H3:
-                if( toc.nestLevel >= 3 )
+                if( _toc.nestLevel >= 3 )
                     return tok;
-                if( toc.nestLevel == 2 )
-                    toc.hasChildren = 1;
-                if( toc.nestLevel < 2 )
+                if( _toc.nestLevel == 2 )
+                    _toc.hasChildren = 1;
+                if( _toc.nestLevel < 2 )
                     _document->printError( ERR1_HEADNEST );
                 if( _document->headerCutOff() >= 3 ) {
                     Hn* h3( new Hn( _document, NULL, _document->dataName(),
@@ -156,11 +153,11 @@ Lexer::Token Hn::parse( Lexer* lexer )
                 }
                 break;
             case Lexer::H4:
-                if( toc.nestLevel >= 4 )
+                if( _toc.nestLevel >= 4 )
                     return tok;
-                if( toc.nestLevel == 3 )
-                    toc.hasChildren = 1;
-                if( toc.nestLevel < 3 )
+                if( _toc.nestLevel == 3 )
+                    _toc.hasChildren = 1;
+                if( _toc.nestLevel < 3 )
                     _document->printError( ERR1_HEADNEST );
                 if( _document->headerCutOff() >= 4 ) {
                     Hn* h4( new Hn( _document, NULL, _document->dataName(),
@@ -176,11 +173,11 @@ Lexer::Token Hn::parse( Lexer* lexer )
                 }
                 break;
             case Lexer::H5:
-                if( toc.nestLevel >= 5 )
+                if( _toc.nestLevel >= 5 )
                     return tok;
-                if( toc.nestLevel == 4 )
-                    toc.hasChildren = 1;
-                if( toc.nestLevel < 4 )
+                if( _toc.nestLevel == 4 )
+                    _toc.hasChildren = 1;
+                if( _toc.nestLevel < 4 )
                     _document->printError( ERR1_HEADNEST );
                 if( _document->headerCutOff() >= 5 ) {
                     Hn* h5( new Hn( _document, NULL, _document->dataName(),
@@ -196,11 +193,11 @@ Lexer::Token Hn::parse( Lexer* lexer )
                 }
                 break;
             case Lexer::H6:
-                if( toc.nestLevel >= 6 )
+                if( _toc.nestLevel >= 6 )
                     return tok;
-                if( toc.nestLevel == 5 )
-                    toc.hasChildren = 1;
-                if( toc.nestLevel < 5 )
+                if( _toc.nestLevel == 5 )
+                    _toc.hasChildren = 1;
+                if( _toc.nestLevel < 5 )
                     _document->printError( ERR1_HEADNEST );
                 if( _document->headerCutOff() >= 6 ) {
                     Hn* h6( new Hn( _document, NULL, _document->dataName(),
@@ -221,12 +218,12 @@ Lexer::Token Hn::parse( Lexer* lexer )
                 {
                     I1* i1( new I1( _document, NULL, _document->dataName(),
                         _document->lexerLine(), _document->lexerCol() ) );
-                    if( res ) {
-                        i1->setRes( res );
-                    } else if( id ) {
-                        i1->setIdOrName( id );
-                    } else if( name ) {
-                        i1->setIdOrName( name );
+                    if( _res ) {
+                        i1->setRes( _res );
+                    } else if( _id ) {
+                        i1->setIdOrName( _id );
+                    } else if( _name ) {
+                        i1->setIdOrName( _name );
                     }
                     appendChild( i1 );
                     tok = i1->parse( lexer );
@@ -236,12 +233,12 @@ Lexer::Token Hn::parse( Lexer* lexer )
                 {
                     I2* i2( new I2( _document, NULL, _document->dataName(),
                         _document->lexerLine(), _document->lexerCol() ) );
-                    if( res ) {
-                        i2->setRes( res );
-                    } else if( id ) {
-                        i2->setIdOrName( id );
-                    } else if( name ) {
-                        i2->setIdOrName( name );
+                    if( _res ) {
+                        i2->setRes( _res );
+                    } else if( _id ) {
+                        i2->setIdOrName( _id );
+                    } else if( _name ) {
+                        i2->setIdOrName( _name );
                     }
                     appendChild( i2 );
                     tok = i2->parse( lexer );
@@ -251,12 +248,12 @@ Lexer::Token Hn::parse( Lexer* lexer )
                 {
                     ICmd* icmd( new ICmd( _document, NULL, _document->dataName(),
                         _document->lexerLine(), _document->lexerCol() ) );
-                    if( res ) {
-                        icmd->setRes( res );
-                    } else if( id ) {
-                        icmd->setIdOrName( id );
-                    } else if( name ) {
-                        icmd->setIdOrName( name );
+                    if( _res ) {
+                        icmd->setRes( _res );
+                    } else if( _id ) {
+                        icmd->setIdOrName( _id );
+                    } else if( _name ) {
+                        icmd->setIdOrName( _name );
                     }
                     appendChild( icmd );
                     tok = icmd->parse( lexer );
@@ -297,93 +294,93 @@ Lexer::Token Hn::parseAttributes( Lexer* lexer )
             std::wstring value;
             splitAttribute( lexer->text(), key, value );
             if( key == L"res" ) {
-                res = static_cast< STD1::uint16_t >( std::wcstoul( value.c_str(), 0, 10 ) );
-                if( res < 1 || res > 64000 )
+                _res = static_cast< STD1::uint16_t >( std::wcstoul( value.c_str(), 0, 10 ) );
+                if( _res < 1 || _res > 64000 )
                     _document->printError( ERR2_VALUE );
                 if( Hide::hiding() )
                     _document->printError( ERR1_HIDERES );
             } else if( key == L"id" ) {
-                id = new GlobalDictionaryWord( value );
-                id->toUpper();              //convert to upper case
+                _id = new GlobalDictionaryWord( value );
+                _id->toUpper();              //convert to upper case
                 if( !_document->isInf() )
-                    id = _document->addWord( id );
+                    _id = _document->addWord( _id );
             } else if( key == L"name" ) {
-                name = new GlobalDictionaryWord( value );
-                name->toUpper();            //convert to upper case
+                _name = new GlobalDictionaryWord( value );
+                _name->toUpper();            //convert to upper case
                 if( !_document->isInf() )
-                    name = _document->addWord( name );
+                    _name = _document->addWord( _name );
             } else if( key == L"tutorial" ) {
-                toc.extended = 1;
-                etoc.setTutor = 1;
-                tutorial = value;
+                _toc.extended = 1;
+                _etoc.setTutor = 1;
+                _tutorial = value;
             } else if( key == L"x" ) {
                 xorg = true;
-                toc.extended = 1;
+                _toc.extended = 1;
                 if( value == L"left" ) {
-                    origin.xPosType = ExtTocEntry::DYNAMIC;
-                    origin.xpos = ExtTocEntry::DYNAMIC_LEFT;
+                    _origin.xPosType = ExtTocEntry::DYNAMIC;
+                    _origin.xpos = ExtTocEntry::DYNAMIC_LEFT;
                 } else if( value == L"center" ) {
-                    origin.xPosType = ExtTocEntry::DYNAMIC;
-                    origin.xpos = ExtTocEntry::DYNAMIC_CENTER;
+                    _origin.xPosType = ExtTocEntry::DYNAMIC;
+                    _origin.xpos = ExtTocEntry::DYNAMIC_CENTER;
                 } else if( value == L"right" ) {
-                    origin.xPosType = ExtTocEntry::DYNAMIC;
-                    origin.xpos = ExtTocEntry::DYNAMIC_RIGHT;
+                    _origin.xPosType = ExtTocEntry::DYNAMIC;
+                    _origin.xpos = ExtTocEntry::DYNAMIC_RIGHT;
                 } else if( value == L"top" || value == L"bottom" ) {
                     _document->printError( ERR2_VALUE );
                 } else {
                     wchar_t *end;
                     unsigned long int x( std::wcstoul( value.c_str(), &end, 10 ) );
-                    origin.xpos = static_cast< unsigned short >( x );
+                    _origin.xpos = static_cast< unsigned short >( x );
                     if( *end == L'c' ) {
-                        origin.xPosType = ExtTocEntry::ABSOLUTE_CHAR;
+                        _origin.xPosType = ExtTocEntry::ABSOLUTE_CHAR;
                     } else if( *end == L'%' ) {
-                        origin.xPosType = ExtTocEntry::RELATIVE_PERCENT;
+                        _origin.xPosType = ExtTocEntry::RELATIVE_PERCENT;
                     } else if( *end == L'x' ) {
-                        origin.xPosType = ExtTocEntry::ABSOLUTE_PIXEL;
+                        _origin.xPosType = ExtTocEntry::ABSOLUTE_PIXEL;
                     } else if( *end == L'p' ) {
-                        origin.xPosType = ExtTocEntry::ABSOLUTE_POINTS;
+                        _origin.xPosType = ExtTocEntry::ABSOLUTE_POINTS;
                     } else {
                         _document->printError( ERR2_VALUE );
                     }
                 }
-                if( dx && origin.xPosType == ExtTocEntry::DYNAMIC && size.widthType != ExtTocEntry::RELATIVE_PERCENT )
+                if( dx && _origin.xPosType == ExtTocEntry::DYNAMIC && _size.widthType != ExtTocEntry::RELATIVE_PERCENT )
                     _document->printError( ERR3_MIXEDUNITS );
             } else if( key == L"y" ) {
                 yorg = true;
-                toc.extended = 1;
+                _toc.extended = 1;
                 if( value == L"top" ) {
-                    origin.yPosType = ExtTocEntry::DYNAMIC;
-                    origin.ypos = ExtTocEntry::DYNAMIC_TOP;
+                    _origin.yPosType = ExtTocEntry::DYNAMIC;
+                    _origin.ypos = ExtTocEntry::DYNAMIC_TOP;
                 } else if( value == L"center" ) {
-                    origin.yPosType = ExtTocEntry::DYNAMIC;
-                    origin.ypos = ExtTocEntry::DYNAMIC_CENTER;
+                    _origin.yPosType = ExtTocEntry::DYNAMIC;
+                    _origin.ypos = ExtTocEntry::DYNAMIC_CENTER;
                 } else if( value == L"bottom" ) {
-                    origin.yPosType = ExtTocEntry::DYNAMIC;
-                    origin.ypos = ExtTocEntry::DYNAMIC_BOTTOM;
+                    _origin.yPosType = ExtTocEntry::DYNAMIC;
+                    _origin.ypos = ExtTocEntry::DYNAMIC_BOTTOM;
                 } else if( value == L"left" || value == L"right" ) {
                     _document->printError( ERR2_VALUE );
                 } else {
                     wchar_t *end;
                     unsigned long int y( std::wcstoul( value.c_str(), &end, 10 ) );
-                    origin.ypos = static_cast< unsigned short >( y );
+                    _origin.ypos = static_cast< unsigned short >( y );
                     if( *end == L'c' ) {
-                        origin.yPosType = ExtTocEntry::ABSOLUTE_CHAR;
+                        _origin.yPosType = ExtTocEntry::ABSOLUTE_CHAR;
                     } else if( *end == L'%' ) {
-                        origin.yPosType = ExtTocEntry::RELATIVE_PERCENT;
+                        _origin.yPosType = ExtTocEntry::RELATIVE_PERCENT;
                     } else if( *end == L'x' ) {
-                        origin.yPosType = ExtTocEntry::ABSOLUTE_PIXEL;
+                        _origin.yPosType = ExtTocEntry::ABSOLUTE_PIXEL;
                     } else if( *end == L'p' ) {
-                        origin.yPosType = ExtTocEntry::ABSOLUTE_POINTS;
+                        _origin.yPosType = ExtTocEntry::ABSOLUTE_POINTS;
                     } else {
                         _document->printError( ERR2_VALUE );
                     }
                 }
-                if( dy && origin.yPosType == ExtTocEntry::DYNAMIC && size.heightType != ExtTocEntry::RELATIVE_PERCENT ) {
+                if( dy && _origin.yPosType == ExtTocEntry::DYNAMIC && _size.heightType != ExtTocEntry::RELATIVE_PERCENT ) {
                     _document->printError( ERR3_MIXEDUNITS );
                 }
             } else if( key == L"width" ) {
                 dx = true;
-                toc.extended = 1;
+                _toc.extended = 1;
                 if( value == L"left" ||
                     value == L"center" ||
                     value == L"right" ||
@@ -393,25 +390,25 @@ Lexer::Token Hn::parseAttributes( Lexer* lexer )
                 } else {
                     wchar_t *end;
                     unsigned long int width = std::wcstoul( value.c_str(), &end, 10 );
-                    size.width = static_cast< unsigned short >( width );
+                    _size.width = static_cast< unsigned short >( width );
                     if( *end == L'c' ) {
-                        size.widthType = ExtTocEntry::ABSOLUTE_CHAR;
+                        _size.widthType = ExtTocEntry::ABSOLUTE_CHAR;
                     } else if( *end == L'%' ) {
-                        size.widthType = ExtTocEntry::RELATIVE_PERCENT;
+                        _size.widthType = ExtTocEntry::RELATIVE_PERCENT;
                     } else if( *end == L'x' ) {
-                        size.widthType = ExtTocEntry::ABSOLUTE_PIXEL;
+                        _size.widthType = ExtTocEntry::ABSOLUTE_PIXEL;
                     } else if( *end == L'p' ) {
-                        size.widthType = ExtTocEntry::ABSOLUTE_POINTS;
+                        _size.widthType = ExtTocEntry::ABSOLUTE_POINTS;
                     } else {
                         _document->printError( ERR2_VALUE );
                     }
                 }
-                if( xorg && origin.xPosType == ExtTocEntry::DYNAMIC && size.widthType != ExtTocEntry::RELATIVE_PERCENT ) {
+                if( xorg && _origin.xPosType == ExtTocEntry::DYNAMIC && _size.widthType != ExtTocEntry::RELATIVE_PERCENT ) {
                     _document->printError( ERR3_MIXEDUNITS );
                 }
             } else if( key == L"height" ) {
                 dy = true;
-                toc.extended = 1;
+                _toc.extended = 1;
                 if( value == L"left" ||
                     value == L"center" ||
                     value == L"right" ||
@@ -421,60 +418,60 @@ Lexer::Token Hn::parseAttributes( Lexer* lexer )
                 } else {
                     wchar_t *end;
                     unsigned long int height = std::wcstoul( value.c_str(), &end, 10 );
-                    size.height = static_cast< unsigned short >( height );
+                    _size.height = static_cast< unsigned short >( height );
                     if( *end == L'c' ) {
-                        size.heightType = ExtTocEntry::ABSOLUTE_CHAR;
+                        _size.heightType = ExtTocEntry::ABSOLUTE_CHAR;
                     } else if( *end == L'%' ) {
-                        size.heightType = ExtTocEntry::RELATIVE_PERCENT;
+                        _size.heightType = ExtTocEntry::RELATIVE_PERCENT;
                     } else if( *end == L'x' ) {
-                        size.heightType = ExtTocEntry::ABSOLUTE_PIXEL;
+                        _size.heightType = ExtTocEntry::ABSOLUTE_PIXEL;
                     } else if( *end == L'p' ) {
-                        size.heightType = ExtTocEntry::ABSOLUTE_POINTS;
+                        _size.heightType = ExtTocEntry::ABSOLUTE_POINTS;
                     } else {
                         _document->printError( ERR2_VALUE );
                     }
                 }
-                if( yorg && origin.yPosType == ExtTocEntry::DYNAMIC && size.heightType != ExtTocEntry::RELATIVE_PERCENT ) {
+                if( yorg && _origin.yPosType == ExtTocEntry::DYNAMIC && _size.heightType != ExtTocEntry::RELATIVE_PERCENT ) {
                     _document->printError( ERR3_MIXEDUNITS );
                 }
             } else if( key == L"group" ) {
-                toc.extended = 1;
-                group.id = static_cast< STD1::uint16_t >( std::wcstoul( value.c_str(), 0, 10 ) );
+                _toc.extended = 1;
+                _group.id = static_cast< STD1::uint16_t >( std::wcstoul( value.c_str(), 0, 10 ) );
             } else if( key == L"titlebar" ) {
-                toc.extended = 1;
+                _toc.extended = 1;
                 if( value == L"yes" ) {
-                    style.word |= PageStyle::TITLEBAR;
+                    _style.word |= PageStyle::TITLEBAR;
                 } else if( value == L"sysmenu" ) {
-                    style.word |= PageStyle::TITLEBAR;
-                    style.word |= PageStyle::SYSMENU;
+                    _style.word |= PageStyle::TITLEBAR;
+                    _style.word |= PageStyle::SYSMENU;
                 } else if( value == L"minmax" ) {
-                    style.word |= PageStyle::TITLEBAR;
-                    style.word |= PageStyle::MINMAX;
+                    _style.word |= PageStyle::TITLEBAR;
+                    _style.word |= PageStyle::MINMAX;
                 } else if( value == L"both" ) {
-                    style.word |= PageStyle::TITLEBAR;
-                    style.word |= PageStyle::SYSMENU;
-                    style.word |= PageStyle::MINMAX;
+                    _style.word |= PageStyle::TITLEBAR;
+                    _style.word |= PageStyle::SYSMENU;
+                    _style.word |= PageStyle::MINMAX;
                 } else if( value != L"none" ) {
                     _document->printError( ERR2_VALUE );
                 }
             } else if( key == L"scroll" ) {
-                toc.extended = 1;
+                _toc.extended = 1;
                 if( value == L"horizontal" ) {
-                    style.word |= PageStyle::HSCROLL;
+                    _style.word |= PageStyle::HSCROLL;
                 } else if( value == L"vertical" ) {
-                    style.word |= PageStyle::VSCROLL;
+                    _style.word |= PageStyle::VSCROLL;
                 } else if( value == L"both" ) {
-                    style.word |= PageStyle::HSCROLL;
-                    style.word |= PageStyle::VSCROLL;
+                    _style.word |= PageStyle::HSCROLL;
+                    _style.word |= PageStyle::VSCROLL;
                 } else if( value != L"none" ) {
                     _document->printError( ERR2_VALUE );
                 }
             } else if( key == L"rules" ) {
-                toc.extended = 1;
+                _toc.extended = 1;
                 if( value == L"border" ) {
-                    style.word |= PageStyle::BORDER;
+                    _style.word |= PageStyle::BORDER;
                 } else if( value == L"sizeborder" ) {
-                    style.word |= PageStyle::SIZEBORDER;
+                    _style.word |= PageStyle::SIZEBORDER;
                 } else if( value != L"none" ) {
                     _document->printError( ERR2_VALUE );
                 }
@@ -490,35 +487,35 @@ Lexer::Token Hn::parseAttributes( Lexer* lexer )
                 }
             } else if( key == L"ctrlarea" ) {
                 if( value == L"page" ) {
-                    toc.extended = 1;
-                    etoc.setCtrl = 1;
+                    _toc.extended = 1;
+                    _etoc.setCtrl = 1;
                 } else {
-                    etoc.setCtrl = 0;
+                    _etoc.setCtrl = 0;
                 }
             } else if( key == L"ctrlrefid" ) {
-                toc.extended = 1;
+                _toc.extended = 1;
                 std::transform( value.begin(), value.end(), value.begin(), std::towupper );
-                controls.word |= _document->getGroupById( value );
+                _controls.word |= _document->getGroupById( value );
             } else {
                 _document->printError( ERR1_ATTRNOTDEF );
             }
         } else if( tok == Lexer::FLAG ) {
             if( lexer->text() == L"global" ) {
-                global = true;
+                _global = true;
             } else if( lexer->text() == L"viewport" ) {
-                toc.extended = 1;
-                etoc.setView = 1;
+                _toc.extended = 1;
+                _etoc.setView = 1;
             } else if( lexer->text() == L"clear" ) {
-                toc.extended = 1;
-                etoc.clear = 1;
+                _toc.extended = 1;
+                _etoc.clear = 1;
             } else if( lexer->text() == L"nosearch" ) {
-                toc.extended = 1;
-                etoc.noSearch = 1;
+                _toc.extended = 1;
+                _etoc.noSearch = 1;
             } else if( lexer->text() == L"noprint" ) {
-                toc.extended = 1;
-                etoc.noPrint = 1;
+                _toc.extended = 1;
+                _etoc.noPrint = 1;
             } else if( lexer->text() == L"hide" ) {
-                toc.hidden = 1;
+                _toc.hidden = 1;
             } else {
                 _document->printError( ERR1_ATTRNOTDEF );
             }
@@ -536,54 +533,54 @@ Lexer::Token Hn::parseAttributes( Lexer* lexer )
 void Hn::buildTOC( Page* page )
 {
     if( !_parent ) {     //root element of a page
-        page->setChildren( childTOCs );
-        page->setTitle( title );
-        page->setTOC( toc );
-        page->setETOC( etoc );
-        page->setOrigin( origin );
-        page->setSize( size );
-        page->setStyle( style );
-        page->setGroup( group );
-        page->SetControls( controls );
+        page->setChildren( _childTOCs );
+        page->setTitle( _title );
+        page->setTOC( _toc );
+        page->setETOC( _etoc );
+        page->setOrigin( _origin );
+        page->setSize( _size );
+        page->setStyle( _style );
+        page->setGroup( _group );
+        page->SetControls( _controls );
         //FIXME: need the index of the parent?
         //page->setSearchable( !nosearch );
         TocRef tr( _fileName, _row, page->index() );
-        if( res || !_document->isInf() ) {
+        if( _res || !_document->isInf() ) {
             try {
-                _document->addRes( res, tr );
+                _document->addRes( _res, tr );
             }
             catch ( Class3Error& e ) {
                 printError( e.code );
             }
         }
-        if( id ) {
+        if( _id ) {
             try {
-                _document->addNameOrId( id, tr );
+                _document->addNameOrId( _id, tr );
             }
             catch( Class3Error& e ) {
                 printError( e.code );
             }
         }
-        if( name ) {
+        if( _name ) {
             try {
-                _document->addNameOrId( name, tr );
+                _document->addNameOrId( _name, tr );
             }
             catch( Class3Error& e ) {
                 printError( e.code );
             }
         }
-        if( global && !_document->isInf() ) {
-            if( id ) {
+        if( _global && !_document->isInf() ) {
+            if( _id ) {
                 try {
-                    _document->addGNameOrId( id, page->index() );
+                    _document->addGNameOrId( _id, page->index() );
                 }
                 catch( Class3Error& e ) {
                     printError( e.code );
                 }
             }
-            if( name ) {
+            if( _name ) {
                 try {
-                    _document->addGNameOrId( name, page->index() );
+                    _document->addGNameOrId( _name, page->index() );
                 }
                 catch( Class3Error& e ) {
                     printError( e.code );
@@ -595,9 +592,9 @@ void Hn::buildTOC( Page* page )
 /***************************************************************************/
 void Hn::buildText( Cell* cell )
 {
-    if( etoc.setTutor ) {
+    if( _etoc.setTutor ) {
         std::string tmp;
-        _document->wtomb_string( tutorial, tmp );
+        _document->wtomb_string( _tutorial, tmp );
         std::size_t size1( tmp.size() );
         if( size1 > 253 ) {
             tmp.erase( 253 );
@@ -620,7 +617,7 @@ void Hn::buildText( Cell* cell )
 /***************************************************************************/
 void Hn::linearize( Page* page )
 {
-    if( _document->headerCutOff() < toc.nestLevel )
+    if( _document->headerCutOff() < _toc.nestLevel )
         page->addElement( this );
     for( ConstChildrenIter iter = _children.begin(); iter != _children.end(); ++iter ) {
         ( *iter )->linearize( page );

@@ -54,7 +54,7 @@ public:
     //add a word to the local dictionary
     bool addWord( GlobalDictionaryWord* wordent );
     //the page title
-    void setTitle( std::string& t ) { _title = t; };
+    void setTitle( std::wstring& t ) { _title = t; };
     //copy data from the Hn or Fn tag
     void setChildren( std::vector< word >& c ) { _children = c; }
     void setTOC( TocEntry& t ) { _toc = t; }
@@ -83,14 +83,14 @@ private:
     Page( const Page& rhs );            //no copy
     Page& operator=( const Page& rhs ); //no assignment
     Document* _document;
-    Cell* _currentCell;                  //the cell currently in use
-    std::vector< Element* > _elements;   //all elements on this page
+    Cell* _currentCell;                 //the cell currently in use
+    std::vector< Element* > _elements;  //all elements on this page
     typedef std::vector< Element* >::iterator ElementIter;
     typedef std::vector< Element* >::const_iterator ConstElementIter;
     std::vector< word > _cells;
     typedef std::vector< word >::iterator CellIter;
     typedef std::vector< word >::const_iterator ConstCellIter;
-    std::string _title;                  //page title
+    std::wstring _title;                //page title
     std::vector< word > _children;
     typedef std::vector< word >::iterator ChildIter;
     typedef std::vector< word >::const_iterator ConstChildxIter;
@@ -101,7 +101,7 @@ private:
     PageStyle _style;
     PageGroup _group;
     PageControls _controls;
-    word _idx;               // index in TOC
+    word _idx;                  // index in TOC
     bool _searchable;
 };
 #endif

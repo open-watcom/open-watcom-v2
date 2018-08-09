@@ -213,37 +213,37 @@ Document::Document( Compiler& c, const char* loc ) :
     addFont( cgraphicFont() );
     //get IPFCARTWORK from env
     env = Environment.value( "IPFCARTWORK" );
-    ipfcartwork_paths.push_back( "" );
+    _ipfcartwork_paths.push_back( "" );
     idx1 = 0;
     idx2 = env.find_first_of( separators, idx1 );
     path = env.substr( idx1, idx2 - idx1 );
     if( !path.empty() )
         path += PATH_SEPARATOR;
-    ipfcartwork_paths.push_back( path );
+    _ipfcartwork_paths.push_back( path );
     while( idx2 != std::string::npos ) {
         idx1 = idx2 + 1;
         idx2 = env.find_first_of( separators, idx1 );
         path = env.substr( idx1, idx2 - idx1 );
         if( !path.empty() )
             path += PATH_SEPARATOR;
-        ipfcartwork_paths.push_back( path );
+        _ipfcartwork_paths.push_back( path );
     }
     //get IPFCIMBED from env
     env = Environment.value( "IPFCIMBED" );
-    ipfcimbed_paths.push_back( "" );
+    _ipfcimbed_paths.push_back( "" );
     idx1 = 0;
     idx2 = env.find_first_of( separators, idx1 );
     path = env.substr( idx1, idx2 - idx1 );
     if( !path.empty() )
         path += PATH_SEPARATOR;
-    ipfcimbed_paths.push_back( path );
+    _ipfcimbed_paths.push_back( path );
     while( idx2 != std::string::npos ) {
         idx1 = idx2 + 1;
         idx2 = env.find_first_of( separators, idx1 );
         path = env.substr( idx1, idx2 - idx1 );
         if( !path.empty() )
             path += PATH_SEPARATOR;
-        ipfcimbed_paths.push_back( path );
+        _ipfcimbed_paths.push_back( path );
     }
 }
 /***************************************************************************/
@@ -256,8 +256,8 @@ Document::~Document()
     for( PageIter itr = _pages.begin(); itr != _pages.end(); ++itr ) {
         delete *itr;
     }
-    ipfcartwork_paths.resize( 0 );
-    ipfcimbed_paths.resize( 0 );
+    _ipfcartwork_paths.resize( 0 );
+    _ipfcimbed_paths.resize( 0 );
 }
 /***************************************************************************/
 // Reads the input file and builds the DOM tree
@@ -300,7 +300,7 @@ void Document::parse( Lexer* lexer )
         if( tok == Lexer::TAG) {
             if( lexer->tagId() == Lexer::TITLE ) {
                 Title title( this );
-                tok = title.parse( lexer, _hdr.get() );
+                tok = title.parse( lexer );
             } else if( lexer->tagId() == Lexer::DOCPROF ) {
                 DocProf dp( this );
                 tok = dp.parse( lexer );
@@ -421,10 +421,19 @@ void Document::parse( Lexer* lexer )
         throw FatalError( ERR_DOCSMALL );
     }
 }
+
 /***************************************************************************/
 // Iterate through the DOM tree to build output data
 void Document::build()
 {
+    //build Title
+    std::string title;
+    wtomb_string( _title, title );
+    if( title.size() > TITLE_SIZE - 1 ) {
+        printError( ERR2_TEXTTOOLONG );
+        title.erase( TITLE_SIZE - 1 );
+    }
+    std::strncpy( _hdr->title, title.c_str(), TITLE_SIZE );
     //build the TOC
     unsigned int visiblePages = 0;
     for( PageIter itr = _pages.begin(); itr != _pages.end(); ++itr ) {
@@ -595,8 +604,8 @@ void Document::makeBitmaps()
             for( BitmapNameIter itr = _bitmapNames.begin(); itr != _bitmapNames.end(); ++itr ) {
                 std::string fname;
                 def_wtomb_string( itr->first, fname );
-                for( std::size_t count = 0; count < ipfcartwork_paths.size(); ++count ) {
-                    std::string fullname( ipfcartwork_paths[count] );
+                for( std::size_t count = 0; count < _ipfcartwork_paths.size(); ++count ) {
+                    std::string fullname( _ipfcartwork_paths[count] );
                     fullname += fname;
 #if !defined( __UNIX__ ) && !defined( __APPLE__ )
                     if( fullname.size() > PATH_MAX ) {
@@ -612,7 +621,7 @@ void Document::makeBitmaps()
                         break;
                     }
                     catch( FatalError& e ) {
-                        if( count == ipfcartwork_paths.size() - 1 ) {
+                        if( count == _ipfcartwork_paths.size() - 1 ) {
                             throw FatalIOError( e.code, itr->first );
                         }
                     }
@@ -634,6 +643,7 @@ void Document::makeBitmaps()
         }
     }
 }
+
 /***************************************************************************/
 STD1::uint32_t Document::writeBitmaps( std::FILE* out )
 {
@@ -848,10 +858,10 @@ void Document::parseCommand( Lexer* lexer, Tag* parent )
         parent->appendChild( cecmd );
         cecmd->parseCommand( lexer );
     } else if( lexer->cmdId() == Lexer::IMBED ) {
-        for( std::size_t count = 0; count < ipfcimbed_paths.size(); ++count ) {
+        for( std::size_t count = 0; count < _ipfcimbed_paths.size(); ++count ) {
             std::string sname;
             def_wtomb_string( lexer->text(), sname );
-            std::string sfname( ipfcimbed_paths[count] + sname );
+            std::string sfname( _ipfcimbed_paths[count] + sname );
 #if !defined( __UNIX__ ) && !defined( __APPLE__ )
             if( sfname.size() > PATH_MAX ) {
                 throw FatalError( ERR_PATH_MAX );
@@ -865,13 +875,13 @@ void Document::parseCommand( Lexer* lexer, Tag* parent )
             }
             catch( FatalError& e ) {
                 delete wfname;
-                if( count == ipfcimbed_paths.size() - 1 ) {
+                if( count == _ipfcimbed_paths.size() - 1 ) {
                     throw e;
                 }
             }
             catch( FatalIOError& e ) {
                 delete wfname;
-                if( count == ipfcimbed_paths.size() - 1 ) {
+                if( count == _ipfcimbed_paths.size() - 1 ) {
                     throw e;
                 }
             }
@@ -899,6 +909,7 @@ void Document::parseCommand( Lexer* lexer, Tag* parent )
         printError( ERR1_CMDNOTDEF );
     }
 }
+
 /***************************************************************************/
 //get a TOC index from the resource number to TOC index map
 STD1::uint16_t Document::tocIndexByRes( word res )
