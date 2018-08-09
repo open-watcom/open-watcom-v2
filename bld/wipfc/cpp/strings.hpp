@@ -42,6 +42,10 @@
 class Document;     // forward reference
 
 class StringTable {
+    typedef STD1::uint8_t   byte;
+    typedef STD1::uint16_t  word;
+    typedef STD1::uint32_t  dword;
+
 public:
     StringTable() : _bytes( 0 ) { _table.reserve( 3 ); };
     void add( const std::wstring& str ) { _table.push_back( str ); };
@@ -52,7 +56,7 @@ private:
     std::vector< std::wstring > _table;
     typedef std::vector< std::wstring >::iterator TableIter;
     typedef std::vector< std::wstring >::const_iterator ConstTableIter;
-    STD1::uint32_t _bytes;
+    dword _bytes;
 };
 
 #endif //STRINGS_INCLUDED

@@ -37,30 +37,30 @@
 
 STD1::uint32_t Controls::write( std::FILE* out, Document *document )
 {
-    STD1::uint32_t start( std::ftell( out ) );
-    STD1::uint16_t value( static_cast< STD1::uint16_t >( controls.size() ) );
-    if( std::fwrite( &value, sizeof( STD1::uint16_t ), 1, out) != 1 )
+    dword start( std::ftell( out ) );
+    word value( static_cast< word >( _controls.size() ) );
+    if( std::fwrite( &value, sizeof( word ), 1, out) != 1 )
         throw FatalError( ERR_WRITE );
-    value = static_cast< STD1::uint16_t >( groups.size() );
-    if( std::fwrite( &value, sizeof( STD1::uint16_t ), 1, out ) != 1 )
+    value = static_cast< word >( _groups.size() );
+    if( std::fwrite( &value, sizeof( word ), 1, out ) != 1 )
         throw FatalError( ERR_WRITE );
-    if( std::fwrite( &coverGroup, sizeof( STD1::uint16_t ), 1, out) != 1 )
+    if( std::fwrite( &_coverGroup, sizeof( word ), 1, out) != 1 )
         throw FatalError( ERR_WRITE );
     value = 0;                              //reserved word
-    if( std::fwrite( &value, sizeof( STD1::uint16_t ), 1, out) != 1 )
+    if( std::fwrite( &value, sizeof( word ), 1, out) != 1 )
         throw FatalError( ERR_WRITE );
-    for( ConstControlIter itr = controls.begin(); itr != controls.end(); ++itr ) {
-        bytes += itr->write( out, document );
+    for( ConstControlIter itr = _controls.begin(); itr != _controls.end(); ++itr ) {
+        _bytes += itr->write( out, document );
     }
-    for( ConstGroupIter itr = groups.begin(); itr != groups.end(); ++itr ) {
-        bytes += itr->write( out );
+    for( ConstGroupIter itr = _groups.begin(); itr != _groups.end(); ++itr ) {
+        _bytes += itr->write( out );
     }
     return start;
 }
 /***************************************************************************/
 ControlButton* Controls::getButtonById( const std::wstring& i )
 {
-    for( ControlIter itr = controls.begin(); itr != controls.end(); ++itr ) {
+    for( ControlIter itr = _controls.begin(); itr != _controls.end(); ++itr ) {
         if( itr->id() == i ) {
             return &(*itr);
         }
@@ -70,7 +70,7 @@ ControlButton* Controls::getButtonById( const std::wstring& i )
 /***************************************************************************/
 ControlGroup* Controls::getGroupById( const std::wstring& i )
 {
-    for( GroupIter itr = groups.begin(); itr != groups.end(); ++itr ) {
+    for( GroupIter itr = _groups.begin(); itr != _groups.end(); ++itr ) {
         if( itr->id() == i ) {
             return &(*itr);
         }

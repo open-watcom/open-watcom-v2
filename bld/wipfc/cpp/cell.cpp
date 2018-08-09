@@ -41,36 +41,38 @@
 //for each element, call buildText() to fill text buffer
 void Cell::build()
 {
-    for( ElementIter itr = elements.begin(); itr != elements.end(); ++itr )
+    for( ElementIter itr = _elements.begin(); itr != _elements.end(); ++itr )
         ( *itr )->buildText( this );
-    if( text.empty() )
-        text.push_back( 0xFE );
-}
-/***************************************************************************/
-void Cell::addWord( STD1::uint16_t wordid )
-{
-    if( !std::binary_search( localDictionary.begin(), localDictionary.end(), wordid ) ) {
-        LDIter itr(
-            //std::lower_bound( localDictionary.begin(), localDictionary.end(), wordid );
-            std::find_if( localDictionary.begin(), localDictionary.end(),
-                std::bind2nd( std::greater< STD1::uint16_t >(), wordid ) ) );
-        localDictionary.insert( itr, wordid );
+    if( _text.empty() ) {
+        _text.push_back( 0xFE );
     }
 }
 /***************************************************************************/
-void Cell::addText( STD1::uint16_t textid )
+void Cell::addWord( word wordid )
+{
+    if( !std::binary_search( _localDictionary.begin(), _localDictionary.end(), wordid ) ) {
+        LDIter itr(
+            //std::lower_bound( localDictionary.begin(), localDictionary.end(), wordid );
+            std::find_if( _localDictionary.begin(), _localDictionary.end(),
+                std::bind2nd( std::greater< word >(), wordid ) ) );
+        _localDictionary.insert( itr, wordid );
+    }
+}
+/***************************************************************************/
+void Cell::addText( word textid )
 {
     LDIter itr(
         //std::lower_bound( localDictionary.begin(), localDictionary.end(), textid );
-        std::find( localDictionary.begin(), localDictionary.end(), textid ) );
-    std::size_t index = itr - localDictionary.begin();
-    text.push_back( static_cast< STD1::uint8_t >( index ) );
+        std::find( _localDictionary.begin(), _localDictionary.end(), textid ) );
+    std::size_t index = itr - _localDictionary.begin();
+    _text.push_back( static_cast< byte >( index ) );
 }
 /***************************************************************************/
-void Cell::addEsc( const std::vector< STD1::uint8_t >& esc )
+void Cell::addEsc( const std::vector< byte >& esc )
 {
-    for( ConstTextIter itr = esc.begin(); itr != esc.end(); ++itr )
-        text.push_back( *itr );
+    for( ConstTextIter itr = esc.begin(); itr != esc.end(); ++itr ) {
+        _text.push_back( *itr );
+    }
 }
 /***************************************************************************/
 #pragma pack(push, 1)
@@ -87,22 +89,22 @@ void Cell::addEsc( const std::vector< STD1::uint8_t >& esc )
 
 STD1::uint32_t Cell::write( std::FILE* out ) const
 {
-    STD1::uint32_t offset( std::ftell( out ) );
+    dword offset( std::ftell( out ) );
     cellData data;
     data.zero = 0;
-    data.dictOffset = offset + sizeof( STD1::uint8_t ) + sizeof( STD1::uint32_t ) +
-        sizeof( STD1::uint8_t ) + sizeof( STD1::uint16_t ) + text.size();
-    data.dictCount = static_cast< STD1::uint8_t >( localDictionary.size() );
-    data.textCount = static_cast< STD1::uint16_t >( text.size() );
+    data.dictOffset = offset + sizeof( byte ) + sizeof( dword ) +
+        sizeof( byte ) + sizeof( word ) + _text.size();
+    data.dictCount = static_cast< byte >( _localDictionary.size() );
+    data.textCount = static_cast< word >( _text.size() );
     if( std::fwrite( &data, sizeof( cellData ), 1, out ) != 1 )
         throw FatalError( ERR_WRITE );
-    if( std::fwrite( &text[0], sizeof( STD1::uint8_t ), text.size(), out ) != text.size() )
+    if( std::fwrite( &_text[0], sizeof( byte ), _text.size(), out ) != _text.size() )
         throw FatalError( ERR_WRITE );
-    if( !localDictionary.empty() &&
-        std::fwrite( &localDictionary[0],
-                     sizeof( STD1::uint16_t ),
-                     localDictionary.size(),
-                     out ) != localDictionary.size() )
+    if( !_localDictionary.empty() &&
+        std::fwrite( &_localDictionary[0],
+                     sizeof( word ),
+                     _localDictionary.size(),
+                     out ) != _localDictionary.size() )
         throw FatalError( ERR_WRITE );
     return offset;
 }

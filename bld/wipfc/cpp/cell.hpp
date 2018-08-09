@@ -39,28 +39,32 @@
 #include "element.hpp"
 
 class Cell {
+    typedef STD1::uint8_t   byte;
+    typedef STD1::uint16_t  word;
+    typedef STD1::uint32_t  dword;
+
 public:
-    Cell( std::size_t m) : maxDictSize( m ) { };
+    Cell( std::size_t m) : _maxDictSize( m ) { };
     ~Cell() { };
     //add a word to the local dictionary
-    void addWord( STD1::uint16_t wordid );
+    void addWord( word wordid );
     //add a word to the encoded text
-    void addText( STD1::uint16_t textid );
+    void addText( word textid );
     //add a byte code to the encoded text
-    void addByte( STD1::uint8_t c ) { text.push_back( c ); };
+    void addByte( byte c ) { _text.push_back( c ); };
     //add an escape sequence to the encoded text
-    void addEsc( const std::vector< STD1::uint8_t >& esc );
+    void addEsc( const std::vector< byte >& esc );
     //set the cell's index (position in the list of cells)
-    void setIndex( std::size_t i ) { idx = i; };
-    std::size_t index() const { return idx; };
+    void setIndex( std::size_t i ) { _idx = i; };
+    std::size_t index() const { return _idx; };
     //is this cell empty?
-    bool empty() const { return text.empty(); }
+    bool empty() const { return _text.empty(); }
     //is the local dictionary full (time for a new cell)?
-    bool dictFull() const { return localDictionary.size() == maxDictSize; };
+    bool dictFull() const { return _localDictionary.size() == _maxDictSize; };
     //is the text block full?
-    bool textFull() const {return text.size() > 64000; };
+    bool textFull() const {return _text.size() > 64000; };
     //add an element to this cell's list
-    void addElement( Element* element ) { elements.push_back( element ); };
+    void addElement( Element* element ) { _elements.push_back( element ); };
     //build the encoded text
     void build();
     //write the cell to the file
@@ -68,17 +72,17 @@ public:
 private:
     Cell( const Cell& rhs );                //no copy
     Cell& operator=( const Cell& rhs );     //no assignment
-    std::vector< STD1::uint16_t > localDictionary;  //indexes into global dictionary
-    typedef std::vector< STD1::uint16_t >::iterator LDIter;
-    typedef std::vector< STD1::uint16_t >::const_iterator ConstLDIter;
-    std::vector< STD1::uint8_t > text;      //indexes into local dictionary
-    typedef std::vector< STD1::uint8_t >::iterator TextIter;
-    typedef std::vector< STD1::uint8_t >::const_iterator ConstTextIter;
-    std::vector< Element* > elements;       //elements in this cell
+    std::vector< word > _localDictionary;   //indexes into global dictionary
+    typedef std::vector< word >::iterator LDIter;
+    typedef std::vector< word >::const_iterator ConstLDIter;
+    std::vector< byte > _text;              //indexes into local dictionary
+    typedef std::vector< byte >::iterator TextIter;
+    typedef std::vector< byte >::const_iterator ConstTextIter;
+    std::vector< Element* > _elements;      //elements in this cell
     typedef std::vector< Element* >::iterator ElementIter;
     typedef std::vector< Element* >::const_iterator ConstElementIter;
-    std::size_t maxDictSize;
-    std::size_t idx;                        //index of this cell in cell array
+    std::size_t _maxDictSize;
+    std::size_t _idx;                       //index of this cell in cell array
 };
 
 /*

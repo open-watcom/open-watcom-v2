@@ -40,19 +40,23 @@
 #include "ptrops.hpp"
 
 class GNames {
+    typedef STD1::uint8_t   byte;
+    typedef STD1::uint16_t  word;
+    typedef STD1::uint32_t  dword;
+
 public:
     GNames() { };
     ~GNames() { };
-    void insert( GlobalDictionaryWord* wordent, STD1::uint16_t toc );
+    void insert( GlobalDictionaryWord* wordent, word toc );
     //the number of names in the collection
-    STD1::uint16_t size() const { return static_cast< STD1::uint16_t >( names.size() ); };
+    STD1::uint16_t size() const { return static_cast< word >( _names.size() ); };
     STD1::uint32_t write( std::FILE *out ) const;
 private:
     GNames( const GNames& rhs );            //no copy
     GNames& operator=( const GNames& rhs ); //no assignment
-    std::map< GlobalDictionaryWord*, STD1::uint16_t, ptrLess< GlobalDictionaryWord* > > names;
-    typedef std::map< GlobalDictionaryWord*, STD1::uint16_t, ptrLess< GlobalDictionaryWord* > >::const_iterator ConstNameIter;
-    typedef std::map< GlobalDictionaryWord*, STD1::uint16_t, ptrLess< GlobalDictionaryWord* > >::iterator NameIter;
+    std::map< GlobalDictionaryWord*, word, ptrLess< GlobalDictionaryWord* > > _names;
+    typedef std::map< GlobalDictionaryWord*, word, ptrLess< GlobalDictionaryWord* > >::const_iterator ConstNameIter;
+    typedef std::map< GlobalDictionaryWord*, word, ptrLess< GlobalDictionaryWord* > >::iterator NameIter;
 };
 
 #endif //GNAMES_INCLUDED

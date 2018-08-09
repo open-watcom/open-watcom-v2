@@ -36,21 +36,25 @@
 #include <vector>
 
 class ControlGroup {
+    typedef STD1::uint8_t   byte;
+    typedef STD1::uint16_t  word;
+    typedef STD1::uint32_t  dword;
+
 public:
-    ControlGroup() : idx( 0 ) {};
-    ControlGroup( const std::wstring& id ) : idnt( id ), idx( 0 ) { };
-    void addButtonIndex( STD1::uint16_t i ) { buttonIndex.push_back( i ); };
-    void setId( const std::wstring& i ) { idnt = i; };
-    const std::wstring& id() const { return idnt; };
-    void setIndex( STD1::uint16_t i ) { idx = i; };
-    STD1::uint16_t index() const { return idx; };
+    ControlGroup() : _idx( 0 ) {};
+    ControlGroup( const std::wstring& id ) : _idnt( id ), _idx( 0 ) { };
+    void addButtonIndex( word i ) { _buttonIndex.push_back( i ); };
+    void setId( const std::wstring& i ) { _idnt = i; };
+    const std::wstring& id() const { return _idnt; };
+    void setIndex( word i ) { _idx = i; };
+    STD1::uint16_t index() const { return _idx; };
     STD1::uint32_t write( std::FILE *out ) const;
 private:
-    std::vector< STD1::uint16_t > buttonIndex;
-    typedef std::vector< STD1::uint16_t >::iterator ButtonIter;
-    typedef std::vector< STD1::uint16_t >::const_iterator ConstButtonIter;
-    std::wstring idnt;  //identifier
-    STD1::uint16_t idx; //index of this item in group array
+    std::vector< word > _buttonIndex;
+    typedef std::vector< word >::iterator ButtonIter;
+    typedef std::vector< word >::const_iterator ConstButtonIter;
+    std::wstring _idnt;  //identifier
+    word _idx;           //index of this item in group array
 };
 
 #endif //CONTROLGROUP_INCLUDED

@@ -41,6 +41,10 @@
 class Document;     // forward reference
 
 class ExternalFiles {
+    typedef STD1::uint8_t   byte;
+    typedef STD1::uint16_t  word;
+    typedef STD1::uint32_t  dword;
+
 public:
     ExternalFiles() : _bytes( 0 ) { };
     //need to get index by name
@@ -52,15 +56,15 @@ public:
     //get the number of bytes written by the collection
     STD1::uint32_t length() const { return _bytes; };
     //get the number of elements in the collection
-    STD1::uint32_t size() const { return static_cast< STD1::uint32_t >( _table.size() ); };
+    STD1::uint32_t size() const { return static_cast< dword >( _table.size() ); };
     STD1::uint32_t write( std::FILE* out, Document *document );
 private:
     ExternalFiles( const ExternalFiles& rhs );              //no copy
     ExternalFiles& operator=( const ExternalFiles& rhs );   //no assignment
-    std::map< std::wstring, STD1::uint16_t > _table;
-    typedef std::map< std::wstring, STD1::uint16_t >::iterator TableIter;
-    typedef std::map< std::wstring, STD1::uint16_t >::const_iterator ConstTableIter;
-    STD1::uint32_t _bytes;   //total length when written to disk
+    std::map< std::wstring, word > _table;
+    typedef std::map< std::wstring, word >::iterator TableIter;
+    typedef std::map< std::wstring, word >::const_iterator ConstTableIter;
+    dword _bytes;   //total length when written to disk
 };
 
 #endif //EXTFILES_INCLUDED

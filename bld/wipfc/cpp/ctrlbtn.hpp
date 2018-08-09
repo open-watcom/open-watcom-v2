@@ -37,22 +37,26 @@
 class Document;     // forward reference
 
 class ControlButton {
+    typedef STD1::uint8_t   byte;
+    typedef STD1::uint16_t  word;
+    typedef STD1::uint32_t  dword;
+
 public:
-    ControlButton() : res( 0 ), idx( 0 ) {};
-    ControlButton( const std::wstring& i, STD1::uint16_t r, const std::wstring& t ) :
-        res( r ), idnt( i ), txt( t ) { };
-    void setId( std::wstring& i ) { idnt = i; };
-    const std::wstring& id() const { return idnt; };
-    void setRes( STD1::uint16_t r ) { res = r; };
-    void setText( std::wstring& t ) { txt = t; };
-    void setIndex( STD1::uint16_t i ) { idx = i; };
-    STD1::uint16_t index() { return idx; };
+    ControlButton() : _res( 0 ), _idx( 0 ) {};
+    ControlButton( const std::wstring& i, word r, const std::wstring& t ) :
+        _res( r ), _idnt( i ), _txt( t ) { };
+    void setId( std::wstring& i ) { _idnt = i; };
+    const std::wstring& id() const { return _idnt; };
+    void setRes( word r ) { _res = r; };
+    void setText( std::wstring& t ) { _txt = t; };
+    void setIndex( word i ) { _idx = i; };
+    STD1::uint16_t index() { return _idx; };
     STD1::uint32_t write( std::FILE* out, Document *document ) const;
 private:
-    STD1::uint16_t res;     //message number
-    STD1::uint16_t idx;     //array index of this item
-    std::wstring idnt;      //identifier
-    std::wstring txt;       //button text
+    word _res;              //message number
+    word _idx;              //array index of this item
+    std::wstring _idnt;     //identifier
+    std::wstring _txt;      //button text
 };
 
 #endif //CTRLBUTTON_INCLUDED

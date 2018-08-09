@@ -47,17 +47,21 @@
 class GlobalDictionaryWord; //forward reference
 
 class I1 : public Element {
+    typedef STD1::uint8_t   byte;
+    typedef STD1::uint16_t  word;
+    typedef STD1::uint32_t  dword;
+
 public:
     I1( Document* d, Element* p, const std::wstring* f, unsigned int r, unsigned int c );
     ~I1() { };
     Lexer::Token parse( Lexer* lexer );
     void buildIndex();
     void buildText( Cell* cell ) { (void)cell; };
-    void setRes( STD1::uint16_t r ) { _parentRes = r; };
+    void setRes( word r ) { _parentRes = r; };
     void setIdOrName( GlobalDictionaryWord* w ) { _parentId = w; };
     void addSecondary( IndexItem* i ) { _secondary.push_back( i ); };
     STD1::uint16_t secondaryCount() const
-        { return static_cast< STD1::uint16_t >( _secondary.size() ); };
+        { return static_cast< word >( _secondary.size() ); };
     bool isGlobal() const { return _primary->isGlobal(); };
     std::size_t write( std::FILE* out );
     bool operator==( const I1& rhs ) const{ return *_primary == *rhs._primary; };
@@ -66,6 +70,8 @@ public:
 private:
     I1( const I1& rhs );                //no copy
     I1& operator=( const I1& rhs );     //no assignment
+    Lexer::Token parseAttributes( Lexer* lexer );
+
     std::auto_ptr< IndexItem > _primary;
     std::vector< IndexItem* > _secondary;
     typedef std::vector< IndexItem* >::iterator IndexIter;
@@ -75,8 +81,7 @@ private:
     typedef std::vector< std::wstring >::const_iterator ConstSynIter;
     std::wstring _id;
     GlobalDictionaryWord* _parentId;
-    STD1::uint16_t _parentRes;
-    Lexer::Token parseAttributes( Lexer* lexer );
+    word _parentRes;
 };
 
 #endif //I1_INCLUDED

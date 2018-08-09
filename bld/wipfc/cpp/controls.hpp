@@ -40,37 +40,41 @@
 class Document;     // forward reference
 
 class Controls {
+    typedef STD1::uint8_t   byte;
+    typedef STD1::uint16_t  word;
+    typedef STD1::uint32_t  dword;
+
 public:
-    Controls() : bytes( 8 ), coverGroup( 0 ) { };
+    Controls() : _bytes( 8 ), _coverGroup( 0 ) { };
     ~Controls() { };
     void addButton( ControlButton& btn )
     {
-        btn.setIndex( static_cast< STD1::uint16_t >( controls.size() + 7 ) );
-        controls.push_back( btn );
+        btn.setIndex( static_cast< word >( _controls.size() + 7 ) );
+        _controls.push_back( btn );
     };
-    ControlButton* button() { return &controls[ controls.size() - 1 ]; };
+    ControlButton* button() { return &_controls[ _controls.size() - 1 ]; };
     ControlButton* getButtonById( const std::wstring& i );
     void addGroup( ControlGroup& grp )
     {
-        groups.push_back( grp );
-        grp.setIndex( static_cast< STD1::uint16_t >( groups.size() ) );
+        _groups.push_back( grp );
+        grp.setIndex( static_cast< word >( _groups.size() ) );
     };
-    ControlGroup* group() { return &groups[ groups.size() - 1 ]; };
+    ControlGroup* group() { return &_groups[ _groups.size() - 1 ]; };
     ControlGroup* getGroupById( const std::wstring& i );
-    void setCover( STD1::uint16_t c ) { coverGroup = c; };
-    STD1::uint32_t length() const { return bytes; };
+    void setCover( word c ) { _coverGroup = c; };
+    STD1::uint32_t length() const { return _bytes; };
     STD1::uint32_t write( std::FILE *out, Document *document );
 private:
     Controls( const Controls& rhs );            //no copy
     Controls& operator=( const Controls& rhs ); //no assignment
-    std::vector< ControlButton > controls;
+    std::vector< ControlButton > _controls;
     typedef std::vector< ControlButton >::iterator ControlIter;
     typedef std::vector< ControlButton >::const_iterator ConstControlIter;
-    std::vector< ControlGroup > groups;
+    std::vector< ControlGroup > _groups;
     typedef std::vector< ControlGroup >::iterator GroupIter;
     typedef std::vector< ControlGroup >::const_iterator ConstGroupIter;
-    STD1::uint32_t bytes;       //size of all controls together
-    STD1::uint16_t coverGroup;
+    dword _bytes;           //size of all controls together
+    word _coverGroup;
 };
 
 #endif //CONTROLS_INCLUDED

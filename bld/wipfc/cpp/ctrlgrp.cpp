@@ -35,11 +35,11 @@
 
 STD1::uint32_t ControlGroup::write( std::FILE *out ) const
 {
-    STD1::uint32_t bytes( sizeof( STD1::uint16_t ) * ( buttonIndex.size() + 1 ) );
-    STD1::uint16_t items( static_cast< STD1::uint16_t >( buttonIndex.size() ) );
-    if( std::fwrite( &items, sizeof( STD1::uint16_t), 1, out) != 1 )
+    dword bytes( sizeof( word ) * ( _buttonIndex.size() + 1 ) );
+    word items( static_cast< word >( _buttonIndex.size() ) );
+    if( std::fwrite( &items, sizeof( word ), 1, out) != 1 )
         throw FatalError( ERR_WRITE );
-    if( std::fwrite( &buttonIndex[0], sizeof( STD1::uint16_t), buttonIndex.size(), out) != buttonIndex.size() )
+    if( std::fwrite( &_buttonIndex[0], sizeof( word ), _buttonIndex.size(), out) != _buttonIndex.size() )
         throw FatalError( ERR_WRITE );
     return bytes;
 }

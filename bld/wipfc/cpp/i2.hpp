@@ -45,6 +45,10 @@
 class GlobalDictionaryWord; //forward reference
 
 class I2 : public Element {
+    typedef STD1::uint8_t   byte;
+    typedef STD1::uint16_t  word;
+    typedef STD1::uint32_t  dword;
+
 public:
     I2( Document* d, Element* p, const std::wstring* f, unsigned int r, unsigned int c ) :
         Element( d, p, f, r, c ), _index( new IndexItem( IndexItem::SECONDARY ) ),
@@ -53,17 +57,18 @@ public:
     Lexer::Token parse( Lexer* lexer );
     void buildIndex();
     void buildText( Cell* cell ) { (void)cell; };
-    void setRes( STD1::uint16_t r ) { _parentRes = r; };
+    void setRes( word r ) { _parentRes = r; };
     void setIdOrName( GlobalDictionaryWord* w ) { _parentId = w; };
     bool isGlobal() const { return _index->isGlobal(); };
     std::size_t write( std::FILE* out ) { return _index->write( out, _document ); };
 private:
     I2( const I2& rhs );                //no copy
     I2& operator=( const I2& rhs );     //no assignment
+    Lexer::Token parseAttributes( Lexer* lexer );
+
     std::auto_ptr< IndexItem > _index;
     std::wstring _refid;
     GlobalDictionaryWord* _parentId;
-    STD1::uint16_t _parentRes;
-    Lexer::Token parseAttributes( Lexer* lexer );
+    word _parentRes;
 };
 #endif //I2_INCLUDED

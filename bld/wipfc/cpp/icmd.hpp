@@ -43,13 +43,17 @@
 class GlobalDictionaryWord; //forward reference
 
 class ICmd : public Element {
+    typedef STD1::uint8_t   byte;
+    typedef STD1::uint16_t  word;
+    typedef STD1::uint32_t  dword;
+
 public:
     ICmd( Document* d, Element* p, const std::wstring* f, unsigned int r, unsigned int c );
     ~ICmd() { };
     Lexer::Token parse( Lexer* lexer );
     void buildIndex();
     void buildText( Cell* cell ) { (void)cell; };
-    void setRes( STD1::uint16_t r ) { _parentRes = r; };
+    void setRes( word r ) { _parentRes = r; };
     void setIdOrName( GlobalDictionaryWord* w ) { _parentId = w; };
     std::size_t write( std::FILE* out ) { return  _index->write( out, _document ); };
     bool operator==( const ICmd& rhs ) const{ return *_index == *rhs._index; };
@@ -60,6 +64,6 @@ private:
     ICmd& operator=( const ICmd& rhs );     //no assignment
     std::auto_ptr< IndexItem > _index;
     GlobalDictionaryWord* _parentId;
-    STD1::uint16_t _parentRes;
+    word _parentRes;
 };
 #endif //ICMD_INCLUDED
