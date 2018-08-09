@@ -649,7 +649,9 @@ void Tag::parseCleanup( Lexer* lexer, Lexer::Token& tok )
 /***************************************************************************/
 void Tag::buildIndex()
 {
-    std::for_each( _children.begin(), _children.end(), std::mem_fun( &Element::buildIndex ) );
+    for( ConstChildrenIter iter = _children.begin(); iter != _children.end(); ++iter ) {
+        ( *iter )->buildIndex();
+    }
 }
 /***************************************************************************/
 void Tag::linearize( Page* page )

@@ -253,9 +253,8 @@ Document::~Document()
         std::fclose( _tmpBitmaps );
     for( CellIter itr = _cells.begin(); itr != _cells.end(); ++itr )
         delete *itr;
-    for( PageIter itr = _pages.begin(); itr != _pages.end(); ++itr ) {
+    for( PageIter itr = _pages.begin(); itr != _pages.end(); ++itr )
         delete *itr;
-    }
     _ipfcartwork_paths.resize( 0 );
     _ipfcimbed_paths.resize( 0 );
 }
@@ -449,10 +448,16 @@ void Document::build()
     _extfiles->convert();            //number each external file
     makeBitmaps();                  //process images
     //for each page, linearize the DOM tree it contains and build local dictionary
-    std::for_each( _pages.begin(), _pages.end(), std::mem_fun( &Page::linearize ) );
+    for( PageIter itr = _pages.begin(); itr != _pages.end(); ++itr ) {
+        ( *itr )->linearize();
+    }
     makeIndexes();
-    std::for_each( _pages.begin(), _pages.end(), std::mem_fun( &Page::buildLocalDictionary ) );
-    std::for_each( _cells.begin(), _cells.end(), std::mem_fun( &Cell::build ) );
+    for( PageIter itr = _pages.begin(); itr != _pages.end(); ++itr ) {
+        ( *itr )->buildLocalDictionary();
+    }
+    for( CellIter itr = _cells.begin(); itr != _cells.end(); ++itr ) {
+        ( *itr )->build();
+    }
     if( _compiler.searchable() ) {
         _hdr->setBigFTS( _dict->buildFTS() ); //build FTS from GlobalDictionary
     }
@@ -590,7 +595,9 @@ void Document::makeIndexes()
 {
     std::sort( _index.begin(), _index.end(), ptrLess< I1* >() );
     std::sort( _icmd.begin(), _icmd.end(), ptrLess< ICmd* >() );
-    std::for_each( _pages.begin(), _pages.end(), std::mem_fun( &Page::buildIndex ) );
+    for( PageIter itr = _pages.begin(); itr != _pages.end(); ++itr ) {
+        ( *itr )->buildIndex();
+    }
 }
 /***************************************************************************/
 void Document::makeBitmaps()
