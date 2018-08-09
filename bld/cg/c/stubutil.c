@@ -445,9 +445,9 @@ n       *NewNode( nclass c, cg_type t )
 }
 
 #define FE_TYPE( x )    ( ( (x) >= TY_FIRST_FREE ) && ( (x) <= TY_LAST_FREE ) )
-extern  n       *Binary( cg_op op, n *l, n *r, cg_type t ) {
-//==========================================================
-
+n       *Binary( cg_op op, n *l, n *r, cg_type t )
+//================================================
+{
     n   *nd;
 
     Use( l );
@@ -463,9 +463,10 @@ extern  n       *Binary( cg_op op, n *l, n *r, cg_type t ) {
     nd->o = op;
     return( nd );
 }
-extern  n       *Unary( cg_op op, n *r, cg_type t ) {
-//===================================================
 
+n       *Unary( cg_op op, n *r, cg_type t )
+//=========================================
+{
     n   *nd;
 
     Use( r );
@@ -474,9 +475,10 @@ extern  n       *Unary( cg_op op, n *r, cg_type t ) {
     nd->o = op;
     return( nd );
 }
-extern  void    Use( n *nd ) {
-//============================
 
+void    Use( n *nd )
+//==================
+{
     if( nd != NULL ) {
         VerNode( nd );
         nd->i++;
@@ -487,32 +489,37 @@ extern  void    Use( n *nd ) {
         }
     }
 }
-extern  void    VerNode( n *nd ) {
-//================================
 
+void    VerNode( n *nd )
+//======================
+{
     Find( "node", (pointer *)NodeList, nd );
 }
-extern  void    VerAuto( a *au ) {
-//================================
 
+void    VerAuto( a *au )
+//======================
+{
     Find( "auto variable", (pointer *)AutoList, au );
 }
-extern  void    VerLabel( l *lb ) {
-//=================================
 
+void    VerLabel( l *lb )
+//=======================
+{
     Find( "label", (pointer *)LblList, lb );
     if( lb->i == -1 ) {
         CGError( "Unknown label%n" );
     }
 }
-extern  void    VerBack( b *bk ) {
-//================================
 
+void    VerBack( b *bk )
+//======================
+{
     Find( "back handle",(pointer *)BackList, bk );
 }
-extern  bool    LkUpOp( cg_op o, cg_op *l ) {
-//==========================================
 
+bool    LkUpOp( cg_op o, cg_op *l )
+//=================================
+{
     while( *l != O_NOP ) {
         if( o == *l++ ) {
             return( true );
@@ -520,9 +527,10 @@ extern  bool    LkUpOp( cg_op o, cg_op *l ) {
     }
     return( false );
 }
-extern  void    VerOp( cg_op o, cg_op *l ) {
-//==========================================
 
+void    VerOp( cg_op o, cg_op *l )
+//================================
+{
     Op(o);
     if( l != NULL ) {
         if( !LkUpOp( o, l ) ) {
@@ -530,9 +538,10 @@ extern  void    VerOp( cg_op o, cg_op *l ) {
         }
     }
 }
-extern  void    VerTipe( cg_type t, cg_type *l ) {
-//================================================
 
+void    VerTipe( cg_type t, cg_type *l )
+//======================================
+{
     type_def    *a;
 
     a = TypeAddress( t );
@@ -549,9 +558,10 @@ extern  void    VerTipe( cg_type t, cg_type *l ) {
         CGError( "Illegal type for given routine %s", Tipe(t) );
     }
 }
-extern  void    Find( char *msg, pointer *list, pointer nd ) {
-//============================================================
 
+void    Find( char *msg, pointer *list, pointer nd )
+//==================================================
+{
     for( ; list != NULL; list = *list ) {
         if( list == nd ) {
             return;
@@ -559,23 +569,26 @@ extern  void    Find( char *msg, pointer *list, pointer nd ) {
     }
     CGError( "Unknown %s %p", msg, nd );
 }
-extern  char    *ACopyOf( const char *s ) {
-//=========================================
 
+char    *ACopyOf( const char *s )
+//===============================
+{
     char        *c;
     c = CGAlloc( Length( s ) + 1 );
     CopyStr( s, c );
     return( c );
 }
-extern  void    DumpTree( n *t ) {
-//================================
 
+void    DumpTree( n *t )
+//======================
+{
     NodeId = 0;
     DumpT( t );
 }
-extern  void    NoDanglers() {
-//============================
 
+void    NoDanglers( void )
+//========================
+{
     n *next;
 
     if( NodeList != NULL ) {
@@ -589,16 +602,18 @@ extern  void    NoDanglers() {
         CGError( "Hanging on to cgnames too long!" );
     }
 }
-extern  void    DumpT( n *t ) {
-//=============================
 
+void    DumpT( n *t )
+//===================
+{
     Use( t );
     DumpSubTree( t );
     Code( "%n" );
 }
-extern n *FindParm( n *p, n *r ) {
-//================================
 
+n *FindParm( n *p, n *r )
+//=======================
+{
     for( ;; ) {
         if( p->r == r )
             return( p );
@@ -606,9 +621,10 @@ extern n *FindParm( n *p, n *r ) {
     }
 //  return( NULL );
 }
-extern void DumpCallTree( n *t ) {
-//================================
 
+void DumpCallTree( n *t )
+//=======================
+{
     n   *parm;
     n   *next;
     n   *first;
@@ -626,9 +642,10 @@ extern void DumpCallTree( n *t ) {
     }
     Code( ")" );
 }
-extern  bool    CheckInLine( n * t ) {
-//====================================
 
+bool    CheckInLine( n * t )
+//====================================
+{
     n   *nlist;
     ic  *icall;
     ip  *iparm;
@@ -671,9 +688,10 @@ extern  bool    CheckInLine( n * t ) {
     NodeList = nlist;
     return( true );
 }
-extern  void    DumpSubTree( n *t ) {
-//===================================
 
+void    DumpSubTree( n *t )
+//=========================
+{
     if( t == NULL ) {
         ;
     } else {
@@ -768,9 +786,10 @@ extern  void    DumpSubTree( n *t ) {
         }
     }
 }
-extern  void    NodeFree( n *nd ) {
-//=================================
 
+void    NodeFree( n *nd )
+//=======================
+{
     n   **o;
     for( o = &NodeList; *o != nd; ) {
         o = (n**)*o;
@@ -778,9 +797,10 @@ extern  void    NodeFree( n *nd ) {
     *o = nd->n;
     CGFree( nd );
 }
-extern  segment_id      SetFile( segment_id seg ) {
-//=================================================
 
+segment_id      SetFile( segment_id seg )
+//=======================================
+{
     segment_id  old;
     int         i;
 
@@ -813,17 +833,18 @@ extern  segment_id      SetFile( segment_id seg ) {
     }
     return( old );
 }
-extern  void    NotDefault( cg_type  t ) {
-//========================================
 
+void    NotDefault( cg_type  t )
+//==============================
+{
     if( t == TY_DEFAULT ) {
         CGError( "TY_DEFAULT not allowed as type to routine" );
     }
 }
 
-extern  char   *CFCnvFS( float_handle f, char *buffer, int maxlen ) {
-//====================================
-
+char   *CFCnvFS( float_handle f, char *buffer, int maxlen )
+//=========================================================
+{
     int         len;
 
     len = f->len - 1;

@@ -31,13 +31,14 @@
 #ifndef FNT_INCLUDED
 #define FNT_INCLUDED
 
-#include <cstring>
 #include <cstdio>
+#include <string>
+
 
 #define MAX_FACENAME_SIZE   33
 #define DEFAULT_CODEPAGE    static_cast< word >( -1 )
 
-class Document;     // forward reference
+class OutFile;      // forward reference
 
 // Font Entry
 struct FontEntry {
@@ -54,7 +55,7 @@ public:
     void setHeight( word height ) { _height = height; }
     void setWidth( word width ) { _width = width; }
     void setCodePage( word codePage ) { _codePage = codePage; }
-    dword write( std::FILE *out, Document *document ) const;
+    dword write( OutFile *out ) const;
     bool operator==( const FontEntry &rhs ) const;
 
 private:

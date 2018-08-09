@@ -43,6 +43,7 @@
 #include "nls.hpp"
 #include "util.hpp"
 #include "ipffile.hpp"
+#include "outfile.hpp"
 
 
 Nls::Nls( const char *loc ) : _bytes( 0 )
@@ -62,7 +63,7 @@ void Nls::readEntityFile( const std::string& sfname )
     std::wstring    wbuffer;
 
     def_mbtow_string( sfname, wfname );
-    IpfFile *ipff = new IpfFile( sfname, &wfname );
+    IpfFile *ipff = new IpfFile( sfname, &wfname, this );
     if( ipff == NULL )
         throw FatalError( ERR_COUNTRY );
     while( ipff->gets( wbuffer ) ) {
@@ -84,7 +85,7 @@ void Nls::readNLSFile( const std::string& sfname )
     std::string::size_type  pos;
 
     def_mbtow_string( sfname, wfname );
-    IpfFile *ipff = new IpfFile( sfname, &wfname );
+    IpfFile *ipff = new IpfFile( sfname, &wfname, this );
     while( ipff->gets( wbuffer ) ) {
         if( wbuffer[0] == L'\0' )
             continue;               //skip blank lines
@@ -202,8 +203,8 @@ wchar_t Nls::entityChar( const std::wstring& key )
     return pos->second;
 }
 
-Nls::dword Nls::write( std::FILE *out )
-/*************************************/
+Nls::dword Nls::write( OutFile *out )
+/***********************************/
 {
     _bytes = _country.size();
     dword start = _country.write( out );
@@ -237,36 +238,34 @@ void Nls::SbcsGrammarDef::setDefaultBits( WIPFC::NLSRecType rectype )
     std::memcpy( this->_bits, &defbits[rectype - WIPFC::TEXT][0], 32 );
 }
 
-Nls::dword Nls::SbcsGrammarDef::write( std::FILE *out ) const
-/***********************************************************/
+Nls::dword Nls::SbcsGrammarDef::write( OutFile *out ) const
+/*********************************************************/
 {
-    dword start = std::ftell( out );
-    if( std::fwrite( &_size, sizeof( _size ), 1, out ) != 1 )
+    dword start = out->tell();
+    if( out->put( _size ) )
         throw FatalError( ERR_WRITE );
-    byte type = static_cast< byte >( _type );
-    if( std::fwrite( &type, sizeof( type ), 1, out ) != 1 )
+    if( out->put( static_cast< byte >( _type ) ) )
         throw FatalError( ERR_WRITE );
-    if( std::fwrite( &_format, sizeof( _format ), 1, out ) != 1 )
+    if( out->put( _format ) )
         throw FatalError( ERR_WRITE );
-    if( std::fwrite( _bits, sizeof( _bits[0] ), sizeof( _bits ) / sizeof( _bits[0] ), out ) != sizeof( _bits ) / sizeof( _bits[0] ) )
+    if( out->write( _bits, sizeof( _bits[0] ), sizeof( _bits ) / sizeof( _bits[0] ) ) )
         throw FatalError( ERR_WRITE );
     return( start );
 }
 
-Nls::dword Nls::DbcsGrammarDef::write( std::FILE *out )
-/*****************************************************/
+Nls::dword Nls::DbcsGrammarDef::write( OutFile *out )
+/***************************************************/
 {
-    dword start = std::ftell( out );
-    _size = static_cast< word >( sizeof( word ) + 2 * sizeof( byte ) + _ranges.size() * sizeof( word ) );
-    if( std::fwrite( &_size, sizeof( _size ), 1, out ) != 1 )
+    dword start = out->tell();
+    _size = static_cast< word >( sizeof( _size ) + sizeof( byte ) + sizeof( _format ) + _ranges.size() * sizeof( std::vector< word >::value_type ) );
+    if( out->put( _size ) )
         throw FatalError( ERR_WRITE );
-    byte type = static_cast< byte >( _type );
-    if( std::fwrite( &type, sizeof( type ), 1, out ) != 1 )
+    if( out->put( static_cast< byte >( _type ) ) )
         throw FatalError( ERR_WRITE );
-    if( std::fwrite( &_format, sizeof( _format ), 1, out ) != 1 )
+    if( out->put( _format ) )
         throw FatalError( ERR_WRITE );
-    for( std::vector< word >::const_iterator itr = _ranges.begin(); itr != _ranges.end(); ++itr ) {
-        if( std::fwrite( &(*itr), sizeof( word ), 1, out ) != 1 ) {
+    for( ConstRangesIter itr = _ranges.begin(); itr != _ranges.end(); ++itr ) {
+        if( out->put( *itr ) ) {
             throw FatalError( ERR_WRITE );
         }
     }
@@ -295,46 +294,4 @@ void Nls::set_document_data_codepage( const char *loc )
 #else
     _setmbcp( _country.codePage() );
 #endif
-}
-
-static int wtomb_char( char *mbc, wchar_t wc )
-/********************************************/
-{
-    // TODO! must be converted by selected UNICODE->MBCS conversion table
-    // which is independent from the host user locale
-    return( std::wctomb( mbc, wc ) );
-}
-
-std::size_t Nls::wtomb_cstring( char *dst_mbc, const wchar_t *src_wc, std::size_t len )
-/*************************************************************************************/
-{
-    std::size_t dst_len = 0;
-    char        mbc[MB_LEN_MAX + 1];
-    int         bytes;
-
-    while( len > 0 && *src_wc != L'\0' ) {
-        bytes = wtomb_char( mbc, *src_wc );
-        if( bytes == -1 || (unsigned)bytes > len )
-            return( ERROR_CNV );
-        std::memcpy( dst_mbc, mbc, bytes );
-        dst_mbc += bytes;
-        dst_len += bytes;
-        len -= bytes;
-        src_wc++;
-    }
-    *dst_mbc = '\0';
-    return( dst_len );
-}
-
-void Nls::wtomb_string( const std::wstring& input, std::string& output )
-/**********************************************************************/
-{
-    for( std::size_t index = 0; index < input.size(); ++index ) {
-        char ch[ MB_LEN_MAX + 1 ];
-        int  bytes( wtomb_char( &ch[ 0 ], input[ index ] ) );
-        if( bytes == -1 )
-            throw FatalError( ERR_T_CONV );
-        ch[ bytes ] = '\0';
-        output += ch;
-    }
 }

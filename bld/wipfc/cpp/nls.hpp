@@ -67,10 +67,7 @@ public:
     bool isEntity( const std::wstring& key ) { return _entityMap.find( key ) != _entityMap.end(); };
     //number of bytes written
     dword length() { return _bytes; };
-    dword write( std::FILE* out );
-    // UNICODE<->MBCS conversion
-    std::size_t  wtomb_cstring( char *mbc, const wchar_t *wc, std::size_t len );
-    void         wtomb_string( const std::wstring& input, std::string& output );
+    dword write( OutFile *out );
 
 private:
     typedef std::map< std::wstring, wchar_t >::iterator EntityIter;
@@ -93,16 +90,18 @@ private:
         SbcsGrammarDef() : _size( sizeof( word ) + 2 * sizeof( byte ) + (sizeof( _bits ) / sizeof( _bits[0] )) * sizeof( byte ) ),
             _type( WIPFC::TEXT ), _format( 0 ) {};
         void setDefaultBits( WIPFC::NLSRecType rectype );
-        dword write( std::FILE* out ) const;
+        dword write( OutFile *out ) const;
     };
     struct DbcsGrammarDef {             // Double-byte character set
         word                _size;          // 4 + (# ranges * 4)
         WIPFC::NLSRecType   _type;          // NLSRecType.TEXT, NLSRecType.GRAPHIC
         byte                _format;        // 1
         std::vector< word > _ranges;        // variable
+        typedef std::vector< word >::iterator RangesIter;
+        typedef std::vector< word >::const_iterator ConstRangesIter;
         DbcsGrammarDef() : _size( sizeof( word ) + 2 * sizeof( byte ) ),
             _type( WIPFC::TEXT ), _format( 1 ) {};
-        dword write( std::FILE* out );
+        dword write( OutFile *out );
     };
 
     CountryDef _country;

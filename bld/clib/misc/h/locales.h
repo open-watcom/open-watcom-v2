@@ -32,6 +32,12 @@
 
 /* locales.h */
 
-#define C_LOCALE        0
-#define NATIVE_LOCALE   1
-#define INVALID_LOCALE  2
+#define LOCALE_DEFS() \
+    pick( C_LOCALE,         STRING( "C" ) ) \
+    pick( NATIVE_LOCALE,    STRING( "" ) )
+
+enum {
+    #define pick(e,t) e,
+    LOCALE_DEFS()
+    #undef pick
+};

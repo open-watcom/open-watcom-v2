@@ -37,7 +37,7 @@
 #include <vector>
 
 
-class Document;     // forward reference
+class OutFile;      // forward reference
 
 class IndexItem {
     typedef STD1::uint8_t   byte;
@@ -58,7 +58,7 @@ public:
     void setText( std::wstring& t ) { _text = t; };
     void setTOC( word t ) { _hdr.tocPanelIndex = t; };
     void addSynonym( dword t ) { _synonyms.push_back( t ); };
-    dword write( std::FILE* out, Document *document );
+    dword write( OutFile *out );
     bool operator==( const IndexItem& rhs ) const;
     bool operator==( const std::wstring& rhs ) const;
     bool operator<( const IndexItem& rhs ) const;

@@ -32,28 +32,26 @@
 #include "wipfc.hpp"
 #include "errors.hpp"
 #include "fnt.hpp"
-#include "document.hpp"
+#include "outfile.hpp"
 
 
-FontEntry::dword FontEntry::write( std::FILE *out, Document *document ) const
+FontEntry::dword FontEntry::write( OutFile *out ) const
 {
     char            faceName[MAX_FACENAME_SIZE];    //null terminated
     std::string     buffer;
-    word            codePage;
 
-    document->wtomb_string( _faceName, buffer );
+    out->wtomb_string( _faceName, buffer );
     std::strncpy( faceName, buffer.c_str(), MAX_FACENAME_SIZE );
     faceName[MAX_FACENAME_SIZE - 1] = '\0';
-    if( std::fwrite( faceName, sizeof( faceName ), 1, out ) != 1 )
+    if( out->write( faceName, sizeof( faceName ), 1 ) )
         throw FatalError( ERR_WRITE );
-    if( std::fwrite( &_height, sizeof( _height ), 1, out ) != 1 )
+    if( out->put( _height ) )
         throw FatalError( ERR_WRITE );
-    if( std::fwrite( &_width, sizeof( _width ), 1, out ) != 1 )
+    if( out->put( _width ) )
         throw FatalError( ERR_WRITE );
-    codePage = ( _codePage == DEFAULT_CODEPAGE ) ? document->codePage() : _codePage;
-    if( std::fwrite( &codePage, sizeof( codePage ), 1, out ) != 1 )
+    if( out->codePage( _codePage ) )
         throw FatalError( ERR_WRITE );
-    return( static_cast< dword >( sizeof( faceName ) + sizeof( _height ) + sizeof( _width ) + sizeof( codePage ) ) );
+    return( static_cast< dword >( sizeof( faceName ) + sizeof( _height ) + sizeof( _width ) + sizeof( word ) ) );
 }
 
 bool FontEntry::operator==( const FontEntry &rhs ) const

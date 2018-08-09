@@ -50,7 +50,7 @@ public:
     void insert( GlobalDictionaryWord* wordent, word toc );
     //the number of names in the collection
     word size() const { return static_cast< word >( _names.size() ); };
-    dword write( std::FILE *out ) const;
+    dword write( OutFile *out ) const;
 private:
     GNames( const GNames& rhs );            //no copy
     GNames& operator=( const GNames& rhs ); //no assignment

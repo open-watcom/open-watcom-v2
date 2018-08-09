@@ -70,6 +70,7 @@
 #include "util.hpp"
 #include "whtspc.hpp"
 #include "word.hpp"
+#include "outfile.hpp"
 
 
 Link::~Link()
@@ -495,7 +496,7 @@ void Link::doTopic( Cell* cell )
             esc.push_back( static_cast< STD1::uint8_t >( index ) );
             //esc.push_back( static_cast< STD1::uint8_t >( index >> 8 ) );
             std::string tmp;
-            _document->wtomb_string( refid->getText(), tmp );
+            cell->out()->wtomb_string( refid->getText(), tmp );
             std::size_t tmpsize( tmp.size() );
             esc.push_back( static_cast< STD1::uint8_t >( tmpsize ) );
             if( hypergraphic && ( x || y || cx || cy ) ) {
@@ -606,9 +607,9 @@ void Link::doLaunch( Cell* cell )
             esc.push_back( static_cast< STD1::uint8_t >( cy >> 8 ) );
         }
         std::string buffer;
-        _document->wtomb_string( object, buffer );
+        cell->out()->wtomb_string( object, buffer );
         buffer += ' ';
-        _document->wtomb_string( data, buffer );
+        cell->out()->wtomb_string( data, buffer );
         std::size_t buffersize( buffer.size() );
         if( buffersize > 255 - esc.size() + 1 ) {
             buffersize = 255 - esc.size() + 1;

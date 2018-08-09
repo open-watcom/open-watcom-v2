@@ -34,12 +34,12 @@
 #include <cstdio>
 #include "ipfdata.hpp"
 
-class Document;     // forward reference
+class Nls;     // forward reference
 
 class IpfFile : public IpfData {
 public:
-    IpfFile( const std::wstring* wfname );
-    IpfFile( const std::string& sfname, const std::wstring* wfname );
+    IpfFile( const std::wstring* wfname, Nls *nls );
+    IpfFile( const std::string& sfname, const std::wstring* wfname, Nls *nls );
     ~IpfFile() { if( _stream ) std::fclose( _stream ); };
     //Set the file name for use in error messages
     void setName( const std::wstring* fileName ) { _fileName = fileName; }

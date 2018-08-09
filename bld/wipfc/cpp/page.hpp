@@ -73,12 +73,15 @@ public:
     void buildTOC();
     void linearize() { ( *( _elements.begin() ))->linearize( this ); };
     void buildIndex() { ( *( _elements.begin() ))->buildIndex(); };
-    void buildLocalDictionary();
+    void buildLocalDictionary( OutFile *out );
     //write a TOC entry
-    dword write( std::FILE* out );
+    dword write( OutFile *out );
     dword tocSize() const { return _toc.size; };
     //write child windows list
-    dword writeChildren( std::FILE* out ) const;
+    dword writeChildren( OutFile *out ) const;
+
+    void setOutFile( OutFile *out ) { _out = out; };
+    OutFile *out() { return _out; };
 private:
     Page( const Page& rhs );            //no copy
     Page& operator=( const Page& rhs ); //no assignment
@@ -103,5 +106,6 @@ private:
     PageControls _controls;
     word _idx;                  // index in TOC
     bool _searchable;
+    OutFile *_out;
 };
 #endif

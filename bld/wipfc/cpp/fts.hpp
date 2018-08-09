@@ -36,6 +36,9 @@
 #include <string>
 #include <vector>
 
+
+class OutFile;
+
 class FTSElement {
     typedef STD1::uint8_t   byte;
     typedef STD1::uint16_t  word;
@@ -47,14 +50,15 @@ public:
     void setPages( std::size_t count );
     //the word appears on page i
     void onPage( std::size_t i );
-    void build();
+    void build( OutFile *out );
     //Only valid after build is run
     bool isBigFTS() { return _dataSize + 2 > UINT8_MAX; };
-    dword write( std::FILE* out, bool big ) const;
+    dword write( OutFile *out, bool big ) const;
 private:
-    word getPages( std::vector< word >& pg, bool absent ) const;
+    std::size_t getPages( std::vector< word >& pg, bool absent ) const;
     FTSElement( const FTSElement& rhs );            //no copy
     FTSElement& operator=( const FTSElement& rhs ); //no assignment
+    void encode( std::vector< byte >& rle );
     enum CompressionCode {
         NONE,               // word is in no panel, no bitstring
         ALL,                // word is in every panel, no bitsring
@@ -74,7 +78,6 @@ private:
     typedef std::vector< byte >::const_iterator ConstPageIter;
     typedef std::vector< byte >::reverse_iterator RPageIter;
     typedef std::vector< byte >::const_reverse_iterator ConstRPageIter;
-    void encode( std::vector< byte >& rle );
 };
 
 #endif //FTSELEMENT_INCLUDED

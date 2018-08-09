@@ -66,6 +66,7 @@
 #include "page.hpp"
 #include "tocref.hpp"
 #include "util.hpp"
+#include "outfile.hpp"
 
 
 Hn::~Hn()
@@ -594,7 +595,7 @@ void Hn::buildText( Cell* cell )
 {
     if( _etoc.setTutor ) {
         std::string tmp;
-        _document->wtomb_string( _tutorial, tmp );
+        cell->out()->wtomb_string( _tutorial, tmp );
         std::size_t size1( tmp.size() );
         if( size1 > 253 ) {
             tmp.erase( 253 );

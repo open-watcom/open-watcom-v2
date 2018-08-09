@@ -34,7 +34,7 @@
 #include <cstdio>
 #include <string>
 
-class Document;     // forward reference
+class OutFile;      // forward reference
 
 class ControlButton {
     typedef STD1::uint8_t   byte;
@@ -51,7 +51,7 @@ public:
     void setText( std::wstring& t ) { _txt = t; };
     void setIndex( word i ) { _idx = i; };
     word index() { return _idx; };
-    dword write( std::FILE* out, Document *document ) const;
+    dword write( OutFile *out ) const;
 private:
     word _res;              //message number
     word _idx;              //array index of this item

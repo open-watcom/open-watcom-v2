@@ -42,6 +42,7 @@
 #include "document.hpp"
 #include "errors.hpp"
 #include "util.hpp"
+#include "outfile.hpp"
 
 
 bool Hide::_hide( false );
@@ -94,7 +95,7 @@ Lexer::Token Hide::parse( Lexer* lexer )
 void Hide::buildText( Cell* cell )
 {
     std::string tmp;
-    _document->wtomb_string( _keyPhrase, tmp );
+    cell->out()->wtomb_string( _keyPhrase, tmp );
     std::size_t size( tmp.size() );
     if( size > 253 ) {
         tmp.erase( 253 );

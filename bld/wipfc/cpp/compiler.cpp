@@ -41,6 +41,7 @@
 #include "ipffile.hpp"
 #include "lexer.hpp"
 #include "util.hpp"
+#include "outfile.hpp"
 
 
 Compiler::Compiler():
@@ -88,16 +89,13 @@ int Compiler::compile()
 {
     int retval( EXIT_SUCCESS );
     // init document and set locale for input/output data
-    std::auto_ptr< Document > doc( new Document( *this, _loc ) );
-    doc->setOutputType( _outType );
+    std::auto_ptr< Document > doc( new Document( *this, _outType, _loc ) );
     _inFileNameW = doc->pushFileInput( _inFileName, _inFileNameW );
+    doc->setOutFile( _outFileName );
     doc->parse( _lexer.get() );
     doc->build();
-    std::FILE* out( std::fopen( _outFileName.c_str() , "wb" ) );
-    if( !out )
-        throw FatalIOError( ERR_OPEN, L"for inf or hlp output" );
     try {
-        doc->write( out );
+        doc->write();
     }
     catch( FatalError& e ) {
         retval = EXIT_FAILURE;
@@ -107,7 +105,6 @@ int Compiler::compile()
         retval = EXIT_FAILURE;
         printError( e.code, e.fname );
     }
-    std::fclose( out );
     //TODO locale should be restored to original value
     if( _xref ) {
         //TODO: convert to ostream when streams and strings mature

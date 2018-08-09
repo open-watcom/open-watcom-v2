@@ -35,6 +35,9 @@
 #include <string>
 #include <vector>
 
+
+class OutFile;
+
 class ControlGroup {
     typedef STD1::uint8_t   byte;
     typedef STD1::uint16_t  word;
@@ -48,7 +51,7 @@ public:
     const std::wstring& id() const { return _idnt; };
     void setIndex( word i ) { _idx = i; };
     word index() const { return _idx; };
-    dword write( std::FILE *out ) const;
+    dword write( OutFile *out ) const;
 private:
     std::vector< word > _buttonIndex;
     typedef std::vector< word >::iterator ButtonIter;

@@ -33,6 +33,8 @@
 #include <cstring>
 #include "header.hpp"
 #include "errors.hpp"
+#include "outfile.hpp"
+
 
 IpfHeader::IpfHeader()
 /********************/
@@ -48,11 +50,11 @@ IpfHeader::IpfHeader()
     maxLocalIndex = 245;
 };
 
-void IpfHeader::write( std::FILE *out ) const
-/*******************************************/
+void IpfHeader::write( OutFile *out ) const
+/*****************************************/
 {
-    std::fseek( out, 0, SEEK_SET ); //exception: this element has a fixed position
-    if( std::fwrite( this, sizeof( IpfHeader ), 1, out ) != 1 ) {
+    out->seek( 0, SEEK_SET ); //exception: this element has a fixed position
+    if( out->write( this, sizeof( IpfHeader ), 1 ) ) {
         throw FatalError( ERR_WRITE );
     }
 }
@@ -69,11 +71,11 @@ void IpfHeader::setBigFTS( bool big )
     searchOffset |= static_cast< STD1::uint32_t >( big ) << 31;
 }
 
-STD1::uint32_t IpfExtHeader::write( std::FILE *out ) const
-/********************************************************/
+STD1::uint32_t IpfExtHeader::write( OutFile *out ) const
+/******************************************************/
 {
-    STD1::uint32_t start( std::ftell( out ) );
-    if( std::fwrite( this, sizeof( IpfExtHeader ), 1, out ) != 1 )
+    STD1::uint32_t start( out->tell() );
+    if( out->write( this, sizeof( IpfExtHeader ), 1 ) )
         throw FatalError( ERR_WRITE );
     return start;
 }

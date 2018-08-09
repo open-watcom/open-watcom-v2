@@ -27,7 +27,7 @@ objs =  main.obj compiler.obj document.obj env.obj ipfbuff.obj ipffile.obj lexer
 objobjs=bitmap.obj btmpblk.obj cecmd.obj cell.obj ctrlbtn.obj ctrlgrp.obj controls.obj&
         errors.obj extfiles.obj fnt.obj fntcol.obj fts.obj gdword.obj gdict.obj gnames.obj&
         header.obj index.obj nls.obj page.obj strings.obj synonym.obj toc.obj tocref.obj&
-        util.obj xref.obj cntrydef.obj
+        util.obj xref.obj cntrydef.obj outfile.obj
 
 tagobjs=element.obj text.obj entity.obj punct.obj whtspc.obj word.obj tag.obj acvwport.obj&
         artlink.obj artwork.obj brcmd.obj caution.obj cgraphic.obj color.obj ctrl.obj&

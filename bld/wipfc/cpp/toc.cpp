@@ -32,48 +32,56 @@
 #include "wipfc.hpp"
 #include "toc.hpp"
 #include "errors.hpp"
+#include "outfile.hpp"
 
-TocEntry::dword TocEntry::write( std::FILE* out ) const
+
+TocEntry::dword TocEntry::write( OutFile *out ) const
 {
-    dword offset( std::ftell( out ) );
-    if( std::fwrite( this, sizeof( TocEntry ), 1, out ) != 1 )
+    dword offset( out->tell() );
+    if( out->write( this, sizeof( TocEntry ), 1 ) )
         throw FatalError( ERR_WRITE );
     return offset;
 }
 /***************************************************************************/
-void ExtTocEntry::write( std::FILE* out ) const
+void ExtTocEntry::write( OutFile *out ) const
 {
-    if( std::fwrite( this, sizeof( ExtTocEntry ), 1, out ) != 1 )
+    if( out->write( this, sizeof( ExtTocEntry ), 1 ) ) {
         throw FatalError( ERR_WRITE );
+    }
 }
 /***************************************************************************/
-void PageOrigin::write( std::FILE* out ) const
+void PageOrigin::write( OutFile *out ) const
 {
-    if( std::fwrite( this, sizeof( PageOrigin ), 1, out ) != 1 )
+    if( out->write( this, sizeof( PageOrigin ), 1 ) ) {
         throw FatalError( ERR_WRITE );
+    }
 }
 /***************************************************************************/
-void PageSize::write( std::FILE* out ) const
+void PageSize::write( OutFile *out ) const
 {
-    if( std::fwrite( this, sizeof( PageSize ), 1, out ) != 1 )
+    if( out->write( this, sizeof( PageSize ), 1 ) ) {
         throw FatalError( ERR_WRITE );
+    }
 }
 /***************************************************************************/
-void PageStyle::write( std::FILE* out ) const
+void PageStyle::write( OutFile *out ) const
 {
-    if( std::fwrite( this, sizeof( PageStyle ), 1, out ) != 1 )
+    if( out->write( this, sizeof( PageStyle ), 1 ) ) {
         throw FatalError( ERR_WRITE );
+    }
 }
 /***************************************************************************/
-void PageGroup::write( std::FILE* out ) const
+void PageGroup::write( OutFile *out ) const
 {
-    if( std::fwrite( this, sizeof( PageGroup ), 1, out ) != 1 )
+    if( out->write( this, sizeof( PageGroup ), 1 ) ) {
         throw FatalError( ERR_WRITE );
+    }
 }
 /***************************************************************************/
-void PageControls::write( std::FILE* out ) const
+void PageControls::write( OutFile *out ) const
 {
-    if( std::fwrite( this, sizeof( PageControls ), 1, out ) != 1 )
+    if( out->write( this, sizeof( PageControls ), 1 ) ) {
         throw FatalError( ERR_WRITE );
+    }
 }
 

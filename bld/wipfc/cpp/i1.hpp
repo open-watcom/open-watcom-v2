@@ -63,7 +63,7 @@ public:
     word secondaryCount() const
         { return static_cast< word >( _secondary.size() ); };
     bool isGlobal() const { return _primary->isGlobal(); };
-    dword write( std::FILE* out );
+    dword write( OutFile *out );
     bool operator==( const I1& rhs ) const{ return *_primary == *rhs._primary; };
     bool operator==( const std::wstring& rhs ) const { return *_primary == rhs; };
     bool operator<( const I1& rhs ) const { return *_primary < *rhs._primary; };

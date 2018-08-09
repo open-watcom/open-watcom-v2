@@ -32,15 +32,16 @@
 #include "wipfc.hpp"
 #include "ctrlgrp.hpp"
 #include "errors.hpp"
+#include "outfile.hpp"
 
-ControlGroup::dword ControlGroup::write( std::FILE *out ) const
+
+ControlGroup::dword ControlGroup::write( OutFile *out ) const
 {
     std::size_t bytes( sizeof( word ) * ( _buttonIndex.size() + 1 ) );
-    word items( static_cast< word >( _buttonIndex.size() ) );
-    if( std::fwrite( &items, sizeof( word ), 1, out ) != 1 )
+    // items count
+    if( out->put( static_cast< word >( _buttonIndex.size() ) ) )
         throw FatalError( ERR_WRITE );
-    if( std::fwrite( &_buttonIndex[0], sizeof( word ), _buttonIndex.size(), out ) != _buttonIndex.size() )
+    if( out->write( &_buttonIndex[0], sizeof( word ), _buttonIndex.size() ) )
         throw FatalError( ERR_WRITE );
     return( static_cast< dword >( bytes ) );
 }
-

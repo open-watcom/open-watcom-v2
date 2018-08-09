@@ -653,6 +653,7 @@ void Tag::buildIndex()
         ( *iter )->buildIndex();
     }
 }
+
 /***************************************************************************/
 void Tag::linearize( Page* page )
 {

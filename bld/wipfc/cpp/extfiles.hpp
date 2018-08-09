@@ -38,7 +38,7 @@
 #include "errors.hpp"
 
 
-class Document;     // forward reference
+class OutFile;      // forward reference
 
 class ExternalFiles {
     typedef STD1::uint8_t   byte;
@@ -57,7 +57,7 @@ public:
     dword length() const { return _bytes; };
     //get the number of elements in the collection
     dword size() const { return static_cast< dword >( _table.size() ); };
-    dword write( std::FILE* out, Document *document );
+    dword write( OutFile *out );
 private:
     ExternalFiles( const ExternalFiles& rhs );              //no copy
     ExternalFiles& operator=( const ExternalFiles& rhs );   //no assignment

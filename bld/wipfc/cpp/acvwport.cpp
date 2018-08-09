@@ -45,6 +45,8 @@
 #include "document.hpp"
 #include "errors.hpp"
 #include "util.hpp"
+#include "outfile.hpp"
+
 
 Lexer::Token AcViewport::parse( Lexer* lexer )
 {
@@ -231,7 +233,7 @@ void AcViewport::buildText( Cell* cell )
         esc.push_back( static_cast< STD1::uint8_t >( _objectName.size() + 1 ) );
         if( !_objectName.empty() ) {
             std::string buffer;
-            _document->wtomb_string( _objectName, buffer );
+            cell->out()->wtomb_string( _objectName, buffer );
             std::size_t bytes( buffer.size() );
             for( std::size_t count1 = 0; count1 < bytes; ++count1 ) {
                 esc.push_back( static_cast< STD1::uint8_t >( buffer[ count1 ] ) );
@@ -240,7 +242,7 @@ void AcViewport::buildText( Cell* cell )
         esc.push_back( static_cast< STD1::uint8_t >( _dll.size() + 1 ) );
         if( !_dll.empty() ) {
             std::string buffer;
-            _document->wtomb_string( _dll, buffer );
+            cell->out()->wtomb_string( _dll, buffer );
             std::size_t bytes( buffer.size() );
             for( std::size_t count1 = 0; count1 < bytes; ++count1 ) {
                 esc.push_back( static_cast< STD1::uint8_t >( buffer[ count1 ] ) );
@@ -249,7 +251,7 @@ void AcViewport::buildText( Cell* cell )
         esc.push_back( static_cast< STD1::uint8_t >( _objectInfo.size() + 1 ) );
         if( !_objectInfo.empty() ) {
             std::string buffer;
-            _document->wtomb_string( _objectInfo, buffer );
+            cell->out()->wtomb_string( _objectInfo, buffer );
             std::size_t bytes( buffer.size() );
             for( std::size_t count1 = 0; count1 < bytes; ++count1 ) {
                 esc.push_back( static_cast< STD1::uint8_t >( buffer[ count1 ] ) );

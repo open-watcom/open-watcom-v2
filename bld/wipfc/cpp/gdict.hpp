@@ -50,7 +50,6 @@
 #include "gdword.hpp"
 #include "ptrops.hpp"
 
-class Document;     // forward reference
 
 class GlobalDictionary {
     typedef STD1::uint8_t   byte;
@@ -78,9 +77,9 @@ public:
     dword length() const { return _bytes; };
     //the number of bytes of FTS data written by the collection
     dword ftsLength() const { return _ftsBytes; };
-    dword write( std::FILE* out, Document *document );
-    bool buildFTS();
-    dword writeFTS( std::FILE* out, bool big );
+    dword write( OutFile *out );
+    bool buildFTS( OutFile *out );
+    dword writeFTS( OutFile *out, bool big );
 private:
     GlobalDictionary( const GlobalDictionary& rhs );            //no copy
     GlobalDictionary operator= ( const GlobalDictionary& rhs ); //no assigment

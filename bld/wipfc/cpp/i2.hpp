@@ -60,7 +60,7 @@ public:
     void setRes( word r ) { _parentRes = r; };
     void setIdOrName( GlobalDictionaryWord* w ) { _parentId = w; };
     bool isGlobal() const { return _index->isGlobal(); };
-    dword write( std::FILE* out ) { return _index->write( out, _document ); };
+    dword write( OutFile *out ) { return _index->write( out ); };
 private:
     I2( const I2& rhs );                //no copy
     I2& operator=( const I2& rhs );     //no assignment

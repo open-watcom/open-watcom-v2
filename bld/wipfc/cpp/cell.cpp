@@ -37,10 +37,13 @@
 #include <algorithm>
 #include "cell.hpp"
 #include "errors.hpp"
+#include "outfile.hpp"
+
 
 //for each element, call buildText() to fill text buffer
-void Cell::build()
+void Cell::build( OutFile *out )
 {
+    _out = out;
     for( ElementIter itr = _elements.begin(); itr != _elements.end(); ++itr )
         ( *itr )->buildText( this );
     if( _text.empty() ) {
@@ -75,37 +78,36 @@ void Cell::addEsc( const std::vector< byte >& esc )
     }
 }
 /***************************************************************************/
-#pragma pack(push, 1)
-    struct cellData {
-        STD1::uint8_t  zero;               //=0
-        STD1::uint32_t dictOffset;         //file offset to STD1::uint16_t array
-        STD1::uint8_t  dictCount;          // <=254 unique words
-        STD1::uint16_t textCount;
-        //variable length data follows:
-        //STD1::uint8_t  text[textCount];  //encoded text (indexes into dict)
-        //STD1::uint16_t  dict[dictCount];  //index to global dictionary
-    };
-#pragma pack(pop)
 
-Cell::dword Cell::write( std::FILE* out ) const
+//struct cellData {
+//    STD1::uint8_t  zero;               //=0
+//    STD1::uint32_t dictOffset;         //file offset to STD1::uint16_t array
+//    STD1::uint8_t  dictCount;          // <=254 unique words
+//    STD1::uint16_t textCount;
+//    //variable length data follows:
+//    //STD1::uint8_t  text[textCount];  //encoded text (indexes into dict)
+//    //STD1::uint16_t  dict[dictCount];  //index to global dictionary
+//};
+
+Cell::dword Cell::write( OutFile *out ) const
 {
-    dword offset( std::ftell( out ) );
-    cellData data;
-    data.zero = 0;
-    data.dictOffset = static_cast< dword >( offset + sizeof( byte ) + sizeof( dword ) +
-        sizeof( byte ) + sizeof( word ) + _text.size() );
-    data.dictCount = static_cast< byte >( _localDictionary.size() );
-    data.textCount = static_cast< word >( _text.size() );
-    if( std::fwrite( &data, sizeof( cellData ), 1, out ) != 1 )
+    dword offset( out->tell() );
+    // zero
+    if( out->put( static_cast< byte >( 0 ) ) )
         throw FatalError( ERR_WRITE );
-    if( std::fwrite( &_text[0], sizeof( byte ), _text.size(), out ) != _text.size() )
+    // dictOffset
+    if( out->put( static_cast< dword >( offset + sizeof( byte ) + sizeof( dword ) + sizeof( byte ) + sizeof( word ) + _text.size() ) ) )
         throw FatalError( ERR_WRITE );
-    if( !_localDictionary.empty() &&
-        std::fwrite( &_localDictionary[0],
-                     sizeof( word ),
-                     _localDictionary.size(),
-                     out ) != _localDictionary.size() )
+    if( out->put( static_cast< byte >( _localDictionary.size() ) ) )
         throw FatalError( ERR_WRITE );
+    if( out->put( static_cast< word >( _text.size() ) ) )
+        throw FatalError( ERR_WRITE );
+    if( out->write( &_text[0], sizeof( byte ), _text.size() ) )
+        throw FatalError( ERR_WRITE );
+    if( !_localDictionary.empty() ) {
+        if( out->write( &_localDictionary[0], sizeof( word ), _localDictionary.size() ) ) {
+            throw FatalError( ERR_WRITE );
+        }
+    }
     return offset;
 }
-

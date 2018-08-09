@@ -60,6 +60,7 @@ class I1;
 class ICmd;
 class Synonym;
 class Text;
+class OutFile;
 
 class Document {
     typedef STD1::uint8_t   byte;
@@ -67,16 +68,16 @@ class Document {
     typedef STD1::uint32_t  dword;
 
 public:
-    Document( Compiler& c, const char * loc );
+    Document( Compiler& c, Compiler::OutputType t, const char * loc );
     ~Document();
     void parse( Lexer* lexer );
     void build();
-    void write( std::FILE* out );
+    void write();
     void summary( std::FILE* logfp );
 
-    //set the output file type
-    void setOutputType( Compiler::OutputType t )
-        { t == Compiler::INF ? _hdr->flags = 0x01 : _hdr->flags = 0x10; };
+    //set the output file
+    void setOutFile( const std::string& fileName );
+    OutFile *out() { return _out; };
     bool isInf() const { return _hdr->flags == 0x01; };
     //set the lowest header level for which new pages are made
     void setHeaderCutOff( unsigned int co ) { _maxHeaderLevel = co; };
@@ -187,8 +188,6 @@ public:
     wchar_t entityChar( const std::wstring& key ) { return _nls->entityChar( key ); };
     // UNICODE<->MBCS conversion
     word codePage() { return _nls->codePage(); };
-    std::size_t  wtomb_cstring( char *mbc, const wchar_t *wc, std::size_t len ){ return _nls->wtomb_cstring( mbc, wc, len ); };
-    void         wtomb_string( const std::wstring& input, std::string& output ){ _nls->wtomb_string( input, output ); };
 
     //To Strings
     void addString( const std::wstring& str ) { _strings->add( str ); };
@@ -265,20 +264,21 @@ private:
     std::vector< std::string > _ipfcartwork_paths;
     std::vector< std::string > _ipfcimbed_paths;
     std::wstring _title;
+    OutFile *_out;
 
     void makeBitmaps();
     void makeIndexes();
-    dword writeBitmaps( std::FILE* out );
-    dword writeResMap( std::FILE* out );
-    dword writeNameMap( std::FILE* out );
-    dword writeTOCs( std::FILE* out );
-    dword writeTOCOffsets( std::FILE* out );
-    void writeCells( std::FILE* out );
-    dword writeCellOffsets( std::FILE* out );
-    dword writeChildWindows( std::FILE* out );
-    void writeSynonyms( std::FILE* out );
-    dword writeIndex( std::FILE* out );
-    dword writeICmd( std::FILE* out );
+    dword writeBitmaps();
+    dword writeResMap();
+    dword writeNameMap();
+    dword writeTOCs();
+    dword writeTOCOffsets();
+    void writeCells();
+    dword writeCellOffsets();
+    dword writeChildWindows();
+    void writeSynonyms();
+    dword writeIndex();
+    dword writeICmd();
 };
 
 #endif //DOCUMENT_INCLUDED

@@ -39,7 +39,7 @@
 #include <vector>
 
 
-class Document;     // forward reference
+class OutFile;      // forward reference
 
 class StringTable {
     typedef STD1::uint8_t   byte;
@@ -51,7 +51,7 @@ public:
     void add( const std::wstring& str ) { _table.push_back( str ); };
     //the number of bytes written to disk
     dword length() const { return( static_cast< dword >( _bytes ) ); };
-    dword write( std::FILE *out, Document *document );
+    dword write( OutFile *out );
 private:
     std::vector< std::wstring > _table;
     typedef std::vector< std::wstring >::iterator TableIter;

@@ -33,6 +33,9 @@
 
 #include <cstdio>
 
+
+class OutFile;
+
 #define TITLE_SIZE      48
 
 #pragma pack(push, 1)
@@ -76,7 +79,7 @@ struct IpfHeader {
     char            title[TITLE_SIZE];  // title of database
 
     IpfHeader();
-    void write( std::FILE *out ) const;
+    void write( OutFile *out ) const;
     bool isBigFTS();
     void setBigFTS( bool );
 };
@@ -100,7 +103,7 @@ struct IpfExtHeader {
     STD1::uint32_t  reserved[ 4 ];      // reserved for future use
 
     IpfExtHeader() { std::memset( this, 0, sizeof( IpfExtHeader) ); };
-    STD1::uint32_t write( std::FILE *out ) const;
+    STD1::uint32_t write( OutFile *out ) const;
 };
 
 #pragma pack(pop)

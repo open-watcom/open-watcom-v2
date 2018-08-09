@@ -32,27 +32,28 @@
 #include "wipfc.hpp"
 #include "ctrlbtn.hpp"
 #include "errors.hpp"
-#include "document.hpp"
-#include "util.hpp"
+#include "outfile.hpp"
 
 
-ControlButton::dword ControlButton::write( std::FILE *out, Document *document ) const
+ControlButton::dword ControlButton::write( OutFile *out ) const
 {
     std::size_t bytes( sizeof( word ) * 2 );
-    word type( 1 );
-    if( std::fwrite( &type, sizeof( word ), 1, out) != 1 )
+
+    // type = 1
+    if( out->put( static_cast< word >( 1 ) ) )
         throw FatalError( ERR_WRITE );
-    if( std::fwrite( &_res, sizeof( word ), 1, out) != 1 )
+    if( out->put( _res ) )
         throw FatalError( ERR_WRITE );
     std::string buffer;
-    document->wtomb_string( _txt, buffer );
+    out->wtomb_string( _txt, buffer );
     std::size_t length( buffer.size() );
     if( length > 255 ) {
         buffer.erase( 255 );
         length = 255;
     }
-    if( std::fputc( static_cast< byte >( length ), out) == EOF ||
-        std::fwrite( buffer.data(), sizeof( char ), length, out ) != length )
+    if( out->put( static_cast< byte >( length ) ) )
+        throw FatalError( ERR_WRITE );
+    if( out->write( buffer.data(), sizeof( char ), length ) )
         throw FatalError( ERR_WRITE );
     bytes += length + 1;
     return( static_cast< dword >( bytes ) );

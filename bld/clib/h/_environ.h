@@ -67,6 +67,8 @@ extern int      __putenv( const char *env_string );
 extern int      __wputenv( const wchar_t *env_string );
 extern int      __setenv( const char *name, const char *newvalue, int overwrite );
 extern int      __wsetenv( const wchar_t *name, const wchar_t *newvalue, int overwrite );
+extern char     *___findenv( const char *name, int *index );
+extern wchar_t  *___wfindenv( const wchar_t *name, int *index );
 
 extern void     __setenvp( void );
 #if !defined(__NETWARE__)

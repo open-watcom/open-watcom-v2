@@ -32,25 +32,23 @@
 #include "wipfc.hpp"
 #include "controls.hpp"
 #include "errors.hpp"
-#include "document.hpp"
+#include "outfile.hpp"
 
 
-Controls::dword Controls::write( std::FILE* out, Document *document )
+Controls::dword Controls::write( OutFile *out )
 {
-    dword start( std::ftell( out ) );
-    word value( static_cast< word >( _controls.size() ) );
-    if( std::fwrite( &value, sizeof( word ), 1, out) != 1 )
+    dword start( out->tell() );
+    if( out->put( static_cast< word >( _controls.size() ) ) )
         throw FatalError( ERR_WRITE );
-    value = static_cast< word >( _groups.size() );
-    if( std::fwrite( &value, sizeof( word ), 1, out ) != 1 )
+    if( out->put( static_cast< word >( _groups.size() ) ) )
         throw FatalError( ERR_WRITE );
-    if( std::fwrite( &_coverGroup, sizeof( word ), 1, out) != 1 )
+    if( out->put( _coverGroup ) )
         throw FatalError( ERR_WRITE );
-    value = 0;                              //reserved word
-    if( std::fwrite( &value, sizeof( word ), 1, out) != 1 )
+    //reserved word 0
+    if( out->put( static_cast< word >( 0 ) ) )
         throw FatalError( ERR_WRITE );
     for( ConstControlIter itr = _controls.begin(); itr != _controls.end(); ++itr ) {
-        _bytes += itr->write( out, document );
+        _bytes += itr->write( out );
     }
     for( ConstGroupIter itr = _groups.begin(); itr != _groups.end(); ++itr ) {
         _bytes += itr->write( out );

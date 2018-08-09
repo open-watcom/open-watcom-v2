@@ -33,7 +33,7 @@
 #include <cwctype>
 #include "index.hpp"
 #include "errors.hpp"
-#include "document.hpp"
+#include "outfile.hpp"
 
 
 IndexItem::IndexItem( Type t )
@@ -109,17 +109,17 @@ int IndexItem::wstricmp( const wchar_t *s, const wchar_t *t ) const
 //  char sortText[size2]                //sort key text
 //char indexText[size or size-size2];   //index word [not zero-terminated]
 //unsigned long synonyms[synonymCount]; //32 bit file offsets to synonyms referencing this word
-IndexItem::dword IndexItem::write( std::FILE* out, Document *document )
+IndexItem::dword IndexItem::write( OutFile *out )
 {
     std::string buffer1;
     std::string buffer2;
     std::size_t length1( 0 );
     std::size_t length2( 0 );
     if( _hdr.sortKey ) {
-        document->wtomb_string( _sortKey, buffer1 );
+        out->wtomb_string( _sortKey, buffer1 );
         length1 = buffer1.size();
     }
-    document->wtomb_string( _text, buffer2 );
+    out->wtomb_string( _text, buffer2 );
     length2 = buffer2.size();
     if( length1 + length2 > 254 ) {
         length2 = length1 > 254 ? 0 : 254 - length1;
@@ -129,20 +129,21 @@ IndexItem::dword IndexItem::write( std::FILE* out, Document *document )
         _hdr.size = static_cast< byte >( length2 );
     }
     _hdr.synonymCount = static_cast< byte >( _synonyms.size() );
-    if( std::fwrite( &_hdr, sizeof( IndexHeader ), 1, out ) != 1 )
+    if( out->write( &_hdr, sizeof( IndexHeader ), 1 ) )
         throw FatalError( ERR_WRITE );
     std::size_t written( sizeof( IndexHeader ) );
     if( _hdr.sortKey ) {
-        if( std::fputc( static_cast< byte >( length1 ), out ) == EOF ||
-            std::fwrite( buffer1.data(), sizeof( char ), length1, out ) != length1 )
+        if( out->put( static_cast< byte >( length1 ) ) )
+            throw FatalError( ERR_WRITE );
+        if( out->write( buffer1.data(), sizeof( char ), length1 ) )
             throw FatalError( ERR_WRITE );
         written += length1 + 1;
     }
-    if( std::fwrite( buffer2.data(), sizeof( char ), length2, out ) != length2 )
+    if( out->write( buffer2.data(), sizeof( char ), length2 ) )
         throw FatalError( ERR_WRITE );
     written += length2;
     if( !_synonyms.empty() &&
-        std::fwrite( &_synonyms[0], sizeof( dword ), _synonyms.size(), out ) != _synonyms.size() )
+        out->write( &_synonyms[0], sizeof( dword ), _synonyms.size() ) )
         throw FatalError( ERR_WRITE );
     written += _synonyms.size() * sizeof( dword );
     return( static_cast< dword >( written ) );

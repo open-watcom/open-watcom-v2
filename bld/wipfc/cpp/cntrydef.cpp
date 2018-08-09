@@ -37,6 +37,7 @@
 #include "cntrydef.hpp"
 #include "util.hpp"
 #include "errors.hpp"
+#include "outfile.hpp"
 
 
 void CountryDef::nlsConfig( const char *loc )
@@ -100,24 +101,23 @@ void CountryDef::nlsConfig( const char *loc )
     _entityFileName = path + std::string( fn2 );
 }
 
-CountryDef::dword CountryDef::write( std::FILE *out ) const
+CountryDef::dword CountryDef::write( OutFile *out ) const
 /*********************************************************/
 {
-    dword start = std::ftell( out );
-    if( std::fwrite( &_size, sizeof( _size ), 1, out ) != 1 )
+    dword start = out->tell();
+    if( out->put( _size ) )
         throw FatalError( ERR_WRITE );
-    byte type = static_cast< byte >( _type );
-    if( std::fwrite( &type, sizeof( type ), 1, out ) != 1 )
+    if( out->put( static_cast< byte >( _type ) ) )
         throw FatalError( ERR_WRITE );
-    if( std::fwrite( &_format, sizeof( _format ), 1, out ) != 1 )
+    if( out->put( _format ) )
         throw FatalError( ERR_WRITE );
-    if( std::fwrite( &_value, sizeof( _value ), 1, out ) != 1 )
+    if( out->put( _value ) )
         throw FatalError( ERR_WRITE );
-    if( std::fwrite( &_country, sizeof( _country ), 1, out ) != 1 )
+    if( out->put( _country ) )
         throw FatalError( ERR_WRITE );
-    if( std::fwrite( &_codePage, sizeof( _codePage ), 1, out ) != 1 )
+    if( out->put( _codePage ) )
         throw FatalError( ERR_WRITE );
-    if( std::fwrite( &_reserved, sizeof( _reserved ), 1, out ) != 1 )
+    if( out->put( _reserved ) )
         throw FatalError( ERR_WRITE );
     return( start );
 }

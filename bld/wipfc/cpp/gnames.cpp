@@ -37,6 +37,8 @@
 #include <cstdio>
 #include "gnames.hpp"
 #include "errors.hpp"
+#include "outfile.hpp"
+
 
 void GNames::insert( GlobalDictionaryWord* wordent, word toc )
 {
@@ -46,20 +48,20 @@ void GNames::insert( GlobalDictionaryWord* wordent, word toc )
     _names.insert( std::map< GlobalDictionaryWord*, word, ptrLess< GlobalDictionaryWord* > >::value_type( wordent, toc ) );
 }
 /***************************************************************************/
-GNames::dword GNames::write( std::FILE *out ) const
+GNames::dword GNames::write( OutFile *out ) const
 {
     dword start( 0 );
     if( _names.size() ) {
-        start = std::ftell( out );
+        start = out->tell();
         for( ConstNameIter itr = _names.begin(); itr != _names.end(); ++itr ) {
-            word index = (itr->first)->index();
-            if( std::fwrite( &index, sizeof( word ), 1, out ) != 1 ) {
+            // name index
+            if( out->put( itr->first->index() ) ) {
                 throw FatalError( ERR_WRITE );
             }
         }
         for( ConstNameIter itr = _names.begin(); itr != _names.end(); ++itr ) {
-            word toc = itr->second;
-            if( std::fwrite( &toc, sizeof( word ), 1, out ) != 1 ) {
+            // TOC index
+            if( out->put( itr->second ) ) {
                 throw FatalError( ERR_WRITE );
             }
         }

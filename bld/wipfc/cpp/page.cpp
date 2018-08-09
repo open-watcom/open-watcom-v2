@@ -35,14 +35,17 @@
 #include "document.hpp"
 #include "errors.hpp"
 #include "hn.hpp"
+#include "outfile.hpp"
+
 
 void Page::buildTOC()
 {
     ( *( _elements.begin() ))->buildTOC( this );
 }
 /***************************************************************************/
-void Page::buildLocalDictionary()
+void Page::buildLocalDictionary( OutFile *out )
 {
+    _out = out;
     bool autoSpacing( true );
     _currentCell = new Cell( _document->maxLocalDictionarySize() );
     _document->addCell( _currentCell );
@@ -77,7 +80,7 @@ bool Page::addWord( GlobalDictionaryWord* wordent )
 }
 /***************************************************************************/
 //Write a TOC entry
-Page::dword Page::write( std::FILE* out )
+Page::dword Page::write( OutFile *out )
 {
     std::size_t tocsize( sizeof( TocEntry ) + _toc.cellCount * sizeof( word ) );
     if( _toc.extended ) {
@@ -96,7 +99,7 @@ Page::dword Page::write( std::FILE* out )
     }
     // convert title to mb
     std::string title;
-    _document->wtomb_string( _title, title );
+    out->wtomb_string( _title, title );
     if( tocsize + title.size() > 255 ) {
         Hn* hn( static_cast< Hn* >( *( _elements.begin() ) ) );
         hn->printError( ERR2_TEXTTOOLONG );
@@ -110,7 +113,7 @@ Page::dword Page::write( std::FILE* out )
         if( _etoc.setPos )
             _origin.write( out );
         if( _etoc.setSize )
-            _size.write (out );
+            _size.write( out );
         if( _etoc.setStyle )
             _style.write( out );
         if( _etoc.setGroup )
@@ -119,10 +122,10 @@ Page::dword Page::write( std::FILE* out )
             _controls.write( out );
         }
     }
-    if( std::fwrite( &_cells[0], sizeof( word ), _cells.size(), out ) != _cells.size() )
+    if( out->write( &_cells[0], sizeof( word ), _cells.size() ) )
         throw FatalError( ERR_WRITE );
-    if( !title.empty() ) {
-        if( std::fwrite( title.c_str(), sizeof( byte ), title.size(), out ) != title.size() ) {
+    if( !_title.empty() ) {
+        if( out->write( _title.c_str(), sizeof( byte ), _title.size() ) ) {
             throw FatalError( ERR_WRITE );
         }
     }
@@ -132,20 +135,18 @@ Page::dword Page::write( std::FILE* out )
 // byte size
 // word parent_toc_index
 // word child_toc_index
-Page::dword Page::writeChildren( std::FILE* out ) const
+Page::dword Page::writeChildren( OutFile *out ) const
 {
-    std::size_t bytes = 0;
+    byte bytes = 0;
     if( !_children.empty() ) {
-        byte size_u8 = 3 + static_cast< byte >( _children.size() * sizeof( word ) );
-        if( std::fputc( size_u8, out ) == EOF )
+        bytes = static_cast< byte >( sizeof( byte ) + sizeof( _idx ) + _children.size() * sizeof( std::vector< word >::value_type ) );
+        if( out->put( bytes ) )
             throw FatalError( ERR_WRITE );
-        ++bytes;
-        if( std::fwrite( &_idx, sizeof( word ), 1, out ) != 1 )
+        if( out->put( _idx ) )
             throw FatalError( ERR_WRITE );
-        bytes += sizeof( word );
-        if( std::fwrite( &_children[0], sizeof( word ), _children.size(), out ) != _children.size() )
+        if( out->write( &_children[0], sizeof( std::vector< word >::value_type ), _children.size() ) ) {
             throw FatalError( ERR_WRITE );
-        bytes += sizeof( word ) * _children.size();
+        }
     }
-    return( static_cast< dword >( bytes ) );
+    return( bytes );
 }

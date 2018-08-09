@@ -38,6 +38,9 @@
 #include <vector>
 #include "element.hpp"
 
+
+class OutFile;
+
 class Cell {
     typedef STD1::uint8_t   byte;
     typedef STD1::uint16_t  word;
@@ -66,9 +69,10 @@ public:
     //add an element to this cell's list
     void addElement( Element* element ) { _elements.push_back( element ); };
     //build the encoded text
-    void build();
+    void build( OutFile *out );
     //write the cell to the file
-    dword write( std::FILE* out ) const;
+    dword write( OutFile *out ) const;
+    OutFile *out() { return _out; };
 private:
     Cell( const Cell& rhs );                //no copy
     Cell& operator=( const Cell& rhs );     //no assignment
@@ -83,6 +87,7 @@ private:
     typedef std::vector< Element* >::const_iterator ConstElementIter;
     std::size_t _maxDictSize;
     std::size_t _idx;                       //index of this cell in cell array
+    OutFile *_out;
 };
 
 /*

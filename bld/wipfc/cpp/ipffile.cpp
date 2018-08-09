@@ -40,11 +40,15 @@
 #include "ipffile.hpp"
 #include "errors.hpp"
 #include "util.hpp"
+#include "outfile.hpp"
+#include "nls.hpp"
 
 
-IpfFile::IpfFile( const std::wstring* wfname ) : IpfData(),
+IpfFile::IpfFile( const std::wstring* wfname, Nls *nls ) : IpfData(),
     _fileName( wfname ), _ungottenChar( WEOF ), _ungotten( false )
 {
+    (void)nls;
+
     std::string sfname;
     def_wtomb_string( *_fileName, sfname );
     if( (_stream = std::fopen( sfname.c_str(), "rb" )) == 0 ) {
@@ -52,9 +56,11 @@ IpfFile::IpfFile( const std::wstring* wfname ) : IpfData(),
     }
 }
 
-IpfFile::IpfFile( const std::string& sfname, const std::wstring* wfname ) : IpfData(),
+IpfFile::IpfFile( const std::string& sfname, const std::wstring* wfname, Nls *nls ) : IpfData(),
     _fileName( wfname ), _ungottenChar( WEOF ), _ungotten( false )
 {
+    (void)nls;
+
     if( (_stream = std::fopen( sfname.c_str(), "rb" )) == 0 ) {
         throw FatalIOError( ERR_OPEN, *_fileName );
     }

@@ -36,9 +36,8 @@
 #include "fnt.hpp"
 #include "errors.hpp"
 
-#define MAX_FONTS       14
 
-class Document;     // forward reference
+#define MAX_FONTS       14
 
 class FontCollection
 {
@@ -54,7 +53,7 @@ public:
     dword length() { return _bytes; };
     //the number of fonts in the collection
     std::size_t size() { return _fonts.size(); };
-    dword write( std::FILE *out, Document *document );
+    dword write( OutFile *out );
 private:
     FontCollection( const FontCollection& rhs );            //no copy
     FontCollection& operator=( const FontCollection& rhs ); //no assigment

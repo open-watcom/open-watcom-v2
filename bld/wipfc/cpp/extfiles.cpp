@@ -34,7 +34,7 @@
 #include <cstdlib>
 #include "extfiles.hpp"
 #include "errors.hpp"
-#include "document.hpp"
+#include "outfile.hpp"
 
 
 void ExternalFiles::addFile( std::wstring& str )
@@ -55,24 +55,24 @@ void ExternalFiles::convert()
     }
 }
 /***************************************************************************/
-ExternalFiles::dword ExternalFiles::write( std::FILE *out, Document *document )
+ExternalFiles::dword ExternalFiles::write( OutFile *out )
 {
     if( _table.empty() )
         return 0;
-    dword start( std::ftell( out ) );
+    dword start( out->tell() );
     for( ConstTableIter itr = _table.begin(); itr != _table.end(); ++itr ) {
         std::string buffer;
-        document->wtomb_string( itr->first, buffer );
+        out->wtomb_string( itr->first, buffer );
         std::size_t length( buffer.size() );
         if( length > 255 ) {
             buffer.erase( 255 );
             length = 255;
         }
-        std::size_t written;
-        if( std::fputc( static_cast< byte >( length + 1 ), out ) == EOF ||
-            ( written = std::fwrite( buffer.data(), sizeof( char ), length, out ) ) != length )
+        if( out->put( static_cast< byte >( length + 1 ) ) )
             throw FatalError( ERR_WRITE );
-        _bytes += static_cast< dword >( written + 1 );
+        if( out->write( buffer.data(), sizeof( char ), length ) )
+            throw FatalError( ERR_WRITE );
+        _bytes += static_cast< dword >( length + 1 );
     }
     return start;
 }

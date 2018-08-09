@@ -35,7 +35,8 @@
 #include <string>
 #include <vector>
 
-class Document;
+
+class OutFile;
 
 class Synonym {
     typedef STD1::uint8_t   byte;
@@ -46,7 +47,7 @@ public:
     Synonym() : _offset( 0 ) { };
     ~Synonym() { };
     void add( const std::wstring& txt ) { _synonyms.push_back( txt ); };
-    void write( std::FILE* out, Document *document );
+    void write( OutFile *out );
     dword location() const { return _offset; };
 private:
     std::vector< std::wstring > _synonyms;
