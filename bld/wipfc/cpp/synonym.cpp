@@ -32,21 +32,35 @@
 #include "wipfc.hpp"
 #include "synonym.hpp"
 #include "errors.hpp"
+#include "document.hpp"
 
-void Synonym::write( std::FILE* out )
+
+void Synonym::write( std::FILE* out, Document *document )
 {
-    offset = std::ftell( out );
-    unsigned short int size( 1 );
+    // convert wide vector _synonyms to mbcs vector synonyms
+    std::vector< std::string > synonyms;
+    for( SynonymWIter itr = _synonyms.begin(); itr != _synonyms.end(); ++itr ) {
+        std::string txt;
+        document->wtomb_string( *itr, txt );
+        if( txt.size() > 255 )
+            txt.erase( 255 );
+        synonyms.push_back( txt );
+    }
+    // process mbcs vector
+    _offset = std::ftell( out );
+    word size( 1 );
     for( SynonymIter itr = synonyms.begin(); itr != synonyms.end(); ++itr )
-        size += static_cast< unsigned short int >( itr->size() );
-    if( std::fwrite( &size, sizeof( unsigned short int ), 1, out ) != 1 )
+        size += static_cast< word >( itr->size() );
+    if( std::fwrite( &size, sizeof( word ), 1, out ) != 1 )
         throw FatalError( ERR_WRITE );
     for( SynonymIter itr = synonyms.begin(); itr != synonyms.end(); ++itr ) {
-        unsigned char length( static_cast< unsigned char >( itr->size() ) );
+        byte length( static_cast< byte >( itr->size() ) );
         if( std::fputc( length, out ) == EOF ||
-            std::fwrite( itr->data(), sizeof( unsigned char ), length, out ) != length )
+            std::fwrite( itr->data(), sizeof( byte ), length, out ) != length ) {
             throw FatalError( ERR_WRITE );
+        }
     }
-    if( std::fputc( '\0', out ) == EOF )
+    if( std::fputc( '\0', out ) == EOF ) {
         throw FatalError( ERR_WRITE );
+    }
 }

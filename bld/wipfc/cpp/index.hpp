@@ -58,7 +58,7 @@ public:
     void setText( std::wstring& t ) { _text = t; };
     void setTOC( word t ) { _hdr.tocPanelIndex = t; };
     void addSynonym( dword t ) { _synonyms.push_back( t ); };
-    std::size_t write( std::FILE* out, Document *document );
+    dword write( std::FILE* out, Document *document );
     bool operator==( const IndexItem& rhs ) const;
     bool operator==( const std::wstring& rhs ) const;
     bool operator<( const IndexItem& rhs ) const;

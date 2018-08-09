@@ -50,13 +50,13 @@ public:
     StringTable() : _bytes( 0 ) { _table.reserve( 3 ); };
     void add( const std::wstring& str ) { _table.push_back( str ); };
     //the number of bytes written to disk
-    dword length() const { return _bytes; };
+    dword length() const { return( static_cast< dword >( _bytes ) ); };
     dword write( std::FILE *out, Document *document );
 private:
     std::vector< std::wstring > _table;
     typedef std::vector< std::wstring >::iterator TableIter;
     typedef std::vector< std::wstring >::const_iterator ConstTableIter;
-    dword _bytes;
+    std::size_t _bytes;
 };
 
 #endif //STRINGS_INCLUDED

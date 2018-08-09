@@ -37,10 +37,14 @@
 #include "btmpblk.hpp"
 
 class Bitmap {
+    typedef STD1::uint8_t   byte;
+    typedef STD1::uint16_t  word;
+    typedef STD1::uint32_t  dword;
+
 public:
     Bitmap( std::string& f );
     ~Bitmap() { };
-    STD1::uint32_t write( std::FILE* bmfpo ) const;
+    dword write( std::FILE* bmfpo ) const;
 private:
     Bitmap( const Bitmap& rhs );            //no copy
     Bitmap& operator=( const Bitmap& rhs ); //no assignment
@@ -88,9 +92,9 @@ private:
     BitmapFileHeader bmfh;              //read BitmapFileHeader
     BitmapInfoHeader16 bmih;
     std::vector< RGB > rgb;
-    STD1::uint32_t bytesPerRow;
-    STD1::uint32_t dataSize;            //size of the compressed data
-    STD1::uint16_t blockSize;           //including this word
+    dword bytesPerRow;
+    dword dataSize;            //size of the compressed data
+    word blockSize;           //including this word
     std::vector< BitmapBlock > data;    //and all of the data blocks
     typedef std::vector< BitmapBlock >::iterator DataIter;
     typedef std::vector< BitmapBlock >::const_iterator ConstDataIter;

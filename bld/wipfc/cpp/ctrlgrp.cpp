@@ -35,12 +35,12 @@
 
 ControlGroup::dword ControlGroup::write( std::FILE *out ) const
 {
-    dword bytes( sizeof( word ) * ( _buttonIndex.size() + 1 ) );
+    std::size_t bytes( sizeof( word ) * ( _buttonIndex.size() + 1 ) );
     word items( static_cast< word >( _buttonIndex.size() ) );
-    if( std::fwrite( &items, sizeof( word ), 1, out) != 1 )
+    if( std::fwrite( &items, sizeof( word ), 1, out ) != 1 )
         throw FatalError( ERR_WRITE );
-    if( std::fwrite( &_buttonIndex[0], sizeof( word ), _buttonIndex.size(), out) != _buttonIndex.size() )
+    if( std::fwrite( &_buttonIndex[0], sizeof( word ), _buttonIndex.size(), out ) != _buttonIndex.size() )
         throw FatalError( ERR_WRITE );
-    return bytes;
+    return( static_cast< dword >( bytes ) );
 }
 

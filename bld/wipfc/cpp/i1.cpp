@@ -161,7 +161,7 @@ void I1::buildIndex()
     }
 }
 /*****************************************************************************/
-std::size_t I1::write( std::FILE* out )
+I1::dword I1::write( std::FILE* out )
 {
     for( ConstSynIter itr = _synRoots.begin(); itr != _synRoots.end(); ++itr ) {
         //convert roots into offsets
@@ -173,9 +173,9 @@ std::size_t I1::write( std::FILE* out )
             printError( e.code );
         }
     }
-    std::size_t written( _primary->write( out, _document ) );
+    dword written = _primary->write( out, _document );
     std::sort( _secondary.begin(), _secondary.end(), ptrLess< IndexItem* >() );
     for( IndexIter itr = _secondary.begin(); itr != _secondary.end(); ++itr )
         written += ( *itr )->write( out, _document );
-    return written;
+    return( written );
 }

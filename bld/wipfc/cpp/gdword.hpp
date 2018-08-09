@@ -52,7 +52,7 @@ public:
     void setIndex( word index ) { _index = index; };
     word index() const { return _index; };
     const std::wstring& getText() const { return _text; };
-    std::size_t writeWord( std::FILE* out, Document *document ) const;
+    dword writeWord( std::FILE* out, Document *document ) const;
     bool operator==( const GlobalDictionaryWord& rhs ) const { return _text == rhs._text; };
     bool operator==( const std::wstring& rhs ) const { return _text == rhs; };
     bool operator<( const GlobalDictionaryWord& rhs ) const;
@@ -61,7 +61,7 @@ public:
     void onPage( std::size_t i ) { _fts.onPage( i ); };
     void buildFTS() { _fts.build(); };
     bool isBigFTS() { return _fts.isBigFTS(); };
-    std::size_t writeFTS( std::FILE* out, bool big ) { return _fts.write( out, big ); };
+    dword writeFTS( std::FILE* out, bool big ) { return _fts.write( out, big ); };
 private:
     GlobalDictionaryWord( const GlobalDictionaryWord& rhs );            //no copy
     GlobalDictionaryWord& operator=( const GlobalDictionaryWord& rhs ); //no assignment

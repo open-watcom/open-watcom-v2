@@ -70,12 +70,7 @@ Lexer::Token ISyn::parse( Lexer* lexer )
     unsigned int currentLine = _document->dataLine();
     while( tok != Lexer::END && !( tok == Lexer::TAG && lexer->tagId() == Lexer::EUSERDOC ) ) {
         if( tok == Lexer::WORD ) {
-            char buffer[ 256 ];     // max len 255 + null
-            std::size_t length( _document->wtomb_cstring( buffer, lexer->text().c_str(), sizeof( buffer ) - 1 ) );
-            if( length == ERROR_CNV )
-                throw FatalError( ERR_T_CONV );
-            std::string txt( buffer );
-            _syn->add( txt );
+            _syn->add( lexer->text() );
         } else if( tok == Lexer::WHITESPACE ) {
             tok = _document->getNextToken();
         } else {

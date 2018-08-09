@@ -50,7 +50,7 @@ public:
     void build();
     //Only valid after build is run
     bool isBigFTS() { return _dataSize + 2 > UINT8_MAX; };
-    std::size_t write( std::FILE* out, bool big ) const;
+    dword write( std::FILE* out, bool big ) const;
 private:
     word getPages( std::vector< word >& pg, bool absent ) const;
     FTSElement( const FTSElement& rhs );            //no copy

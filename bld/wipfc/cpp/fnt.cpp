@@ -53,7 +53,7 @@ FontEntry::dword FontEntry::write( std::FILE *out, Document *document ) const
     codePage = ( _codePage == DEFAULT_CODEPAGE ) ? document->codePage() : _codePage;
     if( std::fwrite( &codePage, sizeof( codePage ), 1, out ) != 1 )
         throw FatalError( ERR_WRITE );
-    return( sizeof( faceName ) + sizeof( _height ) + sizeof( _width ) + sizeof( codePage ) );
+    return( static_cast< dword >( sizeof( faceName ) + sizeof( _height ) + sizeof( _width ) + sizeof( codePage ) ) );
 }
 
 bool FontEntry::operator==( const FontEntry &rhs ) const

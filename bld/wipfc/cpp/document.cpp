@@ -532,7 +532,7 @@ void Document::summary( std::FILE* logfp )
 /***************************************************************************/
 void Document::addBitmap( std::wstring& bmn )
 {
-    _bitmapNames.insert( std::map< std::wstring, unsigned long int >::value_type( bmn, 0 ) );
+    _bitmapNames.insert( std::map< std::wstring, dword >::value_type( bmn, 0 ) );
 }
 /***************************************************************************/
 Document::dword Document::bitmapByName( std::wstring& bmn )
@@ -794,8 +794,9 @@ Document::dword Document::writeChildWindows( std::FILE* out )
 /***************************************************************************/
 void Document::writeSynonyms( std::FILE* out )
 {
-    for( SynIter itr = _synonyms.begin(); itr != _synonyms.end(); ++itr )
-        itr->second->write( out );
+    for( SynIter itr = _synonyms.begin(); itr != _synonyms.end(); ++itr ) {
+        itr->second->write( out, this );
+    }
 }
 /***************************************************************************/
 Document::dword Document::writeIndex( std::FILE* out )

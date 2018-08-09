@@ -55,7 +55,7 @@ public:
     void buildText( Cell* cell ) { (void)cell; };
     void setRes( word r ) { _parentRes = r; };
     void setIdOrName( GlobalDictionaryWord* w ) { _parentId = w; };
-    std::size_t write( std::FILE* out ) { return  _index->write( out, _document ); };
+    dword write( std::FILE* out ) { return  _index->write( out, _document ); };
     bool operator==( const ICmd& rhs ) const{ return *_index == *rhs._index; };
     bool operator==( const std::wstring& rhs ) const { return *_index == rhs; };
     bool operator<( const ICmd& rhs ) const { return *_index < *rhs._index; };

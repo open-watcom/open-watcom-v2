@@ -247,11 +247,11 @@ void FTSElement::encode( std::vector< byte >& rle )
     }
 }
 
-std::size_t FTSElement::write( std::FILE *out, bool big ) const
-/****************************************************************/
+FTSElement::dword FTSElement::write( std::FILE *out, bool big ) const
+/*******************************************************************/
 {
     std::vector< word > pg;
-    word size;
+    std::size_t size;
 
     // calculate FTS data size
     switch( _comp ) {
@@ -277,8 +277,9 @@ std::size_t FTSElement::write( std::FILE *out, bool big ) const
     }
     // output FTS data
     if( big ) {
-        size += sizeof( word ) + sizeof( byte );
-        if( putU16( size, out ) ) {
+        size = static_cast< word >( size + sizeof( word ) + sizeof( byte ) );
+        word tmp = static_cast< word >( size );
+        if( putU16( tmp, out ) ) {
             throw FatalError( ERR_WRITE );
         }
     } else {
@@ -315,5 +316,5 @@ std::size_t FTSElement::write( std::FILE *out, bool big ) const
     default:
         break;
     }
-    return( size );
+    return( static_cast< dword >( size ) );
 }

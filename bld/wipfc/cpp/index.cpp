@@ -109,7 +109,7 @@ int IndexItem::wstricmp( const wchar_t *s, const wchar_t *t ) const
 //  char sortText[size2]                //sort key text
 //char indexText[size or size-size2];   //index word [not zero-terminated]
 //unsigned long synonyms[synonymCount]; //32 bit file offsets to synonyms referencing this word
-std::size_t IndexItem::write( std::FILE* out, Document *document )
+IndexItem::dword IndexItem::write( std::FILE* out, Document *document )
 {
     std::string buffer1;
     std::string buffer2;
@@ -133,7 +133,7 @@ std::size_t IndexItem::write( std::FILE* out, Document *document )
         throw FatalError( ERR_WRITE );
     std::size_t written( sizeof( IndexHeader ) );
     if( _hdr.sortKey ) {
-        if( std::fputc( length1, out ) == EOF ||
+        if( std::fputc( static_cast< byte >( length1 ), out ) == EOF ||
             std::fwrite( buffer1.data(), sizeof( char ), length1, out ) != length1 )
             throw FatalError( ERR_WRITE );
         written += length1 + 1;
@@ -145,5 +145,5 @@ std::size_t IndexItem::write( std::FILE* out, Document *document )
         std::fwrite( &_synonyms[0], sizeof( dword ), _synonyms.size(), out ) != _synonyms.size() )
         throw FatalError( ERR_WRITE );
     written += _synonyms.size() * sizeof( dword );
-    return written;
+    return( static_cast< dword >( written ) );
 }

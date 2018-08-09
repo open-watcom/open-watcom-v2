@@ -38,7 +38,7 @@
 
 ControlButton::dword ControlButton::write( std::FILE *out, Document *document ) const
 {
-    dword bytes( sizeof( word ) * 2 );
+    std::size_t bytes( sizeof( word ) * 2 );
     word type( 1 );
     if( std::fwrite( &type, sizeof( word ), 1, out) != 1 )
         throw FatalError( ERR_WRITE );
@@ -55,5 +55,5 @@ ControlButton::dword ControlButton::write( std::FILE *out, Document *document ) 
         std::fwrite( buffer.data(), sizeof( char ), length, out ) != length )
         throw FatalError( ERR_WRITE );
     bytes += length + 1;
-    return bytes;
+    return( static_cast< dword >( bytes ) );
 }

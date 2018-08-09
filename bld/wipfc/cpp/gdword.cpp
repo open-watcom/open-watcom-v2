@@ -53,17 +53,16 @@ void GlobalDictionaryWord::toUpper()
     }
 }
 /***************************************************************************/
-std::size_t GlobalDictionaryWord::writeWord( std::FILE* out, Document *document ) const
+GlobalDictionaryWord::dword GlobalDictionaryWord::writeWord( std::FILE* out, Document *document ) const
 {
     char buffer[ 255 ];     // max len 254 + null
-    std::size_t written;
     std::size_t length( document->wtomb_cstring( buffer, _text.c_str(), sizeof( buffer ) - 1 ) );
     if( length == ERROR_CNV )
         throw FatalError( ERR_T_CONV );
     if( std::fputc( static_cast< byte >( length + 1 ), out ) == EOF ||
-        ( written = std::fwrite( buffer, sizeof( char ), length, out ) ) != length )
+        std::fwrite( buffer, sizeof( char ), length, out ) != length )
         throw FatalError( ERR_WRITE );
-    return written + 1;
+    return( static_cast< dword >( length + 1 ) );
 }
 /***************************************************************************/
 bool GlobalDictionaryWord::operator<( const GlobalDictionaryWord& rhs ) const

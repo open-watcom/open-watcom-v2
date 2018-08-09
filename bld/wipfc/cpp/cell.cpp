@@ -92,8 +92,8 @@ Cell::dword Cell::write( std::FILE* out ) const
     dword offset( std::ftell( out ) );
     cellData data;
     data.zero = 0;
-    data.dictOffset = offset + sizeof( byte ) + sizeof( dword ) +
-        sizeof( byte ) + sizeof( word ) + _text.size();
+    data.dictOffset = static_cast< dword >( offset + sizeof( byte ) + sizeof( dword ) +
+        sizeof( byte ) + sizeof( word ) + _text.size() );
     data.dictCount = static_cast< byte >( _localDictionary.size() );
     data.textCount = static_cast< word >( _text.size() );
     if( std::fwrite( &data, sizeof( cellData ), 1, out ) != 1 )

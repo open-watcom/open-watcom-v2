@@ -134,7 +134,7 @@ Page::dword Page::write( std::FILE* out )
 // word child_toc_index
 Page::dword Page::writeChildren( std::FILE* out ) const
 {
-    dword bytes = 0;
+    std::size_t bytes = 0;
     if( !_children.empty() ) {
         byte size_u8 = 3 + static_cast< byte >( _children.size() * sizeof( word ) );
         if( std::fputc( size_u8, out ) == EOF )
@@ -147,5 +147,5 @@ Page::dword Page::writeChildren( std::FILE* out ) const
             throw FatalError( ERR_WRITE );
         bytes += sizeof( word ) * _children.size();
     }
-    return( bytes );
+    return( static_cast< dword >( bytes ) );
 }

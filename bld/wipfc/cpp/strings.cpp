@@ -44,14 +44,13 @@ StringTable::dword StringTable::write( std::FILE *out, Document *document )
     dword start( std::ftell( out ) );
     for( ConstTableIter itr = _table.begin(); itr != _table.end(); ++itr ) {
         char buffer[ 256 ];     // max len 255 + null
-        std::size_t written;
         std::size_t length( document->wtomb_cstring( buffer, itr->c_str(), sizeof( buffer ) - 1 ) );
         if( length == ERROR_CNV )
             throw FatalError( ERR_T_CONV );
         if( std::fputc( static_cast< byte >( length + 1 ), out ) == EOF ||
-            ( written = std::fwrite( buffer, sizeof( char ), length, out ) ) != length)
+            std::fwrite( buffer, sizeof( char ), length, out ) != length)
             throw FatalError( ERR_WRITE );
-        _bytes += written + 1;
+        _bytes += length + 1;
     }
     return start;
 }
