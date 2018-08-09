@@ -33,10 +33,11 @@
 #include "wipfc.hpp"
 #include "tocref.hpp"
 
-void TocRef::write( std::FILE* out ) const
+void TocRef::write( std::FILE* logfp ) const
 {
-    std::fprintf( out, " defined at %ls, line %u\n", fileName->c_str(), lineNumber );
-    for( ConstXRefIter itr( xref.begin() ); itr != xref.end(); ++itr )
-        itr->write( out );
+    std::fprintf( logfp, " defined at %ls, line %u\n", fileName->c_str(), lineNumber );
+    for( ConstXRefIter itr( xref.begin() ); itr != xref.end(); ++itr ) {
+        itr->write( logfp );
+    }
 }
 

@@ -43,7 +43,7 @@ public:
     ~TocRef() { };
     STD1::uint16_t index() const { return tocIndex; };
     void addXRef( XRef& ref ) { xref.insert( ref ); };
-    void write( std::FILE* out ) const;
+    void write( std::FILE* logfp ) const;
 private:
     const std::wstring* fileName;
     std::set< XRef > xref;

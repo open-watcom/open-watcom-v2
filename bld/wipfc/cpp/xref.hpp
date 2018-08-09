@@ -38,7 +38,7 @@ class XRef {
 public:
     XRef( const std::wstring* f, unsigned int r ) : fileName( f ), lineNumber( r ) { };
     ~XRef() { };
-    void write( std::FILE* out ) const;
+    void write( std::FILE* logfp ) const;
     bool operator <( const XRef& rhs ) const;
 private:
     const std::wstring* fileName;

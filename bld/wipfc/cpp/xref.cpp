@@ -32,9 +32,9 @@
 #include "wipfc.hpp"
 #include "xref.hpp"
 
-void XRef::write( std::FILE* out ) const
+void XRef::write( std::FILE* logfp ) const
 {
-    std::fprintf( out, "    ^--Referenced by %ls, line %u\n", fileName->c_str(), lineNumber );
+    std::fprintf( logfp, "    ^--Referenced by %ls, line %u\n", fileName->c_str(), lineNumber );
 }
 /*****************************************************************************/
 bool XRef::operator <( const XRef& rhs ) const

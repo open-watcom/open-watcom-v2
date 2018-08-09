@@ -503,25 +503,25 @@ void Document::write( std::FILE *out )
     _hdr->write( out );   //rewrite the header to update the offsets
 }
 /***************************************************************************/
-void Document::summary( std::FILE* out )
+void Document::summary( std::FILE* logfp )
 {
     //TODO: use ostream when streams and strings mature
-    std::fprintf( out, "Number of pages:          %u\n", static_cast< unsigned int >( _pages.size() ) );
-    std::fprintf( out, "Pages defined by name:    %u\n", static_cast< unsigned int >( _nameMap.size() ) );
-    std::fprintf( out, "Pages defined by number:  %u\n", static_cast< unsigned int >( _resMap.size() ) );
-    std::fprintf( out, "Words in dictionary:      %u\n", _dict->size() );
-    std::fprintf( out, "Number of index entries:  %u\n", static_cast< unsigned int >( _index.size() ) );
-    std::fprintf( out, "Global index entries:     %u\n", _eHdr->gIndexCount );
-    std::fprintf( out, "Number of fonts used:     %u\n", static_cast< unsigned int >( _fonts->size() ) );
-    std::fprintf( out, "Number of External files: %u\n", _extfiles->size() );
-    std::fprintf( out, "\nIdentifier Cross-reference\n" );
+    std::fprintf( logfp, "Number of pages:          %u\n", static_cast< unsigned int >( _pages.size() ) );
+    std::fprintf( logfp, "Pages defined by name:    %u\n", static_cast< unsigned int >( _nameMap.size() ) );
+    std::fprintf( logfp, "Pages defined by number:  %u\n", static_cast< unsigned int >( _resMap.size() ) );
+    std::fprintf( logfp, "Words in dictionary:      %u\n", _dict->size() );
+    std::fprintf( logfp, "Number of index entries:  %u\n", static_cast< unsigned int >( _index.size() ) );
+    std::fprintf( logfp, "Global index entries:     %u\n", _eHdr->gIndexCount );
+    std::fprintf( logfp, "Number of fonts used:     %u\n", static_cast< unsigned int >( _fonts->size() ) );
+    std::fprintf( logfp, "Number of External files: %u\n", _extfiles->size() );
+    std::fprintf( logfp, "\nIdentifier Cross-reference\n" );
     for( ConstResMapIter itr( _resMap.begin() ); itr != _resMap.end(); ++itr ) {
-        std::fprintf( out, "%5u:", itr->first );
-        itr->second.write( out );
+        std::fprintf( logfp, "%5u:", itr->first );
+        itr->second.write( logfp );
     }
     for( ConstNameMapIter itr( _nameMap.begin() ); itr != _nameMap.end(); ++itr ) {
-        std::fprintf( out, "%ls:\n      ", itr->first->getText().c_str() );
-        itr->second.write( out );
+        std::fprintf( logfp, "%ls:\n      ", itr->first->getText().c_str() );
+        itr->second.write( logfp );
     }
 }
 /***************************************************************************/

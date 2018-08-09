@@ -72,7 +72,7 @@ public:
     void parse( Lexer* lexer );
     void build();
     void write( std::FILE* out );
-    void summary( std::FILE* out );
+    void summary( std::FILE* logfp );
 
     //set the output file type
     void setOutputType( Compiler::OutputType t )
