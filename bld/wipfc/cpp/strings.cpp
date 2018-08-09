@@ -37,7 +37,7 @@
 #include "util.hpp"
 
 
-STD1::uint32_t StringTable::write( std::FILE *out, Document *document )
+StringTable::dword StringTable::write( std::FILE *out, Document *document )
 {
     if( _table.empty() )
         return 0L;

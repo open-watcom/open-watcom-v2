@@ -33,9 +33,9 @@
 #include "toc.hpp"
 #include "errors.hpp"
 
-STD1::uint32_t TocEntry::write( std::FILE* out ) const
+TocEntry::dword TocEntry::write( std::FILE* out ) const
 {
-    STD1::uint32_t offset( std::ftell( out ) );
+    dword offset( std::ftell( out ) );
     if( std::fwrite( this, sizeof( TocEntry ), 1, out ) != 1 )
         throw FatalError( ERR_WRITE );
     return offset;

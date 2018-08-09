@@ -50,7 +50,7 @@ public:
     void toUpper();
     //set the index postion in the collection
     void setIndex( word index ) { _index = index; };
-    STD1::uint16_t index() const { return _index; };
+    word index() const { return _index; };
     const std::wstring& getText() const { return _text; };
     std::size_t writeWord( std::FILE* out, Document *document ) const;
     bool operator==( const GlobalDictionaryWord& rhs ) const { return _text == rhs._text; };

@@ -77,7 +77,7 @@ bool Page::addWord( GlobalDictionaryWord* wordent )
 }
 /***************************************************************************/
 //Write a TOC entry
-STD1::uint32_t Page::write( std::FILE* out )
+Page::dword Page::write( std::FILE* out )
 {
     std::size_t tocsize( sizeof( TocEntry ) + _toc.cellCount * sizeof( word ) );
     if( _toc.extended ) {
@@ -132,7 +132,7 @@ STD1::uint32_t Page::write( std::FILE* out )
 // byte size
 // word parent_toc_index
 // word child_toc_index
-STD1::uint32_t Page::writeChildren( std::FILE* out ) const
+Page::dword Page::writeChildren( std::FILE* out ) const
 {
     dword bytes = 0;
     if( !_children.empty() ) {

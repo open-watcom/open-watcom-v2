@@ -51,10 +51,10 @@ public:
     //returns the index of the font in the list
     std::size_t add( const FontEntry& fnt );
     //the number of bytes written by the collection
-    STD1::uint32_t length() { return _bytes; };
+    dword length() { return _bytes; };
     //the number of fonts in the collection
     std::size_t size() { return _fonts.size(); };
-    STD1::uint32_t write( std::FILE *out, Document *document );
+    dword write( std::FILE *out, Document *document );
 private:
     FontCollection( const FontCollection& rhs );            //no copy
     FontCollection& operator=( const FontCollection& rhs ); //no assigment

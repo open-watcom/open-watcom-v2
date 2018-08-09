@@ -55,7 +55,7 @@ void ExternalFiles::convert()
     }
 }
 /***************************************************************************/
-STD1::uint32_t ExternalFiles::write( std::FILE *out, Document *document )
+ExternalFiles::dword ExternalFiles::write( std::FILE *out, Document *document )
 {
     if( _table.empty() )
         return 0;

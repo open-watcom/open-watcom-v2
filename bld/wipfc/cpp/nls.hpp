@@ -49,7 +49,7 @@ public:
     Nls( const char* loc );
     //set the locale
     void setLocalization( const char *loc );
-    STD1::uint16_t codePage() const { return _country.codePage(); };
+    word codePage() const { return _country.codePage(); };
     //get localized text strings
     const std::wstring& note() const { return _noteText; };
     const std::wstring& warning() const { return _warningText; };
@@ -66,8 +66,8 @@ public:
     wchar_t entityChar( const std::wstring& key );
     bool isEntity( const std::wstring& key ) { return _entityMap.find( key ) != _entityMap.end(); };
     //number of bytes written
-    STD1::uint32_t length() { return _bytes; };
-    STD1::uint32_t write( std::FILE* out );
+    dword length() { return _bytes; };
+    dword write( std::FILE* out );
     // UNICODE<->MBCS conversion
     std::size_t  wtomb_cstring( char *mbc, const wchar_t *wc, std::size_t len );
     void         wtomb_string( const std::wstring& input, std::string& output );
@@ -93,7 +93,7 @@ private:
         SbcsGrammarDef() : _size( sizeof( word ) + 2 * sizeof( byte ) + (sizeof( _bits ) / sizeof( _bits[0] )) * sizeof( byte ) ),
             _type( WIPFC::TEXT ), _format( 0 ) {};
         void setDefaultBits( WIPFC::NLSRecType rectype );
-        STD1::uint32_t write( std::FILE* out ) const;
+        dword write( std::FILE* out ) const;
     };
     struct DbcsGrammarDef {             // Double-byte character set
         word                _size;          // 4 + (# ranges * 4)
@@ -102,7 +102,7 @@ private:
         std::vector< word > _ranges;        // variable
         DbcsGrammarDef() : _size( sizeof( word ) + 2 * sizeof( byte ) ),
             _type( WIPFC::TEXT ), _format( 1 ) {};
-        STD1::uint32_t write( std::FILE* out );
+        dword write( std::FILE* out );
     };
 
     CountryDef _country;

@@ -48,16 +48,16 @@ class ExternalFiles {
 public:
     ExternalFiles() : _bytes( 0 ) { };
     //need to get index by name
-    STD1::uint16_t index( std::wstring& key ) { return _table[ key ]; };
+    word index( std::wstring& key ) { return _table[ key ]; };
     //add the name of an external database to the collection
     void addFile( std::wstring& str );
     //assign indexes to each entry
     void convert();
     //get the number of bytes written by the collection
-    STD1::uint32_t length() const { return _bytes; };
+    dword length() const { return _bytes; };
     //get the number of elements in the collection
-    STD1::uint32_t size() const { return static_cast< dword >( _table.size() ); };
-    STD1::uint32_t write( std::FILE* out, Document *document );
+    dword size() const { return static_cast< dword >( _table.size() ); };
+    dword write( std::FILE* out, Document *document );
 private:
     ExternalFiles( const ExternalFiles& rhs );              //no copy
     ExternalFiles& operator=( const ExternalFiles& rhs );   //no assignment

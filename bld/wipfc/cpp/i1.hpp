@@ -60,7 +60,7 @@ public:
     void setRes( word r ) { _parentRes = r; };
     void setIdOrName( GlobalDictionaryWord* w ) { _parentId = w; };
     void addSecondary( IndexItem* i ) { _secondary.push_back( i ); };
-    STD1::uint16_t secondaryCount() const
+    word secondaryCount() const
         { return static_cast< word >( _secondary.size() ); };
     bool isGlobal() const { return _primary->isGlobal(); };
     std::size_t write( std::FILE* out );

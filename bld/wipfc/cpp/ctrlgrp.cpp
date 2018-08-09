@@ -33,7 +33,7 @@
 #include "ctrlgrp.hpp"
 #include "errors.hpp"
 
-STD1::uint32_t ControlGroup::write( std::FILE *out ) const
+ControlGroup::dword ControlGroup::write( std::FILE *out ) const
 {
     dword bytes( sizeof( word ) * ( _buttonIndex.size() + 1 ) );
     word items( static_cast< word >( _buttonIndex.size() ) );

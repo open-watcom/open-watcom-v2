@@ -75,10 +75,10 @@ public:
     void buildIndex() { ( *( _elements.begin() ))->buildIndex(); };
     void buildLocalDictionary();
     //write a TOC entry
-    STD1::uint32_t write( std::FILE* out );
-    STD1::uint32_t tocSize() const { return _toc.size; };
+    dword write( std::FILE* out );
+    dword tocSize() const { return _toc.size; };
     //write child windows list
-    STD1::uint32_t writeChildren( std::FILE* out ) const;
+    dword writeChildren( std::FILE* out ) const;
 private:
     Page( const Page& rhs );            //no copy
     Page& operator=( const Page& rhs ); //no assignment

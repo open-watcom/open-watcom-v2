@@ -48,9 +48,9 @@ public:
         _codePage( 850 ), _reserved( 0 ), _useDBCS( false ) {};
 
     void nlsConfig( const char *loc );
-    STD1::uint32_t write( std::FILE* out ) const;
-    STD1::uint16_t codePage() const { return( _codePage ); }
-    STD1::uint16_t size() const { return( _size ); }
+    dword write( std::FILE* out ) const;
+    word codePage() const { return( _codePage ); }
+    word size() const { return( _size ); }
     std::string nlsFileName() const { return _nlsFileName; }
     std::string entityFileName() const { return _entityFileName; }
     bool useDBCS() const { return _useDBCS; }

@@ -72,8 +72,8 @@ void FTSElement::onPage( std::size_t i )
     }
 }
 
-STD1::uint16_t FTSElement::getPages( std::vector< word >& pg, bool absent ) const
-/*******************************************************************************/
+FTSElement::word FTSElement::getPages( std::vector< word >& pg, bool absent ) const
+/*********************************************************************************/
 {
     word index = 0;
 

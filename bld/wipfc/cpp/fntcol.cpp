@@ -63,8 +63,8 @@ std::size_t FontCollection::add( const FontEntry& fnt )
     return( _fonts.size() - 1 );
 }
 
-STD1::uint32_t FontCollection::write( std::FILE *out, Document *document )
-/************************************************************************/
+FontCollection::dword FontCollection::write( std::FILE *out, Document *document )
+/*******************************************************************************/
 {
     dword start = std::ftell( out );
     for( FontIter itr = _fonts.begin(); itr != _fonts.end(); ++itr ) {

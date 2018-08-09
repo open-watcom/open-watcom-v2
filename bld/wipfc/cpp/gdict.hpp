@@ -67,20 +67,20 @@ public:
     //of the collection as if it were an array
     void convert( std::size_t count );
     //get the index of a word in the collection
-    STD1::uint16_t findIndex( GlobalDictionaryWord *wordent ) { return (*_words.find( wordent ))->index(); };
-    STD1::uint16_t findIndex( const std::wstring& wordtxt );
+    word findIndex( GlobalDictionaryWord *wordent ) { return (*_words.find( wordent ))->index(); };
+    word findIndex( const std::wstring& wordtxt );
     //get a word from the collection
     GlobalDictionaryWord* findWord( GlobalDictionaryWord *wordent ) { return *_words.find( wordent ); };
     GlobalDictionaryWord* findWord( const std::wstring& wordtxt );
     //the number of elements in the collection
-    STD1::uint16_t size() const { return static_cast< word >( _words.size() ); };
+    word size() const { return static_cast< word >( _words.size() ); };
     //the number of bytes written by the collection
-    STD1::uint32_t length() const { return _bytes; };
+    dword length() const { return _bytes; };
     //the number of bytes of FTS data written by the collection
-    STD1::uint32_t ftsLength() const { return _ftsBytes; };
-    STD1::uint32_t write( std::FILE* out, Document *document );
+    dword ftsLength() const { return _ftsBytes; };
+    dword write( std::FILE* out, Document *document );
     bool buildFTS();
-    STD1::uint32_t writeFTS( std::FILE* out, bool big );
+    dword writeFTS( std::FILE* out, bool big );
 private:
     GlobalDictionary( const GlobalDictionary& rhs );            //no copy
     GlobalDictionary operator= ( const GlobalDictionary& rhs ); //no assigment

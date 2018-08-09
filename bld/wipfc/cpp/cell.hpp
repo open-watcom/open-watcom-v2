@@ -68,7 +68,7 @@ public:
     //build the encoded text
     void build();
     //write the cell to the file
-    STD1::uint32_t write( std::FILE* out ) const;
+    dword write( std::FILE* out ) const;
 private:
     Cell( const Cell& rhs );                //no copy
     Cell& operator=( const Cell& rhs );     //no assignment

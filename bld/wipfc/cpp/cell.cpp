@@ -87,7 +87,7 @@ void Cell::addEsc( const std::vector< byte >& esc )
     };
 #pragma pack(pop)
 
-STD1::uint32_t Cell::write( std::FILE* out ) const
+Cell::dword Cell::write( std::FILE* out ) const
 {
     dword offset( std::ftell( out ) );
     cellData data;

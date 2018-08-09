@@ -50,8 +50,8 @@ public:
     void setRes( word r ) { _res = r; };
     void setText( std::wstring& t ) { _txt = t; };
     void setIndex( word i ) { _idx = i; };
-    STD1::uint16_t index() { return _idx; };
-    STD1::uint32_t write( std::FILE* out, Document *document ) const;
+    word index() { return _idx; };
+    dword write( std::FILE* out, Document *document ) const;
 private:
     word _res;              //message number
     word _idx;              //array index of this item

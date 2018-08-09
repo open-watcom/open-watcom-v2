@@ -47,8 +47,8 @@ public:
     void setId( const std::wstring& i ) { _idnt = i; };
     const std::wstring& id() const { return _idnt; };
     void setIndex( word i ) { _idx = i; };
-    STD1::uint16_t index() const { return _idx; };
-    STD1::uint32_t write( std::FILE *out ) const;
+    word index() const { return _idx; };
+    dword write( std::FILE *out ) const;
 private:
     std::vector< word > _buttonIndex;
     typedef std::vector< word >::iterator ButtonIter;

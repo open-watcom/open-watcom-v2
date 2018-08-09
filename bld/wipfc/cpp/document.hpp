@@ -86,7 +86,7 @@ public:
     unsigned char leftMargin() const { return _currentLeftMargin; };
     //store a graphics file name
     void addBitmap( std::wstring& bmn );
-    STD1::uint32_t bitmapByName( std::wstring& bmn );
+    dword bitmapByName( std::wstring& bmn );
     //toggle automatic insertion of spaces (for parsing)
     void toggleAutoSpacing() { _spacing = !_spacing; };
     bool autoSpacing() const { return _spacing; };
@@ -124,9 +124,9 @@ public:
     //parse a command
     void parseCommand( Lexer* lexer, Tag* parent );
     //get a TOC index from the resource number to TOC index map
-    STD1::uint16_t tocIndexByRes( word res );
+    word tocIndexByRes( word res );
     //get a TOC index from the id or name to TOC index map
-    STD1::uint16_t tocIndexById( GlobalDictionaryWord* id );
+    word tocIndexById( GlobalDictionaryWord* id );
     //get a .nameit expansion
     const std::wstring* nameit( const std::wstring& key );
     std::wstring* prepNameitName( const std::wstring& key );
@@ -138,7 +138,7 @@ public:
     //Forwarding functions
 
     //To Controls
-    STD1::uint16_t getGroupById( const std::wstring& i );
+    word getGroupById( const std::wstring& i );
 
     //To Compiler
     std::wstring* addFileName( std::wstring* name ) { return _compiler.addFileName( name ); };
@@ -161,14 +161,14 @@ public:
 
     //To ExternalFiles
     void addExtFile( std::wstring& str ) { _extfiles->addFile( str ); };
-    STD1::uint16_t extFileIndex( std::wstring& str ) { return _extfiles->index( str ); };
+    word extFileIndex( std::wstring& str ) { return _extfiles->index( str ); };
 
     //To FontCollection
     std::size_t addFont( const FontEntry& fnt ) { return _fonts->add( fnt ); };
 
     //To GlobalDictionary
     GlobalDictionaryWord * addWord( GlobalDictionaryWord* wordent ) { return _dict->insert( wordent ); };
-    STD1::uint16_t findIndex( const std::wstring& wordtxt ) { return _dict->findIndex( wordtxt ); };
+    word findIndex( const std::wstring& wordtxt ) { return _dict->findIndex( wordtxt ); };
 
     //To GNames
     void addGNameOrId( GlobalDictionaryWord* key, word value )
@@ -186,7 +186,7 @@ public:
     const std::wstring& ulBullet( unsigned int level ) const { return _nls->ulBullets()[level % 3]; };
     wchar_t entityChar( const std::wstring& key ) { return _nls->entityChar( key ); };
     // UNICODE<->MBCS conversion
-    STD1::uint16_t codePage() { return _nls->codePage(); };
+    word codePage() { return _nls->codePage(); };
     std::size_t  wtomb_cstring( char *mbc, const wchar_t *wc, std::size_t len ){ return _nls->wtomb_cstring( mbc, wc, len ); };
     void         wtomb_string( const std::wstring& input, std::string& output ){ _nls->wtomb_string( input, output ); };
 
@@ -268,17 +268,17 @@ private:
 
     void makeBitmaps();
     void makeIndexes();
-    STD1::uint32_t writeBitmaps( std::FILE* out );
-    STD1::uint32_t writeResMap( std::FILE* out );
-    STD1::uint32_t writeNameMap( std::FILE* out );
-    STD1::uint32_t writeTOCs( std::FILE* out );
-    STD1::uint32_t writeTOCOffsets( std::FILE* out );
+    dword writeBitmaps( std::FILE* out );
+    dword writeResMap( std::FILE* out );
+    dword writeNameMap( std::FILE* out );
+    dword writeTOCs( std::FILE* out );
+    dword writeTOCOffsets( std::FILE* out );
     void writeCells( std::FILE* out );
-    STD1::uint32_t writeCellOffsets( std::FILE* out );
-    STD1::uint32_t writeChildWindows( std::FILE* out );
+    dword writeCellOffsets( std::FILE* out );
+    dword writeChildWindows( std::FILE* out );
     void writeSynonyms( std::FILE* out );
-    STD1::uint32_t writeIndex( std::FILE* out );
-    STD1::uint32_t writeICmd( std::FILE* out );
+    dword writeIndex( std::FILE* out );
+    dword writeICmd( std::FILE* out );
 };
 
 #endif //DOCUMENT_INCLUDED

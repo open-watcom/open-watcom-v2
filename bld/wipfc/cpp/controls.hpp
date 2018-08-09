@@ -62,8 +62,8 @@ public:
     ControlGroup* group() { return &_groups[ _groups.size() - 1 ]; };
     ControlGroup* getGroupById( const std::wstring& i );
     void setCover( word c ) { _coverGroup = c; };
-    STD1::uint32_t length() const { return _bytes; };
-    STD1::uint32_t write( std::FILE *out, Document *document );
+    dword length() const { return _bytes; };
+    dword write( std::FILE *out, Document *document );
 private:
     Controls( const Controls& rhs );            //no copy
     Controls& operator=( const Controls& rhs ); //no assignment

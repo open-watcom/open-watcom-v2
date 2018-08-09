@@ -100,8 +100,8 @@ void CountryDef::nlsConfig( const char *loc )
     _entityFileName = path + std::string( fn2 );
 }
 
-STD1::uint32_t CountryDef::write( std::FILE *out ) const
-/******************************************************/
+CountryDef::dword CountryDef::write( std::FILE *out ) const
+/*********************************************************/
 {
     dword start = std::ftell( out );
     if( std::fwrite( &_size, sizeof( _size ), 1, out ) != 1 )

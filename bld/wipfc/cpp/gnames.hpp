@@ -49,8 +49,8 @@ public:
     ~GNames() { };
     void insert( GlobalDictionaryWord* wordent, word toc );
     //the number of names in the collection
-    STD1::uint16_t size() const { return static_cast< word >( _names.size() ); };
-    STD1::uint32_t write( std::FILE *out ) const;
+    word size() const { return static_cast< word >( _names.size() ); };
+    dword write( std::FILE *out ) const;
 private:
     GNames( const GNames& rhs );            //no copy
     GNames& operator=( const GNames& rhs ); //no assignment

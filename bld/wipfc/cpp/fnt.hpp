@@ -54,7 +54,7 @@ public:
     void setHeight( word height ) { _height = height; }
     void setWidth( word width ) { _width = width; }
     void setCodePage( word codePage ) { _codePage = codePage; }
-    STD1::uint32_t write( std::FILE *out, Document *document ) const;
+    dword write( std::FILE *out, Document *document ) const;
     bool operator==( const FontEntry &rhs ) const;
 
 private:

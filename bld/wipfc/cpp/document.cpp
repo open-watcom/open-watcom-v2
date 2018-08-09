@@ -530,7 +530,7 @@ void Document::addBitmap( std::wstring& bmn )
     _bitmapNames.insert( std::map< std::wstring, unsigned long int >::value_type( bmn, 0 ) );
 }
 /***************************************************************************/
-STD1::uint32_t Document::bitmapByName( std::wstring& bmn )
+Document::dword Document::bitmapByName( std::wstring& bmn )
 {
     BitmapNameIter itr( _bitmapNames.find( bmn ) );
     if( itr == _bitmapNames.end() )
@@ -645,7 +645,7 @@ void Document::makeBitmaps()
 }
 
 /***************************************************************************/
-STD1::uint32_t Document::writeBitmaps( std::FILE* out )
+Document::dword Document::writeBitmaps( std::FILE* out )
 {
     dword offset = 0;
     if( !_bitmapNames.empty() && _tmpBitmaps != NULL ) {
@@ -687,7 +687,7 @@ STD1::uint32_t Document::writeBitmaps( std::FILE* out )
     return offset;
 }
 /***************************************************************************/
-STD1::uint32_t Document::writeResMap( std::FILE* out )
+Document::dword Document::writeResMap( std::FILE* out )
 {
     dword offset = 0;
     if( !_resMap.empty() ) {
@@ -708,7 +708,7 @@ STD1::uint32_t Document::writeResMap( std::FILE* out )
     return offset;
 }
 /***************************************************************************/
-STD1::uint32_t Document::writeNameMap( std::FILE* out )
+Document::dword Document::writeNameMap( std::FILE* out )
 {
     dword offset = 0;
     if( !isInf() && !_nameMap.empty() ) {
@@ -730,7 +730,7 @@ STD1::uint32_t Document::writeNameMap( std::FILE* out )
     return offset;
 }
 /***************************************************************************/
-STD1::uint32_t Document::writeTOCs( std::FILE* out )
+Document::dword Document::writeTOCs( std::FILE* out )
 {
     dword offset = std::ftell( out );
     _hdr->tocSize = 0;
@@ -741,7 +741,7 @@ STD1::uint32_t Document::writeTOCs( std::FILE* out )
     return offset;
 }
 /***************************************************************************/
-STD1::uint32_t Document::writeTOCOffsets( std::FILE* out )
+Document::dword Document::writeTOCOffsets( std::FILE* out )
 {
     dword offset = 0;
     if( !_tocOffsets.empty() ) {
@@ -763,7 +763,7 @@ void Document::writeCells( std::FILE* out )
     }
 }
 /***************************************************************************/
-STD1::uint32_t Document::writeCellOffsets( std::FILE* out )
+Document::dword Document::writeCellOffsets( std::FILE* out )
 {
     dword offset = 0;
     if( !_cellOffsets.empty() ) {
@@ -776,7 +776,7 @@ STD1::uint32_t Document::writeCellOffsets( std::FILE* out )
     return offset;
 }
 /***************************************************************************/
-STD1::uint32_t Document::writeChildWindows( std::FILE* out )
+Document::dword Document::writeChildWindows( std::FILE* out )
 {
     dword offset = std::ftell( out );
     _eHdr->childPagesSize = 0;
@@ -791,7 +791,7 @@ void Document::writeSynonyms( std::FILE* out )
         itr->second->write( out );
 }
 /***************************************************************************/
-STD1::uint32_t Document::writeIndex( std::FILE* out )
+Document::dword Document::writeIndex( std::FILE* out )
 {
     dword offset = 0;
     _hdr->indexCount = 0;
@@ -818,7 +818,7 @@ STD1::uint32_t Document::writeIndex( std::FILE* out )
     return offset;
 }
 /***************************************************************************/
-STD1::uint32_t Document::writeICmd( std::FILE* out )
+Document::dword Document::writeICmd( std::FILE* out )
 {
     dword offset = 0;
     _hdr->icmdCount = 0;
@@ -912,7 +912,7 @@ void Document::parseCommand( Lexer* lexer, Tag* parent )
 
 /***************************************************************************/
 //get a TOC index from the resource number to TOC index map
-STD1::uint16_t Document::tocIndexByRes( word res )
+Document::word Document::tocIndexByRes( word res )
 {
     ResMapIter itr( _resMap.find( res ) );
     if( itr == _resMap.end() )
@@ -921,7 +921,7 @@ STD1::uint16_t Document::tocIndexByRes( word res )
 }
 /***************************************************************************/
 //get a TOC index from the id or name to TOC index map
-STD1::uint16_t Document::tocIndexById( GlobalDictionaryWord* id )
+Document::word Document::tocIndexById( GlobalDictionaryWord* id )
 {
     NameMapIter itr( _nameMap.find( id ) );
     if( itr == _nameMap.end() )
@@ -979,7 +979,7 @@ std::wstring* Document::prepNameitName( const std::wstring& key )
     return name;
 }
 /***************************************************************************/
-STD1::uint16_t Document::getGroupById( const std::wstring& i )
+Document::word Document::getGroupById( const std::wstring& i )
 {
     ControlGroup* grp( _controls->getGroupById( i ) );
     if( !grp ) {

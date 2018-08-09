@@ -36,9 +36,9 @@
 #include "util.hpp"
 
 
-STD1::uint32_t ControlButton::write( std::FILE *out, Document *document ) const
+ControlButton::dword ControlButton::write( std::FILE *out, Document *document ) const
 {
-    dword bytes( sizeof( STD1::uint16_t ) * 2 );
+    dword bytes( sizeof( word ) * 2 );
     word type( 1 );
     if( std::fwrite( &type, sizeof( word ), 1, out) != 1 )
         throw FatalError( ERR_WRITE );

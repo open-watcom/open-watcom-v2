@@ -67,7 +67,7 @@ void GlobalDictionary::convert( std::size_t count )
     }
 }
 /***************************************************************************/
-STD1::uint16_t GlobalDictionary::findIndex( const std::wstring& wordtxt )
+GlobalDictionary::word GlobalDictionary::findIndex( const std::wstring& wordtxt )
 {
     GlobalDictionaryWord wordent( wordtxt );
     return( findIndex( &wordent ) );
@@ -79,7 +79,7 @@ GlobalDictionaryWord* GlobalDictionary::findWord( const std::wstring& wordtxt )
     return( findWord( &wordent ) );
 }
 /***************************************************************************/
-STD1::uint32_t GlobalDictionary::write( std::FILE *out, Document *document )
+GlobalDictionary::dword GlobalDictionary::write( std::FILE *out, Document *document )
 {
     dword start = std::ftell( out );
     for( ConstWordIter itr = _words.begin(); itr != _words.end(); ++itr )
@@ -99,7 +99,7 @@ bool GlobalDictionary::buildFTS()
     return( big );
 }
 /***************************************************************************/
-STD1::uint32_t GlobalDictionary::writeFTS( std::FILE *out, bool big )
+GlobalDictionary::dword GlobalDictionary::writeFTS( std::FILE *out, bool big )
 {
     dword start = std::ftell( out );
     for( ConstWordIter itr = _words.begin(); itr != _words.end(); ++itr )

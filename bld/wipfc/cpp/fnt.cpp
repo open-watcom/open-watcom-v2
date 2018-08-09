@@ -35,7 +35,7 @@
 #include "document.hpp"
 
 
-STD1::uint32_t FontEntry::write( std::FILE *out, Document *document ) const
+FontEntry::dword FontEntry::write( std::FILE *out, Document *document ) const
 {
     char            faceName[MAX_FACENAME_SIZE];    //null terminated
     std::string     buffer;

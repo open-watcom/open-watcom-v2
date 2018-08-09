@@ -46,7 +46,7 @@ void GNames::insert( GlobalDictionaryWord* wordent, word toc )
     _names.insert( std::map< GlobalDictionaryWord*, word, ptrLess< GlobalDictionaryWord* > >::value_type( wordent, toc ) );
 }
 /***************************************************************************/
-STD1::uint32_t GNames::write( std::FILE *out ) const
+GNames::dword GNames::write( std::FILE *out ) const
 {
     dword start( 0 );
     if( _names.size() ) {

@@ -35,7 +35,7 @@
 #include "document.hpp"
 
 
-STD1::uint32_t Controls::write( std::FILE* out, Document *document )
+Controls::dword Controls::write( std::FILE* out, Document *document )
 {
     dword start( std::ftell( out ) );
     word value( static_cast< word >( _controls.size() ) );
