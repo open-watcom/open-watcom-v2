@@ -77,20 +77,6 @@ using std::_wsetlocale;
 #define LC_MIN  LC_CTYPE
 #define LC_MAX  LC_ALL
 
-:: It is POSIX locale functionality; not implemented yet
-:segment UNUSED
-:include extposix.sp
-#define LC_CTYPE_MASK       (1 << LC_CTYPE)
-#define LC_NUMERIC_MASK     (1 << LC_NUMERIC)
-#define LC_TIME_MASK        (1 << LC_TIME)
-#define LC_COLLATE_MASK     (1 << LC_COLLATE)
-#define LC_MONETARY_MASK    (1 << LC_MONETARY)
-#define LC_MESSAGES_MASK    (1 << LC_MESSAGES)
-
-#define LC_ALL_MASK         (LC_CTYPE_MASK | LC_NUMERIC_MASK | LC_TIME_MASK | LC_COLLATE_MASK | LC_MONETARY_MASK | LC_MESSAGES_MASK)
-:include extepi.sp
-
-:endsegment
 :include nsstd.sp
 struct lconv {
     char *decimal_point;

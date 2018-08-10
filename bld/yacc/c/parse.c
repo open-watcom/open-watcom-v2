@@ -942,37 +942,36 @@ static char *dupbuf( void )
 
 void dump_header( FILE *fp )
 {
-    const char      *fmt;
-    const char      *ttype;
-    y_token         *t;
-    y_token         *next;
-    unsigned long   max;
+    const char  *fmt;
+    const char  *ttype;
+    y_token     *t;
+    y_token     *tmp;
 
     fprintf( fp, "#ifndef YYTOKENTYPE\n" );
     fprintf( fp, "#define YYTOKENTYPE yytokentype\n" );
+    if( fastflag || bigflag || compactflag ) {
+        ttype = "unsigned short";
+    } else {
+        ttype = "unsigned char";
+    }
     if( enumflag ) {
         fprintf( fp, "typedef enum yytokentype {\n" );
         fmt = "\t%-20s = 0x%02x,\n";
     } else {
         fmt = "#define %-20s 0x%02x\n";
     }
-    max = 0;
-    for( t = tokens_head; t != NULL; t = next ) {
-        next = t->next;
-        if( max < t->value )
-            max = t->value;
+    t = tokens_head;
+    while( t != NULL ) {
         fprintf( fp, fmt, t->name, t->value );
-        FREE( t );
-    }
-    ttype = "short";
-    if( !fastflag && !bigflag && !compactflag && max < 0x0100 ) {
-        ttype = "char";
+        tmp = t;
+        t = t->next;
+        FREE( tmp );
     }
     if( enumflag ) {
-        fprintf( fp, "\tYTOKEN_ENUMSIZE_SETUP = (unsigned %s)-1\n", ttype );
+        fprintf( fp, "\tYTOKEN_ENUMSIZE_SETUP = (%s)-1\n", ttype );
         fprintf( fp, "} yytokentype;\n" );
     } else {
-        fprintf( fp, "typedef unsigned %s yytokentype;\n", ttype );
+        fprintf( fp, "typedef %s yytokentype;\n", ttype );
     }
     fprintf( fp, "#endif\n" );
     fflush( fp );

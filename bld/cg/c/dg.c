@@ -46,12 +46,31 @@
 #include "cgstub.h"
 #include "stubdata.h"
 #include "dbsyms.h"
-#include "stubutil.h"
 #include "feprotos.h"
 #include "cgprotos.h"
 
 
 extern  unsigned_16     TypeIdx;
+
+extern  char            *ACopyOf(const char *);
+extern  void            VerTipe(cg_type ,cg_type *);
+extern  char            *Tipe(cg_type );
+extern  char            *FtnTipe(dbg_ftn_type );
+extern  char            *Label(l *);
+extern  void            Action(char *,... );
+extern  void            TypDbg(char *,... );
+extern  void            Code(char *,... );
+extern  char            *Name(pointer );
+extern  void            Put(char *,... );
+extern  void            SymDbg(char *,... );
+extern  void            VerBack(b *);
+extern  char            *LToS(signed_32 );
+extern  void            CGError(const char *, ... );
+extern  void            DDefLabel(l *);
+extern  void            DRefLabel(l *);
+extern  void            Find(char *,pointer *,pointer );
+
+
 
 void    DGAlign( uint algn )
 //==========================
@@ -109,9 +128,9 @@ unsigned_32     DGTell( void )
     return( Locs[CurSeg] );
 }
 
-unsigned_32     DGBackTell( b *bk )
-//=================================
-{
+extern  unsigned_32     DGBackTell( b *bk ) {
+//===================================
+
     Action( "DGBackTell" );
     VerBack(bk);
     if( !bk->lp->ddef ) {
@@ -121,10 +140,9 @@ unsigned_32     DGBackTell( b *bk )
     Action( "( %s ) -> %l%n", Label( bk->lp ), bk->loc );
     return( bk->loc );
 }
+extern  void    DGFEPtr( sym s, cg_type t, signed_32 o ) {
+//==========================================================
 
-void    DGFEPtr( sym s, cg_type t, signed_32 o )
-//==============================================
-{
     b   *bk;
 
     Action( "DGFEPtr" );
@@ -137,10 +155,9 @@ void    DGFEPtr( sym s, cg_type t, signed_32 o )
     Put( ") + %l %s%n",o,Tipe(t) );
     Locs[CurSeg] += TypeAddress( t )->length;
 }
+extern  void    DGBackPtr( b *bk, segment_id s, signed_32 o, cg_type t ) {
+//==========================================================================
 
-void    DGBackPtr( b *bk, segment_id s, signed_32 o, cg_type t )
-//==============================================================
-{
     Action( "DGBackPtr" );
     Action( "( %s, %d, %l, %s )%n", Label( bk->lp ), s, o, Tipe( t ) );
     VerBack(bk);
@@ -150,10 +167,9 @@ void    DGBackPtr( b *bk, segment_id s, signed_32 o, cg_type t )
     Put( ") + %l (seg %d) %s%n",o,s,Tipe(t) );
     Locs[CurSeg] += TypeAddress( t )->length;
 }
+extern  void    DGBytes( unsigned_32 len, const void *bp ) {
+//============================================
 
-void    DGBytes( unsigned_32 len, const void *bp )
-//================================================
-{
     const byte *p = bp;
     Action( "DGBytes( %l, ... )%n", len );
     Put( "        " );
@@ -164,19 +180,17 @@ void    DGBytes( unsigned_32 len, const void *bp )
     Put( "%n" );
     Locs[CurSeg] += len;
 }
+extern  void    PutName( b *bk ) {
+//================================
 
-void    PutName( b *bk )
-//======================
-{
     Put( "%s", Label( bk->lp ) );
     if( bk->s != NULL ) {
         Put( " [%s]", Name( bk->s ) );
     }
 }
+extern  void    DGInteger(  unsigned_32 i,  cg_type  t ) {
+//======================================================
 
-void    DGInteger(  unsigned_32 i,  cg_type  t )
-//==============================================
-{
     Action( "DGInteger" );
     VerTipe( t,DGIntTypes );
     Action( "( %l, %s )%n", i, Tipe( t ) );
@@ -184,10 +198,8 @@ void    DGInteger(  unsigned_32 i,  cg_type  t )
     Put( " %s%n", Tipe(t) );
     Locs[CurSeg] += TypeAddress( t )->length;
 }
-
-void    DGCFloat( float_handle f, cg_type t )
-//===========================================
-{
+extern  void    DGCFloat( float_handle f, cg_type t ) {
+//=====================================================
     char        buffer[80];
 
     CFCnvFS( f, buffer, 80 );
@@ -195,9 +207,8 @@ void    DGCFloat( float_handle f, cg_type t )
     Put( " %s%n", Tipe(t) );
     Locs[CurSeg] += TypeAddress( t )->length;
 }
-
-void    DGFloat( cchar_ptr f, cg_type t )
-//=======================================
+extern  void    DGFloat( cchar_ptr f, cg_type t )
+//===============================================
 {
     Action( "DGFloat" );
     VerTipe( t, FloatTypes );
@@ -205,17 +216,15 @@ void    DGFloat( cchar_ptr f, cg_type t )
     Action( "( %s, %s )%n", f, Tipe( t ) );
     Locs[CurSeg] += TypeAddress( t )->length;
 }
+extern  void    DGChar( char c ) {
+//================================
 
-void    DGChar( char c )
-//======================
-{
     Action( "DGChar( %c )%n", c );
     Put( "        C(%c)%n",c );
     Locs[CurSeg] += sizeof( char );
 }
-
-void    DGString( cchar_ptr s, uint len )
-//=======================================
+extern  void    DGString( cchar_ptr s, uint len )
+//===============================================
 {
     Action( "DGString( ..., %d )%n", len );
     Locs[CurSeg] += len;
@@ -325,27 +334,26 @@ static  dbg_loc         LocCreate( dbg_loc loc, unsigned typ ) {
     new->class = typ;
     return( new );
 }
+extern  dbg_loc         DBLocInit() {
+/***********************************/
 
-dbg_loc         DBLocInit( void )
-/*******************************/
-{
     Action( "DBLocInit ==> NULL%n" );
     return( NULL );
 }
+extern dbg_loc          DBLocSym( dbg_loc loc, cg_sym_handle sym ) {
+/****************************************************************/
 
-dbg_loc          DBLocSym( dbg_loc loc, cg_sym_handle sym )
-/*********************************************************/
-{
+
     Action( "DBLocSym( %p, %s ) ==>", loc, FEName((pointer)sym) );
     loc = LocCreate( loc, LOC_SYM );
     loc->u.fe_sym = sym;
     Action( "%p%n", loc );
     return( loc );
 }
+extern dbg_loc          DBLocTemp( dbg_loc loc, t *tm  ) {
+/****************************************************************/
 
-dbg_loc          DBLocTemp( dbg_loc loc, t *tm  )
-/***********************************************/
-{
+
     Action( "DBLocTemp" );
     Find( "back end temp", (pointer *)TempList, tm );
     Action( "( %p, T%ld ) ==>", loc, tm->i );
@@ -355,19 +363,18 @@ dbg_loc          DBLocTemp( dbg_loc loc, t *tm  )
     return( loc );
 }
 
-dbg_loc         DBLocConst( dbg_loc loc, unsigned_32 val )
-/********************************************************/
-{
+extern  dbg_loc         DBLocConst( dbg_loc loc, unsigned_32 val ) {
+/******************************************************************/
+
     Action( "DBLocConst( %p, %l ) ==>", loc, val );
     loc = LocCreate( loc, LOC_CONST );
     loc->u.val = val;
     Action( "%p%n", loc );
     return( loc );
 }
+extern  dbg_loc         DBLocOp(dbg_loc loc, dbg_loc_op op, unsigned other) {
+/***************************************************************************/
 
-dbg_loc         DBLocOp(dbg_loc loc, dbg_loc_op op, unsigned other)
-/*****************************************************************/
-{
     unsigned    stkop;
 
     Action( "DBLocOp( %p, %s, %d ) ==>", loc, DBOpNames[op], other );
@@ -445,10 +452,9 @@ dbg_loc         DBLocOp(dbg_loc loc, dbg_loc_op op, unsigned other)
     Action( "%p%n", loc );
     return( loc );
 }
+extern  void _CGAPI             DBLocFini( dbg_loc loc ) {
+/********************************************************/
 
-void _CGAPI             DBLocFini( dbg_loc loc )
-/**********************************************/
-{
     Action( "DBLocFini( %p )%n", loc );
 }
 
@@ -470,8 +476,8 @@ static  void    DBSrcFileFini( void )
     }
 }
 
-uint    DBSrcFile( cchar_ptr fname )
-/**********************************/
+extern  uint    DBSrcFile( cchar_ptr fname )
+/******************************************/
 {
     uint        index;
     size_t      len;
@@ -492,23 +498,23 @@ uint    DBSrcFile( cchar_ptr fname )
     return( index );
 }
 
-void    InitDbgInfo( void )
-/*************************/
+extern  void    InitDbgInfo( void )
+/*********************************/
 {
     SrcFileNoInit();
     DBSrcFile( FEAuxInfo( NULL, SOURCE_NAME ) );
 }
 
 
-void    FiniDbgInfo( void )
-/*************************/
-{
+extern  void    FiniDbgInfo() {
+/******************************/
+
     DBSrcFileFini();
 }
 
-void    DBLineNum( uint no )
-//==========================
-{
+extern  void    DBLineNum( uint no ) {
+//====================================
+
     Action( "%nDBLineNum( %d )%n", no );
     if( CodeSeg != -1 ) {
         Code( "<%d> ", no );
@@ -516,15 +522,15 @@ void    DBLineNum( uint no )
 }
 
 
-void    DBSrcCue( uint fno, uint line, uint col )
-/***********************************************/
-{
+extern  void    DBSrcCue( uint fno, uint line, uint col ) {
+/************************************/
+
     Action( "%nDBSrcCue( %d, %d, %d )%n", fno, line, col );
 }
 
-void    DBModSym( pointer sym, cg_type tipe )
-//===========================================
-{
+extern  void    DBModSym( pointer sym, cg_type tipe ) {
+//=====================================================
+
     Action( "DBModSym" );
     Action( "( %s, %s )%n", FEName(sym), Tipe( tipe ) );
     if( (FEAttr(sym) & FE_IMPORT) == 0 ) {
@@ -533,10 +539,9 @@ void    DBModSym( pointer sym, cg_type tipe )
                 Tipe(tipe) );
     }
 }
+extern  void    DBLocalSym( pointer sym, cg_type tipe ) {
+//=======================================================
 
-void    DBLocalSym( pointer sym, cg_type tipe )
-//=============================================
-{
     Action( "DBLocalSym" );
     Action( "( %s )%n", FEName(sym) );
     if( (FEAttr(sym) & FE_IMPORT) == 0 ) {
@@ -545,9 +550,8 @@ void    DBLocalSym( pointer sym, cg_type tipe )
                 Tipe(tipe));
     }
 }
-
-void    DBTypeDef( cchar_ptr nm, dbg_type  tipe )
-/***********************************************/
+extern  void    DBTypeDef( cchar_ptr nm, dbg_type  tipe )
+/*******************************************************/
 {
     Action( "DBTypeDef( %s, %l ) ==>", nm, tipe );
 }
@@ -557,29 +561,27 @@ void            DBLocalType(pointer sym, bool kind ){
     Action( "DBLocalType( %s, %d ) ==>", FEName((pointer)sym), kind );
 }
 
-void    DBObject( dbg_type tipe, dbg_loc loc )
-//============================================
-{
+extern  void    DBObject( dbg_type tipe, dbg_loc loc ) {
+//=====================================================
+
     Action( "DBObject" );
     Action( "( %d, %s )%n", tipe, Location( loc ) );
     SymDbg( "Object %d (%s)%n", tipe, Location( loc ) );
 }
+extern  void    DBBegBlock( ) {
+//=============================
 
-void    DBBegBlock( void )
-//========================
-{
     Action( "DBBegBlock()%n" );
     SymDbg( "DBBegBlock%n" );
 }
-void    DBEndBlock( void )
+extern  void    DBEndBlock() {
 //============================
-{
+
     Action( "DBEndBlock()%n" );
     SymDbg( "DBEndBlock%n" );
 }
-
-dbg_type        DBFtnType( cchar_ptr nm, dbg_ftn_type tipe )
-//==========================================================
+extern  dbg_type        DBFtnType( cchar_ptr nm, dbg_ftn_type tipe )
+//==================================================================
 {
     Action( "DBFtnType" );
     Action( "( %s, %d )", nm, tipe );
@@ -587,9 +589,8 @@ dbg_type        DBFtnType( cchar_ptr nm, dbg_ftn_type tipe )
     Action( " -> %d%n", TypeIdx );
     return( TypeIdx );
 }
-
-dbg_type        DBScalar( cchar_ptr nm, cg_type tipe )
-//====================================================
+extern  dbg_type        DBScalar( cchar_ptr nm, cg_type tipe )
+//============================================================
 {
     Action( "DBScalar" );
     Action( "( %s, %s )", nm, Tipe( tipe ) );
@@ -597,18 +598,16 @@ dbg_type        DBScalar( cchar_ptr nm, cg_type tipe )
     Action( " -> %d%n", TypeIdx );
     return( TypeIdx );
 }
-
-dbg_type        DBScope( cchar_ptr nm )
-//=====================================
+extern  dbg_type        DBScope( cchar_ptr nm )
+//=============================================
 {
     Action( "DBScope( %s )", nm );
     TypDbg( "(%d) Scope Name '%s'%n", ++TypeIdx, nm );
     Action( " -> %d%n", TypeIdx );
     return( TypeIdx );
 }
-
-dbg_name        DBBegName( cchar_ptr nm, dbg_type scope )
-//=======================================================
+extern  dbg_name        DBBegName( cchar_ptr nm, dbg_type scope )
+//===============================================================
 {
     dbg_name    name;
 
@@ -620,18 +619,16 @@ dbg_name        DBBegName( cchar_ptr nm, dbg_type scope )
     Action( " -> %p%n", name );
     return( name );
 }
+extern  void    DumpName( dbg_name nm, dbg_type tipe ) {
+//======================================================
 
-void    DumpName( dbg_name nm, dbg_type tipe )
-//============================================
-{
     TypDbg( "(%d) Type Name '%s' scope==%d, type==%d%n", ++TypeIdx,
             nm->name, nm->scope, tipe );
     nm->refno = TypeIdx;
 }
+extern  dbg_type        DBForward( dbg_name nm ) {
+//================================================
 
-dbg_type        DBForward( dbg_name nm )
-//======================================
-{
     Action( "DBForward( %p )", nm );
     if( nm->refno == DBG_NIL_TYPE ) {
        DumpName( nm, DBG_FWD_TYPE );
@@ -639,10 +636,9 @@ dbg_type        DBForward( dbg_name nm )
     Action( " -> %d%n", nm->refno );
     return( nm->refno );
 }
+extern  dbg_type        DBEndName( dbg_name nm, dbg_type tipe ) {
+//===============================================================
 
-dbg_type        DBEndName( dbg_name nm, dbg_type tipe )
-//=====================================================
-{
     dbg_type    retv;
 
     Action( "DBEndName( %p, %d )", nm, tipe );
@@ -657,19 +653,17 @@ dbg_type        DBEndName( dbg_name nm, dbg_type tipe )
     Action( " -> %d%n", retv );
     return( retv );
 }
+extern  dbg_type        DBCharBlock( unsigned_32 len ) {
+//======================================================
 
-dbg_type        DBCharBlock( unsigned_32 len )
-//============================================
-{
     Action( "DBCharBlock( %l )", len );
     TypDbg( "(%d) CharBlock len==%l%n", ++TypeIdx, len );
     Action( " -> %d%n", TypeIdx );
     return( TypeIdx );
 }
+extern  dbg_type        DBIndCharBlock( b *len, cg_type len_type, int off ) {
+//=========================================================
 
-dbg_type        DBIndCharBlock( b *len, cg_type len_type, int off )
-//=================================================================
-{
     Action( "DBIndCharBlock" );
     Action( "( %s, %s, %d )", Label( len->lp ), Tipe( len_type ), off );
     TypDbg( "(%d) IndCharBlock len==%s, len_type==%s, offset==%d%n", ++TypeIdx,
@@ -681,10 +675,9 @@ dbg_type        DBIndCharBlock( b *len, cg_type len_type, int off )
     DRefLabel( len->lp );
     return( TypeIdx );
 }
+extern  dbg_type        DBLocCharBlock( dbg_loc loc, cg_type len_type ) {
+//=======================================================================
 
-dbg_type        DBLocCharBlock( dbg_loc loc, cg_type len_type )
-//=============================================================
-{
     Action( "DBLocCharBlock" );
     Action( "( %s, %s )", Location( loc ), Tipe( len_type ) );
     TypDbg( "(%d) LocCharBlock len==%s, len_type==%s", ++TypeIdx,
@@ -692,10 +685,9 @@ dbg_type        DBLocCharBlock( dbg_loc loc, cg_type len_type )
     Action( " -> %d%n", TypeIdx );
     return( TypeIdx );
 }
+extern  dbg_type        DBDereference( cg_type ptr_type, dbg_type base ) {
+//=======================================================================
 
-dbg_type        DBDereference( cg_type ptr_type, dbg_type base )
-//==============================================================
-{
     Action( "DBDereference" );
     Action( "( %s, %d )", Tipe( ptr_type ), base );
     TypDbg( "(%d) DeReference ptr_type==%s, base==%d%n", ++TypeIdx,
@@ -703,10 +695,10 @@ dbg_type        DBDereference( cg_type ptr_type, dbg_type base )
     Action( " -> %d%n", TypeIdx );
     return( TypeIdx );
 }
+extern  dbg_type        DBFtnArray( b *bk, cg_type lo_bound,
+                                    cg_type num_elts, int dim_off,dbg_type base ) {
+//=======================================================================
 
-dbg_type DBFtnArray( b *bk, cg_type lo_bound, cg_type num_elts, int dim_off,dbg_type base )
-//=========================================================================================
-{
     Action( "DBFtnArray" );
     Action( "( %s, %s, %s, %d, %d )", Label( bk->lp ),
             Tipe( lo_bound ), Tipe( num_elts ), dim_off, base );
@@ -720,37 +712,33 @@ dbg_type DBFtnArray( b *bk, cg_type lo_bound, cg_type num_elts, int dim_off,dbg_
     DRefLabel( bk->lp );
     return( TypeIdx );
 }
+extern  dbg_type        DBArray( dbg_type idx, dbg_type base ) {
+//==============================================================
 
-dbg_type        DBArray( dbg_type idx, dbg_type base )
-//====================================================
-{
     Action( "DBArray( %d, %d )", idx, base );
     TypDbg( "(%d) Array index==%d, base==%d%n", ++TypeIdx, idx, base );
     Action( " -> %d%n", TypeIdx );
     return( TypeIdx );
 }
+extern  dbg_type        DBIntArray( unsigned_32 hi, dbg_type base ) {
+//===================================================================
 
-dbg_type        DBIntArray( unsigned_32 hi, dbg_type base )
-//=========================================================
-{
     Action( "DBIntArray( %l, %d )", hi, base );
     TypDbg( "(%d) Int Array hi==%l, base==%d%n", ++TypeIdx, hi, base );
     Action( " -> %d%n", TypeIdx );
     return( TypeIdx );
 }
+extern  dbg_type        DBIntArrayCG( cg_type tipe, unsigned_32 hi, dbg_type base ) {
+/*******************************************************************/
 
-dbg_type    DBIntArrayCG( cg_type tipe, unsigned_32 hi, dbg_type base )
-/*********************************************************************/
-{
     Action( "DBIntArrayCg( %s, %l, %d )", Tipe(tipe), hi, base );
     TypDbg( "(%d) Int Array hi==%l, base==%d%n", ++TypeIdx, hi, base );
     Action( " -> %d%n", TypeIdx );
     return( TypeIdx );
 }
 
-array_list  *DBBegArray(  dbg_type base, cg_type tipe, bool is_col_major )
-/************************************************************************/
-{
+extern  array_list  *DBBegArray(  dbg_type base, cg_type tipe, bool is_col_major ){
+/******************************************************************************/
     array_list *ar;
     type_def   *tipe_addr;
 
@@ -785,9 +773,8 @@ static  void    AddDim( array_list *ar, dim_any *dim ){
     ar->num++;
 }
 
-void DBDimCon( array_list *ar, dbg_type idx, signed_32 lo, signed_32 hi )
-/***********************************************************************/
-{
+extern  void DBDimCon( array_list *ar, dbg_type idx, signed_32 lo, signed_32 hi ){
+/***************************************************/
     dim_con *dim;
 
     Action( "DBDimCon( %p %d, %l, %l, %d)%n", ar, idx, lo, hi );
@@ -799,9 +786,11 @@ void DBDimCon( array_list *ar, dbg_type idx, signed_32 lo, signed_32 hi )
     AddDim( ar, dim );
 }
 
-void  DBDimVar( array_list *ar, b *dims, int off, cg_type lo_bound_tipe, cg_type num_elts_tipe )
-/**********************************************************************************************/
-{
+extern  void  DBDimVar( array_list *ar,
+                        b      *dims, int off,
+                        cg_type lo_bound_tipe,
+                        cg_type num_elts_tipe ){
+/*************************************************/
     dim_var *dim;
 
     Action( "DBDimVar" );
@@ -816,9 +805,10 @@ void  DBDimVar( array_list *ar, b *dims, int off, cg_type lo_bound_tipe, cg_type
     AddDim( ar, dim );
 }
 
-dbg_type        DBEndArray( array_list  *ar )
-/*******************************************/
-{
+extern  dbg_type        DBEndArray( array_list  *ar ) {
+/*******************************************************/
+
+
     Action( "DBEndArray( %p )", ar );
     TypDbg( "(%d) array #dim == %d%n", ++TypeIdx, ar->num );
     CGFree( ar );
@@ -826,19 +816,18 @@ dbg_type        DBEndArray( array_list  *ar )
     return( TypeIdx );
 }
 
-dbg_type        DBSubRange( signed_32 lo, signed_32 hi, dbg_type base )
-//=====================================================================
-{
+extern  dbg_type        DBSubRange( signed_32 lo, signed_32 hi, dbg_type base ) {
+//=============================================================================
+
     Action( "DBSubRange( %l, %l, %d )", lo, hi, base );
     TypDbg( "(%d) Subrange  lo==%l, hi==%l, base==%d%n", ++TypeIdx,
              lo, hi, base );
     Action( " -> %d%n", TypeIdx );
     return( TypeIdx );
 }
+extern  dbg_type        DBPtr( cg_type ptr_tipe, dbg_type base ) {
+//================================================================
 
-dbg_type        DBPtr( cg_type ptr_tipe, dbg_type base )
-//======================================================
-{
     Action( "DBPtr" );
     Action( "( %s, %d )", Tipe( ptr_tipe ), base );
     TypDbg( "(%d) Pointer <%s>, base==%d%n", ++TypeIdx, Tipe(ptr_tipe),
@@ -915,7 +904,7 @@ static  void    AddField( struct_list *st, field_any *field ){
     st->num++;
 }
 
-void    DBAddBitField( struct_list *st, unsigned_32 off, byte strt,
+extern  void    DBAddBitField( struct_list *st, unsigned_32 off, byte strt,
                                      byte len, cchar_ptr nm, dbg_type base)
 /*************************************************************************/
 {
@@ -928,8 +917,7 @@ void    DBAddBitField( struct_list *st, unsigned_32 off, byte strt,
     field->u.off= off;
     AddField( st, field );
 }
-
-void    DBAddLocField( struct_list *st, dbg_loc loc, uint attr,
+extern  void    DBAddLocField( struct_list *st, dbg_loc loc, uint attr,
                      byte strt, byte len, cchar_ptr nm, dbg_type base )
 /*********************************************************************/
 {
@@ -944,8 +932,8 @@ void    DBAddLocField( struct_list *st, dbg_loc loc, uint attr,
 }
 
 
-void DBAddField(struct_list *st,unsigned_32 off,cchar_ptr nm,dbg_type base)
-//=========================================================================
+extern void DBAddField(struct_list *st,unsigned_32 off,cchar_ptr nm,dbg_type base)
+//================================================================================
 {
     field_member *field;
 
@@ -956,8 +944,9 @@ void DBAddField(struct_list *st,unsigned_32 off,cchar_ptr nm,dbg_type base)
     AddField( st, field );
 }
 
-void    DBAddStField( struct_list *st, dbg_loc loc, cchar_ptr nm, uint attr, dbg_type base )
-/******************************************************************************************/
+extern  void    DBAddStField( struct_list *st, dbg_loc loc, cchar_ptr nm,
+                                               uint attr, dbg_type base )
+/***********************************************************************/
 {
     uint          n_len;
     field_stfield *field;
@@ -973,7 +962,7 @@ void    DBAddStField( struct_list *st, dbg_loc loc, cchar_ptr nm, uint attr, dbg
     AddField( st, field );
 }
 
-void    DBAddMethod( struct_list *st, dbg_loc loc, uint attr,
+extern  void    DBAddMethod( struct_list *st, dbg_loc loc, uint attr,
                              uint kind, cchar_ptr nm, dbg_type base )
 /*******************************************************************/
 {
@@ -994,8 +983,8 @@ void    DBAddMethod( struct_list *st, dbg_loc loc, uint attr,
     AddField( st, field );
 }
 
-void    DBAddNestedType( struct_list *st, cchar_ptr nm, dbg_type base )
-/*********************************************************************/
+extern  void    DBAddNestedType( struct_list *st, cchar_ptr nm, dbg_type base )
+/*****************************************************************************/
 {
     uint          n_len;
     field_nested *field;
@@ -1011,11 +1000,11 @@ void    DBAddNestedType( struct_list *st, cchar_ptr nm, dbg_type base )
 }
 
 
-void        DBAddInheritance( struct_list *st, dbg_type inherit,
-                                  uint attr, uint kind,  dbg_loc loc )
-//====================================================================
-{
+extern  void        DBAddInheritance( struct_list *st, dbg_type inherit,
+                                  uint attr, uint kind,  dbg_loc loc ) {
+//===========================================================================
     field_bclass *field;
+
 
     Action( "DBAddInheritance( %p, %d, %p )%n", st, inherit, loc );
     field = CGAlloc( sizeof( field_bclass ) );
@@ -1040,15 +1029,17 @@ void    DBAddBaseInfo( struct_list  *st, unsigned_32 vb_off,  unsigned_32 esize,
                              esize, vtbl, Tipe( ptr_type) );
 }
 
-void    DBAddVFuncInfo( struct_list *st, unsigned_32 vfptr_off, int size, cg_type vft_cgtype )
-//============================================================================================
-{
-     Action( "DBAddVFuncInfo( %p, %d, %d,%s )%n", st, vfptr_off, size, Tipe( vft_cgtype ) );
+extern  void    DBAddVFuncInfo( struct_list  *st, unsigned_32 vfptr_off,
+                                                  int size,
+                                                  cg_type vft_cgtype ){
+//======================================================================
+     Action( "DBAddVFuncInfo( %p, %d, %d,%s )%n", st, vfptr_off,
+                             size,Tipe( vft_cgtype) );
 }
 
-dbg_type        DBEndStruct( struct_list *st )
-//============================================
-{
+extern  dbg_type        DBEndStruct( struct_list *st ) {
+//======================================================
+
     field_any  *curr;
     uint        toff;
 
@@ -1142,10 +1133,9 @@ void    DBAddConst( enum_list *en, cchar_ptr nm, signed_32 val )
     cons->name = ACopyOf( nm );
     cons->val  = val;
 }
+extern  dbg_type        DBEndEnum( enum_list *en ) {
+//==================================================
 
-dbg_type        DBEndEnum( enum_list *en )
-//========================================
-{
     const_entry *cons;
     int tval;
 
@@ -1167,10 +1157,9 @@ dbg_type        DBEndEnum( enum_list *en )
     Action( " -> %d%n", TypeIdx );
     return( TypeIdx );
 }
+extern  proc_list       *DBBegProc( cg_type call_type, dbg_type ret ) {
+//=====================================================================
 
-proc_list       *DBBegProc( cg_type call_type, dbg_type ret )
-//===========================================================
-{
     proc_list   *pr;
 
     Action( "DBBegProc" );
@@ -1183,17 +1172,15 @@ proc_list       *DBBegProc( cg_type call_type, dbg_type ret )
     Action( " -> %p%n", pr );
     return( pr );
 }
+extern  void  DBAddMethParms(  proc_list *pr,  dbg_type  cls, dbg_type this   ) {
+/************************************************************************/
 
-void  DBAddMethParms(  proc_list *pr, dbg_type cls, dbg_type this )
-/*****************************************************************/
-{
     Action( "DBAddMethParms" );
     Action( "(%d %d, %d )%n", pr, cls, this );
 }
+extern  void    DBAddParm( proc_list *pr, dbg_type tipe ) {
+//=========================================================
 
-void    DBAddParm( proc_list *pr, dbg_type tipe )
-//===============================================
-{
     parm_entry  *parm;
     parm_entry  **owner;
 
@@ -1208,10 +1195,9 @@ void    DBAddParm( proc_list *pr, dbg_type tipe )
     parm->tipe = tipe;
     parm->next = NULL;
 }
+extern  dbg_type        DBEndProc( proc_list *pr ) {
+//==================================================
 
-dbg_type        DBEndProc( proc_list *pr )
-//========================================
-{
     parm_entry  *parm;
 
     Action( "DBEndProc( %p )", pr );
@@ -1231,16 +1217,16 @@ dbg_type        DBEndProc( proc_list *pr )
     return( TypeIdx );
 }
 
-void            DBGenStMem(cg_sym_handle sym,dbg_loc loc)
-//=======================================================
-{
+extern  void            DBGenStMem(cg_sym_handle sym,dbg_loc loc) {
+//=================================================================
+
     Action( "DBGenStMem" );
     Action( "( %s, %s )%n", FEName((pointer)sym), Location( loc ) );
 }
 
-void            DBGenSym(cg_sym_handle sym,dbg_loc loc,int scope)
-//===============================================================
-{
+extern  void            DBGenSym(cg_sym_handle sym,dbg_loc loc,int scope) {
+//=========================================================================
+
     Action( "DBGenSym" );
     Action( "( %s )%n", FEName((pointer)sym) );
     if( (FEAttr((pointer)sym) & FE_IMPORT) == 0 ) {
@@ -1250,10 +1236,9 @@ void            DBGenSym(cg_sym_handle sym,dbg_loc loc,int scope)
                 Location( loc ) );
     }
 }
+extern  dbg_type        DBBasedPtr(cg_type ptr_tipe ,dbg_type base,dbg_loc loc) {
+//===============================================================================
 
-dbg_type        DBBasedPtr(cg_type ptr_tipe ,dbg_type base,dbg_loc loc)
-//=====================================================================
-{
     Action( "DBBasedPtr" );
     Action( "( %s, %d )", Tipe( ptr_tipe ), base );
     TypDbg( "(%d) BPointer <%s>, base==%d%n seg_loc=%s", ++TypeIdx, Tipe(ptr_tipe),
@@ -1262,10 +1247,10 @@ dbg_type        DBBasedPtr(cg_type ptr_tipe ,dbg_type base,dbg_loc loc)
     return( TypeIdx );
 }
 
-dbg_type        DBBasedPtrK(cg_type ptr_tipe ,dbg_type base,
-                                  cg_sym_handle sym,  int kind )
+extern  dbg_type        DBBasedPtrK(cg_type ptr_tipe ,dbg_type base,
+                                  cg_sym_handle sym,  int kind ){
 //==================================================================
-{
+
     Action( "DBBasedPtrK" );
     Action( "( %s, %d %s %d)", Tipe( ptr_tipe ), base,
                           kind, FEName((pointer)sym) );

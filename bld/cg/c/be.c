@@ -47,23 +47,41 @@
 #include "utils.h"
 #include "stubdata.h"
 #include "bckptr.h"
-#include "dbsyms.h"
-#include "stubutil.h"
 #include "feprotos.h"
 
 
 extern  int             TempId;
 extern  unsigned_16     TypeIdx;
 
-cg_init_info    BEInit( cg_switches cg_data, cg_target_switches tg_data,
-                                uint opt_size, proc_revision proc )
+extern  char            *ACopyOf(const char *);
+extern  char            *Tipe(cg_type );
+extern  char            *Label(l *);
+extern  void            Action(char *,... );
+extern  void            Code(char *,... );
+extern  segment_id      SetFile(segment_id );
+extern  void            CGError(const char *,... );
+extern  void            VerBack(b *);
+extern  int             FCreate(char *);
+extern  void            FShut(int);
+extern  int             FStdOut();
+extern  char            *EnvVar(char *);
+
+extern  void            DumpTree(pointer);
+extern  void            exit(int);
+extern  void            VDefLabel(l *);
+extern  void            InitDbgInfo();
+extern  void            FiniDbgInfo();
+
+
+extern  cg_init_info    BEInit( cg_switches cg_data, cg_target_switches tg_data,
+                                uint opt_size, proc_revision proc ) {
 //===================================================================
-{
+
     cg_init_info        info;
     int                 i;
 
     Model = cg_data;
-    if( GetEnvVar( "ACTION_STDOUT" ) ) {
+    if( EnvVar( "ACTION_STDOUT" ) ) {
         Actions = FStdOut();
     } else {
         Actions = FCreate( "ACTIONS" );
@@ -129,9 +147,7 @@ cg_init_info    BEInit( cg_switches cg_data, cg_target_switches tg_data,
 #endif
     return( info );
 }
-
-void    BECloseFiles( void )
-//==========================
+extern  void    BECloseFiles()
 {
     int i;
 
@@ -150,10 +166,9 @@ void    BECloseFiles( void )
         }
     }
 }
+extern  void    BEFini() {
+//========================
 
-void    BEFini( void )
-//====================
-{
     b   *bk;
     l   *lb;
 
@@ -171,10 +186,9 @@ void    BEFini( void )
     TypeFini();
     BECloseFiles();
 }
+extern  l       *NewLabel() {
+//===========================
 
-l       *NewLabel( void )
-//=======================
-{
     l   *nl;
     nl = CGAlloc( sizeof( l ) );
     nl->n = LblList;
@@ -186,19 +200,17 @@ l       *NewLabel( void )
     nl->i = ++LabelId;
     return(nl);
 }
+extern  l       *BENewLabel() {
+//=============================
 
-l       *BENewLabel( void )
-//=========================
-{
     l   *nl;
     nl = NewLabel();
     Action( "BENewLabel() -> %s%n", Label(nl) );
     return(nl);
 }
+extern  void    BEFiniLabel(l *lb) {
+//==================================
 
-void    BEFiniLabel(l *lb)
-//========================
-{
     l   **o;
     Action( "BEFiniLabel" );
     Action( "( %s )%n", Label(lb) );
@@ -214,66 +226,54 @@ void    BEFiniLabel(l *lb)
         CGError( "BEFiniLabel must be called between CGProcDecl and CGReturn%n" );
     }
 }
-
-void    BEDefType( cg_type t, uint algn, unsigned_32 l )
-//======================================================
-{
+extern  void    BEDefType( cg_type t, uint algn, unsigned_32 l ) {
+//================================================================
     algn=algn;
 
     Action( "BEDefType" );
     TypeDef( t,l );
     Action( "( %s, %d, %l )%n", Tipe(t), algn, l );
 }
+extern  void    BEAliasType( cg_type t1, cg_type t2 ) {
+//=====================================================
 
-void    BEAliasType( cg_type t1, cg_type t2 )
-//===========================================
-{
     Action( "BEAliasType" );
     TypeAlias(t1,t2);
     Action( "( %s, %s )%n", Tipe(t1), Tipe(t2) );
 }
+extern  unsigned_32     BETypeLength( cg_type t ) {
+//=========================================
 
-unsigned_32     BETypeLength( cg_type t )
-//=======================================
-{
     Action( "BETypeLength" );
     Action( "( %s ) -> %l%n", Tipe(t), TypeAddress( t )->length );
     return( TypeAddress( t )->length );
 }
-
-uint    BETypeAlign( cg_type t )
-//==============================
-{
+extern  uint    BETypeAlign( cg_type t ) {
+//========================================
     t=t;
     Action( "BETypeAlign" );
     CGError( "Not yet implemented" );
     return( 1 );
 }
-
-void    *BEPatch( void )
-//======================
-{
+extern  void    *BEPatch() {
+//==========================
     Action( "BEPatch()%n" );
     return( NULL );
 }
-
-void    BEPatchInteger( void *hdl, signed_32 val )
-//================================================
-{
+extern  void    BEPatchInteger( void *hdl, signed_32 val ) {
+//==========================================================
     Action( "BEPatchInteger( %p, %l )%n", hdl, val );
 }
-
-void    BEFiniPatch( void *hdl )
-//==============================
-{
+extern  void    BEFiniPatch( void *hdl ) {
+//========================================
     Action( "BEFiniPatch( %p )%n", hdl );
 }
 
 static  pointer                 NewBackReturn = NULL;
 
-pointer LkAddBack( sym_handle sym, pointer curr_back )
-/****************************************************/
-{
+extern  pointer LkAddBack( sym_handle sym, pointer curr_back ) {
+/**************************************************************/
+
     b   *bk;
 
     NewBackReturn = TO_FAKE_BACK( curr_back );
@@ -282,9 +282,9 @@ pointer LkAddBack( sym_handle sym, pointer curr_back )
     return( TO_REAL_BACK( bk ) );
 }
 
-b       *BENewBack(sym s)
-//=======================
-{
+extern  b       *BENewBack(sym s) {
+//=================================
+
     b   *bk;
 
     Action( "BENewBack" );
@@ -307,10 +307,9 @@ b       *BENewBack(sym s)
     Action( "( %s ) -> %p%n", FEName( s ), bk );
     return(bk);
 }
+extern  void    BEFiniBack( b *bk ) {
+//===================================
 
-void    BEFiniBack( b *bk )
-//=========================
-{
     Action( "BEFiniBack" );
     if( !IS_REAL_BACK( bk ) ) {
         Action( "( %s )%n", FEName( TO_REAL_BACK( bk )->s ) );
@@ -319,10 +318,9 @@ void    BEFiniBack( b *bk )
     VerBack(bk);
     Action( "( %s [ %s ] )%n", FEName( bk->s ), Label( bk->lp ) );
 }
+extern  void    BEFreeBack( b *bk ) {
+//===================================
 
-void    BEFreeBack( b *bk )
-//=========================
-{
     b   **o;
     Action( "BEFreeBack" );
     if( !IS_REAL_BACK( bk ) ) {
@@ -339,24 +337,23 @@ void    BEFreeBack( b *bk )
     CGFree( bk );
 }
 
-void    BEStart( void )
-//=====================
-{
+extern  void    BEStart() {
+//=========================
+
+
     Action( "BEStart()%n" );
     if( CodeSeg != -1 ) {
         CurSeg = CodeSeg;
     }
 }
+extern  void    BEStop() {
+//========================
 
-void    BEStop( void )
-//====================
-{
     Action( "BEStop()%n" );
 }
+extern  void    BEAbort() {
+//=========================
 
-void    BEAbort( void )
-//=====================
-{
     Action( "BEAbort()%n" );
     CGError( "*****ABORT******%n" );
     Code(   "*****ABORT******%n" );
@@ -364,10 +361,9 @@ void    BEAbort( void )
     BEFini();
     exit( 2010 );
 }
+extern  segment_id      BESetSeg( segment_id seg ) {
+//==================================================
 
-segment_id      BESetSeg( segment_id seg )
-//========================================
-{
     segment_id  old;
 
     Action( "BESetSeg( %d )", seg );
@@ -375,10 +371,9 @@ segment_id      BESetSeg( segment_id seg )
     Action( " -> %d%n", old );
     return( old );
 }
+extern  void    BEFlushSeg( segment_id seg ) {
+//============================================
 
-void    BEFlushSeg( segment_id seg )
-//==================================
-{
     Action( "BEFlushSeg( %d )%n", seg );
     if( seg == CodeSeg ) {
         CodeSeg = -1;
@@ -392,9 +387,9 @@ void    BEFlushSeg( segment_id seg )
     StaticList = NULL;
 }
 
-void    BEDefSeg( segment_id id, seg_attr attr, const char *str, uint algn )
-//==========================================================================
-{
+extern  void    BEDefSeg( segment_id id, seg_attr attr, const char *str, uint algn ) {
+//====================================================================================
+
     segdef      *new;
 
     Action( "BEDefSeg( %d, %h, %s, %d )%n", id, attr, str, algn );
@@ -419,75 +414,65 @@ void    BEDefSeg( segment_id id, seg_attr attr, const char *str, uint algn )
     SegOk[id] = true;
     Locs[id] = 0;
 }
+extern  bool    BEMoreMem( void ) {
+//=================================
 
-bool    BEMoreMem( void )
-//=======================
-{
     Action( "BEMoreMem() -> 0%n" );
     return(false);
 }
 
-unsigned_32 BEUnrollCount( unsigned_32 c )
-/****************************************/
-{
+extern  unsigned_32 BEUnrollCount( unsigned_32 c ) {
+/**************************************************/
     return( c );
 }
 
 /* floating point stuff */
 
 #pragma off (unreferenced);
-char            *BFCnvFS( float_handle cf, char *buff, int buff_len )
-/*******************************************************************/
-{
+extern  char            *BFCnvFS( float_handle cf, char *buff, int buff_len ) {
+/*****************************************************************************/
     Action( "BFCnvFS()%n" );
     *buff = 0;
     return( buff );
 }
 
-float_handle    BFCnvSF( const char *start )
-/******************************************/
-{
+extern  float_handle    BFCnvSF( const char *start ) {
+/****************************************************/
     Action( "BFCnvSF(): %s%n", start );
     return( NULL );
 }
 
-float_handle    BFMul( float_handle c1, float_handle c2 )
-/*******************************************************/
-{
+extern  float_handle    BFMul( float_handle c1, float_handle c2 ) {
+/*****************************************************************/
     Action( "BFMul()%n" );
     return( NULL );
 }
 
-float_handle    BFAdd( float_handle c1, float_handle c2 )
-/*******************************************************/
-{
+extern  float_handle    BFAdd( float_handle c1, float_handle c2 ) {
+/*****************************************************************/
     Action( "BFAdd()%n" );
     return( NULL );
 }
 
-float_handle    BFDiv( float_handle c1, float_handle c2 )
-/*******************************************************/
-{
+extern  float_handle    BFDiv( float_handle c1, float_handle c2 ) {
+/*****************************************************************/
     Action( "BFDiv()%n" );
     return( NULL );
 }
 
-float_handle    BFSub( float_handle c1, float_handle c2 )
-/*******************************************************/
-{
+extern  float_handle    BFSub( float_handle c1, float_handle c2 ) {
+/*****************************************************************/
     Action( "BFSub()%n" );
     return( NULL );
 }
 
-int             BFCmp( float_handle l, float_handle r )
-/*****************************************************/
-{
+extern  int             BFCmp( float_handle l, float_handle r ) {
+/***************************************************************/
     Action( "BFCmp()%n" );
     return( NULL );
 }
 
-void            BFFree( float_handle cf )
-/***************************************/
-{
+extern  void            BFFree( float_handle cf ) {
+/*************************************************/
     Action( "BFFree()%n" );
 }

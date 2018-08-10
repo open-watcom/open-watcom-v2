@@ -51,8 +51,8 @@ dlgprs.exe : $(dlg_yacc_file).h $(bnd_yacc_file).h $(c_objs) $(__MAKEFILES__)
     $(linker) name $^@ $(lflags) file {$(c_objs)}
 !endif
 
-bnd_yacc_options = -b $(bnd_yacc_prefix) -d -db -de
-dlg_yacc_options = -b $(dlg_yacc_prefix) -d -db -de
+bnd_yacc_options = -b $(bnd_yacc_prefix) -d -db
+dlg_yacc_options = -b $(dlg_yacc_prefix) -d -db
 
 $(dlg_yacc_file).h $(dlg_yacc_file).cpp : ../y/prsdlg.y ../cpp/yydriver.cpp
     @%make echo_yacc

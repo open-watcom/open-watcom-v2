@@ -44,12 +44,39 @@
 #include "cgmem.h"
 #include "utils.h"
 #include "stubdata.h"
-#include "stubutil.h"
 #include "feprotos.h"
 
 
 extern  int             TempId;
 
+extern  void            DumpTree(n *);
+
+extern  char            *ACopyOf(const char *);
+extern  void            VerTipe(cg_type ,cg_type *);
+extern  n               *Binary(cg_op ,n *,n *,cg_type );
+extern  char            *Tipe(cg_type );
+extern  void            VerLabel(l *);
+extern  char            *Label(l *);
+extern  void            Action(char *,... );
+extern  void            NoDanglers(void);
+extern  n               *NewNode(nclass ,cg_type );
+extern  void            Code(char *,... );
+extern  void            VerAuto(a *);
+extern  void            VerNode(n *);
+extern  char            *Name(pointer );
+extern  char            *Op(cg_op );
+extern  void            NotDefault(cg_type );
+extern  void            CGError(const char *,... );
+extern  void            VerBack(b *);
+extern  char            *LToS(signed_32 );
+extern  void            DumpT(n *);
+extern  void            VerOp(cg_op ,cg_op *);
+extern  void            Find(char *,pointer *,pointer );
+extern  n               *Unary(cg_op ,n *,cg_type );
+extern  void            CRefLabel(l *lb);
+extern  void            CDefLabel(l *lb);
+extern  void            DRefLabel(l *lb);
+extern  void            DDefLabel(l *lb);
 extern  pointer         LkAddBack(sym_handle,pointer);
 extern  unsigned_32     BETypeLength( cg_type );
 
@@ -114,9 +141,9 @@ static void dumpAutoLocn( void )
 
 
 /* verification */
-void    CGDone( n *nd )
-/*********************/
-{
+extern  void    CGDone( n *nd ) {
+/*******************************/
+
 //  CGError( "OOPS!" );
     Action( "CGDone( %t )%n%n", nd );
     VerNode( nd );
@@ -124,18 +151,18 @@ void    CGDone( n *nd )
     NoDanglers();
 }
 
-void    CGTrash( n *nd )
-/**********************/
-{
+extern  void    CGTrash( n *nd ) {
+/********************************/
+
     Action( "CGTrash( %t )%n%n", nd );
     VerNode( nd );
     DumpT( nd );
 }
 
 static  int     EvalNo = { 0 };
-n       *CGEval( n *nd )
-/**********************/
-{
+extern  n       *CGEval( n *nd ) {
+/********************************/
+
     n           *new;
     char        buff[80];
     char        *endptr;
@@ -153,17 +180,17 @@ n       *CGEval( n *nd )
     return( new );
 }
 
-n       *CGVolatile( n *nd )
-/**************************/
-{
+extern  n       *CGVolatile( n *nd ) {
+/************************************/
+
     Action( "CGVolatile( %t ) -> %t%n", nd, nd );
     VerNode( nd );
     return( nd );
 }
 
-n       *CGAttr( n *nd, cg_sym_attr attr )
-/****************************************/
-{
+extern  n       *CGAttr( n *nd, cg_sym_attr attr ) {
+/**************************************************/
+
     Action( "CGAttr( %t, %l ) -> %t%n", nd, attr, nd );
     VerNode( nd );
     // should check the attr?
@@ -172,9 +199,9 @@ n       *CGAttr( n *nd, cg_sym_attr attr )
 
 static  int     DupNo = { 0 };
 static  n       *CGDuplicateArray[2];
-n       **CGDuplicate( n *nd )
-/****************************/
-{
+extern  n       **CGDuplicate( n *nd ) {
+/************************************/
+
     n           *new1;
     n           *new2;
     char        buff[80];
@@ -205,9 +232,9 @@ static int inlineTypeEquivalent( cg_type t1, cg_type t2 )
     return TypeAddress( t1 )->refno == TypeAddress( t2 )->refno;
 }
 
-void    CGProcDecl( sym s, cg_type t )
-/************************************/
-{
+extern  void    CGProcDecl( sym s, cg_type t ) {
+/**********************************************/
+
     b   *bk;
     Action( "%n==================================================%n" );
     Action( "CGProcDecl" );
@@ -236,9 +263,9 @@ void    CGProcDecl( sym s, cg_type t )
     }
 }
 
-void    CGParmDecl(  sym s,  cg_type  t )
-/***************************************/
-{
+extern  void    CGParmDecl(  sym s,  cg_type  t ) {
+/*************************************************/
+
     ip  *iparm;
     int i;
 
@@ -267,9 +294,9 @@ void    CGParmDecl(  sym s,  cg_type  t )
     }
 }
 
-void    CGAutoDecl( sym s, cg_type t )
-/************************************/
-{
+extern  void    CGAutoDecl( sym s, cg_type t ) {
+/**********************************************/
+
     addAutoLocn( s, t );
     Action( "CGAutoDecl" );
     Action( "( %s, %s )", Name(s), Tipe(t) );
@@ -277,16 +304,16 @@ void    CGAutoDecl( sym s, cg_type t )
     Code( "Auto %s%n", Name(s) );
 }
 
-label_handle CGLastParm( void )
-/*****************************/
-{
+extern  label_handle CGLastParm() {
+/*********************************/
+
     Action( "CGLastParm()%n" );
     return( NULL );
 }
 
-void    Attrs( sym s )
-/********************/
-{
+extern  void    Attrs( sym s ) {
+/******************************/
+
     fe_attr     a;
     Action( "\n----" );
     a = FEAttr( s );
@@ -317,9 +344,9 @@ void    Attrs( sym s )
     Action( " seg id %d%n", FESegID( s ) );
 }
 
-void    DumpCClass( call_class c )
-/********************************/
-{
+extern  void    DumpCClass( call_class c ) {
+/******************************************/
+
 #if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
     if( c & FAR_CALL )
         Action( "FAR " );
@@ -341,9 +368,9 @@ void    DumpCClass( call_class c )
     }
 }
 
-void    CClass( sym  s )
-/**********************/
-{
+extern  void    CClass( sym  s ) {
+/********************************/
+
     call_class  *pc;
 
     pc = FindAuxInfoSym( s, CALL_CLASS );
@@ -351,9 +378,9 @@ void    CClass( sym  s )
     Action( "%n" );
 }
 
-void    CG3WayControl( n *e, l *lt, l *eq, l *gt )
-/************************************************/
-{
+extern  void    CG3WayControl( n *e, l *lt, l *eq, l *gt ) {
+/**********************************************************/
+
     Action( "CG3WayControl" );
     Action( "( %s, ", Label(lt) );
     Action( "%s, ", Label( eq ) );
@@ -368,17 +395,15 @@ void    CG3WayControl( n *e, l *lt, l *eq, l *gt )
     DumpTree( e );
     NoDanglers();
 }
+extern  void    CGControl( cg_op o, n *e, l  *lb ) {
+/**************************************************/
 
-void    CGControl( cg_op o, n *e, l  *lb )
-/****************************************/
-{
     Action( "CGControl" );
     VerCGCtrl( true, o, e, lb );
 }
+extern  void    VerCGCtrl( bool ver, cg_op o, n *e, l *lb ) {
+/***********************************************************/
 
-void    VerCGCtrl( bool ver, cg_op o, n *e, l *lb )
-/*************************************************/
-{
     if( ver ) {
         VerOp( o, ControlOps );
     }
@@ -413,10 +438,9 @@ void    VerCGCtrl( bool ver, cg_op o, n *e, l *lb )
     Action( "%n" );
     NoDanglers();
 }
+extern  n       *CGCompare( cg_op o, n *l, n *r, cg_type t ) {
+/************************************************************/
 
-n       *CGCompare( cg_op o, n *l, n *r, cg_type t )
-/**************************************************/
-{
     n   *new;
 
     Action( "CGCompare" );
@@ -428,10 +452,9 @@ n       *CGCompare( cg_op o, n *l, n *r, cg_type t )
     Action( " -> %t%n", new );
     return( new );
 }
+extern  n       *CGFlow( cg_op o, n *l, n *r ) {
+/**********************************************/
 
-n       *CGFlow( cg_op o, n *l, n *r )
-/************************************/
-{
     n   *new;
 
     Action( "CGFlow" );
@@ -447,10 +470,9 @@ n       *CGFlow( cg_op o, n *l, n *r )
     Action( " -> %t%n", new );
     return( new );
 }
+extern  sh      *CGSelInit() {
+/****************************/
 
-sh      *CGSelInit( void )
-/************************/
-{
     sh  *s;
 
     Action( "CGSelInit()" );
@@ -461,28 +483,26 @@ sh      *CGSelInit( void )
     Action( " -> %d%n", SelId );
     return(s);
 }
+extern  void    CGSelCase( sh *s, l *lb, signed_32 v ) {
+/******************************************************/
 
-void    CGSelCase( sh *s, l *lb, signed_32 v )
-/********************************************/
-{
     Action( "CGSelCase" );
     Action( "( %d, %l, %s )%n", s->i, v, Label( lb ) );
     CRefLabel( lb );
     SelRange(s,v,v,lb);
 }
+extern  void    CGSelRange( sh *s, signed_32 lo, signed_32 hi, l *lb ) {
+/**********************************************************************/
 
-void    CGSelRange( sh *s, signed_32 lo, signed_32 hi, l *lb )
-/************************************************************/
-{
     Action( "CGSelRange" );
     Action( "( %d, %l, %l, %s )%n", s->i, lo, hi, Label( lb ) );
     CRefLabel( lb );
     SelRange(s,lo,hi,lb);
 }
 
-void    SelRange( sh *s, signed_32 lo, signed_32 hi, l *lb )
-/**********************************************************/
-{
+extern  void    SelRange( sh *s, signed_32 lo, signed_32 hi, l *lb ) {
+/********************************************************************/
+
     rh  **or;
     rh  *n;
 
@@ -507,20 +527,18 @@ void    SelRange( sh *s, signed_32 lo, signed_32 hi, l *lb )
     n->n = *or;
     *or = n;
 }
+extern  void    CGSelOther( sh *s, l *lb ) {
+/******************************************/
 
-void    CGSelOther( sh *s, l *lb )
-/********************************/
-{
     Action( "CGSelOther" );
     Action( "( %d, %s )%n", s->i, Label( lb ) );
     CRefLabel(lb);
     if( s->o != NULL ) { CGError( "Otherwise already defined" ); }
     s->o=lb;
 }
+extern  void    CGSelect( sh *s, n *e ) {
+/***************************************/
 
-void    CGSelect( sh *s, n *e )
-/*****************************/
-{
     rh  *r;
 
     Action( "CGSelect" );
@@ -541,10 +559,9 @@ void    CGSelect( sh *s, n *e )
     Code("}%n");
     CGFree(s);
 }
+extern  n       *CGInteger( signed_32 i, cg_type t ) {
+/****************************************************/
 
-n       *CGInteger( signed_32 i, cg_type t )
-/******************************************/
-{
     n   *in;
 
     Action( "CGInteger" );
@@ -555,10 +572,8 @@ n       *CGInteger( signed_32 i, cg_type t )
     Action( " -> %t%n", in );
     return( in );
 }
-
-n       *CGCallback( pointer func, pointer parm )
-/***********************************************/
-{
+extern  n       *CGCallback( pointer func, pointer parm ) {
+/*********************************************************/
     n   *nd;
     call_back* cb;
 
@@ -571,10 +586,8 @@ n       *CGCallback( pointer func, pointer parm )
     Action( "( %p, %p ) -> %t%n", func, parm, nd );
     return( nd );
 }
-
-n       *CGPatchNode( pointer p, cg_type t )
-/******************************************/
-{
+extern  n       *CGPatchNode( pointer p, cg_type t ) {
+/****************************************************/
     n   *l;
 
     Action( "CGPatchNode" );
@@ -584,10 +597,9 @@ n       *CGPatchNode( pointer p, cg_type t )
     Action( "( %p, %s ) -> %t%n", p, Tipe( t ), l );
     return( l );
 }
+extern  n       *CGFloat(const char *s,cg_type t) {
+/*************************************************/
 
-n       *CGFloat(const char *s,cg_type t)
-/***************************************/
-{
     n   *l;
 
     Action( "CGFloat" );
@@ -614,9 +626,9 @@ static  cg_type PtrTipe( pointer s ) {
     }
 }
 
-n       *CGFEName( pointer sym, cg_type t )
-/*****************************************/
-{
+extern  n       *CGFEName( pointer sym, cg_type t ) {
+/*************************************************/
+
     n   *nd;
     a   *au;
     s   *st;
@@ -670,10 +682,9 @@ n       *CGFEName( pointer sym, cg_type t )
     }
     return( nd );
 }
+extern  n       *CGBackName( b *s, cg_type t ) {
+/***************************************************/
 
-n       *CGBackName( b *s, cg_type t )
-/************************************/
-{
     n   *nd;
 
     Action( "CGBackName" );
@@ -686,10 +697,9 @@ n       *CGBackName( b *s, cg_type t )
     Action( "( %s, %s ) -> %t%n", nd->l, Tipe(t), nd );
     return( nd );
 }
+extern  t       *CGTemp( cg_type ty ) {
+/*************************************/
 
-t       *CGTemp( cg_type ty )
-/***************************/
-{
     t   *tm;
     ty=ty;
     Action( "CGTemp" );
@@ -700,10 +710,9 @@ t       *CGTemp( cg_type ty )
     TempList = tm;
     return(tm);
 }
+extern  n       *CGTempName( t *tm, cg_type ty ) {
+/************************************************/
 
-n       *CGTempName( t *tm, cg_type ty )
-/**************************************/
-{
     n   *nd;
     char *c;
 
@@ -716,10 +725,9 @@ n       *CGTempName( t *tm, cg_type ty )
     Action( "( %d, %s ) ->%t%n", tm->i, Tipe( ty ), nd );
     return(nd);
 }
+extern  n       *CGBitMask( n *r, byte st, byte ln, cg_type t ) {
+/***************************************************************/
 
-n       *CGBitMask( n *r, byte st, byte ln, cg_type t )
-/*****************************************************/
-{
     n   *nd;
 
     Action( "CGBitMask" );
@@ -732,10 +740,9 @@ n       *CGBitMask( n *r, byte st, byte ln, cg_type t )
     Action( " -> %t%n", nd );
     return( nd );
 }
+extern  n       *DoCGAssign( n *l, n *r, cg_type t, int i ) {
+/**************************************************/
 
-n       *DoCGAssign( n *l, n *r, cg_type t, int i )
-/*************************************************/
-{
     n   *new;
 
     NotDefault( t );
@@ -745,24 +752,21 @@ n       *DoCGAssign( n *l, n *r, cg_type t, int i )
     Action( " -> %t%n", new );
     return( new );
 }
+extern  n       *CGAssign( n *l, n *r, cg_type t ) {
+/****************************************************/
 
-n       *CGAssign( n *l, n *r, cg_type t )
-/****************************************/
-{
     Action( "CGAssign" );
     return( DoCGAssign( l, r, t, O_GETS ) );
 }
+extern  n       *CGLVAssign( n *l, n *r, cg_type t ) {
+/****************************************************/
 
-n       *CGLVAssign( n *l, n *r, cg_type t )
-/******************************************/
-{
     Action( "CGLVAssign" );
     return( DoCGAssign( l, r, t, O_LV_GETS ) );
 }
+extern  n       *DoCGPreGets( cg_op o, n *l, n *r, cg_type t, int i ) {
+/************************************************************/
 
-n       *DoCGPreGets( cg_op o, n *l, n *r, cg_type t, int i )
-/***********************************************************/
-{
     n   *new;
 
     NotDefault( t );
@@ -772,24 +776,21 @@ n       *DoCGPreGets( cg_op o, n *l, n *r, cg_type t, int i )
     Action( " -> %t%n", new );
     return( new );
 }
+extern  n       *CGPreGets( cg_op o, n *l, n *r, cg_type t ) {
+/***************************************************************/
 
-n       *CGPreGets( cg_op o, n *l, n *r, cg_type t )
-/**************************************************/
-{
     Action( "CGPreGets" );
     return( DoCGPreGets( o, l, r, t, O_PRE_GETS ) );
 }
+extern  n       *CGLVPreGets( cg_op o, n *l, n *r, cg_type t ) {
+/**************************************************************/
 
-n       *CGLVPreGets( cg_op o, n *l, n *r, cg_type t )
-/****************************************************/
-{
     Action( "CGLVPreGets" );
     return( DoCGPreGets( o, l, r, t, O_LV_PRE_GETS ) );
 }
+extern  n       *CGPostGets( cg_op o, n *l, n *r, cg_type t ) {
+/*************************************************************/
 
-n       *CGPostGets( cg_op o, n *l, n *r, cg_type t )
-/***************************************************/
-{
     n   *new;
 
     Action( "CGPostGets" );
@@ -800,10 +801,9 @@ n       *CGPostGets( cg_op o, n *l, n *r, cg_type t )
     Action( " -> %t%n", new );
     return( new );
 }
+extern  n       *CGUnary( cg_op o, n *r, cg_type t ) {
+/****************************************************/
 
-n       *CGUnary( cg_op o, n *r, cg_type t )
-/******************************************/
-{
     n   *new;
 
     Action( "CGUnary" );
@@ -814,10 +814,9 @@ n       *CGUnary( cg_op o, n *r, cg_type t )
     Action( " -> %t%n", new );
     return( new );
 }
+extern  n       *CGBinary( cg_op o, n *l, n *r, cg_type t ) {
+/***********************************************************/
 
-n       *CGBinary( cg_op o, n *l, n *r, cg_type t )
-/*************************************************/
-{
     n   *new;
 
     Action( "CGBinary" );
@@ -827,10 +826,9 @@ n       *CGBinary( cg_op o, n *l, n *r, cg_type t )
     Action( " -> %t%n", new );
     return( new );
 }
+extern  n       *CGIndex( n *l, n *r, cg_type t, cg_type s ) {
+/*************************************************/
 
-n       *CGIndex( n *l, n *r, cg_type t, cg_type s )
-/**************************************************/
-{
     n   *new;
 
     s=s;
@@ -841,10 +839,9 @@ n       *CGIndex( n *l, n *r, cg_type t, cg_type s )
     Action( " -> %t%n", new );
     return( new );
 }
+extern  n       *CGInitCall( n *l, cg_type t, sym_handle h ) {
+/************************************************************/
 
-n       *CGInitCall( n *l, cg_type t, sym_handle h )
-/**************************************************/
-{
     n   *new;
 
     Action( "CGInitCall" );
@@ -856,20 +853,18 @@ n       *CGInitCall( n *l, cg_type t, sym_handle h )
     Action( " -> %t%n", new );
     return( new );
 }
+extern  void    CGAddParm( n *l, n *p, cg_type t ) {
+/**************************************************/
 
-void    CGAddParm( n *l, n *p, cg_type t )
-/****************************************/
-{
     Action( "CGAddParm" );
     VerNode( l );
     VerNode( p );
     Action( "( %t, %t, %s )%n", l, p, Tipe(t) );
     l->r=Binary(O_PARM,p,l->r,t);
 }
+extern  n       *CGCall( n *r ) {
+/*******************************/
 
-n       *CGCall( n *r )
-/*********************/
-{
     call_class  *pc;
 
     Action( "CGCall( %t )", r );
@@ -884,10 +879,9 @@ n       *CGCall( n *r )
     if( r->r != NULL ) r->r->i++;
     return( r );
 }
+extern  void    CGReturn( n *r, cg_type t ) {
+/*******************************************/
 
-void    CGReturn( n *r, cg_type t )
-/*********************************/
-{
     s   *st;
     ic  *icall;
     ip  *iparm;
@@ -929,10 +923,9 @@ void    CGReturn( n *r, cg_type t )
         }
     }
 }
+extern  n       *CGChoose( n *s, n *l, n *r, cg_type t ) {
+/********************************************************/
 
-n       *CGChoose( n *s, n *l, n *r, cg_type t )
-/**********************************************/
-{
     n   *new;
 
     Action( "CGChoose" );
@@ -942,10 +935,9 @@ n       *CGChoose( n *s, n *l, n *r, cg_type t )
     Action( " -> %t%n", new );
     return( new );
 }
+extern  n       *CGWarp( n *b4, l *lb, n *af ) {
+/**********************************************/
 
-n       *CGWarp( n *b4, l *lb, n *af )
-/************************************/
-{
     n   *r;
 
     Action( "CGWarp" );
@@ -960,27 +952,24 @@ n       *CGWarp( n *b4, l *lb, n *af )
     Action( " -> %t%n", r );
     return( r );
 }
+extern  cg_type CGType( n *nd ) {
+/*******************************/
 
-cg_type CGType( n *nd )
-/*********************/
-{
     Action( "CGType( %t )", nd );
     VerNode( nd );
     VerTipe( nd->t,NULL );
     Action( " -> %d%n", TypeAddress( nd->t )->refno );
     return( TypeAddress( nd->t )->refno );
 }
+extern  void    CGBigGoto( l *lb, int ll ) {
+/*******************************************/
 
-void    CGBigGoto( l *lb, int ll )
-/********************************/
-{
     Action( "CGBigGoto( %d )", ll );
     VerCGCtrl( false, O_BIG_GOTO, NULL, lb );
 }
+extern  void    CGBigLabel( b *bk ) {
+/************************************/
 
-void    CGBigLabel( b *bk )
-/*************************/
-{
     Action( "CGBigLabel" );
     VerCGCtrl( false, O_BIG_LABEL, NULL, bk->lp );
 }

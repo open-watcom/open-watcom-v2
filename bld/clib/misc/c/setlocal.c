@@ -38,12 +38,10 @@
 #include "locales.h"
 #include "localset.h"
 
-
 static CHAR_TYPE *ValidLocales[] = {
-    #define pick(e,t) t,
-    LOCALE_DEFS()
-    #undef pick
-    NULL
+    STRING( "C" ),  /* C_LOCALE */
+    STRING( "" ),   /* NATIVE_LOCALE */
+    NULL            /* INVALID_LOCALE */
 };
 
 _WCRTLINK CHAR_TYPE *__F_NAME(setlocale,_wsetlocale)( int category, CHAR_TYPE const *locale )
@@ -51,7 +49,7 @@ _WCRTLINK CHAR_TYPE *__F_NAME(setlocale,_wsetlocale)( int category, CHAR_TYPE co
     register int i;
 
     _INITLOCALESETTING
-    if( category < LC_MIN || category > LC_MAX ) {
+    if( category < LC_MIN  ||  category > LC_MAX ) {
         return( NULL );
     }
     if( locale == NULL ) {
@@ -61,26 +59,23 @@ _WCRTLINK CHAR_TYPE *__F_NAME(setlocale,_wsetlocale)( int category, CHAR_TYPE co
         if( __F_NAME(strcmp,wcscmp)( locale, STRING( "POSIX" ) ) == 0 ) {
             i = C_LOCALE;
         } else {
-            for( i = 0; ValidLocales[i] != NULL; ++i ) {
+            for( i = C_LOCALE; ValidLocales[i] != NULL; ++i ) {
                 if( __F_NAME(strcmp,wcscmp)( locale, ValidLocales[i] ) == 0 ) {
                     break;
                 }
             }
-            if( ValidLocales[i] == NULL ) {
-                return( NULL );
-            }
-            /* now only C_LOCALE is supported for all */
-            i = C_LOCALE;
         }
-        _LOCALESETTING[category] = i;
-        if( category == LC_ALL ) {
-            _LOCALESETTING[LC_COLLATE]  = i;
-            _LOCALESETTING[LC_CTYPE]    = i;
-            _LOCALESETTING[LC_NUMERIC]  = i;
-            _LOCALESETTING[LC_TIME]     = i;
-            _LOCALESETTING[LC_MONETARY] = i;
-            _LOCALESETTING[LC_MESSAGES] = i;
+        if( i != INVALID_LOCALE ) {
+            _LOCALESETTING[category] = i;
+            if( category == LC_ALL ) {
+                _LOCALESETTING[LC_COLLATE]  = i;
+                _LOCALESETTING[LC_CTYPE]    = i;
+                _LOCALESETTING[LC_NUMERIC]  = i;
+                _LOCALESETTING[LC_TIME]     = i;
+                _LOCALESETTING[LC_MONETARY] = i;
+                _LOCALESETTING[LC_MESSAGES] = i;
+            }
         }
     }
-    return( ValidLocales[i] );
+    return( ValidLocales[ i ] );
 }

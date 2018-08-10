@@ -91,12 +91,12 @@ int YYPARSER::yyparse()
     yysp = yys;
     yyvp = yyv;
     *yysp = YYSTART;
-    yytoken = (YYTOKENTYPE)yylex();
+    yytoken = yylex();
     for( ;; ) {
 yynewact:
         yyaction = xfind( *yysp, yytoken );
         if( yyaction == YYNOACTION ) {
-            yyaction = xfind( *yysp, (YYTOKENTYPE)YYDEFTOKEN );
+            yyaction = xfind( *yysp, YYDEFTOKEN );
             if( yyaction == YYNOACTION ) {
                 switch( yyerrflag ) {
                 case 0:
@@ -107,7 +107,7 @@ yyerrlab:
                 case 2:
                     yyerrflag = 3;
                     while( yysp >= yys ) {
-                        yyaction = xfind( *yysp, (YYTOKENTYPE)YYERRTOKEN );
+                        yyaction = xfind( *yysp, YYERRTOKEN );
                         if( yyaction != YYNOACTION && yyaction < YYUSED ) {
                             *++yysp = yyaction;
                             ++yyvp;
@@ -120,7 +120,7 @@ yyerrlab:
                 case 3:
                     if( yytoken == YYEOFTOKEN )
                         YYABORT;
-                    yytoken = (YYTOKENTYPE)yylex();
+                    yytoken = yylex();
                     goto yynewact;
                 }
             }
@@ -133,7 +133,7 @@ yyerrlab:
             *++yyvp = yylval;
             if( yyerrflag )
                 --yyerrflag;
-            yytoken = (YYTOKENTYPE)yylex();
+            yytoken = yylex();
         } else {
             yypnum = yyaction - YYUSED;
             yyi = yyplentab[yypnum];
@@ -144,7 +144,7 @@ yyerrlab:
                 yyerror( "stack underflow\n" );
                 YYABORT;
             }
-            yyaction = xfind( *yysp, (YYTOKENTYPE)yylhs );
+            yyaction = xfind( *yysp, yylhs );
             if( yyaction == YYNOACTION ) {
                 yyerror( "missing nonterminal\n" );
                 YYABORT;
