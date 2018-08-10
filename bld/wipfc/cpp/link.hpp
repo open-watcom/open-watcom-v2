@@ -65,6 +65,10 @@
 class GlobalDictionaryWord; //forward references
 
 class Link : public Tag {
+    typedef STD1::uint8_t   byte;
+    typedef STD1::uint16_t  word;
+    typedef STD1::uint32_t  dword;
+
 public:
     enum LinkType {
         TOPIC,
@@ -74,46 +78,46 @@ public:
     };
     Link( Document* d, Element *p, const std::wstring* f, unsigned int r,
         unsigned int c, WsHandling ws = Tag::NONE ) : Tag( d, p, f, r, c, ws ),
-        refid( 0 ), res( 0 ), x( 0 ), y( 0 ), cx( 0 ), cy( 0 ), type( TOPIC ),
-        automatic( false ), child( false ), dependent( false ), doGroup( false ),
-        doOrigin( false ), doSize( false ), doStyle( false ), split( false ),
-        viewport( false ), noElink( false ), hypergraphic( false ) { };
+        _refid( 0 ), _res( 0 ), _x( 0 ), _y( 0 ), _cx( 0 ), _cy( 0 ), _type( TOPIC ),
+        _automatic( false ), _child( false ), _dependent( false ), _doGroup( false ),
+        _doOrigin( false ), _doSize( false ), _doStyle( false ), _split( false ),
+        _viewport( false ), _noElink( false ), _hypergraphic( false ) { };
     ~Link();
     Lexer::Token parse( Lexer* lexer );
     void buildText( Cell* cell );
     //don't look for an :elink tag for closure
-    void setNoEndTag() { noElink = true; };
-    void setHypergraphic() { hypergraphic = true; };
+    void setNoEndTag() { _noElink = true; };
+    void setHypergraphic() { _hypergraphic = true; };
 protected:
     Lexer::Token parseAttributes( Lexer* lexer );
 private:
     Link( const Link& rhs );                //no copy
     Link& operator=( const Link& rhs );     //no assignment
-    std::wstring database;
-    std::wstring object;
-    std::wstring data;
-    PageOrigin origin;
-    PageSize size;
-    PageStyle style;
-    PageGroup group;
-    GlobalDictionaryWord* refid;    //of link target
-    STD1::uint16_t res;              //of link target
-    STD1::uint16_t x;                //hypergraphic hotspot
-    STD1::uint16_t y;
-    STD1::uint16_t cx;
-    STD1::uint16_t cy;
-    LinkType type;
-    bool automatic;
-    bool child;
-    bool dependent;
-    bool doGroup;
-    bool doOrigin;
-    bool doSize;
-    bool doStyle;
-    bool split;
-    bool viewport;
-    bool noElink;
-    bool hypergraphic;
+    std::wstring _database;
+    std::wstring _object;
+    std::wstring _data;
+    PageOrigin _origin;
+    PageSize _size;
+    PageStyle _style;
+    PageGroup _group;
+    GlobalDictionaryWord* _refid;   //of link target
+    word _res;                      //of link target
+    word _x;                        //hypergraphic hotspot
+    word _y;
+    word _cx;
+    word _cy;
+    LinkType _type;
+    bool _automatic;
+    bool _child;
+    bool _dependent;
+    bool _doGroup;
+    bool _doOrigin;
+    bool _doSize;
+    bool _doStyle;
+    bool _split;
+    bool _viewport;
+    bool _noElink;
+    bool _hypergraphic;
     void doTopic( Cell* cell );
     void doFootnote( Cell* cell );
     void doLaunch( Cell* cell );

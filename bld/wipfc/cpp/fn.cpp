@@ -73,15 +73,16 @@ Lexer::Token Fn::parseAttributes( Lexer* lexer )
             std::wstring value;
             splitAttribute( lexer->text(), key, value );
             if( key == L"id" ) {
-                id = new GlobalDictionaryWord( value );
-                id->toUpper();          //to uppercase
-                if( !_document->isInf() )
-                    id = _document->addWord( id );
+                _id = new GlobalDictionaryWord( value );
+                _id->toUpper();          //to uppercase
+                if( !_document->isInf() ) {
+                    _id = _document->addWord( _id );
+                }
             } else {
                 _document->printError( ERR1_ATTRNOTDEF );
             }
         } else if( tok == Lexer::FLAG ) {
-                _document->printError( ERR1_ATTRNOTDEF );
+            _document->printError( ERR1_ATTRNOTDEF );
         } else if( tok == Lexer::ERROR_TAG ) {
             throw FatalError( ERR_SYNTAX );
         } else if( tok == Lexer::END ) {
@@ -90,17 +91,17 @@ Lexer::Token Fn::parseAttributes( Lexer* lexer )
             _document->printError( ERR1_TAGSYNTAX );
         }
     }
-    if( !id )
+    if( !_id )
         _document->printError( ERR1_NOFNID );
     return _document->getNextToken();    //consume TAGEND
 }
 /***************************************************************************/
 void Fn::buildTOC( Page* page )
 {
-    page->setTOC( toc );
-    if( id ) {
+    page->setTOC( _toc );
+    if( _id ) {
         TocRef tr( _fileName, _row, page->index() );
-        _document->addNameOrId( id, tr );
+        _document->addNameOrId( _id, tr );
     }
 }
 
