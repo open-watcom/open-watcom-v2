@@ -124,8 +124,8 @@ Page::dword Page::write( OutFile *out )
     }
     if( out->write( &_cells[0], sizeof( word ), _cells.size() ) )
         throw FatalError( ERR_WRITE );
-    if( !_title.empty() ) {
-        if( out->write( _title.c_str(), sizeof( byte ), _title.size() ) ) {
+    if( !title.empty() ) {
+        if( out->write( title.c_str(), sizeof( byte ), title.size() ) ) {
             throw FatalError( ERR_WRITE );
         }
     }
