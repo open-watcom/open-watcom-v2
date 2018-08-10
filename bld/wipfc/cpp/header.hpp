@@ -32,6 +32,7 @@
 #define IPFHEADER_INCLUDED
 
 #include <cstdio>
+#include <cstring>
 
 
 class OutFile;

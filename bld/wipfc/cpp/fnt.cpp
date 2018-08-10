@@ -30,6 +30,7 @@
 
 
 #include "wipfc.hpp"
+#include <cstring>
 #include "errors.hpp"
 #include "fnt.hpp"
 #include "outfile.hpp"

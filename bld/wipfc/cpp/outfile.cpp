@@ -1,6 +1,7 @@
 #include "wipfc.hpp"
 #include <cstdlib>
 #include <climits>
+#include <cstring>
 #include "fnt.hpp"
 #include "errors.hpp"
 #include "outfile.hpp"
