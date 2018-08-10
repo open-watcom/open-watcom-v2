@@ -609,7 +609,9 @@ void Link::doLaunch( Cell* cell )
         std::string buffer;
         cell->out()->wtomb_string( object, buffer );
         buffer += ' ';
-        cell->out()->wtomb_string( data, buffer );
+        std::string tmp;
+        cell->out()->wtomb_string( data, tmp );
+        buffer += tmp;
         std::size_t buffersize( buffer.size() );
         if( buffersize > 255 - esc.size() + 1 ) {
             buffersize = 255 - esc.size() + 1;
