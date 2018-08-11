@@ -55,7 +55,7 @@ public:
     void setHeight( word height ) { _height = height; }
     void setWidth( word width ) { _width = width; }
     void setCodePage( word codePage ) { _codePage = codePage; }
-    dword write( OutFile *out ) const;
+    dword write( OutFile* out ) const;
     bool operator==( const FontEntry &rhs ) const;
 
 private:

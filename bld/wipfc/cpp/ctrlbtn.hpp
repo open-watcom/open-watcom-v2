@@ -51,12 +51,12 @@ public:
     void setText( std::wstring& t ) { _txt = t; };
     void setIndex( word i ) { _idx = i; };
     word index() { return _idx; };
-    dword write( OutFile *out ) const;
+    dword write( OutFile* out ) const;
 private:
-    word _res;              //message number
-    word _idx;              //array index of this item
-    std::wstring _idnt;     //identifier
-    std::wstring _txt;      //button text
+    word            _res;       //message number
+    word            _idx;       //array index of this item
+    std::wstring    _idnt;      //identifier
+    std::wstring    _txt;       //button text
 };
 
 #endif //CTRLBUTTON_INCLUDED

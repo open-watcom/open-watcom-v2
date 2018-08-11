@@ -34,15 +34,15 @@
 
 void XRef::write( std::FILE* logfp ) const
 {
-    std::fprintf( logfp, "    ^--Referenced by %ls, line %u\n", fileName->c_str(), lineNumber );
+    std::fprintf( logfp, "    ^--Referenced by %ls, line %u\n", _fileName->c_str(), _lineNumber );
 }
 /*****************************************************************************/
 bool XRef::operator <( const XRef& rhs ) const
 {
-    if( *fileName == *rhs.fileName ) {
-        return lineNumber < rhs.lineNumber;
+    if( *_fileName == *rhs._fileName ) {
+        return _lineNumber < rhs._lineNumber;
     } else {
-        return *fileName < *rhs.fileName;
+        return *_fileName < *rhs._fileName;
     }
 }
 

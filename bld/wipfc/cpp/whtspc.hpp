@@ -34,6 +34,10 @@
 #include "text.hpp"
 
 class WhiteSpace : public Text {
+    typedef STD1::uint8_t   byte;
+    typedef STD1::uint16_t  word;
+    typedef STD1::uint32_t  dword;
+
 public:
     WhiteSpace( Document* d, Element* p, const std::wstring* f, unsigned int r,
         unsigned int c, Tag::WsHandling w = Tag::NONE ) : Text( d, p, f, r, c, w ),
@@ -47,7 +51,8 @@ public:
 private:
     WhiteSpace( const WhiteSpace& rhs );            //no copy
     WhiteSpace& operator=( const WhiteSpace& rhs ); //no assignment
-    unsigned char _spaces;
+
+    byte                _spaces;
 };
 
 class LiteralWhiteSpace : public Element {
@@ -61,7 +66,8 @@ public:
 private:
     LiteralWhiteSpace( const LiteralWhiteSpace& rhs );              //no copy
     LiteralWhiteSpace& operator=( const LiteralWhiteSpace& rhs );   //no assignment
-    bool _toggleSpacing;
+
+    bool                _toggleSpacing;
 };
 
 #endif //WHITESPACE_INCLUDED

@@ -35,7 +35,7 @@
 #include "outfile.hpp"
 
 
-TocEntry::dword TocEntry::write( OutFile *out ) const
+TocEntry::dword TocEntry::write( OutFile* out ) const
 {
     dword offset( out->tell() );
     if( out->write( this, sizeof( TocEntry ), 1 ) )
@@ -43,42 +43,42 @@ TocEntry::dword TocEntry::write( OutFile *out ) const
     return offset;
 }
 /***************************************************************************/
-void ExtTocEntry::write( OutFile *out ) const
+void ExtTocEntry::write( OutFile* out ) const
 {
     if( out->write( this, sizeof( ExtTocEntry ), 1 ) ) {
         throw FatalError( ERR_WRITE );
     }
 }
 /***************************************************************************/
-void PageOrigin::write( OutFile *out ) const
+void PageOrigin::write( OutFile* out ) const
 {
     if( out->write( this, sizeof( PageOrigin ), 1 ) ) {
         throw FatalError( ERR_WRITE );
     }
 }
 /***************************************************************************/
-void PageSize::write( OutFile *out ) const
+void PageSize::write( OutFile* out ) const
 {
     if( out->write( this, sizeof( PageSize ), 1 ) ) {
         throw FatalError( ERR_WRITE );
     }
 }
 /***************************************************************************/
-void PageStyle::write( OutFile *out ) const
+void PageStyle::write( OutFile* out ) const
 {
     if( out->write( this, sizeof( PageStyle ), 1 ) ) {
         throw FatalError( ERR_WRITE );
     }
 }
 /***************************************************************************/
-void PageGroup::write( OutFile *out ) const
+void PageGroup::write( OutFile* out ) const
 {
     if( out->write( this, sizeof( PageGroup ), 1 ) ) {
         throw FatalError( ERR_WRITE );
     }
 }
 /***************************************************************************/
-void PageControls::write( OutFile *out ) const
+void PageControls::write( OutFile* out ) const
 {
     if( out->write( this, sizeof( PageControls ), 1 ) ) {
         throw FatalError( ERR_WRITE );

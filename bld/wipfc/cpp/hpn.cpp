@@ -40,11 +40,11 @@
 #include "errors.hpp"
 
 
-std::vector< STD1::uint8_t > Hpn::_levelStack;
+std::vector< Hpn::byte > Hpn::_levelStack;
 
 Hpn::Hpn( Document* d, Element *p, const std::wstring* f, unsigned int r,
           unsigned int c, unsigned int l ) : Element( d, p, f, r, c ),
-          _level( static_cast< STD1::uint8_t >( l ) ), _previousLevel( 0 )
+          _level( static_cast< byte >( l ) ), _previousLevel( 0 )
 {
     if( !_levelStack.empty() ) {
         _previousLevel = _levelStack[_levelStack.size() - 1];
@@ -93,16 +93,16 @@ void Hpn::buildText( Cell* cell )
     if( _level != 4 && _level < 8 ) {
         cell->addByte( 0x04 );      //change style
         if( _level < 4 ) {
-            cell->addByte( static_cast< STD1::uint8_t >( _level ) );
+            cell->addByte( static_cast< byte >( _level ) );
         } else {
-            cell->addByte( static_cast< STD1::uint8_t >( _level - 1) );
+            cell->addByte( static_cast< byte >( _level - 1) );
         }
     } else {
         cell->addByte( 0x0D );      //special text color
         if( _level == 4 ) {
             cell->addByte( 0x01 );
         } else {
-            cell->addByte( static_cast< STD1::uint8_t >( _level - 6) );
+            cell->addByte( static_cast< byte >( _level - 6) );
         }
     }
     if( cell->textFull() ) {
@@ -112,9 +112,9 @@ void Hpn::buildText( Cell* cell )
 /***************************************************************************/
 EHpn::EHpn( Document* d, Element *p, const std::wstring* f, unsigned int r,
             unsigned int c, unsigned int l ) : Element ( d, p, f, r, c ),
-            _level( static_cast< STD1::uint8_t >( l ) ), _previousLevel( 0 )
+            _level( static_cast< byte >( l ) ), _previousLevel( 0 )
 {
-    std::vector< STD1::uint8_t >& _levelStack( Hpn::levels() );
+    std::vector< byte >& _levelStack( Hpn::levels() );
     if( _levelStack[_levelStack.size() - 1] != l )
         d->printError( ERR2_NEST );
     _levelStack.pop_back();
@@ -162,16 +162,16 @@ void EHpn::buildText( Cell* cell )
         if( _previousLevel != 4 && _previousLevel < 8 ) {
             cell->addByte( 0x04 );  //change style
             if( _previousLevel < 4 ) {
-                cell->addByte( static_cast< STD1::uint8_t >( _previousLevel ) );
+                cell->addByte( static_cast< byte >( _previousLevel ) );
             } else {
-                cell->addByte( static_cast< STD1::uint8_t >( _previousLevel - 1) );
+                cell->addByte( static_cast< byte >( _previousLevel - 1) );
             }
         } else {
             cell->addByte( 0x0D );  //special text color
             if( _previousLevel == 4 ) {
                 cell->addByte( 0x01 );
             } else {
-                cell->addByte( static_cast< STD1::uint8_t >( _previousLevel - 6) );
+                cell->addByte( static_cast< byte >( _previousLevel - 6) );
             }
         }
     }

@@ -41,7 +41,7 @@
 
 
 //for each element, call buildText() to fill text buffer
-void Cell::build( OutFile *out )
+void Cell::build( OutFile* out )
 {
     _out = out;
     for( ElementIter itr = _elements.begin(); itr != _elements.end(); ++itr )
@@ -89,7 +89,7 @@ void Cell::addEsc( const std::vector< byte >& esc )
 //    //STD1::uint16_t  dict[dictCount];  //index to global dictionary
 //};
 
-Cell::dword Cell::write( OutFile *out ) const
+Cell::dword Cell::write( OutFile* out ) const
 {
     dword offset( out->tell() );
     // zero

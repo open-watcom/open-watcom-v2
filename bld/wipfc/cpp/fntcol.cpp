@@ -63,7 +63,7 @@ std::size_t FontCollection::add( const FontEntry& fnt )
     return( _fonts.size() - 1 );
 }
 
-FontCollection::dword FontCollection::write( OutFile *out )
+FontCollection::dword FontCollection::write( OutFile* out )
 /*********************************************************/
 {
     dword start = out->tell();

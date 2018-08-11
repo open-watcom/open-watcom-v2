@@ -70,18 +70,20 @@ public:
     //print an error message (not during parsing)
     void printError( ErrCode c ) const;
     void printError( ErrCode c, const std::wstring& txt ) const;
-protected:
-    Document* _document;
-    Element* _parent;
-    //element was parsed from this source file
-    const std::wstring* _fileName;
-    //at this row
-    unsigned int _row;
-    //and this column
-    unsigned int _col;
+
 private:
     Element( const Element& rhs );              //no copy
     Element& operator=( const Element& rhs );   //no assignment
+
+protected:
+    Document*           _document;
+    Element*            _parent;
+    //element was parsed from this source file
+    const std::wstring* _fileName;
+    //at this row
+    unsigned int        _row;
+    //and this column
+    unsigned int        _col;
 };
 
 #endif //ELEMENT_INCLUDED

@@ -93,35 +93,36 @@ protected:
 private:
     Link( const Link& rhs );                //no copy
     Link& operator=( const Link& rhs );     //no assignment
-    std::wstring _database;
-    std::wstring _object;
-    std::wstring _data;
-    PageOrigin _origin;
-    PageSize _size;
-    PageStyle _style;
-    PageGroup _group;
-    GlobalDictionaryWord* _refid;   //of link target
-    word _res;                      //of link target
-    word _x;                        //hypergraphic hotspot
-    word _y;
-    word _cx;
-    word _cy;
-    LinkType _type;
-    bool _automatic;
-    bool _child;
-    bool _dependent;
-    bool _doGroup;
-    bool _doOrigin;
-    bool _doSize;
-    bool _doStyle;
-    bool _split;
-    bool _viewport;
-    bool _noElink;
-    bool _hypergraphic;
     void doTopic( Cell* cell );
     void doFootnote( Cell* cell );
     void doLaunch( Cell* cell );
     void doInform( Cell* cell );
+
+    std::wstring            _database;
+    std::wstring            _object;
+    std::wstring            _data;
+    PageOrigin              _origin;
+    PageSize                _size;
+    PageStyle               _style;
+    PageGroup               _group;
+    GlobalDictionaryWord*   _refid;         //of link target
+    word                    _res;           //of link target
+    word                    _x;             //hypergraphic hotspot
+    word                    _y;
+    word                    _cx;
+    word                    _cy;
+    LinkType                _type;
+    bool                    _automatic;
+    bool                    _child;
+    bool                    _dependent;
+    bool                    _doGroup;
+    bool                    _doOrigin;
+    bool                    _doSize;
+    bool                    _doStyle;
+    bool                    _split;
+    bool                    _viewport;
+    bool                    _noElink;
+    bool                    _hypergraphic;
 };
 
 class ELink : public Tag {

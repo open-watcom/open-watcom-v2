@@ -41,6 +41,10 @@
 #include "element.hpp"
 
 class Artwork : public Element {
+    typedef STD1::uint8_t   byte;
+    typedef STD1::uint16_t  word;
+    typedef STD1::uint32_t  dword;
+
 public:
     Artwork( Document* d, Element *p, const std::wstring* f, unsigned int r, unsigned int c ) :
         Element( d, p, f, r, c ), _linkfile( 0 ), _flags( 0 ), _hypergraphic( false ) { };
@@ -52,6 +56,7 @@ public:
 private:
     Artwork( const Artwork& rhs );              //no copy
     Artwork& operator=( const Artwork& rhs );   //no assignment
+    Lexer::Token parseAttributes( Lexer* lexer );
     enum Flags {
         LEFT = 0x01,
         RIGHT = 0x02,
@@ -60,11 +65,10 @@ private:
         RUNIN = 0x10,
         ALIGNMASK = 0xF8
     };
-    std::wstring _name;      //the bitmap file name
-    std::wstring* _linkfile; //the link file name
-    unsigned char _flags;
-    bool _hypergraphic;      //bitmap is a link
-    Lexer::Token parseAttributes( Lexer* lexer );
+    std::wstring    _name;          //the bitmap file name
+    std::wstring*   _linkfile;      //the link file name
+    byte            _flags;
+    bool            _hypergraphic;  //bitmap is a link
 };
 
 #endif //ARTWORK_INCLUDED

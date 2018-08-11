@@ -50,7 +50,7 @@ IpfHeader::IpfHeader()
     maxLocalIndex = 245;
 };
 
-void IpfHeader::write( OutFile *out ) const
+void IpfHeader::write( OutFile* out ) const
 /*****************************************/
 {
     out->seek( 0, SEEK_SET ); //exception: this element has a fixed position
@@ -68,13 +68,13 @@ bool IpfHeader::isBigFTS()
 void IpfHeader::setBigFTS( bool big )
 /***********************************/
 {
-    searchOffset |= static_cast< STD1::uint32_t >( big ) << 31;
+    searchOffset |= static_cast< dword >( big ) << 31;
 }
 
-STD1::uint32_t IpfExtHeader::write( OutFile *out ) const
-/******************************************************/
+IpfExtHeader::dword IpfExtHeader::write( OutFile* out ) const
+/***********************************************************/
 {
-    STD1::uint32_t start( out->tell() );
+    dword start( out->tell() );
     if( out->write( this, sizeof( IpfExtHeader ), 1 ) )
         throw FatalError( ERR_WRITE );
     return start;

@@ -42,6 +42,10 @@
 #include "tag.hpp"
 
 class Table : public Tag {
+    typedef STD1::uint8_t   byte;
+    typedef STD1::uint16_t  word;
+    typedef STD1::uint32_t  dword;
+
 public:
     enum Rules {
         NO_RULES,
@@ -55,8 +59,8 @@ public:
         BOX
     };
     Table( Document* d, Element *p, const std::wstring* f, unsigned int r,
-        unsigned int c ) : Tag( d, p, f, r, c, Tag::SPACES ), rules( BOTH ),
-        frame( BOX ) { };
+        unsigned int c ) : Tag( d, p, f, r, c, Tag::SPACES ), _rules( BOTH ),
+        _frame( BOX ) { };
     ~Table() { };
     Lexer::Token parse( Lexer* lexer );
     void buildText( Cell* cell );
@@ -65,13 +69,14 @@ protected:
 private:
     Table( const Table& rhs );              //no copy
     Table& operator=( const Table& rhs );   //no assignment
-    std::vector< unsigned char > colWidth;
-    typedef std::vector< unsigned char >::iterator ColWidthIter;
-    typedef std::vector< unsigned char >::const_iterator ConstColWidthIter;
-    Rules rules;
-    Frame frame;
     void tbBorder( bool bottom );
     void rowRule();
+
+    std::vector< byte >     _colWidth;
+    typedef std::vector< byte >::iterator ColWidthIter;
+    typedef std::vector< byte >::const_iterator ConstColWidthIter;
+    Rules                   _rules;
+    Frame                   _frame;
 };
 
 class ETable : public Tag {
@@ -86,29 +91,38 @@ private:
 };
 
 class TableCol : public Tag {
+    typedef STD1::uint8_t   byte;
+    typedef STD1::uint16_t  word;
+    typedef STD1::uint32_t  dword;
+
 public:
     TableCol( Document* d, Element *p, const std::wstring* f, unsigned int r,
-        unsigned int c, unsigned char w ) : Tag( d, p, f, r, c, Tag::SPACES ),
-        data( 1 ), colWidth( w ) { };
+        unsigned int c, byte w ) : Tag( d, p, f, r, c, Tag::SPACES ),
+        _data( 1 ), _colWidth( w ) { };
     ~TableCol() { };
-    unsigned int rows() const { return static_cast< unsigned int >( data.size() ); };
-    std::list< Element* >& rowData( unsigned int rowpos ) { return data[ rowpos ]; };
+    unsigned int rows() const { return static_cast< unsigned int >( _data.size() ); };
+    std::list< Element* >& rowData( unsigned int rowpos ) { return _data[ rowpos ]; };
     Lexer::Token parse( Lexer* lexer );
-    void appendData( unsigned int rowpos, Element* e ) { data[ rowpos ].push_back( e ); };
+    void appendData( unsigned int rowpos, Element* e ) { _data[ rowpos ].push_back( e ); };
     void buildText( Cell* cell ) { (void)cell; };
 private:
     TableCol( const TableCol& rhs );            //no copy
     TableCol& operator=( const TableCol& rhs ); //no assignment
-    std::vector< std::list< Element* > > data;  //elements owned by TableRow
-    std::size_t colWidth;
+
+    std::vector< std::list< Element* > >    _data;      //elements owned by TableRow
+    std::size_t                             _colWidth;
 };
 
 class TableRow : public Tag {
+    typedef STD1::uint8_t   byte;
+    typedef STD1::uint16_t  word;
+    typedef STD1::uint32_t  dword;
+
 public:
     TableRow( Document* d, Element *p, const std::wstring* f, unsigned int r,
-        unsigned int c, std::vector< unsigned char >& w, Table::Rules rl,
-        Table::Frame fr ) : Tag( d, p, f, r, c, Tag::SPACES ), colWidth( w ),
-        rules( rl ), frame( fr ) { };
+        unsigned int c, std::vector< byte >& w, Table::Rules rl,
+        Table::Frame fr ) : Tag( d, p, f, r, c, Tag::SPACES ), _colWidth( w ),
+        _rules( rl ), _frame( fr ) { };
     ~TableRow();
     Lexer::Token parse( Lexer* lexer );
     void linearize( Page* page ) { linearizeChildren( page ); };
@@ -116,13 +130,14 @@ public:
 private:
     TableRow( const TableRow& rhs );            //no copy
     TableRow& operator=( const TableRow& rhs ); //no assignment
-    std::vector< TableCol* > columns;
+
+    std::vector< TableCol* >    _columns;
     typedef std::vector< TableCol* >::iterator ColIter;
     typedef std::vector< TableCol* >::const_iterator ConstColIter;
     typedef std::list< Element* >::iterator ChildrenIter;
-    std::vector< unsigned char >& colWidth;
-    Table::Rules rules;
-    Table::Frame frame;
+    std::vector< byte >&        _colWidth;
+    Table::Rules                _rules;
+    Table::Frame                _frame;
 };
 
 #endif //TABLE_DEFINED

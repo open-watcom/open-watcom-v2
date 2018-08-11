@@ -36,13 +36,14 @@
 
 class XRef {
 public:
-    XRef( const std::wstring* f, unsigned int r ) : fileName( f ), lineNumber( r ) { };
+    XRef( const std::wstring* f, unsigned int r ) : _fileName( f ), _lineNumber( r ) { };
     ~XRef() { };
     void write( std::FILE* logfp ) const;
     bool operator <( const XRef& rhs ) const;
+
 private:
-    const std::wstring* fileName;
-    unsigned int        lineNumber;
+    const std::wstring*     _fileName;
+    unsigned int            _lineNumber;
 };
 
 #endif //XREF_INCLUDED

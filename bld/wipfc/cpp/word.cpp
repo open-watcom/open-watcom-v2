@@ -57,7 +57,7 @@ Lexer::Token Word::parse( Lexer* lexer )
                     txt += entityChar;
                 }
                 catch( Class2Error& e ) {
-                    _document->printError( e.code );
+                    _document->printError( e._code );
                     break;
                 }
             }

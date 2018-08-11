@@ -99,11 +99,11 @@ int Compiler::compile()
     }
     catch( FatalError& e ) {
         retval = EXIT_FAILURE;
-        printError( e.code );
+        printError( e._code );
     }
     catch( FatalIOError& e ) {
         retval = EXIT_FAILURE;
-        printError( e.code, e.fname );
+        printError( e._code, e._fname );
     }
     //TODO locale should be restored to original value
     if( _xref ) {
@@ -119,10 +119,10 @@ int Compiler::compile()
             doc->summary( logfp );
         } catch( FatalError& e ) {
             retval = EXIT_FAILURE;
-            printError( e.code );
+            printError( e._code );
         } catch( FatalIOError& e ) {
             retval = EXIT_FAILURE;
-            printError( e.code, e.fname );
+            printError( e._code, e._fname );
         }
         std::fclose( logfp );
     }

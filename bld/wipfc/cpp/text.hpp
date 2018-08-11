@@ -49,13 +49,14 @@ public:
     void buildText( Cell* cell );
     void setToggleSpacing() { _toggleSpacing = true; };
     void clearToggleSpacing() { _toggleSpacing = false; };
-protected:
-    GlobalDictionaryWord* _text;
-    Tag::WsHandling _whiteSpace;
-    bool _toggleSpacing;
 private:
     Text( const Text& rhs );            //no copy
     Text& operator=( const Text& rhs ); //no assignment
+
+protected:
+    GlobalDictionaryWord*   _text;
+    Tag::WsHandling         _whiteSpace;
+    bool                    _toggleSpacing;
 };
 
 #endif //TEXT_INCLUDED

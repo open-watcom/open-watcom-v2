@@ -50,7 +50,7 @@ public:
         _codePage( 850 ), _reserved( 0 ), _useDBCS( false ) {};
 
     void nlsConfig( const char *loc );
-    dword write( OutFile *out ) const;
+    dword write( OutFile* out ) const;
     word codePage() const { return( _codePage ); }
     word size() const { return( _size ); }
     std::string nlsFileName() const { return _nlsFileName; }

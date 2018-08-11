@@ -36,7 +36,7 @@
 #include "outfile.hpp"
 
 
-FontEntry::dword FontEntry::write( OutFile *out ) const
+FontEntry::dword FontEntry::write( OutFile* out ) const
 {
     char            faceName[MAX_FACENAME_SIZE];    //null terminated
     std::string     buffer;

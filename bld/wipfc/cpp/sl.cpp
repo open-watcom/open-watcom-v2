@@ -59,8 +59,8 @@ Lexer::Token Sl::parse( Lexer* lexer )
             case Lexer::DL:
                 {
                     Dl *dl = new Dl( _document, this, _document->dataName(),
-                        _document->dataLine(), _document->dataCol(), nestLevel + 1,
-                        indent == 1 ? 4 : indent + 4 );
+                        _document->dataLine(), _document->dataCol(), _nestLevel + 1,
+                        _indent == 1 ? 4 : _indent + 4 );
                     appendChild( dl );
                     tok = dl->parse( lexer );
                     needLine = true;
@@ -70,7 +70,7 @@ Lexer::Token Sl::parse( Lexer* lexer )
                 {
                     Ol *ol = new Ol( _document, this, _document->dataName(),
                         _document->dataLine(), _document->dataCol(),
-                        nestLevel + 1, indent == 1 ? 4 : indent + 4 );
+                        _nestLevel + 1, _indent == 1 ? 4 : _indent + 4 );
                     appendChild( ol );
                     tok = ol->parse( lexer );
                     needLine = true;
@@ -80,8 +80,8 @@ Lexer::Token Sl::parse( Lexer* lexer )
                 {
                     SlLi *slli = new SlLi( _document, this, _document->dataName(),
                         _document->dataLine(), _document->dataCol(),
-                        itemCount++, nestLevel, indent, veryCompact ||
-                        ( compact && !needLine ) );
+                        itemCount++, _nestLevel, _indent, _veryCompact ||
+                        ( _compact && !needLine ) );
                     appendChild( slli );
                     tok = slli->parse( lexer );
                     needLine = false;
@@ -90,7 +90,7 @@ Lexer::Token Sl::parse( Lexer* lexer )
             case Lexer::LP:
                 {
                     Lp *lp = new Lp( _document, this, _document->dataName(),
-                        _document->dataLine(), _document->dataCol(), indent );
+                        _document->dataLine(), _document->dataCol(), _indent );
                     appendChild( lp );
                     tok = lp->parse( lexer );
                 }
@@ -98,8 +98,8 @@ Lexer::Token Sl::parse( Lexer* lexer )
             case Lexer::PARML:
                 {
                     Parml *parml = new Parml( _document, this, _document->dataName(),
-                        _document->dataLine(), _document->dataCol(), nestLevel + 1,
-                        indent == 1 ? 4 : indent + 4 );
+                        _document->dataLine(), _document->dataCol(), _nestLevel + 1,
+                        _indent == 1 ? 4 : _indent + 4 );
                     appendChild( parml );
                     tok = parml->parse( lexer );
                     needLine = true;
@@ -109,7 +109,7 @@ Lexer::Token Sl::parse( Lexer* lexer )
                 {
                     Sl *sl = new Sl( _document, this, _document->dataName(),
                         _document->dataLine(), _document->dataCol(),
-                        nestLevel + 1, indent == 1 ? 4 : indent + 4 );
+                        _nestLevel + 1, _indent == 1 ? 4 : _indent + 4 );
                     appendChild( sl );
                     tok = sl->parse( lexer );
                     needLine = true;
@@ -121,7 +121,7 @@ Lexer::Token Sl::parse( Lexer* lexer )
                         _document->dataLine(), _document->dataCol() );
                     appendChild( esl );
                     tok = esl->parse( lexer );
-                    if( !nestLevel ) {
+                    if( !_nestLevel ) {
                         appendChild( new BrCmd( _document, this, _document->dataName(),
                             _document->dataLine(), _document->dataCol() ) );
                     }
@@ -131,7 +131,7 @@ Lexer::Token Sl::parse( Lexer* lexer )
                 {
                     Ul *ul = new Ul( _document, this, _document->dataName(),
                         _document->dataLine(), _document->dataCol(),
-                        nestLevel + 1, indent == 1 ? 4 : indent + 4 );
+                        _nestLevel + 1, _indent == 1 ? 4 : _indent + 4 );
                     appendChild( ul );
                     tok = ul->parse( lexer );
                     needLine = true;
@@ -157,9 +157,9 @@ Lexer::Token Sl::parseAttributes( Lexer* lexer )
             _document->printError( ERR1_ATTRNOTDEF );
         } else if( tok == Lexer::FLAG ) {
             if( lexer->text() == L"compact" ) {
-                compact = true;
+                _compact = true;
             } else if( lexer->text() == L"verycompact" ) {
-                veryCompact = true;
+                _veryCompact = true;
             } else {
                 _document->printError( ERR1_ATTRNOTDEF );
             }
@@ -210,8 +210,8 @@ void SlLi::buildText( Cell* cell )
     cell->addByte( 0xFF );  //esc
     cell->addByte( 0x03 );  //size
     cell->addByte( 0x02 );  //set left margin
-    cell->addByte( indent );
-    if( compact ) {
+    cell->addByte( _indent );
+    if( _compact ) {
         cell->addByte( 0xFD );
     } else {
         cell->addByte( 0xFA );

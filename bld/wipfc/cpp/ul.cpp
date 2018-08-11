@@ -62,8 +62,8 @@ Lexer::Token Ul::parse( Lexer* lexer )
             case Lexer::DL:
                 {
                     Dl *dl = new Dl( _document, this, _document->dataName(),
-                        _document->dataLine(), _document->dataCol(), nestLevel + 1,
-                        indent == 1 ? 4 : indent + 3 );
+                        _document->dataLine(), _document->dataCol(), _nestLevel + 1,
+                        _indent == 1 ? 4 : _indent + 3 );
                     appendChild( dl );
                     tok = dl->parse( lexer );
                     needLine = true;
@@ -73,7 +73,7 @@ Lexer::Token Ul::parse( Lexer* lexer )
                 {
                     Ol *ol = new Ol( _document, this, _document->dataName(),
                         _document->dataLine(), _document->dataCol(),
-                        0, indent == 1 ? 4 : indent + 3 );
+                        0, _indent == 1 ? 4 : _indent + 3 );
                     appendChild( ol );
                     tok = ol->parse( lexer );
                     needLine = true;
@@ -83,8 +83,8 @@ Lexer::Token Ul::parse( Lexer* lexer )
                 {
                     UlLi *ulli = new UlLi( _document, this, _document->dataName(),
                         _document->dataLine(), _document->dataCol(),
-                        itemCount++, nestLevel, indent, veryCompact ||
-                        ( compact && !needLine ) );
+                        itemCount++, _nestLevel, _indent, _veryCompact ||
+                        ( _compact && !needLine ) );
                     appendChild( ulli );
                     tok = ulli->parse( lexer );
                     needLine = false;
@@ -93,7 +93,7 @@ Lexer::Token Ul::parse( Lexer* lexer )
             case Lexer::LP:
                 {
                     Lp *lp = new Lp( _document, this, _document->dataName(),
-                        _document->dataLine(), _document->dataCol(), indent + 2 );
+                        _document->dataLine(), _document->dataCol(), _indent + 2 );
                     appendChild( lp );
                     tok = lp->parse( lexer );
                 }
@@ -101,8 +101,8 @@ Lexer::Token Ul::parse( Lexer* lexer )
             case Lexer::PARML:
                 {
                     Parml *parml = new Parml( _document, this, _document->dataName(),
-                        _document->dataLine(), _document->dataCol(), nestLevel + 1,
-                        indent == 1 ? 4 : indent + 3 );
+                        _document->dataLine(), _document->dataCol(), _nestLevel + 1,
+                        _indent == 1 ? 4 : _indent + 3 );
                     appendChild( parml );
                     tok = parml->parse( lexer );
                     needLine = true;
@@ -112,7 +112,7 @@ Lexer::Token Ul::parse( Lexer* lexer )
                 {
                     Sl *sl = new Sl( _document, this, _document->dataName(),
                         _document->dataLine(), _document->dataCol(),
-                        0, indent == 1 ? 4 : indent + 3 );
+                        0, _indent == 1 ? 4 : _indent + 3 );
                     appendChild( sl );
                     tok = sl->parse( lexer );
                     needLine = true;
@@ -122,7 +122,7 @@ Lexer::Token Ul::parse( Lexer* lexer )
                 {
                     Ul *ul = new Ul( _document, this, _document->dataName(),
                         _document->dataLine(), _document->dataCol(),
-                        nestLevel + 1, indent == 1 ? 4 : indent + 3 );
+                        _nestLevel + 1, _indent == 1 ? 4 : _indent + 3 );
                     appendChild( ul );
                     tok = ul->parse( lexer );
                     needLine = true;
@@ -134,7 +134,7 @@ Lexer::Token Ul::parse( Lexer* lexer )
                         _document->dataLine(), _document->dataCol() );
                     appendChild( eul );
                     tok = eul->parse( lexer );
-                    if( !nestLevel ) {
+                    if( !_nestLevel ) {
                         appendChild( new BrCmd( _document, this, _document->dataName(),
                             _document->dataLine(), _document->dataCol() ) );
                     }
@@ -160,9 +160,9 @@ Lexer::Token Ul::parseAttributes( Lexer* lexer )
             _document->printError( ERR1_ATTRNOTDEF );
         } else if( tok == Lexer::FLAG ) {
             if( lexer->text() == L"compact" ) {
-                compact = true;
+                _compact = true;
             } else if( lexer->text() == L"verycompact" ) {
-                veryCompact = true;
+                _veryCompact = true;
             } else {
                 _document->printError( ERR1_ATTRNOTDEF );
             }
@@ -192,23 +192,23 @@ Lexer::Token UlLi::parse( Lexer* lexer )
 {
     Lexer::Token tok( parseAttributes( lexer ) );
     appendChild( new Lm( _document, this, _document->dataName(), _document->dataLine(),
-        _document->dataCol(), indent ) );
-    if( compact ) {
+        _document->dataCol(), _indent ) );
+    if( _compact ) {
         appendChild( new BrCmd( _document, this, _document->dataName(), _document->dataLine(),
             _document->dataCol() ) );
     } else {
         appendChild( new P( _document, this, _document->dataName(), _document->dataLine(),
             _document->dataCol() ) );
     }
-    if( _document->ulBullet( nestLevel ).size() == 1 ) {
+    if( _document->ulBullet( _nestLevel ).size() == 1 ) {
         appendChild( new LiteralWhiteSpace( _document, this, _document->dataName(),
             _document->dataLine(), _document->dataCol(), true ) );
     }
     appendChild( new Word( _document, this, _document->dataName(),
-        _document->dataLine(), _document->dataCol(), _document->ulBullet( nestLevel ),
-        _document->ulBullet( nestLevel ).size() == 1 ) );
+        _document->dataLine(), _document->dataCol(), _document->ulBullet( _nestLevel ),
+        _document->ulBullet( _nestLevel ).size() == 1 ) );
     appendChild( new Lm( _document, this, _document->dataName(), _document->dataLine(),
-        _document->dataCol(), indent + 2 ) );
+        _document->dataCol(), _indent + 2 ) );
     while( tok != Lexer::END && !( tok == Lexer::TAG && lexer->tagId() == Lexer::EUSERDOC ) ) {
         if( parseInline( lexer, tok ) ) {
             if( lexer->tagId() == Lexer::LI ) {

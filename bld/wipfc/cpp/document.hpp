@@ -77,14 +77,14 @@ public:
 
     //set the output file
     void setOutFile( const std::string& fileName );
-    OutFile *out() { return _out; };
+    OutFile* out() { return _out; };
     bool isInf() const { return _hdr->flags == 0x01; };
     //set the lowest header level for which new pages are made
     void setHeaderCutOff( unsigned int co ) { _maxHeaderLevel = co; };
     unsigned int headerCutOff() const { return _maxHeaderLevel; };
     //track the current left margin
-    void setLeftMargin( unsigned char lm ) { _currentLeftMargin = lm; } ;
-    unsigned char leftMargin() const { return _currentLeftMargin; };
+    void setLeftMargin( byte lm ) { _currentLeftMargin = lm; } ;
+    byte leftMargin() const { return _currentLeftMargin; };
     //store a graphics file name
     void addBitmap( std::wstring& bmn );
     dword bitmapByName( std::wstring& bmn );
@@ -195,77 +195,6 @@ public:
 private:
     Document( const Document &rhs );            //no copy constructor
     Document& operator=( const Document &rhs ); //no assignment
-    Compiler& _compiler;
-    std::auto_ptr< Nls > _nls;
-    std::auto_ptr< IpfHeader > _hdr;
-    std::auto_ptr< IpfExtHeader > _eHdr;
-    std::auto_ptr< StringTable > _strings;
-    std::auto_ptr< ExternalFiles > _extfiles;
-    std::auto_ptr< Controls > _controls;
-    std::auto_ptr< FontCollection > _fonts;
-    std::auto_ptr< GNames > _gnames;
-    std::auto_ptr< GlobalDictionary > _dict;
-
-    std::vector< Page* > _pages;
-    typedef std::vector< Page* >::iterator PageIter;
-    typedef std::vector< Page* >::const_iterator ConstPageIter;
-
-    std::vector< Cell* > _cells;
-    typedef std::vector< Cell* >::iterator CellIter;
-    typedef std::vector< Cell* >::const_iterator ConstCellIter;
-
-    std::map< std::wstring, dword > _bitmapNames;
-    typedef std::map< std::wstring, dword >::iterator BitmapNameIter;
-    typedef std::map< std::wstring, dword >::const_iterator ConstBitmapNameIter;
-
-    std::map< word, TocRef > _resMap;
-    typedef std::map< word, TocRef >::iterator ResMapIter;
-    typedef std::map< word, TocRef >::const_iterator ConstResMapIter;
-
-    std::map< GlobalDictionaryWord*, TocRef, ptrLess< GlobalDictionaryWord* > > _nameMap;
-    typedef std::map< GlobalDictionaryWord*, TocRef, ptrLess< GlobalDictionaryWord* > >::iterator NameMapIter;
-    typedef std::map< GlobalDictionaryWord*, TocRef, ptrLess< GlobalDictionaryWord* > >::const_iterator ConstNameMapIter;
-
-    std::map< std::wstring, Synonym* > _synonyms;    //each Synonym is owned by an ISym tag
-    typedef std::map< std::wstring, Synonym* >::iterator SynIter;
-    typedef std::map< std::wstring, Synonym* >::const_iterator ConstSynIter;
-
-    std::map< std::wstring, std::wstring > _nameIts;
-    typedef std::map< std::wstring, std::wstring >::iterator NameItIter;
-    typedef std::map< std::wstring, std::wstring >::const_iterator ConstNameItIter;
-
-    std::vector< I1* > _index;
-    typedef std::vector< I1* >::iterator IndexIter;
-    typedef std::vector< I1* >::const_iterator ConstIndexIter;
-    std::map< std::wstring, I1* > _indexMap;
-    typedef std::map< std::wstring, I1* >::iterator IndexMapIter;
-    typedef std::map< std::wstring, I1* >::const_iterator ConstIndexMapIter;
-
-    std::vector< ICmd* > _icmd;
-    typedef std::vector< ICmd* >::iterator ICmdIter;
-    typedef std::vector< ICmd* >::const_iterator ConstICmdIter;
-
-    std::vector< dword > _tocOffsets;
-    typedef std::vector< dword >::iterator TocOffsetIter;
-    typedef std::vector< dword >::const_iterator ConstTocOffsetIter;
-
-    std::vector< dword > _cellOffsets;
-    typedef std::vector< dword >::iterator CellOffsetIter;
-    typedef std::vector< dword >::const_iterator ConstCellOffsetIter;
-
-    std::FILE *_tmpBitmaps;  // temporary file for bitmaps
-    Text* _lastPrintableItem;
-    unsigned int _maxHeaderLevel;
-    unsigned int _headerLevel;
-    unsigned char _currentLeftMargin;
-    Lexer::Token _lastPrintableToken;
-    bool _inDoc;             //true if parsing between userdoc and euserdoc
-    bool _spacing;           //true if automatically inserting spaces
-    std::vector< std::string > _ipfcartwork_paths;
-    std::vector< std::string > _ipfcimbed_paths;
-    std::wstring _title;
-    OutFile *_out;
-
     void makeBitmaps();
     void makeIndexes();
     dword writeBitmaps();
@@ -279,6 +208,77 @@ private:
     void writeSynonyms();
     dword writeIndex();
     dword writeICmd();
+
+    Compiler&                           _compiler;
+    std::auto_ptr< Nls >                _nls;
+    std::auto_ptr< IpfHeader >          _hdr;
+    std::auto_ptr< IpfExtHeader >       _eHdr;
+    std::auto_ptr< StringTable >        _strings;
+    std::auto_ptr< ExternalFiles >      _extfiles;
+    std::auto_ptr< Controls >           _controls;
+    std::auto_ptr< FontCollection >     _fonts;
+    std::auto_ptr< GNames >             _gnames;
+    std::auto_ptr< GlobalDictionary >   _dict;
+
+    std::vector< Page* >                _pages;
+    typedef std::vector< Page* >::iterator PageIter;
+    typedef std::vector< Page* >::const_iterator ConstPageIter;
+
+    std::vector< Cell* >                _cells;
+    typedef std::vector< Cell* >::iterator CellIter;
+    typedef std::vector< Cell* >::const_iterator ConstCellIter;
+
+    std::map< std::wstring, dword >     _bitmapNames;
+    typedef std::map< std::wstring, dword >::iterator BitmapNameIter;
+    typedef std::map< std::wstring, dword >::const_iterator ConstBitmapNameIter;
+
+    std::map< word, TocRef >            _resMap;
+    typedef std::map< word, TocRef >::iterator ResMapIter;
+    typedef std::map< word, TocRef >::const_iterator ConstResMapIter;
+
+    std::map< GlobalDictionaryWord*, TocRef, ptrLess< GlobalDictionaryWord* > > _nameMap;
+    typedef std::map< GlobalDictionaryWord*, TocRef, ptrLess< GlobalDictionaryWord* > >::iterator NameMapIter;
+    typedef std::map< GlobalDictionaryWord*, TocRef, ptrLess< GlobalDictionaryWord* > >::const_iterator ConstNameMapIter;
+
+    std::map< std::wstring, Synonym* >  _synonyms;    //each Synonym is owned by an ISym tag
+    typedef std::map< std::wstring, Synonym* >::iterator SynIter;
+    typedef std::map< std::wstring, Synonym* >::const_iterator ConstSynIter;
+
+    std::map< std::wstring, std::wstring > _nameIts;
+    typedef std::map< std::wstring, std::wstring >::iterator NameItIter;
+    typedef std::map< std::wstring, std::wstring >::const_iterator ConstNameItIter;
+
+    std::vector< I1* >                  _index;
+    typedef std::vector< I1* >::iterator IndexIter;
+    typedef std::vector< I1* >::const_iterator ConstIndexIter;
+    std::map< std::wstring, I1* >       _indexMap;
+    typedef std::map< std::wstring, I1* >::iterator IndexMapIter;
+    typedef std::map< std::wstring, I1* >::const_iterator ConstIndexMapIter;
+
+    std::vector< ICmd* >                _icmd;
+    typedef std::vector< ICmd* >::iterator ICmdIter;
+    typedef std::vector< ICmd* >::const_iterator ConstICmdIter;
+
+    std::vector< dword >                _tocOffsets;
+    typedef std::vector< dword >::iterator TocOffsetIter;
+    typedef std::vector< dword >::const_iterator ConstTocOffsetIter;
+
+    std::vector< dword >                _cellOffsets;
+    typedef std::vector< dword >::iterator CellOffsetIter;
+    typedef std::vector< dword >::const_iterator ConstCellOffsetIter;
+
+    std::FILE*                          _tmpBitmaps;  // temporary file for bitmaps
+    Text*                               _lastPrintableItem;
+    unsigned int                        _maxHeaderLevel;
+    unsigned int                        _headerLevel;
+    byte                                _currentLeftMargin;
+    Lexer::Token                        _lastPrintableToken;
+    bool                                _inDoc;             //true if parsing between userdoc and euserdoc
+    bool                                _spacing;           //true if automatically inserting spaces
+    std::vector< std::string >          _ipfcartwork_paths;
+    std::vector< std::string >          _ipfcimbed_paths;
+    std::wstring                        _title;
+    OutFile*                            _out;
 };
 
 #endif //DOCUMENT_INCLUDED

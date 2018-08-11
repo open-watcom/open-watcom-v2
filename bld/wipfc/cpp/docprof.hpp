@@ -60,12 +60,13 @@ public:
 private:
     DocProf( const DocProf& rhs );              //no copy
     DocProf& operator=( const DocProf& rhs );   //no assignment
-    Document* _document;
-    unsigned int _headerCutOff;
-    std::wstring _dll;
-    std::wstring _objName;
-    std::wstring _objInfo;
-    enum CtrlArea _area;
+
+    Document            *_document;
+    unsigned int        _headerCutOff;
+    std::wstring        _dll;
+    std::wstring        _objName;
+    std::wstring        _objInfo;
+    enum CtrlArea       _area;
 };
 
 #endif //DOCPROF_INCLUDED

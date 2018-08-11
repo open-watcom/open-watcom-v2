@@ -35,8 +35,8 @@
 
 void TocRef::write( std::FILE* logfp ) const
 {
-    std::fprintf( logfp, " defined at %ls, line %u\n", fileName->c_str(), lineNumber );
-    for( ConstXRefIter itr( xref.begin() ); itr != xref.end(); ++itr ) {
+    std::fprintf( logfp, " defined at %ls, line %u\n", _fileName->c_str(), _lineNumber );
+    for( ConstXRefIter itr( _xref.begin() ); itr != _xref.end(); ++itr ) {
         itr->write( logfp );
     }
 }

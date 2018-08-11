@@ -69,25 +69,26 @@ public:
     //add an element to this cell's list
     void addElement( Element* element ) { _elements.push_back( element ); };
     //build the encoded text
-    void build( OutFile *out );
+    void build( OutFile* out );
     //write the cell to the file
-    dword write( OutFile *out ) const;
-    OutFile *out() { return _out; };
+    dword write( OutFile* out ) const;
+    OutFile* out() { return _out; };
 private:
     Cell( const Cell& rhs );                //no copy
     Cell& operator=( const Cell& rhs );     //no assignment
-    std::vector< word > _localDictionary;   //indexes into global dictionary
+
+    std::vector< word >     _localDictionary;   //indexes into global dictionary
     typedef std::vector< word >::iterator LDIter;
     typedef std::vector< word >::const_iterator ConstLDIter;
-    std::vector< byte > _text;              //indexes into local dictionary
+    std::vector< byte >     _text;              //indexes into local dictionary
     typedef std::vector< byte >::iterator TextIter;
     typedef std::vector< byte >::const_iterator ConstTextIter;
-    std::vector< Element* > _elements;      //elements in this cell
+    std::vector< Element* > _elements;          //elements in this cell
     typedef std::vector< Element* >::iterator ElementIter;
     typedef std::vector< Element* >::const_iterator ConstElementIter;
-    std::size_t _maxDictSize;
-    std::size_t _idx;                       //index of this cell in cell array
-    OutFile *_out;
+    std::size_t             _maxDictSize;
+    std::size_t             _idx;               //index of this cell in cell array
+    OutFile*                _out;
 };
 
 /*

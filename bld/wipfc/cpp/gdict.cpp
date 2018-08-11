@@ -80,7 +80,7 @@ GlobalDictionaryWord* GlobalDictionary::findWord( const std::wstring& wordtxt )
     return( findWord( &wordent ) );
 }
 /***************************************************************************/
-GlobalDictionary::dword GlobalDictionary::write( OutFile *out )
+GlobalDictionary::dword GlobalDictionary::write( OutFile* out )
 {
     dword start = out->tell();
     for( ConstWordIter itr = _words.begin(); itr != _words.end(); ++itr )
@@ -88,7 +88,7 @@ GlobalDictionary::dword GlobalDictionary::write( OutFile *out )
     return( start );
 }
 /***************************************************************************/
-bool GlobalDictionary::buildFTS( OutFile *out )
+bool GlobalDictionary::buildFTS( OutFile* out )
 {
     bool big( false );
     for( ConstWordIter itr = _words.begin(); itr != _words.end(); ++itr ) {
@@ -100,7 +100,7 @@ bool GlobalDictionary::buildFTS( OutFile *out )
     return( big );
 }
 /***************************************************************************/
-GlobalDictionary::dword GlobalDictionary::writeFTS( OutFile *out, bool big )
+GlobalDictionary::dword GlobalDictionary::writeFTS( OutFile* out, bool big )
 {
     dword start = out->tell();
     for( ConstWordIter itr = _words.begin(); itr != _words.end(); ++itr )

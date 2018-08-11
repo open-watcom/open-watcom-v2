@@ -35,7 +35,7 @@
 #include "outfile.hpp"
 
 
-Controls::dword Controls::write( OutFile *out )
+Controls::dword Controls::write( OutFile* out )
 {
     dword start( out->tell() );
     if( out->put( static_cast< word >( _controls.size() ) ) )

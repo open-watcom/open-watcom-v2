@@ -39,16 +39,10 @@
 #include "element.hpp"
 
 class Color : public Element {
-public:
-    Color( Document* d, Element *p, const std::wstring* f, unsigned int r, unsigned int c ) :
-        Element( d, p, f, r, c ), _foreground( DEFAULT ), _background( DEFAULT ), _setForeground( false ),
-        _setBackground( false ) { };
-    ~Color() { };
-    Lexer::Token parse( Lexer* lexer );
-    void buildText( Cell* cell );
-private:
-    Color( const Color& rhs );              //no copy
-    Color& operator=( const Color& rhs );   //no assignment
+    typedef STD1::uint8_t   byte;
+    typedef STD1::uint16_t  word;
+    typedef STD1::uint32_t  dword;
+
     enum ColorName {
         DEFAULT,
         BLUE,
@@ -68,11 +62,23 @@ private:
         BLACK,
         PALEGRAY
     };
-    ColorName _foreground;
-    ColorName _background;
-    bool _setForeground;
-    bool _setBackground;
+
+public:
+    Color( Document* d, Element *p, const std::wstring* f, unsigned int r, unsigned int c ) :
+        Element( d, p, f, r, c ), _foreground( DEFAULT ), _background( DEFAULT ), _setForeground( false ),
+        _setBackground( false ) { };
+    ~Color() { };
+    Lexer::Token parse( Lexer* lexer );
+    void buildText( Cell* cell );
+private:
+    Color( const Color& rhs );              //no copy
+    Color& operator=( const Color& rhs );   //no assignment
     ColorName parseColor( std::wstring& name );
+
+    ColorName   _foreground;
+    ColorName   _background;
+    bool        _setForeground;
+    bool        _setBackground;
 };
 
 #endif //COLOR_INCLUDED

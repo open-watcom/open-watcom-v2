@@ -62,10 +62,10 @@ private:
     std::size_t  mbtow_cstring( wchar_t *wc, const char *mbc, std::size_t len );
     void         mbtow_string( const std::string& input, std::wstring& output );
 
-    const std::wstring* _fileName;
-    std::FILE* _stream;
-    wchar_t _ungottenChar;
-    bool _ungotten;
+    const std::wstring*     _fileName;
+    std::FILE*              _stream;
+    wchar_t                 _ungottenChar;
+    bool                    _ungotten;
 };
 
 #endif

@@ -43,7 +43,7 @@ void Page::buildTOC()
     ( *( _elements.begin() ))->buildTOC( this );
 }
 /***************************************************************************/
-void Page::buildLocalDictionary( OutFile *out )
+void Page::buildLocalDictionary( OutFile* out )
 {
     _out = out;
     bool autoSpacing( true );
@@ -80,7 +80,7 @@ bool Page::addWord( GlobalDictionaryWord* wordent )
 }
 /***************************************************************************/
 //Write a TOC entry
-Page::dword Page::write( OutFile *out )
+Page::dword Page::write( OutFile* out )
 {
     std::size_t tocsize( sizeof( TocEntry ) + _toc.cellCount * sizeof( word ) );
     if( _toc.extended ) {
@@ -135,7 +135,7 @@ Page::dword Page::write( OutFile *out )
 // byte size
 // word parent_toc_index
 // word child_toc_index
-Page::dword Page::writeChildren( OutFile *out ) const
+Page::dword Page::writeChildren( OutFile* out ) const
 {
     byte bytes = 0;
     if( !_children.empty() ) {

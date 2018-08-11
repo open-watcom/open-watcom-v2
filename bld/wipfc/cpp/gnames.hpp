@@ -50,10 +50,11 @@ public:
     void insert( GlobalDictionaryWord* wordent, word toc );
     //the number of names in the collection
     word size() const { return static_cast< word >( _names.size() ); };
-    dword write( OutFile *out ) const;
+    dword write( OutFile* out ) const;
 private:
     GNames( const GNames& rhs );            //no copy
     GNames& operator=( const GNames& rhs ); //no assignment
+
     std::map< GlobalDictionaryWord*, word, ptrLess< GlobalDictionaryWord* > > _names;
     typedef std::map< GlobalDictionaryWord*, word, ptrLess< GlobalDictionaryWord* > >::const_iterator ConstNameIter;
     typedef std::map< GlobalDictionaryWord*, word, ptrLess< GlobalDictionaryWord* > >::iterator NameIter;

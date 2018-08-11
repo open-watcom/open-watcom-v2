@@ -63,7 +63,7 @@ Lexer::Token I2::parse( Lexer* lexer )
                     txt += entityChar;
                 }
                 catch( Class2Error& e ) {
-                    _document->printError( e.code );
+                    _document->printError( e._code );
                 }
             }
         } else if( tok == Lexer::PUNCTUATION ) {
@@ -136,7 +136,7 @@ void I2::buildIndex()
         i1->addSecondary( _index.get() );
     }
     catch( Class1Error& e ) {
-        printError( e.code );
+        printError( e._code );
     }
 }
 

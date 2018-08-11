@@ -59,12 +59,12 @@ Lexer::Token Rm::parse( Lexer* lexer )
                     tmp = 1;
                 if( tmp > 255 )
                     tmp = 255;
-                _margin = static_cast< STD1::uint8_t >( tmp );
+                _margin = static_cast< byte >( tmp );
             } else {
                 _document->printError( ERR1_ATTRNOTDEF );
             }
         } else if( tok == Lexer::FLAG ) {
-                _document->printError( ERR1_ATTRNOTDEF );
+            _document->printError( ERR1_ATTRNOTDEF );
         } else if( tok == Lexer::ERROR_TAG ) {
             throw FatalError( ERR_SYNTAX );
         } else if( tok == Lexer::END ) {

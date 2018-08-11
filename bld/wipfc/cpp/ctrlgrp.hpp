@@ -51,13 +51,13 @@ public:
     const std::wstring& id() const { return _idnt; };
     void setIndex( word i ) { _idx = i; };
     word index() const { return _idx; };
-    dword write( OutFile *out ) const;
+    dword write( OutFile* out ) const;
 private:
     std::vector< word > _buttonIndex;
     typedef std::vector< word >::iterator ButtonIter;
     typedef std::vector< word >::const_iterator ConstButtonIter;
-    std::wstring _idnt;  //identifier
-    word _idx;           //index of this item in group array
+    std::wstring        _idnt;      //identifier
+    word                _idx;       //index of this item in group array
 };
 
 #endif //CONTROLGROUP_INCLUDED

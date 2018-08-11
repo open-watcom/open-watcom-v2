@@ -101,7 +101,7 @@ void CountryDef::nlsConfig( const char *loc )
     _entityFileName = path + std::string( fn2 );
 }
 
-CountryDef::dword CountryDef::write( OutFile *out ) const
+CountryDef::dword CountryDef::write( OutFile* out ) const
 /*********************************************************/
 {
     dword start = out->tell();

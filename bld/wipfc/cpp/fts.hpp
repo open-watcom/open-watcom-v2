@@ -50,30 +50,31 @@ public:
     void setPages( std::size_t count );
     //the word appears on page i
     void onPage( std::size_t i );
-    void build( OutFile *out );
+    void build( OutFile* out );
     //Only valid after build is run
     bool isBigFTS() { return _dataSize + 2 > UINT8_MAX; };
-    dword write( OutFile *out, bool big ) const;
+    dword write( OutFile* out, bool big ) const;
 private:
     std::size_t getPages( std::vector< word >& pg, bool absent ) const;
     FTSElement( const FTSElement& rhs );            //no copy
     FTSElement& operator=( const FTSElement& rhs ); //no assignment
     void encode( std::vector< byte >& rle );
+
     enum CompressionCode {
-        NONE,               // word is in no panel, no bitstring
-        ALL,                // word is in every panel, no bitsring
-        RLE,                // run length encoded bitstring
-        PRESENT,            // list of panel numbers (unsigned short) word is in
-        ABSENT,             // list of panel numbers (unsigned short) word is not in
-        TRUNC,              // no empty bytes after last set bit
-        DBL_TRUNC           // first panel number, then bitstring with no empty bytes
-    };                      //   after last set bit
-    std::size_t _pageCount; // number of pages the word is in
-    std::size_t _maxPage;   // the highest page number
-    std::size_t _dataSize;  // the size of the compressed bitstring
-    word _firstPage;        // the first page the word is in
-    CompressionCode _comp;
-    std::vector< byte > _pages;    //bitstring of what pages its found on (for FTS)
+        NONE,                       // word is in no panel, no bitstring
+        ALL,                        // word is in every panel, no bitsring
+        RLE,                        // run length encoded bitstring
+        PRESENT,                    // list of panel numbers (unsigned short) word is in
+        ABSENT,                     // list of panel numbers (unsigned short) word is not in
+        TRUNC,                      // no empty bytes after last set bit
+        DBL_TRUNC                   // first panel number, then bitstring with no empty bytes
+    };                              //   after last set bit
+    std::size_t         _pageCount; // number of pages the word is in
+    std::size_t         _maxPage;   // the highest page number
+    std::size_t         _dataSize;  // the size of the compressed bitstring
+    word                _firstPage; // the first page the word is in
+    CompressionCode     _comp;
+    std::vector< byte > _pages;     // bitstring of what pages its found on (for FTS)
     typedef std::vector< byte >::iterator PageIter;
     typedef std::vector< byte >::const_iterator ConstPageIter;
     typedef std::vector< byte >::reverse_iterator RPageIter;

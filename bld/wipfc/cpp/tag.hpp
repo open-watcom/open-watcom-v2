@@ -52,10 +52,6 @@ public:
     void linearize( Page* page );
     void linearizeChildren( Page* page );
 protected:
-    std::list< Element* > _children;
-    typedef std::list< Element* >::iterator ChildrenIter;
-    typedef std::list< Element* >::const_iterator ConstChildrenIter;
-    WsHandling _whiteSpace;
     virtual
     Lexer::Token parseAttributes( Lexer* lexer );
     bool parseInline( Lexer* lexer, Lexer::Token& tok );
@@ -65,6 +61,12 @@ protected:
 private:
     Tag( const Tag& rhs );              //no copy
     Tag& operator=( const Tag& rhs );   //no assignment
+
+protected:
+    std::list< Element* >   _children;
+    typedef std::list< Element* >::iterator ChildrenIter;
+    typedef std::list< Element* >::const_iterator ConstChildrenIter;
+    WsHandling              _whiteSpace;
 };
 
 #endif //TAG_INCLUDED

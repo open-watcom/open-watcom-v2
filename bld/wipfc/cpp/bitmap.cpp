@@ -78,29 +78,29 @@ struct BitmapInfoHeaderOS22x {
 
 #pragma pack(pop)
 
-Bitmap::Bitmap( std::string& fname ) : dataSize( sizeof( word ) ), blockSize( 0 )
+Bitmap::Bitmap( std::string& fname ) : _dataSize( sizeof( word ) ), _blockSize( 0 )
 {
     std::FILE* bmfpi( std::fopen( fname.c_str(), "rb" ) );
     if( !bmfpi )
         throw FatalError( ERR_OPENIMG );
     try {
-        bmfh.read( bmfpi );
-        if( bmfh.type[0] != 'B' || bmfh.type[1] != 'M' )
+        _bmfh.read( bmfpi );
+        if( _bmfh.type[0] != 'B' || _bmfh.type[1] != 'M' )
             throw Class1Error( ERR1_BADFMT );
-        bmfh.type[0] = 'b';
-        if( bmfh.bmihSize == sizeof( BitmapInfoHeader16 ) + sizeof( dword ) ) {
+        _bmfh.type[0] = 'b';
+        if( _bmfh.bmihSize == sizeof( BitmapInfoHeader16 ) + sizeof( dword ) ) {
             readHeader16( bmfpi );
-        } else if( bmfh.bmihSize == sizeof( BitmapInfoHeaderWin32 ) + sizeof( dword ) ) {
+        } else if( _bmfh.bmihSize == sizeof( BitmapInfoHeaderWin32 ) + sizeof( dword ) ) {
             readHeaderW32( bmfpi );
-        } else if( bmfh.bmihSize == sizeof( BitmapInfoHeaderOS22x ) + sizeof( dword ) ) {
+        } else if( _bmfh.bmihSize == sizeof( BitmapInfoHeaderOS22x ) + sizeof( dword ) ) {
             readHeaderOS2( bmfpi );
         } else {
             throw Class1Error( ERR1_BADFMT );
         }
-        findBlockSize( bmih.width, bmih.height, bmih.bitsPerPixel );
+        findBlockSize( _bmih.width, _bmih.height, _bmih.bitsPerPixel );
         compress( bmfpi );
-        for( DataIter itr = data.begin(); itr != data.end(); ++itr ) {
-            dataSize += itr->totalSize();
+        for( DataIter itr = _data.begin(); itr != _data.end(); ++itr ) {
+            _dataSize += itr->totalSize();
         }
     }
     catch( FatalError& e ) {
@@ -125,18 +125,18 @@ BitmapBlock[];
 Bitmap::dword Bitmap::write( std::FILE* bmfpo ) const
 {
     dword offset( std::ftell( bmfpo ) );
-    bmfh.write( bmfpo );
-    bmih.write( bmfpo );
-    if( !rgb.empty() ) {
-        if( std::fwrite( &rgb[0], sizeof( RGB ), rgb.size(), bmfpo ) != rgb.size() ) {
+    _bmfh.write( bmfpo );
+    _bmih.write( bmfpo );
+    if( !_rgb.empty() ) {
+        if( std::fwrite( &_rgb[0], sizeof( RGB ), _rgb.size(), bmfpo ) != _rgb.size() ) {
             throw FatalError( ERR_WRITE );
         }
     }
-    if( std::fwrite( &dataSize, sizeof( dword ), 1, bmfpo ) != 1 )
+    if( std::fwrite( &_dataSize, sizeof( dword ), 1, bmfpo ) != 1 )
         throw FatalError( ERR_WRITE );
-    if( std::fwrite( &blockSize, sizeof( word ), 1, bmfpo ) != 1 )
+    if( std::fwrite( &_blockSize, sizeof( word ), 1, bmfpo ) != 1 )
         throw FatalError( ERR_WRITE );
-    for( ConstDataIter itr = data.begin(); itr != data.end(); ++itr )
+    for( ConstDataIter itr = _data.begin(); itr != _data.end(); ++itr )
         itr->write( bmfpo );
     return offset;
 }
@@ -206,11 +206,11 @@ void Bitmap::RGBA::read( std::FILE* bmfpi )
 /***************************************************************************/
 void Bitmap::readHeader16( std::FILE* bmfpi )
 {
-    bmih.read( bmfpi );
-    if( bmih.bitsPerPixel <= 8 ) {
-        std::size_t rgbSize( 1 << bmih.bitsPerPixel );
-        rgb.resize( rgbSize );
-        if( std::fread( &rgb[0], sizeof( RGB ), rgbSize, bmfpi ) != rgbSize ) {
+    _bmih.read( bmfpi );
+    if( _bmih.bitsPerPixel <= 8 ) {
+        std::size_t rgbSize( 1 << _bmih.bitsPerPixel );
+        _rgb.resize( rgbSize );
+        if( std::fread( &_rgb[0], sizeof( RGB ), rgbSize, bmfpi ) != rgbSize ) {
             throw FatalError( ERR_READ );
         }
     }
@@ -220,33 +220,33 @@ void Bitmap::readHeaderW32( std::FILE* bmfpi )
 {
     BitmapInfoHeaderWin32 bmihW32;
     bmihW32.read( bmfpi );
-    bmih.width = static_cast< word >( bmihW32.width );
-    bmih.height = static_cast< word >( bmihW32.height );
-    bmih.planes = bmihW32.planes;
-    bmih.bitsPerPixel = bmihW32.bitsPerPixel;
-    bmfh.bmihSize = sizeof( BitmapInfoHeader16 ) + sizeof( dword );
+    _bmih.width = static_cast< word >( bmihW32.width );
+    _bmih.height = static_cast< word >( bmihW32.height );
+    _bmih.planes = bmihW32.planes;
+    _bmih.bitsPerPixel = bmihW32.bitsPerPixel;
+    _bmfh.bmihSize = sizeof( BitmapInfoHeader16 ) + sizeof( dword );
     //it is not necessary to adjust the size or offset, but doesn't hurt
-    bmfh.size -= sizeof( BitmapInfoHeaderWin32 ) - sizeof( BitmapInfoHeader16 );
-    bmfh.bitsOffset -= sizeof( BitmapInfoHeaderWin32 ) - sizeof( BitmapInfoHeader16 );
-    if( bmih.bitsPerPixel <= 8 ) {
-        std::size_t rgbSize( 1 << bmih.bitsPerPixel );
-        rgb.reserve( rgbSize );
+    _bmfh.size -= sizeof( BitmapInfoHeaderWin32 ) - sizeof( BitmapInfoHeader16 );
+    _bmfh.bitsOffset -= sizeof( BitmapInfoHeaderWin32 ) - sizeof( BitmapInfoHeader16 );
+    if( _bmih.bitsPerPixel <= 8 ) {
+        std::size_t rgbSize( 1 << _bmih.bitsPerPixel );
+        _rgb.reserve( rgbSize );
         for( std::size_t count1 = 0; count1 < rgbSize; ++count1 ) {
             RGBA tmp1;
             tmp1.read( bmfpi );
             RGB tmp2( tmp1 );
-            rgb.push_back( tmp2 );
+            _rgb.push_back( tmp2 );
         }
-        bmfh.size -= static_cast< dword >( rgbSize * ( sizeof( RGBA ) - sizeof( RGB ) ) );
-        bmfh.bitsOffset -= static_cast< dword >( rgbSize * ( sizeof( RGBA ) - sizeof( RGB ) ) );
+        _bmfh.size -= static_cast< dword >( rgbSize * ( sizeof( RGBA ) - sizeof( RGB ) ) );
+        _bmfh.bitsOffset -= static_cast< dword >( rgbSize * ( sizeof( RGBA ) - sizeof( RGB ) ) );
     } else if( bmihW32.compression == 3 ) {
         //read and discard 3 items
         RGBA tmp1;
         tmp1.read( bmfpi );
         tmp1.read( bmfpi );
         tmp1.read( bmfpi );
-        bmfh.size -= 3 * sizeof( RGBA );
-        bmfh.bitsOffset -= 3 * sizeof( RGBA );
+        _bmfh.size -= 3 * sizeof( RGBA );
+        _bmfh.bitsOffset -= 3 * sizeof( RGBA );
     }
 }
 /***************************************************************************/
@@ -254,46 +254,46 @@ void Bitmap::readHeaderOS2( std::FILE* bmfpi )
 {
     BitmapInfoHeaderOS22x bmihOS22x;
     bmihOS22x.read( bmfpi );
-    bmih.width = static_cast< word >( bmihOS22x.width );
-    bmih.height = static_cast< word >( bmihOS22x.height );
-    bmih.planes = bmihOS22x.planes;
-    bmih.bitsPerPixel = bmihOS22x.bitsPerPixel;
-    bmfh.bmihSize = sizeof( BitmapInfoHeader16 ) + sizeof( dword );
+    _bmih.width = static_cast< word >( bmihOS22x.width );
+    _bmih.height = static_cast< word >( bmihOS22x.height );
+    _bmih.planes = bmihOS22x.planes;
+    _bmih.bitsPerPixel = bmihOS22x.bitsPerPixel;
+    _bmfh.bmihSize = sizeof( BitmapInfoHeader16 ) + sizeof( dword );
     //it is not necessary to adjust the size or offset, but doesn't hurt
-    bmfh.size -= sizeof( BitmapInfoHeaderOS22x ) - sizeof( BitmapInfoHeader16 );
-    bmfh.bitsOffset -= sizeof( BitmapInfoHeaderOS22x ) - sizeof( BitmapInfoHeader16 );
-    if( bmih.bitsPerPixel <= 8 ) {
-        std::size_t rgbSize( 1 << bmih.bitsPerPixel );
-        rgb.reserve( rgbSize );
+    _bmfh.size -= sizeof( BitmapInfoHeaderOS22x ) - sizeof( BitmapInfoHeader16 );
+    _bmfh.bitsOffset -= sizeof( BitmapInfoHeaderOS22x ) - sizeof( BitmapInfoHeader16 );
+    if( _bmih.bitsPerPixel <= 8 ) {
+        std::size_t rgbSize( 1 << _bmih.bitsPerPixel );
+        _rgb.reserve( rgbSize );
         if( bmihOS22x.usedColors ) {
             for( std::size_t count1 = 0; count1 < bmihOS22x.usedColors; ++count1 ) {
                 RGBA tmp1;
                 tmp1.read( bmfpi );
                 RGB tmp2( tmp1 );
-                rgb.push_back( tmp2 );
+                _rgb.push_back( tmp2 );
             }
             RGB tmp;
             for( std::size_t count1 = bmihOS22x.usedColors; count1 < rgbSize; ++count1 ) {
-                rgb.push_back( tmp );
+                _rgb.push_back( tmp );
             }
         } else {
             for( std::size_t count1 = 0; count1 < rgbSize; ++count1 ) {
                 RGBA tmp1;
                 tmp1.read( bmfpi );
                 RGB tmp2( tmp1 );
-                rgb.push_back( tmp2 );
+                _rgb.push_back( tmp2 );
             }
         }
-        bmfh.bitsOffset = static_cast< dword >( sizeof( BitmapFileHeader ) + sizeof( BitmapInfoHeader16 ) + 3 * rgb.size() );
-        bmfh.size = bmfh.bitsOffset + bmihOS22x.imageSize;
+        _bmfh.bitsOffset = static_cast< dword >( sizeof( BitmapFileHeader ) + sizeof( BitmapInfoHeader16 ) + 3 * _rgb.size() );
+        _bmfh.size = _bmfh.bitsOffset + bmihOS22x.imageSize;
     } else if( bmihOS22x.compression == 3 ) {
         //read and discard 3 items
         RGBA tmp1;
         tmp1.read( bmfpi );
         tmp1.read( bmfpi );
         tmp1.read( bmfpi );
-        bmfh.size -= 3 * sizeof( RGBA );
-        bmfh.bitsOffset -= 3 * sizeof( RGBA );
+        _bmfh.size -= 3 * sizeof( RGBA );
+        _bmfh.bitsOffset -= 3 * sizeof( RGBA );
     }
 }
 /***************************************************************************/
@@ -303,35 +303,35 @@ void Bitmap::findBlockSize( std::size_t width, std::size_t height, std::size_t b
 {
     switch( bitsPerPixel ) {
     case 1:
-        bytesPerRow = (( width / 8 ) & 3 ) ? static_cast< dword >( (( width / 8 ) & ~3 ) + 4 ) : static_cast< dword >( width / 8 );
+        _bytesPerRow = (( width / 8 ) & 3 ) ? static_cast< dword >( (( width / 8 ) & ~3 ) + 4 ) : static_cast< dword >( width / 8 );
         break;
     case 4:
-        bytesPerRow = (( (width + 1) / 2 ) & 3 ) ? static_cast< dword >( (( (width + 1) / 2 ) & ~3 ) + 4 ) : static_cast< dword >( (width + 1) / 2 );
+        _bytesPerRow = (( (width + 1) / 2 ) & 3 ) ? static_cast< dword >( (( (width + 1) / 2 ) & ~3 ) + 4 ) : static_cast< dword >( (width + 1) / 2 );
         break;
     case 8:
-        bytesPerRow = ( width & 3 ) ? static_cast< dword >( ( width & ~3 ) + 4 ) : static_cast< dword >( width );
+        _bytesPerRow = ( width & 3 ) ? static_cast< dword >( ( width & ~3 ) + 4 ) : static_cast< dword >( width );
         break;
     case 15:
     case 16:
-        bytesPerRow = (( width * 2 ) & 3 ) ? static_cast< dword >( (( width * 2 ) & ~3 ) + 4 ) : static_cast< dword >( width * 2 );
+        _bytesPerRow = (( width * 2 ) & 3 ) ? static_cast< dword >( (( width * 2 ) & ~3 ) + 4 ) : static_cast< dword >( width * 2 );
         break;
     case 24:
-        bytesPerRow = (( width * 3 ) & 3 ) ? static_cast< dword >( (( width * 3 ) & ~3 ) + 4 ) : static_cast< dword >( width * 3 );
+        _bytesPerRow = (( width * 3 ) & 3 ) ? static_cast< dword >( (( width * 3 ) & ~3 ) + 4 ) : static_cast< dword >( width * 3 );
         break;
     case 32:
-        bytesPerRow = static_cast< dword >( width * 4 );
+        _bytesPerRow = static_cast< dword >( width * 4 );
         break;
     default:
         throw Class1Error( ERR1_BADFMT );
     }
-    dword totalSize( static_cast< dword >( bytesPerRow * height ) );
-    blockSize = static_cast< word >( ( ( UINT16_MAX - 256 ) / bytesPerRow - 1 ) * bytesPerRow );
+    dword totalSize( static_cast< dword >( _bytesPerRow * height ) );
+    _blockSize = static_cast< word >( ( ( UINT16_MAX - 256 ) / _bytesPerRow - 1 ) * _bytesPerRow );
 #ifdef CHECKCOMP
-    std::printf( "  width=%u bitsPerPixel=%u, bytesPerRow=%u\n", width, bitsPerPixel, bytesPerRow );
-    std::printf( "  calculated blockSize=%u\n", blockSize );
+    std::printf( "  width=%u bitsPerPixel=%u, bytesPerRow=%u\n", width, bitsPerPixel, _bytesPerRow );
+    std::printf( "  calculated blockSize=%u\n", _blockSize );
 #endif
-    if( static_cast< dword >( blockSize ) > totalSize ) {
-        blockSize = static_cast< word >( totalSize );
+    if( static_cast< dword >( _blockSize ) > totalSize ) {
+        _blockSize = static_cast< word >( totalSize );
     }
 }
 /***************************************************************************/
@@ -340,7 +340,7 @@ void Bitmap::compress( std::FILE* bmfpi )
 #ifdef CHECKCOMP
     unsigned int    count( 1 );
 #endif
-    dword   bytesToRead( bytesPerRow * bmih.height );
+    dword   bytesToRead( _bytesPerRow * _bmih.height );
     dword   bytes( 0 );
     while( bytes < bytesToRead ) {
 #ifdef CHECKCOMP
@@ -348,10 +348,10 @@ void Bitmap::compress( std::FILE* bmfpi )
 #endif
 #define COMPRESSION
 #ifdef COMPRESSION
-        data.push_back( BitmapBlock( blockSize, 2 ) );
+        _data.push_back( BitmapBlock( _blockSize, 2 ) );
 #else
-        data.push_back( BitmapBlock( blockSize, 0 ) );
+        _data.push_back( BitmapBlock( _blockSize, 0 ) );
 #endif
-        bytes += data[ data.size() - 1 ].compress( bmfpi );
+        bytes += _data[_data.size() - 1].compress( bmfpi );
     }
 }

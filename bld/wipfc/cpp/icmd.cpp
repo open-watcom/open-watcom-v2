@@ -81,7 +81,7 @@ Lexer::Token ICmd::parse( Lexer* lexer )
                     txt += entityChar;
                 }
                 catch( Class2Error& e ) {
-                    _document->printError( e.code );
+                    _document->printError( e._code );
                 }
             }
         } else if( tok == Lexer::PUNCTUATION ) {
@@ -116,7 +116,7 @@ void ICmd::buildIndex()
         }
     }
     catch( Class1Error& e ) {
-        printError( e.code );
+        printError( e._code );
     }
 }
 

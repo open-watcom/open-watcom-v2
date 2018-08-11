@@ -53,7 +53,7 @@ void GlobalDictionaryWord::toUpper()
     }
 }
 /***************************************************************************/
-GlobalDictionaryWord::dword GlobalDictionaryWord::writeWord( OutFile *out ) const
+GlobalDictionaryWord::dword GlobalDictionaryWord::writeWord( OutFile* out ) const
 {
     char buffer[ 255 ];     // max len 254 + null
     std::size_t length( out->wtomb_cstring( buffer, _text.c_str(), sizeof( buffer ) - 1 ) );

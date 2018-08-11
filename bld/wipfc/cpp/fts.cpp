@@ -91,7 +91,7 @@ std::size_t FTSElement::getPages( std::vector< word >& pg, bool absent ) const
     return( pg.size() * sizeof( word ) );
 }
 
-void FTSElement::build( OutFile *out )
+void FTSElement::build( OutFile* out )
 /************************************/
 {
     (void)out;
@@ -246,7 +246,7 @@ void FTSElement::encode( std::vector< byte >& rle )
     }
 }
 
-FTSElement::dword FTSElement::write( OutFile *out, bool big ) const
+FTSElement::dword FTSElement::write( OutFile* out, bool big ) const
 /*****************************************************************/
 {
     std::vector< word > pg;

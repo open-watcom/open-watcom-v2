@@ -99,23 +99,24 @@ public:
 private:
     Compiler( const Compiler &rhs );            //no copy constructor
     Compiler& operator=( const Compiler &rhs ); //no assignment
-    std::auto_ptr< Lexer > _lexer;
+
+    std::auto_ptr< Lexer >  _lexer;
     std::vector< IpfData* > _inFiles;            //a stack of files being parsed
     typedef std::vector< IpfData* >::iterator InFilesIter;
     typedef std::vector< IpfData* >::const_iterator ConstInFilesIter;
     std::set< std::wstring*, ptrLess< std::wstring* > > _fileNames;
     typedef std::set< std::wstring*, ptrLess< std::wstring* > >::iterator FileNameIter;
     typedef std::set< std::wstring*, ptrLess< std::wstring* > >::const_iterator ConstFileNameIter;
-    const char* _loc;
-    unsigned int _warningLevel;
-    OutputType _outType;
-    bool _parseContinuously;
-    bool _printBanner;
-    bool _search;    //construct search table
-    bool _xref;
-    std::wstring *_inFileNameW;
-    std::string _inFileName;
-    std::string _outFileName;
+    const char              *_loc;
+    unsigned int            _warningLevel;
+    OutputType              _outType;
+    bool                    _parseContinuously;
+    bool                    _printBanner;
+    bool                    _search;    //construct search table
+    bool                    _xref;
+    std::wstring            *_inFileNameW;
+    std::string             _inFileName;
+    std::string             _outFileName;
 };
 
 #endif //COMPILER_INCLUDED

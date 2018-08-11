@@ -45,6 +45,10 @@
 #include "toc.hpp"
 
 class AcViewport : public Element {
+    typedef STD1::uint8_t   byte;
+    typedef STD1::uint16_t  word;
+    typedef STD1::uint32_t  dword;
+
 public:
     AcViewport( Document* d, Element *p, const std::wstring* f, unsigned int r, unsigned int c ) :
         Element( d, p, f, r, c ), _objectId( 0 ), _doOrigin( false ), _doSize( false ) { };
@@ -54,15 +58,16 @@ public:
 private:
     AcViewport( const AcViewport& rhs );              //no copy
     AcViewport& operator=( const AcViewport& rhs );   //no assignment
-    std::wstring _dll;
-    std::wstring _objectName;
-    std::wstring _objectInfo;
-    STD1::uint16_t _objectId;
-    PageOrigin _origin;
-    PageSize _size;
-    bool _doOrigin;
-    bool _doSize;
     Lexer::Token parseAttributes( Lexer* lexer );
+
+    std::wstring    _dll;
+    std::wstring    _objectName;
+    std::wstring    _objectInfo;
+    word            _objectId;
+    PageOrigin      _origin;
+    PageSize        _size;
+    bool            _doOrigin;
+    bool            _doSize;
 };
 
 #endif //ACVIEWPORT_INCLUDED

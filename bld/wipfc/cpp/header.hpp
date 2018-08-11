@@ -42,6 +42,10 @@ class OutFile;
 #pragma pack(push, 1)
 
 struct IpfHeader {
+    typedef STD1::uint8_t   byte;
+    typedef STD1::uint16_t  word;
+    typedef STD1::uint32_t  dword;
+
     STD1::uint8_t   id[ 3 ];            // "HSP"
     STD1::uint8_t   flags;              // 0x01 if INF style file, 0x10 if HLP style file
     STD1::uint16_t  size;               // total size of header, in bytes
@@ -80,13 +84,17 @@ struct IpfHeader {
     char            title[TITLE_SIZE];  // title of database
 
     IpfHeader();
-    void write( OutFile *out ) const;
+    void write( OutFile* out ) const;
     bool isBigFTS();
     void setBigFTS( bool );
 };
 
 // Extended header info
 struct IpfExtHeader {
+    typedef STD1::uint8_t   byte;
+    typedef STD1::uint16_t  word;
+    typedef STD1::uint32_t  dword;
+
     STD1::uint16_t  fontCount;          // number of font entries
     STD1::uint32_t  fontOffset;         // file offset in file
     STD1::uint16_t  dbCount;            // number of external files
@@ -104,7 +112,7 @@ struct IpfExtHeader {
     STD1::uint32_t  reserved[ 4 ];      // reserved for future use
 
     IpfExtHeader() { std::memset( this, 0, sizeof( IpfExtHeader) ); };
-    STD1::uint32_t write( OutFile *out ) const;
+    dword write( OutFile* out ) const;
 };
 
 #pragma pack(pop)

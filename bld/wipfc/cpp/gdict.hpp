@@ -77,17 +77,18 @@ public:
     dword length() const { return _bytes; };
     //the number of bytes of FTS data written by the collection
     dword ftsLength() const { return _ftsBytes; };
-    dword write( OutFile *out );
-    bool buildFTS( OutFile *out );
-    dword writeFTS( OutFile *out, bool big );
+    dword write( OutFile* out );
+    bool buildFTS( OutFile* out );
+    dword writeFTS( OutFile* out, bool big );
 private:
     GlobalDictionary( const GlobalDictionary& rhs );            //no copy
     GlobalDictionary operator= ( const GlobalDictionary& rhs ); //no assigment
+
     std::set< GlobalDictionaryWord*, ptrLess< GlobalDictionaryWord* > > _words;
     typedef std::set< GlobalDictionaryWord*, ptrLess< GlobalDictionaryWord* > >::const_iterator ConstWordIter;
     typedef std::set< GlobalDictionaryWord*, ptrLess< GlobalDictionaryWord* > >::iterator WordIter;
-    dword _bytes;
-    dword _ftsBytes;
+    dword               _bytes;
+    dword               _ftsBytes;
 };
 
 #endif //GLOBALDICTIONARY_INCLUDED

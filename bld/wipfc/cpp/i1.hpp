@@ -63,7 +63,7 @@ public:
     word secondaryCount() const
         { return static_cast< word >( _secondary.size() ); };
     bool isGlobal() const { return _primary->isGlobal(); };
-    dword write( OutFile *out );
+    dword write( OutFile* out );
     bool operator==( const I1& rhs ) const{ return *_primary == *rhs._primary; };
     bool operator==( const std::wstring& rhs ) const { return *_primary == rhs; };
     bool operator<( const I1& rhs ) const { return *_primary < *rhs._primary; };
@@ -72,16 +72,16 @@ private:
     I1& operator=( const I1& rhs );     //no assignment
     Lexer::Token parseAttributes( Lexer* lexer );
 
-    std::auto_ptr< IndexItem > _primary;
-    std::vector< IndexItem* > _secondary;
+    std::auto_ptr< IndexItem >  _primary;
+    std::vector< IndexItem* >   _secondary;
     typedef std::vector< IndexItem* >::iterator IndexIter;
     typedef std::vector< IndexItem* >::const_iterator ConstIndexIter;
     std::vector< std::wstring > _synRoots;
     typedef std::vector< std::wstring >::iterator SynIter;
     typedef std::vector< std::wstring >::const_iterator ConstSynIter;
-    std::wstring _id;
-    GlobalDictionaryWord* _parentId;
-    word _parentRes;
+    std::wstring                _id;
+    GlobalDictionaryWord*       _parentId;
+    word                        _parentRes;
 };
 
 #endif //I1_INCLUDED

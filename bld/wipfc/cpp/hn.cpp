@@ -100,7 +100,7 @@ Lexer::Token Hn::parse( Lexer* lexer )
                     tmp += entityChar;
                 }
                 catch( Class2Error& e ) {
-                    _document->printError( e.code );
+                    _document->printError( e._code );
                 }
             }
         } else if( tok == Lexer::END ) {
@@ -295,7 +295,7 @@ Lexer::Token Hn::parseAttributes( Lexer* lexer )
             std::wstring value;
             splitAttribute( lexer->text(), key, value );
             if( key == L"res" ) {
-                _res = static_cast< STD1::uint16_t >( std::wcstoul( value.c_str(), 0, 10 ) );
+                _res = static_cast< word >( std::wcstoul( value.c_str(), 0, 10 ) );
                 if( _res < 1 || _res > 64000 )
                     _document->printError( ERR2_VALUE );
                 if( Hide::hiding() )
@@ -331,7 +331,7 @@ Lexer::Token Hn::parseAttributes( Lexer* lexer )
                 } else {
                     wchar_t *end;
                     unsigned long int x( std::wcstoul( value.c_str(), &end, 10 ) );
-                    _origin.xpos = static_cast< unsigned short >( x );
+                    _origin.xpos = static_cast< word >( x );
                     if( *end == L'c' ) {
                         _origin.xPosType = ExtTocEntry::ABSOLUTE_CHAR;
                     } else if( *end == L'%' ) {
@@ -363,7 +363,7 @@ Lexer::Token Hn::parseAttributes( Lexer* lexer )
                 } else {
                     wchar_t *end;
                     unsigned long int y( std::wcstoul( value.c_str(), &end, 10 ) );
-                    _origin.ypos = static_cast< unsigned short >( y );
+                    _origin.ypos = static_cast< word >( y );
                     if( *end == L'c' ) {
                         _origin.yPosType = ExtTocEntry::ABSOLUTE_CHAR;
                     } else if( *end == L'%' ) {
@@ -391,7 +391,7 @@ Lexer::Token Hn::parseAttributes( Lexer* lexer )
                 } else {
                     wchar_t *end;
                     unsigned long int width = std::wcstoul( value.c_str(), &end, 10 );
-                    _size.width = static_cast< unsigned short >( width );
+                    _size.width = static_cast< word >( width );
                     if( *end == L'c' ) {
                         _size.widthType = ExtTocEntry::ABSOLUTE_CHAR;
                     } else if( *end == L'%' ) {
@@ -419,7 +419,7 @@ Lexer::Token Hn::parseAttributes( Lexer* lexer )
                 } else {
                     wchar_t *end;
                     unsigned long int height = std::wcstoul( value.c_str(), &end, 10 );
-                    _size.height = static_cast< unsigned short >( height );
+                    _size.height = static_cast< word >( height );
                     if( *end == L'c' ) {
                         _size.heightType = ExtTocEntry::ABSOLUTE_CHAR;
                     } else if( *end == L'%' ) {
@@ -437,7 +437,7 @@ Lexer::Token Hn::parseAttributes( Lexer* lexer )
                 }
             } else if( key == L"group" ) {
                 _toc.extended = 1;
-                _group.id = static_cast< STD1::uint16_t >( std::wcstoul( value.c_str(), 0, 10 ) );
+                _group.id = static_cast< word >( std::wcstoul( value.c_str(), 0, 10 ) );
             } else if( key == L"titlebar" ) {
                 _toc.extended = 1;
                 if( value == L"yes" ) {
@@ -551,7 +551,7 @@ void Hn::buildTOC( Page* page )
                 _document->addRes( _res, tr );
             }
             catch ( Class3Error& e ) {
-                printError( e.code );
+                printError( e._code );
             }
         }
         if( _id ) {
@@ -559,7 +559,7 @@ void Hn::buildTOC( Page* page )
                 _document->addNameOrId( _id, tr );
             }
             catch( Class3Error& e ) {
-                printError( e.code );
+                printError( e._code );
             }
         }
         if( _name ) {
@@ -567,7 +567,7 @@ void Hn::buildTOC( Page* page )
                 _document->addNameOrId( _name, tr );
             }
             catch( Class3Error& e ) {
-                printError( e.code );
+                printError( e._code );
             }
         }
         if( _global && !_document->isInf() ) {
@@ -576,7 +576,7 @@ void Hn::buildTOC( Page* page )
                     _document->addGNameOrId( _id, page->index() );
                 }
                 catch( Class3Error& e ) {
-                    printError( e.code );
+                    printError( e._code );
                 }
             }
             if( _name ) {
@@ -584,7 +584,7 @@ void Hn::buildTOC( Page* page )
                     _document->addGNameOrId( _name, page->index() );
                 }
                 catch( Class3Error& e ) {
-                    printError( e.code );
+                    printError( e._code );
                 }
             }
         }
@@ -601,14 +601,14 @@ void Hn::buildText( Cell* cell )
             tmp.erase( 253 );
             size1 = 253;
         }
-        std::vector< STD1::uint8_t > esc;
+        std::vector< byte > esc;
         esc.reserve( size1 + 3 );
         esc.push_back( 0xFF );  //esc
         esc.push_back( 0x02 );  //size
         esc.push_back( 0x15 );  //begin hide
         for( unsigned int count1 = 0; count1 < size1; count1++ )
-            esc.push_back( static_cast< STD1::uint8_t >( tmp[count1] ) );
-        esc[1] = static_cast< STD1::uint8_t >( esc.size() - 1 );
+            esc.push_back( static_cast< byte >( tmp[count1] ) );
+        esc[1] = static_cast< byte >( esc.size() - 1 );
         cell->addEsc( esc );
         if( cell->textFull() ) {
             printError( ERR1_LARGEPAGE );

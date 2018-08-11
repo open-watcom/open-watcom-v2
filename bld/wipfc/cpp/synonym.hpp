@@ -47,15 +47,16 @@ public:
     Synonym() : _offset( 0 ) { };
     ~Synonym() { };
     void add( const std::wstring& txt ) { _synonyms.push_back( txt ); };
-    void write( OutFile *out );
+    void write( OutFile* out );
     dword location() const { return _offset; };
+
 private:
     std::vector< std::wstring > _synonyms;
     typedef std::vector< std::wstring >::iterator SynonymWIter;
     typedef std::vector< std::wstring >::const_iterator ConstSynonymWIter;
     typedef std::vector< std::string >::iterator SynonymIter;
     typedef std::vector< std::string >::const_iterator ConstSynonymIter;
-    dword _offset;
+    dword                       _offset;
 };
 
 #endif //SYNONYM_INCLUDED

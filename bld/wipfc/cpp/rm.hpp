@@ -38,6 +38,10 @@
 #include "tag.hpp"
 
 class Rm : public Element {
+    typedef STD1::uint8_t   byte;
+    typedef STD1::uint16_t  word;
+    typedef STD1::uint32_t  dword;
+
 public:
     Rm( Document* d, Element *p, const std::wstring* f, unsigned int r, unsigned int c ) :
         Element( d, p, f, r, c ), _margin( 1 ) { };
@@ -47,7 +51,8 @@ public:
 private:
     Rm( const Rm& rhs );                //no copy
     Rm& operator=( const Rm& rhs );     //no assignment
-    STD1::uint8_t _margin;              //in characters
+
+    byte                _margin;        //in characters
 };
 
 #endif //RM_INCLUDED

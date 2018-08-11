@@ -54,7 +54,8 @@ public:
 private:
     Font( const Font& rhs );            //no copy
     Font& operator=( const Font& rhs ); //no assignment
-    byte _index;                 //index of this item in the font collection
+
+    byte            _index;             //index of this item in the font collection
 };
 
 #endif

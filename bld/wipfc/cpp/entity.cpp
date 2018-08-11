@@ -75,7 +75,7 @@ Lexer::Token Entity::parse( Lexer* lexer )
         _text = _document->addWord( new GlobalDictionaryWord( txt ) );   //insert into global dictionary
     }
     catch( Class2Error& e ) {
-        _document->printError( e.code );
+        _document->printError( e._code );
         tok = _document->getNextToken();
     }
     _document->setLastPrintable( Lexer::ENTITY, this );

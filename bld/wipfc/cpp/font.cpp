@@ -101,7 +101,7 @@ Lexer::Token Font::parse( Lexer* lexer )
             _index = static_cast< byte >( _document->addFont( fnt ) );
         }
         catch( Class2Error& e ) {
-            _document->printError( e.code );
+            _document->printError( e._code );
         }
     }
     return _document->getNextToken();

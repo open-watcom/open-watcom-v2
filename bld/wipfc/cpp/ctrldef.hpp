@@ -51,7 +51,8 @@ public:
 private:
     CtrlDef( const CtrlDef& rhs );              //no copy
     CtrlDef& operator=( const CtrlDef& rhs );   //no assignment
-    Document* _document;
+
+    Document                *_document;
     std::vector< CtrlTag* > _children;
     typedef std::vector< CtrlTag* >::iterator ChildrenIter;
     typedef std::vector< CtrlTag* >::const_iterator ConstChildrenIter;

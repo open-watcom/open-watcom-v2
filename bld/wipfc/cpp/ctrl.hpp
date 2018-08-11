@@ -45,7 +45,7 @@ class Document; //forward reference
 class Ctrl : public CtrlTag {
 public:
     Ctrl( Document* d, Element* p, const std::wstring* f, unsigned int r, unsigned int c ) :
-        CtrlTag( d, p, f, r, c ), page( false ), coverpage( false ) { };
+        CtrlTag( d, p, f, r, c ), _page( false ), _coverpage( false ) { };
     ~Ctrl() { };
     Lexer::Token parse( Lexer* lexer );
     void buildText( Cell* cell ) { (void)cell; };
@@ -53,10 +53,11 @@ public:
 private:
     Ctrl( const Ctrl& rhs );            //no copy
     Ctrl& operator=( const Ctrl& rhs ); //no assignment
-    std::wstring ctrlid;                //identifier
-    std::wstring controls;              //control type
-    bool page;
-    bool coverpage;
+
+    std::wstring    _ctrlid;        //identifier
+    std::wstring    _controls;      //control type
+    bool            _page;
+    bool            _coverpage;
 };
 
 #endif //CTRL_INCLUDED

@@ -56,8 +56,9 @@ protected:
 private:
     Fn( const Fn& rhs );                //no copy
     Fn& operator=( const Fn& rhs );     //no assignment
-    TocEntry _toc;
-    GlobalDictionaryWord* _id;
+
+    TocEntry                _toc;
+    GlobalDictionaryWord*   _id;
 };
 
 #endif //FN_INCLUDED

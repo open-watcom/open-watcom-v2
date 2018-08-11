@@ -49,8 +49,9 @@ public:
 private:
     ISyn( const ISyn& rhs );                //no copy
     ISyn& operator=( const ISyn& rhs );     //no assignment
-    std::wstring _root;
-    std::auto_ptr< Synonym > _syn;
+
+    std::wstring                _root;
+    std::auto_ptr< Synonym >    _syn;
 };
 
 #endif //ISYN_INCLUDED

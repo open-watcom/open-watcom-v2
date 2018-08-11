@@ -109,7 +109,7 @@ int IndexItem::wstricmp( const wchar_t *s, const wchar_t *t ) const
 //  char sortText[size2]                //sort key text
 //char indexText[size or size-size2];   //index word [not zero-terminated]
 //unsigned long synonyms[synonymCount]; //32 bit file offsets to synonyms referencing this word
-IndexItem::dword IndexItem::write( OutFile *out )
+IndexItem::dword IndexItem::write( OutFile* out )
 {
     std::string buffer1;
     std::string buffer2;

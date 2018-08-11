@@ -55,15 +55,16 @@ public:
     void buildText( Cell* cell ) { (void)cell; };
     void setRes( word r ) { _parentRes = r; };
     void setIdOrName( GlobalDictionaryWord* w ) { _parentId = w; };
-    dword write( OutFile *out ) { return  _index->write( out ); };
+    dword write( OutFile* out ) { return  _index->write( out ); };
     bool operator==( const ICmd& rhs ) const{ return *_index == *rhs._index; };
     bool operator==( const std::wstring& rhs ) const { return *_index == rhs; };
     bool operator<( const ICmd& rhs ) const { return *_index < *rhs._index; };
 private:
     ICmd( const ICmd& rhs );                //no copy
     ICmd& operator=( const ICmd& rhs );     //no assignment
-    std::auto_ptr< IndexItem > _index;
-    GlobalDictionaryWord* _parentId;
-    word _parentRes;
+
+    std::auto_ptr< IndexItem >  _index;
+    GlobalDictionaryWord*       _parentId;
+    word                        _parentRes;
 };
 #endif //ICMD_INCLUDED

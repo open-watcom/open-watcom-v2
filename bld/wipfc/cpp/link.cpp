@@ -148,7 +148,7 @@ Lexer::Token Link::parseAttributes( Lexer* lexer )
                     _document->addExtFile( value );
                 }
                 catch( Class1Error& e ) {
-                    _document->printError( e.code );
+                    _document->printError( e._code );
                 }
             } else if( key == L"object" ) {
                 _object = value;
@@ -477,7 +477,7 @@ void Link::doTopic( Cell* cell )
                 }
             }
             catch( Class1Error& e ) {
-                printError( e.code );
+                printError( e._code );
             }
         } else {                              //jump to external link
             std::vector< byte > esc;
@@ -573,7 +573,7 @@ void Link::doFootnote( Cell* cell )
             }
         }
         catch( Class1Error& e ) {
-            printError( e.code );
+            printError( e._code );
         }
     } else {
         printError( ERR1_NOREFID );

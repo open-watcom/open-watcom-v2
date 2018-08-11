@@ -71,7 +71,7 @@ Lexer::Token I1::parse( Lexer* lexer )
                     txt += entityChar;
                 }
                 catch( Class2Error& e ) {
-                    _document->printError( e.code );
+                    _document->printError( e._code );
                 }
             }
         } else if( tok == Lexer::PUNCTUATION ) {
@@ -111,7 +111,7 @@ Lexer::Token I1::parseAttributes( Lexer* lexer )
                     _document->addIndexId( _id, this );
                 }
                 catch( Class3Error& e ) {
-                    _document->printError( e.code );
+                    _document->printError( e._code );
                 }
             } else if( key == L"roots" ) {
                 std::wstring::size_type idx1( 0 );
@@ -157,11 +157,11 @@ void I1::buildIndex()
         }
     }
     catch( Class1Error& e ) {
-        printError( e.code );
+        printError( e._code );
     }
 }
 /*****************************************************************************/
-I1::dword I1::write( OutFile *out )
+I1::dword I1::write( OutFile* out )
 {
     for( ConstSynIter itr = _synRoots.begin(); itr != _synRoots.end(); ++itr ) {
         //convert roots into offsets
@@ -170,7 +170,7 @@ I1::dword I1::write( OutFile *out )
             _primary->addSynonym( syn->location() );
         }
         catch( Class3Error& e ) {
-            printError( e.code );
+            printError( e._code );
         }
     }
     dword written = _primary->write( out );

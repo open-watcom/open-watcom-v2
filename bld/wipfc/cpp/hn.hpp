@@ -61,16 +61,20 @@
 class GlobalDictionaryWord; //forward references
 
 class Hn : public Tag {
+    typedef STD1::uint8_t   byte;
+    typedef STD1::uint16_t  word;
+    typedef STD1::uint32_t  dword;
+
 public:
     Hn( Document* d, Element *p, const std::wstring* f, unsigned int r, unsigned int c, unsigned int l ) :
         Tag( d, p, f, r, c ), _id( 0 ), _name( 0 ), _res( 0 ), _global( false )
-        { _toc.nestLevel = static_cast< STD1::uint8_t >( l ); };
+        { _toc.nestLevel = static_cast< byte >( l ); };
     ~Hn();
     Lexer::Token parse( Lexer* lexer );
     void buildTOC( Page* page );
     void buildText( Cell* cell );
     //this header is at level l
-    void setLevel( unsigned int l ) { _toc.nestLevel = static_cast< STD1::uint8_t >( l ); };
+    void setLevel( unsigned int l ) { _toc.nestLevel = static_cast< byte >( l ); };
     unsigned int level() const { return _toc.nestLevel; };
     //get the resource id
     unsigned int resourceNumber() const { return _res; };
@@ -78,7 +82,7 @@ public:
     void setHasChildren() { _toc.hasChildren = 1; };
     //has child windows that it controls
     void setIsParent() { _toc.extended = 1; _etoc.isParent = 1; };
-    void addChild( STD1::uint16_t toc1 ) { _childTOCs.push_back( toc1 ); };
+    void addChild( word toc1 ) { _childTOCs.push_back( toc1 ); };
     //this is a header on a split window
     bool isSplit() const { return ( _style.word & PageStyle::SPLIT ) == PageStyle::SPLIT; };
     void linearize( Page* page );
@@ -87,20 +91,21 @@ protected:
 private:
     Hn( const Hn& rhs );                //no copy
     Hn& operator=( const Hn& rhs );     //no assignment
-    TocEntry _toc;
-    ExtTocEntry _etoc;
-    PageOrigin _origin;
-    PageSize _size;
-    PageStyle _style;
-    PageGroup _group;
-    PageControls _controls;
-    std::wstring _title;
-    std::wstring _tutorial;
-    std::vector< STD1::uint16_t > _childTOCs;
-    GlobalDictionaryWord* _id;
-    GlobalDictionaryWord* _name;
-    STD1::uint16_t _res;
-    bool _global;
+
+    TocEntry                _toc;
+    ExtTocEntry             _etoc;
+    PageOrigin              _origin;
+    PageSize                _size;
+    PageStyle               _style;
+    PageGroup               _group;
+    PageControls            _controls;
+    std::wstring            _title;
+    std::wstring            _tutorial;
+    std::vector< word >     _childTOCs;
+    GlobalDictionaryWord*   _id;
+    GlobalDictionaryWord*   _name;
+    word                    _res;
+    bool                    _global;
 };
 
 #endif //HN_INCLUDED

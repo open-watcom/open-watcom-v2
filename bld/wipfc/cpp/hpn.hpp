@@ -38,24 +38,32 @@
 #include "tag.hpp"
 
 class Hpn : public Element {
+    typedef STD1::uint8_t   byte;
+    typedef STD1::uint16_t  word;
+    typedef STD1::uint32_t  dword;
+
 public:
     Hpn( Document* d, Element *p, const std::wstring* f, unsigned int r,
         unsigned int c, unsigned int l );
     ~Hpn() { };
     static
-    std::vector< STD1::uint8_t >& levels() { return _levelStack; };
+    std::vector< byte >& levels() { return _levelStack; };
     Lexer::Token parse( Lexer* lexer );
     void buildText( Cell* cell );
 private:
     Hpn( const Hpn& rhs );              //no copy
     Hpn& operator=( const Hpn& rhs );   //no assignment
-    static
-    std::vector< STD1::uint8_t > _levelStack;
-    STD1::uint8_t _level;
-    STD1::uint8_t _previousLevel;
+
+    static std::vector< byte >  _levelStack;
+    byte                        _level;
+    byte                        _previousLevel;
 };
 
 class EHpn : public Element {
+    typedef STD1::uint8_t   byte;
+    typedef STD1::uint16_t  word;
+    typedef STD1::uint32_t  dword;
+
 public:
     EHpn( Document* d, Element *p, const std::wstring* f, unsigned int r,
         unsigned int c, unsigned int l );
@@ -65,8 +73,9 @@ public:
 private:
     EHpn( const EHpn& rhs );            //no copy
     EHpn& operator=( const EHpn& rhs ); //no assignment
-    STD1::uint8_t _level;
-    STD1::uint8_t _previousLevel;
+
+    byte                _level;
+    byte                _previousLevel;
 };
 
 #endif // HPN_INCLUDED

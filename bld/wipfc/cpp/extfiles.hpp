@@ -57,14 +57,15 @@ public:
     dword length() const { return _bytes; };
     //get the number of elements in the collection
     dword size() const { return static_cast< dword >( _table.size() ); };
-    dword write( OutFile *out );
+    dword write( OutFile* out );
 private:
     ExternalFiles( const ExternalFiles& rhs );              //no copy
     ExternalFiles& operator=( const ExternalFiles& rhs );   //no assignment
-    std::map< std::wstring, word > _table;
+
+    std::map< std::wstring, word >  _table;
     typedef std::map< std::wstring, word >::iterator TableIter;
     typedef std::map< std::wstring, word >::const_iterator ConstTableIter;
-    dword _bytes;   //total length when written to disk
+    dword                           _bytes;     //total length when written to disk
 };
 
 #endif //EXTFILES_INCLUDED

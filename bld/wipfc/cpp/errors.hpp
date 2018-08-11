@@ -46,34 +46,39 @@ extern const char* ErrText[ ERR_LAST_ERR + 1 ];
 
 class FatalError {
 public:
-    FatalError ( ErrCode c ) : code( c ) { }
-    ErrCode code;
+    FatalError ( ErrCode c ) : _code( c ) { }
+
+    ErrCode         _code;
 };
 /*****************************************************************************/
 class FatalIOError {
 public:
-    FatalIOError ( ErrCode c, const std::wstring& f ) : code( c ), fname( f ) { }
-    FatalIOError ( ErrCode c, const wchar_t* f ) : code( c ), fname( f ) { }
-    ErrCode code;
-    std::wstring fname;
+    FatalIOError ( ErrCode c, const std::wstring& f ) : _code( c ), _fname( f ) { }
+    FatalIOError ( ErrCode c, const wchar_t* f ) : _code( c ), _fname( f ) { }
+
+    ErrCode         _code;
+    std::wstring    _fname;
 };
 /*****************************************************************************/
 class Class1Error {
 public:
-    Class1Error ( ErrCode c ) : code( c ) { }
-    ErrCode code;
+    Class1Error ( ErrCode c ) : _code( c ) { }
+
+    ErrCode         _code;
 };
 /*****************************************************************************/
 class Class2Error {
 public:
-    Class2Error ( ErrCode c ) : code( c ) { }
-    ErrCode code;
+    Class2Error ( ErrCode c ) : _code( c ) { }
+
+    ErrCode         _code;
 };
 /*****************************************************************************/
 class Class3Error {
 public:
-    Class3Error ( ErrCode c ) : code( c ) { }
-    ErrCode code;
+    Class3Error ( ErrCode c ) : _code( c ) { }
+
+    ErrCode         _code;
 };
 
 #endif //ERRORS_INCLUDED

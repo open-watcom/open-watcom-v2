@@ -66,8 +66,8 @@ Lexer::Token Parml::parse( Lexer* lexer )
                 case Lexer::DL:
                     {
                         Dl *dl = new Dl( _document, this, _document->dataName(),
-                            _document->dataLine(), _document->dataCol(), nestLevel + 1,
-                            indent == 1 ? 4 : indent + 3 );
+                            _document->dataLine(), _document->dataCol(), _nestLevel + 1,
+                            _indent == 1 ? 4 : _indent + 3 );
                         appendChild( dl );
                         tok = dl->parse( lexer );
                     }
@@ -76,7 +76,7 @@ Lexer::Token Parml::parse( Lexer* lexer )
                     {
                         Ol *ol = new Ol( _document, this, _document->dataName(),
                             _document->dataLine(), _document->dataCol(),
-                            nestLevel + 1, indent == 1 ? 4 : indent + 3 );
+                            _nestLevel + 1, _indent == 1 ? 4 : _indent + 3 );
                         appendChild( ol );
                         tok = ol->parse( lexer );
                     }
@@ -90,8 +90,8 @@ Lexer::Token Parml::parse( Lexer* lexer )
                 case Lexer::PT:
                     {
                         Pt *pt = new Pt( _document, this, _document->dataName(),
-                            _document->lexerLine(), _document->lexerCol(), indent,
-                            tabSize, breakage, compact && notFirst );
+                            _document->lexerLine(), _document->lexerCol(), _indent,
+                            _tabSize, _breakage, _compact && notFirst );
                         appendChild( pt );
                         tok = pt->parse( lexer );
                         notFirst = true;
@@ -103,7 +103,7 @@ Lexer::Token Parml::parse( Lexer* lexer )
                             _document->lexerLine(), _document->lexerCol() );
                         appendChild( eparml );
                         tok = eparml->parse( lexer );
-                        if( !nestLevel ) {
+                        if( !_nestLevel ) {
                             appendChild( new BrCmd( _document, this, _document->dataName(),
                                 _document->dataLine(), _document->dataCol() ) );
                         }
@@ -113,7 +113,7 @@ Lexer::Token Parml::parse( Lexer* lexer )
                     {
                         Sl *sl = new Sl( _document, this, _document->dataName(),
                             _document->dataLine(), _document->dataCol(),
-                            0, indent == 1 ? 4 : indent + 3 );
+                            0, _indent == 1 ? 4 : _indent + 3 );
                         appendChild( sl );
                         tok = sl->parse( lexer );
                     }
@@ -122,7 +122,7 @@ Lexer::Token Parml::parse( Lexer* lexer )
                     {
                         Ul *ul = new Ul( _document, this, _document->dataName(),
                             _document->dataLine(), _document->dataCol(),
-                            nestLevel + 1, indent == 1 ? 4 : indent + 3 );
+                            _nestLevel + 1, _indent == 1 ? 4 : _indent + 3 );
                         appendChild( ul );
                         tok = ul->parse( lexer );
                     }
@@ -147,14 +147,14 @@ Lexer::Token Parml::parseAttributes( Lexer* lexer )
             std::wstring value;
             splitAttribute( lexer->text(), key, value );
             if( key == L"tsize" ) {
-                tabSize = static_cast< unsigned char >( std::wcstoul( value.c_str(), 0, 10 ) );
+                _tabSize = static_cast< byte >( std::wcstoul( value.c_str(), 0, 10 ) );
             } else if( key == L"break" ) {
                 if( value == L"none" ) {
-                    breakage = NONE;
+                    _breakage = NONE;
                 } else if( value == L"fit" ) {
-                    breakage = FIT;
+                    _breakage = FIT;
                 } else if( value == L"all" ) {
-                    breakage = ALL;
+                    _breakage = ALL;
                 } else {
                     _document->printError( ERR2_VALUE );
                 }
@@ -163,7 +163,7 @@ Lexer::Token Parml::parseAttributes( Lexer* lexer )
             }
         } else if( tok == Lexer::FLAG ) {
             if( lexer->text() == L"compact" ) {
-                compact = true;
+                _compact = true;
             } else {
                 _document->printError( ERR1_ATTRNOTDEF );
             }
@@ -193,8 +193,8 @@ Lexer::Token Pt::parse( Lexer* lexer )
 {
     Lexer::Token tok( parseAttributes( lexer ) );
     appendChild( new Lm( _document, this, _document->dataName(),
-        _document->lexerLine(), _document->lexerCol(), indent ) );
-    if( compact ) {
+        _document->lexerLine(), _document->lexerCol(), _indent ) );
+    if( _compact ) {
         appendChild( new BrCmd( _document, this, _document->dataName(),
             _document->lexerLine(), _document->lexerCol() ) );
     } else {
@@ -204,7 +204,7 @@ Lexer::Token Pt::parse( Lexer* lexer )
     while( tok != Lexer::END && !( tok == Lexer::TAG && lexer->tagId() == Lexer::EUSERDOC ) ) {
         switch( tok ) {
         case Lexer::WORD:
-            textLength += static_cast< unsigned char >( lexer->text().size() );
+            _textLength += static_cast< byte >( lexer->text().size() );
             break;
         case Lexer::ENTITY:
             {
@@ -215,16 +215,16 @@ Lexer::Token Pt::parse( Lexer* lexer )
                     _document->pushInput( buffer );
                     tok = _document->getNextToken();
                 } else {
-                    ++textLength;
+                    ++_textLength;
                 }
             }
             break;
         case Lexer::PUNCTUATION:
-            ++textLength;
+            ++_textLength;
             break;
         case Lexer::WHITESPACE:
             if( lexer->text()[0] != L'\n' )
-                ++textLength;
+                ++_textLength;
             break;
         default:
             break;
@@ -232,16 +232,16 @@ Lexer::Token Pt::parse( Lexer* lexer )
         if( parseInline( lexer, tok ) ) {
             if( lexer->tagId() == Lexer::PD ) {
                 Pd *pd;
-                if( breakage == Parml::NONE ) { //keep on same line
+                if( _breakage == Parml::NONE ) { //keep on same line
                     pd = new Pd( _document, this, _document->dataName(),
-                        _document->lexerLine(), _document->lexerCol(), indent, tabSize, false );
-                } else if( breakage == Parml::FIT ) {
+                        _document->lexerLine(), _document->lexerCol(), _indent, _tabSize, false );
+                } else if( _breakage == Parml::FIT ) {
                     pd = new Pd( _document, this, _document->dataName(),
-                        _document->lexerLine(), _document->lexerCol(), indent, tabSize,
-                        textLength >= tabSize );
+                        _document->lexerLine(), _document->lexerCol(), _indent, _tabSize,
+                        _textLength >= _tabSize );
                 } else {                        //place on next line
                     pd = new Pd( _document, this, _document->dataName(),
-                        _document->lexerLine(), _document->lexerCol(), indent, tabSize, true );
+                        _document->lexerLine(), _document->lexerCol(), _indent, _tabSize, true );
                 }
                 appendChild( pd );
                 tok = pd->parse( lexer );
@@ -257,8 +257,8 @@ Lexer::Token Pd::parse( Lexer* lexer )
 {
     Lexer::Token tok( parseAttributes( lexer ) );
     appendChild( new Lm( _document, this, _document->dataName(),
-        _document->lexerLine(), _document->lexerCol(), indent + tabSize ) );
-    if( doBreak )
+        _document->lexerLine(), _document->lexerCol(), _indent + _tabSize ) );
+    if( _doBreak )
         appendChild( new BrCmd( _document, this, _document->dataName(),
             _document->lexerLine(), _document->lexerCol() ) );
     while( tok != Lexer::END && !( tok == Lexer::TAG && lexer->tagId() == Lexer::EUSERDOC ) ) {

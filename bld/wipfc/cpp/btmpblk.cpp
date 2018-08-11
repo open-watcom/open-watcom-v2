@@ -37,20 +37,20 @@
     #include <iostream>
 #endif
 
-BitmapBlock::BitmapBlock( STD1::uint16_t b, STD1::uint8_t t ) :
-    bitBuffer( 0L ), bitCount( 0 ), bitsPerCode( INITBITS ), hashingShift( MAXBITS - 8 ),
-    maxCode( maxVal( INITBITS ) ), checkCount( 100 ), blockSize( b ),
-    type( t )
+BitmapBlock::BitmapBlock( word b, byte t ) :
+    _bitBuffer( 0L ), _bitCount( 0 ), _bitsPerCode( INITBITS ), _hashingShift( MAXBITS - 8 ),
+    _maxCode( maxVal( INITBITS ) ), _checkCount( 100 ), _blockSize( b ),
+    _type( t )
 {
 }
 /***************************************************************************/
 void BitmapBlock::write( std::FILE* bmfpo ) const
 {
-    if( std::fwrite( &size, sizeof( STD1::uint16_t ), 1, bmfpo ) != 1 )
+    if( std::fwrite( &_size, sizeof( word ), 1, bmfpo ) != 1 )
         throw FatalError( ERR_WRITE );
-    if( std::fputc( type, bmfpo ) == EOF )
+    if( std::fputc( _type, bmfpo ) == EOF )
         throw FatalError( ERR_WRITE );
-    if( std::fwrite( &data[0], sizeof( STD1::uint8_t ), data.size(), bmfpo ) != data.size() ) {
+    if( std::fwrite( &_data[0], sizeof( byte ), _data.size(), bmfpo ) != _data.size() ) {
         throw FatalError( ERR_WRITE );
     }
 }
@@ -60,57 +60,57 @@ void BitmapBlock::write( std::FILE* bmfpo ) const
     1. Mark R. Nelson, October 1989
     2. Shawn M. Regan, January 1990
 */
-STD1::uint32_t BitmapBlock::compress( std::FILE* bmfpi )
+BitmapBlock::dword BitmapBlock::compress( std::FILE* bmfpi )
 {
     std::size_t block;
-    if( type ) {
-        std::vector< STD1::uint8_t > buffer( blockSize );
-        block = std::fread( &buffer[0], sizeof( STD1::uint8_t ), blockSize, bmfpi );
+    if( _type ) {
+        std::vector< byte > buffer( _blockSize );
+        block = std::fread( &buffer[0], sizeof( byte ), _blockSize, bmfpi );
         if( !block )
             throw FatalError( ERR_READ );       //should have seen EOF elsewhere
-        if( block < blockSize ) {
-            blockSize = static_cast< STD1::uint16_t >( block );
-            buffer.resize( blockSize );
+        if( block < _blockSize ) {
+            _blockSize = static_cast< word >( block );
+            buffer.resize( _blockSize );
         }
-        std::vector< STD1::uint16_t > code( TABLESIZE, UNDEFINED );
-        std::vector< STD1::uint16_t > prefix( TABLESIZE );
-        std::vector< STD1::uint8_t >  append( TABLESIZE );
-        std::vector< STD1::uint8_t >::const_iterator itr( buffer.begin() );
+        std::vector< word > code( TABLESIZE, UNDEFINED );
+        std::vector< word > prefix( TABLESIZE );
+        std::vector< byte >  append( TABLESIZE );
+        std::vector< byte >::const_iterator itr( buffer.begin() );
         std::size_t     bytesIn( 1 );
         std::size_t     bytesOut( 0 );
 //        std::size_t     checkPoint( 0 );
 //        std::size_t     oldCompRatio( 100 );
         std::size_t     newCompRatio;
-        STD1::uint16_t  nextCode( FIRST );
-        STD1::uint16_t  codeIndex;
-        STD1::uint16_t  stringCode( *itr );
-        STD1::uint16_t  character;
+        word  nextCode( FIRST );
+        word  codeIndex;
+        word  stringCode( *itr );
+        word  character;
         while( ++itr != buffer.end() ) {
-            character = static_cast< STD1::uint16_t >( *itr );
+            character = static_cast< word >( *itr );
             ++bytesIn;
             codeIndex = findMatch( code, prefix, append, stringCode, character );
             if( code[codeIndex] != UNDEFINED ) {
                 stringCode = code[codeIndex];
             } else {
-                if( nextCode <= maxCode ) {
+                if( nextCode <= _maxCode ) {
                     code[codeIndex] = nextCode++;
                     prefix[codeIndex] = stringCode;
-                    append[codeIndex] = static_cast< STD1::uint8_t >( character );
+                    append[codeIndex] = static_cast< byte >( character );
                 }
                 bytesOut += outputCode( stringCode );
                 stringCode = character;
-                if( nextCode > maxCode ) {                      // if table full
-                    if( bitsPerCode < MAXBITS ) {               // if more bits available
-                        maxCode = maxVal( static_cast< unsigned int >( ++bitsPerCode ) );  // use 'em
+                if( nextCode > _maxCode ) {                      // if table full
+                    if( _bitsPerCode < MAXBITS ) {               // if more bits available
+                        _maxCode = maxVal( static_cast< unsigned int >( ++_bitsPerCode ) );  // use 'em
                     /* Temp change: The decompressor table must *never* grow past 4096 entries! */
                     } else if( bytesIn > 0/*checkPoint*/ ) {    // else if check time
-                        if( bitsPerCode == MAXBITS ) {
+                        if( _bitsPerCode == MAXBITS ) {
                             newCompRatio = bytesOut * 100 / bytesIn;
                             if( newCompRatio > 0/*oldCompRatio*/ ) { //check for compression loss
                                 outputCode( CLEAR );
-                                bitsPerCode = INITBITS;
+                                _bitsPerCode = INITBITS;
                                 nextCode = FIRST;
-                                maxCode = maxVal( INITBITS );
+                                _maxCode = maxVal( INITBITS );
                                 bytesIn = 0;
                                 bytesOut = 0;
 //                                oldCompRatio = 100;
@@ -125,13 +125,13 @@ STD1::uint32_t BitmapBlock::compress( std::FILE* bmfpi )
             }
         }
         bytesOut += outputCode( stringCode );
-        if( nextCode == maxCode )               // Special case: increment on EOF
-            ++bitsPerCode;
+        if( nextCode == _maxCode )               // Special case: increment on EOF
+            ++_bitsPerCode;
         bytesOut += outputCode( TERMINATE );
         bytesOut += flushCode();
-        size = static_cast< STD1::uint16_t >( ( data.size() + 1 ) * sizeof( STD1::uint8_t ) );
+        _size = static_cast< word >( ( _data.size() + 1 ) * sizeof( byte ) );
 #ifdef CHECKCOMP
-        std::vector< STD1::uint8_t> buffer2( blockSize );
+        std::vector< byte > buffer2( _blockSize );
         expand( buffer2 );
         if( buffer2.size() != buffer.size() )
             std::cout<< "    Expanded data size is not equal to the original" << std::endl;
@@ -148,23 +148,23 @@ STD1::uint32_t BitmapBlock::compress( std::FILE* bmfpi )
         }
 #endif
     } else {
-        data.resize( blockSize );
-        block = std::fread( &data[0], sizeof( STD1::uint8_t ), blockSize, bmfpi );
+        _data.resize( _blockSize );
+        block = std::fread( &_data[0], sizeof( byte ), _blockSize, bmfpi );
         if( !block )
             throw FatalError( ERR_READ );       //should have seen EOF elsewhere
-        if( block < blockSize )
-            data.resize( block );
-        size = static_cast< STD1::uint16_t >( block + 1 );
+        if( block < _blockSize )
+            _data.resize( block );
+        _size = static_cast< word >( block + 1 );
     }
-    return( static_cast< STD1::uint32_t >( block ) );
+    return( static_cast< dword >( block ) );
 }
 /***************************************************************************/
-STD1::int16_t BitmapBlock::findMatch( std::vector< STD1::uint16_t >& code,
-    std::vector< STD1::uint16_t >& prefix, std::vector< STD1::uint8_t >& append,
-    STD1::int16_t hashPrefix, STD1::uint16_t character ) const
+BitmapBlock::sword BitmapBlock::findMatch( std::vector< word >& code,
+    std::vector< word >& prefix, std::vector< byte >& append,
+    sword hashPrefix, word character ) const
 {
-    STD1::int16_t index( ( character << hashingShift ) ^ hashPrefix );
-    STD1::int16_t offset( ( index == 0 ) ? 1 : TABLESIZE - index );
+    sword index( ( character << _hashingShift ) ^ hashPrefix );
+    sword offset( ( index == 0 ) ? 1 : TABLESIZE - index );
     for( ;; ) {
         if( code[index] == UNDEFINED )
             return index;
@@ -177,32 +177,32 @@ STD1::int16_t BitmapBlock::findMatch( std::vector< STD1::uint16_t >& code,
     }
 }
 /***************************************************************************/
-STD1::uint16_t BitmapBlock::outputCode( STD1::uint16_t code )
+BitmapBlock::word BitmapBlock::outputCode( word code )
 {
-    STD1::uint16_t bytesOut( 0 );
-    bitBuffer |= static_cast< STD1::uint32_t >( code ) << ( 32 - bitsPerCode - bitCount);
-    bitCount += bitsPerCode;
-    while( bitCount >= 8 ) {
+    word bytesOut( 0 );
+    _bitBuffer |= static_cast< dword >( code ) << ( 32 - _bitsPerCode - _bitCount );
+    _bitCount += _bitsPerCode;
+    while( _bitCount >= 8 ) {
         //debugging
-        //STD1::uint8_t byte( static_cast< STD1::uint8_t >( bitBuffer >> 24 ) );
-        //std::size_t bytesWritten( data.size() );
-        //data.push_back( byte );
-        data.push_back( static_cast< STD1::uint8_t >( bitBuffer >> 24 ) );
-        bitBuffer <<= 8;
-        bitCount -= 8;
+        //byte byte( static_cast< byte >( _bitBuffer >> 24 ) );
+        //std::size_t bytesWritten( _data.size() );
+        //_data.push_back( byte );
+        _data.push_back( static_cast< byte >( _bitBuffer >> 24 ) );
+        _bitBuffer <<= 8;
+        _bitCount -= 8;
         ++bytesOut;
     }
     return bytesOut;
 }
 /***************************************************************************/
-STD1::uint16_t BitmapBlock::flushCode( void )
+BitmapBlock::word BitmapBlock::flushCode( void )
 {
-    STD1::uint16_t bytesOut( 0 );
-    bitCount += bitsPerCode;
-    while( bitCount >= 8 && bitBuffer ) {
-        data.push_back( static_cast< STD1::uint8_t >( bitBuffer >> 24 ) );
-        bitBuffer <<= 8;
-        bitCount -= 8;
+    word bytesOut( 0 );
+    _bitCount += _bitsPerCode;
+    while( _bitCount >= 8 && _bitBuffer ) {
+        _data.push_back( static_cast< byte >( _bitBuffer >> 24 ) );
+        _bitBuffer <<= 8;
+        _bitCount -= 8;
         ++bytesOut;
     }
     return bytesOut;
@@ -210,46 +210,46 @@ STD1::uint16_t BitmapBlock::flushCode( void )
 /***************************************************************************/
 #ifdef CHECKCOMP
 // Modified from the references above to follow what NewView does
-void BitmapBlock::expand( std::vector< STD1::uint8_t >& output )
+void BitmapBlock::expand( std::vector< byte >& output )
 {
-    std::vector< STD1::uint16_t > prefix( TABLESIZE );
-    std::vector< STD1::uint8_t >  append( TABLESIZE );
-    std::vector< STD1::uint8_t >  decode( TABLESIZE );
+    std::vector< word > prefix( TABLESIZE );
+    std::vector< byte >  append( TABLESIZE );
+    std::vector< byte >  decode( TABLESIZE );
     DecodeIter string;
     OutputIter out( output.begin() );
     //OutputIter outEnd( output.end() );  //debugging
-    InputIter in( data.begin() );
-    //InputIter inEnd( data.end() );      //debugging
-    STD1::uint16_t nextCode( FIRST );
-    STD1::uint16_t newCode;
-    STD1::uint16_t oldCode;
-    STD1::uint16_t character;
-    STD1::uint8_t  lastCode;
+    InputIter in( _data.begin() );
+    //InputIter inEnd( _data.end() );      //debugging
+    word nextCode( FIRST );
+    word newCode;
+    word oldCode;
+    word character;
+    byte  lastCode;
     bool clear( true );
-    bitBuffer = 0L;
-    bitCount = 0;
-    bitsPerCode = INITBITS;
-    maxCode = maxVal( INITBITS );
+    _bitBuffer = 0L;
+    _bitCount = 0;
+    _bitsPerCode = INITBITS;
+    _maxCode = maxVal( INITBITS );
     try {
         while( ( newCode = getCode( in ) ) != TERMINATE ) {
             if( clear ) {               //(re-)initialize
                 clear = false;
                 oldCode = newCode;
                 character = newCode;
-                lastCode = static_cast< STD1::uint8_t >( newCode );//NewView
-                *out = static_cast< STD1::uint8_t >( newCode );
+                lastCode = static_cast< byte >( newCode );//NewView
+                *out = static_cast< byte >( newCode );
                 ++out;
                 continue;
             }
             if( newCode == CLEAR ) {    //Clear string table
                 clear = true;
-                bitsPerCode = INITBITS;
+                _bitsPerCode = INITBITS;
                 nextCode = FIRST;
-                maxCode = maxVal( INITBITS );
+                _maxCode = maxVal( INITBITS );
                 continue;
             }
             if( newCode >= nextCode) {  //Check for string+char+string
-                decode[0] = static_cast< STD1::uint8_t >( character );
+                decode[0] = static_cast< byte >( character );
                 string = decodeString( prefix, append, decode.begin() + 1, oldCode );
             } else {
                 string = decodeString( prefix, append, decode.begin(), newCode );
@@ -263,12 +263,12 @@ void BitmapBlock::expand( std::vector< STD1::uint8_t >& output )
                 --string;
             }
             lastCode = *( ++string );
-            if( nextCode <= maxCode ) { //Add to string table if not full
+            if( nextCode <= _maxCode ) { //Add to string table if not full
                 prefix[nextCode] = oldCode;
-                append[nextCode] = static_cast< STD1::uint8_t >( character );
+                append[nextCode] = static_cast< byte >( character );
                 ++nextCode;
-                if( nextCode == maxCode && bitsPerCode < MAXBITS ) {
-                    maxCode = maxVal( ++bitsPerCode );
+                if( nextCode == _maxCode && _bitsPerCode < MAXBITS ) {
+                    _maxCode = maxVal( ++_bitsPerCode );
                 }
             }
             oldCode = newCode;
@@ -285,32 +285,32 @@ void BitmapBlock::expand( std::vector< STD1::uint8_t >& output )
     }
 }
 /***************************************************************************/
-STD1::uint16_t BitmapBlock::getCode( InputIter& in )
+BitmapBlock::word BitmapBlock::getCode( InputIter& in )
 {
-    STD1::uint16_t retval;
-    while( bitCount <= 24 ) {
-        if( in != data.end() ) {
-            bitBuffer |= static_cast< STD1::uint32_t >( *in ) << ( 24 - bitCount );
+    word retval;
+    while( _bitCount <= 24 ) {
+        if( in != _data.end() ) {
+            _bitBuffer |= static_cast< dword >( *in ) << ( 24 - _bitCount );
             ++in;
         } else {
-            //bitBuffer |= 0;
-            bitBuffer |= static_cast< STD1::uint32_t >( EOF ) << ( 24 - bitCount );
+            //_bitBuffer |= 0;
+            _bitBuffer |= static_cast< dword >( EOF ) << ( 24 - _bitCount );
         }
-        bitCount += 8;
+        _bitCount += 8;
     }
-    if( in != data.end() ) {
-        retval = static_cast< STD1::uint16_t >( bitBuffer >> ( 32 - bitsPerCode ) );
+    if( in != _data.end() ) {
+        retval = static_cast< word >( _bitBuffer >> ( 32 - _bitsPerCode ) );
     } else {
         retval = TERMINATE;
     }
-    //retval = static_cast< STD1::uint16_t >( bitBuffer >> ( 32 - bitsPerCode ) );
-    bitBuffer <<= bitsPerCode;
-    bitCount -= bitsPerCode;
+    //retval = static_cast< word >( _bitBuffer >> ( 32 - _bitsPerCode ) );
+    _bitBuffer <<= _bitsPerCode;
+    _bitCount -= _bitsPerCode;
     return retval;
 }
 /*******************************************************************************************/
-BitmapBlock::DecodeIter BitmapBlock::decodeString( std::vector< STD1::uint16_t >& prefix,
-    std::vector< STD1::uint8_t >& append, DecodeIter decode, STD1::uint16_t code )
+BitmapBlock::DecodeIter BitmapBlock::decodeString( std::vector< word >& prefix,
+    std::vector< byte >& append, DecodeIter decode, word code )
 {
     std::size_t index = 0;
     while( code > 255 ) {
@@ -321,7 +321,7 @@ BitmapBlock::DecodeIter BitmapBlock::decodeString( std::vector< STD1::uint16_t >
             throw std::out_of_range( "    Decode stack size limit exceeded" );
         ++index;
     }
-    *decode = static_cast< STD1::uint8_t >( code );
+    *decode = static_cast< byte >( code );
     return decode;
 }
 

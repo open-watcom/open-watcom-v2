@@ -55,7 +55,7 @@ struct TocEntry {
     STD1::uint8_t hasChildren:1;    // following nodes are numerically higher
     STD1::uint8_t cellCount;        // number of Cells occupied by the text for this toc entry
     TocEntry() { std::memset( this, 0, sizeof( TocEntry ) ); };
-    dword write( OutFile *out ) const;
+    dword write( OutFile* out ) const;
     //variable length data follows:
     //if extended
     // ExtTocEntry + associated stuff
@@ -78,7 +78,7 @@ struct ExtTocEntry {
     STD1::uint16_t isParent:1;      //has child windows
     STD1::uint16_t unknown2:4;
     ExtTocEntry() { std::memset( this, 0, sizeof( ExtTocEntry ) ); };
-    void write( OutFile *out ) const;
+    void write( OutFile* out ) const;
     enum Position {
         ABSOLUTE_CHAR = 0,
         RELATIVE_PERCENT,
@@ -102,7 +102,7 @@ struct PageOrigin {
     STD1::uint16_t xpos;
     STD1::uint16_t ypos;
     PageOrigin() { std::memset( this, 0, sizeof( PageOrigin ) ); };
-    void write( OutFile *out ) const;
+    void write( OutFile* out ) const;
 };
 
 struct PageSize {
@@ -111,7 +111,7 @@ struct PageSize {
     STD1::uint16_t  width;
     STD1::uint16_t  height;
     PageSize() { std::memset( this, 0, sizeof( PageSize ) ); };
-    void write( OutFile *out ) const;
+    void write( OutFile* out ) const;
 };
 
 //titlebar, scrollbars, and rules
@@ -131,20 +131,20 @@ struct PageStyle {
     };
     STD1::uint16_t word;
     PageStyle() : word( 0 ) { };
-    void write( OutFile *out ) const;
+    void write( OutFile* out ) const;
 };
 
 struct PageGroup {
     STD1::uint16_t id;               //a panel number
     PageGroup() : id( 0 ) { };
-    void write( OutFile *out ) const;
+    void write( OutFile* out ) const;
 };
 
 //ctrlarea and ctrlrefid?
 struct PageControls {
     STD1::uint16_t word;
     PageControls() : word( 0 ) { };
-    void write( OutFile *out ) const;
+    void write( OutFile* out ) const;
 };
 
 // TOCOffset

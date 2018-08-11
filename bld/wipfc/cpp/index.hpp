@@ -58,7 +58,7 @@ public:
     void setText( std::wstring& t ) { _text = t; };
     void setTOC( word t ) { _hdr.tocPanelIndex = t; };
     void addSynonym( dword t ) { _synonyms.push_back( t ); };
-    dword write( OutFile *out );
+    dword write( OutFile* out );
     bool operator==( const IndexItem& rhs ) const;
     bool operator==( const std::wstring& rhs ) const;
     bool operator<( const IndexItem& rhs ) const;
@@ -66,6 +66,7 @@ private:
     IndexItem( const IndexItem& rhs );              //no copy
     IndexItem& operator=( const IndexItem& rhs );   //no assignment
     int wstricmp( const wchar_t *s, const wchar_t *t ) const;
+
 #pragma pack(push, 1)
     struct IndexHeader {
         STD1::uint8_t   size;               // size of item text
@@ -79,10 +80,10 @@ private:
         IndexHeader() { std::memset( this, 0, sizeof( IndexItem ) ); };
     };
 #pragma pack(pop)
-    IndexHeader _hdr;
-    std::wstring _sortKey;
-    std::wstring _text;
-    std::vector< dword > _synonyms;
+    IndexHeader             _hdr;
+    std::wstring            _sortKey;
+    std::wstring            _text;
+    std::vector< dword >    _synonyms;
     typedef std::vector< dword >::iterator SynIter;
     typedef std::vector< dword >::const_iterator ConstSynIter;
 };

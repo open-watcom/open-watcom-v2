@@ -634,11 +634,11 @@ void Document::makeBitmaps()
                     }
                     catch( FatalError& e ) {
                         if( count == _ipfcartwork_paths.size() - 1 ) {
-                            throw FatalIOError( e.code, itr->first );
+                            throw FatalIOError( e._code, itr->first );
                         }
                     }
                     catch( Class1Error& e ) {
-                        printError( e.code, itr->first );
+                        printError( e._code, itr->first );
                     }
                 }
             }

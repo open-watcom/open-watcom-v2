@@ -84,7 +84,7 @@ Lexer::Token ISyn::parse( Lexer* lexer )
         _document->addSynonym( _root, _syn.get() );
     }
     catch( Class3Error& e ) {
-        _document->printError( e.code );
+        _document->printError( e._code );
     }
     return tok;
 }

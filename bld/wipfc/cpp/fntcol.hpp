@@ -53,15 +53,16 @@ public:
     dword length() { return _bytes; };
     //the number of fonts in the collection
     std::size_t size() { return _fonts.size(); };
-    dword write( OutFile *out );
+    dword write( OutFile* out );
 private:
     FontCollection( const FontCollection& rhs );            //no copy
     FontCollection& operator=( const FontCollection& rhs ); //no assigment
-    std::vector< FontEntry > _fonts;
+
+    std::vector< FontEntry >    _fonts;
     typedef std::vector< FontEntry >::iterator FontIter;
     typedef std::vector< FontEntry >::const_iterator ConstFontIter;
-    dword _bytes;
-    word _maxFontCount;
+    dword                       _bytes;
+    word                        _maxFontCount;
 };
 
 #endif

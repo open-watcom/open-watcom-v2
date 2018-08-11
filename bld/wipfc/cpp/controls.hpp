@@ -62,18 +62,19 @@ public:
     ControlGroup* getGroupById( const std::wstring& i );
     void setCover( word c ) { _coverGroup = c; };
     dword length() const { return _bytes; };
-    dword write( OutFile *out );
+    dword write( OutFile* out );
 private:
     Controls( const Controls& rhs );            //no copy
     Controls& operator=( const Controls& rhs ); //no assignment
-    std::vector< ControlButton > _controls;
+
+    std::vector< ControlButton >    _controls;
     typedef std::vector< ControlButton >::iterator ControlIter;
     typedef std::vector< ControlButton >::const_iterator ConstControlIter;
-    std::vector< ControlGroup > _groups;
+    std::vector< ControlGroup >     _groups;
     typedef std::vector< ControlGroup >::iterator GroupIter;
     typedef std::vector< ControlGroup >::const_iterator ConstGroupIter;
-    dword _bytes;           //size of all controls together
-    word _coverGroup;
+    dword                           _bytes;         //size of all controls together
+    word                            _coverGroup;
 };
 
 #endif //CONTROLS_INCLUDED

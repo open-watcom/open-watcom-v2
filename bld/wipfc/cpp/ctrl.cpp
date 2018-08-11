@@ -54,19 +54,19 @@ Lexer::Token Ctrl::parse( Lexer* lexer )
             std::wstring value;
             splitAttribute( lexer->text(), key, value );
             if( key == L"ctrlid" ) {
-                ctrlid = value;
-                std::transform( ctrlid.begin(), ctrlid.end(), ctrlid.begin(), std::towupper );
+                _ctrlid = value;
+                std::transform( _ctrlid.begin(), _ctrlid.end(), _ctrlid.begin(), std::towupper );
             } else if( key == L"controls" ) {
-                controls = value;
-                std::transform( controls.begin(), controls.end(), controls.begin(), std::towupper );
+                _controls = value;
+                std::transform( _controls.begin(), _controls.end(), _controls.begin(), std::towupper );
             } else {
                 _document->printError( ERR1_ATTRNOTDEF );
             }
         } else if( tok == Lexer::FLAG ) {
             if( lexer->text() == L"page" ) {
-                page = true;
+                _page = true;
             } else if( lexer->text() == L"coverpage" ) {
-                coverpage = true;
+                _coverpage = true;
             } else {
                 _document->printError( ERR1_ATTRNOTDEF );
             }
@@ -83,13 +83,13 @@ Lexer::Token Ctrl::parse( Lexer* lexer )
 /***************************************************************************/
 void Ctrl::build( Controls* ctrls)
 {
-    if( ctrls->getGroupById( ctrlid ) == 0 ) { //no duplicate group ids
-        ControlGroup grp( ctrlid );
-        if( !controls.empty() ) {
+    if( ctrls->getGroupById( _ctrlid ) == 0 ) { //no duplicate group ids
+        ControlGroup grp( _ctrlid );
+        if( !_controls.empty() ) {
             std::wstring::size_type p1( 0 );
             while( p1 < std::wstring::npos ) {
-                std::wstring::size_type p2( controls.find( L' ', p1 ) );
-                std::wstring temp( controls.substr( p1, p2 - p1 ) );
+                std::wstring::size_type p2( _controls.find( L' ', p1 ) );
+                std::wstring temp( _controls.substr( p1, p2 - p1 ) );
                 ControlButton* btn( ctrls->getButtonById( temp ) ); //check if button is present
                 if( btn ) {
                     grp.addButtonIndex( btn->index() );
@@ -115,11 +115,11 @@ void Ctrl::build( Controls* ctrls)
                 p1 = p2 == std::wstring::npos ? std::wstring::npos : p2 + 1;
             }
             ctrls->addGroup( grp );
-            if( coverpage ) {
+            if( _coverpage ) {
                 ctrls->setCover( ctrls->group()->index() + 1);
             }
         }
     } else {
-        printError( ERR3_DUPID, ctrlid );
+        printError( ERR3_DUPID, _ctrlid );
     }
 }

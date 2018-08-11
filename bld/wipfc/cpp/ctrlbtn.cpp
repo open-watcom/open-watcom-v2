@@ -35,7 +35,7 @@
 #include "outfile.hpp"
 
 
-ControlButton::dword ControlButton::write( OutFile *out ) const
+ControlButton::dword ControlButton::write( OutFile* out ) const
 {
     std::size_t bytes( sizeof( word ) * 2 );
 

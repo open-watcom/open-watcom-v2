@@ -35,7 +35,7 @@
 #include "outfile.hpp"
 
 
-void Synonym::write( OutFile *out )
+void Synonym::write( OutFile* out )
 {
     // convert wide vector _synonyms to mbcs vector synonyms
     std::vector< std::string > synonyms;

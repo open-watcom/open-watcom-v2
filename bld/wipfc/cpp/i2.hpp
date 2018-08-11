@@ -60,15 +60,15 @@ public:
     void setRes( word r ) { _parentRes = r; };
     void setIdOrName( GlobalDictionaryWord* w ) { _parentId = w; };
     bool isGlobal() const { return _index->isGlobal(); };
-    dword write( OutFile *out ) { return _index->write( out ); };
+    dword write( OutFile* out ) { return _index->write( out ); };
 private:
     I2( const I2& rhs );                //no copy
     I2& operator=( const I2& rhs );     //no assignment
     Lexer::Token parseAttributes( Lexer* lexer );
 
-    std::auto_ptr< IndexItem > _index;
-    std::wstring _refid;
-    GlobalDictionaryWord* _parentId;
-    word _parentRes;
+    std::auto_ptr< IndexItem >  _index;
+    std::wstring                _refid;
+    GlobalDictionaryWord*       _parentId;
+    word                        _parentRes;
 };
 #endif //I2_INCLUDED

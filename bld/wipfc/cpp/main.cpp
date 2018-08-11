@@ -81,10 +81,10 @@ int main(int argc, char **argv)
         retval = c.compile();
     }
     catch( FatalError& e ) {
-        c.printError( e.code );
+        c.printError( e._code );
     }
     catch( FatalIOError& e ) {
-        c.printError( e.code, e.fname );
+        c.printError( e._code, e._fname );
     }
     return retval;
 }

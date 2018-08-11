@@ -38,18 +38,23 @@
 #include "tag.hpp"
 
 class Lm : public Element {
+    typedef STD1::uint8_t   byte;
+    typedef STD1::uint16_t  word;
+    typedef STD1::uint32_t  dword;
+
 public:
     Lm( Document* d, Element *p, const std::wstring* f, unsigned int r, unsigned int c ) :
         Element( d, p, f, r, c ), _margin( 1 ) { };
-    Lm( Document* d, Element *p, const std::wstring* f, unsigned int r, unsigned int c,
-        unsigned char m ) : Element( d, p, f, r, c ), _margin( m ) { };
+    Lm( Document* d, Element *p, const std::wstring* f, unsigned int r, unsigned int c, byte m ) :
+        Element( d, p, f, r, c ), _margin( m ) { };
     ~Lm() { };
     Lexer::Token parse( Lexer* lexer );
     void buildText( Cell* cell );
 private:
     Lm( const Lm& rhs );                //no copy
     Lm& operator=( const Lm& rhs );     //no assignment
-    STD1::uint8_t _margin;
+
+    byte                _margin;
 };
 
 #endif //LM_INCLUDED

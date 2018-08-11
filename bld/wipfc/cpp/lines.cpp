@@ -70,11 +70,11 @@ Lexer::Token Lines::parseAttributes( Lexer* lexer )
             splitAttribute( lexer->text(), key, value );
             if( key == L"align" ) {
                 if( value == L"left" ) {
-                    alignment = LEFT;
+                    _alignment = LEFT;
                 } else if( value == L"right" ) {
-                    alignment = RIGHT;
+                    _alignment = RIGHT;
                 } else if( value == L"center" ) {
-                    alignment = CENTER;
+                    _alignment = CENTER;
                 } else {
                     _document->printError( ERR2_VALUE );
                 }
@@ -100,7 +100,7 @@ void Lines::buildText( Cell* cell )
     cell->addByte( 0xFF );  //esc
     cell->addByte( 0x03 );  //size
     cell->addByte( 0x1A );  //begin lines sequence
-    cell->addByte( static_cast< byte >( alignment ) );
+    cell->addByte( static_cast< byte >( _alignment ) );
     cell->addByte( 0xFC );  //toggle spacing
     if( cell->textFull() ) {
         printError( ERR1_LARGEPAGE );

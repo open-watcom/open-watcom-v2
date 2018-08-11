@@ -40,6 +40,10 @@
 #include "tag.hpp"
 
 class Hide : public Element {
+    typedef STD1::uint8_t   byte;
+    typedef STD1::uint16_t  word;
+    typedef STD1::uint32_t  dword;
+
 public:
     Hide( Document* d, Element *p, const std::wstring* f, unsigned int r,
         unsigned int c );
@@ -55,8 +59,9 @@ protected:
 private:
     Hide( const Hide& rhs );            //no copy
     Hide& operator=( const Hide& rhs ); //no assignment
-    static bool _hide;
-    std::wstring _keyPhrase;
+
+    static bool         _hide;
+    std::wstring        _keyPhrase;
 };
 
 class EHide : public Element {

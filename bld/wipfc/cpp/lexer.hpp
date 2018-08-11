@@ -86,19 +86,20 @@ public:
 private:
     Lexer( const Lexer& rhs );              //no copy
     Lexer& operator=( const Lexer& rhs );   //no assignment
-    std::wstring _buffer;
-    std::map< std::wstring, TagId > _tagIdMap;
-    typedef std::map< std::wstring, TagId >::iterator TagIdMapIter;
-    typedef std::map< std::wstring, TagId >::const_iterator ConstTagIdMapIter;
-    unsigned int _charNum;
-    unsigned int _lineNum;
-    TagId _tagCode;
-    CmdId _cmdCode;
-    bool _inTag;         //we are between ':' and '.' inside a tag
     //if the token is a tag, find the id
     void getTagId();
     //if the token is a command, find the id
     void getCmdId();
+
+    std::wstring                    _buffer;
+    std::map< std::wstring, TagId > _tagIdMap;
+    typedef std::map< std::wstring, TagId >::iterator TagIdMapIter;
+    typedef std::map< std::wstring, TagId >::const_iterator ConstTagIdMapIter;
+    unsigned int                    _charNum;
+    unsigned int                    _lineNum;
+    TagId                           _tagCode;
+    CmdId                           _cmdCode;
+    bool                            _inTag;     //we are between ':' and '.' inside a tag
 };
 
 #endif //LEXER_INCLUDED

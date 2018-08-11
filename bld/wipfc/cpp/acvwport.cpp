@@ -82,7 +82,7 @@ Lexer::Token AcViewport::parseAttributes( Lexer* lexer )
             } else if( key == L"objectinfo" ) {
                 _objectInfo = value;
             } else if( key == L"objectid" ) {
-                _objectId = static_cast< STD1::uint16_t >( std::wcstoul( value.c_str(), 0, 10 ) );
+                _objectId = static_cast< word >( std::wcstoul( value.c_str(), 0, 10 ) );
             } else if( key == L"vpx" ) {
                 _doOrigin = true;
                 xorg = true;
@@ -100,7 +100,7 @@ Lexer::Token AcViewport::parseAttributes( Lexer* lexer )
                 } else {
                     wchar_t *end;
                     unsigned long int x( std::wcstoul( value.c_str(), &end, 10 ) );
-                    _origin.xpos = static_cast< STD1::uint16_t >( x );
+                    _origin.xpos = static_cast< word >( x );
                     if( *end == L'c' ) {
                         _origin.xPosType = ExtTocEntry::ABSOLUTE_CHAR;
                     } else if( *end == L'%' ) {
@@ -133,7 +133,7 @@ Lexer::Token AcViewport::parseAttributes( Lexer* lexer )
                 } else {
                     wchar_t *end;
                     unsigned long int y( std::wcstoul( value.c_str(), &end, 10 ) );
-                    _origin.ypos = static_cast< STD1::uint16_t >( y );
+                    _origin.ypos = static_cast< word >( y );
                     if( *end == L'c' ) {
                         _origin.yPosType = ExtTocEntry::ABSOLUTE_CHAR;
                     } else if( *end == L'%' ) {
@@ -160,7 +160,7 @@ Lexer::Token AcViewport::parseAttributes( Lexer* lexer )
                 } else {
                     wchar_t *end;
                     unsigned long int width = std::wcstoul( value.c_str(), &end, 10 );
-                    _size.width = static_cast< STD1::uint16_t >( width );
+                    _size.width = static_cast< word >( width );
                     if( *end == L'c' ) {
                         _size.widthType = ExtTocEntry::ABSOLUTE_CHAR;
                     } else if( *end == L'%' ) {
@@ -187,7 +187,7 @@ Lexer::Token AcViewport::parseAttributes( Lexer* lexer )
                 } else {
                     wchar_t *end;
                     unsigned long int height = std::wcstoul( value.c_str(), &end, 10 );
-                    _size.height = static_cast< STD1::uint16_t >( height );
+                    _size.height = static_cast< word >( height );
                     if( *end == L'c' ) {
                         _size.heightType = ExtTocEntry::ABSOLUTE_CHAR;
                     } else if( *end == L'%' ) {
@@ -219,46 +219,46 @@ Lexer::Token AcViewport::parseAttributes( Lexer* lexer )
 void AcViewport::buildText( Cell* cell )
 {
     if( _objectId && !_objectName.empty() ) {
-        std::vector< STD1::uint8_t > esc;
+        std::vector< byte > esc;
         esc.reserve( 3 + 4 + _objectName.size() + 1 + _dll.size() + 1 +
             _objectInfo.size() + 1 + 2 + sizeof( PageOrigin ) + sizeof( PageSize ) );
         esc.push_back( 0xFF );          //ESC
         esc.push_back( 2 );             //size
         esc.push_back( 0x21 );          //type
         esc.push_back( 0 );             //reserved
-        esc.push_back( static_cast< STD1::uint8_t >( _objectName.size() + 1 +
+        esc.push_back( static_cast< byte >( _objectName.size() + 1 +
             _dll.size() + 1 + _objectInfo.size() + 1 ) );
-        esc.push_back( static_cast< STD1::uint8_t >( _objectId ) );
-        esc.push_back( static_cast< STD1::uint8_t >( _objectId >> 8 ) );
-        esc.push_back( static_cast< STD1::uint8_t >( _objectName.size() + 1 ) );
+        esc.push_back( static_cast< byte >( _objectId ) );
+        esc.push_back( static_cast< byte >( _objectId >> 8 ) );
+        esc.push_back( static_cast< byte >( _objectName.size() + 1 ) );
         if( !_objectName.empty() ) {
             std::string buffer;
             cell->out()->wtomb_string( _objectName, buffer );
             std::size_t bytes( buffer.size() );
             for( std::size_t count1 = 0; count1 < bytes; ++count1 ) {
-                esc.push_back( static_cast< STD1::uint8_t >( buffer[ count1 ] ) );
+                esc.push_back( static_cast< byte >( buffer[count1] ) );
             }
         }
-        esc.push_back( static_cast< STD1::uint8_t >( _dll.size() + 1 ) );
+        esc.push_back( static_cast< byte >( _dll.size() + 1 ) );
         if( !_dll.empty() ) {
             std::string buffer;
             cell->out()->wtomb_string( _dll, buffer );
             std::size_t bytes( buffer.size() );
             for( std::size_t count1 = 0; count1 < bytes; ++count1 ) {
-                esc.push_back( static_cast< STD1::uint8_t >( buffer[ count1 ] ) );
+                esc.push_back( static_cast< byte >( buffer[count1] ) );
             }
         }
-        esc.push_back( static_cast< STD1::uint8_t >( _objectInfo.size() + 1 ) );
+        esc.push_back( static_cast< byte >( _objectInfo.size() + 1 ) );
         if( !_objectInfo.empty() ) {
             std::string buffer;
             cell->out()->wtomb_string( _objectInfo, buffer );
             std::size_t bytes( buffer.size() );
             for( std::size_t count1 = 0; count1 < bytes; ++count1 ) {
-                esc.push_back( static_cast< STD1::uint8_t >( buffer[ count1 ] ) );
+                esc.push_back( static_cast< byte >( buffer[count1] ) );
             }
         }
         if( _doOrigin || _doSize ) {
-            STD1::uint8_t flag( 0xC0 );
+            byte flag( 0xC0 );
             if( _doOrigin )
                 flag |= 0x01;
             if( _doSize )
@@ -266,19 +266,19 @@ void AcViewport::buildText( Cell* cell )
             esc.push_back( flag );
             esc.push_back( 0 );
             if( _doOrigin ) {
-                STD1::uint8_t* src = reinterpret_cast< STD1::uint8_t* >( &_origin );
+                byte* src = reinterpret_cast< byte* >( &_origin );
                 for( std::size_t count1 = 0; count1 < sizeof( PageOrigin ); ++count1, ++src ) {
                     esc.push_back( *src );
                 }
             }
             if( _doSize ) {
-                STD1::uint8_t* src = reinterpret_cast< STD1::uint8_t* >( &_size );
+                byte* src = reinterpret_cast< byte* >( &_size );
                 for( std::size_t count1 = 0; count1 < sizeof( PageSize ); ++count1, ++src ) {
                     esc.push_back( *src );
                 }
             }
         }
-        esc[ 1 ] = static_cast< STD1::uint8_t >( esc.size() - 1 );
+        esc[1] = static_cast< byte >( esc.size() - 1 );
         cell->addEsc( esc );
     }
 }

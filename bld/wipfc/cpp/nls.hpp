@@ -67,7 +67,7 @@ public:
     bool isEntity( const std::wstring& key ) { return _entityMap.find( key ) != _entityMap.end(); };
     //number of bytes written
     dword length() { return _bytes; };
-    dword write( OutFile *out );
+    dword write( OutFile* out );
 
 private:
     typedef std::map< std::wstring, wchar_t >::iterator EntityIter;
@@ -90,7 +90,7 @@ private:
         SbcsGrammarDef() : _size( sizeof( word ) + 2 * sizeof( byte ) + (sizeof( _bits ) / sizeof( _bits[0] )) * sizeof( byte ) ),
             _type( WIPFC::TEXT ), _format( 0 ) {};
         void setDefaultBits( WIPFC::NLSRecType rectype );
-        dword write( OutFile *out ) const;
+        dword write( OutFile* out ) const;
     };
     struct DbcsGrammarDef {             // Double-byte character set
         word                _size;          // 4 + (# ranges * 4)
@@ -101,25 +101,25 @@ private:
         typedef std::vector< word >::const_iterator ConstRangesIter;
         DbcsGrammarDef() : _size( sizeof( word ) + 2 * sizeof( byte ) ),
             _type( WIPFC::TEXT ), _format( 1 ) {};
-        dword write( OutFile *out );
+        dword write( OutFile* out );
     };
 
-    CountryDef _country;
-    SbcsGrammarDef _sbcsT;
-    SbcsGrammarDef _sbcsG;
-    DbcsGrammarDef _dbcsT;
-    DbcsGrammarDef _dbcsG;
-    std::map< std::wstring, wchar_t > _entityMap; //stuff from entity file
-    std::wstring _noteText;                  //stuff from nls file
-    std::wstring _cautionText;
-    std::wstring _warningText;
-    std::wstring _referenceText;
-    std::wstring _grammarChars;
-    FontEntry _cgraphicFont;
-    dword _bytes;
-    std::wstring _olCh;
-    std::wstring _olClosers[2];
-    std::wstring _ulBul[3];
+    CountryDef                          _country;
+    SbcsGrammarDef                      _sbcsT;
+    SbcsGrammarDef                      _sbcsG;
+    DbcsGrammarDef                      _dbcsT;
+    DbcsGrammarDef                      _dbcsG;
+    std::map< std::wstring, wchar_t >   _entityMap;     //stuff from entity file
+    std::wstring                        _noteText;      //stuff from nls file
+    std::wstring                        _cautionText;
+    std::wstring                        _warningText;
+    std::wstring                        _referenceText;
+    std::wstring                        _grammarChars;
+    FontEntry                           _cgraphicFont;
+    dword                               _bytes;
+    std::wstring                        _olCh;
+    std::wstring                        _olClosers[2];
+    std::wstring                        _ulBul[3];
 };
 
 #endif //NLS_INCLUDED

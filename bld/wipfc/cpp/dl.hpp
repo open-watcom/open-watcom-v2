@@ -43,6 +43,10 @@
 #include "tag.hpp"
 
 class Dl : public Tag {
+    typedef STD1::uint8_t   byte;
+    typedef STD1::uint16_t  word;
+    typedef STD1::uint32_t  dword;
+
 public:
     enum Break {
         NONE,
@@ -50,8 +54,8 @@ public:
         ALL
     };
     Dl( Document* d, Element *p, const std::wstring* f, unsigned int r,
-        unsigned int c, unsigned char n, unsigned char i ) : Tag( d, p, f, r, c ),
-        nestLevel( n ), indent( i ), tabSize( 10 ), breakage( NONE ), compact( false ) { };
+        unsigned int c, byte n, byte i ) : Tag( d, p, f, r, c ),
+        _nestLevel( n ), _indent( i ), _tabSize( 10 ), _breakage( NONE ), _compact( false ) { };
     ~Dl() { };
     Lexer::Token parse( Lexer* lexer );
     void linearize( Page* page ) { linearizeChildren( page ); };
@@ -61,11 +65,12 @@ protected:
 private:
     Dl( const Dl& rhs );            //no copy
     Dl& operator=( const Dl& rhs ); //no assignment
-    unsigned char nestLevel;        //counts from 0
-    unsigned char indent;           //in character spaces
-    unsigned char tabSize;          //in character spaces
-    Break breakage;
-    bool compact;
+
+    byte            _nestLevel;     //counts from 0
+    byte            _indent;        //in character spaces
+    byte            _tabSize;       //in character spaces
+    Break           _breakage;
+    bool            _compact;
 };
 
 class EDl : public Tag {
@@ -80,27 +85,36 @@ private:
 };
 
 class DtHd : public Tag {
+    typedef STD1::uint8_t   byte;
+    typedef STD1::uint16_t  word;
+    typedef STD1::uint32_t  dword;
+
 public:
     DtHd( Document* d, Element *p, const std::wstring* f, unsigned int r,
-        unsigned int c, unsigned char i ) : Tag( d, p, f, r, c ), indent( i ),
-        textLength( 0 ) { };
+        unsigned int c, byte i ) : Tag( d, p, f, r, c ), _indent( i ),
+        _textLength( 0 ) { };
     ~DtHd() { };
-    unsigned char length() const { return textLength; };
+    byte length() const { return _textLength; };
     Lexer::Token parse( Lexer* lexer );
     void linearize( Page* page ) { linearizeChildren( page ); };
     void buildText( Cell* cell ) { (void)cell; };
 private:
     DtHd( const DtHd& rhs );            //no copy
     DtHd& operator=( const DtHd& rhs ); //no assignment
-    unsigned char indent;
-    unsigned char textLength;
+
+    byte                _indent;
+    byte                _textLength;
 };
 
 class DdHd : public Tag {
+    typedef STD1::uint8_t   byte;
+    typedef STD1::uint16_t  word;
+    typedef STD1::uint32_t  dword;
+
 public:
     DdHd( Document* d, Element *p, const std::wstring* f, unsigned int r,
-        unsigned int c, unsigned char i, unsigned char t ) : Tag( d, p, f, r, c ),
-        indent( i ), tabSize( t ) { };
+        unsigned int c, byte i, byte t ) : Tag( d, p, f, r, c ),
+        _indent( i ), _tabSize( t ) { };
     ~DdHd() { };
     Lexer::Token parse( Lexer* lexer );
     void linearize( Page* page ) { linearizeChildren( page ); };
@@ -108,16 +122,21 @@ public:
 private:
     DdHd( const DdHd& rhs );            //no copy
     DdHd& operator=( const DdHd& rhs ); //no assignment
-    unsigned char indent;
-    unsigned char tabSize;
+
+    byte                _indent;
+    byte                _tabSize;
 };
 
 class Dt : public Tag {
+    typedef STD1::uint8_t   byte;
+    typedef STD1::uint16_t  word;
+    typedef STD1::uint32_t  dword;
+
 public:
     Dt( Document* d, Element *p, const std::wstring* f, unsigned int r,
-        unsigned int c, unsigned char i, unsigned char t, Dl::Break brk, bool cp ) :
-        Tag( d, p, f, r, c ), indent( i ), tabSize( t ), textLength( 0 ),
-        breakage( brk ), compact( cp ) { };
+        unsigned int c, byte i, byte t, Dl::Break brk, bool cp ) :
+        Tag( d, p, f, r, c ), _indent( i ), _tabSize( t ), _textLength( 0 ),
+        _breakage( brk ), _compact( cp ) { };
     ~Dt() { };
     Lexer::Token parse( Lexer* lexer );
     void linearize( Page* page ) { linearizeChildren( page ); };
@@ -125,18 +144,23 @@ public:
 private:
     Dt( const Dt& rhs );            //no copy
     Dt& operator=( const Dt& rhs ); //no assignment
-    unsigned char indent;
-    unsigned char tabSize;
-    unsigned char textLength;
-    Dl::Break breakage;
-    bool compact;
+
+    byte                _indent;
+    byte                _tabSize;
+    byte                _textLength;
+    Dl::Break           _breakage;
+    bool                _compact;
 };
 
 class Dd : public Tag {
+    typedef STD1::uint8_t   byte;
+    typedef STD1::uint16_t  word;
+    typedef STD1::uint32_t  dword;
+
 public:
     Dd( Document* d, Element *p, const std::wstring* f, unsigned int r,
-        unsigned int c, unsigned char i, unsigned char t, bool brk ) :
-        Tag( d, p, f, r, c ), indent( i ), tabSize( t ), doBreak( brk ) { };
+        unsigned int c, byte i, byte t, bool brk ) :
+        Tag( d, p, f, r, c ), _indent( i ), _tabSize( t ), _doBreak( brk ) { };
     ~Dd() { };
     Lexer::Token parse( Lexer* lexer );
     void linearize( Page* page ) { linearizeChildren( page ); };
@@ -144,9 +168,10 @@ public:
 private:
     Dd( const Dd& rhs );            //no copy
     Dd& operator=( const Dd& rhs ); //no assignment
-    unsigned char indent;
-    unsigned char tabSize;
-    bool doBreak;
+
+    byte                _indent;
+    byte                _tabSize;
+    bool                _doBreak;
 };
 
 #endif //DL_INCLUDED

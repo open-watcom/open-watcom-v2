@@ -46,7 +46,8 @@ public:
 private:
     Title( const Title& rhs );              //no copy
     Title& operator=( const Title& rhs );   //no assignment
-    Document* _document;
+
+    Document*           _document;
 };
 
 #endif //TITLE_INCLUDED

@@ -73,39 +73,40 @@ public:
     void buildTOC();
     void linearize() { ( *( _elements.begin() ))->linearize( this ); };
     void buildIndex() { ( *( _elements.begin() ))->buildIndex(); };
-    void buildLocalDictionary( OutFile *out );
+    void buildLocalDictionary( OutFile* out );
     //write a TOC entry
-    dword write( OutFile *out );
+    dword write( OutFile* out );
     dword tocSize() const { return _toc.size; };
     //write child windows list
-    dword writeChildren( OutFile *out ) const;
+    dword writeChildren( OutFile* out ) const;
 
-    void setOutFile( OutFile *out ) { _out = out; };
-    OutFile *out() { return _out; };
+    void setOutFile( OutFile* out ) { _out = out; };
+    OutFile* out() { return _out; };
 private:
     Page( const Page& rhs );            //no copy
     Page& operator=( const Page& rhs ); //no assignment
-    Document* _document;
-    Cell* _currentCell;                 //the cell currently in use
-    std::vector< Element* > _elements;  //all elements on this page
+
+    Document*               _document;
+    Cell*                   _currentCell;   //the cell currently in use
+    std::vector< Element* > _elements;      //all elements on this page
     typedef std::vector< Element* >::iterator ElementIter;
     typedef std::vector< Element* >::const_iterator ConstElementIter;
-    std::vector< word > _cells;
+    std::vector< word >     _cells;
     typedef std::vector< word >::iterator CellIter;
     typedef std::vector< word >::const_iterator ConstCellIter;
-    std::wstring _title;                //page title
-    std::vector< word > _children;
+    std::wstring _title;                    //page title
+    std::vector< word >     _children;
     typedef std::vector< word >::iterator ChildIter;
     typedef std::vector< word >::const_iterator ConstChildxIter;
-    TocEntry _toc;
-    ExtTocEntry _etoc;
-    PageOrigin _origin;
-    PageSize _size;
-    PageStyle _style;
-    PageGroup _group;
-    PageControls _controls;
-    word _idx;                  // index in TOC
-    bool _searchable;
-    OutFile *_out;
+    TocEntry                _toc;
+    ExtTocEntry             _etoc;
+    PageOrigin              _origin;
+    PageSize                _size;
+    PageStyle               _style;
+    PageGroup               _group;
+    PageControls            _controls;
+    word                    _idx;           // index in TOC
+    bool                    _searchable;
+    OutFile*                _out;
 };
 #endif

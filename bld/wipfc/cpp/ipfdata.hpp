@@ -60,8 +60,9 @@ public:
 private:
     IpfData( const IpfData& rhs );              //no copy
     IpfData& operator=( const IpfData& rhs );   //no assignment
-    unsigned int _lineNum;
-    unsigned int _charNum;
+
+    unsigned int        _lineNum;
+    unsigned int        _charNum;
 };
 
 #endif //IPFDATA_INCLUDED

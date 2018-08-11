@@ -39,9 +39,9 @@ void Env::add( const std::string& key )
     if( env ) {
         std::string val( env );
         killQuotes( val );
-        data.insert( std::map< std::string, std::string >::value_type( key, val ) );
+        _data.insert( std::map< std::string, std::string >::value_type( key, val ) );
     } else {
-        data.insert( std::map< std::string, std::string >::value_type( key, "" ) );
+        _data.insert( std::map< std::string, std::string >::value_type( key, "" ) );
     }
 }
 /*****************************************************************************/

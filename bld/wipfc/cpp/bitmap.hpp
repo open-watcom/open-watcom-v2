@@ -89,20 +89,21 @@ private:
         void write( std::FILE* bmfpo ) const;
     };
 #pragma pack(pop)
-    BitmapFileHeader bmfh;              //read BitmapFileHeader
-    BitmapInfoHeader16 bmih;
-    std::vector< RGB > rgb;
-    dword bytesPerRow;
-    dword dataSize;            //size of the compressed data
-    word blockSize;           //including this word
-    std::vector< BitmapBlock > data;    //and all of the data blocks
-    typedef std::vector< BitmapBlock >::iterator DataIter;
-    typedef std::vector< BitmapBlock >::const_iterator ConstDataIter;
     void readHeader16( std::FILE* bmfpi );
     void readHeaderW32( std::FILE* bmfpi );
     void readHeaderOS2( std::FILE* bmfpi );
     void findBlockSize( std::size_t width, std::size_t height, std::size_t bitsPerPixel );
     void compress( std::FILE* bmfpi );
+
+    BitmapFileHeader            _bmfh;          //read BitmapFileHeader
+    BitmapInfoHeader16          _bmih;
+    std::vector< RGB >          _rgb;
+    dword                       _bytesPerRow;
+    dword                       _dataSize;      //size of the compressed data
+    word                        _blockSize;     //including this word
+    std::vector< BitmapBlock >  _data;          //and all of the data blocks
+    typedef std::vector< BitmapBlock >::iterator DataIter;
+    typedef std::vector< BitmapBlock >::const_iterator ConstDataIter;
 };
 
 #endif //BITMAP_INCLUDED

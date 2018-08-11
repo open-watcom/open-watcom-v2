@@ -51,11 +51,12 @@ public:
 private:
     IpfBuffer( const IpfBuffer& rhs );              //no copy
     IpfBuffer& operator=( const IpfBuffer& rhs );   //no assignment
-    const std::wstring* _fileName;
-    std::wstring _buffer;
-    std::wstring::iterator _head;
-    std::wstring::iterator _tail;
-    wchar_t _ungotCh;
+
+    const std::wstring*     _fileName;
+    std::wstring            _buffer;
+    std::wstring::iterator  _head;
+    std::wstring::iterator  _tail;
+    wchar_t                 _ungotCh;
 };
 
 #endif //IPFBUFFER_INCLUDED

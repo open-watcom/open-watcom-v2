@@ -37,16 +37,21 @@
 #include "tag.hpp"
 
 class Lp : public Tag {
+    typedef STD1::uint8_t   byte;
+    typedef STD1::uint16_t  word;
+    typedef STD1::uint32_t  dword;
+
 public:
     Lp( Document* d, Element *p, const std::wstring* f, unsigned int r, unsigned int c,
-        unsigned char i ) : Tag( d, p, f, r, c ), indent( i ) { };
+        byte i ) : Tag( d, p, f, r, c ), _indent( i ) { };
     ~Lp() { };
     Lexer::Token parse( Lexer* lexer );
     void buildText( Cell* cell );
 private:
     Lp( const Lp& rhs );            //no copy
     Lp& operator=( const Lp& rhs ); //no assignment
-    STD1::uint8_t indent;
+
+    byte                _indent;
 };
 
 #endif //LP_INCLUDED

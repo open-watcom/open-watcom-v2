@@ -37,6 +37,10 @@
 #include "element.hpp"
 
 class Ddf : public Element {
+    typedef STD1::uint8_t   byte;
+    typedef STD1::uint16_t  word;
+    typedef STD1::uint32_t  dword;
+
 public:
     Ddf( Document* d, Element *p, const std::wstring* f, unsigned int r, unsigned int c ) :
         Element( d, p, f, r, c ), _res( 0 ) { };
@@ -46,8 +50,9 @@ public:
 private:
     Ddf( const Ddf& rhs );              //no copy
     Ddf& operator=( const Ddf& rhs );   //no assignment
-    STD1::uint16_t _res;
     Lexer::Token parseAttributes( Lexer* lexer );
+
+    word                _res;
 };
 
 #endif //DDF_INCLUDED
