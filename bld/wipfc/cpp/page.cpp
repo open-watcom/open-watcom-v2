@@ -68,13 +68,13 @@ void Page::buildLocalDictionary( OutFile* out )
     }
 }
 /***************************************************************************/
-bool Page::addWord( GlobalDictionaryWord* wordent )
+bool Page::addWord( GlobalDictionaryWord* gdentry )
 {
-    if( wordent ) {    //can be 0 for unrecognized entity references
+    if( gdentry ) {    //can be 0 for unrecognized entity references
         if( _currentCell->dictFull() )
             return( true );
-        _currentCell->addWord( wordent->index() );
-        wordent->onPage( _idx );
+        _currentCell->addWord( gdentry->index() );
+        gdentry->onPage( _index );
     }
     return( false );
 }
@@ -139,10 +139,10 @@ Page::dword Page::writeChildren( OutFile* out ) const
 {
     byte bytes = 0;
     if( !_children.empty() ) {
-        bytes = static_cast< byte >( sizeof( byte ) + sizeof( _idx ) + _children.size() * sizeof( std::vector< word >::value_type ) );
+        bytes = static_cast< byte >( sizeof( byte ) + sizeof( _index ) + _children.size() * sizeof( std::vector< word >::value_type ) );
         if( out->put( bytes ) )
             throw FatalError( ERR_WRITE );
-        if( out->put( _idx ) )
+        if( out->put( _index ) )
             throw FatalError( ERR_WRITE );
         if( out->write( &_children[0], sizeof( std::vector< word >::value_type ), _children.size() ) ) {
             throw FatalError( ERR_WRITE );

@@ -57,42 +57,42 @@ I1::I1( Document* d, Element* p, const std::wstring* f, unsigned int r, unsigned
 Lexer::Token I1::parse( Lexer* lexer )
 {
     Lexer::Token tok( parseAttributes( lexer ) );
-    std::wstring txt;
+    std::wstring text;
     while( tok != Lexer::END && !( tok == Lexer::TAG && lexer->tagId() == Lexer::EUSERDOC)) {
         if( tok == Lexer::WORD ) {
-            txt += lexer->text();
+            text += lexer->text();
         } else if( tok == Lexer::ENTITY ) {
             const std::wstring* exp( _document->nameit( lexer->text() ) );
             if( exp ) {
-                txt += *exp;
+                text += *exp;
             } else {
                 try {
                     wchar_t entityChar( _document->entityChar( lexer->text() ) );
-                    txt += entityChar;
+                    text += entityChar;
                 }
                 catch( Class2Error& e ) {
                     _document->printError( e._code );
                 }
             }
         } else if( tok == Lexer::PUNCTUATION ) {
-            txt += lexer->text();
+            text += lexer->text();
         } else if( tok == Lexer::WHITESPACE ) {
             if( lexer->text()[0] == L'\n' ) {
                 tok = _document->getNextToken();
                 break;
             }
-            txt+= lexer->text();
+            text += lexer->text();
         } else {
             break;
         }
         tok = _document->getNextToken();
     }
-    if( txt.empty() ) {
+    if( text.empty() ) {
         _document->printError( ERR2_INOTEXT );
-    } else if( txt.size() > 255 ) {
+    } else if( text.size() > 255 ) {
         _document->printError( ERR2_TEXTTOOLONG );
     }
-    _primary->setText( txt );
+    _primary->setText( text );
     return tok;
 }
 /*****************************************************************************/

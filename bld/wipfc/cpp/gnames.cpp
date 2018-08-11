@@ -40,12 +40,12 @@
 #include "outfile.hpp"
 
 
-void GNames::insert( GlobalDictionaryWord* wordent, word toc )
+void GNames::insert( GlobalDictionaryWord* gdentry, word toc )
 {
-    NameIter itr( _names.find( wordent ) );   //look up word in names
+    NameIter itr( _names.find( gdentry ) );   //look up word in names
     if( itr != _names.end() )
         throw Class3Error( ERR3_DUPID );
-    _names.insert( std::map< GlobalDictionaryWord*, word, ptrLess< GlobalDictionaryWord* > >::value_type( wordent, toc ) );
+    _names.insert( std::map< GlobalDictionaryWord*, word, ptrLess< GlobalDictionaryWord* > >::value_type( gdentry, toc ) );
 }
 /***************************************************************************/
 GNames::dword GNames::write( OutFile* out ) const

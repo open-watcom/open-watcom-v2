@@ -52,12 +52,12 @@ Lexer::Token AcViewport::parse( Lexer* lexer )
 {
     Lexer::Token tok( parseAttributes( lexer ) );
     if( _objectId == 0 ) {
-        std::wstring txt( L"objectid" );
-        _document->printError( ERR2_VALUE, txt );
+        std::wstring text( L"objectid" );
+        _document->printError( ERR2_VALUE, text );
     }
     if( _objectName.empty() ) {
-        std::wstring txt( L"objectname" );
-        _document->printError( ERR2_VALUE, txt );
+        std::wstring text( L"objectname" );
+        _document->printError( ERR2_VALUE, text );
     }
     return tok;
 }

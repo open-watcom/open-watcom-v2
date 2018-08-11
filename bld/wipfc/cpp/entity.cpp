@@ -39,26 +39,26 @@
 Lexer::Token Entity::parse( Lexer* lexer )
 {
     Lexer::Token tok;
-    const std::wstring* nameitTxt( _document->nameit( lexer->text() ) ); //lookup nameit
-    if( nameitTxt ) {
+    const std::wstring* nameitText( _document->nameit( lexer->text() ) ); //lookup nameit
+    if( nameitText ) {
         std::wstring* name( _document->prepNameitName( lexer->text() ) );
-        IpfBuffer* buffer( new IpfBuffer( name, _document->dataLine(), _document->dataCol(), *nameitTxt ) );
+        IpfBuffer* buffer( new IpfBuffer( name, _document->dataLine(), _document->dataCol(), *nameitText ) );
         _document->pushInput( buffer );
         return _document->getNextToken();
     }
     try {
         wchar_t entityChar( _document->entityChar( lexer->text() ) );    //lookup entity
-        std::wstring txt( 1, entityChar );
+        std::wstring text( 1, entityChar );
         tok = _document->getNextToken();
         if( !std::iswpunct( entityChar ) ) {
             while( tok != Lexer::END && !( tok == Lexer::TAG && lexer->tagId() == Lexer::EUSERDOC) ) {
                 if( tok == Lexer::WORD ) {
-                    txt += lexer->text();       //part of a compound ...-word-entity-word-...
+                    text += lexer->text();       //part of a compound ...-word-entity-word-...
                 } else if( tok == Lexer::ENTITY ) {
                     entityChar = _document->entityChar( lexer->text() );
                     if( std::iswpunct( entityChar ) )
                         break;
-                    txt += entityChar;
+                    text += entityChar;
                 } else {
                     break;
                 }
@@ -72,7 +72,7 @@ Lexer::Token Entity::parse( Lexer* lexer )
                 _document->lastText()->setToggleSpacing();
             }
         }
-        _text = _document->addWord( new GlobalDictionaryWord( txt ) );   //insert into global dictionary
+        _text = _document->addWord( new GlobalDictionaryWord( text ) );   //insert into global dictionary
     }
     catch( Class2Error& e ) {
         _document->printError( e._code );

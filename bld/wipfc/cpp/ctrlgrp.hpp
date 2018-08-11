@@ -44,20 +44,20 @@ class ControlGroup {
     typedef STD1::uint32_t  dword;
 
 public:
-    ControlGroup() : _idx( 0 ) {};
-    ControlGroup( const std::wstring& id ) : _idnt( id ), _idx( 0 ) { };
+    ControlGroup() : _index( 0 ) {};
+    ControlGroup( const std::wstring& id ) : _idnt( id ), _index( 0 ) { };
     void addButtonIndex( word i ) { _buttonIndex.push_back( i ); };
     void setId( const std::wstring& i ) { _idnt = i; };
     const std::wstring& id() const { return _idnt; };
-    void setIndex( word i ) { _idx = i; };
-    word index() const { return _idx; };
+    void setIndex( word i ) { _index = i; };
+    word index() const { return _index; };
     dword write( OutFile* out ) const;
 private:
     std::vector< word > _buttonIndex;
     typedef std::vector< word >::iterator ButtonIter;
     typedef std::vector< word >::const_iterator ConstButtonIter;
     std::wstring        _idnt;      //identifier
-    word                _idx;       //index of this item in group array
+    word                _index;     //index of this item in group array
 };
 
 #endif //CONTROLGROUP_INCLUDED

@@ -39,8 +39,8 @@ public:
         unsigned int c, Tag::WsHandling w = Tag::NONE ) :
         Text( d, p, f, r, c, w ) { };
     Punctuation( Document* d, Element* p, const std::wstring* f, unsigned int r,
-        unsigned int c, const std::wstring& txt, bool ts = true ) :
-        Text( d, p, f, r, c, txt, ts ) { };
+        unsigned int c, const std::wstring& text, bool ts = true ) :
+        Text( d, p, f, r, c, text, ts ) { };
     ~Punctuation() { };
     Lexer::Token parse( Lexer* lexer );
 private:

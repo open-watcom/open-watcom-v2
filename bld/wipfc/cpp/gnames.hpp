@@ -47,7 +47,7 @@ class GNames {
 public:
     GNames() { };
     ~GNames() { };
-    void insert( GlobalDictionaryWord* wordent, word toc );
+    void insert( GlobalDictionaryWord* gdentry, word toc );
     //the number of names in the collection
     word size() const { return static_cast< word >( _names.size() ); };
     dword write( OutFile* out ) const;

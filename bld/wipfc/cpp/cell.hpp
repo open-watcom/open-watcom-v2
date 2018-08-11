@@ -50,16 +50,16 @@ public:
     Cell( std::size_t m) : _maxDictSize( m ) { };
     ~Cell() { };
     //add a word to the local dictionary
-    void addWord( word wordid );
+    void addWord( word index );
     //add a word to the encoded text
-    void addText( word textid );
+    void addText( word index );
     //add a byte code to the encoded text
     void addByte( byte c ) { _text.push_back( c ); };
     //add an escape sequence to the encoded text
     void addEsc( const std::vector< byte >& esc );
     //set the cell's index (position in the list of cells)
-    void setIndex( std::size_t i ) { _idx = i; };
-    std::size_t index() const { return _idx; };
+    void setIndex( std::size_t i ) { _index = i; };
+    std::size_t index() const { return _index; };
     //is this cell empty?
     bool empty() const { return _text.empty(); }
     //is the local dictionary full (time for a new cell)?
@@ -87,7 +87,7 @@ private:
     typedef std::vector< Element* >::iterator ElementIter;
     typedef std::vector< Element* >::const_iterator ConstElementIter;
     std::size_t             _maxDictSize;
-    std::size_t             _idx;               //index of this cell in cell array
+    std::size_t             _index;             //index of this cell in cell array
     OutFile*                _out;
 };
 

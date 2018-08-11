@@ -144,11 +144,11 @@ public:
     //To Compiler
     std::wstring* addFileName( std::wstring* name ) { return _compiler.addFileName( name ); };
     void printError( ErrCode c ) const { _compiler.printError( c ); };
-    void printError( ErrCode c, const std::wstring& txt ) const { _compiler.printError( c, txt ); };
+    void printError( ErrCode c, const std::wstring& text ) const { _compiler.printError( c, text ); };
     void printError( ErrCode c, const std::wstring* name, unsigned int row, unsigned int col ) const
         { _compiler.printError( c, name, row, col ); };
-    void printError( ErrCode c, const std::wstring* name, unsigned int row, unsigned int col, const std::wstring& txt ) const
-        { _compiler.printError( c, name, row, col, txt ); };
+    void printError( ErrCode c, const std::wstring* name, unsigned int row, unsigned int col, const std::wstring& text ) const
+        { _compiler.printError( c, name, row, col, text ); };
     Lexer::Token getNextToken() { return _compiler.getNextToken(); };
     void setBlockParsing( bool yn ) { _compiler.setBlockParsing( yn ); };
     bool blockParsing() { return _compiler.blockParsing(); };
@@ -168,8 +168,8 @@ public:
     std::size_t addFont( const FontEntry& fnt ) { return _fonts->add( fnt ); };
 
     //To GlobalDictionary
-    GlobalDictionaryWord * addWord( GlobalDictionaryWord* wordent ) { return _dict->insert( wordent ); };
-    word findIndex( const std::wstring& wordtxt ) { return _dict->findIndex( wordtxt ); };
+    GlobalDictionaryWord * addWord( GlobalDictionaryWord* gdentry ) { return _dict->insert( gdentry ); };
+    word findIndex( const std::wstring& text ) { return _dict->findIndex( text ); };
 
     //To GNames
     void addGNameOrId( GlobalDictionaryWord* key, word value )

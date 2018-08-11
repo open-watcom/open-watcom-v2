@@ -60,17 +60,17 @@ public:
     GlobalDictionary() : _bytes( 0 ), _ftsBytes( 0 ) {};
     ~GlobalDictionary();
     //add a word to the collection
-    GlobalDictionaryWord* insert( GlobalDictionaryWord* wordent );
-    GlobalDictionaryWord* insert( const std::wstring& wordtxt );
+    GlobalDictionaryWord* insert( GlobalDictionaryWord* gdentry );
+    GlobalDictionaryWord* insert( const std::wstring& text );
     //after insertions are completed, assign an index to each element
     //of the collection as if it were an array
     void convert( std::size_t count );
     //get the index of a word in the collection
-    word findIndex( GlobalDictionaryWord *wordent ) { return (*_words.find( wordent ))->index(); };
-    word findIndex( const std::wstring& wordtxt );
+    word findIndex( GlobalDictionaryWord *gdentry ) { return (*_words.find( gdentry ))->index(); };
+    word findIndex( const std::wstring& text );
     //get a word from the collection
-    GlobalDictionaryWord* findWord( GlobalDictionaryWord *wordent ) { return *_words.find( wordent ); };
-    GlobalDictionaryWord* findWord( const std::wstring& wordtxt );
+    GlobalDictionaryWord* findWord( GlobalDictionaryWord *gdentry ) { return *_words.find( gdentry ); };
+    GlobalDictionaryWord* findWord( const std::wstring& text );
     //the number of elements in the collection
     word size() const { return static_cast< word >( _words.size() ); };
     //the number of bytes written by the collection

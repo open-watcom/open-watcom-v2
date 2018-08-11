@@ -42,21 +42,21 @@ class ControlButton {
     typedef STD1::uint32_t  dword;
 
 public:
-    ControlButton() : _res( 0 ), _idx( 0 ) {};
+    ControlButton() : _res( 0 ), _index( 0 ) {};
     ControlButton( const std::wstring& i, word r, const std::wstring& t ) :
-        _res( r ), _idnt( i ), _txt( t ) { };
+        _res( r ), _idnt( i ), _text( t ) { };
     void setId( std::wstring& i ) { _idnt = i; };
     const std::wstring& id() const { return _idnt; };
     void setRes( word r ) { _res = r; };
-    void setText( std::wstring& t ) { _txt = t; };
-    void setIndex( word i ) { _idx = i; };
-    word index() { return _idx; };
+    void setText( std::wstring& t ) { _text = t; };
+    void setIndex( word i ) { _index = i; };
+    word index() { return _index; };
     dword write( OutFile* out ) const;
 private:
     word            _res;       //message number
-    word            _idx;       //array index of this item
+    word            _index;     //array index of this item
     std::wstring    _idnt;      //identifier
-    std::wstring    _txt;       //button text
+    std::wstring    _text;      //button text
 };
 
 #endif //CTRLBUTTON_INCLUDED

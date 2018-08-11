@@ -39,9 +39,9 @@ void Element::printError( ErrCode c ) const
     _document->printError( c, _fileName, _row, _col );
 }
 /***************************************************************************/
-void Element::printError( ErrCode c, const std::wstring& txt ) const
+void Element::printError( ErrCode c, const std::wstring& text ) const
 {
-    _document->printError( c, _fileName, _row, _col, txt );
+    _document->printError( c, _fileName, _row, _col, text );
 }
 /***************************************************************************/
 void Element::linearize( Page* page )

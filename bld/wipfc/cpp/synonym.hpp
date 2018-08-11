@@ -46,7 +46,7 @@ class Synonym {
 public:
     Synonym() : _offset( 0 ) { };
     ~Synonym() { };
-    void add( const std::wstring& txt ) { _synonyms.push_back( txt ); };
+    void add( const std::wstring& text ) { _synonyms.push_back( text ); };
     void write( OutFile* out );
     dword location() const { return _offset; };
 

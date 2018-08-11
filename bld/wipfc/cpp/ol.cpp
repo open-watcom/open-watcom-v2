@@ -204,23 +204,23 @@ Lexer::Token OlLi::parse( Lexer* lexer )
             _document->dataCol() ) );
     }
     if( _nestLevel & 1 ) {
-        std::wstring txt;
-        txt.push_back( _document->olChar( _itemNumber ) );
+        std::wstring text;
+        text.push_back( _document->olChar( _itemNumber ) );
         appendChild( new LiteralWhiteSpace( _document, this, _document->dataName(),
             _document->dataLine(), _document->dataCol(), true ) );
         appendChild( new Word( _document, this, _document->dataName(),
-            _document->dataLine(), _document->dataCol(), txt, false ) );
+            _document->dataLine(), _document->dataCol(), text, false ) );
         appendChild( new Punctuation( _document, this, _document->dataName(),
             _document->dataLine(), _document->dataCol(), _document->olClose( _nestLevel ), true ) );
     } else {
         wchar_t tmp[ 4 ];
         std::swprintf( tmp, 4, L"%u", _itemNumber + 1 );
-        std::wstring txt( tmp );
+        std::wstring text( tmp );
         if( _itemNumber < 9 )
             appendChild( new LiteralWhiteSpace( _document, this, _document->dataName(),
                 _document->dataLine(), _document->dataCol(), true ) );
         appendChild( new Word( _document, this, _document->dataName(),
-            _document->dataLine(), _document->dataCol(), txt, _itemNumber >= 9 ) );
+            _document->dataLine(), _document->dataCol(), text, _itemNumber >= 9 ) );
         appendChild( new Punctuation( _document, this, _document->dataName(),
             _document->dataLine(), _document->dataCol(), _document->olClose( _nestLevel ), true ) );
     }

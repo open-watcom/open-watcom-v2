@@ -69,7 +69,7 @@ public:
     Element* rootElement();
     //print an error message (not during parsing)
     void printError( ErrCode c ) const;
-    void printError( ErrCode c, const std::wstring& txt ) const;
+    void printError( ErrCode c, const std::wstring& text ) const;
 
 private:
     Element( const Element& rhs );              //no copy

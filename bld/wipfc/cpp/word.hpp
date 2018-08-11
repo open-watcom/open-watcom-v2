@@ -39,7 +39,7 @@ public:
         unsigned int c, Tag::WsHandling w = Tag::NONE ) :
         Text( d, p, f, r, c, w ) { };
     Word( Document* d, Element* p, const std::wstring* f, unsigned int r, unsigned int c,
-        const std::wstring& txt, bool ts = false ) : Text( d, p, f, r, c, txt, ts ) { };
+        const std::wstring& text, bool ts = false ) : Text( d, p, f, r, c, text, ts ) { };
     ~Word() { };
     Lexer::Token parse( Lexer* lexer );
 private:

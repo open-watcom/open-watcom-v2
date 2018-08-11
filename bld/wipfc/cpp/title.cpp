@@ -54,22 +54,22 @@ Lexer::Token Title::parse( Lexer* lexer )
             _document->printError( ERR1_TAGSYNTAX );
         }
     }
-    std::wstring txt;
+    std::wstring text;
     unsigned int startLine( _document->dataLine() );
     tok = _document->getNextToken();
     while(  _document->dataLine() == startLine ) {
         if( tok == Lexer::WHITESPACE ||
             tok == Lexer::WORD ||
             tok == Lexer::PUNCTUATION ) {
-            txt += lexer->text();
+            text += lexer->text();
         } else if( tok == Lexer::ENTITY ) {
             const std::wstring* exp( _document->nameit( lexer->text() ) );
             if( exp ) {
-                txt += *exp;
+                text += *exp;
             } else {
                 try {
                     wchar_t entityChar( _document->entityChar( lexer->text() ) );
-                    txt += entityChar;
+                    text += entityChar;
                 }
                 catch( Class2Error& e ) {
                     _document->printError( e._code );
@@ -82,6 +82,6 @@ Lexer::Token Title::parse( Lexer* lexer )
         }
         tok = _document->getNextToken();
     }
-    _document->setTitle( txt );
+    _document->setTitle( text );
     return tok;
 }

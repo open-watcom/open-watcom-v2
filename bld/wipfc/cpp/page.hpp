@@ -48,11 +48,11 @@ class Page {
 
 public:
     Page( Document* d, Element* head ) : _document( d ), _elements( 1, head ),
-        _idx( 0 ), _searchable( true ) { };
+        _index( 0 ), _searchable( true ) { };
     ~Page() { };
     void addElement( Element* e ) { _elements.push_back( e ); };
     //add a word to the local dictionary
-    bool addWord( GlobalDictionaryWord* wordent );
+    bool addWord( GlobalDictionaryWord* gdentry );
     //the page title
     void setTitle( std::wstring& t ) { _title = t; };
     //copy data from the Hn or Fn tag
@@ -64,12 +64,12 @@ public:
     void setStyle( PageStyle& s ) { _style = s; };
     void setGroup( PageGroup& g ) { _group = g; };
     void SetControls( PageControls& c ) { _controls = c; };
-    void setIndex( word i ) { _idx = i; };
+    void setIndex( word i ) { _index = i; };
     void setSearchable( bool s ) { _searchable = s; }
     //page appears in TOC
     bool isVisible() const { return !_toc.hidden; };
     //index of page in TOC collection
-    word index() const { return _idx; };
+    word index() const { return _index; };
     void buildTOC();
     void linearize() { ( *( _elements.begin() ))->linearize( this ); };
     void buildIndex() { ( *( _elements.begin() ))->buildIndex(); };
@@ -105,7 +105,7 @@ private:
     PageStyle               _style;
     PageGroup               _group;
     PageControls            _controls;
-    word                    _idx;           // index in TOC
+    word                    _index;         // index in TOC
     bool                    _searchable;
     OutFile*                _out;
 };

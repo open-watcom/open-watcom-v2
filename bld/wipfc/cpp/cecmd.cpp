@@ -58,10 +58,10 @@ void CeCmd::parseCommand( Lexer* lexer )
             appendChild( ws );
             tok = ws->parse( lexer );
         } else if( tok == Lexer::WORD ) {
-            Word* word( new Word( _document, this,
+            Word* w( new Word( _document, this,
                     _document->dataName(), _document->dataLine(), _document->dataCol() ) );
-            appendChild( word );
-            tok = word->parse( lexer );
+            appendChild( w );
+            tok = w->parse( lexer );
         } else if( tok == Lexer::ENTITY ) {
             Entity* entity( new Entity( _document, this,
                     _document->dataName(), _document->dataLine(), _document->dataCol() ) );

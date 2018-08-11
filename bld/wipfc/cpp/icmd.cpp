@@ -67,39 +67,39 @@ Lexer::Token ICmd::parse( Lexer* lexer )
         }
     }
     tok = _document->getNextToken();    //consume TAGEND
-    std::wstring txt;
+    std::wstring text;
     while( tok != Lexer::END && !( tok == Lexer::TAG && lexer->tagId() == Lexer::EUSERDOC)) {
         if( tok == Lexer::WORD ) {
-            txt += lexer->text();
+            text += lexer->text();
         } else if( tok == Lexer::ENTITY ) {
             const std::wstring* exp( _document->nameit( lexer->text() ) );
             if( exp ) {
-                txt += *exp;
+                text += *exp;
             } else {
                 try {
                     wchar_t entityChar( _document->entityChar( lexer->text() ) );
-                    txt += entityChar;
+                    text += entityChar;
                 }
                 catch( Class2Error& e ) {
                     _document->printError( e._code );
                 }
             }
         } else if( tok == Lexer::PUNCTUATION ) {
-            txt += lexer->text();
+            text += lexer->text();
         } else if( tok == Lexer::WHITESPACE ) {
             if( lexer->text()[0] == L'\n' ) {
                 tok = _document->getNextToken();
                 break;
             }
-            txt+= lexer->text();
+            text += lexer->text();
         } else {
             break;
         }
         tok = _document->getNextToken();
     }
-    if( txt.empty() )
+    if( text.empty() )
         _document->printError( ERR2_INOTEXT );
-    _index->setText( txt );
+    _index->setText( text );
     return tok;
 }
 /*****************************************************************************/

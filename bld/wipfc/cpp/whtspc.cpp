@@ -36,16 +36,16 @@
 #include "document.hpp"
 
 WhiteSpace::WhiteSpace( Document* d, Element* p, const std::wstring* f, unsigned int r,
-    unsigned int c, const std::wstring& tx, Tag::WsHandling w, bool ts ) :
+    unsigned int c, const std::wstring& text, Tag::WsHandling w, bool ts ) :
     Text( d, p, f, r, c, w, ts )
 {
-    if( tx[0] != L'\n' ) {
-        _spaces = static_cast< byte >( tx.size() );
+    if( text[0] != L'\n' ) {
+        _spaces = static_cast< byte >( text.size() );
     } else {
         _spaces = 0;
     }
     if( w == Tag::SPACES ) {
-        _text = _document->addWord( new GlobalDictionaryWord( tx ) );   //insert into global dictionary
+        _text = _document->addWord( new GlobalDictionaryWord( text ) );   //insert into global dictionary
     }
 }
 /***************************************************************************/

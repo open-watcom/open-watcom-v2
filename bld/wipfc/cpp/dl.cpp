@@ -252,10 +252,10 @@ Lexer::Token DtHd::parse( Lexer* lexer )
             break;
         case Lexer::ENTITY:
             {
-                const std::wstring* txt( _document->nameit( lexer->text() ) );
-                if( txt ) {
+                const std::wstring* text( _document->nameit( lexer->text() ) );
+                if( text ) {
                     std::wstring* name( _document->prepNameitName( lexer->text() ) );
-                    IpfBuffer* buffer( new IpfBuffer( name, _document->dataLine(), _document->dataCol(), *txt ) );
+                    IpfBuffer* buffer( new IpfBuffer( name, _document->dataLine(), _document->dataCol(), *text ) );
                     _document->pushInput( buffer );
                     tok = _document->getNextToken();
                 } else {
@@ -308,10 +308,10 @@ Lexer::Token Dt::parse( Lexer* lexer )
             break;
         case Lexer::ENTITY:
             {
-                const std::wstring* txt( _document->nameit( lexer->text() ) );
-                if( txt ) {
+                const std::wstring* text( _document->nameit( lexer->text() ) );
+                if( text ) {
                     std::wstring* name( _document->prepNameitName( lexer->text() ) );
-                    IpfBuffer* buffer( new IpfBuffer( name, _document->dataLine(), _document->dataCol(), *txt ) );
+                    IpfBuffer* buffer( new IpfBuffer( name, _document->dataLine(), _document->dataCol(), *text ) );
                     _document->pushInput( buffer );
                     tok = _document->getNextToken();
                 } else {

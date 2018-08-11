@@ -906,10 +906,10 @@ void Document::parseCommand( Lexer* lexer, Tag* parent )
         std::wstring::size_type idx4( lexer->text()[ idx3 + 5 ] == L'\'' ?
             lexer->text().find( L'\'', idx3  + 6 ) :
             lexer->text().find( L' ', idx3 + 5 ) );
-        std::wstring txt( lexer->text().substr( idx3 + 5, idx4 - idx3 - 5 ) );
-        killQuotes( txt );
+        std::wstring text( lexer->text().substr( idx3 + 5, idx4 - idx3 - 5 ) );
+        killQuotes( text );
         if( !_nls->isEntity( sym ) && _nameIts.find( sym ) == _nameIts.end() ) {   //add it to the list
-            _nameIts.insert( std::map< std::wstring, std::wstring >::value_type( sym, txt ) );
+            _nameIts.insert( std::map< std::wstring, std::wstring >::value_type( sym, text ) );
         } else {
             printError( ERR3_DUPSYMBOL );
         }
