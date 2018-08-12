@@ -1920,7 +1920,6 @@ static int isDelim( char chr )              // TEST IF DELIMITER
     if( chr == '('
      || chr == ','
      || chr == ')'
-     || chr == ','
       ) {
         return( 1 );
     } else {
