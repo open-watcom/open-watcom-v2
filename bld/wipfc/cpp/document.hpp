@@ -134,7 +134,6 @@ public:
 
     std::wstring * pushFileInput( std::wstring *wfname );
     std::wstring * pushFileInput( std::string& sfname, std::wstring *wfname );
-    void setTitle( std::wstring& title ) { _title = title; };
 
     //Forwarding functions
 
@@ -277,7 +276,7 @@ private:
     bool                                _spacing;           //true if automatically inserting spaces
     std::vector< std::string >          _ipfcartwork_paths;
     std::vector< std::string >          _ipfcimbed_paths;
-    std::wstring                        _title;
+    Title                               _title;
     OutFile*                            _out;
 };
 

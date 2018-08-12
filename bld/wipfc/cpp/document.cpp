@@ -303,8 +303,7 @@ void Document::parse( Lexer* lexer )
         //instructions for the document
         if( tok == Lexer::TAG) {
             if( lexer->tagId() == Lexer::TITLE ) {
-                Title title( this );
-                tok = title.parse( lexer );
+                tok = _title.parse( lexer, this );
             } else if( lexer->tagId() == Lexer::DOCPROF ) {
                 DocProf dp( this );
                 tok = dp.parse( lexer );
@@ -432,12 +431,11 @@ void Document::build()
 {
     //build Title
     std::string title;
-    _out->wtomb_string( _title, title );
-    if( title.size() > TITLE_SIZE - 1 ) {
-        printError( ERR2_TEXTTOOLONG );
-        title.erase( TITLE_SIZE - 1 );
-    }
-    std::strncpy( _hdr->title, title.c_str(), TITLE_SIZE );
+    _out->wtomb_string( _title.text(), title );
+    if( title.size() > TITLE_SIZE - 1 )
+        _title.printError( ERR2_TEXTTOOLONG );
+    std::strncpy( _hdr->title, title.c_str(), TITLE_SIZE - 1 );
+    _hdr->title[TITLE_SIZE - 1] = '\0';
     //build the TOC
     unsigned int visiblePages = 0;
     for( PageIter itr = _pages.begin(); itr != _pages.end(); ++itr ) {

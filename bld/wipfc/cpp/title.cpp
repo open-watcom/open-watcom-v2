@@ -39,10 +39,11 @@
 #include "document.hpp"
 
 
-Lexer::Token Title::parse( Lexer* lexer )
+Lexer::Token Title::parse( Lexer* lexer, Document *document )
 {
     Lexer::Token tok;
 
+    _document = document;
     while( (tok = _document->getNextToken()) != Lexer::TAGEND ) {
         if( tok == Lexer::ATTRIBUTE ) {
             _document->printError( ERR1_ATTRNOTDEF );
@@ -55,6 +56,9 @@ Lexer::Token Title::parse( Lexer* lexer )
         }
     }
     std::wstring text;
+    _fileName = _document->dataName();
+    _row = _document->lexerLine();
+    _col = _document->lexerCol();
     unsigned int startLine( _document->dataLine() );
     tok = _document->getNextToken();
     while(  _document->dataLine() == startLine ) {
@@ -82,6 +86,11 @@ Lexer::Token Title::parse( Lexer* lexer )
         }
         tok = _document->getNextToken();
     }
-    _document->setTitle( text );
+    _text = text;
     return tok;
+}
+
+void Title::printError( ErrCode c )
+{
+    _document->printError( c, _fileName, _row, _col );
 }

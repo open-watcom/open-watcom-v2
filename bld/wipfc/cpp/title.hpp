@@ -33,22 +33,31 @@
 #ifndef TITLE_INCLUDED
 #define TITLE_INCLUDED
 
+#include <string>
 #include "lexer.hpp"
+#include "errors.hpp"
 
 class Document;
-struct IpfHeader;
 
 class Title {
 public:
-    Title( Document* d ) : _document( d ) { };
-    ~Title() { };
-    Lexer::Token parse( Lexer* lexer );
+    Title() : _document( 0 ), _fileName( 0 ), _row( 0 ), _col( 0 ) { };
+    Lexer::Token parse( Lexer* lexer, Document* d );
+    std::wstring& text() { return _text; };
+    void printError( ErrCode c );
+
 private:
     Title( const Title& rhs );              //no copy
     Title& operator=( const Title& rhs );   //no assignment
 
     Document*           _document;
+    std::wstring        _text;
+    //element was parsed from this source file
+    const std::wstring* _fileName;
+    //at this row
+    unsigned int        _row;
+    //and this column
+    unsigned int        _col;
 };
 
 #endif //TITLE_INCLUDED
-
