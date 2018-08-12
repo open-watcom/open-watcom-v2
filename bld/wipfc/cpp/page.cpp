@@ -50,14 +50,12 @@ void Page::buildLocalDictionary( OutFile* out )
     _currentCell = new Cell( _document->maxLocalDictionarySize() );
     _document->addCell( _currentCell );
     _cells.push_back( static_cast< word >( _currentCell->index() ) );
-    ++_toc.cellCount;
     for( ElementIter itr = _elements.begin(); itr != _elements.end(); ++itr ) {
         std::pair< bool, bool > flags( ( *itr )->buildLocalDict( this ) );
         if( flags.first ) {
             _currentCell = new Cell( _document->maxLocalDictionarySize() );
             _document->addCell( _currentCell );
             _cells.push_back( static_cast< word >( _currentCell->index() ) );
-            ++_toc.cellCount;
             if( !autoSpacing )          //autoSpacing can't cross a cell boundry
                 _currentCell->addByte( 0xFC );   //so turn it off so we can turn
             flags = ( *itr )->buildLocalDict( this ); //it back on later
@@ -66,6 +64,7 @@ void Page::buildLocalDictionary( OutFile* out )
             autoSpacing = !autoSpacing;
         _currentCell->addElement( *itr );
     }
+    _toc.cellCount = static_cast< byte >( _cells.size() );
 }
 /***************************************************************************/
 bool Page::addWord( GlobalDictionaryWord* gdentry )
@@ -82,7 +81,8 @@ bool Page::addWord( GlobalDictionaryWord* gdentry )
 //Write a TOC entry
 Page::dword Page::write( OutFile* out )
 {
-    std::size_t tocsize( sizeof( TocEntry ) + _toc.cellCount * sizeof( word ) );
+    // calculate toc size
+    std::size_t tocsize = sizeof( TocEntry );
     if( _toc.extended ) {
         tocsize += sizeof( ExtTocEntry );
         if( _etoc.setPos )
@@ -97,7 +97,9 @@ Page::dword Page::write( OutFile* out )
             tocsize += sizeof( PageControls );
         }
     }
-    // convert title to mb
+    // add cells size
+    tocsize += _cells.size() * sizeof( word );
+    // add title size
     std::string title;
     out->wtomb_string( _title, title );
     if( tocsize + title.size() > 255 ) {
@@ -107,6 +109,7 @@ Page::dword Page::write( OutFile* out )
     }
     tocsize += title.size();
     _toc.size = static_cast< byte >( tocsize );
+    // write all out
     dword pos = _toc.write( out );
     if( _toc.extended ) {
         _etoc.write( out );
@@ -125,7 +128,7 @@ Page::dword Page::write( OutFile* out )
     if( out->write( &_cells[0], sizeof( word ), _cells.size() ) )
         throw FatalError( ERR_WRITE );
     if( !title.empty() ) {
-        if( out->write( title.c_str(), sizeof( byte ), title.size() ) ) {
+        if( out->write( title.data(), sizeof( char ), title.size() ) ) {
             throw FatalError( ERR_WRITE );
         }
     }
@@ -139,12 +142,12 @@ Page::dword Page::writeChildren( OutFile* out ) const
 {
     byte bytes = 0;
     if( !_children.empty() ) {
-        bytes = static_cast< byte >( sizeof( byte ) + sizeof( _index ) + _children.size() * sizeof( std::vector< word >::value_type ) );
+        bytes = static_cast< byte >( sizeof( byte ) + sizeof( _index ) + _children.size() * sizeof( word ) );
         if( out->put( bytes ) )
             throw FatalError( ERR_WRITE );
         if( out->put( _index ) )
             throw FatalError( ERR_WRITE );
-        if( out->write( &_children[0], sizeof( std::vector< word >::value_type ), _children.size() ) ) {
+        if( out->write( &_children[0], sizeof( word ), _children.size() ) ) {
             throw FatalError( ERR_WRITE );
         }
     }

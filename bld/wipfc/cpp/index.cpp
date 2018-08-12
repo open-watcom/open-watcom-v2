@@ -117,34 +117,31 @@ IndexItem::dword IndexItem::write( OutFile* out )
     std::size_t length2( 0 );
     if( _hdr.sortKey ) {
         out->wtomb_string( _sortKey, buffer1 );
-        length1 = buffer1.size();
+        length1 = buffer1.size() + 1;   // add len byte
+        if( length1 > 255 ) {
+            length1 = 255;
+        }
     }
     out->wtomb_string( _text, buffer2 );
     length2 = buffer2.size();
-    if( length1 + length2 > 254 ) {
-        length2 = length1 > 254 ? 0 : 254 - length1;
-    } else if( _hdr.sortKey ) {
-        _hdr.size = static_cast< byte >( length1 + length2 + 1 );
-    } else {
-        _hdr.size = static_cast< byte >( length2 );
-    }
+    if( length1 + length2 > 255 )
+        length2 = 255 - length1;
+    _hdr.size = static_cast< byte >( length1 + length2 );
     _hdr.synonymCount = static_cast< byte >( _synonyms.size() );
     if( out->write( &_hdr, sizeof( IndexHeader ), 1 ) )
         throw FatalError( ERR_WRITE );
-    std::size_t written( sizeof( IndexHeader ) );
     if( _hdr.sortKey ) {
+        length1--;
         if( out->put( static_cast< byte >( length1 ) ) )
             throw FatalError( ERR_WRITE );
-        if( out->write( buffer1.data(), sizeof( char ), length1 ) )
+        if( out->write( buffer1.data(), sizeof( char ), length1 ) ) {
             throw FatalError( ERR_WRITE );
-        written += length1 + 1;
+        }
     }
     if( out->write( buffer2.data(), sizeof( char ), length2 ) )
         throw FatalError( ERR_WRITE );
-    written += length2;
     if( !_synonyms.empty() &&
         out->write( &_synonyms[0], sizeof( dword ), _synonyms.size() ) )
         throw FatalError( ERR_WRITE );
-    written += _synonyms.size() * sizeof( dword );
-    return( static_cast< dword >( written ) );
+    return( static_cast< dword >( sizeof( IndexHeader ) + _hdr.size + _synonyms.size() * sizeof( dword ) ) );
 }

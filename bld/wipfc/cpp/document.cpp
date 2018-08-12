@@ -430,11 +430,11 @@ void Document::parse( Lexer* lexer )
 void Document::build()
 {
     //build Title
-    std::string title;
-    _out->wtomb_string( _title.text(), title );
-    if( title.size() > TITLE_SIZE - 1 )
+    std::string buffer;
+    _out->wtomb_string( _title.text(), buffer );
+    if( buffer.size() > TITLE_SIZE - 1 )
         _title.printError( ERR2_TEXTTOOLONG );
-    std::strncpy( _hdr->title, title.c_str(), TITLE_SIZE - 1 );
+    std::strncpy( _hdr->title, buffer.c_str(), TITLE_SIZE - 1 );
     _hdr->title[TITLE_SIZE - 1] = '\0';
     //build the TOC
     unsigned int visiblePages = 0;
@@ -669,14 +669,14 @@ Document::dword Document::writeBitmaps()
             for( length = std::ftell( _tmpBitmaps ); length > BUFSIZ; length -= BUFSIZ ) {
                 if( std::fread( &buffer[0], sizeof( byte ), BUFSIZ, _tmpBitmaps ) != BUFSIZ )
                     throw FatalIOError( ERR_READ, L"(temporary file for bitmaps)" );
-                if( _out->write( &buffer[0], sizeof( byte ), BUFSIZ ) ) {
+                if( _out->write( buffer.data(), sizeof( byte ), BUFSIZ ) ) {
                     throw FatalError( ERR_WRITE );
                 }
             }
             if( length ) {
                 if( std::fread( &buffer[0], sizeof( byte ), length, _tmpBitmaps ) != length )
                     throw FatalIOError( ERR_READ, L"(temporary file for bitmaps)" );
-                if( _out->write( &buffer[0], sizeof( byte ), length ) ) {
+                if( _out->write( buffer.data(), sizeof( byte ), length ) ) {
                     throw FatalError( ERR_WRITE );
                 }
             }
@@ -753,7 +753,7 @@ Document::dword Document::writeTOCOffsets()
     dword offset = 0;
     if( !_tocOffsets.empty() ) {
         offset = _out->tell();
-        if( _out->write( &_tocOffsets[0], sizeof( dword ), _tocOffsets.size() ) ) {
+        if( _out->write( _tocOffsets.data(), sizeof( dword ), _tocOffsets.size() ) ) {
             throw FatalError( ERR_WRITE );
         }
     }
@@ -774,7 +774,7 @@ Document::dword Document::writeCellOffsets()
     dword offset = 0;
     if( !_cellOffsets.empty() ) {
         offset = _out->tell();
-        if( _out->write( &_cellOffsets[0], sizeof( dword ), _cellOffsets.size() ) ) {
+        if( _out->write( _cellOffsets.data(), sizeof( dword ), _cellOffsets.size() ) ) {
             throw FatalError( ERR_WRITE );
         }
     }

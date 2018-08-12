@@ -47,27 +47,6 @@ static int wtomb_char( char *mbc, wchar_t wc )
     return( std::wctomb( mbc, wc ) );
 }
 
-std::size_t OutFile::wtomb_cstring( char *dst_mbc, const wchar_t *src_wc, std::size_t len )
-/*****************************************************************************************/
-{
-    std::size_t dst_len = 0;
-    char        mbc[MB_LEN_MAX + 1];
-    int         bytes;
-
-    while( len > 0 && *src_wc != L'\0' ) {
-        bytes = wtomb_char( mbc, *src_wc );
-        if( bytes == -1 || (unsigned)bytes > len )
-            return( ERROR_CNV );
-        std::memcpy( dst_mbc, mbc, bytes );
-        dst_mbc += bytes;
-        dst_len += bytes;
-        len -= bytes;
-        src_wc++;
-    }
-    *dst_mbc = '\0';
-    return( dst_len );
-}
-
 void OutFile::wtomb_string( const std::wstring& input, std::string& output )
 /**************************************************************************/
 {

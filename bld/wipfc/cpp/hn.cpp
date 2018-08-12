@@ -594,20 +594,18 @@ void Hn::buildTOC( Page* page )
 void Hn::buildText( Cell* cell )
 {
     if( _etoc.setTutor ) {
-        std::string tmp;
-        cell->out()->wtomb_string( _tutorial, tmp );
-        std::size_t size1( tmp.size() );
-        if( size1 > 253 ) {
-            tmp.erase( 253 );
-            size1 = 253;
-        }
+        std::string buffer;
+        cell->out()->wtomb_string( _tutorial, buffer );
+        if( buffer.size() > ( 255 - 2 ) )
+            buffer.erase( 255 - 2 );
+        std::size_t length = buffer.size();
         std::vector< byte > esc;
-        esc.reserve( size1 + 3 );
+        esc.reserve( length + 3 );
         esc.push_back( 0xFF );  //esc
         esc.push_back( 0x02 );  //size
         esc.push_back( 0x15 );  //begin hide
-        for( unsigned int count1 = 0; count1 < size1; count1++ )
-            esc.push_back( static_cast< byte >( tmp[count1] ) );
+        for( std::size_t count1 = 0; count1 < length; count1++ )
+            esc.push_back( static_cast< byte >( buffer[count1] ) );
         esc[1] = static_cast< byte >( esc.size() - 1 );
         cell->addEsc( esc );
         if( cell->textFull() ) {

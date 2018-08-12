@@ -137,25 +137,6 @@ std::wint_t IpfFile::getwc()
     return( ch );
 }
 
-std::size_t IpfFile::mbtow_cstring( wchar_t *dst_wc, const char *src_mbc, std::size_t len )
-/*****************************************************************************************/
-{
-    std::size_t dst_len = 0;
-    int         bytes;
-
-    while( len > 0 && *src_mbc != '\0' ) {
-        bytes = mbtow_char( dst_wc, src_mbc, MB_LEN_MAX );
-        if( bytes == -1 )
-            return( ERROR_CNV );
-        dst_wc++;
-        dst_len++;
-        len--;
-        src_mbc += bytes;
-    }
-    *dst_wc = L'\0';
-    return( dst_len );
-}
-
 void IpfFile::mbtow_string( const std::string& input, std::wstring& output )
 /**************************************************************************/
 {
@@ -172,6 +153,7 @@ void IpfFile::mbtow_string( const std::string& input, std::wstring& output )
 }
 
 const wchar_t * IpfFile::gets( std::wstring& wbuffer )
+/****************************************************/
 {
     char    sbuffer[512];
 

@@ -43,15 +43,16 @@ StringTable::dword StringTable::write( OutFile* out )
         return 0L;
     dword start( out->tell() );
     for( ConstTableIter itr = _table.begin(); itr != _table.end(); ++itr ) {
-        char buffer[ 256 ];     // max len 255 + null
-        std::size_t length( out->wtomb_cstring( buffer, itr->c_str(), sizeof( buffer ) - 1 ) );
-        if( length == ERROR_CNV )
-            throw FatalError( ERR_T_CONV );
-        if( out->put( static_cast< byte >( length + 1 ) ) )
+        std::string buffer;     // max len 255 + null
+        out->wtomb_string( *itr, buffer );
+        if( buffer.size() > ( 255 - 1 ) )
+            buffer.erase( 255 - 1 );
+        std::size_t length = buffer.size() + 1;
+        if( out->put( static_cast< byte >( length ) ) )
             throw FatalError( ERR_WRITE );
-        if( out->write( buffer, sizeof( char ), length ) )
+        if( out->write( buffer.data(), sizeof( char ), length - 1 ) )
             throw FatalError( ERR_WRITE );
-        _bytes += length + 1;
+        _bytes += length;
     }
     return start;
 }

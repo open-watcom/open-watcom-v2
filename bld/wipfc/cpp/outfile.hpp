@@ -25,7 +25,6 @@ public:
     bool codePage( word codePage );
     int seek( dword offset, int where ) { return std::fseek( _ufp->_fp, offset, where ); };
     // UNICODE<->MBCS conversion
-    std::size_t  wtomb_cstring( char *mbc, const wchar_t *wc, std::size_t len );
     void         wtomb_string( const std::wstring& input, std::string& output );
 
 private:

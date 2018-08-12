@@ -63,16 +63,14 @@ ExternalFiles::dword ExternalFiles::write( OutFile* out )
     for( ConstTableIter itr = _table.begin(); itr != _table.end(); ++itr ) {
         std::string buffer;
         out->wtomb_string( itr->first, buffer );
-        std::size_t length( buffer.size() );
-        if( length > 255 ) {
-            buffer.erase( 255 );
-            length = 255;
-        }
-        if( out->put( static_cast< byte >( length + 1 ) ) )
+        if( buffer.size() > ( 255 - 1 ) )
+            buffer.erase( 255 - 1 );
+        std::size_t length( buffer.size() + 1 );
+        if( out->put( static_cast< byte >( length ) ) )
             throw FatalError( ERR_WRITE );
-        if( out->write( buffer.data(), sizeof( char ), length ) )
+        if( out->write( buffer.data(), sizeof( char ), length - 1 ) )
             throw FatalError( ERR_WRITE );
-        _bytes += static_cast< dword >( length + 1 );
+        _bytes += static_cast< dword >( length );
     }
     return start;
 }

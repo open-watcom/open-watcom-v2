@@ -59,7 +59,6 @@ private:
     IpfFile& operator=( const IpfFile& rhs );   //no assignment
     std::wint_t  getwc();
     // MBCS->UNICODE conversion
-    std::size_t  mbtow_cstring( wchar_t *wc, const char *mbc, std::size_t len );
     void         mbtow_string( const std::string& input, std::wstring& output );
 
     const std::wstring*     _fileName;

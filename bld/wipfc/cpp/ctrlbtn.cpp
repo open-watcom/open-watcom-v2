@@ -37,8 +37,6 @@
 
 ControlButton::dword ControlButton::write( OutFile* out ) const
 {
-    std::size_t bytes( sizeof( word ) * 2 );
-
     // type = 1
     if( out->put( static_cast< word >( 1 ) ) )
         throw FatalError( ERR_WRITE );
@@ -46,15 +44,12 @@ ControlButton::dword ControlButton::write( OutFile* out ) const
         throw FatalError( ERR_WRITE );
     std::string buffer;
     out->wtomb_string( _text, buffer );
-    std::size_t length( buffer.size() );
-    if( length > 255 ) {
+    if( buffer.size() > 255 )
         buffer.erase( 255 );
-        length = 255;
-    }
+    std::size_t length( buffer.size() );
     if( out->put( static_cast< byte >( length ) ) )
         throw FatalError( ERR_WRITE );
     if( out->write( buffer.data(), sizeof( char ), length ) )
         throw FatalError( ERR_WRITE );
-    bytes += length + 1;
-    return( static_cast< dword >( bytes ) );
+    return( static_cast< dword >( sizeof( word ) + sizeof( _res ) + sizeof( byte ) + length * sizeof( char ) ) );
 }

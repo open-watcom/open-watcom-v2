@@ -497,9 +497,9 @@ void Link::doTopic( Cell* cell )
             word index( _document->extFileIndex( _database ) );
             esc.push_back( static_cast< byte >( index ) );
             //esc.push_back( static_cast< byte >( index >> 8 ) );
-            std::string tmp;
-            cell->out()->wtomb_string( _refid->getText(), tmp );
-            std::size_t tmpsize( tmp.size() );
+            std::string buffer;
+            cell->out()->wtomb_string( _refid->getText(), buffer );
+            std::size_t tmpsize( buffer.size() );
             esc.push_back( static_cast< byte >( tmpsize ) );
             if( _hypergraphic && ( _x || _y || _cx || _cy ) ) {
                 esc.push_back( static_cast< byte >( _x ) );
@@ -513,10 +513,10 @@ void Link::doTopic( Cell* cell )
             }
             if( tmpsize > 255 - esc.size() + 1 ) {
                 tmpsize = 255 - esc.size() + 1;
-                tmp.erase( tmpsize );
+                buffer.erase( tmpsize );
             }
             for( std::size_t count1 = 0; count1 < tmpsize; count1++ )
-                esc.push_back( static_cast< byte >( tmp[count1] ) );
+                esc.push_back( static_cast< byte >( buffer[count1] ) );
             esc[1] = static_cast< byte >( esc.size() - 1 );
             cell->addEsc( esc );
             if( cell->textFull() ) {

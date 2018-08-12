@@ -219,42 +219,49 @@ Lexer::Token AcViewport::parseAttributes( Lexer* lexer )
 void AcViewport::buildText( Cell* cell )
 {
     if( _objectId && !_objectName.empty() ) {
+        // convert wide strings to mbcs
+        std::string objectName;
+        if( !_objectName.empty() ) {
+            cell->out()->wtomb_string( _objectName, objectName );
+        }
+        std::string dll;
+        if( !_dll.empty() ) {
+            cell->out()->wtomb_string( _dll, dll );
+        }
+        std::string objectInfo;
+        if( !_objectInfo.empty() ) {
+            cell->out()->wtomb_string( _objectInfo, objectInfo );
+        }
+        byte dataSize = static_cast< byte >( objectName.size() + 1 + dll.size() + 1 + objectInfo.size() + 1 );
+        // process esc text        
         std::vector< byte > esc;
-        esc.reserve( 3 + 4 + _objectName.size() + 1 + _dll.size() + 1 +
-            _objectInfo.size() + 1 + 2 + sizeof( PageOrigin ) + sizeof( PageSize ) );
+        esc.reserve( 3 + 4 + dataSize + 2 + sizeof( PageOrigin ) + sizeof( PageSize ) );
         esc.push_back( 0xFF );          //ESC
         esc.push_back( 2 );             //size
         esc.push_back( 0x21 );          //type
         esc.push_back( 0 );             //reserved
-        esc.push_back( static_cast< byte >( _objectName.size() + 1 +
-            _dll.size() + 1 + _objectInfo.size() + 1 ) );
+        esc.push_back( dataSize );
         esc.push_back( static_cast< byte >( _objectId ) );
         esc.push_back( static_cast< byte >( _objectId >> 8 ) );
-        esc.push_back( static_cast< byte >( _objectName.size() + 1 ) );
-        if( !_objectName.empty() ) {
-            std::string buffer;
-            cell->out()->wtomb_string( _objectName, buffer );
-            std::size_t bytes( buffer.size() );
+        esc.push_back( static_cast< byte >( objectName.size() + 1 ) );
+        if( !objectName.empty() ) {
+            std::size_t bytes( objectName.size() );
             for( std::size_t count1 = 0; count1 < bytes; ++count1 ) {
-                esc.push_back( static_cast< byte >( buffer[count1] ) );
+                esc.push_back( static_cast< byte >( objectName[count1] ) );
             }
         }
-        esc.push_back( static_cast< byte >( _dll.size() + 1 ) );
-        if( !_dll.empty() ) {
-            std::string buffer;
-            cell->out()->wtomb_string( _dll, buffer );
-            std::size_t bytes( buffer.size() );
+        esc.push_back( static_cast< byte >( dll.size() + 1 ) );
+        if( !dll.empty() ) {
+            std::size_t bytes( dll.size() );
             for( std::size_t count1 = 0; count1 < bytes; ++count1 ) {
-                esc.push_back( static_cast< byte >( buffer[count1] ) );
+                esc.push_back( static_cast< byte >( dll[count1] ) );
             }
         }
-        esc.push_back( static_cast< byte >( _objectInfo.size() + 1 ) );
-        if( !_objectInfo.empty() ) {
-            std::string buffer;
-            cell->out()->wtomb_string( _objectInfo, buffer );
-            std::size_t bytes( buffer.size() );
+        esc.push_back( static_cast< byte >( objectInfo.size() + 1 ) );
+        if( !objectInfo.empty() ) {
+            std::size_t bytes( objectInfo.size() );
             for( std::size_t count1 = 0; count1 < bytes; ++count1 ) {
-                esc.push_back( static_cast< byte >( buffer[count1] ) );
+                esc.push_back( static_cast< byte >( objectInfo[count1] ) );
             }
         }
         if( _doOrigin || _doSize ) {
