@@ -37,11 +37,11 @@
 
 ControlGroup::dword ControlGroup::write( OutFile* out ) const
 {
-    std::size_t bytes( sizeof( word ) * ( _buttonIndex.size() + 1 ) );
+    std::size_t size = static_cast< word >( _buttonIndex.size() );
     // items count
-    if( out->put( static_cast< word >( _buttonIndex.size() ) ) )
+    if( out->put( static_cast< word >( size ) ) )
         throw FatalError( ERR_WRITE );
-    if( out->write( &_buttonIndex[0], sizeof( word ), _buttonIndex.size() ) )
+    if( out->write( _buttonIndex.data(), sizeof( word ), size ) )
         throw FatalError( ERR_WRITE );
-    return( static_cast< dword >( bytes ) );
+    return( static_cast< dword >( sizeof( word ) + size * sizeof( word ) ) );
 }

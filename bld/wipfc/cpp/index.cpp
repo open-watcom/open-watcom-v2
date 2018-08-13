@@ -105,10 +105,10 @@ int IndexItem::wstricmp( const wchar_t *s, const wchar_t *t ) const
 //write header
 //variable length data follows:
 //if sortKey bit set
-//  char size2                          //size of sortKey text
-//  char sortText[size2]                //sort key text
-//char indexText[size or size-size2];   //index word [not zero-terminated]
-//unsigned long synonyms[synonymCount]; //32 bit file offsets to synonyms referencing this word
+//  char size2                              //size of sortKey text
+//  char sortText[size2]                    //sort key text
+//char indexText[size or size-(size2+1)];   //index word [not zero-terminated]
+//unsigned long synonyms[synonymCount];     //32 bit file offsets to synonyms referencing this word
 IndexItem::dword IndexItem::write( OutFile* out )
 {
     std::string buffer1;
@@ -134,14 +134,16 @@ IndexItem::dword IndexItem::write( OutFile* out )
         length1--;
         if( out->put( static_cast< byte >( length1 ) ) )
             throw FatalError( ERR_WRITE );
-        if( out->write( buffer1.data(), sizeof( char ), length1 ) ) {
-            throw FatalError( ERR_WRITE );
+        if( length1 > 0 ) {
+            if( out->write( buffer1.data(), sizeof( char ), length1 ) ) {
+                throw FatalError( ERR_WRITE );
+            }
         }
     }
     if( out->write( buffer2.data(), sizeof( char ), length2 ) )
         throw FatalError( ERR_WRITE );
     if( !_synonyms.empty() &&
-        out->write( &_synonyms[0], sizeof( dword ), _synonyms.size() ) )
+        out->write( _synonyms.data(), sizeof( dword ), _synonyms.size() ) )
         throw FatalError( ERR_WRITE );
     return( static_cast< dword >( sizeof( IndexHeader ) + _hdr.size + _synonyms.size() * sizeof( dword ) ) );
 }

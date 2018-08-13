@@ -291,7 +291,7 @@ FTSElement::dword FTSElement::write( OutFile* out, bool big ) const
     switch( _comp ) {
     case PRESENT:
     case ABSENT:
-        if( out->write( &pg[0], sizeof( word ), pg.size() ) )
+        if( out->write( pg.data(), sizeof( word ), pg.size() ) )
             throw FatalError( ERR_WRITE );
         break;
     case RLE:
@@ -306,7 +306,7 @@ FTSElement::dword FTSElement::write( OutFile* out, bool big ) const
                 throw FatalError( ERR_WRITE );
             }
         }
-        if( out->write( &_pages[0], sizeof( byte ), _pages.size() ) )
+        if( out->write( _pages.data(), sizeof( byte ), _pages.size() ) )
             throw FatalError( ERR_WRITE );
         break;
     case NONE:

@@ -257,18 +257,15 @@ Nls::dword Nls::DbcsGrammarDef::write( OutFile* out )
 /***************************************************/
 {
     dword start = out->tell();
-    _size = static_cast< word >( sizeof( _size ) + sizeof( byte ) + sizeof( _format ) + _ranges.size() * sizeof( std::vector< word >::value_type ) );
+    _size = static_cast< word >( sizeof( _size ) + sizeof( byte ) + sizeof( _format ) + _ranges.size() * sizeof( word ) );
     if( out->put( _size ) )
         throw FatalError( ERR_WRITE );
     if( out->put( static_cast< byte >( _type ) ) )
         throw FatalError( ERR_WRITE );
     if( out->put( _format ) )
         throw FatalError( ERR_WRITE );
-    for( ConstRangesIter itr = _ranges.begin(); itr != _ranges.end(); ++itr ) {
-        if( out->put( *itr ) ) {
-            throw FatalError( ERR_WRITE );
-        }
-    }
+    if( out->write( _ranges.data(), sizeof( word ), _ranges.size() ) )
+        throw FatalError( ERR_WRITE );
     return( start );
 }
 

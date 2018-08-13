@@ -457,8 +457,9 @@ void Link::doTopic( Cell* cell )
                 if( _doSize ) {
                     esc[1] += sizeof( PageSize );
                     byte* src = reinterpret_cast< byte * >( &_size );
-                    for( std::size_t count1 = 0; count1 < sizeof( PageSize ); ++count1, ++src)
+                    for( std::size_t count1 = 0; count1 < sizeof( PageSize ); ++count1, ++src ) {
                         esc.push_back( *src );
+                    }
                 }
                 if( _doStyle ) {
                     esc[1] += sizeof( PageStyle );

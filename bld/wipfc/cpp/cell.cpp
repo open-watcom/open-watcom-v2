@@ -46,8 +46,8 @@ void Cell::build( OutFile* out )
     _out = out;
     for( ElementIter itr = _elements.begin(); itr != _elements.end(); ++itr )
         ( *itr )->buildText( this );
-    if( _text.empty() ) {
-        _text.push_back( 0xFE );
+    if( _esc.empty() ) {
+        _esc.push_back( 0xFE );
     }
 }
 /***************************************************************************/
@@ -55,7 +55,7 @@ void Cell::addWord( word index )
 {
     if( !std::binary_search( _localDictionary.begin(), _localDictionary.end(), index ) ) {
         LDIter itr(
-            //std::lower_bound( localDictionary.begin(), localDictionary.end(), index );
+            //std::lower_bound( _localDictionary.begin(), _localDictionary.end(), index );
             std::find_if( _localDictionary.begin(), _localDictionary.end(),
                 std::bind2nd( std::greater< word >(), index ) ) );
         _localDictionary.insert( itr, index );
@@ -65,23 +65,23 @@ void Cell::addWord( word index )
 void Cell::addText( word index )
 {
     LDIter itr(
-        //std::lower_bound( localDictionary.begin(), localDictionary.end(), index );
+        //std::lower_bound( _localDictionary.begin(), _localDictionary.end(), index );
         std::find( _localDictionary.begin(), _localDictionary.end(), index ) );
     std::size_t locindex = itr - _localDictionary.begin();
-    _text.push_back( static_cast< byte >( locindex ) );
+    _esc.push_back( static_cast< byte >( locindex ) );
 }
 /***************************************************************************/
 void Cell::addEsc( const std::vector< byte >& esc )
 {
     for( ConstTextIter itr = esc.begin(); itr != esc.end(); ++itr ) {
-        _text.push_back( *itr );
+        _esc.push_back( *itr );
     }
 }
 /***************************************************************************/
 
 //struct cellData {
 //    STD1::uint8_t  zero;               //=0
-//    STD1::uint32_t dictOffset;         //file offset to STD1::uint16_t array
+//    STD1::uint32_t dictOffset;         //file offset to STD1::uint16_t dict[dictCount] array
 //    STD1::uint8_t  dictCount;          // <=254 unique words
 //    STD1::uint16_t textCount;
 //    //variable length data follows:
@@ -96,16 +96,17 @@ Cell::dword Cell::write( OutFile* out ) const
     if( out->put( static_cast< byte >( 0 ) ) )
         throw FatalError( ERR_WRITE );
     // dictOffset
-    if( out->put( static_cast< dword >( offset + sizeof( byte ) + sizeof( dword ) + sizeof( byte ) + sizeof( word ) + _text.size() ) ) )
+    if( out->put( static_cast< dword >( offset + sizeof( byte ) + sizeof( dword ) + sizeof( byte )
+            + sizeof( word ) + _esc.size() * sizeof( byte ) ) ) )
         throw FatalError( ERR_WRITE );
     if( out->put( static_cast< byte >( _localDictionary.size() ) ) )
         throw FatalError( ERR_WRITE );
-    if( out->put( static_cast< word >( _text.size() ) ) )
+    if( out->put( static_cast< word >( _esc.size() ) ) )
         throw FatalError( ERR_WRITE );
-    if( out->write( &_text[0], sizeof( byte ), _text.size() ) )
+    if( out->write( _esc.data(), sizeof( byte ), _esc.size() ) )
         throw FatalError( ERR_WRITE );
     if( !_localDictionary.empty() ) {
-        if( out->write( &_localDictionary[0], sizeof( word ), _localDictionary.size() ) ) {
+        if( out->write( _localDictionary.data(), sizeof( word ), _localDictionary.size() ) ) {
             throw FatalError( ERR_WRITE );
         }
     }

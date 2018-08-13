@@ -34,30 +34,27 @@
 #define TITLE_INCLUDED
 
 #include <string>
+#include "element.hpp"
 #include "lexer.hpp"
 #include "errors.hpp"
 
 class Document;
+class Cell;
+class OutFile;
 
-class Title {
+class Title: public Element {
 public:
-    Title() : _document( 0 ), _fileName( 0 ), _row( 0 ), _col( 0 ) { };
-    Lexer::Token parse( Lexer* lexer, Document* d );
-    std::wstring& text() { return _text; };
-    void printError( ErrCode c );
+    Title( Document* d, const std::wstring* f, unsigned int r, unsigned int c ) :
+        Element( d, 0, f, r, c ) { };
+    Lexer::Token parse( Lexer* lexer );
+    void buildText( Cell* cell ) { (void)cell; };
+    void build( OutFile *out );
 
 private:
     Title( const Title& rhs );              //no copy
     Title& operator=( const Title& rhs );   //no assignment
 
-    Document*           _document;
     std::wstring        _text;
-    //element was parsed from this source file
-    const std::wstring* _fileName;
-    //at this row
-    unsigned int        _row;
-    //and this column
-    unsigned int        _col;
 };
 
 #endif //TITLE_INCLUDED

@@ -26,7 +26,7 @@
 *
 * Description:  Process title tag
 *   :title
-*       Maximum 47 characters
+*       Maximum 47 characters + null terminator
 *
 ****************************************************************************/
 
@@ -37,13 +37,13 @@
 #include "title.hpp"
 #include "lexer.hpp"
 #include "document.hpp"
+#include "outfile.hpp"
 
 
-Lexer::Token Title::parse( Lexer* lexer, Document *document )
+Lexer::Token Title::parse( Lexer* lexer )
 {
     Lexer::Token tok;
 
-    _document = document;
     while( (tok = _document->getNextToken()) != Lexer::TAGEND ) {
         if( tok == Lexer::ATTRIBUTE ) {
             _document->printError( ERR1_ATTRNOTDEF );
@@ -55,7 +55,6 @@ Lexer::Token Title::parse( Lexer* lexer, Document *document )
             _document->printError( ERR1_TAGSYNTAX );
         }
     }
-    std::wstring text;
     _fileName = _document->dataName();
     _row = _document->lexerLine();
     _col = _document->lexerCol();
@@ -65,15 +64,15 @@ Lexer::Token Title::parse( Lexer* lexer, Document *document )
         if( tok == Lexer::WHITESPACE ||
             tok == Lexer::WORD ||
             tok == Lexer::PUNCTUATION ) {
-            text += lexer->text();
+            _text += lexer->text();
         } else if( tok == Lexer::ENTITY ) {
             const std::wstring* exp( _document->nameit( lexer->text() ) );
             if( exp ) {
-                text += *exp;
+                _text += *exp;
             } else {
                 try {
                     wchar_t entityChar( _document->entityChar( lexer->text() ) );
-                    text += entityChar;
+                    _text += entityChar;
                 }
                 catch( Class2Error& e ) {
                     _document->printError( e._code );
@@ -86,11 +85,15 @@ Lexer::Token Title::parse( Lexer* lexer, Document *document )
         }
         tok = _document->getNextToken();
     }
-    _text = text;
     return tok;
 }
 
-void Title::printError( ErrCode c )
+void Title::build( OutFile *out )
 {
-    _document->printError( c, _fileName, _row, _col );
+    //build Title
+    std::string buffer;
+    out->wtomb_string( _text, buffer );
+    if( buffer.size() > TITLE_SIZE - 1 )
+        _document->printError( ERR2_TEXTTOOLONG );
+    _document->setTitle( buffer );
 }

@@ -104,7 +104,7 @@ void Hide::buildText( Cell* cell )
     esc.push_back( 0xFF );  //esc
     esc.push_back( 0x02 );  //size
     esc.push_back( 0x17 );  //begin hide
-    for( unsigned int count1 = 0; count1 < length; count1++ )
+    for( std::size_t count1 = 0; count1 < length; count1++ )
         esc.push_back( static_cast< byte >( buffer[count1] ) );
     esc[1] = static_cast< byte >( esc.size() - 1 );
     cell->addEsc( esc );

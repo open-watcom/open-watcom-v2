@@ -42,7 +42,6 @@
 
 void CeCmd::parseCommand( Lexer* lexer )
 {
-    std::wstring temp;
     std::wstring* fname( new std::wstring() );
     prepBufferName( fname, *( _document->dataName() ) );
     fname = _document->addFileName( fname );

@@ -54,18 +54,18 @@ public:
     //add a word to the encoded text
     void addText( word index );
     //add a byte code to the encoded text
-    void addByte( byte c ) { _text.push_back( c ); };
+    void addByte( byte c ) { _esc.push_back( c ); };
     //add an escape sequence to the encoded text
     void addEsc( const std::vector< byte >& esc );
     //set the cell's index (position in the list of cells)
     void setIndex( std::size_t i ) { _index = i; };
     std::size_t index() const { return _index; };
     //is this cell empty?
-    bool empty() const { return _text.empty(); }
+    bool empty() const { return _esc.empty(); }
     //is the local dictionary full (time for a new cell)?
     bool dictFull() const { return _localDictionary.size() == _maxDictSize; };
     //is the text block full?
-    bool textFull() const {return _text.size() > 64000; };
+    bool textFull() const {return _esc.size() > 64000; };
     //add an element to this cell's list
     void addElement( Element* element ) { _elements.push_back( element ); };
     //build the encoded text
@@ -80,7 +80,7 @@ private:
     std::vector< word >     _localDictionary;   //indexes into global dictionary
     typedef std::vector< word >::iterator LDIter;
     typedef std::vector< word >::const_iterator ConstLDIter;
-    std::vector< byte >     _text;              //indexes into local dictionary
+    std::vector< byte >     _esc;               //indexes into local dictionary
     typedef std::vector< byte >::iterator TextIter;
     typedef std::vector< byte >::const_iterator ConstTextIter;
     std::vector< Element* > _elements;          //elements in this cell
