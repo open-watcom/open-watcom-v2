@@ -142,8 +142,10 @@ IndexItem::dword IndexItem::write( OutFile* out )
     }
     if( out->write( buffer2.data(), sizeof( char ), length2 ) )
         throw FatalError( ERR_WRITE );
-    if( !_synonyms.empty() &&
-        out->write( _synonyms.data(), sizeof( dword ), _synonyms.size() ) )
-        throw FatalError( ERR_WRITE );
+    if( !_synonyms.empty() ) {
+        if( out->write( _synonyms.data(), sizeof( dword ), _synonyms.size() ) ) {
+            throw FatalError( ERR_WRITE );
+        }
+    }
     return( static_cast< dword >( sizeof( IndexHeader ) + _hdr.size + _synonyms.size() * sizeof( dword ) ) );
 }
