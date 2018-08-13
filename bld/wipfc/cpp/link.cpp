@@ -503,7 +503,7 @@ void Link::doTopic( Cell* cell )
             std::size_t tmpsize( buffer.size() );
             if( _hypergraphic && ( _x || _y || _cx || _cy ) ) {
                 if( tmpsize > 255 - (( esc.size() + 9 ) - 1 ) ) {
-                    tmpsize = 255 - (( esc.size() + 9 ) - 1 ) );
+                    tmpsize = 255 - (( esc.size() + 9 ) - 1 );
                 }
                 esc.push_back( static_cast< byte >( tmpsize ) );
                 esc.push_back( static_cast< byte >( _x ) );
@@ -516,7 +516,7 @@ void Link::doTopic( Cell* cell )
                 esc.push_back( static_cast< byte >( _cy >> 8 ) );
             } else {
                 if( tmpsize > 255 - (( esc.size() + 1 ) - 1 ) ) {
-                    tmpsize = 255 - (( esc.size() + 1 ) - 1 ) );
+                    tmpsize = 255 - (( esc.size() + 1 ) - 1 );
                 }
                 esc.push_back( static_cast< byte >( tmpsize ) );
             }
