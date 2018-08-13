@@ -704,13 +704,12 @@ Document::dword Document::writeResMap()
     dword offset = 0;
     if( !_resMap.empty() ) {
         offset = _out->tell();
-        ConstResMapIter itr;
-        for( itr = _resMap.begin(); itr != _resMap.end(); ++itr ) {
+        for( ConstResMapIter itr = _resMap.begin(); itr != _resMap.end(); ++itr ) {
             if( _out->put( itr->first ) ) {
                 throw FatalError( ERR_WRITE );
             }
         }
-        for( itr = _resMap.begin(); itr != _resMap.end(); ++itr ) {
+        for( ConstResMapIter itr = _resMap.begin(); itr != _resMap.end(); ++itr ) {
             if( _out->put( itr->second.index() ) ) {
                 throw FatalError( ERR_WRITE );
             }
@@ -724,13 +723,12 @@ Document::dword Document::writeNameMap()
     dword offset = 0;
     if( !isInf() && !_nameMap.empty() ) {
         offset = _out->tell();
-        ConstNameMapIter itr;
-        for( itr = _nameMap.begin(); itr != _nameMap.end(); ++itr ) {
+        for( ConstNameMapIter itr = _nameMap.begin(); itr != _nameMap.end(); ++itr ) {
             if( _out->put( itr->first->index() ) ) {
                 throw FatalError( ERR_WRITE );
             }
         }
-        for( itr = _nameMap.begin(); itr != _nameMap.end(); ++itr ) {
+        for( ConstNameMapIter itr = _nameMap.begin(); itr != _nameMap.end(); ++itr ) {
             if( _out->put( itr->second.index() ) ) {
                 throw FatalError( ERR_WRITE );
             }

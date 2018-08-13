@@ -501,8 +501,11 @@ void Link::doTopic( Cell* cell )
             std::string buffer;
             cell->out()->wtomb_string( _refid->getText(), buffer );
             std::size_t tmpsize( buffer.size() );
-            esc.push_back( static_cast< byte >( tmpsize ) );
             if( _hypergraphic && ( _x || _y || _cx || _cy ) ) {
+                if( tmpsize > 255 - (( esc.size() + 9 ) - 1 ) ) {
+                    tmpsize = 255 - (( esc.size() + 9 ) - 1 ) );
+                }
+                esc.push_back( static_cast< byte >( tmpsize ) );
                 esc.push_back( static_cast< byte >( _x ) );
                 esc.push_back( static_cast< byte >( _x >> 8 ) );
                 esc.push_back( static_cast< byte >( _y ) );
@@ -511,10 +514,11 @@ void Link::doTopic( Cell* cell )
                 esc.push_back( static_cast< byte >( _cx >> 8 ) );
                 esc.push_back( static_cast< byte >( _cy ) );
                 esc.push_back( static_cast< byte >( _cy >> 8 ) );
-            }
-            if( tmpsize > 255 - esc.size() + 1 ) {
-                tmpsize = 255 - esc.size() + 1;
-                buffer.erase( tmpsize );
+            } else {
+                if( tmpsize > 255 - (( esc.size() + 1 ) - 1 ) ) {
+                    tmpsize = 255 - (( esc.size() + 1 ) - 1 ) );
+                }
+                esc.push_back( static_cast< byte >( tmpsize ) );
             }
             for( std::size_t count1 = 0; count1 < tmpsize; count1++ )
                 esc.push_back( static_cast< byte >( buffer[count1] ) );

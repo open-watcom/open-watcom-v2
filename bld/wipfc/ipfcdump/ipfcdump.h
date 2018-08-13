@@ -373,7 +373,7 @@ typedef struct {
     //variable length data follows:
     //if !extended
     //  uint16_t    cellIndex[cellCount];
-    //  int8_t      title[length - 2 - 2 * cellCount];
+    //  int8_t      title[size - 2 - 2 * cellCount];
     //else
     // ExtTocEntry
 } TocEntry;
@@ -451,9 +451,9 @@ typedef struct {
     uint16_t    tocPanelIndex;      // toc entry number of panel
     //variable length data follows:
     //if sortKey bit set
-    //  int8_t size
-    //  int8_t text[size]
-    //int8_t word[size];                 // index word [not zero-terminated]
+    //  int8_t size1
+    //  int8_t text[size1]
+    //int8_t word[size-(size1+1)];     // index word [not zero-terminated]
     //uint32_t synonyms[synonymCount]; // 32 bit file offset to start of synonyms referencing this word
 } IndexItem;
 
