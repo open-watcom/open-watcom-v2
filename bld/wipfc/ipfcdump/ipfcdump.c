@@ -42,7 +42,7 @@ static int parseFile( char *filename )
         if( Vocabulary != NULL ) {  //free Vocabulary strings
             unsigned int count;
             for( count = 0; count < Hdr.dictCount; count++ )
-                free( Vocabulary[ count ] );
+                free( Vocabulary[count] );
             free( Vocabulary );
         }
         fclose( out );
@@ -54,12 +54,23 @@ static int parseFile( char *filename )
     }
 }
 /*****************************************************************************/
-size_t readDictString(FILE *in, wchar_t *buffer)
+size_t readDictString( FILE *in, wchar_t *buffer )
 {
-    char    temp[ STRING_MAX_LEN ];
+    char    temp[STRING_MAX_LEN];
     size_t  length = fgetc( in ) - 1;
     fread( temp, sizeof( char ), length, in );
-    temp[ length ] = '\0';
+    temp[length] = '\0';
+    length = mbstowcs( buffer, temp, WSTRING_MAX_LEN );
+    return( length + 1 );
+}
+
+/*****************************************************************************/
+size_t readCtrlString( FILE *in, wchar_t *buffer )
+{
+    char    temp[STRING_MAX_LEN];
+    size_t  length = fgetc( in );
+    fread( temp, sizeof( char ), length, in );
+    temp[length] = '\0';
     length = mbstowcs( buffer, temp, WSTRING_MAX_LEN );
     return( length + 1 );
 }

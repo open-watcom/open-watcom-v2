@@ -35,6 +35,7 @@ static void processIndex( FILE *in, FILE *out, size_t items )
     size_t      count2;
     char        buffer[ 256 ];
     wchar_t     text[ WSTRING_MAX_LEN ];
+    size_t      keysize;
 
     for( count1 = 0; count1 < items; count1++ ) {
         fread( &idx, sizeof(IndexItem), 1, in );
@@ -47,14 +48,15 @@ static void processIndex( FILE *in, FILE *out, size_t items )
         fprintf( out, "    IndexItem.sortKey:       %4.4s\n", idx.sortKey ? "yes" : "no" );
         fprintf( out, "    IndexItem.synonymCount:  %4.2x (%u)\n", idx.synonymCount, idx.synonymCount );
         fprintf( out, "    IndexItem.tocPanelIndex: %4.4x (%hu)\n", idx.tocPanelIndex, idx.tocPanelIndex );
+        keysize = 0;
         if( idx.sortKey ) {
             memset(text, 0, 256 * sizeof( wchar_t ) );
-            readDictString( in, text );
+            keysize = readCtrlString( in, text );
             fprintf( out, "    IndexItem.sortKeyText:     %ls\n", text );
         }
         memset( buffer, 0, sizeof( buffer ) );
         memset( text, 0, sizeof( text ) );
-        fread( buffer, sizeof( uint8_t ), idx.size, in );
+        fread( buffer, sizeof( uint8_t ), idx.size - keysize, in );
         mbstowcs( text, buffer, WSTRING_MAX_LEN );
         fprintf( out, "    IndexItem.text:          %ls\n", text );
         for( count2 = 0; count2 < idx.synonymCount; count2++ ) {

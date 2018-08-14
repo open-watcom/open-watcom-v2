@@ -17,4 +17,3 @@ void readStrings( FILE *in, FILE *out )
         fputs( "  There are no strings\n", out );
     }
 }
-

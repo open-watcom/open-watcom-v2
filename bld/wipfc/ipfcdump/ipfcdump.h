@@ -642,6 +642,7 @@ extern void         readFTS( FILE *, FILE *);
 extern void         readBitMaps( FILE *, FILE * );
 extern void         readChildPages( FILE *, FILE * );
 extern size_t       readDictString( FILE *, wchar_t * );
+extern size_t       readCtrlString( FILE *, wchar_t * );
 extern const char   *bstring( uint8_t );
 extern int          isBigFTS( IpfHeader *hdr );
 extern uint32_t     dataOffsetFTS( IpfHeader *hdr );

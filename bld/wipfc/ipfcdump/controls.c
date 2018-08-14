@@ -3,7 +3,6 @@
 #include "ipfcdump.h"
 #include <stdlib.h>
 
-static size_t readCtrlString(FILE *, wchar_t *);
 
 void readControls( FILE *in, FILE *out )
 {
@@ -49,14 +48,4 @@ void readControls( FILE *in, FILE *out )
     } else {
         fputs("  No panel controls found\n", out);
     }
-}
-/*****************************************************************************/
-size_t readCtrlString( FILE *in, wchar_t *buffer )
-{
-    char    temp[ STRING_MAX_LEN ];
-    size_t  length = fgetc( in );
-    fread( temp, sizeof( char ), length, in );
-    temp[ length ] = '\0';
-    length = mbstowcs( buffer, temp, WSTRING_MAX_LEN );
-    return( length + 1 );
 }
