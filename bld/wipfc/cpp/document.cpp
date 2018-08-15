@@ -662,13 +662,12 @@ Document::dword Document::writeBitmaps()
     dword offset = 0;
     if( !_bitmapNames.empty() && _tmpBitmaps != NULL ) {
         offset = _out->tell();
-        std::fseek( _tmpBitmaps, 0L, SEEK_END );
-        dword length;
-        std::fseek( _tmpBitmaps, 0L, SEEK_SET );
         std::vector< byte > buffer( BUFSIZ );
-        //copy the temporary file into this one
+        //copy the temporary file to the output file
         try {
-            for( length = std::ftell( _tmpBitmaps ); length > BUFSIZ; length -= BUFSIZ ) {
+            dword length = std::ftell( _tmpBitmaps );
+            std::rewind( _tmpBitmaps );
+            for( ; length > BUFSIZ; length -= BUFSIZ ) {
                 if( std::fread( &buffer[0], sizeof( byte ), BUFSIZ, _tmpBitmaps ) != BUFSIZ )
                     throw FatalIOError( ERR_READ, L"(temporary file for bitmaps)" );
                 if( _out->write( buffer.data(), sizeof( byte ), BUFSIZ ) ) {
