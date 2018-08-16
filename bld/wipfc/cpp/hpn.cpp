@@ -79,26 +79,26 @@ void Hpn::buildText( Cell* cell )
 {
     if( _previousLevel ) {
         //kill the previous level
-        cell->addByte( 0xFF );      //esc
-        cell->addByte( 0x03 );      //size
+        cell->addByte( Cell::ESCAPE );  //esc
+        cell->addByte( 0x03 );          //size
         if( _previousLevel != 4 && _previousLevel < 8 ) {
-            cell->addByte( 0x04 );  //change style
+            cell->addByte( 0x04 );      //change style
         } else {
-            cell->addByte( 0x0D );  //special text color
+            cell->addByte( 0x0D );      //special text color
         }
-        cell->addByte( 0x00 );      //default
+        cell->addByte( 0x00 );          //default
     }
-    cell->addByte( 0xFF );          //esc
-    cell->addByte( 0x03 );          //size
+    cell->addByte( Cell::ESCAPE );      //esc
+    cell->addByte( 0x03 );              //size
     if( _level != 4 && _level < 8 ) {
-        cell->addByte( 0x04 );      //change style
+        cell->addByte( 0x04 );          //change style
         if( _level < 4 ) {
             cell->addByte( static_cast< byte >( _level ) );
         } else {
             cell->addByte( static_cast< byte >( _level - 1) );
         }
     } else {
-        cell->addByte( 0x0D );      //special text color
+        cell->addByte( 0x0D );          //special text color
         if( _level == 4 ) {
             cell->addByte( 0x01 );
         } else {
@@ -148,26 +148,26 @@ Lexer::Token EHpn::parse( Lexer* lexer )
 /***************************************************************************/
 void EHpn::buildText( Cell* cell )
 {
-    cell->addByte( 0xFF );          //esc
-    cell->addByte( 0x03 );          //size
+    cell->addByte( Cell::ESCAPE );      //esc
+    cell->addByte( 0x03 );              //size
     if( _level != 4 && _level < 8 ) {
-        cell->addByte( 0x04 );      //change style
+        cell->addByte( 0x04 );          //change style
     } else {
-        cell->addByte( 0x0D );      //special text color
+        cell->addByte( 0x0D );          //special text color
     }
-    cell->addByte( 0x00 );          //default
+    cell->addByte( 0x00 );              //default
     if( _previousLevel ) {
-        cell->addByte( 0xFF );      //esc
-        cell->addByte( 0x03 );      //size
+        cell->addByte( Cell::ESCAPE );  //esc
+        cell->addByte( 0x03 );          //size
         if( _previousLevel != 4 && _previousLevel < 8 ) {
-            cell->addByte( 0x04 );  //change style
+            cell->addByte( 0x04 );      //change style
             if( _previousLevel < 4 ) {
                 cell->addByte( static_cast< byte >( _previousLevel ) );
             } else {
                 cell->addByte( static_cast< byte >( _previousLevel - 1) );
             }
         } else {
-            cell->addByte( 0x0D );  //special text color
+            cell->addByte( 0x0D );      //special text color
             if( _previousLevel == 4 ) {
                 cell->addByte( 0x01 );
             } else {

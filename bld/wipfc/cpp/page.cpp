@@ -57,8 +57,8 @@ void Page::buildLocalDictionary( OutFile* out )
             _document->addCell( _currentCell );
             _cells.push_back( static_cast< word >( _currentCell->index() ) );
             if( !autoSpacing )          //autoSpacing can't cross a cell boundry
-                _currentCell->addByte( 0xFC );   //so turn it off so we can turn
-            flags = ( *itr )->buildLocalDict( this ); //it back on later
+                _currentCell->addByte( Cell::TOGGLE_SPACING );  //so turn it off so we can turn
+            flags = ( *itr )->buildLocalDict( this );           //it back on later
         }
         if( flags.second )
             autoSpacing = !autoSpacing;

@@ -109,6 +109,10 @@ int IndexItem::wstricmp( const wchar_t *s, const wchar_t *t ) const
 //  char sortText[size2]                    //sort key text
 //char indexText[size or size-(size2+1)];   //index word [not zero-terminated]
 //unsigned long synonyms[synonymCount];     //32 bit file offsets to synonyms referencing this word
+//
+// NOTE: IBM IPFC has some strange limit on index text, it looks like limit is 128 bytes
+//          we use limit 255 bytes for index item
+//
 IndexItem::dword IndexItem::write( OutFile* out )
 {
     std::string buffer1;

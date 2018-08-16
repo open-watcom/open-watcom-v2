@@ -68,12 +68,12 @@ Lexer::Token Fig::parse( Lexer* lexer )
 /*****************************************************************************/
 void Fig::buildText( Cell* cell )
 {
-    cell->addByte( 0xFC );  //toggle spacing
-    cell->addByte( 0xFF );  //esc
-    cell->addByte( 0x03 );  //size
-    cell->addByte( 0x1A );  //begin fig sequence
-    cell->addByte( 0x01 );  //left align
-    cell->addByte( 0xFC );  //toggle spacing
+    cell->addByte( Cell::TOGGLE_SPACING );  //toggle spacing
+    cell->addByte( Cell::ESCAPE );          //esc
+    cell->addByte( 0x03 );                  //size
+    cell->addByte( 0x1A );                  //begin fig sequence
+    cell->addByte( 0x01 );                  //left align
+    cell->addByte( Cell::TOGGLE_SPACING );  //toggle spacing
     if( cell->textFull() ) {
         printError( ERR1_LARGEPAGE );
     }
@@ -81,12 +81,10 @@ void Fig::buildText( Cell* cell )
 /*****************************************************************************/
 void EFig::buildText( Cell* cell )
 {
-    cell->addByte( 0xFF );  //esc
-    cell->addByte( 0x02 );  //size
-    cell->addByte( 0x1B );  //end fig sequence
+    cell->addByte( Cell::ESCAPE );  //esc
+    cell->addByte( 0x02 );          //size
+    cell->addByte( 0x1B );          //end fig sequence
     if( cell->textFull() ) {
         printError( ERR1_LARGEPAGE );
     }
 }
-
-

@@ -176,9 +176,9 @@ Lexer::Token Sl::parseAttributes( Lexer* lexer )
 /***************************************************************************/
 void ESl::buildText( Cell* cell )
 {
-    cell->addByte( 0xFF );  //esc
-    cell->addByte( 0x03 );  //size
-    cell->addByte( 0x02 );  //set left margin
+    cell->addByte( Cell::ESCAPE );  //esc
+    cell->addByte( 0x03 );          //size
+    cell->addByte( 0x02 );          //set left margin
     cell->addByte( 1 );
     if( cell->textFull() ) {
         printError( ERR1_LARGEPAGE );
@@ -207,14 +207,14 @@ Lexer::Token SlLi::parse( Lexer* lexer )
 /***************************************************************************/
 void SlLi::buildText( Cell* cell )
 {
-    cell->addByte( 0xFF );  //esc
-    cell->addByte( 0x03 );  //size
-    cell->addByte( 0x02 );  //set left margin
+    cell->addByte( Cell::ESCAPE );      //esc
+    cell->addByte( 0x03 );              //size
+    cell->addByte( 0x02 );              //set left margin
     cell->addByte( _indent );
     if( _compact ) {
-        cell->addByte( 0xFD );
+        cell->addByte( Cell::LINE_BREAK );
     } else {
-        cell->addByte( 0xFA );
+        cell->addByte( Cell::END_PARAGRAPH );
     }
     if( cell->textFull() ) {
         printError( ERR1_LARGEPAGE );

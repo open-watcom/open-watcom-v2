@@ -125,18 +125,18 @@ Lexer::Token Nt::parse( Lexer* lexer )
 /***************************************************************************/
 void ENt::buildText( Cell* cell )
 {
-    cell->addByte( 0xFF );  //esc
-    cell->addByte( 0x03 );  //size
-    cell->addByte( 0x02 );  //set left margin
-    cell->addByte( 0 );     //reset
-    cell->addByte( 0xFA );  //line break
+    cell->addByte( Cell::ESCAPE );          //esc
+    cell->addByte( 0x03 );                  //size
+    cell->addByte( 0x02 );                  //set left margin
+    cell->addByte( 0 );                     //reset
+    cell->addByte( Cell::END_PARAGRAPH );   //line break
 }
 /***************************************************************************/
 void NtLm::buildText( Cell* cell )
 {
-    cell->addByte( 0xFF );  //esc
-    cell->addByte( 0x02 );  //size
-    cell->addByte( 0x1C );  //set left margin to current position (reset at end of paragraph)
+    cell->addByte( Cell::ESCAPE );  //esc
+    cell->addByte( 0x02 );          //size
+    cell->addByte( 0x1C );          //set left margin to current position (reset at end of paragraph)
 }
 /*****************************************************************************/
 void Nt::prepBufferName( std::wstring* buffer, const std::wstring& fname )

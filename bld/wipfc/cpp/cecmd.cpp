@@ -84,7 +84,7 @@ void CeCmd::parseCommand( Lexer* lexer )
 /*****************************************************************************/
 void CeCmd::buildText( Cell* cell )
 {
-    cell->addByte( 0xFB );
+    cell->addByte( Cell::CENTER );
     if( cell->textFull() ) {
         printError( ERR1_LARGEPAGE );
     }

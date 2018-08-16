@@ -78,9 +78,9 @@ Lexer::Token Rm::parse( Lexer* lexer )
 /***************************************************************************/
 void Rm::buildText( Cell* cell )
 {
-    cell->addByte( 0xFF );  //esc
-    cell->addByte( 0x03 );  //size
-    cell->addByte( 0x03 );  //set right margin
+    cell->addByte( Cell::ESCAPE );  //esc
+    cell->addByte( 0x03 );          //size
+    cell->addByte( 0x03 );          //set right margin
     cell->addByte( _margin );
     if( cell->textFull() ) {
         printError( ERR1_LARGEPAGE );

@@ -81,11 +81,10 @@ void Ddf::buildText( Cell* cell )
 //        word tocIndex( _document->tocIndexByRes( _res ) );
         XRef xref( _fileName, _row );
         _document->addXRef( _res, xref );
-        cell->addByte( 0xFF );  //ESC
-        cell->addByte( 0x04 );  //size
-        cell->addByte( 0x20 );  //ddf
-        cell->addByte( static_cast< byte >( _res ) );
-        cell->addByte( static_cast< byte >( _res >> 8 ) );
+        cell->addByte( Cell::ESCAPE );  //ESC
+        cell->addByte( 0x04 );          //size
+        cell->addByte( 0x20 );          //ddf
+        cell->addWord( _res );
         if( cell->textFull() ) {
             printError( ERR1_LARGEPAGE );
         }

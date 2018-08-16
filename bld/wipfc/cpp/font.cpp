@@ -110,9 +110,9 @@ Lexer::Token Font::parse( Lexer* lexer )
 /***************************************************************************/
 void Font::buildText( Cell* cell )
 {
-    cell->addByte( 0xFF );  //esc
-    cell->addByte( 0x03 );  //size
-    cell->addByte( 0x19 );  //set font
+    cell->addByte( Cell::ESCAPE );  //esc
+    cell->addByte( 0x03 );          //size
+    cell->addByte( 0x19 );          //set font
     cell->addByte( _index );
     if( cell->textFull() ) {
         printError( ERR1_LARGEPAGE );

@@ -120,7 +120,7 @@ Lexer::Token Warning::parse( Lexer* lexer )
 /***************************************************************************/
 void EWarning::buildText( Cell* cell )
 {
-    cell->addByte( 0xFA );  //line break
+    cell->addByte( Cell::END_PARAGRAPH );  //line break
     if( cell->textFull() ) {
         printError( ERR1_LARGEPAGE );
     }

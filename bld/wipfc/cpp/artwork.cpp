@@ -130,27 +130,21 @@ Lexer::Token Artwork::parseAttributes( Lexer* lexer )
 /***************************************************************************/
 void Artwork::buildText( Cell* cell )
 {
-    dword index( _document->bitmapByName( _name ) );  //get file offset of graphic
-    std::vector< byte > esc;
-    esc.push_back( 0xFF );      //esc
+    std::size_t start( cell->getPos() );
+    cell->reserve( 9 );
+    cell->addByte( Cell::ESCAPE );  //esc
     if( !_hypergraphic ) {
-        esc.push_back( 0x07 );  //size
-        esc.push_back( 0x0E );  //bitmap image
+        cell->addByte( 0x07 );      //size
+        cell->addByte( 0x0E );      //bitmap image
     } else {
-        esc.push_back( 0x08 );  //size
-        esc.push_back( 0x0F );  //image map
-        esc.push_back( 0x00 );  //define hypergraphic
+        cell->addByte( 0x08 );      //size
+        cell->addByte( 0x0F );      //image map
+        cell->addByte( 0x00 );      //define hypergraphic
     }
-    esc.push_back( _flags );
-    esc.push_back( static_cast< byte >( index ) );
-    esc.push_back( static_cast< byte >( index >> 8) );
-    esc.push_back( static_cast< byte >( index >> 16) );
-    esc.push_back( static_cast< byte >( index >> 24) );
-    esc[1] = static_cast< byte >( esc.size() - 1 );
-    cell->addEsc( esc );
+    cell->addByte( _flags );
+    cell->addDword( _document->bitmapByName( _name ) ); //get file offset of graphic
+    cell->updateByte( start + 1, static_cast< byte >( cell->getPos( start ) - 1 ) );
     if( cell->textFull() ) {
         printError( ERR1_LARGEPAGE );
     }
 }
-
-

@@ -36,12 +36,13 @@
 
 #include <cstdio>
 #include <vector>
+#include "dataenc.hpp"
 #include "element.hpp"
 
 
 class OutFile;
 
-class Cell {
+class Cell : public DataEncode {
     typedef STD1::uint8_t   byte;
     typedef STD1::uint16_t  word;
     typedef STD1::uint32_t  dword;
@@ -49,23 +50,25 @@ class Cell {
 public:
     Cell( std::size_t m) : _maxDictSize( m ) { };
     ~Cell() { };
+
+    enum Data {
+        END_PARAGRAPH   = 0xFA,
+        CENTER          = 0xFB,
+        TOGGLE_SPACING  = 0xFC,
+        LINE_BREAK      = 0xFD,
+        SPACE           = 0xFE,
+        ESCAPE          = 0xFF
+    };
+
     //add a word to the local dictionary
     void addWord( word index );
     //add a word to the encoded text
     void addText( word index );
-    //add a byte code to the encoded text
-    void addByte( byte c ) { _esc.push_back( c ); };
-    //add an escape sequence to the encoded text
-    void addEsc( const std::vector< byte >& esc );
     //set the cell's index (position in the list of cells)
     void setIndex( std::size_t i ) { _index = i; };
     std::size_t index() const { return _index; };
-    //is this cell empty?
-    bool empty() const { return _esc.empty(); }
     //is the local dictionary full (time for a new cell)?
     bool dictFull() const { return _localDictionary.size() == _maxDictSize; };
-    //is the text block full?
-    bool textFull() const {return _esc.size() > 64000; };
     //add an element to this cell's list
     void addElement( Element* element ) { _elements.push_back( element ); };
     //build the encoded text
@@ -80,9 +83,6 @@ private:
     std::vector< word >     _localDictionary;   //indexes into global dictionary
     typedef std::vector< word >::iterator LDIter;
     typedef std::vector< word >::const_iterator ConstLDIter;
-    std::vector< byte >     _esc;               //indexes into local dictionary
-    typedef std::vector< byte >::iterator TextIter;
-    typedef std::vector< byte >::const_iterator ConstTextIter;
     std::vector< Element* > _elements;          //elements in this cell
     typedef std::vector< Element* >::iterator ElementIter;
     typedef std::vector< Element* >::const_iterator ConstElementIter;
@@ -92,17 +92,6 @@ private:
 };
 
 /*
-// CellOffsets
-//unsigned long CellOffset[];
-
-#define END_PARAGRAPH   0xFA
-#define CENTER          0xFB
-//ends with new paragraph
-#define TOGGLE_SPACING  0xFC
-#define LINE_BREAK      0xFD
-#define SPACE           0xFE
-#define ESCAPE          0xFF
-
 // EscSeq:
 #pragma pack(push, 1)
 struct EscSeq {

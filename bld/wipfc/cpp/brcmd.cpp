@@ -35,7 +35,7 @@
 
 void BrCmd::buildText( Cell* cell )
 {
-    cell->addByte( 0xFD );
+    cell->addByte( Cell::LINE_BREAK );
     if( cell->textFull() ) {
         printError( ERR1_LARGEPAGE );
     }

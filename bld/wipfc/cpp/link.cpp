@@ -392,38 +392,28 @@ void Link::doTopic( Cell* cell )
                     tocIndex = _document->tocIndexByRes( _res );
                     _document->addXRef( _res, xref );
                 }
-                std::vector< byte > esc;
-                esc.reserve( 7 + _hspot.size( _hypergraphic ) + sizeof( PageOrigin ) + sizeof( PageSize ) +
+                std::size_t start( cell->getPos() );
+                cell->reserve( 7 + _hspot.size( _hypergraphic ) + sizeof( PageOrigin ) + sizeof( PageSize ) +
                     sizeof( PageStyle ) + sizeof( PageGroup ) );
-                esc.push_back( 0xFF );      //ESC
-                esc.push_back( 4 );         //size
+                cell->addByte( Cell::ESCAPE );  //ESC
+                cell->addByte( 4 );             //size
                 if( !_hypergraphic ) {
-                    esc.push_back( 0x05 );  //text link
+                    cell->addByte( 0x05 );      //text link
                 } else {
                     if( _hspot.isDef( true ) ) {
-                        esc.push_back( 0x01 );  //partial bitmap
+                        cell->addByte( 0x01 );  //partial bitmap
                     } else {
-                        esc.push_back( 0x04 );  //full bitmap
+                        cell->addByte( 0x04 );  //full bitmap
                     }
                 }
-                esc.push_back( static_cast< byte >( tocIndex ) );
-                esc.push_back( static_cast< byte >( tocIndex >> 8 ) );
+                cell->addWord( tocIndex );
                 //this may need to be last
-                if( _hspot.isDef( _hypergraphic ) ) {
-                    esc.push_back( static_cast< byte >( _hspot.x ) );
-                    esc.push_back( static_cast< byte >( _hspot.x >> 8 ) );
-                    esc.push_back( static_cast< byte >( _hspot.y ) );
-                    esc.push_back( static_cast< byte >( _hspot.y >> 8 ) );
-                    esc.push_back( static_cast< byte >( _hspot.cx ) );
-                    esc.push_back( static_cast< byte >( _hspot.cx >> 8 ) );
-                    esc.push_back( static_cast< byte >( _hspot.cy ) );
-                    esc.push_back( static_cast< byte >( _hspot.cy >> 8 ) );
-                }
+                if( _hspot.isDef( _hypergraphic ) )
+                    cell->addHotspot( _hspot );
                 if( _viewport || _doStyle || _automatic || _split || _doOrigin || _doSize ||
                     _dependent || _doGroup ) {
                     byte flag1( 0 );
                     byte flag2( 0 );
-                    esc[1] += 2;
                     if( _doOrigin )
                         flag1 |= 0x01;
                     if( _doSize )
@@ -444,35 +434,22 @@ void Link::doTopic( Cell* cell )
                         flag2 |= 0x02;
                     if( _doGroup )
                         flag2 |= 0x04;
-                    esc.push_back( flag1 );
-                    esc.push_back( flag2 );
+                    cell->addByte( flag1 );
+                    cell->addByte( flag2 );
                 }
                 if( _doOrigin ) {
-                    esc[1] += sizeof( PageOrigin );
-                    byte* src = reinterpret_cast< byte * >( &_origin );
-                    for( std::size_t count1 = 0; count1 < sizeof( PageOrigin ); ++count1, ++src ) {
-                        esc.push_back( *src );
-                    }
+                    cell->addArray( reinterpret_cast< byte * >( &_origin ), sizeof( PageOrigin ) );
                 }
                 if( _doSize ) {
-                    esc[1] += sizeof( PageSize );
-                    byte* src = reinterpret_cast< byte * >( &_size );
-                    for( std::size_t count1 = 0; count1 < sizeof( PageSize ); ++count1, ++src ) {
-                        esc.push_back( *src );
-                    }
+                    cell->addArray( reinterpret_cast< byte * >( &_size ), sizeof( PageSize ) );
                 }
                 if( _doStyle ) {
-                    esc[1] += sizeof( PageStyle );
-                    esc.push_back( static_cast< byte >( _style.word ) );
-                    esc.push_back( static_cast< byte >( _style.word >> 8 ) );
+                    cell->addWord( _style.word );
                 }
                 if( _doGroup ) {
-                    esc[1] += sizeof( PageGroup );
-                    esc.push_back( static_cast< byte >( _group.id ) );
-                    esc.push_back( static_cast< byte >( _group.id >> 8 ) );
+                    cell->addWord( _group.id );
                 }
-                esc[1] = static_cast< byte >( esc.size() - 1 );
-                cell->addEsc( esc );
+                cell->updateByte( start + 1, static_cast< byte >( cell->getPos( start ) - 1 ) );
                 if( cell->textFull() ) {
                     printError( ERR1_LARGEPAGE );
                 }
@@ -481,41 +458,29 @@ void Link::doTopic( Cell* cell )
                 printError( e._code );
             }
         } else {                              //jump to external link
-            std::vector< byte > esc;
-            esc.reserve( 7 +  _hspot.size( _hypergraphic ) );
-            esc.push_back( 0xFF );          //ESC
-            esc.push_back( 4 );             //size
+            std::size_t start( cell->getPos() );
+            cell->reserve( 7 +  _hspot.size( _hypergraphic ) );
+            cell->addByte( Cell::ESCAPE );  //ESC
+            cell->addByte( 4 );             //size
             if( !_hypergraphic ) {
-                esc.push_back( 0x1F );      //text link
+                cell->addByte( 0x1F );      //text link
             } else {
-                esc.push_back( 0x0F );      //hypergraphic link
+                cell->addByte( 0x0F );      //hypergraphic link
                 if( _hspot.isDef( true ) ) {
-                    esc.push_back( 0x17 );  //partial bitmap
+                    cell->addByte( 0x17 );  //partial bitmap
                 } else {
-                    esc.push_back( 0x16 );  //full bitmap
+                    cell->addByte( 0x16 );  //full bitmap
                 }
             }
-            esc.push_back( _document->extFileIndex( _database ) );
+            cell->addByte( _document->extFileIndex( _database ) );
             std::string buffer( cell->out()->wtomb_string( _refid->getText() ) );
-            std::size_t tmpsize( buffer.size() );
-            if( tmpsize > 255 - (( esc.size() + _hspot.size( _hypergraphic ) + 1 ) - 1 ) ) {
-                tmpsize = 255 - (( esc.size() + _hspot.size( _hypergraphic ) + 1 ) - 1 );
-            }
-            esc.push_back( static_cast< byte >( tmpsize ) );
-            if( _hspot.isDef( _hypergraphic ) ) {
-                esc.push_back( static_cast< byte >( _hspot.x ) );
-                esc.push_back( static_cast< byte >( _hspot.x >> 8 ) );
-                esc.push_back( static_cast< byte >( _hspot.y ) );
-                esc.push_back( static_cast< byte >( _hspot.y >> 8 ) );
-                esc.push_back( static_cast< byte >( _hspot.cx ) );
-                esc.push_back( static_cast< byte >( _hspot.cx >> 8 ) );
-                esc.push_back( static_cast< byte >( _hspot.cy ) );
-                esc.push_back( static_cast< byte >( _hspot.cy >> 8 ) );
-            }
-            for( std::size_t count1 = 0; count1 < tmpsize; count1++ )
-                esc.push_back( static_cast< byte >( buffer[count1] ) );
-            esc[1] = static_cast< byte >( esc.size() - 1 );
-            cell->addEsc( esc );
+            if( buffer.size() > 255 - (( cell->getPos( start ) + _hspot.size( _hypergraphic ) + 1 ) - 1 ) )
+                buffer.erase( 255 - (( cell->getPos( start ) + _hspot.size( _hypergraphic ) + 1 ) - 1 ) );
+            cell->addByte( static_cast< byte >( buffer.size() ) );
+            if( _hspot.isDef( _hypergraphic ) )
+                cell->addHotspot( _hspot );
+            cell->addString( buffer );
+            cell->updateByte( start + 1, static_cast< byte >( cell->getPos( start ) - 1 ) );
             if( cell->textFull() ) {
                 printError( ERR1_LARGEPAGE );
             }
@@ -538,33 +503,23 @@ void Link::doFootnote( Cell* cell )
                 tocIndex = _document->tocIndexByRes( _res );
                 _document->addXRef( _res, xref );
             }
-            std::vector< byte > esc;
-            esc.reserve( 5 + _hspot.size( _hypergraphic ) );
-            esc.push_back( 0xFF );          //ESC
-            esc.push_back( 4 );             //size
+            std::size_t start( cell->getPos() );
+            cell->reserve( 5 + _hspot.size( _hypergraphic ) );
+            cell->addByte( Cell::ESCAPE );  //ESC
+            cell->addByte( 4 );             //size
             if( !_hypergraphic ) {
-                esc.push_back( 0x07 );      //text link
+                cell->addByte( 0x07 );      //text link
             } else {
                 if( _hspot.isDef( true ) ) {
-                    esc.push_back( 0x02 );  //partial bitmap
+                    cell->addByte( 0x02 );  //partial bitmap
                 } else {
-                    esc.push_back( 0x05 );  //full bitmap
+                    cell->addByte( 0x05 );  //full bitmap
                 }
             }
-            esc.push_back( static_cast< byte >( tocIndex ) );
-            esc.push_back( static_cast< byte >( tocIndex >> 8 ) );
-            if( _hspot.isDef( _hypergraphic ) ) {
-                esc.push_back( static_cast< byte >( _hspot.x ) );
-                esc.push_back( static_cast< byte >( _hspot.x >> 8 ) );
-                esc.push_back( static_cast< byte >( _hspot.y ) );
-                esc.push_back( static_cast< byte >( _hspot.y >> 8 ) );
-                esc.push_back( static_cast< byte >( _hspot.cx ) );
-                esc.push_back( static_cast< byte >( _hspot.cx >> 8 ) );
-                esc.push_back( static_cast< byte >( _hspot.cy ) );
-                esc.push_back( static_cast< byte >( _hspot.cy >> 8 ) );
-            }
-            esc[1] = static_cast< byte >( esc.size() - 1 );
-            cell->addEsc( esc );
+            cell->addWord( static_cast< word >( tocIndex ) );
+            if( _hspot.isDef( _hypergraphic ) )
+                cell->addHotspot( _hspot );
+            cell->updateByte( start + 1, static_cast< byte >( cell->getPos( start ) - 1 ) );
             if( cell->textFull() ) {
                 printError( ERR1_LARGEPAGE );
             }
@@ -580,44 +535,31 @@ void Link::doFootnote( Cell* cell )
 void Link::doLaunch( Cell* cell )
 {
     if( _object.size() && _data.size() ) {  //both are required
-        std::vector< byte > esc;
-        esc.reserve( 6 + _hspot.size( _hypergraphic ) );
-        esc.push_back( 0xFF );          //ESC
-        esc.push_back( 3 );             //size
+        std::size_t start( cell->getPos() );
+        cell->reserve( 6 + _hspot.size( _hypergraphic ) );
+        cell->addByte( Cell::ESCAPE );  //ESC
+        cell->addByte( 3 );             //size
         if( !_hypergraphic ) {
-            esc.push_back( 0x10 );      //text link
+            cell->addByte( 0x10 );      //text link
         } else {
-            esc.push_back( 0x0F );      //hypergraphic link
+            cell->addByte( 0x0F );      //hypergraphic link
             if( _hspot.isDef( true ) ) {
-                esc.push_back( 0x08 );  //partial bitmap
+                cell->addByte( 0x08 );  //partial bitmap
             } else {
-                esc.push_back( 0x07 );  //full bitmap
+                cell->addByte( 0x07 );  //full bitmap
             }
         }
-        esc.push_back( 0x00 );          //blank byte
-        if( _hspot.isDef( _hypergraphic ) ) {
-            esc.push_back( static_cast< byte >( _hspot.x ) );
-            esc.push_back( static_cast< byte >( _hspot.x >> 8 ) );
-            esc.push_back( static_cast< byte >( _hspot.y ) );
-            esc.push_back( static_cast< byte >( _hspot.y >> 8 ) );
-            esc.push_back( static_cast< byte >( _hspot.cx ) );
-            esc.push_back( static_cast< byte >( _hspot.cx >> 8 ) );
-            esc.push_back( static_cast< byte >( _hspot.cy ) );
-            esc.push_back( static_cast< byte >( _hspot.cy >> 8 ) );
-        }
+        cell->addByte( 0x00 );          //blank byte
+        if( _hspot.isDef( _hypergraphic ) )
+            cell->addHotspot( _hspot );
         std::string buffer( cell->out()->wtomb_string( _object ) );
         buffer += ' ';
         std::string tmp( cell->out()->wtomb_string( _data ) );
         buffer += tmp;
-        std::size_t buffersize( buffer.size() );
-        if( buffersize > 255 - esc.size() + 1 ) {
-            buffersize = 255 - esc.size() + 1;
-            buffer.erase( buffersize );
-        }
-        for( std::size_t count1 = 0; count1 < buffersize; ++count1 )
-            esc.push_back( static_cast< byte >( buffer[count1] ) );
-        esc[1] = static_cast< byte >( esc.size() - 1 );
-        cell->addEsc( esc );
+        if( buffer.size() > 255 - cell->getPos( start ) + 1 )
+            buffer.erase( 255 - cell->getPos( start ) + 1 );
+        cell->addString( buffer );
+        cell->updateByte( start + 1, static_cast< byte >( cell->getPos( start ) - 1 ) );
         if( cell->textFull() ) {
             printError( ERR1_LARGEPAGE );
         }
@@ -629,34 +571,24 @@ void Link::doLaunch( Cell* cell )
 void Link::doInform( Cell* cell )
 {
    if( _res ) {                         //res is required
-        std::vector< byte > esc;
-        esc.reserve( 6 + _hspot.size( _hypergraphic ) );
-        esc.push_back( 0xFF );          //ESC
-        esc.push_back( 4 );             //size
+        std::size_t start( cell->getPos() );
+        cell->reserve( 6 + _hspot.size( _hypergraphic ) );
+        cell->addByte( Cell::ESCAPE );  //ESC
+        cell->addByte( 4 );             //size
         if( !_hypergraphic ) {
-            esc.push_back( 0x16 );      //text link
+            cell->addByte( 0x16 );      //text link
         } else {
-            esc.push_back( 0x0F );      //hypergraphic link
+            cell->addByte( 0x0F );      //hypergraphic link
             if( _hspot.isDef( true ) ) {
-                esc.push_back( 0x10 );  //partial bitmap
+                cell->addByte( 0x10 );  //partial bitmap
             } else {
-                esc.push_back( 0x09 );  //full bitmap
+                cell->addByte( 0x09 );  //full bitmap
             }
         }
-        esc.push_back( static_cast< byte >( _res ) );
-        esc.push_back( static_cast< byte >( _res >> 8 ) );
-        if( _hspot.isDef( _hypergraphic ) ) {
-            esc.push_back( static_cast< byte >( _hspot.x ) );
-            esc.push_back( static_cast< byte >( _hspot.x >> 8 ) );
-            esc.push_back( static_cast< byte >( _hspot.y ) );
-            esc.push_back( static_cast< byte >( _hspot.y >> 8 ) );
-            esc.push_back( static_cast< byte >( _hspot.cx ) );
-            esc.push_back( static_cast< byte >( _hspot.cx >> 8 ) );
-            esc.push_back( static_cast< byte >( _hspot.cy ) );
-            esc.push_back( static_cast< byte >( _hspot.cy >> 8 ) );
-        }
-        esc[1] = static_cast< byte >( esc.size() - 1 );
-        cell->addEsc( esc );
+        cell->addWord( _res );
+        if( _hspot.isDef( _hypergraphic ) )
+            cell->addHotspot( _hspot );
+        cell->updateByte( start + 1, static_cast< byte >( cell->getPos( start ) - 1 ) );
         if( cell->textFull() ) {
             printError( ERR1_LARGEPAGE );
         }
@@ -667,7 +599,7 @@ void Link::doInform( Cell* cell )
 /***************************************************************************/
 void ELink::buildText( Cell* cell )
 {
-    cell->addByte( 0xFF );
+    cell->addByte( Cell::ESCAPE );
     cell->addByte( 0x02 );
     cell->addByte( 0x08 );
     if( cell->textFull() ) {

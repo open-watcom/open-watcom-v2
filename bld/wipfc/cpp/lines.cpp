@@ -96,12 +96,12 @@ Lexer::Token Lines::parseAttributes( Lexer* lexer )
 /*****************************************************************************/
 void Lines::buildText( Cell* cell )
 {
-    cell->addByte( 0xFC );  //toggle spacing
-    cell->addByte( 0xFF );  //esc
-    cell->addByte( 0x03 );  //size
-    cell->addByte( 0x1A );  //begin lines sequence
+    cell->addByte( Cell::TOGGLE_SPACING );  //toggle spacing
+    cell->addByte( Cell::ESCAPE );          //esc
+    cell->addByte( 0x03 );                  //size
+    cell->addByte( 0x1A );                  //begin lines sequence
     cell->addByte( static_cast< byte >( _alignment ) );
-    cell->addByte( 0xFC );  //toggle spacing
+    cell->addByte( Cell::TOGGLE_SPACING );  //toggle spacing
     if( cell->textFull() ) {
         printError( ERR1_LARGEPAGE );
     }
@@ -109,9 +109,9 @@ void Lines::buildText( Cell* cell )
 /*****************************************************************************/
 void ELines::buildText( Cell* cell )
 {
-    cell->addByte( 0xFF );  //esc
-    cell->addByte( 0x02 );  //size
-    cell->addByte( 0x1B );  //end lines sequence
+    cell->addByte( Cell::ESCAPE );  //esc
+    cell->addByte( 0x02 );          //size
+    cell->addByte( 0x1B );          //end lines sequence
     if( cell->textFull() ) {
         printError( ERR1_LARGEPAGE );
     }

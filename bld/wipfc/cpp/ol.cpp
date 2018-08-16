@@ -182,9 +182,9 @@ Lexer::Token Ol::parseAttributes( Lexer* lexer )
 /***************************************************************************/
 void EOl::buildText( Cell* cell )
 {
-    cell->addByte( 0xFF );  //esc
-    cell->addByte( 0x03 );  //size
-    cell->addByte( 0x02 );  //set left margin
+    cell->addByte( Cell::ESCAPE );  //esc
+    cell->addByte( 0x03 );          //size
+    cell->addByte( 0x02 );          //set left margin
     cell->addByte( 1 );
     if( cell->textFull() ) {
         printError( ERR1_LARGEPAGE );

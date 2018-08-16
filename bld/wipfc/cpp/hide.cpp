@@ -97,16 +97,13 @@ void Hide::buildText( Cell* cell )
     std::string buffer( cell->out()->wtomb_string( _keyPhrase ) );
     if( buffer.size() > ( 255 - 2 ) )
         buffer.erase( 255 - 2 );
-    std::size_t length = buffer.size();
-    std::vector< byte > esc;
-    esc.reserve( length + 3 );
-    esc.push_back( 0xFF );  //esc
-    esc.push_back( 0x02 );  //size
-    esc.push_back( 0x17 );  //begin hide
-    for( std::size_t count1 = 0; count1 < length; count1++ )
-        esc.push_back( static_cast< byte >( buffer[count1] ) );
-    esc[1] = static_cast< byte >( esc.size() - 1 );
-    cell->addEsc( esc );
+    std::size_t start = cell->getPos();
+    cell->reserve( buffer.size() + 3 );
+    cell->addByte( Cell::ESCAPE );  //esc
+    cell->addByte( 0x02 );          //size
+    cell->addByte( 0x17 );          //begin hide
+    cell->addString( buffer );
+    cell->updateByte( start + 1, static_cast< byte >( cell->getPos( start ) - 1 ) );
     if( cell->textFull() ) {
         printError( ERR1_LARGEPAGE );
     }
@@ -146,9 +143,9 @@ Lexer::Token EHide::parse( Lexer* lexer )
 /***************************************************************************/
 void EHide::buildText( Cell* cell )
 {
-    cell->addByte( 0xFF );  //esc
-    cell->addByte( 0x02 );  //size
-    cell->addByte( 0x18 );  //end hide
+    cell->addByte( Cell::ESCAPE );  //esc
+    cell->addByte( 0x02 );          //size
+    cell->addByte( 0x18 );          //end hide
     if( cell->textFull() ) {
         printError( ERR1_LARGEPAGE );
     }

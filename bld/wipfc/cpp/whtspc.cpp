@@ -75,26 +75,26 @@ void WhiteSpace::buildText( Cell* cell )
             Text::buildText( cell );
         } else if( _col == 1 ) {
             for( byte count = 0; count < _spaces / 2; ++count )
-                cell->addByte( 0xFE );
+                cell->addByte( Cell::SPACE );
             if( _spaces & 1 ) {
-                cell->addByte( 0xFC );
-                cell->addByte( 0xFE );
-                cell->addByte( 0xFC );
+                cell->addByte( Cell::TOGGLE_SPACING );
+                cell->addByte( Cell::SPACE );
+                cell->addByte( Cell::TOGGLE_SPACING );
             }
         } else if( _spaces > 1 ) {
             if( _spaces & 1 ) {
                 for( byte count = 0; count < _spaces / 2; ++count )
-                    cell->addByte( 0xFE );
+                    cell->addByte( Cell::SPACE );
             } else {
                 for( byte count = 0; count < _spaces / 2 - 1; ++count )
-                    cell->addByte( 0xFE );
-                cell->addByte( 0xFC );
-                cell->addByte( 0xFE );
-                cell->addByte( 0xFC );
+                    cell->addByte( Cell::SPACE );
+                cell->addByte( Cell::TOGGLE_SPACING );
+                cell->addByte( Cell::SPACE );
+                cell->addByte( Cell::TOGGLE_SPACING );
             }
         }
     } else if( _whiteSpace != Tag::NONE ) { //'\n'
-        cell->addByte( 0xFD );
+        cell->addByte( Cell::LINE_BREAK );
     }
     if( cell->textFull() ) {
         printError( ERR1_LARGEPAGE );
@@ -111,8 +111,8 @@ std::pair< bool, bool > LiteralWhiteSpace::buildLocalDict( Page* page )
 void LiteralWhiteSpace::buildText( Cell* cell )
 {
     if( _toggleSpacing )
-        cell->addByte( 0xFC );
-    cell->addByte( 0xFE );
+        cell->addByte( Cell::TOGGLE_SPACING );
+    cell->addByte( Cell::SPACE );
     if( cell->textFull() ) {
         printError( ERR1_LARGEPAGE );
     }

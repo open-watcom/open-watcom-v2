@@ -123,15 +123,15 @@ Color::ColorName Color::parseColor( std::wstring& name )
 void Color::buildText( Cell* cell )
 {
     if( _setForeground ) {
-        cell->addByte( 0xFF );  //esc
-        cell->addByte( 0x03 );  //size
-        cell->addByte( 0x13 );  //set foreground color
+        cell->addByte( Cell::ESCAPE );  //esc
+        cell->addByte( 0x03 );          //size
+        cell->addByte( 0x13 );          //set foreground color
         cell->addByte( static_cast< byte >( _foreground ) );
     }
     if( _setBackground ) {
-        cell->addByte( 0xFF );  //esc
-        cell->addByte( 0x03 );  //size
-        cell->addByte( 0x14 );  //set background color
+        cell->addByte( Cell::ESCAPE );  //esc
+        cell->addByte( 0x03 );          //size
+        cell->addByte( 0x14 );          //set background color
         cell->addByte( static_cast< byte >( _background ) );
     }
     if( cell->textFull() ) {

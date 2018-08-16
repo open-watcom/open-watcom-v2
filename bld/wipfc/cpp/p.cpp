@@ -52,7 +52,7 @@ Lexer::Token P::parse( Lexer* lexer )
 /***************************************************************************/
 void P::buildText( Cell* cell )
 {
-    cell->addByte( 0xFA );
+    cell->addByte( Cell::END_PARAGRAPH );
     if( cell->textFull() ) {
         printError( ERR1_LARGEPAGE );
     }

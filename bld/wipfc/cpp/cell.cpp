@@ -46,8 +46,8 @@ void Cell::build( OutFile* out )
     _out = out;
     for( ElementIter itr = _elements.begin(); itr != _elements.end(); ++itr )
         ( *itr )->buildText( this );
-    if( _esc.empty() ) {
-        _esc.push_back( 0xFE );
+    if( empty() ) {
+        addByte( Cell::SPACE );
     }
 }
 /***************************************************************************/
@@ -68,14 +68,7 @@ void Cell::addText( word index )
         //std::lower_bound( _localDictionary.begin(), _localDictionary.end(), index );
         std::find( _localDictionary.begin(), _localDictionary.end(), index ) );
     std::size_t locindex = itr - _localDictionary.begin();
-    _esc.push_back( static_cast< byte >( locindex ) );
-}
-/***************************************************************************/
-void Cell::addEsc( const std::vector< byte >& esc )
-{
-    for( ConstTextIter itr = esc.begin(); itr != esc.end(); ++itr ) {
-        _esc.push_back( *itr );
-    }
+    addByte( static_cast< byte >( locindex ) );
 }
 /***************************************************************************/
 
@@ -97,13 +90,13 @@ Cell::dword Cell::write( OutFile* out ) const
         throw FatalError( ERR_WRITE );
     // dictOffset
     if( out->put( static_cast< dword >( offset + sizeof( byte ) + sizeof( dword ) + sizeof( byte )
-            + sizeof( word ) + _esc.size() * sizeof( byte ) ) ) )
+            + sizeof( word ) + dataSize() * sizeof( byte ) ) ) )
         throw FatalError( ERR_WRITE );
     if( out->put( static_cast< byte >( _localDictionary.size() ) ) )
         throw FatalError( ERR_WRITE );
-    if( out->put( static_cast< word >( _esc.size() ) ) )
+    if( out->put( static_cast< word >( dataSize() ) ) )
         throw FatalError( ERR_WRITE );
-    if( out->write( _esc.data(), sizeof( byte ), _esc.size() ) )
+    if( out->write( data(), sizeof( byte ), dataSize() ) )
         throw FatalError( ERR_WRITE );
     if( !_localDictionary.empty() ) {
         if( out->write( _localDictionary.data(), sizeof( word ), _localDictionary.size() ) ) {

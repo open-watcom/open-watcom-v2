@@ -59,9 +59,9 @@ Lexer::Token Xmp::parse( Lexer* lexer )
 /*****************************************************************************/
 void Xmp::buildText( Cell* cell )
 {
-    cell->addByte( 0xFF );  //esc
-    cell->addByte( 0x02 );  //size
-    cell->addByte( 0x0B );  //begin monospaced
+    cell->addByte( Cell::ESCAPE );  //esc
+    cell->addByte( 0x02 );          //size
+    cell->addByte( 0x0B );          //begin monospaced
     if( cell->textFull() ) {
         printError( ERR1_LARGEPAGE );
     }
@@ -69,9 +69,9 @@ void Xmp::buildText( Cell* cell )
 /*****************************************************************************/
 void EXmp::buildText( Cell* cell )
 {
-    cell->addByte( 0xFF );  //esc
-    cell->addByte( 0x02 );  //size
-    cell->addByte( 0x0C );  //end monospaced
+    cell->addByte( Cell::ESCAPE );  //esc
+    cell->addByte( 0x02 );          //size
+    cell->addByte( 0x0C );          //end monospaced
     if( cell->textFull() ) {
         printError( ERR1_LARGEPAGE );
     }
