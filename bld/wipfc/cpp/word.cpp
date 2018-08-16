@@ -36,7 +36,7 @@
 #include "gdword.hpp"
 #include "ipfbuff.hpp"
 
-Lexer::Token Word::parse( Lexer* lexer )
+Lexer::Token TextWord::parse( Lexer* lexer )
 {
     std::wstring text( lexer->text() );  //get text from lexer
     Lexer::Token tok( _document->getNextToken() );
@@ -73,7 +73,7 @@ Lexer::Token Word::parse( Lexer* lexer )
             _document->lastText()->setToggleSpacing();
         }
     }
-    _text = _document->addWord( new GlobalDictionaryWord( text ) );   //insert into global dictionary
+    _text = _document->addTextToGD( new GlobalDictionaryWord( text ) );   //insert into global dictionary
     _document->setLastPrintable( Lexer::WORD, this );
     return tok;
 }

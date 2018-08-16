@@ -33,18 +33,18 @@
 
 #include "text.hpp"
 
-class Word : public Text {
+class TextWord : public Text {
 public:
-    Word( Document* d, Element* p, const std::wstring* f, unsigned int r,
+    TextWord( Document* d, Element* p, const std::wstring* f, unsigned int r,
         unsigned int c, Tag::WsHandling w = Tag::NONE ) :
         Text( d, p, f, r, c, w ) { };
-    Word( Document* d, Element* p, const std::wstring* f, unsigned int r, unsigned int c,
+    TextWord( Document* d, Element* p, const std::wstring* f, unsigned int r, unsigned int c,
         const std::wstring& text, bool ts = false ) : Text( d, p, f, r, c, text, ts ) { };
-    ~Word() { };
+    ~TextWord() { };
     Lexer::Token parse( Lexer* lexer );
 private:
-    Word( const Word& rhs );            //no copy
-    Word& operator=( const Word& rhs ); //no assignment
+    TextWord( const TextWord& rhs );            //no copy
+    TextWord& operator=( const TextWord& rhs ); //no assignment
 };
 
 #endif //WORD_INCLUDED

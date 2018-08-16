@@ -204,7 +204,7 @@ Lexer::Token UlLi::parse( Lexer* lexer )
         appendChild( new LiteralWhiteSpace( _document, this, _document->dataName(),
             _document->dataLine(), _document->dataCol(), true ) );
     }
-    appendChild( new Word( _document, this, _document->dataName(),
+    appendChild( new TextWord( _document, this, _document->dataName(),
         _document->dataLine(), _document->dataCol(), _document->ulBullet( _nestLevel ),
         _document->ulBullet( _nestLevel ).size() == 1 ) );
     appendChild( new Lm( _document, this, _document->dataName(), _document->dataLine(),

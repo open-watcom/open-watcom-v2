@@ -108,7 +108,7 @@ bool Tag::parseInline( Lexer* lexer, Lexer::Token& tok )
 {
     bool notHandled( false );
     if( tok == Lexer::WORD ) {
-        Word* w( new Word( _document, this, _document->dataName(),
+        TextWord* w( new TextWord( _document, this, _document->dataName(),
             _document->lexerLine(), _document->lexerCol(), _whiteSpace ) );
         appendChild( w );
         tok = w->parse( lexer );

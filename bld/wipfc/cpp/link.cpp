@@ -141,7 +141,7 @@ Lexer::Token Link::parseAttributes( Lexer* lexer )
                 _refid = new GlobalDictionaryWord( value );
                 _refid->toUpper();           //to uppercase
                 if( !_document->isInf() ) {
-                    _refid = _document->addWord( _refid );
+                    _refid = _document->addTextToGD( _refid );
                 }
             } else if( key == L"database" ) {
                 _database = value;
@@ -498,7 +498,7 @@ void Link::doFootnote( Cell* cell )
     if( _refid || _res ) {                  //refid is required
         try {
             XRef xref( _fileName, _row );
-            std::size_t tocIndex;
+            word tocIndex;
             if( _refid ) {
                 tocIndex = _document->tocIndexById( _refid );
                 _document->addXRef( _refid, xref );
@@ -519,7 +519,7 @@ void Link::doFootnote( Cell* cell )
                     cell->addByte( 0x05 );  //full bitmap
                 }
             }
-            cell->addWord( static_cast< word >( tocIndex ) );
+            cell->addWord( tocIndex );
             if( _hspot.isDef( _hypergraphic ) )
                 cell->addHotspot( _hspot );
             cell->updateByte( start + 1, static_cast< byte >( cell->getPos( start ) - 1 ) );

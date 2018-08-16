@@ -42,14 +42,14 @@ Text::Text( Document* d, Element* p, const std::wstring* f, unsigned int r,
             unsigned int c, const std::wstring& text, bool ts ) :
             Element( d, p, f, r, c ), _whiteSpace( Tag::NONE), _toggleSpacing( ts )
 {
-    _text = _document->addWord( new GlobalDictionaryWord( text ) );   //insert into global dictionary
+    _text = _document->addTextToGD( new GlobalDictionaryWord( text ) );   //insert into global dictionary
 }
 /***************************************************************************/
 std::pair< bool, bool > Text::buildLocalDict( Page* page )
 {
     std::pair< bool, bool > retval( false, false );
     if( _text ) {
-        retval.first = page->addWord( _text );
+        retval.first = page->addTextToLD( _text );
         retval.second = _toggleSpacing;
     }
     return retval;

@@ -37,7 +37,7 @@
 Lexer::Token Punctuation::parse( Lexer* lexer )
 {
     //get text from lexer and insert into global dictionary
-    _text = _document->addWord( new GlobalDictionaryWord( lexer->text() ) );
+    _text = _document->addTextToGD( new GlobalDictionaryWord( lexer->text() ) );
     Lexer::Token tok( _document->getNextToken() );
     if( _whiteSpace != Tag::SPACES && _document->autoSpacing() ) {
         Lexer::Token t( _document->lastToken() );

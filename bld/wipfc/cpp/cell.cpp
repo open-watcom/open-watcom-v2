@@ -51,7 +51,7 @@ void Cell::build( OutFile* out )
     }
 }
 /***************************************************************************/
-void Cell::addWord( word index )
+void Cell::addTextToLD( word index )
 {
     if( !std::binary_search( _localDictionary.begin(), _localDictionary.end(), index ) ) {
         LDIter itr(
@@ -64,11 +64,9 @@ void Cell::addWord( word index )
 /***************************************************************************/
 void Cell::addText( word index )
 {
-    LDIter itr(
+    LDIter itr( std::find( _localDictionary.begin(), _localDictionary.end(), index ) );
         //std::lower_bound( _localDictionary.begin(), _localDictionary.end(), index );
-        std::find( _localDictionary.begin(), _localDictionary.end(), index ) );
-    std::size_t locindex = itr - _localDictionary.begin();
-    addByte( static_cast< byte >( locindex ) );
+    addByte( static_cast< byte >( itr - _localDictionary.begin() ) );
 }
 /***************************************************************************/
 

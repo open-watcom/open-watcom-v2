@@ -215,24 +215,24 @@ void Table::tbBorder( bool bottom )
             printError( e._code );
         }
         //left frame edge
-        appendChild( new Word( _document, this, _document->dataName(),
+        appendChild( new TextWord( _document, this, _document->dataName(),
             _document->lexerLine(), _document->lexerCol(), text1) );
         //the columns
         if( !_colWidth.empty() ) {
             for( count1 = 0; count1 < _colWidth.size() - 1; ++count1 ) {
                 std::wstring text( _colWidth[ count1 ], ch );
-                appendChild( new Word( _document, this, _document->dataName(),
+                appendChild( new TextWord( _document, this, _document->dataName(),
                     _document->lexerLine(), _document->lexerCol(), text) );
-                appendChild( new Word( _document, this, _document->dataName(),
+                appendChild( new TextWord( _document, this, _document->dataName(),
                     _document->lexerLine(), _document->lexerCol(), text2) );
             }
             std::wstring text( _colWidth[ count1 ], ch );
-            appendChild( new Word( _document, this, _document->dataName(),
+            appendChild( new TextWord( _document, this, _document->dataName(),
                 _document->lexerLine(), _document->lexerCol(), text) );
         }
         //right frame edge
         if( _frame ) {
-            appendChild( new Word( _document, this, _document->dataName(),
+            appendChild( new TextWord( _document, this, _document->dataName(),
                 _document->lexerLine(), _document->lexerCol(), text3) );
         }
     }
@@ -278,23 +278,23 @@ void Table::rowRule()
             printError( e._code );
         }
         //left frame edge
-        appendChild( new Word( _document, this, _document->dataName(),
+        appendChild( new TextWord( _document, this, _document->dataName(),
             _document->lexerLine(), _document->lexerCol(), text1 ) );
         //the columns
         if( !_colWidth.empty() ) {
             for( count1 = 0; count1 < _colWidth.size() - 1; ++count1 ) {
                 std::wstring text( _colWidth[ count1 ], ch );
-                appendChild( new Word( _document, this, _document->dataName(),
+                appendChild( new TextWord( _document, this, _document->dataName(),
                     _document->lexerLine(), _document->lexerCol(), text ) );
-                appendChild( new Word( _document, this, _document->dataName(),
+                appendChild( new TextWord( _document, this, _document->dataName(),
                     _document->lexerLine(), _document->lexerCol(), text2 ) );
             }
             std::wstring text( _colWidth[ count1 ], ch );
-            appendChild( new Word( _document, this, _document->dataName(),
+            appendChild( new TextWord( _document, this, _document->dataName(),
                 _document->lexerLine(), _document->lexerCol(), text ) );
         }
         //right frame edge
-        appendChild( new Word( _document, this, _document->dataName(),
+        appendChild( new TextWord( _document, this, _document->dataName(),
             _document->lexerLine(), _document->lexerCol(), text3 ) );
     }
     appendChild( new BrCmd( _document, this, _document->dataName(),
@@ -380,7 +380,7 @@ Lexer::Token TableRow::parse( Lexer* lexer )
         }
     }
     for( unsigned int count1 = 0; count1 < rows; ++count1 ) {
-        appendChild( new Word( _document, this, _document->dataName(),
+        appendChild( new TextWord( _document, this, _document->dataName(),
             _document->lexerLine(), _document->lexerCol(), text1) );
         for( unsigned int count2 = 0; count2 < _colWidth.size(); ++count2 ) {
             if( count1 < _columns[ count2 ]->rows() &&
@@ -395,12 +395,12 @@ Lexer::Token TableRow::parse( Lexer* lexer )
                     _document->lexerLine(), _document->lexerCol(), blank, _whiteSpace ) );
             }
             if( count2 < _colWidth.size() - 1 ) {
-                appendChild( new Word( _document, this, _document->dataName(),
+                appendChild( new TextWord( _document, this, _document->dataName(),
                     _document->lexerLine(), _document->lexerCol(), text2 ) );
             }
         }
         if( _frame == Table::BOX )
-            appendChild( new Word( _document, this, _document->dataName(),
+            appendChild( new TextWord( _document, this, _document->dataName(),
                 _document->lexerLine(), _document->lexerCol(), text1) );
         appendChild( new BrCmd( _document, this, _document->dataName(),
             _document->lexerLine(), _document->lexerCol() ) );
@@ -469,7 +469,7 @@ Lexer::Token TableCol::parse( Lexer* lexer )
                     _document->printError( ERR1_TABLECELLTEXTWIDTH );
                 }
                 if( textSize > 0 ) {
-                    appendData( cellLine, new Word( _document, this, _document->dataName(),
+                    appendData( cellLine, new TextWord( _document, this, _document->dataName(),
                         _document->lexerLine(), _document->lexerCol(), text ) );
                     spaces -= textSize;
                 }
@@ -492,7 +492,7 @@ Lexer::Token TableCol::parse( Lexer* lexer )
                     ++cellLine;
                     spaces = _colWidth;
                 }
-                appendData( cellLine, new Word( _document, this, _document->dataName(),
+                appendData( cellLine, new TextWord( _document, this, _document->dataName(),
                     _document->lexerLine(), _document->lexerCol(), text ) );
                 spaces -= textSize;
                 if( textSize < _colWidth && ( nextIsPunct || tok == Lexer::PUNCTUATION ) ) {

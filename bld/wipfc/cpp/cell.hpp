@@ -61,7 +61,7 @@ public:
     };
 
     //add a word to the local dictionary
-    void addWord( word index );
+    void addTextToLD( word index );
     //add a word to the encoded text
     void addText( word index );
     //set the cell's index (position in the list of cells)

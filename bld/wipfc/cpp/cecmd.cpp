@@ -57,7 +57,7 @@ void CeCmd::parseCommand( Lexer* lexer )
             appendChild( ws );
             tok = ws->parse( lexer );
         } else if( tok == Lexer::WORD ) {
-            Word* w( new Word( _document, this,
+            TextWord* w( new TextWord( _document, this,
                     _document->dataName(), _document->dataLine(), _document->dataCol() ) );
             appendChild( w );
             tok = w->parse( lexer );

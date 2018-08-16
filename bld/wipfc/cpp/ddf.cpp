@@ -59,8 +59,9 @@ Lexer::Token Ddf::parseAttributes( Lexer* lexer )
             splitAttribute( lexer->text(), key, value );
             if( key == L"res" ) {
                 _res = static_cast< word >( std::wcstoul( value.c_str(), 0, 10 ) );
-                if( _res < 1 || _res > 64000 )
+                if( _res < 1 || _res > 64000 ) {
                     _document->printError( ERR2_VALUE );
+                }
             } else {
                 _document->printError( ERR1_ATTRNOTDEF );
             }

@@ -72,7 +72,7 @@ Lexer::Token Entity::parse( Lexer* lexer )
                 _document->lastText()->setToggleSpacing();
             }
         }
-        _text = _document->addWord( new GlobalDictionaryWord( text ) );   //insert into global dictionary
+        _text = _document->addTextToGD( new GlobalDictionaryWord( text ) );   //insert into global dictionary
     }
     catch( Class2Error& e ) {
         _document->printError( e._code );

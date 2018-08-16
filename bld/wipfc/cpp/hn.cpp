@@ -298,18 +298,21 @@ Lexer::Token Hn::parseAttributes( Lexer* lexer )
                 _res = static_cast< word >( std::wcstoul( value.c_str(), 0, 10 ) );
                 if( _res < 1 || _res > 64000 )
                     _document->printError( ERR2_VALUE );
-                if( Hide::hiding() )
+                if( Hide::hiding() ) {
                     _document->printError( ERR1_HIDERES );
+                }
             } else if( key == L"id" ) {
                 _id = new GlobalDictionaryWord( value );
                 _id->toUpper();              //convert to upper case
-                if( !_document->isInf() )
-                    _id = _document->addWord( _id );
+                if( !_document->isInf() ) {
+                    _id = _document->addTextToGD( _id );
+                }
             } else if( key == L"name" ) {
                 _name = new GlobalDictionaryWord( value );
                 _name->toUpper();            //convert to upper case
-                if( !_document->isInf() )
-                    _name = _document->addWord( _name );
+                if( !_document->isInf() ) {
+                    _name = _document->addTextToGD( _name );
+                }
             } else if( key == L"tutorial" ) {
                 _toc.extended = 1;
                 _etoc.setTutor = 1;
@@ -344,8 +347,9 @@ Lexer::Token Hn::parseAttributes( Lexer* lexer )
                         _document->printError( ERR2_VALUE );
                     }
                 }
-                if( dx && _origin.xPosType == ExtTocEntry::DYNAMIC && _size.widthType != ExtTocEntry::RELATIVE_PERCENT )
+                if( dx && _origin.xPosType == ExtTocEntry::DYNAMIC && _size.widthType != ExtTocEntry::RELATIVE_PERCENT ) {
                     _document->printError( ERR3_MIXEDUNITS );
+                }
             } else if( key == L"y" ) {
                 yorg = true;
                 _toc.extended = 1;

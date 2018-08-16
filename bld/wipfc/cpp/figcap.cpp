@@ -50,7 +50,7 @@ Lexer::Token Figcap::parse( Lexer* lexer )
     while( tok != Lexer::END ) {
         //may contain inline, not block
         if( tok == Lexer::WORD ) {
-            Word* w( new Word( _document, this, _document->dataName(),
+            TextWord* w( new TextWord( _document, this, _document->dataName(),
                 _document->dataLine(), _document->dataCol() ) );
             appendChild( w );
             tok = w->parse( lexer );

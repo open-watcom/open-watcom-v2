@@ -208,7 +208,7 @@ Lexer::Token OlLi::parse( Lexer* lexer )
         text.push_back( _document->olChar( _itemNumber ) );
         appendChild( new LiteralWhiteSpace( _document, this, _document->dataName(),
             _document->dataLine(), _document->dataCol(), true ) );
-        appendChild( new Word( _document, this, _document->dataName(),
+        appendChild( new TextWord( _document, this, _document->dataName(),
             _document->dataLine(), _document->dataCol(), text, false ) );
         appendChild( new Punctuation( _document, this, _document->dataName(),
             _document->dataLine(), _document->dataCol(), _document->olClose( _nestLevel ), true ) );
@@ -219,7 +219,7 @@ Lexer::Token OlLi::parse( Lexer* lexer )
         if( _itemNumber < 9 )
             appendChild( new LiteralWhiteSpace( _document, this, _document->dataName(),
                 _document->dataLine(), _document->dataCol(), true ) );
-        appendChild( new Word( _document, this, _document->dataName(),
+        appendChild( new TextWord( _document, this, _document->dataName(),
             _document->dataLine(), _document->dataCol(), text, _itemNumber >= 9 ) );
         appendChild( new Punctuation( _document, this, _document->dataName(),
             _document->dataLine(), _document->dataCol(), _document->olClose( _nestLevel ), true ) );

@@ -52,7 +52,7 @@ public:
     ~Page() { };
     void addElement( Element* e ) { _elements.push_back( e ); };
     //add a word to the local dictionary
-    bool addWord( GlobalDictionaryWord* gdentry );
+    bool addTextToLD( GlobalDictionaryWord* gdentry );
     //the page title
     void setTitle( std::wstring& t ) { _title = t; };
     //copy data from the Hn or Fn tag

@@ -67,12 +67,12 @@ void Page::buildLocalDictionary( OutFile* out )
     _toc.cellCount = static_cast< byte >( _cells.size() );
 }
 /***************************************************************************/
-bool Page::addWord( GlobalDictionaryWord* gdentry )
+bool Page::addTextToLD( GlobalDictionaryWord* gdentry )
 {
     if( gdentry ) {    //can be 0 for unrecognized entity references
         if( _currentCell->dictFull() )
             return( true );
-        _currentCell->addWord( gdentry->index() );
+        _currentCell->addTextToLD( gdentry->index() );
         gdentry->onPage( _index );
     }
     return( false );

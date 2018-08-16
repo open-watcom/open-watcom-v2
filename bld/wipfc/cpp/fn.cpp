@@ -76,7 +76,7 @@ Lexer::Token Fn::parseAttributes( Lexer* lexer )
                 _id = new GlobalDictionaryWord( value );
                 _id->toUpper();          //to uppercase
                 if( !_document->isInf() ) {
-                    _id = _document->addWord( _id );
+                    _id = _document->addTextToGD( _id );
                 }
             } else {
                 _document->printError( ERR1_ATTRNOTDEF );
