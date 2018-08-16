@@ -146,8 +146,9 @@ Lexer::Token AcViewport::parseAttributes( Lexer* lexer )
                         _document->printError( ERR2_VALUE );
                     }
                 }
-                if( dy && _origin.yPosType == ExtTocEntry::DYNAMIC && _size.heightType != ExtTocEntry::RELATIVE_PERCENT )
+                if( dy && _origin.yPosType == ExtTocEntry::DYNAMIC && _size.heightType != ExtTocEntry::RELATIVE_PERCENT ) {
                     _document->printError( ERR3_MIXEDUNITS );
+                }
             } else if( key == L"vpcx" ) {
                 _doSize = true;
                 dx = true;
@@ -173,8 +174,9 @@ Lexer::Token AcViewport::parseAttributes( Lexer* lexer )
                         _document->printError( ERR2_VALUE );
                     }
                 }
-                if( xorg && _origin.xPosType == ExtTocEntry::DYNAMIC && _size.widthType != ExtTocEntry::RELATIVE_PERCENT )
+                if( xorg && _origin.xPosType == ExtTocEntry::DYNAMIC && _size.widthType != ExtTocEntry::RELATIVE_PERCENT ) {
                     _document->printError( ERR3_MIXEDUNITS );
+                }
             } else if( key == L"vpcy" ) {
                 _doSize = true;
                 dy = true;
@@ -200,8 +202,9 @@ Lexer::Token AcViewport::parseAttributes( Lexer* lexer )
                         _document->printError( ERR2_VALUE );
                     }
                 }
-                if( yorg && _origin.yPosType == ExtTocEntry::DYNAMIC && _size.heightType != ExtTocEntry::RELATIVE_PERCENT )
+                if( yorg && _origin.yPosType == ExtTocEntry::DYNAMIC && _size.heightType != ExtTocEntry::RELATIVE_PERCENT ) {
                     _document->printError( ERR3_MIXEDUNITS );
+                }
             } else {
                 _document->printError( ERR1_ATTRNOTDEF );
             }

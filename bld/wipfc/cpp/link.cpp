@@ -75,8 +75,9 @@
 
 Link::~Link()
 {
-    if( _document->isInf() )
+    if( _document->isInf() ) {
         delete _refid;
+    }
 }
 /***************************************************************************/
 Lexer::Token Link::parse( Lexer* lexer )
@@ -187,8 +188,9 @@ Lexer::Token Link::parseAttributes( Lexer* lexer )
                         _document->printError( ERR2_VALUE );
                     }
                 }
-                if( dx && _origin.xPosType == ExtTocEntry::DYNAMIC && _size.widthType != ExtTocEntry::RELATIVE_PERCENT )
+                if( dx && _origin.xPosType == ExtTocEntry::DYNAMIC && _size.widthType != ExtTocEntry::RELATIVE_PERCENT ) {
                     _document->printError( ERR3_MIXEDUNITS );
+                }
             } else if( key == L"vpy" ) {
                 _doOrigin = true;
                 yorg = true;
@@ -247,8 +249,9 @@ Lexer::Token Link::parseAttributes( Lexer* lexer )
                         _document->printError( ERR2_VALUE );
                     }
                 }
-                if( xorg && _origin.xPosType == ExtTocEntry::DYNAMIC && _size.widthType != ExtTocEntry::RELATIVE_PERCENT )
+                if( xorg && _origin.xPosType == ExtTocEntry::DYNAMIC && _size.widthType != ExtTocEntry::RELATIVE_PERCENT ) {
                     _document->printError( ERR3_MIXEDUNITS );
+                }
             } else if( key == L"vpcy" ) {
                 _doSize = true;
                 dy = true;
