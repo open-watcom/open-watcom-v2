@@ -614,8 +614,7 @@ void Document::makeBitmaps()
             throw FatalIOError( ERR_OPEN, L"(temporary file for bitmaps)" );
         try {
             for( BitmapNameIter itr = _bitmapNames.begin(); itr != _bitmapNames.end(); ++itr ) {
-                std::string fname;
-                def_wtomb_string( itr->first, fname );
+                std::string fname( def_wtomb_string( itr->first ) );
                 for( std::size_t count = 0; count < _ipfcartwork_paths.size(); ++count ) {
                     std::string fullname( _ipfcartwork_paths[count] );
                     fullname += fname;
@@ -864,8 +863,7 @@ void Document::parseCommand( Lexer* lexer, Tag* parent )
         cecmd->parseCommand( lexer );
     } else if( lexer->cmdId() == Lexer::IMBED ) {
         for( std::size_t count = 0; count < _ipfcimbed_paths.size(); ++count ) {
-            std::string sname;
-            def_wtomb_string( lexer->text(), sname );
+            std::string sname( def_wtomb_string( lexer->text() ) );
             std::string sfname( _ipfcimbed_paths[count] + sname );
 #if !defined( __UNIX__ ) && !defined( __APPLE__ )
             if( sfname.size() > PATH_MAX ) {

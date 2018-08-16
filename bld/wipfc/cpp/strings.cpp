@@ -43,8 +43,7 @@ StringTable::dword StringTable::write( OutFile* out )
         return 0L;
     dword start( out->tell() );
     for( ConstTableIter itr = _table.begin(); itr != _table.end(); ++itr ) {
-        std::string buffer;
-        out->wtomb_string( *itr, buffer );
+        std::string buffer( out->wtomb_string( *itr ) );
         if( buffer.size() > ( 255 - 1 ) )
             buffer.erase( 255 - 1 );
         std::size_t length = buffer.size() + 1;

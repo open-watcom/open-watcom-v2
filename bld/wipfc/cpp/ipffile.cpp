@@ -49,8 +49,7 @@ IpfFile::IpfFile( const std::wstring* wfname, Nls *nls ) : IpfData(),
 {
     (void)nls;
 
-    std::string sfname;
-    def_wtomb_string( *_fileName, sfname );
+    std::string sfname( def_wtomb_string( *_fileName ) );
     if( (_stream = std::fopen( sfname.c_str(), "rb" )) == 0 ) {
         throw FatalIOError( ERR_OPEN, *_fileName );
     }

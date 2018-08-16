@@ -40,11 +40,10 @@ void Synonym::write( OutFile* out )
     // convert wide vector _synonyms to mbcs vector synonyms
     std::vector< std::string > synonyms;
     for( SynonymWIter itr = _synonyms.begin(); itr != _synonyms.end(); ++itr ) {
-        std::string text;
-        out->wtomb_string( *itr, text );
-        if( text.size() > 255 )
-            text.erase( 255 );
-        synonyms.push_back( text );
+        std::string buffer( out->wtomb_string( *itr ) );
+        if( buffer.size() > 255 )
+            buffer.erase( 255 );
+        synonyms.push_back( buffer );
     }
     // process mbcs vector
     _offset = out->tell();

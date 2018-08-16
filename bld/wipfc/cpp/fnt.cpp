@@ -39,9 +39,7 @@
 FontEntry::dword FontEntry::write( OutFile* out ) const
 {
     char            faceName[MAX_FACENAME_SIZE];    //null terminated
-    std::string     buffer;
-
-    out->wtomb_string( _faceName, buffer );
+    std::string     buffer( out->wtomb_string( _faceName ) );
     std::strncpy( faceName, buffer.c_str(), MAX_FACENAME_SIZE - 1 );
     faceName[MAX_FACENAME_SIZE - 1] = '\0';
     if( out->write( faceName, sizeof( faceName ), 1 ) )

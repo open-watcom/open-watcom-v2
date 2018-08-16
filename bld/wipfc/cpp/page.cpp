@@ -100,8 +100,7 @@ Page::dword Page::write( OutFile* out )
     // add cells size
     tocsize += _cells.size() * sizeof( word );
     // add title size
-    std::string title;
-    out->wtomb_string( _title, title );
+    std::string title( out->wtomb_string( _title ) );
     if( tocsize + title.size() > 255 ) {
         Hn* hn( static_cast< Hn* >( *( _elements.begin() ) ) );
         hn->printError( ERR2_TEXTTOOLONG );

@@ -91,8 +91,7 @@ Lexer::Token Title::parse( Lexer* lexer )
 void Title::build( OutFile *out )
 {
     //build Title
-    std::string buffer;
-    out->wtomb_string( _text, buffer );
+    std::string buffer( out->wtomb_string( _text ) );
     if( buffer.size() > TITLE_SIZE - 1 )
         _document->printError( ERR2_TEXTTOOLONG );
     _document->setTitle( buffer );

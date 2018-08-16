@@ -24,8 +24,8 @@ public:
     bool put( dword data ) { return( std::fwrite( &data, sizeof( data ), 1, _ufp->_fp ) != 1 ); };
     bool codePage( word codePage );
     int seek( dword offset, int where ) { return std::fseek( _ufp->_fp, offset, where ); };
-    // UNICODE<->MBCS conversion
-    void         wtomb_string( const std::wstring& input, std::string& output );
+    // UNICODE->MBCS conversion
+    std::string wtomb_string( const std::wstring& input );
 
 private:
     UNIFILE*            _ufp;

@@ -162,7 +162,7 @@ public:
 
     //To ExternalFiles
     void addExtFile( std::wstring& str ) { _extfiles->addFile( str ); };
-    word extFileIndex( std::wstring& str ) { return _extfiles->index( str ); };
+    byte extFileIndex( std::wstring& str ) { return _extfiles->index( str ); };
 
     //To FontCollection
     std::size_t addFont( const FontEntry& fnt ) { return _fonts->add( fnt ); };

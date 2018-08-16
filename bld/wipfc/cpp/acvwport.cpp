@@ -222,18 +222,18 @@ void AcViewport::buildText( Cell* cell )
         // convert wide strings to mbcs
         std::string objectName;
         if( !_objectName.empty() ) {
-            cell->out()->wtomb_string( _objectName, objectName );
+            objectName = cell->out()->wtomb_string( _objectName );
         }
         std::string dll;
         if( !_dll.empty() ) {
-            cell->out()->wtomb_string( _dll, dll );
+            dll = cell->out()->wtomb_string( _dll );
         }
         std::string objectInfo;
         if( !_objectInfo.empty() ) {
-            cell->out()->wtomb_string( _objectInfo, objectInfo );
+            objectInfo = cell->out()->wtomb_string( _objectInfo );
         }
         byte dataSize = static_cast< byte >( objectName.size() + 1 + dll.size() + 1 + objectInfo.size() + 1 );
-        // process esc text        
+        // process esc text
         std::vector< byte > esc;
         esc.reserve( 3 + 4 + dataSize + 2 + sizeof( PageOrigin ) + sizeof( PageSize ) );
         esc.push_back( 0xFF );          //ESC

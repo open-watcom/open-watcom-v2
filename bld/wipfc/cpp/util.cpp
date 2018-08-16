@@ -187,9 +187,10 @@ wchar_t *skipWS( wchar_t *text )
 
 // this conversion must use user profile locale/codepage
 // it is used for command line arguments and for file path/name
-void def_wtomb_string( const std::wstring& input, std::string& output )
-/*********************************************************************/
+std::string def_wtomb_string( const std::wstring& input )
+/*******************************************************/
 {
+    std::string output;
     for( std::size_t index = 0; index < input.size(); ++index ) {
         char ch[MB_LEN_MAX + 1];
         int  bytes( std::wctomb( &ch[0], input[index] ) );
@@ -198,6 +199,7 @@ void def_wtomb_string( const std::wstring& input, std::string& output )
         ch[bytes] = '\0';
         output += ch;
     }
+    return( output );
 }
 
 // this conversion must use user profile locale/codepage

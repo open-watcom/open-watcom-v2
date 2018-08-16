@@ -57,7 +57,7 @@ extern std::string  canonicalPath( char* arg );
 extern char         *skipWS( char *text );
 extern wchar_t      *skipWS( wchar_t *text );
 
-extern void         def_wtomb_string( const std::wstring& input, std::string& output );
+extern std::string  def_wtomb_string( const std::wstring& input );
 extern void         def_mbtow_string( const std::string& input, std::wstring& output );
 
 #endif //UTIL_INCLUDED

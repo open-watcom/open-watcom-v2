@@ -47,9 +47,10 @@ static int wtomb_char( char *mbc, wchar_t wc )
     return( std::wctomb( mbc, wc ) );
 }
 
-void OutFile::wtomb_string( const std::wstring& input, std::string& output )
-/**************************************************************************/
+std::string OutFile::wtomb_string( const std::wstring& input )
+/************************************************************/
 {
+    std::string output;
     for( std::size_t index = 0; index < input.size(); ++index ) {
         char ch[ MB_LEN_MAX + 1 ];
         int  bytes( wtomb_char( &ch[ 0 ], input[ index ] ) );
@@ -58,4 +59,5 @@ void OutFile::wtomb_string( const std::wstring& input, std::string& output )
         ch[ bytes ] = '\0';
         output += ch;
     }
+    return( output );
 }

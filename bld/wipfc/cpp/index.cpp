@@ -112,18 +112,16 @@ int IndexItem::wstricmp( const wchar_t *s, const wchar_t *t ) const
 IndexItem::dword IndexItem::write( OutFile* out )
 {
     std::string buffer1;
-    std::string buffer2;
     std::size_t length1( 0 );
-    std::size_t length2( 0 );
+    std::string buffer2( out->wtomb_string( _text ) );
+    std::size_t length2 = buffer2.size();
     if( _hdr.sortKey ) {
-        out->wtomb_string( _sortKey, buffer1 );
+        buffer1 = out->wtomb_string( _sortKey );
         length1 = buffer1.size() + 1;   // add len byte
         if( length1 > 255 ) {
             length1 = 255;
         }
     }
-    out->wtomb_string( _text, buffer2 );
-    length2 = buffer2.size();
     if( length1 + length2 > 255 )
         length2 = 255 - length1;
     _hdr.size = static_cast< byte >( length1 + length2 );

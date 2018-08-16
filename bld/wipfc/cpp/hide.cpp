@@ -94,8 +94,7 @@ Lexer::Token Hide::parse( Lexer* lexer )
 //How are multiple pass-phrases encoded? Assuming + left in place...
 void Hide::buildText( Cell* cell )
 {
-    std::string buffer;
-    cell->out()->wtomb_string( _keyPhrase, buffer );
+    std::string buffer( cell->out()->wtomb_string( _keyPhrase ) );
     if( buffer.size() > ( 255 - 2 ) )
         buffer.erase( 255 - 2 );
     std::size_t length = buffer.size();

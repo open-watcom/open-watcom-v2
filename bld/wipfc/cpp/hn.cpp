@@ -594,8 +594,7 @@ void Hn::buildTOC( Page* page )
 void Hn::buildText( Cell* cell )
 {
     if( _etoc.setTutor ) {
-        std::string buffer;
-        cell->out()->wtomb_string( _tutorial, buffer );
+        std::string buffer( cell->out()->wtomb_string( _tutorial ) );
         if( buffer.size() > ( 255 - 2 ) )
             buffer.erase( 255 - 2 );
         std::size_t length = buffer.size();

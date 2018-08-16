@@ -48,7 +48,7 @@ class ExternalFiles {
 public:
     ExternalFiles() : _bytes( 0 ) { };
     //need to get index by name
-    word index( std::wstring& key ) { return _table[ key ]; };
+    byte index( std::wstring& key ) { return _table[key]; };
     //add the name of an external database to the collection
     void addFile( std::wstring& str );
     //assign indexes to each entry
@@ -62,9 +62,9 @@ private:
     ExternalFiles( const ExternalFiles& rhs );              //no copy
     ExternalFiles& operator=( const ExternalFiles& rhs );   //no assignment
 
-    std::map< std::wstring, word >  _table;
-    typedef std::map< std::wstring, word >::iterator TableIter;
-    typedef std::map< std::wstring, word >::const_iterator ConstTableIter;
+    std::map< std::wstring, byte >  _table;
+    typedef std::map< std::wstring, byte >::iterator TableIter;
+    typedef std::map< std::wstring, byte >::const_iterator ConstTableIter;
     dword                           _bytes;     //total length when written to disk
 };
 

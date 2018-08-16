@@ -42,8 +42,7 @@ ControlButton::dword ControlButton::write( OutFile* out ) const
         throw FatalError( ERR_WRITE );
     if( out->put( _res ) )
         throw FatalError( ERR_WRITE );
-    std::string buffer;
-    out->wtomb_string( _text, buffer );
+    std::string buffer( out->wtomb_string( _text ) );
     if( buffer.size() > 255 )
         buffer.erase( 255 );
     std::size_t length( buffer.size() );

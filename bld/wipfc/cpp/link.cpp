@@ -495,11 +495,8 @@ void Link::doTopic( Cell* cell )
                     esc.push_back( 0x16 );  //full bitmap
                 }
             }
-            word index( _document->extFileIndex( _database ) );
-            esc.push_back( static_cast< byte >( index ) );
-            //esc.push_back( static_cast< byte >( index >> 8 ) );
-            std::string buffer;
-            cell->out()->wtomb_string( _refid->getText(), buffer );
+            esc.push_back( _document->extFileIndex( _database ) );
+            std::string buffer( cell->out()->wtomb_string( _refid->getText() ) );
             std::size_t tmpsize( buffer.size() );
             if( _hypergraphic && ( _x || _y || _cx || _cy ) ) {
                 if( tmpsize > 255 - (( esc.size() + 9 ) - 1 ) ) {
@@ -613,11 +610,9 @@ void Link::doLaunch( Cell* cell )
             esc.push_back( static_cast< byte >( _cy ) );
             esc.push_back( static_cast< byte >( _cy >> 8 ) );
         }
-        std::string buffer;
-        cell->out()->wtomb_string( _object, buffer );
+        std::string buffer( cell->out()->wtomb_string( _object ) );
         buffer += ' ';
-        std::string tmp;
-        cell->out()->wtomb_string( _data, tmp );
+        std::string tmp( cell->out()->wtomb_string( _data ) );
         buffer += tmp;
         std::size_t buffersize( buffer.size() );
         if( buffersize > 255 - esc.size() + 1 ) {

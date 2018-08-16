@@ -40,8 +40,8 @@
 void ExternalFiles::addFile( std::wstring& str )
 {
     if( _table.find( str ) == _table.end() ) {
-        _table.insert( std::map< std::wstring, word >::value_type( str, 0 ) );
-        if( _table.size() >= 256 ) {
+        _table.insert( std::map< std::wstring, byte >::value_type( str, 0 ) );
+        if( _table.size() > 255 ) {
             throw Class1Error( ERR1_EXTFILESLARGE );
         }
     }
@@ -49,7 +49,7 @@ void ExternalFiles::addFile( std::wstring& str )
 /***************************************************************************/
 void ExternalFiles::convert()
 {
-    word count1( 0 );
+    byte count1( 0 );
     for( TableIter itr = _table.begin(); itr != _table.end(); ++itr, ++count1 ) {
         itr->second = count1;
     }
@@ -61,8 +61,7 @@ ExternalFiles::dword ExternalFiles::write( OutFile* out )
         return 0;
     dword start( out->tell() );
     for( ConstTableIter itr = _table.begin(); itr != _table.end(); ++itr ) {
-        std::string buffer;
-        out->wtomb_string( itr->first, buffer );
+        std::string buffer( out->wtomb_string( itr->first ) );
         if( buffer.size() > ( 255 - 1 ) )
             buffer.erase( 255 - 1 );
         std::size_t length( buffer.size() + 1 );
