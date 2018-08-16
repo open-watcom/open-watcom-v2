@@ -32,7 +32,9 @@
 #ifndef DATAENC_INCLUDED
 #define DATAENC_INCLUDED
 
+#include <string>
 #include "hotspot.hpp"
+
 
 class DataEncode {
     typedef STD1::uint8_t   byte;

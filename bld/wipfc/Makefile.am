@@ -33,7 +33,7 @@ noinst_HEADERS = cpp/compiler.hpp cpp/document.hpp cpp/env.hpp cpp/ipfbuff.hpp \
         cpp/lines.hpp cpp/link.hpp cpp/lm.hpp cpp/lp.hpp cpp/note.hpp cpp/nt.hpp \
         cpp/ol.hpp cpp/p.hpp cpp/parml.hpp cpp/pbutton.hpp cpp/rm.hpp cpp/sl.hpp \
         cpp/table.hpp cpp/title.hpp cpp/ul.hpp cpp/warning.hpp cpp/wipfc.hpp cpp/xmp.hpp \
-        cpp/cntrydef.hpp cpp/outfile.hpp
+        cpp/cntrydef.hpp cpp/outfile.hpp cpp/dataenc.hpp
 wipfcdir = $datadir/wipfc
 dist_wipfc_DATA = helper/de_DE.nls helper/en_GB.nls helper/en_US.nls helper/fr_CA.nls \
         helper/fr_FR.nls helper/ja_JA.nls helper/xx_YY.nls helper/enti0932.txt \
