@@ -61,6 +61,8 @@
 
 #include "tag.hpp"
 #include "toc.hpp"
+#include "hotspot.hpp"
+
 
 class GlobalDictionaryWord; //forward references
 
@@ -78,7 +80,7 @@ public:
     };
     Link( Document* d, Element *p, const std::wstring* f, unsigned int r,
         unsigned int c, WsHandling ws = Tag::NONE ) : Tag( d, p, f, r, c, ws ),
-        _refid( 0 ), _res( 0 ), _x( 0 ), _y( 0 ), _cx( 0 ), _cy( 0 ), _type( TOPIC ),
+        _refid( 0 ), _res( 0 ), _hspot( 0, 0, 0, 0 ), _type( TOPIC ),
         _automatic( false ), _child( false ), _dependent( false ), _doGroup( false ),
         _doOrigin( false ), _doSize( false ), _doStyle( false ), _split( false ),
         _viewport( false ), _noElink( false ), _hypergraphic( false ) { };
@@ -107,10 +109,7 @@ private:
     PageGroup               _group;
     GlobalDictionaryWord*   _refid;         //of link target
     word                    _res;           //of link target
-    word                    _x;             //hypergraphic hotspot
-    word                    _y;
-    word                    _cx;
-    word                    _cy;
+    Hotspot                 _hspot;         //hypergraphic hotspot
     LinkType                _type;
     bool                    _automatic;
     bool                    _child;

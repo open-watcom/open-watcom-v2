@@ -279,16 +279,16 @@ Lexer::Token Link::parseAttributes( Lexer* lexer )
                 }
             } else if( key == L"x" ) {
                 _hypergraphic = true;
-                _x = static_cast< word >( std::wcstoul( value.c_str(), 0, 10 ) );
+                _hspot.x = static_cast< word >( std::wcstoul( value.c_str(), 0, 10 ) );
             } else if( key == L"y" ) {
                 _hypergraphic = true;
-                _y = static_cast< word >( std::wcstoul( value.c_str(), 0, 10 ) );
+                _hspot.y = static_cast< word >( std::wcstoul( value.c_str(), 0, 10 ) );
             } else if( key == L"cx" ) {
                 _hypergraphic = true;
-                _cx = static_cast< word >( std::wcstoul( value.c_str(), 0, 10 ) );
+                _hspot.cx = static_cast< word >( std::wcstoul( value.c_str(), 0, 10 ) );
             } else if( key == L"cy" ) {
                 _hypergraphic = true;
-                _cy = static_cast< word >( std::wcstoul( value.c_str(), 0, 10 ) );
+                _hspot.cy = static_cast< word >( std::wcstoul( value.c_str(), 0, 10 ) );
             } else if( key == L"titlebar" ) {
                 _doStyle = true;
                 if( value == L"yes" ) {
@@ -393,14 +393,14 @@ void Link::doTopic( Cell* cell )
                     _document->addXRef( _res, xref );
                 }
                 std::vector< byte > esc;
-                esc.reserve( 7 + sizeof( PageOrigin ) + sizeof( PageSize ) +
+                esc.reserve( 7 + _hspot.size( _hypergraphic ) + sizeof( PageOrigin ) + sizeof( PageSize ) +
                     sizeof( PageStyle ) + sizeof( PageGroup ) );
                 esc.push_back( 0xFF );      //ESC
                 esc.push_back( 4 );         //size
                 if( !_hypergraphic ) {
                     esc.push_back( 0x05 );  //text link
                 } else {
-                    if( _x || _y || _cx || _cy ) {
+                    if( _hspot.isDef( true ) ) {
                         esc.push_back( 0x01 );  //partial bitmap
                     } else {
                         esc.push_back( 0x04 );  //full bitmap
@@ -409,15 +409,15 @@ void Link::doTopic( Cell* cell )
                 esc.push_back( static_cast< byte >( tocIndex ) );
                 esc.push_back( static_cast< byte >( tocIndex >> 8 ) );
                 //this may need to be last
-                if( _hypergraphic && ( _x || _y || _cx || _cy ) ) {
-                    esc.push_back( static_cast< byte >( _x ) );
-                    esc.push_back( static_cast< byte >( _x >> 8 ) );
-                    esc.push_back( static_cast< byte >( _y ) );
-                    esc.push_back( static_cast< byte >( _y >> 8 ) );
-                    esc.push_back( static_cast< byte >( _cx ) );
-                    esc.push_back( static_cast< byte >( _cx >> 8 ) );
-                    esc.push_back( static_cast< byte >( _cy ) );
-                    esc.push_back( static_cast< byte >( _cy >> 8 ) );
+                if( _hspot.isDef( _hypergraphic ) ) {
+                    esc.push_back( static_cast< byte >( _hspot.x ) );
+                    esc.push_back( static_cast< byte >( _hspot.x >> 8 ) );
+                    esc.push_back( static_cast< byte >( _hspot.y ) );
+                    esc.push_back( static_cast< byte >( _hspot.y >> 8 ) );
+                    esc.push_back( static_cast< byte >( _hspot.cx ) );
+                    esc.push_back( static_cast< byte >( _hspot.cx >> 8 ) );
+                    esc.push_back( static_cast< byte >( _hspot.cy ) );
+                    esc.push_back( static_cast< byte >( _hspot.cy >> 8 ) );
                 }
                 if( _viewport || _doStyle || _automatic || _split || _doOrigin || _doSize ||
                     _dependent || _doGroup ) {
@@ -482,14 +482,14 @@ void Link::doTopic( Cell* cell )
             }
         } else {                              //jump to external link
             std::vector< byte > esc;
-            esc.reserve( 7 );
+            esc.reserve( 7 +  _hspot.size( _hypergraphic ) );
             esc.push_back( 0xFF );          //ESC
             esc.push_back( 4 );             //size
             if( !_hypergraphic ) {
                 esc.push_back( 0x1F );      //text link
             } else {
                 esc.push_back( 0x0F );      //hypergraphic link
-                if( _x || _y || _cx || _cy ) {
+                if( _hspot.isDef( true ) ) {
                     esc.push_back( 0x17 );  //partial bitmap
                 } else {
                     esc.push_back( 0x16 );  //full bitmap
@@ -498,24 +498,19 @@ void Link::doTopic( Cell* cell )
             esc.push_back( _document->extFileIndex( _database ) );
             std::string buffer( cell->out()->wtomb_string( _refid->getText() ) );
             std::size_t tmpsize( buffer.size() );
-            if( _hypergraphic && ( _x || _y || _cx || _cy ) ) {
-                if( tmpsize > 255 - (( esc.size() + 9 ) - 1 ) ) {
-                    tmpsize = 255 - (( esc.size() + 9 ) - 1 );
-                }
-                esc.push_back( static_cast< byte >( tmpsize ) );
-                esc.push_back( static_cast< byte >( _x ) );
-                esc.push_back( static_cast< byte >( _x >> 8 ) );
-                esc.push_back( static_cast< byte >( _y ) );
-                esc.push_back( static_cast< byte >( _y >> 8 ) );
-                esc.push_back( static_cast< byte >( _cx ) );
-                esc.push_back( static_cast< byte >( _cx >> 8 ) );
-                esc.push_back( static_cast< byte >( _cy ) );
-                esc.push_back( static_cast< byte >( _cy >> 8 ) );
-            } else {
-                if( tmpsize > 255 - (( esc.size() + 1 ) - 1 ) ) {
-                    tmpsize = 255 - (( esc.size() + 1 ) - 1 );
-                }
-                esc.push_back( static_cast< byte >( tmpsize ) );
+            if( tmpsize > 255 - (( esc.size() + _hspot.size( _hypergraphic ) + 1 ) - 1 ) ) {
+                tmpsize = 255 - (( esc.size() + _hspot.size( _hypergraphic ) + 1 ) - 1 );
+            }
+            esc.push_back( static_cast< byte >( tmpsize ) );
+            if( _hspot.isDef( _hypergraphic ) ) {
+                esc.push_back( static_cast< byte >( _hspot.x ) );
+                esc.push_back( static_cast< byte >( _hspot.x >> 8 ) );
+                esc.push_back( static_cast< byte >( _hspot.y ) );
+                esc.push_back( static_cast< byte >( _hspot.y >> 8 ) );
+                esc.push_back( static_cast< byte >( _hspot.cx ) );
+                esc.push_back( static_cast< byte >( _hspot.cx >> 8 ) );
+                esc.push_back( static_cast< byte >( _hspot.cy ) );
+                esc.push_back( static_cast< byte >( _hspot.cy >> 8 ) );
             }
             for( std::size_t count1 = 0; count1 < tmpsize; count1++ )
                 esc.push_back( static_cast< byte >( buffer[count1] ) );
@@ -544,13 +539,13 @@ void Link::doFootnote( Cell* cell )
                 _document->addXRef( _res, xref );
             }
             std::vector< byte > esc;
-            esc.reserve( 5 );
+            esc.reserve( 5 + _hspot.size( _hypergraphic ) );
             esc.push_back( 0xFF );          //ESC
             esc.push_back( 4 );             //size
             if( !_hypergraphic ) {
                 esc.push_back( 0x07 );      //text link
             } else {
-                if( _x || _y || _cx || _cy ) {
+                if( _hspot.isDef( true ) ) {
                     esc.push_back( 0x02 );  //partial bitmap
                 } else {
                     esc.push_back( 0x05 );  //full bitmap
@@ -558,15 +553,15 @@ void Link::doFootnote( Cell* cell )
             }
             esc.push_back( static_cast< byte >( tocIndex ) );
             esc.push_back( static_cast< byte >( tocIndex >> 8 ) );
-            if( _hypergraphic && ( _x || _y || _cx || _cy ) ) {
-                esc.push_back( static_cast< byte >( _x ) );
-                esc.push_back( static_cast< byte >( _x >> 8 ) );
-                esc.push_back( static_cast< byte >( _y ) );
-                esc.push_back( static_cast< byte >( _y >> 8 ) );
-                esc.push_back( static_cast< byte >( _cx ) );
-                esc.push_back( static_cast< byte >( _cx >> 8 ) );
-                esc.push_back( static_cast< byte >( _cy ) );
-                esc.push_back( static_cast< byte >( _cy >> 8 ) );
+            if( _hspot.isDef( _hypergraphic ) ) {
+                esc.push_back( static_cast< byte >( _hspot.x ) );
+                esc.push_back( static_cast< byte >( _hspot.x >> 8 ) );
+                esc.push_back( static_cast< byte >( _hspot.y ) );
+                esc.push_back( static_cast< byte >( _hspot.y >> 8 ) );
+                esc.push_back( static_cast< byte >( _hspot.cx ) );
+                esc.push_back( static_cast< byte >( _hspot.cx >> 8 ) );
+                esc.push_back( static_cast< byte >( _hspot.cy ) );
+                esc.push_back( static_cast< byte >( _hspot.cy >> 8 ) );
             }
             esc[1] = static_cast< byte >( esc.size() - 1 );
             cell->addEsc( esc );
@@ -586,29 +581,29 @@ void Link::doLaunch( Cell* cell )
 {
     if( _object.size() && _data.size() ) {  //both are required
         std::vector< byte > esc;
-        esc.reserve( 6 );
+        esc.reserve( 6 + _hspot.size( _hypergraphic ) );
         esc.push_back( 0xFF );          //ESC
         esc.push_back( 3 );             //size
         if( !_hypergraphic ) {
             esc.push_back( 0x10 );      //text link
         } else {
             esc.push_back( 0x0F );      //hypergraphic link
-            if( _x || _y || _cx || _cy ) {
+            if( _hspot.isDef( true ) ) {
                 esc.push_back( 0x08 );  //partial bitmap
             } else {
                 esc.push_back( 0x07 );  //full bitmap
             }
         }
         esc.push_back( 0x00 );          //blank byte
-        if( _hypergraphic && ( _x || _y || _cx || _cy ) ) {
-            esc.push_back( static_cast< byte >( _x ) );
-            esc.push_back( static_cast< byte >( _x >> 8 ) );
-            esc.push_back( static_cast< byte >( _y ) );
-            esc.push_back( static_cast< byte >( _y >> 8 ) );
-            esc.push_back( static_cast< byte >( _cx ) );
-            esc.push_back( static_cast< byte >( _cx >> 8 ) );
-            esc.push_back( static_cast< byte >( _cy ) );
-            esc.push_back( static_cast< byte >( _cy >> 8 ) );
+        if( _hspot.isDef( _hypergraphic ) ) {
+            esc.push_back( static_cast< byte >( _hspot.x ) );
+            esc.push_back( static_cast< byte >( _hspot.x >> 8 ) );
+            esc.push_back( static_cast< byte >( _hspot.y ) );
+            esc.push_back( static_cast< byte >( _hspot.y >> 8 ) );
+            esc.push_back( static_cast< byte >( _hspot.cx ) );
+            esc.push_back( static_cast< byte >( _hspot.cx >> 8 ) );
+            esc.push_back( static_cast< byte >( _hspot.cy ) );
+            esc.push_back( static_cast< byte >( _hspot.cy >> 8 ) );
         }
         std::string buffer( cell->out()->wtomb_string( _object ) );
         buffer += ' ';
@@ -635,14 +630,14 @@ void Link::doInform( Cell* cell )
 {
    if( _res ) {                         //res is required
         std::vector< byte > esc;
-        esc.reserve( 5 );
+        esc.reserve( 6 + _hspot.size( _hypergraphic ) );
         esc.push_back( 0xFF );          //ESC
         esc.push_back( 4 );             //size
         if( !_hypergraphic ) {
             esc.push_back( 0x16 );      //text link
         } else {
             esc.push_back( 0x0F );      //hypergraphic link
-            if( _x || _y || _cx || _cy ) {
+            if( _hspot.isDef( true ) ) {
                 esc.push_back( 0x10 );  //partial bitmap
             } else {
                 esc.push_back( 0x09 );  //full bitmap
@@ -650,15 +645,15 @@ void Link::doInform( Cell* cell )
         }
         esc.push_back( static_cast< byte >( _res ) );
         esc.push_back( static_cast< byte >( _res >> 8 ) );
-        if( _hypergraphic && ( _x || _y || _cx || _cy ) ) {
-            esc.push_back( static_cast< byte >( _x ) );
-            esc.push_back( static_cast< byte >( _x >> 8 ) );
-            esc.push_back( static_cast< byte >( _y ) );
-            esc.push_back( static_cast< byte >( _y >> 8 ) );
-            esc.push_back( static_cast< byte >( _cx ) );
-            esc.push_back( static_cast< byte >( _cx >> 8 ) );
-            esc.push_back( static_cast< byte >( _cy ) );
-            esc.push_back( static_cast< byte >( _cy >> 8 ) );
+        if( _hspot.isDef( _hypergraphic ) ) {
+            esc.push_back( static_cast< byte >( _hspot.x ) );
+            esc.push_back( static_cast< byte >( _hspot.x >> 8 ) );
+            esc.push_back( static_cast< byte >( _hspot.y ) );
+            esc.push_back( static_cast< byte >( _hspot.y >> 8 ) );
+            esc.push_back( static_cast< byte >( _hspot.cx ) );
+            esc.push_back( static_cast< byte >( _hspot.cx >> 8 ) );
+            esc.push_back( static_cast< byte >( _hspot.cy ) );
+            esc.push_back( static_cast< byte >( _hspot.cy >> 8 ) );
         }
         esc[1] = static_cast< byte >( esc.size() - 1 );
         cell->addEsc( esc );
