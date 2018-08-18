@@ -295,38 +295,38 @@ Lexer::Token Link::parseAttributes( Lexer* lexer )
             } else if( key == L"titlebar" ) {
                 _doStyle = true;
                 if( value == L"yes" ) {
-                    _style.word |= PageStyle::TITLEBAR;
+                    _style.attrs |= PageStyle::TITLEBAR;
                 } else if( value == L"sysmenu" ) {
-                    _style.word |= PageStyle::TITLEBAR;
-                    _style.word |= PageStyle::SYSMENU;
+                    _style.attrs |= PageStyle::TITLEBAR;
+                    _style.attrs |= PageStyle::SYSMENU;
                 } else if( value == L"minmax" ) {
-                    _style.word |= PageStyle::TITLEBAR;
-                    _style.word |= PageStyle::MINMAX;
+                    _style.attrs |= PageStyle::TITLEBAR;
+                    _style.attrs |= PageStyle::MINMAX;
                 } else if( value == L"both" ) {
-                    _style.word |= PageStyle::TITLEBAR;
-                    _style.word |= PageStyle::SYSMENU;
-                    _style.word |= PageStyle::MINMAX;
+                    _style.attrs |= PageStyle::TITLEBAR;
+                    _style.attrs |= PageStyle::SYSMENU;
+                    _style.attrs |= PageStyle::MINMAX;
                 } else if( value != L"none" ) {
                     _document->printError( ERR2_VALUE );
                 }
             } else if( key == L"scroll" ) {
                 _doStyle = true;
                 if( value == L"horizontal" ) {
-                    _style.word |= PageStyle::HSCROLL;
+                    _style.attrs |= PageStyle::HSCROLL;
                 } else if( value == L"vertical" ) {
-                    _style.word |= PageStyle::VSCROLL;
+                    _style.attrs |= PageStyle::VSCROLL;
                 } else if( value == L"both" ) {
-                    _style.word |= PageStyle::HSCROLL;
-                    _style.word |= PageStyle::VSCROLL;
+                    _style.attrs |= PageStyle::HSCROLL;
+                    _style.attrs |= PageStyle::VSCROLL;
                 } else if( value != L"none" ) {
                     _document->printError( ERR2_VALUE );
                 }
             } else if( key == L"rules" ) {
                 _doStyle = true;
                 if( value == L"border" ) {
-                    _style.word |= PageStyle::BORDER;
+                    _style.attrs |= PageStyle::BORDER;
                 } else if( value == L"sizeborder" ) {
-                    _style.word |= PageStyle::SIZEBORDER;
+                    _style.attrs |= PageStyle::SIZEBORDER;
                 } else if( value != L"none" ) {
                     _document->printError( ERR2_VALUE );
                 }
@@ -447,7 +447,7 @@ void Link::doTopic( Cell* cell )
                     cell->addArray( reinterpret_cast< byte * >( &_size ), sizeof( PageSize ) );
                 }
                 if( _doStyle ) {
-                    cell->addWord( _style.word );
+                    cell->addWord( _style.attrs );
                 }
                 if( _doGroup ) {
                     cell->addWord( _group.id );

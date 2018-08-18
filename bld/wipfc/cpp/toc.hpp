@@ -116,6 +116,10 @@ struct PageSize {
 
 //titlebar, scrollbars, and rules
 struct PageStyle {
+    typedef STD1::uint8_t   byte;
+    typedef STD1::uint16_t  word;
+    typedef STD1::uint32_t  dword;
+
     enum Style {
         BORDER      = 0x0004,   //?
         SIZEBORDER  = 0x0008,
@@ -129,8 +133,8 @@ struct PageStyle {
         //0x4000 ?
         //0x8000 ?
     };
-    STD1::uint16_t word;
-    PageStyle() : word( 0 ) { };
+    word attrs;
+    PageStyle() : attrs( 0 ) { };
     void write( OutFile* out ) const;
 };
 

@@ -84,7 +84,7 @@ public:
     void setIsParent() { _toc.extended = 1; _etoc.isParent = 1; };
     void addChild( word toc1 ) { _childTOCs.push_back( toc1 ); };
     //this is a header on a split window
-    bool isSplit() const { return ( _style.word & PageStyle::SPLIT ) == PageStyle::SPLIT; };
+    bool isSplit() const { return ( _style.attrs & PageStyle::SPLIT ) == PageStyle::SPLIT; };
     void linearize( Page* page );
 protected:
     Lexer::Token parseAttributes( Lexer* lexer );
