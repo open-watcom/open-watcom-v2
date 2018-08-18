@@ -25,6 +25,14 @@
 *  ========================================================================
 *
 * Description:  Process docprof tag
+*   :docprof
+*       toc=[1-6]+ (default: 123)
+*       dll=''
+*       objectname=''
+*       objectinfo=''
+*       ctrlarea=page|coverpage|both|none
+*       Must be a child of :userdoc
+* Must follow :title
 *
 ****************************************************************************/
 
@@ -46,9 +54,9 @@ Lexer::Token DocProf::parse( Lexer* lexer )
             std::wstring value;
             splitAttribute( lexer->text(), key, value );
             if( key == L"toc" ) {
-                wchar_t ch[ 2 ];
-                ch[ 0 ] = value[ value.size() - 1 ];    //last number is critical value
-                ch[ 1 ] = L'\0';
+                wchar_t ch[2];
+                ch[0] = value[value.size() - 1];    //last number is critical value
+                ch[1] = L'\0';
                 int tmp( static_cast<int>( std::wcstol( ch, 0, 10 ) ) );
                 if( tmp < 1 || tmp > 6 ) {
                     _document->printError( ERR2_VALUE );
