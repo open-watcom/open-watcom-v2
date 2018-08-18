@@ -98,7 +98,7 @@ private:
     PageSize                _size;
     PageStyle               _style;
     PageGroup               _group;
-    PageControls            _controls;
+    PageControl             _control;
     std::wstring            _title;
     std::wstring            _tutorial;
     std::vector< word >     _childTOCs;

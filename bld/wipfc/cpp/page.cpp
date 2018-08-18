@@ -94,7 +94,7 @@ Page::dword Page::write( OutFile* out )
         if( _etoc.setGroup )
             tocsize += sizeof ( PageGroup );
         if( _etoc.setCtrl ) {
-            tocsize += sizeof( PageControls );
+            tocsize += sizeof( PageControl );
         }
     }
     // add cells size
@@ -121,7 +121,7 @@ Page::dword Page::write( OutFile* out )
         if( _etoc.setGroup )
             _group.write( out );
         if( _etoc.setCtrl ) {
-            _controls.write( out );
+            _control.write( out );
         }
     }
     if( out->write( _cells.data(), sizeof( word ), _cells.size() ) )

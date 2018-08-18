@@ -78,9 +78,9 @@ void PageGroup::write( OutFile* out ) const
     }
 }
 /***************************************************************************/
-void PageControls::write( OutFile* out ) const
+void PageControl::write( OutFile* out ) const
 {
-    if( out->write( this, sizeof( PageControls ), 1 ) ) {
+    if( out->write( this, sizeof( PageControl ), 1 ) ) {
         throw FatalError( ERR_WRITE );
     }
 }

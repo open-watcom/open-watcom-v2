@@ -500,7 +500,7 @@ Lexer::Token Hn::parseAttributes( Lexer* lexer )
             } else if( key == L"ctrlrefid" ) {
                 _toc.extended = 1;
                 std::transform( value.begin(), value.end(), value.begin(), std::towupper );
-                _controls.word |= _document->getGroupById( value );
+                _control.refid |= _document->getGroupById( value );
             } else {
                 _document->printError( ERR1_ATTRNOTDEF );
             }
@@ -546,7 +546,7 @@ void Hn::buildTOC( Page* page )
         page->setSize( _size );
         page->setStyle( _style );
         page->setGroup( _group );
-        page->SetControls( _controls );
+        page->SetControl( _control );
         //FIXME: need the index of the parent?
         //page->setSearchable( !nosearch );
         TocRef tr( _fileName, _row, page->index() );

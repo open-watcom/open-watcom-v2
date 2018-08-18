@@ -145,9 +145,9 @@ struct PageGroup {
 };
 
 //ctrlarea and ctrlrefid?
-struct PageControls {
-    STD1::uint16_t word;
-    PageControls() : word( 0 ) { };
+struct PageControl {
+    STD1::uint16_t refid;
+    PageControl() : refid( 0 ) { };
     void write( OutFile* out ) const;
 };
 

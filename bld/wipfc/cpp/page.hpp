@@ -63,7 +63,7 @@ public:
     void setSize( PageSize& s ) { _size = s; };
     void setStyle( PageStyle& s ) { _style = s; };
     void setGroup( PageGroup& g ) { _group = g; };
-    void SetControls( PageControls& c ) { _controls = c; };
+    void SetControl( PageControl& c ) { _control = c; };
     void setIndex( word i ) { _index = i; };
     void setSearchable( bool s ) { _searchable = s; }
     //page appears in TOC
@@ -104,7 +104,7 @@ private:
     PageSize                _size;
     PageStyle               _style;
     PageGroup               _group;
-    PageControls            _controls;
+    PageControl             _control;
     word                    _index;         // index in TOC
     bool                    _searchable;
     OutFile*                _out;
