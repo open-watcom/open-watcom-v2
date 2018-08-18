@@ -13,7 +13,7 @@ OutFile::OutFile( const std::string& sfname, Nls *nls ) : _ufp( NULL ), _codePag
 {
     std::FILE *fp;
 
-    (void)nls;
+    _codePage = nls->codePage();
 
     fp = std::fopen( sfname.c_str(), "wb" );
     if( fp != NULL ) {

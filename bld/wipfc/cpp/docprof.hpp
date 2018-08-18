@@ -56,7 +56,7 @@ public:
     DocProf( Document* d) : _document( d ), _headerCutOff( 3 ), _area( COVERPAGE ) { };
     ~DocProf() { };
     Lexer::Token parse( Lexer* lexer );
-    void build( Controls* ctrls, StringTable* strs );
+    void build( Controls* controls, StringTable* strings );
 private:
     DocProf( const DocProf& rhs );              //no copy
     DocProf& operator=( const DocProf& rhs );   //no assignment

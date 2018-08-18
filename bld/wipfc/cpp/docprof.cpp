@@ -87,19 +87,19 @@ Lexer::Token DocProf::parse( Lexer* lexer )
     return _document->getNextToken();
 }
 /***************************************************************************/
-void DocProf::build( Controls* ctrls, StringTable* strs )
+void DocProf::build( Controls* controls, StringTable* strings )
 {
     _document->setHeaderCutOff( _headerCutOff );
     if( _area == NONE || _area == PAGE ) {
-        ctrls->setCover( 0xFFFF );
+        controls->setCover( 0xFFFF );
     } else {
-        ctrls->setCover( 0 );   //may be modified by :ctrl. tag later
+        controls->setCover( 0 );   //may be modified by :ctrl. tag later
     }
     if( !_objName.empty() )
-        strs->add( _objName );
+        strings->add( _objName );
     if( !_dll.empty() )
-        strs->add( _dll );
+        strings->add( _dll );
     if( !_objInfo.empty() ) {
-        strs->add( _objInfo );
+        strings->add( _objInfo );
     }
 }

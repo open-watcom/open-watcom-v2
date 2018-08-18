@@ -186,11 +186,6 @@ public:
     const std::wstring& olClose( unsigned int level ) const { return _nls->olClose()[level % 2]; };
     const std::wstring& ulBullet( unsigned int level ) const { return _nls->ulBullets()[level % 3]; };
     wchar_t entityChar( const std::wstring& key ) { return _nls->entityChar( key ); };
-    // UNICODE<->MBCS conversion
-    word codePage() { return _nls->codePage(); };
-
-    //To Strings
-    void addString( const std::wstring& str ) { _strings->add( str ); };
 
 private:
     Document( const Document &rhs );            //no copy constructor
