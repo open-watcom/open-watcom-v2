@@ -24,12 +24,12 @@
 *
 *  ========================================================================
 *
-* Description:  A WORD element
+* Description:  A TextWord element
 *
 ****************************************************************************/
 
-#ifndef WORD_INCLUDED
-#define WORD_INCLUDED
+#ifndef TEXTWORD_INCLUDED
+#define TEXTWORD_INCLUDED
 
 #include "text.hpp"
 
@@ -47,4 +47,4 @@ private:
     TextWord& operator=( const TextWord& rhs ); //no assignment
 };
 
-#endif //WORD_INCLUDED
+#endif //TEXTWORD_INCLUDED
