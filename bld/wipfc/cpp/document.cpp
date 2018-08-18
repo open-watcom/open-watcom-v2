@@ -982,11 +982,11 @@ std::wstring* Document::prepNameitName( const std::wstring& key )
     return name;
 }
 /***************************************************************************/
-Document::word Document::getGroupById( const std::wstring& i )
+Document::word Document::getGroupIndexById( const std::wstring& id )
 {
-    ControlGroup* grp( _controls->getGroupById( i ) );
+    ControlGroup* grp( _controls->getGroupById( id ) );
     if( !grp ) {
-        _compiler.printError( ERR1_NOID, i );
+        _compiler.printError( ERR1_NOID, id );
         return 0;
     } else {
         return grp->index() + 1;

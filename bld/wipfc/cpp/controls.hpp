@@ -52,14 +52,14 @@ public:
         _controls.push_back( btn );
     };
     ControlButton* button() { return &_controls[ _controls.size() - 1 ]; };
-    ControlButton* getButtonById( const std::wstring& i );
+    ControlButton* getButtonById( const std::wstring& id );
     void addGroup( ControlGroup& grp )
     {
         _groups.push_back( grp );
         grp.setIndex( static_cast< word >( _groups.size() ) );
     };
     ControlGroup* group() { return &_groups[ _groups.size() - 1 ]; };
-    ControlGroup* getGroupById( const std::wstring& i );
+    ControlGroup* getGroupById( const std::wstring& id );
     void setCover( word c ) { _coverGroup = c; };
     dword length() const { return _bytes; };
     dword write( OutFile* out );

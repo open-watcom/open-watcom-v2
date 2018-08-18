@@ -56,20 +56,20 @@ Controls::dword Controls::write( OutFile* out )
     return start;
 }
 /***************************************************************************/
-ControlButton* Controls::getButtonById( const std::wstring& i )
+ControlButton* Controls::getButtonById( const std::wstring& id )
 {
     for( ControlIter itr = _controls.begin(); itr != _controls.end(); ++itr ) {
-        if( itr->id() == i ) {
+        if( itr->id() == id ) {
             return &(*itr);
         }
     }
     return 0;
 }
 /***************************************************************************/
-ControlGroup* Controls::getGroupById( const std::wstring& i )
+ControlGroup* Controls::getGroupById( const std::wstring& id )
 {
     for( GroupIter itr = _groups.begin(); itr != _groups.end(); ++itr ) {
-        if( itr->id() == i ) {
+        if( itr->id() == id ) {
             return &(*itr);
         }
     }

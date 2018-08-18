@@ -139,7 +139,7 @@ public:
     //Forwarding functions
 
     //To Controls
-    word getGroupById( const std::wstring& i );
+    word getGroupIndexById( const std::wstring& id );
 
     //To Compiler
     std::wstring* addFileName( std::wstring* name ) { return _compiler.addFileName( name ); };

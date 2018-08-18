@@ -500,7 +500,7 @@ Lexer::Token Hn::parseAttributes( Lexer* lexer )
             } else if( key == L"ctrlrefid" ) {
                 _toc.extended = 1;
                 std::transform( value.begin(), value.end(), value.begin(), std::towupper );
-                _control.refid |= _document->getGroupById( value );
+                _control.refid = _document->getGroupIndexById( value );
             } else {
                 _document->printError( ERR1_ATTRNOTDEF );
             }
