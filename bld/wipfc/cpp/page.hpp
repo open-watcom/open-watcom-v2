@@ -67,7 +67,7 @@ public:
     void setIndex( word i ) { _index = i; };
     void setSearchable( bool s ) { _searchable = s; }
     //page appears in TOC
-    bool isVisible() const { return !_toc.hidden; };
+    bool isVisible() const { return !_toc.flags.s.hidden; };
     //index of page in TOC collection
     word index() const { return _index; };
     void buildTOC();

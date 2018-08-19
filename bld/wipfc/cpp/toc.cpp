@@ -38,24 +38,31 @@
 
 void TocEntry::buildText( Cell *cell ) const
 {
-    cell->addArray( reinterpret_cast< const byte* >( this ), sizeof( TocEntry ) );
+    cell->addByte( hdrsize );
+    cell->addByte( flags.data );
+    cell->addByte( cellCount );
 };
+
 TocEntry::dword TocEntry::write( OutFile* out ) const
 {
     dword offset( out->tell() );
-    if( out->write( this, sizeof( TocEntry ), 1 ) )
+    if( out->put( hdrsize ) )
+        throw FatalError( ERR_WRITE );
+    if( out->put( flags.data ) )
+        throw FatalError( ERR_WRITE );
+    if( out->put( cellCount ) )
         throw FatalError( ERR_WRITE );
     return offset;
 }
 /***************************************************************************/
 void ExtTocEntry::buildText( Cell *cell ) const
 {
-    cell->addArray( reinterpret_cast< const byte* >( this ), sizeof( ExtTocEntry ) );
+    cell->addWord( flags.data );
 };
 
 void ExtTocEntry::write( OutFile* out ) const
 {
-    if( out->write( this, sizeof( ExtTocEntry ), 1 ) ) {
+    if( out->put( flags.data ) ) {
         throw FatalError( ERR_WRITE );
     }
 }

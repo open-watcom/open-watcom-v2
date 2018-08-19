@@ -116,10 +116,10 @@ Lexer::Token Hn::parse( Lexer* lexer )
             case Lexer::H1:
                 return tok;
             case Lexer::H2:
-                if( _toc.nestLevel >= 2 )
+                if( _toc.flags.s.nestLevel >= 2 )
                     return tok;;
-                if( _toc.nestLevel == 1 )
-                    _toc.hasChildren = 1;
+                if( _toc.flags.s.nestLevel == 1 )
+                    _toc.flags.s.hasChildren = 1;
                 if( _document->headerCutOff() >= 2 ) {
                     Hn* h2( new Hn( _document, NULL, _document->dataName(),
                         _document->lexerLine(), _document->lexerCol(), 2 ) );
@@ -134,11 +134,11 @@ Lexer::Token Hn::parse( Lexer* lexer )
                 }
                 break;
             case Lexer::H3:
-                if( _toc.nestLevel >= 3 )
+                if( _toc.flags.s.nestLevel >= 3 )
                     return tok;
-                if( _toc.nestLevel == 2 )
-                    _toc.hasChildren = 1;
-                if( _toc.nestLevel < 2 )
+                if( _toc.flags.s.nestLevel == 2 )
+                    _toc.flags.s.hasChildren = 1;
+                if( _toc.flags.s.nestLevel < 2 )
                     _document->printError( ERR1_HEADNEST );
                 if( _document->headerCutOff() >= 3 ) {
                     Hn* h3( new Hn( _document, NULL, _document->dataName(),
@@ -154,11 +154,11 @@ Lexer::Token Hn::parse( Lexer* lexer )
                 }
                 break;
             case Lexer::H4:
-                if( _toc.nestLevel >= 4 )
+                if( _toc.flags.s.nestLevel >= 4 )
                     return tok;
-                if( _toc.nestLevel == 3 )
-                    _toc.hasChildren = 1;
-                if( _toc.nestLevel < 3 )
+                if( _toc.flags.s.nestLevel == 3 )
+                    _toc.flags.s.hasChildren = 1;
+                if( _toc.flags.s.nestLevel < 3 )
                     _document->printError( ERR1_HEADNEST );
                 if( _document->headerCutOff() >= 4 ) {
                     Hn* h4( new Hn( _document, NULL, _document->dataName(),
@@ -174,11 +174,11 @@ Lexer::Token Hn::parse( Lexer* lexer )
                 }
                 break;
             case Lexer::H5:
-                if( _toc.nestLevel >= 5 )
+                if( _toc.flags.s.nestLevel >= 5 )
                     return tok;
-                if( _toc.nestLevel == 4 )
-                    _toc.hasChildren = 1;
-                if( _toc.nestLevel < 4 )
+                if( _toc.flags.s.nestLevel == 4 )
+                    _toc.flags.s.hasChildren = 1;
+                if( _toc.flags.s.nestLevel < 4 )
                     _document->printError( ERR1_HEADNEST );
                 if( _document->headerCutOff() >= 5 ) {
                     Hn* h5( new Hn( _document, NULL, _document->dataName(),
@@ -194,11 +194,11 @@ Lexer::Token Hn::parse( Lexer* lexer )
                 }
                 break;
             case Lexer::H6:
-                if( _toc.nestLevel >= 6 )
+                if( _toc.flags.s.nestLevel >= 6 )
                     return tok;
-                if( _toc.nestLevel == 5 )
-                    _toc.hasChildren = 1;
-                if( _toc.nestLevel < 5 )
+                if( _toc.flags.s.nestLevel == 5 )
+                    _toc.flags.s.hasChildren = 1;
+                if( _toc.flags.s.nestLevel < 5 )
                     _document->printError( ERR1_HEADNEST );
                 if( _document->headerCutOff() >= 6 ) {
                     Hn* h6( new Hn( _document, NULL, _document->dataName(),
@@ -314,12 +314,12 @@ Lexer::Token Hn::parseAttributes( Lexer* lexer )
                     _name = _document->addTextToGD( _name );
                 }
             } else if( key == L"tutorial" ) {
-                _toc.extended = 1;
-                _etoc.setTutor = 1;
+                _toc.flags.s.extended = 1;
+                _etoc.flags.s.setTutor = 1;
                 _tutorial = value;
             } else if( key == L"x" ) {
                 xorg = true;
-                _toc.extended = 1;
+                _toc.flags.s.extended = 1;
                 if( value == L"left" ) {
                     _origin.xPosType = ExtTocEntry::DYNAMIC;
                     _origin.xpos = ExtTocEntry::DYNAMIC_LEFT;
@@ -352,7 +352,7 @@ Lexer::Token Hn::parseAttributes( Lexer* lexer )
                 }
             } else if( key == L"y" ) {
                 yorg = true;
-                _toc.extended = 1;
+                _toc.flags.s.extended = 1;
                 if( value == L"top" ) {
                     _origin.yPosType = ExtTocEntry::DYNAMIC;
                     _origin.ypos = ExtTocEntry::DYNAMIC_TOP;
@@ -385,7 +385,7 @@ Lexer::Token Hn::parseAttributes( Lexer* lexer )
                 }
             } else if( key == L"width" ) {
                 dx = true;
-                _toc.extended = 1;
+                _toc.flags.s.extended = 1;
                 if( value == L"left" ||
                     value == L"center" ||
                     value == L"right" ||
@@ -413,7 +413,7 @@ Lexer::Token Hn::parseAttributes( Lexer* lexer )
                 }
             } else if( key == L"height" ) {
                 dy = true;
-                _toc.extended = 1;
+                _toc.flags.s.extended = 1;
                 if( value == L"left" ||
                     value == L"center" ||
                     value == L"right" ||
@@ -440,10 +440,10 @@ Lexer::Token Hn::parseAttributes( Lexer* lexer )
                     _document->printError( ERR3_MIXEDUNITS );
                 }
             } else if( key == L"group" ) {
-                _toc.extended = 1;
+                _toc.flags.s.extended = 1;
                 _group.id = static_cast< word >( std::wcstoul( value.c_str(), 0, 10 ) );
             } else if( key == L"titlebar" ) {
-                _toc.extended = 1;
+                _toc.flags.s.extended = 1;
                 if( value == L"yes" ) {
                     _style.attrs |= PageStyle::TITLEBAR;
                 } else if( value == L"sysmenu" ) {
@@ -460,7 +460,7 @@ Lexer::Token Hn::parseAttributes( Lexer* lexer )
                     _document->printError( ERR2_VALUE );
                 }
             } else if( key == L"scroll" ) {
-                _toc.extended = 1;
+                _toc.flags.s.extended = 1;
                 if( value == L"horizontal" ) {
                     _style.attrs |= PageStyle::HSCROLL;
                 } else if( value == L"vertical" ) {
@@ -472,7 +472,7 @@ Lexer::Token Hn::parseAttributes( Lexer* lexer )
                     _document->printError( ERR2_VALUE );
                 }
             } else if( key == L"rules" ) {
-                _toc.extended = 1;
+                _toc.flags.s.extended = 1;
                 if( value == L"border" ) {
                     _style.attrs |= PageStyle::BORDER;
                 } else if( value == L"sizeborder" ) {
@@ -492,13 +492,13 @@ Lexer::Token Hn::parseAttributes( Lexer* lexer )
                 }
             } else if( key == L"ctrlarea" ) {
                 if( value == L"page" ) {
-                    _toc.extended = 1;
-                    _etoc.setCtrl = 1;
+                    _toc.flags.s.extended = 1;
+                    _etoc.flags.s.setCtrl = 1;
                 } else {
-                    _etoc.setCtrl = 0;
+                    _etoc.flags.s.setCtrl = 0;
                 }
             } else if( key == L"ctrlrefid" ) {
-                _toc.extended = 1;
+                _toc.flags.s.extended = 1;
                 std::transform( value.begin(), value.end(), value.begin(), std::towupper );
                 _control.refid = _document->getGroupIndexById( value );
             } else {
@@ -508,19 +508,19 @@ Lexer::Token Hn::parseAttributes( Lexer* lexer )
             if( lexer->text() == L"global" ) {
                 _global = true;
             } else if( lexer->text() == L"viewport" ) {
-                _toc.extended = 1;
-                _etoc.setView = 1;
+                _toc.flags.s.extended = 1;
+                _etoc.flags.s.setView = 1;
             } else if( lexer->text() == L"clear" ) {
-                _toc.extended = 1;
-                _etoc.clear = 1;
+                _toc.flags.s.extended = 1;
+                _etoc.flags.s.clear = 1;
             } else if( lexer->text() == L"nosearch" ) {
-                _toc.extended = 1;
-                _etoc.noSearch = 1;
+                _toc.flags.s.extended = 1;
+                _etoc.flags.s.noSearch = 1;
             } else if( lexer->text() == L"noprint" ) {
-                _toc.extended = 1;
-                _etoc.noPrint = 1;
+                _toc.flags.s.extended = 1;
+                _etoc.flags.s.noPrint = 1;
             } else if( lexer->text() == L"hide" ) {
-                _toc.hidden = 1;
+                _toc.flags.s.hidden = 1;
             } else {
                 _document->printError( ERR1_ATTRNOTDEF );
             }
@@ -597,7 +597,7 @@ void Hn::buildTOC( Page* page )
 /***************************************************************************/
 void Hn::buildText( Cell* cell )
 {
-    if( _etoc.setTutor ) {
+    if( _etoc.flags.s.setTutor ) {
         std::string buffer( cell->out()->wtomb_string( _tutorial ) );
         if( buffer.size() > ( 255 - 2 ) )
             buffer.erase( 255 - 2 );
@@ -616,7 +616,7 @@ void Hn::buildText( Cell* cell )
 /***************************************************************************/
 void Hn::linearize( Page* page )
 {
-    if( _document->headerCutOff() < _toc.nestLevel )
+    if( _document->headerCutOff() < _toc.flags.s.nestLevel )
         page->addElement( this );
     for( ConstChildrenIter iter = _children.begin(); iter != _children.end(); ++iter ) {
         ( *iter )->linearize( page );

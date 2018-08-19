@@ -83,17 +83,17 @@ Page::dword Page::write( OutFile* out )
 {
     // calculate toc size
     std::size_t tocsize = _toc.size();
-    if( _toc.extended ) {
+    if( _toc.flags.s.extended ) {
         tocsize += _etoc.size();
-        if( _etoc.setPos )
+        if( _etoc.flags.s.setPos )
             tocsize += _origin.size();
-        if( _etoc.setSize )
+        if( _etoc.flags.s.setSize )
             tocsize += _size.size();
-        if( _etoc.setStyle )
+        if( _etoc.flags.s.setStyle )
             tocsize += _style.size();
-        if( _etoc.setGroup )
+        if( _etoc.flags.s.setGroup )
             tocsize += _group.size();
-        if( _etoc.setCtrl ) {
+        if( _etoc.flags.s.setCtrl ) {
             tocsize += _control.size();
         }
     }
@@ -110,17 +110,17 @@ Page::dword Page::write( OutFile* out )
     _toc.hdrsize = static_cast< byte >( tocsize );
     // write all out
     dword offset = _toc.write( out );
-    if( _toc.extended ) {
+    if( _toc.flags.s.extended ) {
         _etoc.write( out );
-        if( _etoc.setPos )
+        if( _etoc.flags.s.setPos )
             _origin.write( out );
-        if( _etoc.setSize )
+        if( _etoc.flags.s.setSize )
             _size.write( out );
-        if( _etoc.setStyle )
+        if( _etoc.flags.s.setStyle )
             _style.write( out );
-        if( _etoc.setGroup )
+        if( _etoc.flags.s.setGroup )
             _group.write( out );
-        if( _etoc.setCtrl ) {
+        if( _etoc.flags.s.setCtrl ) {
             _control.write( out );
         }
     }
