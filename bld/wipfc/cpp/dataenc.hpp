@@ -32,6 +32,7 @@
 #ifndef DATAENC_INCLUDED
 #define DATAENC_INCLUDED
 
+#include <vector>
 #include <string>
 #include "hotspot.hpp"
 

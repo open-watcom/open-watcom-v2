@@ -144,7 +144,7 @@ void IpfFile::mbtow_string( const std::string& input, std::wstring& output )
     output.clear();
     for( std::size_t index = 0; index < input.size(); index += consumed ) {
         wchar_t wch;
-        consumed = mbtow_char( &wch, input.data() + index, MB_CUR_MAX );
+        consumed = mbtow_char( &wch, &input[0] + index, MB_CUR_MAX );
         if( consumed == -1 )
             throw FatalError( ERR_T_CONV );
         output += wch;

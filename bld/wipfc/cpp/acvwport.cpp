@@ -223,22 +223,25 @@ void AcViewport::buildText( Cell* cell )
 {
     if( _objectId && !_objectName.empty() ) {
         // convert wide strings to mbcs
+        byte dataSize = 3;
         std::string objectName;
         if( !_objectName.empty() ) {
             objectName = cell->out()->wtomb_string( _objectName );
+            dataSize += static_cast< byte >( objectName.size() );
         }
         std::string dll;
         if( !_dll.empty() ) {
             dll = cell->out()->wtomb_string( _dll );
+            dataSize += static_cast< byte >( dll.size() );
         }
         std::string objectInfo;
         if( !_objectInfo.empty() ) {
             objectInfo = cell->out()->wtomb_string( _objectInfo );
+            dataSize += static_cast< byte >( objectInfo.size() );
         }
-        byte dataSize = static_cast< byte >( objectName.size() + 1 + dll.size() + 1 + objectInfo.size() + 1 );
         // process text
         std::size_t start( cell->getPos() );
-        cell->reserve( 3 + 4 + dataSize + 2 + _origin.size() + _size.size() );
+        cell->reserve( 3 + 2 + 2 + dataSize + 2 + _origin.size() + _size.size() );
         cell->addByte( Cell::ESCAPE );  //ESC
         cell->addByte( 2 );             //size
         cell->addByte( 0x21 );          //type
@@ -275,4 +278,3 @@ void AcViewport::buildText( Cell* cell )
         cell->updateByte( start + 1, static_cast< byte >( cell->getPos( start ) - 1 ) );
     }
 }
-

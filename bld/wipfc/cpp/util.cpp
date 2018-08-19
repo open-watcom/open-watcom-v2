@@ -211,7 +211,7 @@ void def_mbtow_string( const std::string& input, std::wstring& output )
 
     for( std::size_t index = 0; index < input.size(); index += consumed ) {
         wchar_t wch;
-        consumed = std::mbtowc( &wch, input.data() + index, MB_CUR_MAX );
+        consumed = std::mbtowc( &wch, &input[0] + index, MB_CUR_MAX );
         if( consumed == -1 )
             throw FatalError( ERR_T_CONV );
         output += wch;
