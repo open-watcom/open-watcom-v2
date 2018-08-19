@@ -38,48 +38,6 @@
 class Cell;
 class OutFile;
 
-struct _TocFlags {
-    typedef STD1::uint8_t   byte;
-
-    byte            nestLevel   :4;     // nesting level
-    byte            unknown     :1;
-    byte            extended    :1;     // extended entry format
-    byte            hidden      :1;     // don't show this toc entry
-    byte            hasChildren :1;     // following nodes are numerically higher
-};
-
-union TocFlags {
-    typedef STD1::uint8_t   byte;
-
-    _TocFlags       s;
-    byte            data;
-};
-
-struct _ExtTocFlags {
-    typedef STD1::uint16_t  word;
-
-    word            setPos      :1;     //PanelOrigin is present
-    word            setSize     :1;     //PanelSize is present
-    word            setView     :1;     //force new window
-    word            setStyle    :1;     //PanelStyle is present
-    word            noSearch    :1;
-    word            noPrint     :1;
-    word            setCtrl     :1;     //PanelControls is present
-    word            setTutor    :1;
-    word            clear       :1;     //erase window
-    word            unknown1    :1;
-    word            setGroup    :1;     //PanelGroup is present
-    word            isParent    :1;     //has child windows
-    word            unknown2    :4;
-};
-
-union ExtTocFlags {
-    typedef STD1::uint16_t  word;
-
-    _ExtTocFlags    s;
-    word            data;
-};
-
 // TocEntry: located at offset pointed to by tocOffsetOffset[i]
 // There is one entry per page, stored in the order in which
 // they occur in the document.
@@ -91,6 +49,19 @@ struct TocEntry {
     dword write( OutFile* out ) const;
     void buildText( Cell *cell ) const;
     std::size_t size() const { return( 3 * sizeof( byte ) ); };
+
+    struct _TocFlags {
+        byte            nestLevel   :4;     // nesting level
+        byte            unknown     :1;
+        byte            extended    :1;     // extended entry format
+        byte            hidden      :1;     // don't show this toc entry
+        byte            hasChildren :1;     // following nodes are numerically higher
+    };
+
+    union TocFlags {
+        _TocFlags       s;
+        byte            data;
+    };
 
     byte            hdrsize;            // size of the entry
     TocFlags        flags;
@@ -125,6 +96,28 @@ struct ExtTocEntry {
         DYNAMIC_BOTTOM  = 8,
         DYNAMIC_CENTER  = 16
     };
+
+    struct _ExtTocFlags {
+        word            setPos      :1;     //PanelOrigin is present
+        word            setSize     :1;     //PanelSize is present
+        word            setView     :1;     //force new window
+        word            setStyle    :1;     //PanelStyle is present
+        word            noSearch    :1;
+        word            noPrint     :1;
+        word            setCtrl     :1;     //PanelControls is present
+        word            setTutor    :1;
+        word            clear       :1;     //erase window
+        word            unknown1    :1;
+        word            setGroup    :1;     //PanelGroup is present
+        word            isParent    :1;     //has child windows
+        word            unknown2    :4;
+    };
+
+    union ExtTocFlags {
+        _ExtTocFlags    s;
+        word            data;
+    };
+
     ExtTocFlags     flags;
 };
 
