@@ -82,19 +82,19 @@ bool Page::addTextToLD( GlobalDictionaryWord* gdentry )
 Page::dword Page::write( OutFile* out )
 {
     // calculate toc size
-    std::size_t tocsize = sizeof( TocEntry );
+    std::size_t tocsize = _toc.size();
     if( _toc.extended ) {
-        tocsize += sizeof( ExtTocEntry );
+        tocsize += _etoc.size();
         if( _etoc.setPos )
-            tocsize += sizeof( PageOrigin );
+            tocsize += _origin.size();
         if( _etoc.setSize )
-            tocsize += sizeof( PageSize );
+            tocsize += _size.size();
         if( _etoc.setStyle )
-            tocsize += sizeof( PageStyle );
+            tocsize += _style.size();
         if( _etoc.setGroup )
-            tocsize += sizeof ( PageGroup );
+            tocsize += _group.size();
         if( _etoc.setCtrl ) {
-            tocsize += sizeof( PageControl );
+            tocsize += _control.size();
         }
     }
     // add cells size
@@ -107,9 +107,9 @@ Page::dword Page::write( OutFile* out )
         title.erase( 255 - tocsize );  //write only part of title
     }
     tocsize += title.size();
-    _toc.size = static_cast< byte >( tocsize );
+    _toc.hdrsize = static_cast< byte >( tocsize );
     // write all out
-    dword pos = _toc.write( out );
+    dword offset = _toc.write( out );
     if( _toc.extended ) {
         _etoc.write( out );
         if( _etoc.setPos )
@@ -131,7 +131,7 @@ Page::dword Page::write( OutFile* out )
             throw FatalError( ERR_WRITE );
         }
     }
-    return( pos );
+    return( offset );
 }
 /***************************************************************************/
 // byte size

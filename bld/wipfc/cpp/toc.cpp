@@ -31,10 +31,15 @@
 
 #include "wipfc.hpp"
 #include "toc.hpp"
+#include "cell.hpp"
 #include "errors.hpp"
 #include "outfile.hpp"
 
 
+void TocEntry::buildText( Cell *cell ) const
+{
+    cell->addArray( reinterpret_cast< const byte* >( this ), sizeof( TocEntry ) );
+};
 TocEntry::dword TocEntry::write( OutFile* out ) const
 {
     dword offset( out->tell() );
@@ -43,6 +48,11 @@ TocEntry::dword TocEntry::write( OutFile* out ) const
     return offset;
 }
 /***************************************************************************/
+void ExtTocEntry::buildText( Cell *cell ) const
+{
+    cell->addArray( reinterpret_cast< const byte* >( this ), sizeof( ExtTocEntry ) );
+};
+
 void ExtTocEntry::write( OutFile* out ) const
 {
     if( out->write( this, sizeof( ExtTocEntry ), 1 ) ) {
@@ -50,37 +60,70 @@ void ExtTocEntry::write( OutFile* out ) const
     }
 }
 /***************************************************************************/
+void PageOrigin::buildText( Cell* cell ) const
+{
+    cell->addByte( static_cast< byte >( ( xPosType << 4 ) | yPosType ) );
+    cell->addWord( xpos );
+    cell->addWord( ypos );
+}
 void PageOrigin::write( OutFile* out ) const
 {
-    if( out->write( this, sizeof( PageOrigin ), 1 ) ) {
+    dword offset( out->tell() );
+    if( out->put( static_cast< byte >( ( xPosType << 4 ) | yPosType ) ) )
+        throw FatalError( ERR_WRITE );
+    if( out->put( xpos ) )
+        throw FatalError( ERR_WRITE );
+    if( out->put( xpos ) ) {
         throw FatalError( ERR_WRITE );
     }
 }
 /***************************************************************************/
+void PageSize::buildText( Cell* cell ) const
+{
+    cell->addByte( static_cast< byte >( ( heightType << 4 ) | widthType ) );
+    cell->addWord( width );
+    cell->addWord( height );
+}
 void PageSize::write( OutFile* out ) const
 {
-    if( out->write( this, sizeof( PageSize ), 1 ) ) {
+    if( out->put( static_cast< byte >( ( heightType << 4 ) | widthType ) ) )
+        throw FatalError( ERR_WRITE );
+    if( out->put( width ) )
+        throw FatalError( ERR_WRITE );
+    if( out->put( height ) ) {
         throw FatalError( ERR_WRITE );
     }
 }
 /***************************************************************************/
+void PageStyle::buildText( Cell* cell ) const
+{
+    cell->addWord( attrs );
+}
 void PageStyle::write( OutFile* out ) const
 {
-    if( out->write( this, sizeof( PageStyle ), 1 ) ) {
+    if( out->put( attrs ) ) {
         throw FatalError( ERR_WRITE );
     }
 }
 /***************************************************************************/
+void PageGroup::buildText( Cell* cell ) const
+{
+    cell->addWord( id );
+}
 void PageGroup::write( OutFile* out ) const
 {
-    if( out->write( this, sizeof( PageGroup ), 1 ) ) {
+    if( out->put( id ) ) {
         throw FatalError( ERR_WRITE );
     }
 }
 /***************************************************************************/
+void PageControl::buildText( Cell* cell ) const
+{
+    cell->addWord( refid );
+}
 void PageControl::write( OutFile* out ) const
 {
-    if( out->write( this, sizeof( PageControl ), 1 ) ) {
+    if( out->put( refid ) ) {
         throw FatalError( ERR_WRITE );
     }
 }

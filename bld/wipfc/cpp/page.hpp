@@ -76,7 +76,7 @@ public:
     void buildLocalDictionary( OutFile* out );
     //write a TOC entry
     dword write( OutFile* out );
-    dword tocSize() const { return _toc.size; };
+    dword tocSize() const { return _toc.hdrsize; };
     //write child windows list
     dword writeChildren( OutFile* out ) const;
 

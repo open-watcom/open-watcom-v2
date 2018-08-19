@@ -396,8 +396,8 @@ void Link::doTopic( Cell* cell )
                     _document->addXRef( _res, xref );
                 }
                 std::size_t start( cell->getPos() );
-                cell->reserve( 7 + _hspot.size( _hypergraphic ) + sizeof( PageOrigin ) + sizeof( PageSize ) +
-                    sizeof( PageStyle ) + sizeof( PageGroup ) );
+                cell->reserve( 7 + _hspot.size( _hypergraphic ) + _origin.size() + _size.size() +
+                    _style.size() + _group.size() );
                 cell->addByte( Cell::ESCAPE );  //ESC
                 cell->addByte( 4 );             //size
                 if( !_hypergraphic ) {
@@ -441,16 +441,16 @@ void Link::doTopic( Cell* cell )
                     cell->addByte( flag2 );
                 }
                 if( _doOrigin ) {
-                    cell->addArray( reinterpret_cast< byte * >( &_origin ), sizeof( PageOrigin ) );
+                    _origin.buildText( cell );
                 }
                 if( _doSize ) {
-                    cell->addArray( reinterpret_cast< byte * >( &_size ), sizeof( PageSize ) );
+                    _size.buildText( cell );
                 }
                 if( _doStyle ) {
-                    cell->addWord( _style.attrs );
+                    _style.buildText( cell );
                 }
                 if( _doGroup ) {
-                    cell->addWord( _group.id );
+                    _group.buildText( cell );
                 }
                 cell->updateByte( start + 1, static_cast< byte >( cell->getPos( start ) - 1 ) );
                 if( cell->textFull() ) {

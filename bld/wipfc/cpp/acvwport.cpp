@@ -238,7 +238,7 @@ void AcViewport::buildText( Cell* cell )
         byte dataSize = static_cast< byte >( objectName.size() + 1 + dll.size() + 1 + objectInfo.size() + 1 );
         // process text
         std::size_t start( cell->getPos() );
-        cell->reserve( 3 + 4 + dataSize + 2 + sizeof( PageOrigin ) + sizeof( PageSize ) );
+        cell->reserve( 3 + 4 + dataSize + 2 + _origin.size() + _size.size() );
         cell->addByte( Cell::ESCAPE );  //ESC
         cell->addByte( 2 );             //size
         cell->addByte( 0x21 );          //type
@@ -266,10 +266,10 @@ void AcViewport::buildText( Cell* cell )
             cell->addByte( flag );
             cell->addByte( 0 );
             if( _doOrigin ) {
-                cell->addArray( reinterpret_cast< byte* >( &_origin ), sizeof( PageOrigin ) );
+                _origin.buildText( cell );
             }
             if( _doSize ) {
-                cell->addArray( reinterpret_cast< byte* >( &_size ), sizeof( PageSize ) );
+                _size.buildText( cell );
             }
         }
         cell->updateByte( start + 1, static_cast< byte >( cell->getPos( start ) - 1 ) );
