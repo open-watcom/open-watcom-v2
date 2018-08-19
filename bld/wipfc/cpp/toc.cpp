@@ -36,14 +36,16 @@
 #include "outfile.hpp"
 
 
-void TocEntry::buildText( Cell *cell ) const
+void TocEntry::buildText( Cell* cell ) const
+/******************************************/
 {
     cell->addByte( hdrsize );
     cell->addByte( flags.data );
     cell->addByte( cellCount );
-};
+}
 
 TocEntry::dword TocEntry::write( OutFile* out ) const
+/***************************************************/
 {
     dword offset( out->tell() );
     if( out->put( hdrsize ) )
@@ -54,28 +56,33 @@ TocEntry::dword TocEntry::write( OutFile* out ) const
         throw FatalError( ERR_WRITE );
     return offset;
 }
-/***************************************************************************/
-void ExtTocEntry::buildText( Cell *cell ) const
+
+void ExtTocEntry::buildText( Cell* cell ) const
+/*********************************************/
 {
     cell->addWord( flags.data );
-};
+}
 
 void ExtTocEntry::write( OutFile* out ) const
+/*******************************************/
 {
     if( out->put( flags.data ) ) {
         throw FatalError( ERR_WRITE );
     }
 }
-/***************************************************************************/
+
 void PageOrigin::buildText( Cell* cell ) const
+/********************************************/
 {
-    cell->addByte( static_cast< byte >( ( xPosType << 4 ) | yPosType ) );
+    cell->addByte( static_cast< byte >( (( xPosType << 4 ) & 0xf0) | (yPosType & 0x0f) ) );
     cell->addWord( xpos );
     cell->addWord( ypos );
 }
+
 void PageOrigin::write( OutFile* out ) const
+/******************************************/
 {
-    if( out->put( static_cast< byte >( ( xPosType << 4 ) | yPosType ) ) )
+    if( out->put( static_cast< byte >( (( xPosType << 4 ) & 0xf0) | (yPosType & 0x0f) ) ) )
         throw FatalError( ERR_WRITE );
     if( out->put( xpos ) )
         throw FatalError( ERR_WRITE );
@@ -83,16 +90,19 @@ void PageOrigin::write( OutFile* out ) const
         throw FatalError( ERR_WRITE );
     }
 }
-/***************************************************************************/
+
 void PageSize::buildText( Cell* cell ) const
+/******************************************/
 {
-    cell->addByte( static_cast< byte >( ( heightType << 4 ) | widthType ) );
+    cell->addByte( static_cast< byte >( (( heightType << 4 ) & 0xf0) | (widthType & 0x0f) ) );
     cell->addWord( width );
     cell->addWord( height );
 }
+
 void PageSize::write( OutFile* out ) const
+/****************************************/
 {
-    if( out->put( static_cast< byte >( ( heightType << 4 ) | widthType ) ) )
+    if( out->put( static_cast< byte >( (( heightType << 4 ) & 0xf0) | (widthType & 0x0f) ) ) )
         throw FatalError( ERR_WRITE );
     if( out->put( width ) )
         throw FatalError( ERR_WRITE );
@@ -100,37 +110,45 @@ void PageSize::write( OutFile* out ) const
         throw FatalError( ERR_WRITE );
     }
 }
-/***************************************************************************/
+
 void PageStyle::buildText( Cell* cell ) const
+/*******************************************/
 {
     cell->addWord( attrs );
 }
+
 void PageStyle::write( OutFile* out ) const
+/*****************************************/
 {
     if( out->put( attrs ) ) {
         throw FatalError( ERR_WRITE );
     }
 }
-/***************************************************************************/
+
 void PageGroup::buildText( Cell* cell ) const
+/*******************************************/
 {
     cell->addWord( id );
 }
+
 void PageGroup::write( OutFile* out ) const
+/*****************************************/
 {
     if( out->put( id ) ) {
         throw FatalError( ERR_WRITE );
     }
 }
-/***************************************************************************/
+
 void PageControl::buildText( Cell* cell ) const
+/*********************************************/
 {
     cell->addWord( refid );
 }
+
 void PageControl::write( OutFile* out ) const
+/*******************************************/
 {
     if( out->put( refid ) ) {
         throw FatalError( ERR_WRITE );
     }
 }
-

@@ -138,8 +138,8 @@ struct PageOrigin {
     void buildText( Cell *cell ) const;
     std::size_t size() const { return( sizeof( byte ) + 2 * sizeof( word ) ); };
 
-    byte            yPosType    :4;
-    byte            xPosType    :4;
+    byte            yPosType;
+    byte            xPosType;
     word            xpos;
     word            ypos;
 };
@@ -153,8 +153,8 @@ struct PageSize {
     void buildText( Cell *cell ) const;
     std::size_t size() const { return( sizeof( byte ) + 2 * sizeof( word ) ); };
 
-    byte            widthType   :4;
-    byte            heightType  :4;
+    byte            widthType;
+    byte            heightType;
     word            width;
     word            height;
 };
