@@ -52,9 +52,9 @@ public:
     };
     IndexItem( Type t );
     ~IndexItem() { };
-    void setGlobal() { _hdr.global = 1; };
-    bool isGlobal() const { return _hdr.global; };
-    void setSortKey( std::wstring& key ) { _hdr.sortKey = 1; _sortKey = key; };
+    void setGlobal() { _hdr.flags.s.global = 1; };
+    bool isGlobal() const { return _hdr.flags.s.global; };
+    void setSortKey( std::wstring& key ) { _hdr.flags.s.sortKey = 1; _sortKey = key; };
     void setText( std::wstring& t ) { _text = t; };
     void setTOC( word t ) { _hdr.tocPanelIndex = t; };
     void addSynonym( dword t ) { _synonyms.push_back( t ); };
@@ -62,24 +62,36 @@ public:
     bool operator==( const IndexItem& rhs ) const;
     bool operator==( const std::wstring& rhs ) const;
     bool operator<( const IndexItem& rhs ) const;
+
 private:
     IndexItem( const IndexItem& rhs );              //no copy
     IndexItem& operator=( const IndexItem& rhs );   //no assignment
     int wstricmp( const wchar_t *s, const wchar_t *t ) const;
 
-#pragma pack(push, 1)
-    struct IndexHeader {
-        STD1::uint8_t   size;               // size of item text
-        STD1::uint8_t   primary  :1;        // bit 0 set: i1
-        STD1::uint8_t   secondary:1;        // bit 1 set: i2 (both clear if icmd)
-        STD1::uint8_t   unknown  :4;
-        STD1::uint8_t   global   :1;        // bit 6 set: global entry
-        STD1::uint8_t   sortKey  :1;        // bit 7 set: sort key
-        STD1::uint8_t   synonymCount;       // number synonym entries following
-        STD1::uint16_t  tocPanelIndex;      // toc entry number of panel
-        IndexHeader() { std::memset( this, 0, sizeof( IndexItem ) ); };
+    struct _IndexFlags {
+        byte            primary     :1;     // bit 0 set: i1
+        byte            secondary   :1;     // bit 1 set: i2 (both clear if icmd)
+        byte            unknown     :4;
+        byte            global      :1;     // bit 6 set: global entry
+        byte            sortKey     :1;     // bit 7 set: sort key
     };
-#pragma pack(pop)
+
+    struct IndexFlags {
+        _IndexFlags     s;
+        byte            data;
+    };
+
+    struct IndexHeader {
+        IndexHeader() { std::memset( this, 0, sizeof( IndexHeader ) ); };
+        void write( OutFile* out ) const;
+        std::size_t size() const { return( 3 * sizeof( byte ) + sizeof( word ) ); };
+
+        byte            hdrsize;            // size of item text
+        IndexFlags      flags;
+        byte            synonymCount;       // number synonym entries following
+        word            tocPanelIndex;      // toc entry number of panel
+    };
+
     IndexHeader             _hdr;
     std::wstring            _sortKey;
     std::wstring            _text;

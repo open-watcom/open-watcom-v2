@@ -39,54 +39,53 @@ class OutFile;
 
 #define TITLE_SIZE      48
 
-#pragma pack(push, 1)
-
 struct IpfHeader {
     typedef STD1::uint8_t   byte;
     typedef STD1::uint16_t  word;
     typedef STD1::uint32_t  dword;
 
-    STD1::uint8_t   id[ 3 ];            // "HSP"
-    STD1::uint8_t   flags;              // 0x01 if INF style file, 0x10 if HLP style file
-    STD1::uint16_t  size;               // total size of header, in bytes
-    STD1::uint8_t   version_hi;
-    STD1::uint8_t   version_lo;
-    STD1::uint16_t  tocCount;           // number of toc items
-    STD1::uint32_t  tocOffset;          // file offset to start of TocEntry elements
-    STD1::uint32_t  tocSize;            // size of all TocEntry data
-    STD1::uint32_t  tocOffsetOffset;    // file offset to array of file offsets to TocEntry
-    STD1::uint16_t  panelCount;         // number of panels with resource numbers
-    STD1::uint32_t  panelOffset;        // file offset to panel number table
-                                        // 2 consecutive arrays: panel number, TocEntry index
-    STD1::uint16_t  nameCount;          // number of named panels
-    STD1::uint32_t  nameOffset;         // file offset to panel name table
-                                        // 2 consecutive arrays: panel name index, TocEntry index
-    STD1::uint16_t  indexCount;         // number of index entries
-    STD1::uint32_t  indexOffset;        // file offset to index table
-    STD1::uint32_t  indexSize;          // size of index table
-    STD1::uint16_t  icmdCount;          // number of icmd index items
-    STD1::uint32_t  icmdOffset;         // file offset to icmd index items
-    STD1::uint32_t  icmdSize;           // size of icmd index table
-    STD1::uint32_t  searchOffset;       // file offset to full text search table; if high bit set, size of search record size is 16-bit
-    STD1::uint32_t  searchSize;         // size of full text search table
-    STD1::uint16_t  cellCount;          // number of cells
-    STD1::uint32_t  cellOffsetOffset;   // file offset to array of file offsets to cells
-    STD1::uint32_t  dictSize;           // number of bytes occupied by the dictionary
-    STD1::uint16_t  dictCount;          // number of entries in the dictionary
-    STD1::uint32_t  dictOffset;         // file offset array of DictString
-                                        // string table is built from this
-    STD1::uint32_t  imageOffset;        // file offset of image data
-    STD1::uint8_t   maxLocalIndex;      // highest index inside panel's local dictionary,
-    STD1::uint32_t  nlsOffset;          // file offset to NLS table
-    STD1::uint32_t  nlsSize;            // size of NLS table
-    STD1::uint32_t  extOffset;          // file offset to extended data block
-    STD1::uint8_t   reserved[ 12 ];     // reserved for future use
-    char            title[TITLE_SIZE];  // title of database
-
     IpfHeader();
     void write( OutFile* out ) const;
     bool isBigFTS();
     void setBigFTS( bool );
+    std::size_t size() { return( ( 3 + 12 + TITLE_SIZE + 4 ) * sizeof( byte ) + 8 * sizeof( word ) + 18 * sizeof( dword ) ); };
+
+    byte            id[3];              // "HSP"
+    byte            flags;              // 0x01 if INF style file, 0x10 if HLP style file
+    word            hdrsize;            // total size of header, in bytes
+    byte            version_hi;
+    byte            version_lo;
+    word            tocCount;           // number of toc items
+    dword           tocOffset;          // file offset to start of TocEntry elements
+    dword           tocSize;            // size of all TocEntry data
+    dword           tocOffsetOffset;    // file offset to array of file offsets to TocEntry
+    word            panelCount;         // number of panels with resource numbers
+    dword           panelOffset;        // file offset to panel number table
+                                        // 2 consecutive arrays: panel number, TocEntry index
+    word            nameCount;          // number of named panels
+    dword           nameOffset;         // file offset to panel name table
+                                        // 2 consecutive arrays: panel name index, TocEntry index
+    word            indexCount;         // number of index entries
+    dword           indexOffset;        // file offset to index table
+    dword           indexSize;          // size of index table
+    word            icmdCount;          // number of icmd index items
+    dword           icmdOffset;         // file offset to icmd index items
+    dword           icmdSize;           // size of icmd index table
+    dword           searchOffset;       // file offset to full text search table; if high bit set, size of search record size is 16-bit
+    dword           searchSize;         // size of full text search table
+    word            cellCount;          // number of cells
+    dword           cellOffsetOffset;   // file offset to array of file offsets to cells
+    dword           dictSize;           // number of bytes occupied by the dictionary
+    word            dictCount;          // number of entries in the dictionary
+    dword           dictOffset;         // file offset array of DictString
+                                        // string table is built from this
+    dword           imageOffset;        // file offset of image data
+    byte            maxLocalIndex;      // highest index inside panel's local dictionary,
+    dword           nlsOffset;          // file offset to NLS table
+    dword           nlsSize;            // size of NLS table
+    dword           extOffset;          // file offset to extended data block
+    byte            reserved[12];       // reserved for future use
+    char            title[TITLE_SIZE];  // title of database
 };
 
 // Extended header info
@@ -95,27 +94,26 @@ struct IpfExtHeader {
     typedef STD1::uint16_t  word;
     typedef STD1::uint32_t  dword;
 
-    STD1::uint16_t  fontCount;          // number of font entries
-    STD1::uint32_t  fontOffset;         // file offset in file
-    STD1::uint16_t  dbCount;            // number of external files
-    STD1::uint32_t  dbOffset;           // file offset of external files table
-    STD1::uint32_t  dbSize;             // size of external files table
-    STD1::uint16_t  gNameCount;         // number of global panel name entries
-    STD1::uint32_t  gNameOffset;        // file offset of global panel names
-    STD1::uint32_t  stringsOffset;      // file offset of strings
-    STD1::uint16_t  stringsSize;        // size of string data
-    STD1::uint32_t  childPagesOffset;   // file offset of child pages table
-    STD1::uint32_t  childPagesSize;     // size of child pages
-    STD1::uint32_t  gIndexCount;        // number of global index items
-    STD1::uint32_t  ctrlOffset;         // file offset to button control data
-    STD1::uint32_t  ctrlSize;           // size of button control data
-    STD1::uint32_t  reserved[ 4 ];      // reserved for future use
-
     IpfExtHeader() { std::memset( this, 0, sizeof( IpfExtHeader) ); };
     dword write( OutFile* out ) const;
-};
+    std::size_t size() { return( 4 * sizeof( word ) + 14 * sizeof( dword ) ); };
 
-#pragma pack(pop)
+    word            fontCount;          // number of font entries
+    dword           fontOffset;         // file offset in file
+    word            dbCount;            // number of external files
+    dword           dbOffset;           // file offset of external files table
+    dword           dbSize;             // size of external files table
+    word            gNameCount;         // number of global panel name entries
+    dword           gNameOffset;        // file offset of global panel names
+    dword           stringsOffset;      // file offset of strings
+    word            stringsSize;        // size of string data
+    dword           childPagesOffset;   // file offset of child pages table
+    dword           childPagesSize;     // size of child pages
+    dword           gIndexCount;        // number of global index items
+    dword           ctrlOffset;         // file offset to button control data
+    dword           ctrlSize;           // size of button control data
+    dword           reserved[4];        // reserved for future use
+};
 
 #endif //IPFHEADER_INCLUDED
 

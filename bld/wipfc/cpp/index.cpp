@@ -39,9 +39,9 @@
 IndexItem::IndexItem( Type t )
 {
     if( t == PRIMARY ) {
-        _hdr.primary = 1;
+        _hdr.flags.s.primary = 1;
     } else if( t == SECONDARY ) {
-        _hdr.secondary = 1;
+        _hdr.flags.s.secondary = 1;
     }
 }
 /***************************************************************************/
@@ -119,7 +119,7 @@ IndexItem::dword IndexItem::write( OutFile* out )
     std::string buffer2( out->wtomb_string( _text ) );
     std::size_t length;
     std::size_t length1 = 0;
-    if( _hdr.sortKey ) {
+    if( _hdr.flags.s.sortKey ) {
         buffer1 = out->wtomb_string( _sortKey );
         length1 = buffer1.size() + 1;   // add len byte
         if( length1 > 255 ) {
@@ -132,11 +132,10 @@ IndexItem::dword IndexItem::write( OutFile* out )
         buffer2.erase( 255 - length1 );
         length = 255;
     }
-    _hdr.size = static_cast< byte >( length );
+    _hdr.hdrsize = static_cast< byte >( length );
     _hdr.synonymCount = static_cast< byte >( _synonyms.size() );
-    if( out->write( &_hdr, sizeof( IndexHeader ), 1 ) )
-        throw FatalError( ERR_WRITE );
-    if( _hdr.sortKey ) {
+    _hdr.write( out );
+    if( _hdr.flags.s.sortKey ) {
         if( out->put( static_cast< byte >( buffer1.size() ) ) )
             throw FatalError( ERR_WRITE );
         if( out->put( buffer1 ) ) {
@@ -150,5 +149,19 @@ IndexItem::dword IndexItem::write( OutFile* out )
             throw FatalError( ERR_WRITE );
         }
     }
-    return( static_cast< dword >( sizeof( IndexHeader ) + _hdr.size + _synonyms.size() * sizeof( dword ) ) );
+    return( static_cast< dword >( _hdr.size() + _hdr.hdrsize + _synonyms.size() * sizeof( dword ) ) );
 }
+
+void IndexItem::IndexHeader::write( OutFile* out ) const
+{
+    if( out->put( hdrsize ) )
+        throw FatalError( ERR_WRITE );
+    if( out->put( flags.data ) )
+        throw FatalError( ERR_WRITE );
+    if( out->put( synonymCount ) )
+        throw FatalError( ERR_WRITE );
+    if( out->put( tocPanelIndex ) ) {
+        throw FatalError( ERR_WRITE );
+    }
+}
+
