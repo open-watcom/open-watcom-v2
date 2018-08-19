@@ -93,13 +93,11 @@ private:
 
 /*
 // EscSeq:
-#pragma pack(push, 1)
 struct EscSeq {
     STD1::uint8_t esc;                  //=0xFF
     STD1::uint8_t size;                 //2 + optional arguments
     STD1::uint8_t type;
     //variable length data follows:
-#pragma pack(pop)
 */
 /*
 Type    Meaning
