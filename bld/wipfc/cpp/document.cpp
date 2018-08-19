@@ -212,7 +212,7 @@ Document::Document( Compiler& c, Compiler::OutputType t, const char* loc ) :
     std::string separators( PATH_LIST_SEPARATORS );
     std::string path;
 
-    _hdr->flags = ( t == Compiler::INF ) ? 0x01 : 0x10;
+    _hdr->flags = ( t == Compiler::INF ) ? Document::INF : Document::HLP ;
     addFont( cgraphicFont() );
     //get IPFCARTWORK from env
     env = Environment.value( "IPFCARTWORK" );

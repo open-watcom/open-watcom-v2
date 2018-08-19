@@ -68,6 +68,11 @@ class Document {
     typedef STD1::uint32_t  dword;
 
 public:
+    enum OutputType {
+        INF = 0x01,
+        HLP = 0x10
+    };
+
     Document( Compiler& c, Compiler::OutputType t, const char * loc );
     ~Document();
     void parse( Lexer* lexer );
@@ -78,7 +83,7 @@ public:
     //set the output file
     void setOutFile( const std::string& fileName );
     OutFile* out() { return _out; };
-    bool isInf() const { return _hdr->flags == 0x01; };
+    bool isInf() const { return _hdr->flags == Document::INF; };
     //set the lowest header level for which new pages are made
     void setHeaderCutOff( unsigned int co ) { _maxHeaderLevel = co; };
     unsigned int headerCutOff() const { return _maxHeaderLevel; };
