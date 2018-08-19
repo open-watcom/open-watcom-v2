@@ -79,7 +79,7 @@ void PageOrigin::write( OutFile* out ) const
         throw FatalError( ERR_WRITE );
     if( out->put( xpos ) )
         throw FatalError( ERR_WRITE );
-    if( out->put( xpos ) ) {
+    if( out->put( ypos ) ) {
         throw FatalError( ERR_WRITE );
     }
 }
