@@ -68,7 +68,6 @@ void PageOrigin::buildText( Cell* cell ) const
 }
 void PageOrigin::write( OutFile* out ) const
 {
-    dword offset( out->tell() );
     if( out->put( static_cast< byte >( ( xPosType << 4 ) | yPosType ) ) )
         throw FatalError( ERR_WRITE );
     if( out->put( xpos ) )

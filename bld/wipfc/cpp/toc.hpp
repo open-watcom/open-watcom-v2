@@ -45,7 +45,6 @@ class OutFile;
 // they occur in the document.
 struct TocEntry {
     typedef STD1::uint8_t   byte;
-    typedef STD1::uint16_t  word;
     typedef STD1::uint32_t  dword;
 
     TocEntry() { std::memset( this, 0, sizeof( TocEntry ) ); };
@@ -53,24 +52,23 @@ struct TocEntry {
     void buildText( Cell *cell ) const;
     std::size_t size() const { return( 3 * sizeof( byte ) ); };
 
-    STD1::uint8_t hdrsize;          // size of the entry
-    STD1::uint8_t nestLevel  :4;    // nesting level
-    STD1::uint8_t unknown    :1;
-    STD1::uint8_t extended   :1;    // extended entry format
-    STD1::uint8_t hidden     :1;    // don't show this toc entry
-    STD1::uint8_t hasChildren:1;    // following nodes are numerically higher
-    STD1::uint8_t cellCount;        // number of Cells occupied by the text for this toc entry
+    byte            hdrsize;            // size of the entry
+    byte            nestLevel   :4;     // nesting level
+    byte            unknown     :1;
+    byte            extended    :1;     // extended entry format
+    byte            hidden      :1;     // don't show this toc entry
+    byte            hasChildren :1;     // following nodes are numerically higher
+    byte            cellCount;          // number of Cells occupied by the text for this toc entry
     //variable length data follows:
     //if extended
     // ExtTocEntry + associated stuff
-    //STD1::uint16_t  cellIndex[cellCount];
+    //word            cellIndex[cellCount];
     //char            title[length - 3 - 2 * cellCount {- sizes of extended TOC components, if any}];
 };
 
 struct ExtTocEntry {
     typedef STD1::uint8_t   byte;
     typedef STD1::uint16_t  word;
-    typedef STD1::uint32_t  dword;
 
     ExtTocEntry() { std::memset( this, 0, sizeof( ExtTocEntry ) ); };
     void write( OutFile* out ) const;
@@ -91,59 +89,55 @@ struct ExtTocEntry {
         DYNAMIC_BOTTOM  = 8,
         DYNAMIC_CENTER  = 16
     };
-    STD1::uint16_t setPos  :1;      //PanelOrigin is present
-    STD1::uint16_t setSize :1;      //PanelSize is present
-    STD1::uint16_t setView :1;      //force new window
-    STD1::uint16_t setStyle:1;      //PanelStyle is present
-    STD1::uint16_t noSearch:1;
-    STD1::uint16_t noPrint :1;
-    STD1::uint16_t setCtrl :1;      //PanelControls is present
-    STD1::uint16_t setTutor:1;
-    STD1::uint16_t clear   :1;      //erase window
-    STD1::uint16_t unknown1:1;
-    STD1::uint16_t setGroup:1;      //PanelGroup is present
-    STD1::uint16_t isParent:1;      //has child windows
-    STD1::uint16_t unknown2:4;
+    word            setPos      :1;     //PanelOrigin is present
+    word            setSize     :1;     //PanelSize is present
+    word            setView     :1;     //force new window
+    word            setStyle    :1;     //PanelStyle is present
+    word            noSearch    :1;
+    word            noPrint     :1;
+    word            setCtrl     :1;     //PanelControls is present
+    word            setTutor    :1;
+    word            clear       :1;     //erase window
+    word            unknown1    :1;
+    word            setGroup    :1;     //PanelGroup is present
+    word            isParent    :1;     //has child windows
+    word            unknown2    :4;
 };
 
 //on disk in this order
 struct PageOrigin {
     typedef STD1::uint8_t   byte;
     typedef STD1::uint16_t  word;
-    typedef STD1::uint32_t  dword;
 
     PageOrigin() { std::memset( this, 0, sizeof( PageOrigin ) ); };
     void write( OutFile* out ) const;
     void buildText( Cell *cell ) const;
     std::size_t size() const { return( sizeof( byte ) + 2 * sizeof( word ) ); };
 
-    STD1::uint8_t  yPosType:4;
-    STD1::uint8_t  xPosType:4;
-    STD1::uint16_t xpos;
-    STD1::uint16_t ypos;
+    byte            yPosType    :4;
+    byte            xPosType    :4;
+    word            xpos;
+    word            ypos;
 };
 
 struct PageSize {
     typedef STD1::uint8_t   byte;
     typedef STD1::uint16_t  word;
-    typedef STD1::uint32_t  dword;
 
     PageSize() { std::memset( this, 0, sizeof( PageSize ) ); };
     void write( OutFile* out ) const;
     void buildText( Cell *cell ) const;
     std::size_t size() const { return( sizeof( byte ) + 2 * sizeof( word ) ); };
 
-    STD1::uint8_t   widthType :4;
-    STD1::uint8_t   heightType:4;
-    STD1::uint16_t  width;
-    STD1::uint16_t  height;
+    byte            widthType   :4;
+    byte            heightType  :4;
+    word            width;
+    word            height;
 };
 
 //titlebar, scrollbars, and rules
 struct PageStyle {
-    typedef STD1::uint8_t   byte;
     typedef STD1::uint16_t  word;
-    typedef STD1::uint32_t  dword;
 
     PageStyle() : attrs( 0 ) { };
     void write( OutFile* out ) const;
@@ -167,23 +161,19 @@ struct PageStyle {
 };
 
 struct PageGroup {
-    typedef STD1::uint8_t   byte;
     typedef STD1::uint16_t  word;
-    typedef STD1::uint32_t  dword;
 
     PageGroup() : id( 0 ) { };
     void write( OutFile* out ) const;
     void buildText( Cell *cell ) const;
     std::size_t size() const { return( sizeof( word ) ); };
 
-    word            id;               //a panel number
+    word            id;             //a panel number
 };
 
 //ctrlarea and ctrlrefid?
 struct PageControl {
-    typedef STD1::uint8_t   byte;
     typedef STD1::uint16_t  word;
-    typedef STD1::uint32_t  dword;
 
     PageControl() : refid( 0 ) { };
     void write( OutFile* out ) const;
