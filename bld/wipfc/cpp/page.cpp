@@ -124,10 +124,10 @@ Page::dword Page::write( OutFile* out )
             _control.write( out );
         }
     }
-    if( out->write( _cells.data(), sizeof( word ), _cells.size() ) )
+    if( out->put( _cells ) )
         throw FatalError( ERR_WRITE );
     if( !title.empty() ) {
-        if( out->write( title.data(), sizeof( char ), title.size() ) ) {
+        if( out->put( title ) ) {
             throw FatalError( ERR_WRITE );
         }
     }
@@ -146,7 +146,7 @@ Page::dword Page::writeChildren( OutFile* out ) const
             throw FatalError( ERR_WRITE );
         if( out->put( _index ) )
             throw FatalError( ERR_WRITE );
-        if( out->write( _children.data(), sizeof( word ), _children.size() ) ) {
+        if( out->put( _children ) ) {
             throw FatalError( ERR_WRITE );
         }
     }

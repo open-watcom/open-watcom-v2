@@ -56,7 +56,7 @@ void Synonym::write( OutFile* out )
         byte length( static_cast< byte >( itr->size() ) );
         if( out->put( length ) )
             throw FatalError( ERR_WRITE );
-        if( out->write( itr->data(), sizeof( char ), length ) ) {
+        if( out->put( *itr ) ) {
             throw FatalError( ERR_WRITE );
         }
     }

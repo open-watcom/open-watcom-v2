@@ -116,36 +116,37 @@ int IndexItem::wstricmp( const wchar_t *s, const wchar_t *t ) const
 IndexItem::dword IndexItem::write( OutFile* out )
 {
     std::string buffer1;
-    std::size_t length1( 0 );
     std::string buffer2( out->wtomb_string( _text ) );
-    std::size_t length2 = buffer2.size();
+    std::size_t length;
+    std::size_t length1 = 0;
     if( _hdr.sortKey ) {
         buffer1 = out->wtomb_string( _sortKey );
         length1 = buffer1.size() + 1;   // add len byte
         if( length1 > 255 ) {
             length1 = 255;
+            buffer1.erase( length1 - 1 );
         }
     }
-    if( length1 + length2 > 255 )
-        length2 = 255 - length1;
-    _hdr.size = static_cast< byte >( length1 + length2 );
+    length = length1 + buffer2.size();
+    if( length > 255 ) {
+        buffer2.erase( 255 - length1 );
+        length = 255;
+    }
+    _hdr.size = static_cast< byte >( length );
     _hdr.synonymCount = static_cast< byte >( _synonyms.size() );
     if( out->write( &_hdr, sizeof( IndexHeader ), 1 ) )
         throw FatalError( ERR_WRITE );
     if( _hdr.sortKey ) {
-        length1--;
-        if( out->put( static_cast< byte >( length1 ) ) )
+        if( out->put( static_cast< byte >( buffer1.size() ) ) )
             throw FatalError( ERR_WRITE );
-        if( length1 > 0 ) {
-            if( out->write( buffer1.data(), sizeof( char ), length1 ) ) {
-                throw FatalError( ERR_WRITE );
-            }
+        if( out->put( buffer1 ) ) {
+            throw FatalError( ERR_WRITE );
         }
     }
-    if( out->write( buffer2.data(), sizeof( char ), length2 ) )
+    if( out->put( buffer2 ) )
         throw FatalError( ERR_WRITE );
     if( !_synonyms.empty() ) {
-        if( out->write( _synonyms.data(), sizeof( dword ), _synonyms.size() ) ) {
+        if( out->put( _synonyms ) ) {
             throw FatalError( ERR_WRITE );
         }
     }

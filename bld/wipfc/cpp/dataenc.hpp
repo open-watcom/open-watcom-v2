@@ -52,9 +52,6 @@ public:
     std::size_t getPos( std::size_t start = 0 ) { return _data.size() - start; };
     //update byte at possition in encoded text
     void updateByte( std::size_t pos, byte data ) { _data[pos] = data; };
-    std::size_t dataSize() const { return _data.size(); };
-    const unsigned char *data() const { return _data.data(); };
-
     //add a byte code to the encoded text
     void addByte( byte c ) { _data.push_back( c ); };
     //add a word code to the encoded text
@@ -96,7 +93,7 @@ public:
         _data.push_back( static_cast< byte >( hs.cy >> 8 ) );
     };
 
-private:
+protected:
     std::vector< byte >     _data;              //encoded data, indexes into local dictionary
     typedef std::vector< byte >::iterator DataIter;
     typedef std::vector< byte >::const_iterator ConstDataIter;

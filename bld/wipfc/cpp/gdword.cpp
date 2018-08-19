@@ -61,7 +61,7 @@ GlobalDictionaryWord::dword GlobalDictionaryWord::writeWord( OutFile* out ) cons
     std::size_t length = buffer.size() + 1;
     if( out->put( static_cast< byte >( length ) ) )
         throw FatalError( ERR_WRITE );
-    if( out->write( buffer.data(), sizeof( char ), length - 1 ) )
+    if( out->put( buffer ) )
         throw FatalError( ERR_WRITE );
     return( static_cast< dword >( length ) );
 }

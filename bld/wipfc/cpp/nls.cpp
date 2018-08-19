@@ -264,7 +264,7 @@ Nls::dword Nls::DbcsGrammarDef::write( OutFile* out )
         throw FatalError( ERR_WRITE );
     if( out->put( _format ) )
         throw FatalError( ERR_WRITE );
-    if( out->write( _ranges.data(), sizeof( word ), _ranges.size() ) )
+    if( out->put( _ranges ) )
         throw FatalError( ERR_WRITE );
     return( start );
 }

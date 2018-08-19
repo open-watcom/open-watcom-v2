@@ -661,22 +661,22 @@ Document::dword Document::writeBitmaps()
     dword offset = 0;
     if( !_bitmapNames.empty() && _tmpBitmaps != NULL ) {
         offset = _out->tell();
-        std::vector< byte > buffer( BUFSIZ );
+        char buffer[BUFSIZ];
         //copy the temporary file to the output file
         try {
             dword length = std::ftell( _tmpBitmaps );
             std::rewind( _tmpBitmaps );
             for( ; length > BUFSIZ; length -= BUFSIZ ) {
-                if( std::fread( &buffer[0], sizeof( byte ), BUFSIZ, _tmpBitmaps ) != BUFSIZ )
+                if( std::fread( buffer, sizeof( byte ), BUFSIZ, _tmpBitmaps ) != BUFSIZ )
                     throw FatalIOError( ERR_READ, L"(temporary file for bitmaps)" );
-                if( _out->write( buffer.data(), sizeof( byte ), BUFSIZ ) ) {
+                if( _out->write( buffer, sizeof( byte ), BUFSIZ ) ) {
                     throw FatalError( ERR_WRITE );
                 }
             }
             if( length ) {
-                if( std::fread( &buffer[0], sizeof( byte ), length, _tmpBitmaps ) != length )
+                if( std::fread( buffer, sizeof( byte ), length, _tmpBitmaps ) != length )
                     throw FatalIOError( ERR_READ, L"(temporary file for bitmaps)" );
-                if( _out->write( buffer.data(), sizeof( byte ), length ) ) {
+                if( _out->write( buffer, sizeof( byte ), length ) ) {
                     throw FatalError( ERR_WRITE );
                 }
             }
@@ -751,7 +751,7 @@ Document::dword Document::writeTOCOffsets()
     dword offset = 0;
     if( !_tocOffsets.empty() ) {
         offset = _out->tell();
-        if( _out->write( _tocOffsets.data(), sizeof( dword ), _tocOffsets.size() ) ) {
+        if( _out->put( _tocOffsets ) ) {
             throw FatalError( ERR_WRITE );
         }
     }
@@ -772,7 +772,7 @@ Document::dword Document::writeCellOffsets()
     dword offset = 0;
     if( !_cellOffsets.empty() ) {
         offset = _out->tell();
-        if( _out->write( _cellOffsets.data(), sizeof( dword ), _cellOffsets.size() ) ) {
+        if( _out->put( _cellOffsets ) ) {
             throw FatalError( ERR_WRITE );
         }
     }

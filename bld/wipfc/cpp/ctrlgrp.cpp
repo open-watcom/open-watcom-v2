@@ -41,7 +41,7 @@ ControlGroup::dword ControlGroup::write( OutFile* out ) const
     // items count
     if( out->put( static_cast< word >( size ) ) )
         throw FatalError( ERR_WRITE );
-    if( out->write( _buttonIndex.data(), sizeof( word ), size ) )
+    if( out->put( _buttonIndex ) )
         throw FatalError( ERR_WRITE );
     return( static_cast< dword >( sizeof( word ) + size * sizeof( word ) ) );
 }

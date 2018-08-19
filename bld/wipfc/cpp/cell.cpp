@@ -88,16 +88,16 @@ Cell::dword Cell::write( OutFile* out ) const
         throw FatalError( ERR_WRITE );
     // dictOffset
     if( out->put( static_cast< dword >( offset + sizeof( byte ) + sizeof( dword ) + sizeof( byte )
-            + sizeof( word ) + dataSize() * sizeof( byte ) ) ) )
+            + sizeof( word ) + _data.size() * sizeof( byte ) ) ) )
         throw FatalError( ERR_WRITE );
     if( out->put( static_cast< byte >( _localDictionary.size() ) ) )
         throw FatalError( ERR_WRITE );
-    if( out->put( static_cast< word >( dataSize() ) ) )
+    if( out->put( static_cast< word >( _data.size() ) ) )
         throw FatalError( ERR_WRITE );
-    if( out->write( data(), sizeof( byte ), dataSize() ) )
+    if( out->put( _data ) )
         throw FatalError( ERR_WRITE );
     if( !_localDictionary.empty() ) {
-        if( out->write( _localDictionary.data(), sizeof( word ), _localDictionary.size() ) ) {
+        if( out->put( _localDictionary ) ) {
             throw FatalError( ERR_WRITE );
         }
     }
