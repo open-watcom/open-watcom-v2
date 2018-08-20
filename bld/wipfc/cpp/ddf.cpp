@@ -85,7 +85,7 @@ void Ddf::buildText( Cell* cell )
         cell->addByte( Cell::ESCAPE );  //ESC
         cell->addByte( 0x04 );          //size
         cell->addByte( 0x20 );          //ddf
-        cell->addWord( _res );
+        cell->add( _res );
         if( cell->textFull() ) {
             printError( ERR1_LARGEPAGE );
         }

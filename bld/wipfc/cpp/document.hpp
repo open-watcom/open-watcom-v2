@@ -68,7 +68,7 @@ class Document {
     typedef STD1::uint32_t  dword;
 
 public:
-    enum OutputType {
+    enum DocumentType {
         INF = 0x01,
         HLP = 0x10
     };
@@ -83,7 +83,7 @@ public:
     //set the output file
     void setOutFile( const std::string& fileName );
     OutFile* out() { return _out; };
-    bool isInf() const { return _hdr->flags == Document::INF; };
+    bool isInf() const { return _hdr->flags == INF; };
     //set the lowest header level for which new pages are made
     void setHeaderCutOff( unsigned int co ) { _maxHeaderLevel = co; };
     unsigned int headerCutOff() const { return _maxHeaderLevel; };

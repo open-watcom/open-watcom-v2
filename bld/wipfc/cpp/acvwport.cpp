@@ -246,19 +246,19 @@ void AcViewport::buildText( Cell* cell )
         cell->addByte( 2 );             //size
         cell->addByte( 0x21 );          //type
         cell->addByte( 0 );             //reserved
-        cell->addByte( dataSize );
-        cell->addWord( _objectId );
-        cell->addByte( static_cast< byte >( objectName.size() + 1 ) );
+        cell->add( dataSize );
+        cell->add( _objectId );
+        cell->add( static_cast< byte >( objectName.size() + 1 ) );
         if( !objectName.empty() ) {
-            cell->addString( objectName );
+            cell->add( objectName );
         }
-        cell->addByte( static_cast< byte >( dll.size() + 1 ) );
+        cell->add( static_cast< byte >( dll.size() + 1 ) );
         if( !dll.empty() ) {
-            cell->addString( dll );
+            cell->add( dll );
         }
-        cell->addByte( static_cast< byte >( objectInfo.size() + 1 ) );
+        cell->add( static_cast< byte >( objectInfo.size() + 1 ) );
         if( !objectInfo.empty() ) {
-            cell->addString( objectInfo );
+            cell->add( objectInfo );
         }
         if( _doOrigin || _doSize ) {
             byte flag( 0xC0 );
@@ -266,7 +266,7 @@ void AcViewport::buildText( Cell* cell )
                 flag |= 0x01;
             if( _doSize )
                 flag |= 0x02;
-            cell->addByte( flag );
+            cell->add( flag );
             cell->addByte( 0 );
             if( _doOrigin ) {
                 _origin.buildText( cell );

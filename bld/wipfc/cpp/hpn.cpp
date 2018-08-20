@@ -93,7 +93,7 @@ void Hpn::buildText( Cell* cell )
     if( _level != 4 && _level < 8 ) {
         cell->addByte( 0x04 );          //change style
         if( _level < 4 ) {
-            cell->addByte( static_cast< byte >( _level ) );
+            cell->addByte( _level );
         } else {
             cell->addByte( static_cast< byte >( _level - 1 ) );
         }
@@ -162,7 +162,7 @@ void EHpn::buildText( Cell* cell )
         if( _previousLevel != 4 && _previousLevel < 8 ) {
             cell->addByte( 0x04 );      //change style
             if( _previousLevel < 4 ) {
-                cell->addByte( static_cast< byte >( _previousLevel ) );
+                cell->addByte( _previousLevel );
             } else {
                 cell->addByte( static_cast< byte >( _previousLevel - 1 ) );
             }

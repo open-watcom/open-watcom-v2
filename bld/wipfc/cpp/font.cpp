@@ -113,7 +113,7 @@ void Font::buildText( Cell* cell )
     cell->addByte( Cell::ESCAPE );  //esc
     cell->addByte( 0x03 );          //size
     cell->addByte( 0x19 );          //set font
-    cell->addByte( _index );
+    cell->add( _index );
     if( cell->textFull() ) {
         printError( ERR1_LARGEPAGE );
     }

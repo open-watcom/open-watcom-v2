@@ -55,27 +55,28 @@ public:
     void updateByte( std::size_t pos, byte data ) { _data[pos] = data; };
     //add a byte code to the encoded text
     void addByte( byte c ) { _data.push_back( c ); };
+    void add( byte c ) { _data.push_back( c ); };
     //add a word code to the encoded text
-    void addWord( word w ) {
+    void add( word w ) {
         _data.push_back( static_cast< byte >( w ) );
         _data.push_back( static_cast< byte >( w >> 8 ) );
     };
     //add a dword code to the encoded text
-    void addDword( dword dw ) {
+    void add( dword dw ) {
         _data.push_back( static_cast< byte >( dw ) );
         _data.push_back( static_cast< byte >( dw >> 8 ) );
         _data.push_back( static_cast< byte >( dw >> 16 ) );
         _data.push_back( static_cast< byte >( dw >> 24 ) );
     };
     //add a byte array to the encoded text
-    void addArray( const byte *array, std::size_t len ) {
+    void add( const byte *array, std::size_t len ) {
         _data.reserve( _data.size() + len );
         for( std::size_t i = 0; i < len; i++ ) {
             _data.push_back( array[i] );
         }
     };
     //add a std::string to the encoded text
-    void addString( const std::string& text ) {
+    void add( const std::string& text ) {
         std::size_t len = text.size();
         _data.reserve( _data.size() + len );
         for( std::size_t i = 0; i < len; i++ ) {
@@ -83,7 +84,7 @@ public:
         }
     };
     //add a Hotspot to the encoded text
-    void addHotspot( const Hotspot& hs ) {
+    void add( const Hotspot& hs ) {
         _data.push_back( static_cast< byte >( hs.x ) );
         _data.push_back( static_cast< byte >( hs.x >> 8 ) );
         _data.push_back( static_cast< byte >( hs.y ) );

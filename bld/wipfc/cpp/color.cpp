@@ -126,13 +126,13 @@ void Color::buildText( Cell* cell )
         cell->addByte( Cell::ESCAPE );  //esc
         cell->addByte( 0x03 );          //size
         cell->addByte( 0x13 );          //set foreground color
-        cell->addByte( static_cast< byte >( _foreground ) );
+        cell->add( static_cast< byte >( _foreground ) );
     }
     if( _setBackground ) {
         cell->addByte( Cell::ESCAPE );  //esc
         cell->addByte( 0x03 );          //size
         cell->addByte( 0x14 );          //set background color
-        cell->addByte( static_cast< byte >( _background ) );
+        cell->add( static_cast< byte >( _background ) );
     }
     if( cell->textFull() ) {
         printError( ERR1_LARGEPAGE );

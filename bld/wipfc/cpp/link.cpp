@@ -409,10 +409,10 @@ void Link::doTopic( Cell* cell )
                         cell->addByte( 0x04 );  //full bitmap
                     }
                 }
-                cell->addWord( tocIndex );
+                cell->add( tocIndex );
                 //this may need to be last
                 if( _hspot.isDef( _hypergraphic ) )
-                    cell->addHotspot( _hspot );
+                    cell->add( _hspot );
                 if( _viewport || _doStyle || _automatic || _split || _doOrigin || _doSize ||
                     _dependent || _doGroup ) {
                     byte flag1( 0 );
@@ -437,8 +437,8 @@ void Link::doTopic( Cell* cell )
                         flag2 |= 0x02;
                     if( _doGroup )
                         flag2 |= 0x04;
-                    cell->addByte( flag1 );
-                    cell->addByte( flag2 );
+                    cell->add( flag1 );
+                    cell->add( flag2 );
                 }
                 if( _doOrigin ) {
                     _origin.buildText( cell );
@@ -475,14 +475,14 @@ void Link::doTopic( Cell* cell )
                     cell->addByte( 0x16 );  //full bitmap
                 }
             }
-            cell->addByte( _document->extFileIndex( _database ) );
+            cell->add( _document->extFileIndex( _database ) );
             std::string buffer( cell->out()->wtomb_string( _refid->getText() ) );
             if( buffer.size() > 255 - (( cell->getPos( start ) + _hspot.size( _hypergraphic ) + 1 ) - 1 ) )
                 buffer.erase( 255 - (( cell->getPos( start ) + _hspot.size( _hypergraphic ) + 1 ) - 1 ) );
-            cell->addByte( static_cast< byte >( buffer.size() ) );
+            cell->add( static_cast< byte >( buffer.size() ) );
             if( _hspot.isDef( _hypergraphic ) )
-                cell->addHotspot( _hspot );
-            cell->addString( buffer );
+                cell->add( _hspot );
+            cell->add( buffer );
             cell->updateByte( start + 1, static_cast< byte >( cell->getPos( start ) - 1 ) );
             if( cell->textFull() ) {
                 printError( ERR1_LARGEPAGE );
@@ -519,9 +519,9 @@ void Link::doFootnote( Cell* cell )
                     cell->addByte( 0x05 );  //full bitmap
                 }
             }
-            cell->addWord( tocIndex );
+            cell->add( tocIndex );
             if( _hspot.isDef( _hypergraphic ) )
-                cell->addHotspot( _hspot );
+                cell->add( _hspot );
             cell->updateByte( start + 1, static_cast< byte >( cell->getPos( start ) - 1 ) );
             if( cell->textFull() ) {
                 printError( ERR1_LARGEPAGE );
@@ -554,14 +554,14 @@ void Link::doLaunch( Cell* cell )
         }
         cell->addByte( 0x00 );          //blank byte
         if( _hspot.isDef( _hypergraphic ) )
-            cell->addHotspot( _hspot );
+            cell->add( _hspot );
         std::string buffer( cell->out()->wtomb_string( _object ) );
         buffer += ' ';
         std::string tmp( cell->out()->wtomb_string( _data ) );
         buffer += tmp;
         if( buffer.size() > 255 - cell->getPos( start ) + 1 )
             buffer.erase( 255 - cell->getPos( start ) + 1 );
-        cell->addString( buffer );
+        cell->add( buffer );
         cell->updateByte( start + 1, static_cast< byte >( cell->getPos( start ) - 1 ) );
         if( cell->textFull() ) {
             printError( ERR1_LARGEPAGE );
@@ -588,9 +588,9 @@ void Link::doInform( Cell* cell )
                 cell->addByte( 0x09 );  //full bitmap
             }
         }
-        cell->addWord( _res );
+        cell->add( _res );
         if( _hspot.isDef( _hypergraphic ) )
-            cell->addHotspot( _hspot );
+            cell->add( _hspot );
         cell->updateByte( start + 1, static_cast< byte >( cell->getPos( start ) - 1 ) );
         if( cell->textFull() ) {
             printError( ERR1_LARGEPAGE );

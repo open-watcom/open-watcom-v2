@@ -141,8 +141,8 @@ void Artwork::buildText( Cell* cell )
         cell->addByte( 0x0F );      //image map
         cell->addByte( 0x00 );      //define hypergraphic
     }
-    cell->addByte( _flags );
-    cell->addDword( _document->bitmapByName( _name ) ); //get file offset of graphic
+    cell->add( _flags );
+    cell->add( _document->bitmapByName( _name ) );  //get file offset of graphic
     cell->updateByte( start + 1, static_cast< byte >( cell->getPos( start ) - 1 ) );
     if( cell->textFull() ) {
         printError( ERR1_LARGEPAGE );

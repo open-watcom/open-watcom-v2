@@ -210,7 +210,7 @@ void SlLi::buildText( Cell* cell )
     cell->addByte( Cell::ESCAPE );      //esc
     cell->addByte( 0x03 );              //size
     cell->addByte( 0x02 );              //set left margin
-    cell->addByte( _indent );
+    cell->add( _indent );
     if( _compact ) {
         cell->addByte( Cell::LINE_BREAK );
     } else {

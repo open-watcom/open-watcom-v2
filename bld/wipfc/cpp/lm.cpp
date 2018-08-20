@@ -82,7 +82,7 @@ void Lm::buildText( Cell* cell )
     cell->addByte( Cell::ESCAPE );  //esc
     cell->addByte( 0x03 );          //size
     cell->addByte( 0x02 );          //set left margin
-    cell->addByte( _margin );
+    cell->add( _margin );
     if( cell->textFull() ) {
         printError( ERR1_LARGEPAGE );
     }

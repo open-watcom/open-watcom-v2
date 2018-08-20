@@ -606,7 +606,7 @@ void Hn::buildText( Cell* cell )
         cell->addByte( Cell::ESCAPE );  //esc
         cell->addByte( 0x02 );          //size
         cell->addByte( 0x15 );          //begin hide
-        cell->addString( buffer );
+        cell->add( buffer );
         cell->updateByte( start + 1, static_cast< byte >( cell->getPos( start ) - 1 ) );
         if( cell->textFull() ) {
             printError( ERR1_LARGEPAGE );

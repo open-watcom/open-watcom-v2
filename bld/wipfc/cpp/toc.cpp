@@ -39,9 +39,9 @@
 void TocEntry::buildText( Cell* cell ) const
 /******************************************/
 {
-    cell->addByte( hdrsize );
-    cell->addByte( flags.data );
-    cell->addByte( cellCount );
+    cell->add( hdrsize );
+    cell->add( flags.data );
+    cell->add( cellCount );
 }
 
 TocEntry::dword TocEntry::write( OutFile* out ) const
@@ -60,7 +60,7 @@ TocEntry::dword TocEntry::write( OutFile* out ) const
 void ExtTocEntry::buildText( Cell* cell ) const
 /*********************************************/
 {
-    cell->addWord( flags.data );
+    cell->add( flags.data );
 }
 
 void ExtTocEntry::write( OutFile* out ) const
@@ -74,9 +74,9 @@ void ExtTocEntry::write( OutFile* out ) const
 void PageOrigin::buildText( Cell* cell ) const
 /********************************************/
 {
-    cell->addByte( static_cast< byte >( ( (xPosType & 0x0f) << 4 ) | (yPosType & 0x0f) ) );
-    cell->addWord( xpos );
-    cell->addWord( ypos );
+    cell->add( static_cast< byte >( ( (xPosType & 0x0f) << 4 ) | (yPosType & 0x0f) ) );
+    cell->add( xpos );
+    cell->add( ypos );
 }
 
 void PageOrigin::write( OutFile* out ) const
@@ -94,9 +94,9 @@ void PageOrigin::write( OutFile* out ) const
 void PageSize::buildText( Cell* cell ) const
 /******************************************/
 {
-    cell->addByte( static_cast< byte >( ( (heightType & 0x0f) << 4 ) | (widthType & 0x0f) ) );
-    cell->addWord( width );
-    cell->addWord( height );
+    cell->add( static_cast< byte >( ( (heightType & 0x0f) << 4 ) | (widthType & 0x0f) ) );
+    cell->add( width );
+    cell->add( height );
 }
 
 void PageSize::write( OutFile* out ) const
@@ -114,7 +114,7 @@ void PageSize::write( OutFile* out ) const
 void PageStyle::buildText( Cell* cell ) const
 /*******************************************/
 {
-    cell->addWord( attrs );
+    cell->add( attrs );
 }
 
 void PageStyle::write( OutFile* out ) const
@@ -128,7 +128,7 @@ void PageStyle::write( OutFile* out ) const
 void PageGroup::buildText( Cell* cell ) const
 /*******************************************/
 {
-    cell->addWord( id );
+    cell->add( id );
 }
 
 void PageGroup::write( OutFile* out ) const
@@ -142,7 +142,7 @@ void PageGroup::write( OutFile* out ) const
 void PageControl::buildText( Cell* cell ) const
 /*********************************************/
 {
-    cell->addWord( refid );
+    cell->add( refid );
 }
 
 void PageControl::write( OutFile* out ) const

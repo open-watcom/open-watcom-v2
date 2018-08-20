@@ -55,7 +55,7 @@ void Lp::buildText( Cell* cell )
     cell->addByte( Cell::ESCAPE );          //esc
     cell->addByte( 0x03 );                  //size
     cell->addByte( 0x02 );                  //set left margin
-    cell->addByte( _indent );
+    cell->add( _indent );
     cell->addByte( Cell::END_PARAGRAPH );
     if( cell->textFull() ) {
         printError( ERR1_LARGEPAGE );
