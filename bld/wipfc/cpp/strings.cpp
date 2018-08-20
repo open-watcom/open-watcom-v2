@@ -46,8 +46,8 @@ StringTable::dword StringTable::write( OutFile* out )
         std::string buffer( out->wtomb_string( *itr ) );
         if( buffer.size() > ( 255 - 1 ) )
             buffer.erase( 255 - 1 );
-        std::size_t length = buffer.size() + 1;
-        if( out->put( static_cast< byte >( length ) ) )
+        byte length( static_cast< byte >( buffer.size() + 1 ) );
+        if( out->put( length ) )
             throw FatalError( ERR_WRITE );
         if( out->put( buffer ) )
             throw FatalError( ERR_WRITE );

@@ -58,12 +58,12 @@ GlobalDictionaryWord::dword GlobalDictionaryWord::writeWord( OutFile* out ) cons
     std::string buffer( out->wtomb_string( _text ) );
     if( buffer.size() > ( 255 - 1 ) )
         buffer.erase( 255 - 1 );
-    std::size_t length = buffer.size() + 1;
-    if( out->put( static_cast< byte >( length ) ) )
+    byte length( static_cast< byte >( buffer.size() + 1 ) );
+    if( out->put( length ) )
         throw FatalError( ERR_WRITE );
     if( out->put( buffer ) )
         throw FatalError( ERR_WRITE );
-    return( static_cast< dword >( length ) );
+    return( length );
 }
 /***************************************************************************/
 bool GlobalDictionaryWord::operator<( const GlobalDictionaryWord& rhs ) const
