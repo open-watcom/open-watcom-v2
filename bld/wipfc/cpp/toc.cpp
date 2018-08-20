@@ -74,7 +74,7 @@ void ExtTocEntry::write( OutFile* out ) const
 void PageOrigin::buildText( Cell* cell ) const
 /********************************************/
 {
-    cell->addByte( static_cast< byte >( (( xPosType << 4 ) & 0xf0) | (yPosType & 0x0f) ) );
+    cell->addByte( static_cast< byte >( ( (xPosType & 0x0f) << 4 ) | (yPosType & 0x0f) ) );
     cell->addWord( xpos );
     cell->addWord( ypos );
 }
@@ -82,7 +82,7 @@ void PageOrigin::buildText( Cell* cell ) const
 void PageOrigin::write( OutFile* out ) const
 /******************************************/
 {
-    if( out->put( static_cast< byte >( (( xPosType << 4 ) & 0xf0) | (yPosType & 0x0f) ) ) )
+    if( out->put( static_cast< byte >( ( (xPosType & 0x0f) << 4 ) | (yPosType & 0x0f) ) ) )
         throw FatalError( ERR_WRITE );
     if( out->put( xpos ) )
         throw FatalError( ERR_WRITE );
@@ -94,7 +94,7 @@ void PageOrigin::write( OutFile* out ) const
 void PageSize::buildText( Cell* cell ) const
 /******************************************/
 {
-    cell->addByte( static_cast< byte >( (( heightType << 4 ) & 0xf0) | (widthType & 0x0f) ) );
+    cell->addByte( static_cast< byte >( ( (heightType & 0x0f) << 4 ) | (widthType & 0x0f) ) );
     cell->addWord( width );
     cell->addWord( height );
 }
@@ -102,7 +102,7 @@ void PageSize::buildText( Cell* cell ) const
 void PageSize::write( OutFile* out ) const
 /****************************************/
 {
-    if( out->put( static_cast< byte >( (( heightType << 4 ) & 0xf0) | (widthType & 0x0f) ) ) )
+    if( out->put( static_cast< byte >( ( (heightType & 0x0f) << 4 ) | (widthType & 0x0f) ) ) )
         throw FatalError( ERR_WRITE );
     if( out->put( width ) )
         throw FatalError( ERR_WRITE );

@@ -131,10 +131,10 @@ struct PageOrigin {
     void buildText( Cell *cell ) const;
     std::size_t size() const { return( sizeof( byte ) + 2 * sizeof( word ) ); };
 
-    byte            yPosType;
-    byte            xPosType;
-    word            xpos;
-    word            ypos;
+    ExtTocEntry::Position   yPosType;
+    ExtTocEntry::Position   xPosType;
+    word                    xpos;
+    word                    ypos;
 };
 
 struct PageSize {
@@ -146,22 +146,23 @@ struct PageSize {
     void buildText( Cell *cell ) const;
     std::size_t size() const { return( sizeof( byte ) + 2 * sizeof( word ) ); };
 
-    byte            widthType;
-    byte            heightType;
-    word            width;
-    word            height;
+    ExtTocEntry::Position   widthType;
+    ExtTocEntry::Position   heightType;
+    word                    width;
+    word                    height;
 };
 
 //titlebar, scrollbars, and rules
 struct PageStyle {
     typedef STD1::uint16_t  word;
 
-    PageStyle() : attrs( 0 ) { };
+    PageStyle() : attrs( NONE ) { };
     void write( OutFile* out ) const;
     void buildText( Cell *cell ) const;
     std::size_t size() const { return( sizeof( word ) ); };
 
     enum Style {
+        NONE        = 0,
         BORDER      = 0x0004,   //?
         SIZEBORDER  = 0x0008,
         HSCROLL     = 0x0010,
