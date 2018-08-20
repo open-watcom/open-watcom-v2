@@ -94,6 +94,7 @@ private:
     void readHeaderOS2( std::FILE* bmfpi );
     void findBlockSize( std::size_t width, std::size_t height, std::size_t bitsPerPixel );
     void compress( std::FILE* bmfpi );
+    unsigned rgbByteSize() { return 1 << _bmih.bitsPerPixel; };
 
     BitmapFileHeader            _bmfh;          //read BitmapFileHeader
     BitmapInfoHeader16          _bmih;

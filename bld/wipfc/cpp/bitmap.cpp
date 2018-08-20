@@ -208,7 +208,7 @@ void Bitmap::readHeader16( std::FILE* bmfpi )
 {
     _bmih.read( bmfpi );
     if( _bmih.bitsPerPixel <= 8 ) {
-        std::size_t rgbSize( 1 << _bmih.bitsPerPixel );
+        std::size_t rgbSize( rgbByteSize() );
         _rgb.resize( rgbSize );
         if( std::fread( &_rgb[0], sizeof( RGB ), rgbSize, bmfpi ) != rgbSize ) {
             throw FatalError( ERR_READ );
@@ -229,7 +229,7 @@ void Bitmap::readHeaderW32( std::FILE* bmfpi )
     _bmfh.size -= sizeof( BitmapInfoHeaderWin32 ) - sizeof( BitmapInfoHeader16 );
     _bmfh.bitsOffset -= sizeof( BitmapInfoHeaderWin32 ) - sizeof( BitmapInfoHeader16 );
     if( _bmih.bitsPerPixel <= 8 ) {
-        std::size_t rgbSize( 1 << _bmih.bitsPerPixel );
+        std::size_t rgbSize( rgbByteSize() );
         _rgb.reserve( rgbSize );
         for( std::size_t count1 = 0; count1 < rgbSize; ++count1 ) {
             RGBA tmp1;
@@ -263,7 +263,7 @@ void Bitmap::readHeaderOS2( std::FILE* bmfpi )
     _bmfh.size -= sizeof( BitmapInfoHeaderOS22x ) - sizeof( BitmapInfoHeader16 );
     _bmfh.bitsOffset -= sizeof( BitmapInfoHeaderOS22x ) - sizeof( BitmapInfoHeader16 );
     if( _bmih.bitsPerPixel <= 8 ) {
-        std::size_t rgbSize( 1 << _bmih.bitsPerPixel );
+        std::size_t rgbSize( rgbByteSize() );
         _rgb.reserve( rgbSize );
         if( bmihOS22x.usedColors ) {
             for( std::size_t count1 = 0; count1 < bmihOS22x.usedColors; ++count1 ) {
