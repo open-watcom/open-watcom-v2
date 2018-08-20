@@ -60,7 +60,7 @@ void Text::buildText( Cell* cell )
     if( _text ) {
         if( _toggleSpacing )
             cell->addByte( Cell::TOGGLE_SPACING );
-        cell->addText( _text->index() );
+        cell->addByte( cell->LDIndex( _text->index() ) );
         if( cell->textFull() ) {
             printError( ERR1_LARGEPAGE );
         }

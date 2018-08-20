@@ -62,11 +62,11 @@ void Cell::addTextToLD( word index )
     }
 }
 /***************************************************************************/
-void Cell::addText( word index )
+Cell::byte Cell::LDIndex( word index )
 {
     LDIter itr( std::find( _localDictionary.begin(), _localDictionary.end(), index ) );
         //std::lower_bound( _localDictionary.begin(), _localDictionary.end(), index );
-    addByte( static_cast< byte >( itr - _localDictionary.begin() ) );
+    return( static_cast< byte >( itr - _localDictionary.begin() ) );
 }
 /***************************************************************************/
 
