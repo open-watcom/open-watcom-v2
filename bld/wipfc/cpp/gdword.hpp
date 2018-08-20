@@ -66,7 +66,7 @@ private:
     GlobalDictionaryWord& operator=( const GlobalDictionaryWord& rhs ); //no assignment
     int wstricmp( const wchar_t *s, const wchar_t *t ) const;
 
-    word                _index;     // index in Dictionary
+    word                _index;     // index in Global Dictionary
     std::wstring        _text;      // the actual text
     FTSElement          _fts;
 };

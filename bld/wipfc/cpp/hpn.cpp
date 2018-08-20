@@ -93,16 +93,16 @@ void Hpn::buildText( Cell* cell )
     if( _level != 4 && _level < 8 ) {
         cell->addByte( 0x04 );          //change style
         if( _level < 4 ) {
-            cell->addByte( _level );
+            cell->add( _level );
         } else {
-            cell->addByte( static_cast< byte >( _level - 1 ) );
+            cell->add( static_cast< byte >( _level - 1 ) );
         }
     } else {
         cell->addByte( 0x0D );          //special text color
         if( _level == 4 ) {
             cell->addByte( 0x01 );
         } else {
-            cell->addByte( static_cast< byte >( _level - 6 ) );
+            cell->add( static_cast< byte >( _level - 6 ) );
         }
     }
     if( cell->textFull() ) {
@@ -162,16 +162,16 @@ void EHpn::buildText( Cell* cell )
         if( _previousLevel != 4 && _previousLevel < 8 ) {
             cell->addByte( 0x04 );      //change style
             if( _previousLevel < 4 ) {
-                cell->addByte( _previousLevel );
+                cell->add( _previousLevel );
             } else {
-                cell->addByte( static_cast< byte >( _previousLevel - 1 ) );
+                cell->add( static_cast< byte >( _previousLevel - 1 ) );
             }
         } else {
             cell->addByte( 0x0D );      //special text color
             if( _previousLevel == 4 ) {
                 cell->addByte( 0x01 );
             } else {
-                cell->addByte( static_cast< byte >( _previousLevel - 6 ) );
+                cell->add( static_cast< byte >( _previousLevel - 6 ) );
             }
         }
     }
