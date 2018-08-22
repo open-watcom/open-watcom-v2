@@ -81,7 +81,7 @@ int SwitchChar( void )
 {
 #if defined( __DOS__ )
     return( DOSSwitchChar() );
-#elif   defined( __OS2__ ) || defined( __NT__ )
+#elif   defined( __OS2__ ) || defined( __NT__ ) || defined( __RDOS__ )
     return( '/' );
 #elif   defined( __UNIX__ )
     return( '-' );

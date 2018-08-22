@@ -8,3 +8,4 @@ dir="binnt64"   usr="wmake.exe"     cond="wnt64host"                    keys="nt
 dir="axpnt"     usr="wmake.exe"     cond="alphahost"    where="ac"
 dir="binl"      usr="wmake"         cond="lnxhost"
 dir="binl64"    usr="wmake"         cond="lnx64host"                    keys="lx64"
+dir="rdos"      usr="wmake"         cond="rdoshost"

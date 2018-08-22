@@ -23,6 +23,8 @@ set PROJDIR=<CWD>
     <CCCMD> nt386/wmk.sym     <OWRELROOT>/binnt/wmake.sym
     <CCCMD> linux386/wmk.exe  <OWRELROOT>/binl/wmake
     <CCCMD> linux386/wmk.sym  <OWRELROOT>/binl/wmake.sym
+    <CCCMD> rdos386/wmk.exe   <OWRELROOT>/rdos/wmake.exe
+    <CCCMD> rdos386/wmk.sym   <OWRELROOT>/rdos/wmake.sym
     <CCCMD> ntaxp/wmk.exe     <OWRELROOT>/axpnt/wmake.exe
 
     <CCCMD> qnxi86/wmk.exe    <OWRELROOT>/qnx/binq/wmake

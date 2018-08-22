@@ -109,6 +109,25 @@
 # define LINE_BUFF          80      /* length of one-line user input buffer */
 # define DLL_CMD_ENTRY      "???"   /* entry-pt for .DLL version of command */
 
+
+#elif defined( __RDOS__ )
+
+# define PATH_SPLIT         ';'     /* path seperator                       */
+# define IS_PATH_SPLIT(c)   ((c)==PATH_SPLIT||(c)==';')
+# define SHELL_METAS        "<>|&()"/* characters that force use of shell   */
+# define SHELL_ESC          '^'     /* character that escapes a meta char   */
+# define WILD_METAS         "*?"    /* wild card characters opendir supports*/
+                                    /* dir entries to ignore (direct.h)     */
+# define IGNORE_MASK        ( 0 )
+# define EXIT_OK            0       /* normal termination of program        */
+# define EXIT_WARN          1       /* return from aborted -q (Query) make  */
+# define EXIT_ERROR         2       /* return after errors in parsing       */
+# define EXIT_FATAL         4       /* return after fatal error             */
+# define MAX_SUFFIX         16      /* must fit dotname, or largest .ext.ext*/
+# define MAX_TOK_SIZE       130     /* Maximum token size                   */
+# define LINE_BUFF          80      /* length of one-line user input buffer */
+# define DLL_CMD_ENTRY      "EXEC_CMD"   /* entry-pt for .DLL version of command */
+
 #else
 # error Must define system dependent macros
 #endif
