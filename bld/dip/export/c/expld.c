@@ -1005,6 +1005,19 @@ static dip_status TryELF( FILE *fp, imp_image_handle *iih )
                     }
                     break;
                 case STT_NOTYPE:
+                    if( sym.st_shndx < head.e_shnum ) {
+                        addr_seg    seg;
+
+                        /* Take a guess: If pointing to an executable section,
+                         * symbol is probably code.
+                         */
+                        if( sect[sym.st_shndx].sh_flags & SHF_EXECINSTR )
+                            seg = MAP_FLAT_CODE_SELECTOR;
+                        else
+                            seg = MAP_FLAT_DATA_SELECTOR;
+                        ds = AddSymbol( ii, seg, sym.st_value, len, name );
+                    }
+                    break;
                 case STT_OBJECT:
                     if( sym.st_shndx < head.e_shnum ) {
                         ds = AddSymbol( iih, MAP_FLAT_DATA_SELECTOR, sym.st_value, len, name );
