@@ -206,7 +206,7 @@ char *FixName( char *name )
     }
 
     return( name );
-#elif defined( __OS2__ ) || defined( __NT__ )
+#elif defined( __OS2__ ) || defined( __NT__ ) || defined( __RDOS__ )
 /*********************************
  * convert fwd-slash to back-slash
  */
@@ -249,7 +249,7 @@ bool FNameEq( const char *a, const char *b )
 static bool FNameChrEq( char a, char b )
 /**************************************/
 {
-#if defined( __OS2__ ) || defined( __NT__ ) || defined( __DOS__ )
+#if defined( __OS2__ ) || defined( __NT__ ) || defined( __DOS__ ) || defined( __RDOS__ )
     return( ctolower( a ) == ctolower( b ) );
 #else
     return( a == b );
@@ -261,7 +261,7 @@ static bool FNameChrEq( char a, char b )
 bool FarFNameEq( const char FAR *a, const char FAR *b )
 /*****************************************************/
 {
-#if defined( __OS2__ ) || defined( __NT__ ) || defined( __DOS__ )
+#if defined( __OS2__ ) || defined( __NT__ ) || defined( __DOS__ ) || defined( __RDOS__ )
     return( _fstricmp( a, b ) == 0 );
 #else
     return( _fstrcmp( a, b ) == 0 );

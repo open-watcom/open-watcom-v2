@@ -60,7 +60,7 @@ pick( ECHO )
 pick( ENDLOCAL )
 #endif
 pick( ERASE )
-#if defined( __OS2__ ) || defined( __NT__ ) || defined( __UNIX__ )
+#if defined( __OS2__ ) || defined( __NT__ ) || defined( __UNIX__ ) || defined( __RDOS__ )
 pick( EXIT )
 pick( EXTPROC )
 #endif

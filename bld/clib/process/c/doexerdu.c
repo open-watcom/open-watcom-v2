@@ -61,6 +61,7 @@ int _doexec( CHAR_TYPE *pgmname, CHAR_TYPE *cmdline,
     int fh;
     char *drive;
     char *dir;
+    char null_repl;
 
     __F_NAME(__ccmdline,__wccmdline)( pgmname, argv, cmdline, 0 );
 
@@ -82,16 +83,22 @@ int _doexec( CHAR_TYPE *pgmname, CHAR_TYPE *cmdline,
                 while( envp && !ok) {
                     ep = strchr( envp, ';' );
                     if( ep ) {
+                        null_repl = *ep;
                         *ep = 0;
-                        ep++;
                     }
                     _makepath( p, "", envp, fname, ext );
-                    fh = RdosOpenFile( pgmname, 0 );
+                    fh = RdosOpenFile( p, 0 );
                     if( fh ) {
                         ok = 1;
                         RdosCloseFile( fh );
                     }
-                    envp = ep;
+                    if( ep ) {
+                        *ep = null_repl;
+                        ep++;
+                        envp = ep;
+                    } else {
+                        envp = 0;
+                    }
                 }                
             }
         }
@@ -101,7 +108,7 @@ int _doexec( CHAR_TYPE *pgmname, CHAR_TYPE *cmdline,
     }
 
     if( ok ) {
-        RdosExec( pgmname, cmdline, 0, envpar );
+        RdosExec( p, cmdline, 0, envpar );
     }
 
     lib_free( p );

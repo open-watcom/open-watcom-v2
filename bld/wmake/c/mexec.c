@@ -47,6 +47,9 @@
 #ifdef __UNIX__
     #include <sys/wait.h>
 #endif
+#ifdef __RDOS__
+    #include "rdos.h"
+#endif
 #include <ctype.h>
 #include <time.h>
 #ifdef DLLS_IMPLEMENTED
@@ -1304,7 +1307,7 @@ STATIC RET_T handleFor( char *line )
 #endif
 
 
-#if defined( __OS2__ ) || defined( __NT__ ) || defined( __UNIX__ )
+#if defined( __OS2__ ) || defined( __NT__ ) || defined( __UNIX__ ) || defined( __RDOS__ )
 STATIC RET_T handleCD( char *cmd )
 /********************************/
 {
@@ -1366,6 +1369,29 @@ STATIC RET_T handleChangeDrive( const char *cmd )
     return( RET_SUCCESS );
 }
 #endif
+
+
+#if defined( __RDOS__ )
+STATIC RET_T handleChangeDrive( const char *cmd )
+/***********************************************/
+{
+    unsigned    drive_index;
+    unsigned    curr_drive;
+
+#ifdef DEVELOPMENT
+    PrtMsg( DBG | INF | INTERPRETING, dosInternals[CNUM] );
+#endif
+
+    drive_index = (unsigned)(ctoupper( *cmd ) - 'A');
+    RdosSetCurDrive( drive_index );
+    curr_drive = RdosGetCurDrive();
+    if( curr_drive != drive_index ) {
+        return( RET_ERROR );
+    }
+    return( RET_SUCCESS );
+}
+#endif
+
 #endif
 
 
@@ -1891,11 +1917,11 @@ STATIC RET_T shellSpawn( char *cmd, shell_flags flags )
         case COM_FOR:   my_ret = handleFor( cmd );          break;
         case COM_IF:    my_ret = handleIf( cmd );           break;
         case COM_RM:    my_ret = handleRM( cmd );           break;
-#if defined( __OS2__ ) || defined( __NT__ ) || defined( __UNIX__ )
+#if defined( __OS2__ ) || defined( __NT__ ) || defined( __UNIX__ ) || defined( __RDOS__ )
         case COM_CD:
         case COM_CHDIR: my_ret = handleCD( cmd );           break;
 #endif
-#if defined( __OS2__ ) || defined( __NT__ )
+#if defined( __OS2__ ) || defined( __NT__ ) || defined( __RDOS__ )
         case CNUM:      my_ret = handleChangeDrive( cmd );  break;
 #endif
         default:        my_ret = mySystem( cmdname, cmd );  break;
