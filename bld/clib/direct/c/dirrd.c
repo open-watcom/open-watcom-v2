@@ -272,6 +272,7 @@ _WCRTLINK DIR *opendir( const char *name )
                 if( IS_DIR_SEP( *ptr ) )
                     break;
                 ptr--;
+                size--;
             }
             ptr++;
             strupr( ptr );
