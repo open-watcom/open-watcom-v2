@@ -36,6 +36,9 @@
 #endif
 #include <sys/stat.h>
 #include <sys/types.h>
+#if defined( __RDOS__ )
+    #include "rdos.h"
+#endif
 #include "make.h"
 #include "mhash.h"
 #include "mmemory.h"
@@ -47,10 +50,6 @@
 #include "mcache.h"
 
 #include "clibext.h"
-
-#if defined( __RDOS__ )
-#include "rdos.h"
-#endif
 
 
 #if defined( __WATCOMC__ ) && !defined( __UNIX__ )
