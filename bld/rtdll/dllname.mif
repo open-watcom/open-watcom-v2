@@ -4,7 +4,7 @@ dllname_stack    = s
 !ifdef profile
 dllname_profile  = p
 !endif
-!ifeq release 0
+!ifeq rtdll_release 0
 dllname_debug    = d
 !endif
 dllname_clib_386 = clb
