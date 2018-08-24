@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2016,2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2016-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -54,7 +54,7 @@ typedef pthread_fn      __pthread_fn;
 
 struct __thread_pass {
     pthread_t   thread;
-    sem_t       registered;    
+    sem_t       registered;
     pthread_fn  *start_routine;
     void        *arg;
 };
@@ -121,7 +121,7 @@ _WCRTLINK int pthread_create( pthread_t *thread, const pthread_attr_t *attr,
         return( -1 );
     }
     memset( passed, 0,  sizeof( struct __thread_pass ) );
-    
+
     passed->start_routine = start_routine;
     passed->arg = arg;
     passed->thread = (pthread_t)-1;
@@ -137,7 +137,7 @@ _WCRTLINK int pthread_create( pthread_t *thread, const pthread_attr_t *attr,
     if( sem_init( &passed->registered, 0, 0 ) != 0 ) {
         return( -1 );
     }
-    
+
     ret = _beginthread( __thread_start, NULL, 0, (void *)passed );
 
     /* Wait for registration */
