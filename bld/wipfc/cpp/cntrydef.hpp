@@ -53,8 +53,9 @@ public:
     dword write( OutFile* out ) const;
     word codePage() const { return( _codePage ); }
     word size() const { return( _size ); }
-    std::string nlsFileName() const { return _nlsFileName; }
-    std::string entityFileName() const { return _entityFileName; }
+    const std::string nlsFileName() const { return _nlsFileName; }
+    const std::string entityFileName() const { return _entityFileName; }
+    const std::string icuConverter() const { return _icuConverter; }
     bool useDBCS() const { return _useDBCS; }
 
 private:
@@ -68,6 +69,7 @@ private:
     bool                _useDBCS;
     std::string         _nlsFileName;
     std::string         _entityFileName;
+    std::string         _icuConverter;
 };
 
 #endif

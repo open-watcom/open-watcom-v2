@@ -46,6 +46,7 @@ void CountryDef::nlsConfig( const char *loc )
     char        buffer[256];
     const char  *fn1;
     const char  *fn2;
+    const char  *fn3;
 
     std::string path( Environment.value( "WIPFC" ) );
     if( path.length() )
@@ -54,7 +55,7 @@ void CountryDef::nlsConfig( const char *loc )
     std::FILE *nlsconf = std::fopen( fname.c_str(), "r" );
     if( nlsconf == NULL )
         throw FatalError( ERR_NLSCONF );
-    while( (fn1 = fn2 = std::fgets( buffer, sizeof( buffer ), nlsconf )) != NULL ) {
+    while( (fn1 = fn2 = fn3 = std::fgets( buffer, sizeof( buffer ), nlsconf )) != NULL ) {
         std::size_t len = std::strlen( buffer );
         killEOL( buffer + len - 1 );
         char *p = skipWS( buffer );
@@ -63,7 +64,7 @@ void CountryDef::nlsConfig( const char *loc )
         if( p[0] == '#' )
             continue;                       // skip comment lines
         p = std::strtok( buffer, " \t" );   // get locale
-        if( p == NULL || std::strcmp( p, loc ) != 0 )
+        if( p == NULL || std::strcmp( p, loc ) != 0 && std::strcmp( p, "default" ) != 0 )
             continue;
         p = std::strtok( NULL, " \t" );     // get nls file
         if( p == NULL )
@@ -73,6 +74,10 @@ void CountryDef::nlsConfig( const char *loc )
         if( p == NULL )
             continue;                       // skip incorrect lines
         fn2 = skipWS( p );
+        p = std::strtok( NULL, " \t" );     // get ICU conversion file
+        if( p == NULL )
+            continue;                       // skip incorrect lines
+        fn3 = skipWS( p );
         p = std::strtok( NULL, " \t" );     // get country
         if( p == NULL )
             continue;                       // skip incorrect lines
@@ -89,16 +94,11 @@ void CountryDef::nlsConfig( const char *loc )
         break;
     }
     std::fclose( nlsconf );
-    if( fn2 == NULL ) {
-        // if error or locale not found then set default US
-        _country = 1;
-        _codePage = 437;
-        _useDBCS = false;
-        fn1 = "en_US.nls";
-        fn2 = "entity.txt";
-    }
+    if( fn3 == NULL )
+        throw FatalError( ERR_NLSCONF );
     _nlsFileName = path + std::string( fn1 );
     _entityFileName = path + std::string( fn2 );
+    _icuConverter = std::string( fn3 );
 }
 
 CountryDef::dword CountryDef::write( OutFile* out ) const
