@@ -70,7 +70,7 @@ int __HeapMin( __segment seg, __segment one_heap )
     _AccessFHeap();
     for( ; seg != _NULLSEG; seg = next_seg ) {
         /* we might free this segment so get the next one now */
-        next_seg = BHEAP( seg )->next;
+        next_seg = BHEAP( seg )->next.s.segm;
         if( BHEAP( seg )->numfree == 0 ) {      /* full heap */
             if( one_heap != _NULLSEG )
                 break;
@@ -80,7 +80,7 @@ int __HeapMin( __segment seg, __segment one_heap )
             continue;
         }
         /* verify the last block is free */
-        last_free = BHEAP( seg )->freehead.prev;
+        last_free = BHEAP( seg )->freehead.prev.nptr;
         if( IS_BLK_INUSE( last_free ) )
             continue;
 

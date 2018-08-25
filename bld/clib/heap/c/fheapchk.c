@@ -38,7 +38,7 @@
 #include "heapacc.h"
 
 
-freelistp _WCFAR *__fheapchk_current;
+freelist_fptr __fheapchk_current;
 
 static int checkFreeList( unsigned long *free_size )
 {
@@ -47,18 +47,18 @@ static int checkFreeList( unsigned long *free_size )
     unsigned long       total_size;
 
     total_size = 0;
-    for( seg = __fheapbeg; seg != _NULLSEG; seg = BHEAP( seg )->next ) {
-        __fheapchk_current = frl = BHEAP( seg )->freehead.next;
+    for( seg = __fheapbeg; seg != _NULLSEG; seg = BHEAP( seg )->next.s.segm ) {
+        __fheapchk_current = frl = BHEAP( seg )->freehead.next.nptr;
         while( (unsigned)frl != offsetof( heapblk, freehead ) ) {
             total_size += frl->len;
-            __fheapchk_current = frl = frl->next;
+            __fheapchk_current = frl = frl->next.nptr;
         }
     }
     *free_size = total_size;
     return( _HEAPOK );
 }
 
-static int checkFree( freelistp _WCFAR *frl )
+static int checkFree( freelist_fptr frl )
 {
     __segment       seg;
     FRLPTR( seg )   prev;
@@ -66,12 +66,12 @@ static int checkFree( freelistp _WCFAR *frl )
 
     __fheapchk_current = frl;
     seg = FP_SEG( frl );
-    prev = frl->prev;
-    next = frl->next;
-    if( prev->next != (FRLPTR( seg ))frl || next->prev != (FRLPTR( seg ))frl ) {
+    prev = frl->prev.nptr;
+    next = frl->next.nptr;
+    if( prev->next.nptr != (FRLPTR( seg ))frl || next->prev.nptr != (FRLPTR( seg ))frl ) {
         return( _HEAPBADNODE );
     }
-    if( ((FRLPTR( seg ))prev->prev)->next != prev || ((FRLPTR( seg ))next->next)->prev != next ) {
+    if( ((FRLPTR( seg ))prev->prev.nptr)->next.nptr != prev || ((FRLPTR( seg ))next->next.nptr)->prev.nptr != next ) {
         return( _HEAPBADNODE );
     }
     return( _HEAPOK );

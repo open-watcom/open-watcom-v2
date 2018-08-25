@@ -73,9 +73,9 @@ _WCRTLINK int _heapset( unsigned int fill )
 
 _WCRTLINK int _nheapset( unsigned int fill )
 {
-    mheapptr    heap;
-    frlptr      frl;
-    int         heap_status;
+    heapblk_nptr    heap;
+    freelist_nptr   frl;
+    int             heap_status;
 
     heap_status = _heapchk();
     if( heap_status != _HEAPOK ) {
@@ -83,9 +83,9 @@ _WCRTLINK int _nheapset( unsigned int fill )
     }
     _AccessNHeap();
 
-    for( heap = __nheapbeg; heap != NULL; heap = heap->next ) {
-        for( frl = heap->freehead.next; frl != (frlptr)&heap->freehead; frl = frl->next ) {
-            _mymemset( frl + 1, fill, frl->len - sizeof( freelistp ) );
+    for( heap = __nheapbeg; heap != NULL; heap = heap->next.nptr ) {
+        for( frl = heap->freehead.next.nptr; frl != (freelist_nptr)&heap->freehead; frl = frl->next.nptr ) {
+            _mymemset( frl + 1, fill, frl->len - sizeof( freelist ) );
         }
     }
     _ReleaseNHeap();

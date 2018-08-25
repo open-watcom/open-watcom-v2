@@ -43,14 +43,14 @@
 
 _WCRTLINK size_t _memavl( void )
 {
-    size_t      length;
-    frlptr      frl;
-    mheapptr    heap;
+    size_t          length;
+    freelist_nptr   frl;
+    heapblk_nptr    heap;
 
     length = 0;
     _AccessNHeap();
-    for( heap = __nheapbeg; heap != NULL; heap = heap->next ) {
-        for( frl = heap->freehead.next; frl != (frlptr)&heap->freehead; frl = frl->next ) {
+    for( heap = __nheapbeg; heap != NULL; heap = heap->next.nptr ) {
+        for( frl = heap->freehead.next.nptr; frl != (freelist_nptr)&heap->freehead; frl = frl->next.nptr ) {
             length += __ROUND_DOWN_SIZE_HEAP( frl->len );
         }
     }

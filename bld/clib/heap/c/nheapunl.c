@@ -35,7 +35,7 @@
 #include "heap.h"
 
 
-void __UnlinkNHeap( mheapptr heap, mheapptr prev_heap, mheapptr next_heap )
+void __UnlinkNHeap( heapblk_nptr heap, heapblk_nptr prev_heap, heapblk_nptr next_heap )
 {
     if( __nheapbeg == heap )
         __nheapbeg = next_heap;
@@ -51,9 +51,9 @@ void __UnlinkNHeap( mheapptr heap, mheapptr prev_heap, mheapptr next_heap )
         __MiniHeapFreeRover = NULL;
     }
     if( prev_heap != NULL ) {
-        prev_heap->next = next_heap;
+        prev_heap->next.nptr = next_heap;
     }
     if( next_heap != NULL ) {
-        next_heap->prev = prev_heap;
+        next_heap->prev.nptr = prev_heap;
     }
 }

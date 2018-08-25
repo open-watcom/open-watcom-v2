@@ -111,9 +111,9 @@ _WCRTLINK void_nptr _nrealloc( void_nptr cstg_old, size_t req_size )
     if( cstg_new == NULL ) {                    /* if couldn't be expanded in place */
 #if defined(__DOS_EXT__)
         if( _IsRational() ) {
-            frlptr  flp, newflp;
+            freelist_nptr  flp, newflp;
 
-            flp = (frlptr)CPTR2BLK( cstg_old );
+            flp = (freelist_nptr)CPTR2BLK( cstg_old );
             newflp = __ReAllocDPMIBlock( flp, req_size + TAG_SIZE );
             if( newflp ) {
                 return( (void_nptr)BLK2CPTR( newflp ) );

@@ -131,15 +131,15 @@ int __GrowSeg( __segment seg, unsigned int amount )
 #endif
         new_heaplen = num_of_paras << 4;
         BHEAP( seg )->len = new_heaplen;        /* put in new heap length */
-        pfree = BHEAP( seg )->freehead.prev;
+        pfree = BHEAP( seg )->freehead.prev.nptr;
         if( NEXT_BLK( pfree ) != old_heaplen - TAG_SIZE * 2 ) {
             /* last free entry not at end of the heap */
             /* add a new free entry to end of list */
             pnew = (FRLPTR( seg ))( old_heaplen - TAG_SIZE * 2 );
-            pnew->prev = pfree;
-            pnew->next = pfree->next;
-            pfree->next = pnew;
-            BHEAP( seg )->freehead.prev = pnew;
+            pnew->prev.nptr = pfree;
+            pnew->next.nptr = pfree->next.nptr;
+            pfree->next.nptr = pnew;
+            BHEAP( seg )->freehead.prev.nptr = pnew;
             BHEAP( seg )->numfree++;
             pfree = pnew;
         }

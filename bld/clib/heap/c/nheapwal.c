@@ -38,7 +38,7 @@
 #include "heapacc.h"
 
 
-#define FIRST_FRL(h)    ((frlptr)(h + 1))
+#define FIRST_FRL(h)    ((freelist_nptr)(h + 1))
 
 #if defined(__SMALL_DATA__)
 _WCRTLINK int _heapwalk( struct _heapinfo *entry )
@@ -47,24 +47,24 @@ _WCRTLINK int _heapwalk( struct _heapinfo *entry )
 }
 #endif
 
-int __NHeapWalk( struct _heapinfo *entry, mheapptr heap )
+int __NHeapWalk( struct _heapinfo *entry, heapblk_nptr heap )
 {
-    frlptr frl;
-    frlptr frl_next;
+    freelist_nptr frl;
+    freelist_nptr frl_next;
 
     if( heap == NULL ) {
         return( _HEAPEMPTY );
     }
-    frl = (frlptr)(entry->_pentry);
+    frl = (freelist_nptr)(entry->_pentry);
     if( frl == NULL ) {
         frl = FIRST_FRL( heap );
     } else {    /* advance to next entry */
-        for( heap = __nheapbeg; heap->next != NULL; heap = heap->next ) {
+        for( heap = __nheapbeg; heap->next.nptr != NULL; heap = heap->next.nptr ) {
             if( IS_IN_HEAP( frl, heap ) ) {
                 break;
             }
         }
-        frl_next = (frlptr)NEXT_BLK_A( frl );
+        frl_next = (freelist_nptr)NEXT_BLK_A( frl );
         if( frl_next <= frl ) {
             return( _HEAPBADNODE );
         }
@@ -72,7 +72,7 @@ int __NHeapWalk( struct _heapinfo *entry, mheapptr heap )
     }
     for( ; IS_BLK_END( frl ); ) {
         // We advance to next miniheapblk
-        heap = heap->next;
+        heap = heap->next.nptr;
         if( heap == NULL ) {
             entry->_useflag = _USEDENTRY;
             entry->_size    = 0;

@@ -45,8 +45,8 @@
     #pragma aux (__outside_CLIB) __nmemneed;
 #endif
 
-mheapptr        _WCNEAR __nheapbeg = NULL;
-mheapptr        __MiniHeapRover = NULL;
+heapblk_nptr    _WCNEAR __nheapbeg = NULL;
+heapblk_nptr    __MiniHeapRover = NULL;
 unsigned int    __LargestSizeB4MiniHeapRover = 0;
 
 #if defined(__WARP__)
@@ -140,7 +140,7 @@ _WCRTLINK void_nptr _nmalloc( size_t amt )
     unsigned        size;
     void_bptr       cstg;
     unsigned char   expanded;
-    mheapptr        heap;
+    heapblk_nptr    heap;
 
 #if defined(__WARP__)
     unsigned char   use_obj_any;
@@ -177,14 +177,18 @@ _WCRTLINK void_nptr _nmalloc( size_t amt )
             heap = __nheapbeg;
         }
         // Search for free block
-        for( ; heap != NULL; heap = heap->next ) {
+        for( ; heap != NULL; heap = heap->next.nptr ) {
             __MiniHeapRover = heap;
             largest = heap->largest_blk;
 #if defined(__WARP__)
             if( use_obj_any == ( heap->used_obj_any != 0 ) ) {
 #endif // __WARP__
               if( largest >= amt ) {
+#ifdef _M_I86
                   cstg = __MemAllocator( amt, _DGroup(), heap );
+#else
+                  cstg = __MemAllocator( amt, heap );
+#endif
                   if( cstg != NULL ) {
                       goto lbl_release_heap;
                   }

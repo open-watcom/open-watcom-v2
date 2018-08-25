@@ -40,7 +40,7 @@
 #endif
 
 
-mheapptr    __MiniHeapFreeRover;
+heapblk_nptr    __MiniHeapFreeRover;
 
 #if defined(__SMALL_DATA__)
 
@@ -65,8 +65,8 @@ _WCRTLINK void _nfree( void_nptr cstg )
 
 _WCRTLINK void _nfree( void_nptr cstg )
 {
-    mheapptr        heap;
-    mheapptr        heap2;
+    heapblk_nptr    heap;
+    heapblk_nptr    heap2;
 
     if( cstg == NULL )
         return;
@@ -80,13 +80,13 @@ _WCRTLINK void _nfree( void_nptr cstg )
                 break;
             }
             heap2 = heap;
-            heap = heap->prev;
+            heap = heap->prev.nptr;
             if( heap != NULL ) {
                 if( IS_IN_HEAP( cstg, heap ) ) {
                     break;
                 }
             }
-            heap = heap2->next;
+            heap = heap2->next.nptr;
             if( heap != NULL ) {
                 if( IS_IN_HEAP( cstg, heap ) ) {
                     break;
@@ -99,13 +99,13 @@ _WCRTLINK void _nfree( void_nptr cstg )
                 break;
             }
             heap2 = heap;
-            heap = heap->prev;
+            heap = heap->prev.nptr;
             if( heap != NULL ) {
                 if( IS_IN_HEAP( cstg, heap ) ) {
                     break;
                 }
             }
-            heap = heap2->next;
+            heap = heap2->next.nptr;
             if( heap != NULL ) {
                 if( IS_IN_HEAP( cstg, heap ) ) {
                     break;
@@ -114,7 +114,7 @@ _WCRTLINK void _nfree( void_nptr cstg )
         }
 
         // not found near rover, so search the list
-        for( heap = __nheapbeg; heap != NULL; heap = heap->next ) {
+        for( heap = __nheapbeg; heap != NULL; heap = heap->next.nptr ) {
             if( IS_IN_HEAP( cstg, heap ) ) {
                 // break twice!
                 goto found_it;
@@ -128,7 +128,11 @@ _WCRTLINK void _nfree( void_nptr cstg )
 
 found_it:
     // we found the miniheap, free the storage
+#ifdef _M_I86
     __MemFree( cstg, _DGroup(), heap );
+#else
+    __MemFree( cstg, heap );
+#endif
     __MiniHeapFreeRover = heap;
     if( heap < __MiniHeapRover ) {
         if( __LargestSizeB4MiniHeapRover < heap->largest_blk ) {

@@ -38,11 +38,11 @@
 
 
 #ifdef _M_I86
-#define HEAP(s)             miniheapblkp __based(s) *
-#define FRLPTRADD(s,p,o)    (freelistp __based(s) *)((PTR)(p)+(o))
+#define HEAP(s)             heapblk __based(s) *
+#define FRLPTRADD(s,p,o)    (freelist __based(s) *)((PTR)(p)+(o))
 #else
-#define HEAP(s)             miniheapblkp _WCNEAR *
-#define FRLPTRADD(s,p,o)    (freelistp _WCNEAR *)((PTR)(p)+(o))
+#define HEAP(s)             heapblk_nptr
+#define FRLPTRADD(s,p,o)    (freelist_nptr)((PTR)(p)+(o))
 #endif
 
 int __HeapManager_expand( __segment seg, void_bptr cstg, size_t req_size, size_t *growth_size )
@@ -76,22 +76,22 @@ int __HeapManager_expand( __segment seg, void_bptr cstg, size_t req_size, size_t
                 break;
             heap = 0;                   // for based heap
             free_size = p2->len;
-            pnext = p2->next;
-            pprev = p2->prev;
+            pnext = p2->next.nptr;
+            pprev = p2->prev.nptr;
             if( seg == _DGroup() ) {    // near heap
-                for( heap = __nheapbeg; heap->next != NULL; heap = heap->next ) {
+                for( heap = __nheapbeg; heap->next.nptr != NULL; heap = heap->next.nptr ) {
                     if( IS_IN_HEAP( p1, heap ) ) {
                         break;
                     }
                 }
             }
-            if( heap->rover == p2 ) {
-                heap->rover = p2->prev;
+            if( heap->rover.nptr == p2 ) {
+                heap->rover.nptr = p2->prev.nptr;
             }
             if( free_size < *growth_size || free_size - *growth_size < FRL_SIZE ) {
                 /* unlink small free block */
-                pprev->next = pnext;
-                pnext->prev = pprev;
+                pprev->next.nptr = pnext;
+                pnext->prev.nptr = pprev;
                 p1->len += free_size;
                 heap->numfree--;
                 if( free_size >= *growth_size ) {
@@ -102,10 +102,10 @@ int __HeapManager_expand( __segment seg, void_bptr cstg, size_t req_size, size_t
             } else {
                 p2 = FRLPTRADD( seg, p2, *growth_size );
                 p2->len = free_size - *growth_size;
-                p2->prev = pprev;
-                p2->next = pnext;
-                pprev->next = p2;
-                pnext->prev = p2;
+                p2->prev.nptr = pprev;
+                p2->next.nptr = pnext;
+                pprev->next.nptr = p2;
+                pnext->prev.nptr = p2;
                 p1->len += *growth_size;
                 return( __HM_SUCCESS );
             }
@@ -121,7 +121,7 @@ int __HeapManager_expand( __segment seg, void_bptr cstg, size_t req_size, size_t
         p2 = FRLPTRADD( seg, p1, new_size );
         SET_BLK_SIZE_INUSE( p2, old_size - new_size );
         if( seg == _DGroup() ) {    // near heap
-            for( heap = __nheapbeg; heap->next != NULL; heap = heap->next ) {
+            for( heap = __nheapbeg; heap->next.nptr != NULL; heap = heap->next.nptr ) {
                 if( IS_IN_HEAP( p1, heap ) ) {
                     break;
                 }

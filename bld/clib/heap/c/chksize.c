@@ -37,7 +37,6 @@
 // This file is compiled to ensure that important structures don't change.
 // The following sizes are important to maintaining the alignment of the heap
 #define SIZEOF_FREELIST     (TAG_SIZE * 3)
-#define SIZEOF_FREELISTP    SIZEOF_FREELIST
 #if defined(__WARP__)
 // 32-bit OS/2 has one more for high memory flags - was 8
 #define SIZEOF_HEAPBLK      (TAG_SIZE * 9 + SIZEOF_FREELIST)
@@ -45,7 +44,6 @@
 #define SIZEOF_HEAPBLK      (TAG_SIZE * 8 + SIZEOF_FREELIST)
 #endif
 #define SIZEOF_HEAPBLKP     SIZEOF_HEAPBLK
-#define SIZEOF_MINIHEAPBLKP SIZEOF_HEAPBLK
 #define SIZEOF_HEAPSTART    (SIZEOF_HEAPBLK + SIZEOF_FREELIST)
 #define SIZEOF_HEAPEND      (TAG_SIZE + SIZEOF_FREELIST)
 #ifdef __DOS_EXT__
@@ -57,14 +55,8 @@
 // structure has shrunk
 char __freelist_shrunk[sizeof( freelist ) - SIZEOF_FREELIST + 1];
 char __freelist_bigger[SIZEOF_FREELIST - sizeof( freelist ) + 1];
-char __freelistp_shrunk[sizeof( freelistp ) - SIZEOF_FREELISTP + 1];
-char __freelistp_bigger[SIZEOF_FREELISTP - sizeof( freelistp ) + 1];
 char __heapblk_shrunk[sizeof( heapblk ) - SIZEOF_HEAPBLK + 1];
 char __heapblk_bigger[SIZEOF_HEAPBLK - sizeof( heapblk ) + 1];
-char __heapblkp_shrunk[sizeof( heapblkp ) - SIZEOF_HEAPBLKP + 1];
-char __heapblkp_bigger[SIZEOF_HEAPBLKP - sizeof( heapblkp ) + 1];
-char __miniheapblkp_shrunk[sizeof( miniheapblkp ) - SIZEOF_MINIHEAPBLKP + 1];
-char __miniheapblkp_bigger[SIZEOF_MINIHEAPBLKP - sizeof( miniheapblkp ) + 1];
 char __heapstart_shrunk[sizeof( heapstart ) - SIZEOF_HEAPSTART + 1];
 char __heapstart_bigger[SIZEOF_HEAPSTART - sizeof( heapstart ) + 1];
 char __heapend_shrunk[sizeof( heapend ) - SIZEOF_HEAPEND + 1];
