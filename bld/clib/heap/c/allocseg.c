@@ -54,8 +54,6 @@
 
 #define HEAP(s)             ((heapblk __based(s) *)0)
 #define FIRST_FRL(s)        ((freelist __based(s) *)(HEAP(s) + 1))
-#define SET_HEAP_END(s,p)   ((freelistp __based(s) *)(p))->len=END_TAG; \
-                            ((freelistp __based(s) *)(p))->prev=0
 
 #if defined(__QNX__)
 extern unsigned         __qnx_alloc_flags;
@@ -119,9 +117,9 @@ __segment __AllocSeg( unsigned int amount )
     seg = TINY_INFO( rc );
 #endif
     heaplen = num_of_paras << 4;
-    HEAP( seg )->heaplen = heaplen;
-    HEAP( seg )->prevseg = _NULLSEG;
-    HEAP( seg )->nextseg = _NULLSEG;
+    HEAP( seg )->len = heaplen;
+    HEAP( seg )->prev = _NULLSEG;
+    HEAP( seg )->next = _NULLSEG;
     HEAP( seg )->rover = sizeof( heapblk );
     HEAP( seg )->b4rover = 0;
     HEAP( seg )->numalloc = 0;

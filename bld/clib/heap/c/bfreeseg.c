@@ -37,8 +37,6 @@
 #include "heapacc.h"
 
 
-#define HEAP(s)     ((heapblkp __based(s) *)0)
-
 _WCRTLINK int _bfreeseg( __segment seg )
 {
     __segment       next_seg;
@@ -46,15 +44,15 @@ _WCRTLINK int _bfreeseg( __segment seg )
 
     _AccessFHeap();
     /* unlink from heap list */
-    prev_seg = HEAP( seg )->prevseg;
-    next_seg = HEAP( seg )->nextseg;
+    prev_seg = BHEAP( seg )->prev;
+    next_seg = BHEAP( seg )->next;
     if( next_seg != _NULLSEG ) {
-        HEAP( next_seg )->prevseg = prev_seg;
+        BHEAP( next_seg )->prev = prev_seg;
     }
     if( prev_seg == _NULLSEG ) {
         __bheapbeg = next_seg;
     } else {
-        HEAP( prev_seg )->nextseg = next_seg;
+        BHEAP( prev_seg )->next = next_seg;
     }
     _ReleaseFHeap();
     return( __FreeSeg( seg ) );

@@ -53,11 +53,6 @@
 #include "heap.h"
 
 
-#define HEAP(s)             ((heapblkp __based(s) *)0)
-#define FRLPTR(s)           freelistp __based(s) *
-#define SET_HEAP_END(s,p)   ((FRLPTR(s))(p))->len = END_TAG; \
-                            ((FRLPTR(s))(p))->prev = 0
-
 int __GrowSeg( __segment seg, unsigned int amount )
 {
     unsigned        num_of_paras;   /* number of paragraphs desired   */
@@ -69,7 +64,7 @@ int __GrowSeg( __segment seg, unsigned int amount )
 
     if( !__heap_enabled )
         return( 0 );
-    old_heaplen = HEAP( seg )->heaplen;
+    old_heaplen = BHEAP( seg )->len;
     if( old_heaplen != 0 ) {                /* if not already 64K */
         amount += TAG_SIZE;
         if( amount < TAG_SIZE )
@@ -135,8 +130,8 @@ int __GrowSeg( __segment seg, unsigned int amount )
             return( 0 );
 #endif
         new_heaplen = num_of_paras << 4;
-        HEAP( seg )->heaplen = new_heaplen;        /* put in new heap length */
-        pfree = HEAP( seg )->freehead.prev;
+        BHEAP( seg )->len = new_heaplen;        /* put in new heap length */
+        pfree = BHEAP( seg )->freehead.prev;
         if( NEXT_BLK( pfree ) != old_heaplen - TAG_SIZE * 2 ) {
             /* last free entry not at end of the heap */
             /* add a new free entry to end of list */
@@ -144,13 +139,13 @@ int __GrowSeg( __segment seg, unsigned int amount )
             pnew->prev = pfree;
             pnew->next = pfree->next;
             pfree->next = pnew;
-            HEAP( seg )->freehead.prev = pnew;
-            HEAP( seg )->numfree++;
+            BHEAP( seg )->freehead.prev = pnew;
+            BHEAP( seg )->numfree++;
             pfree = pnew;
         }
         pfree->len = new_heaplen - FP_OFF( pfree ) - TAG_SIZE * 2;
-        if( HEAP( seg )->largest_blk < pfree->len )
-            HEAP( seg )->largest_blk = pfree->len;
+        if( BHEAP( seg )->largest_blk < pfree->len )
+            BHEAP( seg )->largest_blk = pfree->len;
         SET_HEAP_END( seg, new_heaplen - 2 * TAG_SIZE );
         return( 1 );                /* indicate segment was grown */
     }

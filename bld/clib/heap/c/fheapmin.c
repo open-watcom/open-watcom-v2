@@ -39,8 +39,6 @@
 #include "heapacc.h"
 
 
-#define HEAP(s)     ((heapblkp __based(s) *)0)
-
 #if defined(__BIG_DATA__)
 
 _WCRTLINK int _heapshrink( void )
@@ -71,17 +69,17 @@ _WCRTLINK int _fheapshrink( void )
     _AccessFHeap();
     for( seg = __fheapbeg; seg != _NULLSEG; seg = next_seg ) {
         /* we might free this segment so get the next one now */
-        next_seg = HEAP( seg )->nextseg;
-        if( HEAP( seg )->numalloc == 0 ) {     /* empty heap */
+        next_seg = BHEAP( seg )->next;
+        if( BHEAP( seg )->numalloc == 0 ) {     /* empty heap */
             /* unlink from heap list */
-            prev_seg = HEAP( seg )->prevseg;
+            prev_seg = BHEAP( seg )->prev;
             if( next_seg != _NULLSEG ) {
-                HEAP( next_seg )->prevseg = prev_seg;
+                BHEAP( next_seg )->prev = prev_seg;
             }
             if( prev_seg == _NULLSEG ) {
                 __fheapbeg = next_seg;
             } else {
-                HEAP( prev_seg )->nextseg = next_seg;
+                BHEAP( prev_seg )->next = next_seg;
             }
             __fheapRover = __fheapbeg;
             heap_status = __FreeSeg( seg );

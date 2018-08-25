@@ -38,9 +38,6 @@
 #include "heapacc.h"
 
 
-#define HEAP(s)     ((heapblkp __based(s) *)0)
-#define FRLPTR(s)   freelistp __based(s) *
-
 freelistp _WCFAR *__fheapchk_current;
 
 static int checkFreeList( unsigned long *free_size )
@@ -50,8 +47,8 @@ static int checkFreeList( unsigned long *free_size )
     unsigned long       total_size;
 
     total_size = 0;
-    for( seg = __fheapbeg; seg != _NULLSEG; seg = HEAP( seg )->nextseg ) {
-        __fheapchk_current = frl = HEAP( seg )->freehead.next;
+    for( seg = __fheapbeg; seg != _NULLSEG; seg = BHEAP( seg )->next ) {
+        __fheapchk_current = frl = BHEAP( seg )->freehead.next;
         while( (unsigned)frl != offsetof( heapblk, freehead ) ) {
             total_size += frl->len;
             __fheapchk_current = frl = frl->next;

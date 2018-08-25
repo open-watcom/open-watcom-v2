@@ -80,6 +80,15 @@
 #define NEXT_BLK(p)                 ((unsigned)(p) + (p)->len)
 #define NEXT_BLK_A(p)               ((unsigned)(p) + GET_BLK_SIZE(p))
 
+#ifdef _M_I86
+#define BHEAP(s)            ((heapblkp __based(s) *)0)
+#define FRLPTR(s)           freelistp __based(s) *
+#else
+#define FRLPTR(s)           freelistp _WCNEAR *
+#endif
+
+#define SET_HEAP_END(s,p)   ((FRLPTR(s))(p))->len = END_TAG; ((FRLPTR(s))(p))->prev = 0
+
 #define IS_IN_HEAP(m,h)     ((unsigned)(h) <= (unsigned)(m) && (unsigned)(m) < (unsigned)NEXT_BLK((h)))
 
 #define memcpy_i86      "shr cx,1"  "rep movsw" "adc cx,cx"   "rep movsb"
@@ -88,23 +97,57 @@
 #define memset_i86      "mov ah,al" "shr cx,1"  "rep stosw" "adc cx,cx"   "rep stosb"
 #define memset_386      "mov ah,al" "shr ecx,1" "rep stosw" "adc ecx,ecx" "rep stosb"
 
-#ifdef _M_I86
-typedef void            __based(void) *void_bptr;
-#else
-typedef void            _WCNEAR *void_bptr;
-#endif
-typedef void            _WCNEAR *void_nptr;
-typedef void            _WCFAR *void_fptr;
-typedef void            _WCHUGE *void_hptr;
-
-typedef unsigned int    tag;
-typedef unsigned char   _WCNEAR *PTR;
-typedef unsigned char   _WCFAR *FARPTR;
-
 /*
 ** NOTE: the size of these data structures is critical to the alignemnt
 **       of the pointers returned by malloc().
 */
+
+typedef unsigned int    tag;
+
+typedef struct heapblk  heapblk;
+typedef struct freelist freelist;
+
+typedef heapblk         _WCNEAR *nheapptr;
+typedef freelist        _WCNEAR *nfreeptr;
+
+typedef union segmptr {
+    struct {
+        __segment       segm;
+#if !defined( _M_I86 )
+        __segment       dummy;
+#endif
+    } s;
+    nheapptr            nptr;
+} segmptr;
+
+typedef union freeptr {
+    nfreeptr            nptr;
+    unsigned int        offs;
+} freeptr;
+
+#if 0
+struct freelist {
+    tag                 len;        /* length of block in free list */
+    freeptr             prev;       /* offset of previous block in free list */
+    freeptr             next;       /* offset of next block in free list */
+};
+
+struct heapblk {
+    tag                 len;                /* size of heap (0 = 64K) */
+    segmptr             prev;               /* segment selector/offset for previous heap */
+    segmptr             next;               /* segment selector/offset for next heap */
+    freeptr             rover;              /* roving pointer into free list */
+    unsigned int        b4rover;            /* largest block before rover */
+    unsigned int        largest_blk;        /* largest block in the heap  */
+    unsigned int        numalloc;           /* number of allocated blocks in heap */
+    unsigned int        numfree;            /* number of free blocks in the heap */
+    freelist            freehead;           /* listhead of free blocks in heap */
+#if defined( __WARP__ )
+    unsigned int        used_obj_any :1;    /* allocated with OBJ_ANY - block may be in high memory */
+#endif
+};
+#endif
+
 typedef struct freelist {
     tag                 len;    /* length of block in free list */
     unsigned int        prev;   /* offset of previous block in free list */
@@ -113,15 +156,16 @@ typedef struct freelist {
 
 typedef freelist        _WCFAR *farfrlptr;
 
+#if 1
 typedef struct heapblk {
-    tag                 heaplen;        /* size of heap (0 = 64K) */
+    tag                 len;            /* size of heap (0 = 64K) */
 #if defined( _M_I86 )
-    __segment           prevseg;        /* segment selector for previous heap */
-    __segment           nextseg;        /* segment selector for next heap */
+    __segment           prev;           /* segment selector for previous heap */
+    __segment           next;           /* segment selector for next heap */
 #elif defined( _M_IX86 )
-    __segment           prevseg;        /* segment selector for previous heap */
+    __segment           prev;           /* segment selector for previous heap */
     __segment           dummy1;         /* not used, match miniheapblkp size */
-    __segment           nextseg;        /* segment selector for next heap */
+    __segment           next;           /* segment selector for next heap */
     __segment           dummy2;         /* not used, match miniheapblkp size */
 #else
     unsigned int        dummy1;         /* not used, match miniheapblkp size */
@@ -137,6 +181,7 @@ typedef struct heapblk {
     unsigned int        spare;          /* not used, match miniheapblkp size */
 #endif
 } heapblk;
+#endif
 
 typedef struct freelistp {
     tag                 len;
@@ -147,14 +192,14 @@ typedef struct freelistp {
 typedef freelistp       _WCNEAR *frlptr;
 
 typedef struct heapblkp {
-    tag                 heaplen;
+    tag                 len;
 #if defined( _M_I86 )
-    __segment           prevseg;        /* segment selector for previous heap */
-    __segment           nextseg;        /* segment selector for next heap */
+    __segment           prev;           /* segment selector for previous heap */
+    __segment           next;           /* segment selector for next heap */
 #elif defined( _M_IX86 )
-    __segment           prevseg;        /* segment selector for previous heap */
+    __segment           prev;           /* segment selector for previous heap */
     __segment           dummy1;         /* not used, match miniheapblkp size */
-    __segment           nextseg;        /* segment selector for next heap */
+    __segment           next;           /* segment selector for next heap */
     __segment           dummy2;         /* not used, match miniheapblkp size */
 #else
     unsigned int        dummy1;         /* not used, match miniheapblkp size */
@@ -197,6 +242,20 @@ typedef struct heapend {
     tag                 last_tag;
     freelist            last;
 } heapend;
+
+#ifdef _M_I86
+typedef heapblk         __based(void) *heap_bptr;
+typedef void            __based(void) *void_bptr;
+#else
+typedef heapblk         _WCNEAR *heap_bptr;
+typedef void            _WCNEAR *void_bptr;
+#endif
+typedef void            _WCNEAR *void_nptr;
+typedef void            _WCFAR *void_fptr;
+typedef void            _WCHUGE *void_hptr;
+
+typedef unsigned char   _WCNEAR *PTR;
+typedef unsigned char   _WCFAR *FARPTR;
 
 #ifdef __DOS_EXT__
 typedef struct dpmi_hdr {

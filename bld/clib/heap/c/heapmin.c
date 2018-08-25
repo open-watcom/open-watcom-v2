@@ -53,11 +53,6 @@
 #include "seterrno.h"
 
 
-#define HEAP(s)             ((heapblkp __based(s) *)0)
-#define FRLPTR(s)           freelistp __based(s) *
-#define SET_HEAP_END(s,p)   ((FRLPTR(s))(p))->len = END_TAG; \
-                            ((FRLPTR(s))(p))->prev = 0
-
 int __HeapMin( __segment seg, __segment one_heap )
 {
     tag                 last_len;
@@ -75,17 +70,17 @@ int __HeapMin( __segment seg, __segment one_heap )
     _AccessFHeap();
     for( ; seg != _NULLSEG; seg = next_seg ) {
         /* we might free this segment so get the next one now */
-        next_seg = HEAP( seg )->nextseg;
-        if( HEAP( seg )->numfree == 0 ) {      /* full heap */
+        next_seg = BHEAP( seg )->next;
+        if( BHEAP( seg )->numfree == 0 ) {      /* full heap */
             if( one_heap != _NULLSEG )
                 break;
             continue;
         }
-        if( HEAP( seg )->numalloc == 0 ) {     /* empty heap */
+        if( BHEAP( seg )->numalloc == 0 ) {     /* empty heap */
             continue;
         }
         /* verify the last block is free */
-        last_free = HEAP( seg )->freehead.prev;
+        last_free = BHEAP( seg )->freehead.prev;
         if( IS_BLK_INUSE( last_free ) )
             continue;
 
@@ -99,8 +94,8 @@ int __HeapMin( __segment seg, __segment one_heap )
         if( last_len <= FRL_SIZE )
             continue;
 
-        new_heap_len = __ROUND_UP_SIZE_PARA( HEAP( seg )->heaplen - ( last_len - FRL_SIZE ) );
-        adjust_len = HEAP( seg )->heaplen - new_heap_len;
+        new_heap_len = __ROUND_UP_SIZE_PARA( BHEAP( seg )->len - ( last_len - FRL_SIZE ) );
+        adjust_len = BHEAP( seg )->len - new_heap_len;
         if( adjust_len == 0 )
             continue;
 
@@ -141,7 +136,7 @@ int __HeapMin( __segment seg, __segment one_heap )
         }
 #endif
         /* make the changes to the heap structure */
-        HEAP( seg )->heaplen = new_heap_len;
+        BHEAP( seg )->len = new_heap_len;
         last_free->len -= adjust_len;
         SET_HEAP_END( seg, NEXT_BLK( last_free ) );
     }
