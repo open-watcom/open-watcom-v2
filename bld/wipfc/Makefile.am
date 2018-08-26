@@ -16,10 +16,10 @@ wipfc_SOURCES = cpp/main.cpp cpp/compiler.cpp cpp/document.cpp cpp/env.cpp \
         cpp/lines.cpp cpp/link.cpp cpp/lm.cpp cpp/lp.cpp cpp/note.cpp cpp/nt.cpp \
         cpp/ol.cpp cpp/p.cpp cpp/parml.cpp cpp/pbutton.cpp cpp/rm.cpp cpp/sl.cpp \
         cpp/table.cpp cpp/title.cpp cpp/ul.cpp cpp/warning.cpp cpp/xmp.cpp \
-        cpp/cntrydef.cpp cpp/outfile.cpp cpp/iculoadr.obj \
-        icu/common/ucnv_u8.obj icu/common/ucnv_cnv.obj icu/common/ucnvmbcs.obj \
-        icu/common/ucnv_cb.obj icu/common/ucnv_ext.obj icu/common/ucnv.obj \
-        icu/common/ucnv_err.obj
+        cpp/cntrydef.cpp cpp/outfile.cpp cpp/iculoadr.cpp \
+        icu/common/ucnv_u8.cpp icu/common/ucnv_cnv.cpp icu/common/ucnvmbcs.cpp \
+        icu/common/ucnv_cb.cpp icu/common/ucnv_ext.cpp icu/common/ucnv.cpp \
+        icu/common/ucnv_err.cpp
 noinst_HEADERS = cpp/compiler.hpp cpp/document.hpp cpp/env.hpp cpp/ipfbuff.hpp \
         cpp/ipffile.hpp cpp/ipfdata.hpp cpp/lexer.hpp \
         cpp/bitmap.hpp cpp/btmpblk.hpp cpp/cecmd.hpp cpp/cell.hpp cpp/ctrlbtn.hpp \
@@ -32,7 +32,7 @@ noinst_HEADERS = cpp/compiler.hpp cpp/document.hpp cpp/env.hpp cpp/ipfbuff.hpp \
         cpp/brcmd.hpp cpp/caution.hpp cpp/cgraphic.hpp cpp/color.hpp cpp/ctrl.hpp \
         cpp/ctrldef.hpp cpp/ddf.hpp cpp/dl.hpp cpp/docprof.hpp cpp/fig.hpp \
         cpp/figcap.hpp cpp/fn.hpp cpp/font.hpp cpp/hdref.hpp cpp/hide.hpp cpp/hn.hpp \
-        cpp/hpn.hpp cpp/i1.hpp cpp/i2.hpp cpp/icmd.hpp cpp/isyn.hpp nlsrecty.hpp \
+        cpp/hpn.hpp cpp/i1.hpp cpp/i2.hpp cpp/icmd.hpp cpp/isyn.hpp cpp/nlsrecty.hpp \
         cpp/lines.hpp cpp/link.hpp cpp/lm.hpp cpp/lp.hpp cpp/note.hpp cpp/nt.hpp \
         cpp/ol.hpp cpp/p.hpp cpp/parml.hpp cpp/pbutton.hpp cpp/rm.hpp cpp/sl.hpp \
         cpp/table.hpp cpp/title.hpp cpp/ul.hpp cpp/warning.hpp cpp/wipfc.hpp cpp/xmp.hpp \
