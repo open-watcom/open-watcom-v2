@@ -77,6 +77,7 @@ wmake text
 *.bz2 binary
 *.chi binary
 *.chm binary
+*.cnv binary
 *.com binary
 *.cop binary
 *.cur binary
