@@ -60,8 +60,6 @@ private:
     IpfFile( const IpfFile& rhs );              //no copy
     IpfFile& operator=( const IpfFile& rhs );   //no assignment
     std::wint_t  getwc();
-    // MBCS->UNICODE conversion
-    void         mbtow_string( const std::string& input, std::wstring& output );
 
     const std::wstring*     _fileName;
     std::FILE*              _stream;

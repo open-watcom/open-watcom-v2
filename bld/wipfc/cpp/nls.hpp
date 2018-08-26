@@ -78,7 +78,6 @@ private:
     Nls( const Nls& rhs );              // no copy
     Nls& operator=( const Nls& rhs );   // no assignment
 
-    void set_document_data_codepage( const char *loc );
     void readEntityFile( const std::string& sfname );
     void readNLSFile( const std::string& sfname );
     void addGrammarItem( wchar_t chr1, wchar_t chr2 );

@@ -142,7 +142,8 @@ void Nls::readNLSFile( const std::string& sfname )
 void Nls::setLocalization( const char *loc )
 /******************************************/
 {
-    set_document_data_codepage( loc );
+    _country.nlsConfig( loc );
+    _icu = new ICULoader( _country.icuConverter().c_str() );
     readNLSFile( _country.nlsFileName() );
     readEntityFile( _country.entityFileName() );
 }
@@ -261,11 +262,4 @@ Nls::dword Nls::DbcsGrammarDef::write( OutFile* out )
     if( out->put( _ranges ) )
         throw FatalError( ERR_WRITE );
     return( start );
-}
-
-void Nls::set_document_data_codepage( const char *loc )
-/*****************************************************/
-{
-    _country.nlsConfig( loc );
-    _icu = new ICULoader( _country.icuConverter().c_str() );
 }

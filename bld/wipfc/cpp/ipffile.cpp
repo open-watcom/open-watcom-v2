@@ -121,6 +121,7 @@ void IpfFile::unget( wchar_t ch )
 std::wint_t IpfFile::getwc()
 /**************************/
 {
+    // read UNICODE character from internal buffer
     if( _pos >= _wbuffer.size() ) {
         _pos = 0;
         if( gets( false ) == NULL ) {
@@ -130,36 +131,31 @@ std::wint_t IpfFile::getwc()
     return _wbuffer[_pos++];
 }
 
-void IpfFile::mbtow_string( const std::string& input, std::wstring& output )
-/**************************************************************************/
-{
-    UErrorCode err = U_ZERO_ERROR;
-    const char *start = input.c_str();
-    const char *end = start + input.size();
-    output.clear();
-    while( start < end ) {
-        UChar32 uc;
-        uc = _icu->getNextUChar( _converter, &start, end, &err );
-        output += uc;
-    }
-}
-
 const std::wstring * IpfFile::gets( bool removeEOL )
 /**************************************************/
 {
+    UErrorCode  err = U_ZERO_ERROR;
     char        sbuffer[512];
     bool        eol;
     std::string buffer;
 
     _wbuffer = L"";
     eol = false;
+    // read MBCS/SBCS/UTF8 input line from file
     while( !eol && std::fgets( sbuffer, sizeof( sbuffer ), _stream ) != NULL ) {
         std::size_t len = std::strlen( sbuffer );
         eol = killEOL( sbuffer + len - 1, removeEOL );
         buffer += sbuffer;
     }
     if( buffer.size() > 0 || eol ) {
-        mbtow_string( buffer, _wbuffer );
+        // input line conversion from MBCS/SBCS/UTF8 to UNICODE (by ICU converter)
+        const char *start = buffer.c_str();
+        const char *end = start + buffer.size();
+        while( start < end ) {
+            UChar32 uc;
+            uc = _icu->getNextUChar( _converter, &start, end, &err );
+            _wbuffer += uc;
+        }
         return( &_wbuffer );
     }
     return( NULL );
