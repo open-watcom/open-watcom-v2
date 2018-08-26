@@ -1,3 +1,13 @@
+// © 2016 and later: Unicode, Inc. and others.
+// License & terms of use: http://www.unicode.org/copyright.html
+/*
+******************************************************************************
+*
+*   Copyright (C) 1998-2016, International Business Machines
+*   Corporation and others.  All Rights Reserved.
+*
+******************************************************************************
+*/
 /****************************************************************************
 *
 *                            Open Watcom Project
@@ -24,53 +34,31 @@
 *
 *  ========================================================================
 *
-* Description: IPF File object
+* Description:  ICU single converter minimised loader
+*                   Only support for MBCS/SBCS/UTF-8 (ASCII encoding)
 *
 ****************************************************************************/
 
-#ifndef IPFFILE_INCLUDED
-#define IPFFILE_INCLUDED
 
-#include <cstdio>
-#include "ipfdata.hpp"
+#include "unicode/utypes.h"
+#include "udatamem.h"
+#include "cmemory.h"
+#include "ucnv_imp.h"
 
-class Nls;     // forward reference
-class ICULoader;
-struct UConverter;
 
-class IpfFile : public IpfData {
+class ICULoader {
 public:
-    IpfFile( const std::wstring* wfname, Nls *nls );
-    IpfFile( const std::string& sfname, const std::wstring* wfname, Nls *nls );
-    ~IpfFile();
-    //Set the file name for use in error messages
-    void setName( const std::wstring* fileName ) { _fileName = fileName; }
-    //Returns the file or buffer name for use in error messages
-    virtual
-    const std::wstring* name() const { return _fileName; };
-    //Read a character
-    virtual
-    std::wint_t get();
-    //Un-read a character
-    virtual
-    void unget( wchar_t ch );
-    const std::wstring *gets( bool removeEOL );
+    ICULoader( const char *name );
+    ~ICULoader();
+
+    UConverter *clone( UErrorCode *err );
+    void close( UConverter *converter );
+    UChar32 getNextUChar( UConverter *converter, const char **source, const char *source_end, UErrorCode *err );
+    void fromUnicodeToMBCS( UConverter *converter, char **target, const char *target_end, const UChar **source, const UChar *source_end, int32_t *offset, UBool flush, UErrorCode *err );
+private:
+    UConverterSharedData *createFromFile( UConverterLoadArgs *pArgs, UErrorCode *err );
+    void unloadSharedData( UConverter *converter );
 
 private:
-    IpfFile( const IpfFile& rhs );              //no copy
-    IpfFile& operator=( const IpfFile& rhs );   //no assignment
-    std::wint_t  getwc();
-    // MBCS->UNICODE conversion
-    void         mbtow_string( const std::string& input, std::wstring& output );
-
-    const std::wstring*     _fileName;
-    std::FILE*              _stream;
-    wchar_t                 _ungottenChar;
-    bool                    _ungotten;
-    std::wstring            _wbuffer;
-    std::size_t             _pos;
-    ICULoader               *_icu;
-    UConverter              *_converter;
+    UConverter              _converter;
 };
-
-#endif

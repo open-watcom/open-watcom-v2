@@ -32,38 +32,52 @@
 #include <cstdlib>
 #include <cstring>
 #include <climits>
-#if defined( __UNIX__ ) || defined( __APPLE__ )
-    #include <clocale>
-#else
-    #include <mbctype.h>
-#endif
 #include "ipffile.hpp"
 #include "errors.hpp"
 #include "util.hpp"
 #include "outfile.hpp"
 #include "nls.hpp"
+#include "iculoadr.hpp"
 
 
 IpfFile::IpfFile( const std::wstring* wfname, Nls *nls ) : IpfData(),
-    _fileName( wfname ), _ungottenChar( WEOF ), _ungotten( false )
+    _fileName( wfname ), _ungottenChar( WEOF ), _ungotten( false ), _pos( 0 )
 {
+    UErrorCode err = U_ZERO_ERROR;
+
     (void)nls;
 
     std::string sfname( def_wtomb_string( *_fileName ) );
     if( (_stream = std::fopen( sfname.c_str(), "rb" )) == 0 ) {
         throw FatalIOError( ERR_OPEN, *_fileName );
     }
+    _icu = nls->getICU();
+    _converter = _icu->clone( &err );
 }
 
 IpfFile::IpfFile( const std::string& sfname, const std::wstring* wfname, Nls *nls ) : IpfData(),
-    _fileName( wfname ), _ungottenChar( WEOF ), _ungotten( false )
+    _fileName( wfname ), _ungottenChar( WEOF ), _ungotten( false ), _pos( 0 )
 {
+    UErrorCode err = U_ZERO_ERROR;
+
     (void)nls;
 
     if( (_stream = std::fopen( sfname.c_str(), "rb" )) == 0 ) {
         throw FatalIOError( ERR_OPEN, *_fileName );
     }
+    _icu = nls->getICU();
+    _converter = _icu->clone( &err );
 }
+
+IpfFile::~IpfFile()
+{
+    if( _stream ) {
+        std::fclose( _stream );
+    }
+    _wbuffer.erase();
+    _icu->close( _converter );
+}
+
 /*****************************************************************************/
 //Read a character
 //Returns EOB if end-of-file reached
@@ -104,64 +118,49 @@ void IpfFile::unget( wchar_t ch )
     }
 }
 
-static int mbtow_char( wchar_t *wc, const char *mbc, std::size_t len )
-/********************************************************************/
-{
-    // TODO! must be converted by selected MBCS->UNICODE conversion table
-    // which is independent from the host user locale
-    return( std::mbtowc( wc, mbc, len ) );
-}
-
 std::wint_t IpfFile::getwc()
 /**************************/
 {
-    wchar_t ch;
-
-#if defined( __UNIX__ ) || defined( __APPLE__ )
-    // TODO! read MBCS character and convert it to UNICODE by mbtow_char
-    ch = std::fgetwc( _stream );
-#else
-    char    mbc[ MB_LEN_MAX ];
-    if( std::fread( &mbc[0], sizeof( char ), 1, _stream ) != 1 )
-        return( WEOF );
-    if( _ismbblead( mbc[0] ) ) {
-        if( std::fread( &mbc[1], sizeof( char ), 1, _stream ) != 1 ) {
+    if( _pos >= _wbuffer.size() ) {
+        _pos = 0;
+        if( gets( false ) == NULL ) {
             return( WEOF );
         }
     }
-    if( mbtow_char( &ch, mbc, MB_CUR_MAX ) < 0 ) {
-        throw FatalError( ERR_T_CONV );
-    }
-#endif
-    return( ch );
+    return _wbuffer[_pos++];
 }
 
 void IpfFile::mbtow_string( const std::string& input, std::wstring& output )
 /**************************************************************************/
 {
-    int consumed;
-
+    UErrorCode err = U_ZERO_ERROR;
+    const char *start = input.c_str();
+    const char *end = start + input.size();
     output.clear();
-    for( std::size_t index = 0; index < input.size(); index += consumed ) {
-        wchar_t wch;
-        consumed = mbtow_char( &wch, &input[0] + index, MB_CUR_MAX );
-        if( consumed == -1 )
-            throw FatalError( ERR_T_CONV );
-        output += wch;
+    while( start < end ) {
+        UChar32 uc;
+        uc = _icu->getNextUChar( _converter, &start, end, &err );
+        output += uc;
     }
 }
 
-const wchar_t * IpfFile::gets( std::wstring& wbuffer )
-/****************************************************/
+const std::wstring * IpfFile::gets( bool removeEOL )
+/**************************************************/
 {
-    char    sbuffer[512];
+    char        sbuffer[512];
+    bool        eol;
+    std::string buffer;
 
-    if( std::fgets( sbuffer, sizeof( sbuffer ), _stream ) != NULL ) {
+    _wbuffer = L"";
+    eol = false;
+    while( !eol && std::fgets( sbuffer, sizeof( sbuffer ), _stream ) != NULL ) {
         std::size_t len = std::strlen( sbuffer );
-        killEOL( sbuffer + len - 1 );
-        std::string buffer( sbuffer );
-        mbtow_string( sbuffer, wbuffer );
-        return( wbuffer.c_str() );
+        eol = killEOL( sbuffer + len - 1, removeEOL );
+        buffer += sbuffer;
+    }
+    if( buffer.size() > 0 || eol ) {
+        mbtow_string( buffer, _wbuffer );
+        return( &_wbuffer );
     }
     return( NULL );
 }

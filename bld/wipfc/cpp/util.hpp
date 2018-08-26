@@ -46,14 +46,14 @@
 
 #define ERROR_CNV   static_cast<std::size_t>( -1 )
 
-extern void         killQuotes( char * text );
-extern void         killQuotes( wchar_t * text );
+extern void         killQuotes( char *text );
+extern void         killQuotes( wchar_t *text );
 extern void         killQuotes( std::string& val );
 extern void         killQuotes( std::wstring& val );
 extern void         splitAttribute( const std::wstring& text, std::wstring& key, std::wstring& value);
-extern void         killEOL( char * text );
-extern void         killEOL( wchar_t * text );
-extern std::string  canonicalPath( char* arg );
+extern bool         killEOL( char *text, bool kill );
+extern bool         killEOL( wchar_t *text, bool kill );
+extern std::string  canonicalPath( char *arg );
 extern char         *skipWS( char *text );
 extern wchar_t      *skipWS( wchar_t *text );
 

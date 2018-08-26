@@ -105,7 +105,6 @@ int Compiler::compile()
         retval = EXIT_FAILURE;
         printError( e._code, e._fname );
     }
-    //TODO locale should be restored to original value
     if( _xref ) {
         //TODO: convert to ostream when streams and strings mature
         std::string logfname( _outFileName );

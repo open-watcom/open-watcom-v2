@@ -33,21 +33,17 @@
 #include <cstdlib>
 #include <cstring>
 #include <climits>
-#if defined( __UNIX__ ) || defined( __APPLE__ )
-    #include <clocale>
-#else
-    #include <mbctype.h>
-#endif
 #include "errors.hpp"
 #include "env.hpp"
 #include "nls.hpp"
 #include "util.hpp"
 #include "ipffile.hpp"
 #include "outfile.hpp"
+#include "iculoadr.hpp"
 
 
-Nls::Nls( const char *loc ) : _bytes( 0 )
-/***************************************/
+Nls::Nls( const char *loc ) : _bytes( 0 ), _icu( NULL )
+/*****************************************************/
 {
     _sbcsG._type = WIPFC::GRAPHIC;
     _dbcsG._type = WIPFC::GRAPHIC;
@@ -59,19 +55,17 @@ Nls::Nls( const char *loc ) : _bytes( 0 )
 void Nls::readEntityFile( const std::string& sfname )
 /***************************************************/
 {
-    std::wstring    wfname;
-    std::wstring    wbuffer;
+    std::wstring        wfname;
+    const std::wstring  *wbuffer;
 
     def_mbtow_string( sfname, wfname );
     IpfFile *ipff = new IpfFile( sfname, &wfname, this );
     if( ipff == NULL )
         throw FatalError( ERR_COUNTRY );
-    while( ipff->gets( wbuffer ) ) {
-        if( wbuffer[0] == L'\0' )
+    while( (wbuffer = ipff->gets( true )) != NULL ) {
+        if( (*wbuffer)[0] == L'\0' )
             continue;               //skip blank lines
-        wchar_t c = wbuffer[0];
-        wbuffer.erase( 0, 1 );
-        _entityMap.insert( std::map< std::wstring, wchar_t >::value_type( wbuffer, c ) );
+        _entityMap.insert( std::map< std::wstring, wchar_t >::value_type( wbuffer->substr( 1 ), (*wbuffer)[0] ) );
     }
     delete ipff;
 }
@@ -81,19 +75,19 @@ void Nls::readNLSFile( const std::string& sfname )
 {
     bool                    doGrammar( false );
     std::wstring            wfname;
-    std::wstring            wbuffer;
+    const std::wstring      *wbuffer;
     std::string::size_type  pos;
 
     def_mbtow_string( sfname, wfname );
     IpfFile *ipff = new IpfFile( sfname, &wfname, this );
-    while( ipff->gets( wbuffer ) ) {
-        if( wbuffer[0] == L'\0' )
+    while( (wbuffer = ipff->gets( true )) != NULL ) {
+        if( (*wbuffer)[0] == L'\0' )
             continue;               //skip blank lines
-        if( wbuffer[0] == L'#' )
+        if( (*wbuffer)[0] == L'#' )
             continue;               //skip comments
-        if( (pos = wbuffer.find( L'=' )) != std::wstring::npos ) {
-            std::wstring keyword = wbuffer.substr( 0, pos );
-            std::wstring value = wbuffer.substr( pos + 1 );
+        if( (pos = wbuffer->find( L'=' )) != std::wstring::npos ) {
+            std::wstring keyword = wbuffer->substr( 0, pos );
+            std::wstring value = wbuffer->substr( pos + 1 );
             if( doGrammar ) {
                 if( keyword == L"Words" ) {
                     processGrammar( value );
@@ -134,9 +128,9 @@ void Nls::readNLSFile( const std::string& sfname )
             } else {
                 // error: unknown keyword
             }
-        } else if( wbuffer == L"Grammar" ) {
+        } else if( wcscmp( wbuffer->c_str(), L"Grammar" ) == 0 ) {
             doGrammar = true;
-        } else if( wbuffer == L"eGrammar" ) {
+        } else if( wcscmp( wbuffer->c_str(), L"eGrammar" ) == 0 ) {
             doGrammar = false;
         } else {
             // error: unknown keyword
@@ -269,26 +263,9 @@ Nls::dword Nls::DbcsGrammarDef::write( OutFile* out )
     return( start );
 }
 
-//
-// Following code is responsible for document data conversion UNICODE<->MBCS
-//  in dependency on required code page (default is cp=850)
-//
-// TODO! MBCS<->UNICODE conversion for mbtow_char and wtomb_char must be setup
-// instead of existing code which rely on host OS locale support.
-// By example proper characters encoding for US INF Documentation files is
-// DOS codepage 850, but on Linux it is handled as ISO-8859-1 or UTF-8 in
-// dependency how host locale are configured. It is wrong!
-// Correct solution is to use DOS codepage 850 for US on any host OS.
-// It requires to define appropriate MBCS<->UNICODE conversion tables as part of WIPFC.
-
 void Nls::set_document_data_codepage( const char *loc )
 /*****************************************************/
 {
     _country.nlsConfig( loc );
-    // TODO! It is wrong code, but we doesn't have any better for now
-#if defined( __UNIX__ ) || defined( __APPLE__ )
-    std::setlocale( LC_ALL, loc );
-#else
-    _setmbcp( _country.codePage() );
-#endif
+    _icu = new ICULoader( _country.icuConverter().c_str() );
 }

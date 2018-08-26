@@ -35,7 +35,9 @@
 #include <string>
 
 
-class Nls;
+class Nls;     // forward reference
+class ICULoader;
+struct UConverter;
 
 struct UNIFILE {
     std::FILE   *_fp;
@@ -68,6 +70,8 @@ public:
 private:
     UNIFILE*            _ufp;
     word                _codePage;
+    ICULoader           *_icu;
+    UConverter          *_converter;
 };
 
 #endif

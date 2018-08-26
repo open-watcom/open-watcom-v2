@@ -57,7 +57,7 @@ void CountryDef::nlsConfig( const char *loc )
         throw FatalError( ERR_NLSCONF );
     while( (fn1 = fn2 = fn3 = std::fgets( buffer, sizeof( buffer ), nlsconf )) != NULL ) {
         std::size_t len = std::strlen( buffer );
-        killEOL( buffer + len - 1 );
+        killEOL( buffer + len - 1, true );
         char *p = skipWS( buffer );
         if( p[0] == '\0' )
             continue;                       // skip blank lines

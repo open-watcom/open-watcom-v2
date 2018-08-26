@@ -39,6 +39,7 @@
 #include "nlsrecty.hpp"
 #include "cntrydef.hpp"
 
+class ICULoader;
 
 class Nls {
     typedef STD1::uint8_t   byte;
@@ -68,6 +69,7 @@ public:
     //number of bytes written
     dword length() { return _bytes; };
     dword write( OutFile* out );
+    ICULoader *getICU() { return _icu; };
 
 private:
     typedef std::map< std::wstring, wchar_t >::iterator EntityIter;
@@ -120,6 +122,7 @@ private:
     std::wstring                        _olCh;
     std::wstring                        _olClosers[2];
     std::wstring                        _ulBul[3];
+    ICULoader                           *_icu;
 };
 
 #endif //NLS_INCLUDED

@@ -106,28 +106,44 @@ void splitAttribute( const std::wstring& text, std::wstring& key, std::wstring& 
     killQuotes( value );
 }
 
-void killEOL( char *text )
-/************************/
+bool killEOL( char *text, bool kill )
+/***********************************/
 //Allow for files with non-native end-of-lines
 {
+    bool eol = false;
+
     if( *text == '\n' || *text == '\r' ) {  //CR or LF
-        *text-- = '\0';
+        if( kill )
+            *text = '\0';
+        text--;
+        eol = true;
     }
     if( *text == '\n' || *text == '\r' ) {  //CRLF (or LFCR)
-        *text = '\0';
+        if( kill )
+            *text = '\0';
+        eol = true;
     }
+    return eol;
 }
 
-void killEOL( wchar_t *text )
-/***************************/
+bool killEOL( wchar_t *text, bool kill )
+/**************************************/
 //Allow for files with non-native end-of-lines
 {
+    bool eol = false;
+
     if( *text == L'\n' || *text == L'\r' ) {    //CR or LF
-        *text-- = L'\0';
+        if( kill )
+            *text = L'\0';
+        text--;
+        eol = true;
     }
     if( *text == L'\n' || *text == L'\r' ) {    //CRLF (or LFCR)
-        *text = L'\0';
+        if( kill )
+            *text = L'\0';
+        eol = true;
     }
+    return eol;
 }
 
 std::string canonicalPath( char* arg )
@@ -184,9 +200,6 @@ wchar_t *skipWS( wchar_t *text )
     return( text );
 }
 
-
-// this conversion must use user profile locale/codepage
-// it is used for command line arguments and for file path/name
 std::string def_wtomb_string( const std::wstring& input )
 /*******************************************************/
 {
@@ -202,8 +215,6 @@ std::string def_wtomb_string( const std::wstring& input )
     return( output );
 }
 
-// this conversion must use user profile locale/codepage
-// it is used for command line arguments and for file path/name
 void def_mbtow_string( const std::string& input, std::wstring& output )
 /*********************************************************************/
 {

@@ -449,9 +449,9 @@ void Document::build()
     if( !visiblePages )
         throw FatalError( ERR_INVISIBLETOC );
     _tocOffsets.reserve( _pages.size() );
-    _dict->convert( _pages.size() );  //number each page
-    _extfiles->convert();            //number each external file
-    makeBitmaps();                  //process images
+    _dict->convert( _pages.size() );    //number each page
+    _extfiles->convert();               //number each external file
+    makeBitmaps();                      //process images
     //for each page, linearize the DOM tree it contains and build local dictionary
     for( PageIter itr = _pages.begin(); itr != _pages.end(); ++itr ) {
         ( *itr )->linearize();
