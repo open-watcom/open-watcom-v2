@@ -75,7 +75,7 @@ am_wipfc_OBJECTS = main.$(OBJEXT) compiler.$(OBJEXT) \
 	sl.$(OBJEXT) table.$(OBJEXT) title.$(OBJEXT) ul.$(OBJEXT) \
 	warning.$(OBJEXT) xmp.$(OBJEXT) cntrydef.$(OBJEXT) \
 	outfile.$(OBJEXT) iculoadr.$(OBJEXT) ucnv_u8.$(OBJEXT) \
-	ucnv_cnv.$(OBJEXT) ucnvmbcs.$(OBJEXT) ucnv_cb.$(OBJEXT) \ 
+	ucnv_cnv.$(OBJEXT) ucnvmbcs.$(OBJEXT) ucnv_cb.$(OBJEXT) \
 	ucnv_ext.$(OBJEXT) ucnv.$(OBJEXT) ucnv_err.$(OBJEXT)
 wipfc_OBJECTS = $(am_wipfc_OBJECTS)
 wipfc_LDADD = $(LDADD)

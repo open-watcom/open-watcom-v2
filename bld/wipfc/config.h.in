@@ -3,9 +3,6 @@
 /* Define to 1 if you have the <algorithm> header file. */
 #undef HAVE_ALGORITHM
 
-/* Define to 1 if you have the <clocale> header file. */
-#undef HAVE_CLOCALE
-
 /* Define to 1 if you have the <cstdint> header file. */
 #undef HAVE_CSTDINT
 
@@ -60,9 +57,6 @@
 /* Define to 1 if you have the <set> header file. */
 #undef HAVE_SET
 
-/* Define to 1 if you have the `setlocale' function. */
-#undef HAVE_SETLOCALE
-
 /* Define to 1 if you have the <stdint.h> header file. */
 #undef HAVE_STDINT_H
 
@@ -107,6 +101,9 @@
 
 /* Define to the one symbol short name of this package. */
 #undef PACKAGE_TARNAME
+
+/* Define to the home page for this package. */
+#undef PACKAGE_URL
 
 /* Define to the version of this package. */
 #undef PACKAGE_VERSION
