@@ -831,7 +831,7 @@ ucnv_MBCSEnumToUnicode(UConverterMBCSTable *mbcsTable,
     int8_t stateProps[MBCS_MAX_STATE_COUNT];
     int32_t state;
 
-    uprv_memset(stateProps, -1, sizeof(stateProps));
+    std::memset(stateProps, -1, sizeof(stateProps));
 
     /* recurse from state 0 and set all stateProps */
     getStateProp(mbcsTable->stateTable, stateProps, 0);

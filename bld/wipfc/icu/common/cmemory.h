@@ -1,4 +1,4 @@
-// © 2016 and later: Unicode, Inc. and others.
+// Â© 2016 and later: Unicode, Inc. and others.
 // License & terms of use: http://www.unicode.org/copyright.html
 /*
 ******************************************************************************
@@ -29,7 +29,7 @@
 #include "unicode/utypes.h"
 
 #include <stddef.h>
-#include <string.h>
+#include <cstring>
 #include "unicode/localpointer.h"
 
 #if U_DEBUG && defined(UPRV_MALLOC_COUNT)
@@ -101,7 +101,7 @@ typedef union {
   *    Clears any user heap functions from u_setMemoryFunctions()
   *    Does NOT deallocate any remaining allocated memory.
   */
-U_CFUNC UBool 
+U_CFUNC UBool
 cmemory_cleanup(void);
 
 /**
@@ -141,6 +141,7 @@ public:
      * @param p simple pointer to an array of T items that is adopted
      */
     explicit LocalMemory(T *p=NULL) : LocalPointerBase<T>(p) {}
+#if U_HAVE_RVALUE_REFERENCES
     /**
      * Move constructor, leaves src with isNull().
      * @param src source smart pointer
@@ -148,12 +149,14 @@ public:
     LocalMemory(LocalMemory<T> &&src) U_NOEXCEPT : LocalPointerBase<T>(src.ptr) {
         src.ptr=NULL;
     }
+#endif
     /**
      * Destructor deletes the memory it owns.
      */
     ~LocalMemory() {
         uprv_free(LocalPointerBase<T>::ptr);
     }
+#if U_HAVE_RVALUE_REFERENCES
     /**
      * Move assignment operator, leaves src with isNull().
      * The behavior is undefined if *this and src are the same object.
@@ -163,6 +166,7 @@ public:
     LocalMemory<T> &operator=(LocalMemory<T> &&src) U_NOEXCEPT {
         return moveFrom(src);
     }
+#endif
     /**
      * Move assignment, leaves src with isNull().
      * The behavior is undefined if *this and src are the same object.
@@ -287,6 +291,7 @@ public:
      * Default constructor initializes with internal T[stackCapacity] buffer.
      */
     MaybeStackArray() : ptr(stackArray), capacity(stackCapacity), needToRelease(FALSE) {}
+#if U_CPLUSPLUS_VERSION >= 11
     /**
      * Automatically allocates the heap array if the argument is larger than the stack capacity.
      * Intended for use when an approximate capacity is known at compile time but the true
@@ -295,10 +300,12 @@ public:
     MaybeStackArray(int32_t newCapacity) : MaybeStackArray() {
         if (capacity < newCapacity) { resize(newCapacity); }
     };
+#endif
     /**
      * Destructor deletes the array (if owned).
      */
     ~MaybeStackArray() { releaseArray(); }
+#if U_HAVE_RVALUE_REFERENCES
     /**
      * Move constructor: transfers ownership or copies the stack array.
      */
@@ -307,6 +314,7 @@ public:
      * Move assignment: transfers ownership or copies the stack array.
      */
     MaybeStackArray<T, stackCapacity> &operator=(MaybeStackArray<T, stackCapacity> &&src) U_NOEXCEPT;
+#endif
     /**
      * Returns the array capacity (number of T items).
      * @return array capacity
@@ -404,13 +412,14 @@ private:
     //      Returning NULL is rejected by gcc for operator new.
     //      The expedient thing is just not to override operator new.
     //      While relatively pointless, heap allocated instances will function.
-    // static void * U_EXPORT2 operator new(size_t size); 
+    // static void * U_EXPORT2 operator new(size_t size);
     // static void * U_EXPORT2 operator new[](size_t size);
 #if U_HAVE_PLACEMENT_NEW
     // static void * U_EXPORT2 operator new(size_t, void *ptr);
 #endif
 };
 
+#if U_HAVE_RVALUE_REFERENCES
 template<typename T, int32_t stackCapacity>
 icu::MaybeStackArray<T, stackCapacity>::MaybeStackArray(
         MaybeStackArray <T, stackCapacity>&& src) U_NOEXCEPT
@@ -438,6 +447,7 @@ MaybeStackArray<T, stackCapacity>::operator=(MaybeStackArray <T, stackCapacity>&
     }
     return *this;
 }
+#endif
 
 template<typename T, int32_t stackCapacity>
 inline T *MaybeStackArray<T, stackCapacity>::resize(int32_t newCapacity, int32_t length) {
@@ -605,7 +615,7 @@ private:
     // No heap allocation. Use only on the stack.
     //   (Declaring these functions private triggers a cascade of problems;
     //    see the MaybeStackArray class for details.)
-    // static void * U_EXPORT2 operator new(size_t size); 
+    // static void * U_EXPORT2 operator new(size_t size);
     // static void * U_EXPORT2 operator new[](size_t size);
 #if U_HAVE_PLACEMENT_NEW
     // static void * U_EXPORT2 operator new(size_t, void *ptr);

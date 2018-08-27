@@ -43,6 +43,7 @@
 #include "wipfc.hpp"
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
 #include <string>
 #include "env.hpp"
 #include "iculoadr.hpp"
@@ -68,7 +69,7 @@ static void dataReset( UDataMemory *dataMemory )
 static bool mapFile( UDataMemory *dataMemory, const char *name )
 {
     std::FILE       *fp;
-    int32_t         fileSize;
+    uint32_t        fileSize;
     char            *p;
     bool            ok = false;
 
@@ -81,7 +82,7 @@ static bool mapFile( UDataMemory *dataMemory, const char *name )
     fp = std::fopen( path.c_str(), "rb" );
     if( fp != NULL ) {
         std::fseek( fp, 0, SEEK_END );
-        fileSize = (int32_t)std::ftell( fp );
+        fileSize = std::ftell( fp );
         std::fseek( fp, 0, SEEK_SET );
         if( !std::ferror( fp ) && fileSize > 20 ) {
             p = new char[fileSize];
@@ -92,7 +93,7 @@ static bool mapFile( UDataMemory *dataMemory, const char *name )
                     dataMemory->map = p;
                     dataMemory->pHeader = (const DataHeader *)p;
                     dataMemory->mapAddr = p;
-                    dataMemory->length = fileSize;
+                    dataMemory->length = (int32_t)fileSize;
                     ok = true;
                 }
             }
@@ -371,7 +372,7 @@ ICULoader::ICULoader( const char *name )
 
     args.name = name;
 
-    if( args.name == "utf-8" ) {
+    if( std::strcmp( args.name, "utf-8" ) == 0 ) {
         /* algorithmic converter */
         _converter.sharedData = (UConverterSharedData *)converterData[UCNV_UTF8];
     } else {
