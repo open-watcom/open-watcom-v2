@@ -831,7 +831,7 @@ ucnv_MBCSEnumToUnicode(UConverterMBCSTable *mbcsTable,
     int8_t stateProps[MBCS_MAX_STATE_COUNT];
     int32_t state;
 
-    std::memset(stateProps, -1, sizeof(stateProps));
+    uprv_memset(stateProps, -1, sizeof(stateProps));
 
     /* recurse from state 0 and set all stateProps */
     getStateProp(mbcsTable->stateTable, stateProps, 0);
@@ -1313,7 +1313,7 @@ reconstituteData(UConverterMBCSTable *mbcsTable,
         *pErrorCode=U_MEMORY_ALLOCATION_ERROR;
         return;
     }
-    std::memset(mbcsTable->reconstitutedData, 0, dataLength);
+    uprv_memset(mbcsTable->reconstitutedData, 0, dataLength);
 
     /* copy existing data and reroute the pointers */
     stage1=(uint16_t *)mbcsTable->reconstitutedData;

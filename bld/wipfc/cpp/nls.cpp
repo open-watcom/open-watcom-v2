@@ -128,9 +128,9 @@ void Nls::readNLSFile( const std::string& sfname )
             } else {
                 // error: unknown keyword
             }
-        } else if( wcscmp( wbuffer->c_str(), L"Grammar" ) == 0 ) {
+        } else if( std::wcscmp( wbuffer->c_str(), L"Grammar" ) == 0 ) {
             doGrammar = true;
-        } else if( wcscmp( wbuffer->c_str(), L"eGrammar" ) == 0 ) {
+        } else if( std::wcscmp( wbuffer->c_str(), L"eGrammar" ) == 0 ) {
             doGrammar = false;
         } else {
             // error: unknown keyword

@@ -34,8 +34,6 @@
 #ifndef UTYPES_H
 #define UTYPES_H
 
-#include "wipfc.hpp"
-
 #include "unicode/umachine.h"
 #include "unicode/uversion.h"
 #include "unicode/uconfig.h"

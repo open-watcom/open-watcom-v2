@@ -40,13 +40,14 @@
 #include "ucnv_imp.h"
 #include "ucnv_cnv.h"
 #include "ucnv_bld.h"
+#include "cwchar.h"
 
 
 U_CAPI int32_t   U_EXPORT2
 u_strlen(const UChar *s)
 {
 #if U_SIZEOF_WCHAR_T == U_SIZEOF_UCHAR
-    return (int32_t)std::wcslen((const wchar_t *)s);
+    return (int32_t)uprv_wcslen((const wchar_t *)s);
 #else
     const UChar *t = s;
     while(*t != 0) {
@@ -300,7 +301,7 @@ _fromUnicodeWithCallback(UConverterFromUnicodeArgs *pArgs, UErrorCode *err) {
         realFlush=pArgs->flush;
         realSourceIndex=sourceIndex;
 
-        std::memcpy(replay, cnv->preFromU, -cnv->preFromULength*U_SIZEOF_UCHAR);
+        uprv_memcpy(replay, cnv->preFromU, -cnv->preFromULength*U_SIZEOF_UCHAR);
         pArgs->source=replay;
         pArgs->sourceLimit=replay-cnv->preFromULength;
         pArgs->flush=FALSE;
@@ -389,7 +390,7 @@ _fromUnicodeWithCallback(UConverterFromUnicodeArgs *pArgs, UErrorCode *err) {
                     realFlush=pArgs->flush;
                     realSourceIndex=sourceIndex;
 
-                    std::memcpy(replay, cnv->preFromU, -cnv->preFromULength*U_SIZEOF_UCHAR);
+                    uprv_memcpy(replay, cnv->preFromU, -cnv->preFromULength*U_SIZEOF_UCHAR);
                     pArgs->source=replay;
                     pArgs->sourceLimit=replay-cnv->preFromULength;
                     pArgs->flush=FALSE;
@@ -486,7 +487,7 @@ _fromUnicodeWithCallback(UConverterFromUnicodeArgs *pArgs, UErrorCode *err) {
 
                         length=(int32_t)(pArgs->sourceLimit-pArgs->source);
                         if(length>0) {
-                            std::memcpy(cnv->preFromU, pArgs->source, length);
+                            uprv_memcpy(cnv->preFromU, pArgs->source, length);
                             cnv->preFromULength=(int8_t)-length;
                         }
 
@@ -746,7 +747,7 @@ _toUnicodeWithCallback(UConverterToUnicodeArgs *pArgs, UErrorCode *err) {
         realFlush=pArgs->flush;
         realSourceIndex=sourceIndex;
 
-        std::memcpy(replay, cnv->preToU, -cnv->preToULength);
+        uprv_memcpy(replay, cnv->preToU, -cnv->preToULength);
         pArgs->source=replay;
         pArgs->sourceLimit=replay-cnv->preToULength;
         pArgs->flush=FALSE;
@@ -835,7 +836,7 @@ _toUnicodeWithCallback(UConverterToUnicodeArgs *pArgs, UErrorCode *err) {
                     realFlush=pArgs->flush;
                     realSourceIndex=sourceIndex;
 
-                    std::memcpy(replay, cnv->preToU, -cnv->preToULength);
+                    uprv_memcpy(replay, cnv->preToU, -cnv->preToULength);
                     pArgs->source=replay;
                     pArgs->sourceLimit=replay-cnv->preToULength;
                     pArgs->flush=FALSE;
@@ -934,7 +935,7 @@ _toUnicodeWithCallback(UConverterToUnicodeArgs *pArgs, UErrorCode *err) {
 
                         length=(int32_t)(pArgs->sourceLimit-pArgs->source);
                         if(length>0) {
-                            std::memcpy(cnv->preToU, pArgs->source, length);
+                            uprv_memcpy(cnv->preToU, pArgs->source, length);
                             cnv->preToULength=(int8_t)-length;
                         }
 
@@ -950,7 +951,7 @@ _toUnicodeWithCallback(UConverterToUnicodeArgs *pArgs, UErrorCode *err) {
             /* copy toUBytes[] to invalidCharBuffer[] */
             errorInputLength=cnv->invalidCharLength=cnv->toULength;
             if(errorInputLength>0) {
-                std::memcpy(cnv->invalidCharBuffer, cnv->toUBytes, errorInputLength);
+                uprv_memcpy(cnv->invalidCharBuffer, cnv->toUBytes, errorInputLength);
             }
 
             /* set the converter state to deal with the next character */
@@ -1223,7 +1224,7 @@ ucnv_toUChars(UConverter *cnv,
     ucnv_resetToUnicode(cnv);
     originalDest=dest;
     if(srcLength==-1) {
-        srcLength=(int32_t)std::strlen(src);
+        srcLength=(int32_t)uprv_strlen(src);
     }
     if(srcLength>0) {
         srcLimit=src+srcLength;

@@ -127,4 +127,8 @@ typedef unsigned int uint32_t;
 
 #endif /* U_HAVE_STDINT_H / U_HAVE_INTTYPES_H */
 
+#if defined( __cplusplus ) && __cplusplus < 201103L
+typedef uint16_t char16_t;
+#endif
+
 #endif /* _PTYPES_H */
