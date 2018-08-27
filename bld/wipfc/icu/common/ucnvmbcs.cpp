@@ -644,8 +644,8 @@ enumToU(UConverterMBCSTable *mbcsTable, int8_t stateProps[],
     UChar32 anyCodePoints;
     int32_t b, limit;
 
-    row=mbcsTable->stateTable[state];
-    unicodeCodeUnits=mbcsTable->unicodeCodeUnits;
+    row = mbcsTable->stateTable[state];
+    unicodeCodeUnits = mbcsTable->unicodeCodeUnits;
 
     value<<=8;
     anyCodePoints=-1;  /* becomes non-negative if there is a mapping */
@@ -1309,14 +1309,14 @@ reconstituteData(UConverterMBCSTable *mbcsTable,
     uint32_t *stage2;
     uint32_t dataLength=stage1Length*2+fullStage2Length*4+mbcsTable->fromUBytesLength;
     mbcsTable->reconstitutedData = new uint8_t[dataLength];
-    if(mbcsTable->reconstitutedData==NULL) {
+    if( mbcsTable->reconstitutedData == NULL ) {
         *pErrorCode=U_MEMORY_ALLOCATION_ERROR;
         return;
     }
     uprv_memset(mbcsTable->reconstitutedData, 0, dataLength);
 
     /* copy existing data and reroute the pointers */
-    stage1=(uint16_t *)mbcsTable->reconstitutedData;
+    stage1 = (uint16_t *)mbcsTable->reconstitutedData;
     uprv_memcpy(stage1, mbcsTable->fromUnicodeTable, stage1Length*2);
 
     stage2=(uint32_t *)(stage1+stage1Length);
@@ -1544,10 +1544,10 @@ ucnv_MBCSUnload(UConverterSharedData *sharedData) {
     UConverterMBCSTable *mbcsTable=&sharedData->mbcs;
 
     if(mbcsTable->stateTableOwned) {
-        delete mbcsTable->stateTable;
+        delete[] mbcsTable->stateTable;
     }
     if(mbcsTable->reconstitutedData!=NULL) {
-        delete mbcsTable->reconstitutedData;
+        delete[] mbcsTable->reconstitutedData;
     }
 }
 
@@ -4628,7 +4628,8 @@ ucnv_SBCSFromUTF8(UConverterFromUnicodeArgs *pFromUArgs,
     uint8_t b, t1, t2;
 
     uint32_t asciiRoundtrips;
-    uint16_t value, minValue = 0;
+    uint16_t value = 0;
+    uint16_t minValue = 0;
     UBool hasSupplementary;
 
     /* set up the local pointers */

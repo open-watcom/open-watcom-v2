@@ -88,7 +88,7 @@ static bool mapFile( UDataMemory *dataMemory, const char *name )
             p = new char[fileSize];
             if( p != NULL ) {
                 if( fileSize != std::fread( p, 1, fileSize, fp ) ) {
-                    delete p;
+                    delete[] p;
                 } else {
                     dataMemory->map = p;
                     dataMemory->pHeader = (const DataHeader *)p;
@@ -106,7 +106,7 @@ static bool mapFile( UDataMemory *dataMemory, const char *name )
 static void unmapFile( UDataMemory *dataMemory )
 {
     if( dataMemory != NULL && dataMemory->map != NULL ) {
-        delete (char *)dataMemory->map;
+        delete[] (char *)dataMemory->map;
         dataReset( dataMemory );
     }
 }
@@ -266,7 +266,7 @@ void  ICULoader::close( UConverter *converter )
     }
 
     if( converter->subChars != (uint8_t *)converter->subUChars ) {
-        delete converter->subChars;
+        delete[] converter->subChars;
     }
 
     if( converter->sharedData->isReferenceCounted ) {
@@ -332,7 +332,7 @@ UConverter* ICULoader::clone( UErrorCode *err )
 
     if( localConverter == NULL || U_FAILURE( *err ) ) {
         if( allocatedConverter != NULL && allocatedConverter->subChars != (uint8_t *)allocatedConverter->subUChars ) {
-            delete allocatedConverter->subChars;
+            delete[] allocatedConverter->subChars;
         }
         delete allocatedConverter;
         return NULL;

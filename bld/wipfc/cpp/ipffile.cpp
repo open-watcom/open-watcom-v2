@@ -154,7 +154,7 @@ const std::wstring * IpfFile::gets( bool removeEOL )
         while( start < end ) {
             UChar32 uc;
             uc = _icu->getNextUChar( _converter, &start, end, &err );
-            _wbuffer += uc;
+            _wbuffer += static_cast< wchar_t >( uc );
         }
         return( &_wbuffer );
     }
