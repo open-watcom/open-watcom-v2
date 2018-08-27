@@ -29,7 +29,7 @@
 
 #include "unicode/utypes.h"
 #include "cmemory.h"
-#include <cstring>
+#include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
 

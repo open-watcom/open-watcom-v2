@@ -29,7 +29,7 @@
 #include "unicode/utypes.h"
 
 #include <stddef.h>
-#include <cstring>
+#include <string.h>
 #include "unicode/localpointer.h"
 
 #if U_DEBUG && defined(UPRV_MALLOC_COUNT)
