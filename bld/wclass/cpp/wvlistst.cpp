@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "wvlist1.hpp"
+#include "wvlistst.hpp"
 #include "wobjfile.hpp"
 
 extern "C" {

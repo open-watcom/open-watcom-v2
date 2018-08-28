@@ -31,7 +31,7 @@
 
 
 #include "wobject.hpp"
-#include "wvlist1.hpp"
+#include "wvlistst.hpp"
 #include "wstring.hpp"
 #include "wobjfile.hpp"
 
