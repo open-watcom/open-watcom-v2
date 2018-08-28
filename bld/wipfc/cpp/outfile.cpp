@@ -81,14 +81,13 @@ std::string OutFile::wtomb_string( const std::wstring& input )
     char *target;
     UChar uc[1];
     const UChar *source;
-    int32_t offset;
     UErrorCode err = U_ZERO_ERROR;
 
     for( std::size_t index = 0; index < input.size(); ++index ) {
         target = ch;
         source = uc;
         uc[0] = input[index];
-        _icu->fromUnicodeToMBCS( _converter, &target, target + MB_LEN_MAX, &source, source + 1, &offset, TRUE, &err );
+        _icu->fromUnicodeToMBCS( _converter, &target, target + MB_LEN_MAX, &source, source + 1, NULL, TRUE, &err );
         *target = '\0';
         output += ch;
     }
