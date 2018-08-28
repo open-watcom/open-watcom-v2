@@ -110,3 +110,7 @@ unicode*.* binary
 /bld/plustest/regress/positive/source/pp15.c binary
 /bld/wmake/regress/errtest/error.bat binary
 /bld/wmake/regress/errtest/error.cmd binary
+
+# text files in exact encoding
+/bld/wipfc/helper/enti*.txt binary
+/bld/wipfc/helper/*.nls binary
