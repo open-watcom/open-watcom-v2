@@ -203,7 +203,7 @@ dword Nls::write( OutFile* out )
 {
     _bytes = _country.size();
     dword start = _country.write( out );
-    if( _country.useDBCS() ) {
+    if( _icu->useDBCS() ) {
         _dbcsT.write( out );
         _bytes += _dbcsT._size;
         _dbcsG.write( out );

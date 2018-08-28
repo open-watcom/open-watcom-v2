@@ -345,6 +345,11 @@ void ICULoader::fromUnicodeToMBCS( UConverter *converter, char **target, const c
     ucnv_fromUnicode( converter, target, target_end, source, source_end, offset, flush, err );
 }
 
+bool ICULoader::useDBCS()
+{
+    return _converter.sharedData->staticData->minBytesPerChar == 1 && _converter.sharedData->staticData->maxBytesPerChar == 2;
+}
+
 ICULoader::ICULoader( const char *name )
 {
     UErrorCode err = U_ZERO_ERROR;

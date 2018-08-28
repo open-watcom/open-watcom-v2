@@ -37,6 +37,7 @@ public:
     void close( UConverter *converter );
     UChar32 getNextUChar( UConverter *converter, const char **source, const char *source_end, UErrorCode *err );
     void fromUnicodeToMBCS( UConverter *converter, char **target, const char *target_end, const UChar **source, const UChar *source_end, int32_t *offset, UBool flush, UErrorCode *err );
+    bool useDBCS();
 private:
     UConverterSharedData *createFromFile( UConverterLoadArgs *pArgs, UErrorCode *err );
     void unloadSharedData( UConverter *converter );
