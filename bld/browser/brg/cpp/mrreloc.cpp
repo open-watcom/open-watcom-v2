@@ -79,7 +79,7 @@ MergeRelocate::~MergeRelocate()
         delete _replacedDies[ i ];
     }
 
-    delete _replacedDies;
+    delete[] _replacedDies;
     _hPool.ragnarok();
 }
 

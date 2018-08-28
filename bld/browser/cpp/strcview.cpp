@@ -140,7 +140,7 @@ void StrucView::reset()
 
     char * tmpstr = _treeRoot->name();
     _listbox->insertString( tmpstr, 0 );
-    delete tmpstr;
+    delete[] tmpstr;
 
     _listobjs->insertAt( 0, _treeRoot );
 
@@ -250,7 +250,7 @@ void StrucView::minusSelected( WWindow * )
         char * tmp = item->name();
         _listobjs->insertAt( index, item );
         _listbox->insertString( tmp, index );
-        delete tmp;
+        delete[] tmp;
         _listbox->select( curr );
     }
 }
@@ -369,14 +369,14 @@ void StrucViewItem::expandNode( int index )
     char * tmp = name();
     listbox->deleteString( index );
     listbox->insertString( tmp, index );
-    delete tmp;
+    delete[] tmp;
     listobjs->removeAt( index );
     listobjs->insertAt( index, this );
 
     for( i = 0; i < _kids.count(); i++ ) {
         char *tmp = ((StrucViewItem *)_kids[i])->name();
         listbox->insertString( tmp, childIndex );
-        delete tmp;
+        delete[] tmp;
         listobjs->insertAt( childIndex, _kids[i] );
         childIndex ++;
     }
@@ -423,7 +423,7 @@ void StrucViewItem::expandAllNode( int &index )
         listobjs->insertAt( index, this );
         char * tmp = name();
         listbox->insertString( tmp, index );
-        delete tmp;
+        delete[] tmp;
         if( _expandState == Collapsed ) {
             _expandState = Expanded;
         }
@@ -433,7 +433,7 @@ void StrucViewItem::expandAllNode( int &index )
             listbox->deleteString( index );
             char * tmp = name();
             listbox->insertString( tmp, index );
-            delete tmp;
+            delete[] tmp;
         }
     }
     index += 1;

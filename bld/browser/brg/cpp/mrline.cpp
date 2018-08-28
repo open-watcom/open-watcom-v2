@@ -271,7 +271,7 @@ void MergeLineSection::readLineSect( MergeFile * file, MergeOffset& moff )
         }
     }
 
-    delete standard_opcode_lengths;
+    delete[] standard_opcode_lengths;
 }
 
 void MergeLineSection::addDirectory( uint_8 fileIdx, uint_16 oldDirIdx,
