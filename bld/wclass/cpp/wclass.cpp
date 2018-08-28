@@ -31,16 +31,91 @@
 
 
 #include "wobject.hpp"
-#include "wvlistst.hpp"
 #include "wstring.hpp"
 #include "wobjfile.hpp"
 
-class WClassList : public WVList1
+class WClassList
 {
     public:
         WClassList() {}
-        ~WClassList() { deleteContents() ; }
+        ~WClassList();
+
+        WObject* find( WObject *obj );
+        WObject* add( WObject* obj );
+    private:
+        void growBlock();
+
+        static WObject** _set;
+        static int     _count;
+        static int     _free;
 };
+
+WObject ** WClassList::_set = (WObject **)NULL;
+int WClassList::_count = 0;
+int WClassList::_free = 0;
+
+WClassList::~WClassList()
+{
+    if( _set != NULL ) {
+        for( int i=_free; i>0; i-- ) {
+            if( _set[i - 1] != NULL ) {
+                delete _set[i - 1];
+            }
+        }
+        _free = 0;
+        delete[] _set;
+        _set = NULL;
+    }
+}
+
+WObject* WClassList::find( WObject* obj )
+{
+    for( int i=0; i<_free; i++ ) {
+        if( _set[i] != NULL ) {
+            if( _set[i]->isEqual( obj ) ) {
+                return( _set[i] );
+            }
+        }
+    }
+    return( NULL );
+}
+
+WObject* WClassList::add( WObject* obj )
+{
+    growBlock();
+    if( _set != NULL ) {
+        _set[_free] = obj;
+        _free += 1;
+        return( obj );
+    }
+    return( NULL );
+}
+
+void WClassList::growBlock()
+{
+    if( _set == NULL ) {
+        static int _countInit = 10;
+        _set = new WObject*[_countInit];
+        if( _set != NULL ) {
+            _count = _countInit;
+            _free = 0;
+        }
+    }
+    if( _set != NULL ) {
+        if( _free >= _count ) {
+            static int _countIncr = 5;
+            WObject** nset = new WObject*[_count + _countIncr];
+            if( nset != NULL ) {
+                for( int i=0; i<_count; i++ ) {
+                    nset[i] = _set[i];
+                }
+                delete[] _set;
+                _set = nset;
+                _count += _countIncr;
+            }
+        }
+    }
+}
 
 class WClassMapItem: public WObject
 {

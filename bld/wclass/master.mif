@@ -81,7 +81,6 @@ objs = &
         wvcllctn.obj &
         wview.obj &
         wvlist.obj &
-        wvlistst.obj &
         wwindow.obj &
         wwinmain.obj
 
