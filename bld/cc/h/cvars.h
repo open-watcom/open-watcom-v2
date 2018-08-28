@@ -438,6 +438,7 @@ extern char         *ForceSlash(char *, char );
 extern char         *CreateFileName( const char *template, const char *extension, bool forceext );
 extern char         *GetSourceDepName( void );
 extern FNAMEPTR     NextDependency( FNAMEPTR );
+extern void         CppPrtfFilenameErr( const char *filename, src_file_type typ, bool print_error );
 
 extern FNAMEPTR     AddFlist(char const *);
 extern FNAMEPTR     FileIndexToFName(unsigned);
