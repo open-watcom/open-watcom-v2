@@ -180,7 +180,7 @@ void __MemFree( void_bptr cstg, heap_bptr heap )
                     if( pnext == HEAP( seg )->rover.nptr ) { // check for rover
                         HEAP( seg )->rover.nptr = pfree;// update rover
                     }
-                    pprev = pnext->prev.nptr;                // fixup next/prev links
+                    pprev = pnext->prev.nptr;           // fixup next/prev links
                     pnext = pnext->next.nptr;
                     pprev->next.nptr = pnext;
                     pnext->prev.nptr = pprev;
@@ -300,20 +300,20 @@ found_it:
                                                         // coalesce pprev and pfree
                 len += pprev->len;                      // udpate len
                 pprev->len = len;
-                if( HEAP( seg )->rover.nptr == pfree ) {     // check rover impact
-                    HEAP( seg )->rover.nptr = pprev;        // update rover
+                if( HEAP( seg )->rover.nptr == pfree ) {// check rover impact
+                    HEAP( seg )->rover.nptr = pprev;    // update rover
                 }
                 pfree = pprev;                          // now work with coalesced blk
             } else {
                 HEAP( seg )->numfree++;                 // one more free entry
-                pfree->next.nptr = pnext;                    // update next/prev entries
+                pfree->next.nptr = pnext;               // update next/prev entries
                 pfree->prev.nptr = pprev;
                 pprev->next.nptr = pfree;
                 pnext->prev.nptr = pfree;
             }
             HEAP( seg )->numalloc--;                    // one fewer allocated
 
-            if( pfree < HEAP( seg )->rover.nptr ) {          // check rover impact
+            if( pfree < HEAP( seg )->rover.nptr ) {     // check rover impact
                 if( HEAP( seg )->b4rover < len ) {      // is len bigger than b4rover
                     HEAP( seg )->b4rover = len;         // then update b4rover
                 }
