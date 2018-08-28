@@ -55,7 +55,7 @@ void ExternalFiles::convert()
     }
 }
 /***************************************************************************/
-ExternalFiles::dword ExternalFiles::write( OutFile* out )
+dword ExternalFiles::write( OutFile* out )
 {
     if( _table.empty() )
         return 0;

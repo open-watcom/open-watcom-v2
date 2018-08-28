@@ -43,10 +43,6 @@ class OutFile;      // forward reference
 // Font Entry
 struct FontEntry {
 private:
-    typedef STD1::uint8_t   byte;
-    typedef STD1::uint16_t  word;
-    typedef STD1::uint32_t  dword;
-
 public:
     FontEntry() : _faceName(), _width( 0 ), _height( 0 ), _codePage( DEFAULT_CODEPAGE ) { };
     FontEntry( const std::wstring& faceName, word width, word height, word codePage = DEFAULT_CODEPAGE )

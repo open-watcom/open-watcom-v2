@@ -61,10 +61,6 @@
 class GlobalDictionaryWord; //forward references
 
 class Hn : public Tag {
-    typedef STD1::uint8_t   byte;
-    typedef STD1::uint16_t  word;
-    typedef STD1::uint32_t  dword;
-
 public:
     Hn( Document* d, Element *p, const std::wstring* f, unsigned int r, unsigned int c, unsigned int l ) :
         Tag( d, p, f, r, c ), _id( 0 ), _name( 0 ), _res( 0 ), _global( false )

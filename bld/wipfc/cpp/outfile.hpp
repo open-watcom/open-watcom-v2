@@ -44,10 +44,6 @@ struct UNIFILE {
 };
 
 class OutFile {
-    typedef STD1::uint8_t   byte;
-    typedef STD1::uint16_t  word;
-    typedef STD1::uint32_t  dword;
-
 public:
     OutFile( const std::string& sfname, Nls *nls );
     ~OutFile();

@@ -27,8 +27,8 @@
 * Description:  Global Names data
 * Obtained from the "id" or "name" attribute of an :hn tag iff the "global"
 * attribute flag is set
-* STD1::uint16_t dictIndex[ IpfHeader.panelCount ]; //in ascending order
-* STD1::uint16_t TOCIndex[ IpfHeader.panelCount ];
+* word dictIndex[ IpfHeader.panelCount ]; //in ascending order
+* word TOCIndex[ IpfHeader.panelCount ];
 *
 ****************************************************************************/
 
@@ -48,7 +48,7 @@ void GNames::insert( GlobalDictionaryWord* gdentry, word toc )
     _names.insert( std::map< GlobalDictionaryWord*, word, ptrLess< GlobalDictionaryWord* > >::value_type( gdentry, toc ) );
 }
 /***************************************************************************/
-GNames::dword GNames::write( OutFile* out ) const
+dword GNames::write( OutFile* out ) const
 {
     dword start( 0 );
     if( _names.size() ) {

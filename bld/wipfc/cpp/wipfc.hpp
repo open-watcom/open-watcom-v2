@@ -40,13 +40,22 @@
     #include "config.h"
     #ifdef HAVE_CSTDINT
         #include <cstdint>
-        #define STD1 std
+        typedef std::uint8_t    byte;
+        typedef std::uint16_t   word;
+        typedef std::uint32_t   dword;
+        typedef std::int16_t    sword;
     #else
         #include <stdint.h>
-        #define STD1
+        typedef uint8_t     byte;
+        typedef uint16_t    word;
+        typedef uint32_t    dword;
+        typedef int16_t     sword;
     #endif
 #else
     #include <cstdint>
-    #define STD1 std
+    typedef std::uint8_t    byte;
+    typedef std::uint16_t   word;
+    typedef std::uint32_t   dword;
+    typedef std::int16_t    sword;
 #endif
 

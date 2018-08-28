@@ -39,10 +39,6 @@
 class OutFile;
 
 class Synonym {
-    typedef STD1::uint8_t   byte;
-    typedef STD1::uint16_t  word;
-    typedef STD1::uint32_t  dword;
-
 public:
     Synonym() : _offset( 0 ) { };
     ~Synonym() { };

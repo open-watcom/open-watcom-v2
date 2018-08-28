@@ -40,10 +40,6 @@ class OutFile;
 #define TITLE_SIZE      48
 
 struct IpfHeader {
-    typedef STD1::uint8_t   byte;
-    typedef STD1::uint16_t  word;
-    typedef STD1::uint32_t  dword;
-
     IpfHeader();
     void write( OutFile* out ) const;
     bool isBigFTS();
@@ -90,10 +86,6 @@ struct IpfHeader {
 
 // Extended header info
 struct IpfExtHeader {
-    typedef STD1::uint8_t   byte;
-    typedef STD1::uint16_t  word;
-    typedef STD1::uint32_t  dword;
-
     IpfExtHeader() { std::memset( this, 0, sizeof( IpfExtHeader) ); };
     dword write( OutFile* out ) const;
     std::size_t size() { return( 4 * sizeof( word ) + 14 * sizeof( dword ) ); };

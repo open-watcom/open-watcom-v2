@@ -79,7 +79,7 @@ bool Page::addTextToLD( GlobalDictionaryWord* gdentry )
 }
 /***************************************************************************/
 //Write a TOC entry
-Page::dword Page::write( OutFile* out )
+dword Page::write( OutFile* out )
 {
     // calculate toc size
     std::size_t tocsize = _toc.size();
@@ -137,7 +137,7 @@ Page::dword Page::write( OutFile* out )
 // byte size
 // word parent_toc_index
 // word child_toc_index
-Page::dword Page::writeChildren( OutFile* out ) const
+dword Page::writeChildren( OutFile* out ) const
 {
     byte bytes = 0;
     if( !_children.empty() ) {

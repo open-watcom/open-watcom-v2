@@ -35,7 +35,7 @@
 #include "outfile.hpp"
 
 
-ControlButton::dword ControlButton::write( OutFile* out ) const
+dword ControlButton::write( OutFile* out ) const
 {
     // type = 1
     if( out->put( static_cast< word >( 1 ) ) )

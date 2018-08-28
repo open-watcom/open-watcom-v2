@@ -53,7 +53,7 @@ void GlobalDictionaryWord::toUpper()
     }
 }
 /***************************************************************************/
-GlobalDictionaryWord::dword GlobalDictionaryWord::writeWord( OutFile* out ) const
+dword GlobalDictionaryWord::writeWord( OutFile* out ) const
 {
     std::string buffer( out->wtomb_string( _text ) );
     if( buffer.size() > ( 255 - 1 ) )

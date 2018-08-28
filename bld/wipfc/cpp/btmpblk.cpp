@@ -60,7 +60,7 @@ void BitmapBlock::write( std::FILE* bmfpo ) const
     1. Mark R. Nelson, October 1989
     2. Shawn M. Regan, January 1990
 */
-BitmapBlock::dword BitmapBlock::compress( std::FILE* bmfpi )
+dword BitmapBlock::compress( std::FILE* bmfpi )
 {
     std::size_t block;
     if( _type ) {
@@ -159,7 +159,7 @@ BitmapBlock::dword BitmapBlock::compress( std::FILE* bmfpi )
     return( static_cast< dword >( block ) );
 }
 /***************************************************************************/
-BitmapBlock::sword BitmapBlock::findMatch( std::vector< word >& code,
+sword BitmapBlock::findMatch( std::vector< word >& code,
     std::vector< word >& prefix, std::vector< byte >& append,
     sword hashPrefix, word character ) const
 {
@@ -177,7 +177,7 @@ BitmapBlock::sword BitmapBlock::findMatch( std::vector< word >& code,
     }
 }
 /***************************************************************************/
-BitmapBlock::word BitmapBlock::outputCode( word code )
+word BitmapBlock::outputCode( word code )
 {
     word bytesOut( 0 );
     _bitBuffer |= static_cast< dword >( code ) << ( 32 - _bitsPerCode - _bitCount );
@@ -195,7 +195,7 @@ BitmapBlock::word BitmapBlock::outputCode( word code )
     return bytesOut;
 }
 /***************************************************************************/
-BitmapBlock::word BitmapBlock::flushCode( void )
+word BitmapBlock::flushCode( void )
 {
     word bytesOut( 0 );
     _bitCount += _bitsPerCode;
@@ -285,7 +285,7 @@ void BitmapBlock::expand( std::vector< byte >& output )
     }
 }
 /***************************************************************************/
-BitmapBlock::word BitmapBlock::getCode( InputIter& in )
+word BitmapBlock::getCode( InputIter& in )
 {
     word retval;
     while( _bitCount <= 24 ) {

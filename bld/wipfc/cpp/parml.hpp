@@ -44,10 +44,6 @@
 #include "tag.hpp"
 
 class Parml : public Tag {
-    typedef STD1::uint8_t   byte;
-    typedef STD1::uint16_t  word;
-    typedef STD1::uint32_t  dword;
-
 public:
     enum Break {
         NONE,
@@ -86,10 +82,6 @@ private:
 };
 
 class Pt : public Tag {
-    typedef STD1::uint8_t   byte;
-    typedef STD1::uint16_t  word;
-    typedef STD1::uint32_t  dword;
-
 public:
     Pt( Document* d, Element *p, const std::wstring* f, unsigned int r,
         unsigned int c, byte i, byte t, Parml::Break brk, bool cp ) :
@@ -111,10 +103,6 @@ private:
 };
 
 class Pd : public Tag {
-    typedef STD1::uint8_t   byte;
-    typedef STD1::uint16_t  word;
-    typedef STD1::uint32_t  dword;
-
 public:
     Pd( Document* d, Element *p, const std::wstring* f, unsigned int r,
         unsigned int c, byte i, byte t, bool brk ) :

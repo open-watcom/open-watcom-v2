@@ -38,10 +38,6 @@
 #include "tag.hpp"
 
 class Hpn : public Element {
-    typedef STD1::uint8_t   byte;
-    typedef STD1::uint16_t  word;
-    typedef STD1::uint32_t  dword;
-
 public:
     Hpn( Document* d, Element *p, const std::wstring* f, unsigned int r,
         unsigned int c, unsigned int l );
@@ -60,10 +56,6 @@ private:
 };
 
 class EHpn : public Element {
-    typedef STD1::uint8_t   byte;
-    typedef STD1::uint16_t  word;
-    typedef STD1::uint32_t  dword;
-
 public:
     EHpn( Document* d, Element *p, const std::wstring* f, unsigned int r,
         unsigned int c, unsigned int l );

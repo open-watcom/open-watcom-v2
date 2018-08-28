@@ -37,10 +37,6 @@
 #include "tag.hpp"
 
 class Lp : public Tag {
-    typedef STD1::uint8_t   byte;
-    typedef STD1::uint16_t  word;
-    typedef STD1::uint32_t  dword;
-
 public:
     Lp( Document* d, Element *p, const std::wstring* f, unsigned int r, unsigned int c,
         byte i ) : Tag( d, p, f, r, c ), _indent( i ) { };

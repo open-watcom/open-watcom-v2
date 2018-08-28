@@ -44,8 +44,8 @@ void TocEntry::buildText( Cell* cell ) const
     cell->add( cellCount );
 }
 
-TocEntry::dword TocEntry::write( OutFile* out ) const
-/***************************************************/
+dword TocEntry::write( OutFile* out ) const
+/*****************************************/
 {
     dword offset( out->tell() );
     if( out->put( hdrsize ) )

@@ -37,10 +37,6 @@
 #include "btmpblk.hpp"
 
 class Bitmap {
-    typedef STD1::uint8_t   byte;
-    typedef STD1::uint16_t  word;
-    typedef STD1::uint32_t  dword;
-
 public:
     Bitmap( std::string& f );
     ~Bitmap() { };
@@ -50,12 +46,12 @@ private:
     Bitmap& operator=( const Bitmap& rhs ); //no assignment
 #pragma pack(push,1)
     struct BitmapFileHeader {
-        STD1::uint8_t  type[ 2 ];       //'BM' for input, 'bM' for output
-        STD1::uint32_t size;            //including this header, before lzw compression
-        STD1::int16_t  xHotspot;
-        STD1::int16_t  yHotspot;
-        STD1::uint32_t bitsOffset;      //offset to bitmap data
-        STD1::uint32_t bmihSize;        //size of BitmapInfoHeader16 + this entry
+        byte    type[ 2 ];       //'BM' for input, 'bM' for output
+        dword   size;            //including this header, before lzw compression
+        sword   xHotspot;
+        sword   yHotspot;
+        dword   bitsOffset;      //offset to bitmap data
+        dword   bmihSize;        //size of BitmapInfoHeader16 + this entry
         void read( std::FILE* bmfpi );
         void write( std::FILE* bmfpo ) const;
         //followed by BitmapInfoHeaderXX
@@ -63,25 +59,25 @@ private:
     // win16 or os/2 1.x
     // used for both input and output
     struct BitmapInfoHeader16 {
-        STD1::uint16_t width;
-        STD1::uint16_t height;
-        STD1::uint16_t planes;
-        STD1::uint16_t bitsPerPixel;
+        word    width;
+        word    height;
+        word    planes;
+        word    bitsPerPixel;
         void read( std::FILE* bmfpi );
         void write( std::FILE* bmfpo ) const;
         //followed by rgb triples if <= 8bpp
     };
     struct RGBA {
-        STD1::uint8_t   blue;
-        STD1::uint8_t   green;
-        STD1::uint8_t   red;
-        STD1::uint8_t   reserved;
+        byte    blue;
+        byte    green;
+        byte    red;
+        byte    reserved;
         void read( std::FILE* bmfpi );
     };
     struct RGB {
-        STD1::uint8_t   blue;
-        STD1::uint8_t   green;
-        STD1::uint8_t   red;
+        byte    blue;
+        byte    green;
+        byte    red;
         RGB() : blue( 0 ), green( 0 ), red( 0 ) { };
         RGB( RGBA& rhs ) : blue( rhs.blue ), green( rhs.green ), red( rhs.red ) { };
         RGB& operator=( RGBA& rhs ) { blue = rhs.blue; green = rhs.green; red = rhs.red; return *this; };

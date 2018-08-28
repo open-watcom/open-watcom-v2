@@ -40,10 +40,6 @@
 #include "li.hpp"
 
 class Ul : public Tag {
-    typedef STD1::uint8_t   byte;
-    typedef STD1::uint16_t  word;
-    typedef STD1::uint32_t  dword;
-
 public:
     Ul( Document* d, Element *p, const std::wstring* f, unsigned int r,
         unsigned int c, byte l, byte i ) : Tag( d, p, f, r, c ),
@@ -76,10 +72,6 @@ private:
 };
 
 class UlLi : public Li {
-    typedef STD1::uint8_t   byte;
-    typedef STD1::uint16_t  word;
-    typedef STD1::uint32_t  dword;
-
 public:
     UlLi( Document* d, Element *p, const std::wstring* f, unsigned int r,
         unsigned int c, unsigned int n, byte l, byte i, bool cmp ) :

@@ -136,8 +136,8 @@ void IpfHeader::setBigFTS( bool big )
     searchOffset |= static_cast< dword >( big ) << 31;
 }
 
-IpfExtHeader::dword IpfExtHeader::write( OutFile* out ) const
-/***********************************************************/
+dword IpfExtHeader::write( OutFile* out ) const
+/*********************************************/
 {
     dword start( out->tell() );
 

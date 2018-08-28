@@ -40,10 +40,6 @@
 class OutFile;
 
 class FTSElement {
-    typedef STD1::uint8_t   byte;
-    typedef STD1::uint16_t  word;
-    typedef STD1::uint32_t  dword;
-
 public:
     FTSElement() : _pageCount( 0 ), _dataSize( 0 ), _firstPage( 0 ), _comp( NONE ) { };
     //set the number of pages on which the word might occur

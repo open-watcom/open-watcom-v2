@@ -37,7 +37,7 @@
 #include "outfile.hpp"
 
 
-StringTable::dword StringTable::write( OutFile* out )
+dword StringTable::write( OutFile* out )
 {
     if( _table.empty() )
         return 0L;

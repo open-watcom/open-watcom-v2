@@ -113,7 +113,7 @@ int IndexItem::wstricmp( const wchar_t *s, const wchar_t *t ) const
 // NOTE: IBM IPFC has some strange limit on index text, it looks like limit is 128 bytes
 //          we use limit 255 bytes for index item
 //
-IndexItem::dword IndexItem::write( OutFile* out )
+dword IndexItem::write( OutFile* out )
 {
     std::string buffer1;
     std::string buffer2( out->wtomb_string( _text ) );

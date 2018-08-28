@@ -39,10 +39,6 @@
 
 
 class Controls {
-    typedef STD1::uint8_t   byte;
-    typedef STD1::uint16_t  word;
-    typedef STD1::uint32_t  dword;
-
 public:
     Controls() : _bytes( 8 ), _coverGroup( 0 ) { };
     ~Controls() { };

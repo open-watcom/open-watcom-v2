@@ -38,10 +38,6 @@
 
 
 class DataEncode {
-    typedef STD1::uint8_t   byte;
-    typedef STD1::uint16_t  word;
-    typedef STD1::uint32_t  dword;
-
 public:
     //is this data empty?
     bool empty() const { return _data.empty(); }

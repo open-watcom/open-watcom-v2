@@ -161,7 +161,7 @@ void I1::buildIndex()
     }
 }
 /*****************************************************************************/
-I1::dword I1::write( OutFile* out )
+dword I1::write( OutFile* out )
 {
     for( ConstSynIter itr = _synRoots.begin(); itr != _synRoots.end(); ++itr ) {
         //convert roots into offsets

@@ -37,10 +37,6 @@
 #include "xref.hpp"
 
 class TocRef {
-    typedef STD1::uint8_t   byte;
-    typedef STD1::uint16_t  word;
-    typedef STD1::uint32_t  dword;
-
 public:
     TocRef( const std::wstring* f, unsigned int r, word i ) :
         _fileName( f ), _lineNumber( r ), _tocIndex( i ) { };

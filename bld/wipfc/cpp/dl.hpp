@@ -43,10 +43,6 @@
 #include "tag.hpp"
 
 class Dl : public Tag {
-    typedef STD1::uint8_t   byte;
-    typedef STD1::uint16_t  word;
-    typedef STD1::uint32_t  dword;
-
 public:
     enum Break {
         NONE,
@@ -85,10 +81,6 @@ private:
 };
 
 class DtHd : public Tag {
-    typedef STD1::uint8_t   byte;
-    typedef STD1::uint16_t  word;
-    typedef STD1::uint32_t  dword;
-
 public:
     DtHd( Document* d, Element *p, const std::wstring* f, unsigned int r,
         unsigned int c, byte i ) : Tag( d, p, f, r, c ), _indent( i ),
@@ -107,10 +99,6 @@ private:
 };
 
 class DdHd : public Tag {
-    typedef STD1::uint8_t   byte;
-    typedef STD1::uint16_t  word;
-    typedef STD1::uint32_t  dword;
-
 public:
     DdHd( Document* d, Element *p, const std::wstring* f, unsigned int r,
         unsigned int c, byte i, byte t ) : Tag( d, p, f, r, c ),
@@ -128,10 +116,6 @@ private:
 };
 
 class Dt : public Tag {
-    typedef STD1::uint8_t   byte;
-    typedef STD1::uint16_t  word;
-    typedef STD1::uint32_t  dword;
-
 public:
     Dt( Document* d, Element *p, const std::wstring* f, unsigned int r,
         unsigned int c, byte i, byte t, Dl::Break brk, bool cp ) :
@@ -153,10 +137,6 @@ private:
 };
 
 class Dd : public Tag {
-    typedef STD1::uint8_t   byte;
-    typedef STD1::uint16_t  word;
-    typedef STD1::uint32_t  dword;
-
 public:
     Dd( Document* d, Element *p, const std::wstring* f, unsigned int r,
         unsigned int c, byte i, byte t, bool brk ) :

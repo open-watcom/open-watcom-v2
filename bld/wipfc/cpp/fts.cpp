@@ -38,14 +38,14 @@
 
 
 //struct FTS8Header {
-//    STD1::uint8_t   size;
-//    STD1::uint8_t   compression;
+//    byte            size;
+//    byte            compression;
 //    //variable length data follows
 //    //bitstring: 1 bit per panel
 //};
 //struct FTS16Header {
-//    STD1::uint16_t  size;
-//    STD1::uint8_t   compression;
+//    word            size;
+//    byte            compression;
 //    //variable length data follows
 //    //bitstring: 1 bit per panel
 //};
@@ -153,7 +153,7 @@ void FTSElement::build( OutFile* out )
 void FTSElement::encode( std::vector< byte >& rle )
 /*************************************************/
 //The number of pages can never exceed 65535 because the count is stored in
-//an STD1::uint16_t (unsigned short int)
+//an word (unsigned short int)
 //only runs of 3 or more are considered to be "same"
 {
     std::vector< byte > dif;
@@ -170,7 +170,7 @@ void FTSElement::encode( std::vector< byte >& rle )
                     rle.push_back( *tst );
                 } else {
                     //sameCount will never exceed 65536 because the number of pages
-                    //must be less than 65536 (it's stored in a STD1::uint16_t)
+                    //must be less than 65536 (it's stored in a word)
                     rle.push_back( 0x80 );
                     rle.push_back( *tst );
                     rle.push_back( static_cast< byte >( sameCount ) );
@@ -246,8 +246,8 @@ void FTSElement::encode( std::vector< byte >& rle )
     }
 }
 
-FTSElement::dword FTSElement::write( OutFile* out, bool big ) const
-/*****************************************************************/
+dword FTSElement::write( OutFile* out, bool big ) const
+/*****************************************************/
 {
     std::vector< word > pg;
     std::size_t size;

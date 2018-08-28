@@ -198,8 +198,8 @@ wchar_t Nls::entityChar( const std::wstring& key )
     return pos->second;
 }
 
-Nls::dword Nls::write( OutFile* out )
-/***********************************/
+dword Nls::write( OutFile* out )
+/******************************/
 {
     _bytes = _country.size();
     dword start = _country.write( out );
@@ -233,8 +233,8 @@ void Nls::SbcsGrammarDef::setDefaultBits( WIPFC::NLSRecType rectype )
     std::memcpy( this->_bits, &defbits[rectype - WIPFC::TEXT][0], 32 );
 }
 
-Nls::dword Nls::SbcsGrammarDef::write( OutFile* out ) const
-/*********************************************************/
+dword Nls::SbcsGrammarDef::write( OutFile* out ) const
+/****************************************************/
 {
     dword start = out->tell();
     if( out->put( _size ) )
@@ -248,8 +248,8 @@ Nls::dword Nls::SbcsGrammarDef::write( OutFile* out ) const
     return( start );
 }
 
-Nls::dword Nls::DbcsGrammarDef::write( OutFile* out )
-/***************************************************/
+dword Nls::DbcsGrammarDef::write( OutFile* out )
+/**********************************************/
 {
     dword start = out->tell();
     _size = static_cast< word >( sizeof( _size ) + sizeof( byte ) + sizeof( _format ) + _ranges.size() * sizeof( word ) );

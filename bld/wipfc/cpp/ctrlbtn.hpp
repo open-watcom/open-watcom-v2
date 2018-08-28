@@ -37,10 +37,6 @@
 class OutFile;      // forward reference
 
 class ControlButton {
-    typedef STD1::uint8_t   byte;
-    typedef STD1::uint16_t  word;
-    typedef STD1::uint32_t  dword;
-
 public:
     ControlButton() : _res( 0 ), _index( 0 ) {};
     ControlButton( const std::wstring& i, word r, const std::wstring& t ) :

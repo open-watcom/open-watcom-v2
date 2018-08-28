@@ -540,7 +540,7 @@ void Document::addBitmap( std::wstring& bmn )
     _bitmapNames.insert( std::map< std::wstring, dword >::value_type( bmn, 0 ) );
 }
 /***************************************************************************/
-Document::dword Document::bitmapByName( std::wstring& bmn )
+dword Document::bitmapByName( std::wstring& bmn )
 {
     BitmapNameIter itr( _bitmapNames.find( bmn ) );
     if( itr == _bitmapNames.end() )
@@ -656,7 +656,7 @@ void Document::makeBitmaps()
 }
 
 /***************************************************************************/
-Document::dword Document::writeBitmaps()
+dword Document::writeBitmaps()
 {
     dword offset = 0;
     if( !_bitmapNames.empty() && _tmpBitmaps != NULL ) {
@@ -697,7 +697,7 @@ Document::dword Document::writeBitmaps()
     return offset;
 }
 /***************************************************************************/
-Document::dword Document::writeResMap()
+dword Document::writeResMap()
 {
     dword offset = 0;
     if( !_resMap.empty() ) {
@@ -716,7 +716,7 @@ Document::dword Document::writeResMap()
     return offset;
 }
 /***************************************************************************/
-Document::dword Document::writeNameMap()
+dword Document::writeNameMap()
 {
     dword offset = 0;
     if( !isInf() && !_nameMap.empty() ) {
@@ -735,7 +735,7 @@ Document::dword Document::writeNameMap()
     return offset;
 }
 /***************************************************************************/
-Document::dword Document::writeTOCs()
+dword Document::writeTOCs()
 {
     dword offset = _out->tell();
     _hdr->tocSize = 0;
@@ -746,7 +746,7 @@ Document::dword Document::writeTOCs()
     return offset;
 }
 /***************************************************************************/
-Document::dword Document::writeTOCOffsets()
+dword Document::writeTOCOffsets()
 {
     dword offset = 0;
     if( !_tocOffsets.empty() ) {
@@ -767,7 +767,7 @@ void Document::writeCells()
     }
 }
 /***************************************************************************/
-Document::dword Document::writeCellOffsets()
+dword Document::writeCellOffsets()
 {
     dword offset = 0;
     if( !_cellOffsets.empty() ) {
@@ -779,7 +779,7 @@ Document::dword Document::writeCellOffsets()
     return offset;
 }
 /***************************************************************************/
-Document::dword Document::writeChildWindows()
+dword Document::writeChildWindows()
 {
     dword offset = _out->tell();
     _eHdr->childPagesSize = 0;
@@ -795,7 +795,7 @@ void Document::writeSynonyms()
     }
 }
 /***************************************************************************/
-Document::dword Document::writeIndex()
+dword Document::writeIndex()
 {
     dword offset = 0;
     _hdr->indexCount = 0;
@@ -822,7 +822,7 @@ Document::dword Document::writeIndex()
     return offset;
 }
 /***************************************************************************/
-Document::dword Document::writeICmd()
+dword Document::writeICmd()
 {
     dword offset = 0;
     _hdr->icmdCount = 0;
@@ -915,7 +915,7 @@ void Document::parseCommand( Lexer* lexer, Tag* parent )
 
 /***************************************************************************/
 //get a TOC index from the resource number to TOC index map
-Document::word Document::tocIndexByRes( word res )
+word Document::tocIndexByRes( word res )
 {
     ResMapIter itr( _resMap.find( res ) );
     if( itr == _resMap.end() )
@@ -924,7 +924,7 @@ Document::word Document::tocIndexByRes( word res )
 }
 /***************************************************************************/
 //get a TOC index from the id or name to TOC index map
-Document::word Document::tocIndexById( GlobalDictionaryWord* id )
+word Document::tocIndexById( GlobalDictionaryWord* id )
 {
     NameMapIter itr( _nameMap.find( id ) );
     if( itr == _nameMap.end() )
@@ -982,7 +982,7 @@ std::wstring* Document::prepNameitName( const std::wstring& key )
     return name;
 }
 /***************************************************************************/
-Document::word Document::getGroupIndexById( const std::wstring& id )
+word Document::getGroupIndexById( const std::wstring& id )
 {
     ControlGroup* grp( _controls->getGroupById( id ) );
     if( !grp ) {

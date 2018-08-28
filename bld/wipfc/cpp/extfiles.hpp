@@ -41,10 +41,6 @@
 class OutFile;      // forward reference
 
 class ExternalFiles {
-    typedef STD1::uint8_t   byte;
-    typedef STD1::uint16_t  word;
-    typedef STD1::uint32_t  dword;
-
 public:
     ExternalFiles() : _bytes( 0 ) { };
     //need to get index by name

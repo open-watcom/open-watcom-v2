@@ -101,8 +101,8 @@ void CountryDef::nlsConfig( const char *loc )
     _icuConverter = std::string( fn3 );
 }
 
-CountryDef::dword CountryDef::write( OutFile* out ) const
-/*********************************************************/
+dword CountryDef::write( OutFile* out ) const
+/*******************************************/
 {
     dword start = out->tell();
     if( out->put( _size ) )

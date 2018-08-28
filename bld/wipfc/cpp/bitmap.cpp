@@ -38,40 +38,40 @@
 
 //used for input
 struct BitmapInfoHeaderWin32 {
-    STD1::uint32_t width;           //pixels
-    STD1::uint32_t height;          //pixels
-    STD1::uint16_t planes;
-    STD1::uint16_t bitsPerPixel;    //1,4,8,16,24,32
-    STD1::uint32_t compression;     //0,1,2,3
-    STD1::uint32_t imageSize;       //rounded up to next dword
-    STD1::uint32_t xResolution;
-    STD1::uint32_t yResolution;
-    STD1::uint32_t usedColors;
-    STD1::uint32_t importantColors;
+    dword   width;           //pixels
+    dword   height;          //pixels
+    word    planes;
+    word    bitsPerPixel;    //1,4,8,16,24,32
+    dword   compression;     //0,1,2,3
+    dword   imageSize;       //rounded up to next dword
+    dword   xResolution;
+    dword   yResolution;
+    dword   usedColors;
+    dword   importantColors;
     void read( std::FILE* bmfpi );
     //possibly followed by rgb quads
 };
 
 //used for input
 struct BitmapInfoHeaderOS22x {
-    STD1::uint32_t width;           //pixels
-    STD1::uint32_t height;          //pixels
-    STD1::uint16_t planes;
-    STD1::uint16_t bitsPerPixel;    //1,4,8,16,24,32
-    STD1::uint32_t compression;     //0,1,2,3
-    STD1::uint32_t imageSize;       //rounded up to next dword
-    STD1::uint32_t xResolution;
-    STD1::uint32_t yResolution;
-    STD1::uint32_t usedColors;
-    STD1::uint32_t importantColors;
-    STD1::uint16_t units;
-    STD1::uint16_t reserved;
-    STD1::uint16_t recording;
-    STD1::uint16_t rendering;
-    STD1::uint32_t size1;
-    STD1::uint32_t size2;
-    STD1::uint32_t colorEncoding;
-    STD1::uint32_t identifier;
+    dword   width;           //pixels
+    dword   height;          //pixels
+    word    planes;
+    word    bitsPerPixel;    //1,4,8,16,24,32
+    dword   compression;     //0,1,2,3
+    dword   imageSize;       //rounded up to next dword
+    dword   xResolution;
+    dword   yResolution;
+    dword   usedColors;
+    dword   importantColors;
+    word    units;
+    word    reserved;
+    word    recording;
+    word    rendering;
+    dword   size1;
+    dword   size2;
+    dword   colorEncoding;
+    dword   identifier;
     void read( std::FILE* bmfpi );
     //possibly followed by rgb triples
 };
@@ -119,10 +119,10 @@ BitmapFileHeader hdr;
 variable length data follows:
 unsigned char rgb[(1 << hdr.info.bitsPerPixel) * 3]
 unsigned long size;         //starting with next field, used to SEEK_CUR to next bitmap
-STD1::uint16_t blockSize;
+word          blockSize;
 BitmapBlock[];
 */
-Bitmap::dword Bitmap::write( std::FILE* bmfpo ) const
+dword Bitmap::write( std::FILE* bmfpo ) const
 {
     dword offset( std::ftell( bmfpo ) );
     _bmfh.write( bmfpo );

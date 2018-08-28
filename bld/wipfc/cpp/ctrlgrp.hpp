@@ -39,10 +39,6 @@
 class OutFile;
 
 class ControlGroup {
-    typedef STD1::uint8_t   byte;
-    typedef STD1::uint16_t  word;
-    typedef STD1::uint32_t  dword;
-
 public:
     ControlGroup() : _index( 0 ) {};
     ControlGroup( const std::wstring& id ) : _idnt( id ), _index( 0 ) { };

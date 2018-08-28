@@ -62,7 +62,7 @@ void Cell::addTextToLD( word index )
     }
 }
 /***************************************************************************/
-Cell::byte Cell::LDIndex( word index )
+byte Cell::LDIndex( word index )
 {
     LDIter itr( std::find( _localDictionary.begin(), _localDictionary.end(), index ) );
         //std::lower_bound( _localDictionary.begin(), _localDictionary.end(), index );
@@ -71,16 +71,16 @@ Cell::byte Cell::LDIndex( word index )
 /***************************************************************************/
 
 //struct cellData {
-//    STD1::uint8_t  zero;               //=0
-//    STD1::uint32_t dictOffset;         //file offset to STD1::uint16_t dict[dictCount] array
-//    STD1::uint8_t  dictCount;          // <=254 unique words
-//    STD1::uint16_t textCount;
+//    byte           zero;               //=0
+//    dword          dictOffset;         //file offset to word dict[dictCount] array
+//    byte           dictCount;          // <=254 unique words
+//    word           textCount;
 //    //variable length data follows:
-//    //STD1::uint8_t  text[textCount];  //encoded text (indexes into dict)
-//    //STD1::uint16_t  dict[dictCount];  //index to global dictionary
+//    //byte           text[textCount];  //encoded text (indexes into dict)
+//    //word           dict[dictCount];  //index to global dictionary
 //};
 
-Cell::dword Cell::write( OutFile* out ) const
+dword Cell::write( OutFile* out ) const
 {
     dword offset( out->tell() );
     // zero

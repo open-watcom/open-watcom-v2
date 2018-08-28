@@ -36,11 +36,6 @@
 
 // BitMapBlock
 class BitmapBlock {
-    typedef STD1::uint8_t   byte;
-    typedef STD1::uint16_t  word;
-    typedef STD1::uint32_t  dword;
-    typedef STD1::int16_t   sword;
-
 public:
     BitmapBlock() { };
     BitmapBlock( word b, byte t );

@@ -42,10 +42,6 @@
 #include "tag.hpp"
 
 class Table : public Tag {
-    typedef STD1::uint8_t   byte;
-    typedef STD1::uint16_t  word;
-    typedef STD1::uint32_t  dword;
-
 public:
     enum Rules {
         NO_RULES,
@@ -91,10 +87,6 @@ private:
 };
 
 class TableCol : public Tag {
-    typedef STD1::uint8_t   byte;
-    typedef STD1::uint16_t  word;
-    typedef STD1::uint32_t  dword;
-
 public:
     TableCol( Document* d, Element *p, const std::wstring* f, unsigned int r,
         unsigned int c, byte w ) : Tag( d, p, f, r, c, Tag::SPACES ),
@@ -114,10 +106,6 @@ private:
 };
 
 class TableRow : public Tag {
-    typedef STD1::uint8_t   byte;
-    typedef STD1::uint16_t  word;
-    typedef STD1::uint32_t  dword;
-
 public:
     TableRow( Document* d, Element *p, const std::wstring* f, unsigned int r,
         unsigned int c, std::vector< byte >& w, Table::Rules rl,

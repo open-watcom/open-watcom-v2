@@ -42,10 +42,6 @@ class Document; //forward reference
 class Cell;
 
 class Page {
-    typedef STD1::uint8_t   byte;
-    typedef STD1::uint16_t  word;
-    typedef STD1::uint32_t  dword;
-
 public:
     Page( Document* d, Element* head ) : _document( d ), _elements( 1, head ),
         _index( 0 ), _searchable( true ) { };

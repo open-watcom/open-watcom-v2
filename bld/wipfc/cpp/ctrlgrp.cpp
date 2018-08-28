@@ -35,7 +35,7 @@
 #include "outfile.hpp"
 
 
-ControlGroup::dword ControlGroup::write( OutFile* out ) const
+dword ControlGroup::write( OutFile* out ) const
 {
     std::size_t size = static_cast< word >( _buttonIndex.size() );
     // items count

@@ -40,10 +40,6 @@
 class OutFile;
 
 class CountryDef {
-    typedef STD1::uint8_t   byte;
-    typedef STD1::uint16_t  word;
-    typedef STD1::uint32_t  dword;
-
 public:
     CountryDef() : _size( sizeof( word ) + 2 * sizeof( byte ) + 4 * sizeof( word ) ),
         _type( WIPFC::CONTROL ), _format( 0 ), _value( 256 ), _country( 1 ),

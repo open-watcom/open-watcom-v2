@@ -42,9 +42,6 @@ class OutFile;
 // There is one entry per page, stored in the order in which
 // they occur in the document.
 struct TocEntry {
-    typedef STD1::uint8_t   byte;
-    typedef STD1::uint32_t  dword;
-
     TocEntry() { std::memset( this, 0, sizeof( TocEntry ) ); };
     dword write( OutFile* out ) const;
     void buildText( Cell *cell ) const;
@@ -74,9 +71,6 @@ struct TocEntry {
 };
 
 struct ExtTocEntry {
-    typedef STD1::uint8_t   byte;
-    typedef STD1::uint16_t  word;
-
     ExtTocEntry() { std::memset( this, 0, sizeof( ExtTocEntry ) ); };
     void write( OutFile* out ) const;
     void buildText( Cell *cell ) const;
@@ -123,9 +117,6 @@ struct ExtTocEntry {
 
 //on disk in this order
 struct PageOrigin {
-    typedef STD1::uint8_t   byte;
-    typedef STD1::uint16_t  word;
-
     PageOrigin() { std::memset( this, 0, sizeof( PageOrigin ) ); };
     void write( OutFile* out ) const;
     void buildText( Cell *cell ) const;
@@ -138,9 +129,6 @@ struct PageOrigin {
 };
 
 struct PageSize {
-    typedef STD1::uint8_t   byte;
-    typedef STD1::uint16_t  word;
-
     PageSize() { std::memset( this, 0, sizeof( PageSize ) ); };
     void write( OutFile* out ) const;
     void buildText( Cell *cell ) const;
@@ -154,8 +142,6 @@ struct PageSize {
 
 //titlebar, scrollbars, and rules
 struct PageStyle {
-    typedef STD1::uint16_t  word;
-
     PageStyle() : attrs( NONE ) { };
     void write( OutFile* out ) const;
     void buildText( Cell *cell ) const;
@@ -179,8 +165,6 @@ struct PageStyle {
 };
 
 struct PageGroup {
-    typedef STD1::uint16_t  word;
-
     PageGroup() : id( 0 ) { };
     void write( OutFile* out ) const;
     void buildText( Cell *cell ) const;
@@ -191,8 +175,6 @@ struct PageGroup {
 
 //ctrlarea and ctrlrefid?
 struct PageControl {
-    typedef STD1::uint16_t  word;
-
     PageControl() : refid( 0 ) { };
     void write( OutFile* out ) const;
     void buildText( Cell *cell ) const;

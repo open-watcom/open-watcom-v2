@@ -40,7 +40,7 @@
 #include "errors.hpp"
 
 
-std::vector< Hpn::byte > Hpn::_levelStack;
+std::vector< byte > Hpn::_levelStack;
 
 Hpn::Hpn( Document* d, Element *p, const std::wstring* f, unsigned int r,
           unsigned int c, unsigned int l ) : Element( d, p, f, r, c ),

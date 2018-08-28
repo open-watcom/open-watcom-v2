@@ -41,10 +41,6 @@
 
 class FontCollection
 {
-    typedef STD1::uint8_t   byte;
-    typedef STD1::uint16_t  word;
-    typedef STD1::uint32_t  dword;
-
 public:
     FontCollection( word maxFontCount );
     //returns the index of the font in the list

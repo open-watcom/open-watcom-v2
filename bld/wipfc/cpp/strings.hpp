@@ -42,10 +42,6 @@
 class OutFile;      // forward reference
 
 class StringTable {
-    typedef STD1::uint8_t   byte;
-    typedef STD1::uint16_t  word;
-    typedef STD1::uint32_t  dword;
-
 public:
     StringTable() : _bytes( 0 ) { _table.reserve( 3 ); };
     void add( const std::wstring& str ) { _table.push_back( str ); };
