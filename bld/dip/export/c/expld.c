@@ -1015,7 +1015,7 @@ static dip_status TryELF( FILE *fp, imp_image_handle *iih )
                             seg = MAP_FLAT_CODE_SELECTOR;
                         else
                             seg = MAP_FLAT_DATA_SELECTOR;
-                        ds = AddSymbol( ii, seg, sym.st_value, len, name );
+                        ds = AddSymbol( iih, seg, sym.st_value, len, name );
                     }
                     break;
                 case STT_OBJECT:
