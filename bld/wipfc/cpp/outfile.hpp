@@ -54,10 +54,10 @@ public:
     bool put( byte data ) { return( std::fwrite( &data, sizeof( data ), 1, _ufp->_fp ) != 1 ); };
     bool put( word data ) { return( std::fwrite( &data, sizeof( data ), 1, _ufp->_fp ) != 1 ); };
     bool put( dword data ) { return( std::fwrite( &data, sizeof( data ), 1, _ufp->_fp ) != 1 ); };
-    bool put( const std::string& data ) { return( std::fwrite( &data[0], data.size(), 1, _ufp->_fp ) != 1 ); };
-    bool put( const std::vector< byte >& data ) { return( std::fwrite( &data[0], data.size(), sizeof( byte ), _ufp->_fp ) != sizeof( byte ) ); };
-    bool put( const std::vector< word >& data ) { return( std::fwrite( &data[0], data.size(), sizeof( word ), _ufp->_fp ) != sizeof( word ) ); };
-    bool put( const std::vector< dword >& data ) { return( std::fwrite( &data[0], data.size(), sizeof( dword ), _ufp->_fp ) != sizeof( dword ) ); };
+    bool put( const std::string& data ) { return( std::fwrite( &data[0], 1, data.size(), _ufp->_fp ) != data.size() ); };
+    bool put( const std::vector< byte >& data ) { return( std::fwrite( &data[0], sizeof( byte ), data.size(), _ufp->_fp ) != data.size() ); };
+    bool put( const std::vector< word >& data ) { return( std::fwrite( &data[0], sizeof( word ), data.size(), _ufp->_fp ) != data.size() ); };
+    bool put( const std::vector< dword >& data ) { return( std::fwrite( &data[0], sizeof( dword ), data.size(), _ufp->_fp ) != data.size() ); };
     bool codePage( word codePage );
     int seek( dword offset, int where ) { return std::fseek( _ufp->_fp, offset, where ); };
     // UNICODE->MBCS conversion
