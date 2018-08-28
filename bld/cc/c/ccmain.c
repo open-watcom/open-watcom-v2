@@ -282,7 +282,7 @@ static const char *IncludeAlias( const char *filename, bool is_lib )
     return( filename );
 }
 
-static void CppPrtfFilenameErr( const char *filename, src_file_type typ, bool print_error )
+void CppPrtfFilenameErr( const char *filename, src_file_type typ, bool print_error )
 {
     bool        save;
 

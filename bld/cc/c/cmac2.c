@@ -282,7 +282,9 @@ void CInclude( void )
     PPNextToken();
     PPCTL_DISABLE_MACROS();
     if( CurToken == T_STRING ) {
-        OpenSrcFile( Buffer, FT_HEADER );
+        if( !OpenSrcFile( Buffer, FT_HEADER ) ) {
+            CppPrtfFilenameErr( Buffer, FT_HEADER, true );
+        }
 #if _CPU == 370
         if( !CompFlags.use_precompiled_header ) {
             SrcFile->colum = Column;    /* do trunc and col on  */
@@ -297,7 +299,9 @@ void CInclude( void )
         for( ;; ) {
             PPNextToken();
             if( CurToken == T_GT ) {
-                OpenSrcFile( buf, FT_LIBRARY );
+                if( !OpenSrcFile( buf, FT_LIBRARY ) ) {
+                    CppPrtfFilenameErr( buf, FT_LIBRARY, true );
+                }
                 break;
             }
             strncat( buf, Buffer, sizeof( buf ) - 2 );
