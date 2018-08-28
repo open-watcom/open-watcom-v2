@@ -1,14 +1,14 @@
+__cifx__ =$(system).$(processor)/$(libsubdir)
 __mifx__ =$(system).$(processor)/$(libsubdir).dll
-__cifx__ =$(system).axp/$(libsubdir)
 
 dll_libs = $+ &
-    $(mathlib_dir)/library/$(__mifx__)/math$(dllname_$(convention)).lib &
-    $(clib_dir)/rtdll/$(__cifx__)/clb$(dllname_$(convention))dll$(dllname_profile).lib &
+    $(mathlib_dir)/library/$(__mifx__)/math.lib &
+    $(clib_dir)/rtdll/$(__cifx__)/clbdll.lib &
     $-
 
 dll_def = $+ &
-    $(mathlib_dir)/library/$(__mifx__)/export.gdf &
-    $(mathlib_dir)/export.$(processor) &
+#    $(mathlib_dir)/library/$(__mifx__)/export.gdf &
+#    $(mathlib_dir)/export.$(processor) &
     $-
 
 dll_objs = $+ &
