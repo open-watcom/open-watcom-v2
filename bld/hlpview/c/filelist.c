@@ -97,9 +97,9 @@ static void printDescrip( FileInfo *info)
             printf( "%s", buf );
         }
         FiniHelpSearch( hdl );
+        HelpClose( fp );
     }
     printf( "\n" );
-    HelpClose( fp );
 }
 
 static void printFileList( FileList *list )
