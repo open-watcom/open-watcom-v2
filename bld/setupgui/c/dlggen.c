@@ -55,6 +55,8 @@
 #include "clibext.h"
 
 
+#define HELP_PREFIX     "Help_"
+
 /* A few new defines, rather than hard numbers in source */
 /* Controls per line */
 #define MAX_CTRL_PER_LINE      4
@@ -671,8 +673,9 @@ static bool GenericGUIEventProc( gui_window *gui, gui_event gui_ev, void *param 
                 return( true );
             }
         case CTL_HELP:
-            strcpy( buff, "Help_" );
-            strcat( buff, curr_dialog->name );
+            strcpy( buff, HELP_PREFIX );
+            strncpy( buff + sizeof( HELP_PREFIX ) - 1, curr_dialog->name, MAXBUF - sizeof( HELP_PREFIX ) );
+            buff[MAXBUF - 1] = '\0';
             DoDialogWithParent( gui, buff );
             return( true );
         }

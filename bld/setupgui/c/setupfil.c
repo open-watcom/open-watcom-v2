@@ -83,8 +83,6 @@ typedef enum {
     VAR_ERROR,
 } var_type;
 
-extern int              GetOptionVarValue( vhandle var_handle, bool is_minimal );
-
 static char             new_val[MAXENVVAR + 1];
 
 #if defined( __NT__ )

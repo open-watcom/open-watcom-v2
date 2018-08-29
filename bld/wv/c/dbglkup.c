@@ -465,11 +465,11 @@ void FreeSymHandle( sym_list *sl )
 
     for( owner = &SymListHead; (curr = *owner) != NULL; owner = &curr->next ) {
         if( curr == sl ) {
+            *owner = curr->next;
+            _Free( curr );
             break;
         }
     }
-    *owner = curr->next;
-    _Free( curr );
 }
 
 void PurgeSymHandles( void )

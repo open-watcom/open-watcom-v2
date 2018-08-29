@@ -56,6 +56,8 @@
 #define MAX_INSTR_BYTES (8)
 #define BUFF_SIZE       (512)
 
+#define OFFSET_ERROR    ((unsigned long)-1)
+
 #if BUFF_SIZE > 0x7fff
 #error buffer size is too large for strict POSIX compliance
 #endif
@@ -68,26 +70,26 @@ static struct {
 } exeFlags;
 
 static uint_16          cacheSegment;
-static off_t            cacheExeOffset;
+static unsigned long    cacheExeOffset;
 static uint_32          cacheLo;
 static uint_32          cacheHi;
 static bool             isHole = false;
 static address          currAddr;
 static uint_16          segmentShift;
 static FILE             *exeFP;
-static off_t            exeImageOffset;
+static unsigned long    exeImageOffset;
 static image_info       *exeImage;
 static EXE_TYPE         exeType;
 static uint_16          exeAmount;
 static uint_16          exeCurrent;
-static off_t            exePosition;
+static unsigned long    exePosition;
 static unsigned_16      nbytes = BUFF_SIZE;
 static uint_16          numBytes = MAX_INSTR_BYTES;
 static char             exeBuff[BUFF_SIZE];
 
 
 STATIC void             AdvanceCurrentOffset( uint_32 );
-STATIC uint_32          TransformExeOffset( uint_16, uint_32, uint_16 );
+STATIC unsigned long    TransformExeOffset( uint_16, uint_32, uint_16 );
 
 static mad_disasm_data  *MDData;
 static unsigned         MDSize;
@@ -128,18 +130,18 @@ void ExeClose( FILE *fp )
 
 
 
-STATIC bool exeSeek( off_t posn )
-/*******************************/
+STATIC bool exeSeek( unsigned long fileoffset )
+/*********************************************/
 {
-    if(( posn >= exePosition )&&( posn < ( exePosition + exeAmount ))) {
-        exeCurrent = posn - exePosition;
+    if(( fileoffset >= exePosition )&&( fileoffset < ( exePosition + exeAmount ))) {
+        exeCurrent = fileoffset - exePosition;
         return( true );
     }
-    if( fseek( exeFP, posn, SEEK_SET ) ) {
+    if( fseek( exeFP, fileoffset, SEEK_SET ) ) {
         exeFlags.end_of_file = true;
         return( false );
     }
-    exePosition = posn;
+    exePosition = fileoffset;
     exeAmount = 0;
     exeCurrent = 0;
     exeFlags.end_of_file = false;
@@ -151,11 +153,11 @@ STATIC bool exeSeek( off_t posn )
 STATIC void MapSetExeOffset( address a )
 /**************************************/
 {
-    off_t   pos;
+    unsigned long   fileoffset;
 
-    pos = TransformExeOffset( a.mach.segment, a.mach.offset, a.sect_id );
-    if( pos != -1 ) {
-        exeSeek( pos );
+    fileoffset = TransformExeOffset( a.mach.segment, a.mach.offset, a.sect_id );
+    if( fileoffset != OFFSET_ERROR ) {
+        exeSeek( fileoffset );
     } else {
         exeFlags.end_of_file = true;
     }
@@ -384,9 +386,9 @@ bool SetExeFile( FILE *fp, bool overlay )
 /***************************************/
 {
     dos_exe_header      head;
-    off_t               new_header;
-    off_t               header_base;
-    off_t               seek_off;
+    unsigned long       new_header;
+    unsigned long       header_base;
+    unsigned long       seek_off;
     uint_16             dummy_16;
     uint_32             dummy_32;
 
@@ -591,15 +593,15 @@ STATIC void searchQNX( uint_16 seg, uint_32 off )
 
 
 
-STATIC uint_32 TransformExeOffset( uint_16 seg, uint_32 off, uint_16 sect_id )
-/****************************************************************************/
+STATIC unsigned long TransformExeOffset( uint_16 seg, uint_32 off, uint_16 sect_id )
+/**********************************************************************************/
 {
     ovl_entry               *entry;
     segment_record          segment;
     map_entry               mapping;
-    off_t                   tmp_offset;
+    unsigned long           tmp_offset;
     image_info              *curr_image;
-    uint_32                 subresult;
+    unsigned long           subresult;
     uint_32                 page_offset_shift;
     uint_32                 object_table;
     uint_32                 objmap_table;
@@ -612,7 +614,7 @@ STATIC uint_32 TransformExeOffset( uint_16 seg, uint_32 off, uint_16 sect_id )
     if( sect_id != ROOT_SECTION ) {
         curr_image = CurrSIOData->curr_image;
         if( sect_id > curr_image->ovl_count ) {
-            return( -1 );
+            return( OFFSET_ERROR );
         }
         entry = curr_image->ovl_data;
         entry += sect_id - 1;
@@ -631,11 +633,11 @@ STATIC uint_32 TransformExeOffset( uint_16 seg, uint_32 off, uint_16 sect_id )
         break;
     case EXE_OS2:
         if( seg != cacheSegment ) {
-            tmp_offset = exeImageOffset + (seg-1) * sizeof(segment_record);
+            tmp_offset = exeImageOffset + ( seg - 1 ) * sizeof(segment_record);
             fseek( exeFP, tmp_offset, SEEK_SET );
             fread( &segment, 1, sizeof( segment ), exeFP );
             cacheSegment = seg;
-            cacheExeOffset = ((off_t) segment.address) << segmentShift;
+            cacheExeOffset = ((unsigned long)segment.address) << segmentShift;
         }
         subresult = cacheExeOffset + off;
         break;
@@ -653,9 +655,9 @@ STATIC uint_32 TransformExeOffset( uint_16 seg, uint_32 off, uint_16 sect_id )
             readEntry( &objmap_table, offsetof(os2_flat_header,objmap_off));
             tmp_offset = objmap_table + exeImageOffset;
             if( exeType == EXE_OS2_LX ) {
-                tmp_offset += ( map_idx-1 ) * sizeof( lx_map_entry );
+                tmp_offset += ( map_idx - 1 ) * sizeof( lx_map_entry );
             } else {
-                tmp_offset += ( map_idx-1 ) * sizeof( le_map_entry );
+                tmp_offset += ( map_idx - 1 ) * sizeof( le_map_entry );
             }
             fseek( exeFP, tmp_offset, SEEK_SET );
             fread( &mapping, 1, sizeof( mapping ), exeFP );
@@ -710,7 +712,7 @@ STATIC uint_32 TransformExeOffset( uint_16 seg, uint_32 off, uint_16 sect_id )
             i = 0;
             for( ;; ) {
                 if( i > cacheSegment ) {
-                    return( -1 );
+                    return( OFFSET_ERROR );
                 }
                 fseek( exeFP, tmp_offset, SEEK_SET );
                 fread( &phe, 1, sizeof( phe ), exeFP );
@@ -730,7 +732,7 @@ STATIC uint_32 TransformExeOffset( uint_16 seg, uint_32 off, uint_16 sect_id )
 /**/    myassert( 0 );
     case EXE_P2:    /* P2 format is not supported 03-may-90 AFS */
     default:
-        subresult = -1;
+        subresult = OFFSET_ERROR;
         break;
     }
     return( subresult );
@@ -970,8 +972,8 @@ STATIC bool LoadOverlayInfo( void )
     FILE                    *fp;
     address                 map_addr;
     addr_seg                base_segment;
-    off_t                   fileoffset;
-    off_t                   filenameoffset;
+    unsigned long           fileoffset;
+    unsigned long           filenameoffset;
     ovltab_entry            formal_entry;
     ovltab_prolog           prolog;
     ovl_entry               *entry;
@@ -1131,8 +1133,8 @@ STATIC void AdvanceCurrentOffset( uint_32 advance )
 
 
 
-STATIC void exeRewind( size_t offset )
-/************************************/
+STATIC void exeRewind( unsigned long offset )
+/*******************************************/
 {
     if( offset > exeCurrent ) {
         exeSeek( ( exePosition + exeCurrent ) - offset );

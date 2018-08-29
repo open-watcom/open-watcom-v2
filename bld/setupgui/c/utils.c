@@ -1113,12 +1113,14 @@ static bool FindUpgradeFile( char *path )
 #endif
             if( info->d_name[0] != '.' ) {
                 if( FindUpgradeFile( path ) ) {
+                    closedir( d );
                     return( true );
                 }
             }
         } else {
             for( i = 0; i < upgrades; ++i ) {
                 if( MatchEnd( path, SimGetUpgradeName( i ) ) ) {
+                    closedir( d );
                     return( true );
                 }
             }
