@@ -31,7 +31,7 @@
 
 
 #include <string.h>
-#include "trpimp.h"
+#include "trpcore.h"
 #include "trpld.h"
 #include "ovldefn.h"
 
@@ -40,7 +40,7 @@ mx_entry_p  Out_Mx_Ptr;
 
 #define OUTPTR( type, name ) type *name = Out_Mx_Ptr->ptr;
 
-trap_retval ReqConnect( void )
+static trap_retval ReqConnect( void )
 {
     OUTPTR( connect_ret, ret );
 
@@ -48,12 +48,12 @@ trap_retval ReqConnect( void )
     return( sizeof( *ret ) );
 }
 
-OVL_EXTERN trap_retval ReqSimpleStub( void )
+static trap_retval ReqSimpleStub( void )
 {
     return( 0 );
 }
 
-trap_retval ReqGet_supplementary_service(void)
+static trap_retval ReqGet_supplementary_service( void )
 {
     OUTPTR( get_supplementary_service_ret, ret );
 
@@ -62,7 +62,7 @@ trap_retval ReqGet_supplementary_service(void)
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqMap_addr( void )
+static trap_retval ReqMap_addr( void )
 {
     OUTPTR( map_addr_ret, ret );
 
@@ -73,7 +73,7 @@ trap_retval ReqMap_addr( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqChecksum_mem( void )
+static trap_retval ReqChecksum_mem( void )
 {
     OUTPTR( checksum_mem_ret, ret );
 
@@ -81,7 +81,7 @@ trap_retval ReqChecksum_mem( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqProg_load( void )
+static trap_retval ReqProg_load( void )
 {
     OUTPTR( prog_load_ret, ret );
 
@@ -89,7 +89,7 @@ trap_retval ReqProg_load( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqProg_kill( void )
+static trap_retval ReqProg_kill( void )
 {
     OUTPTR( prog_kill_ret, ret );
 
@@ -97,7 +97,7 @@ trap_retval ReqProg_kill( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqSet_watch( void )
+static trap_retval ReqSet_watch( void )
 {
     OUTPTR( set_watch_ret, ret );
 
@@ -106,7 +106,7 @@ trap_retval ReqSet_watch( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqSet_break( void )
+static trap_retval ReqSet_break( void )
 {
     OUTPTR( set_break_ret, ret );
 
@@ -114,7 +114,7 @@ trap_retval ReqSet_break( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqGet_next_alias( void )
+static trap_retval ReqGet_next_alias( void )
 {
     OUTPTR( get_next_alias_ret, ret );
 
@@ -123,7 +123,7 @@ trap_retval ReqGet_next_alias( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqRead_user_keyboard( void )
+static trap_retval ReqRead_user_keyboard( void )
 {
     OUTPTR( read_user_keyboard_ret, ret );
 
@@ -131,7 +131,7 @@ trap_retval ReqRead_user_keyboard( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqGet_lib_name( void )
+static trap_retval ReqGet_lib_name( void )
 {
     OUTPTR( get_lib_name_ret, ret );
 
@@ -139,7 +139,7 @@ trap_retval ReqGet_lib_name( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqRedirect_stdin( void  )
+static trap_retval ReqRedirect_stdin( void  )
 {
     OUTPTR( redirect_stdin_ret, ret );
 
@@ -147,7 +147,7 @@ trap_retval ReqRedirect_stdin( void  )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqRedirect_stdout( void  )
+static trap_retval ReqRedirect_stdout( void  )
 {
     OUTPTR( redirect_stdout_ret, ret );
 
@@ -156,7 +156,7 @@ trap_retval ReqRedirect_stdout( void  )
 }
 
 
-trap_retval ReqSplit_cmd( void )
+static trap_retval ReqSplit_cmd( void )
 {
     OUTPTR( split_cmd_ret, ret );
 
@@ -165,7 +165,7 @@ trap_retval ReqSplit_cmd( void )
     return( sizeof( *ret ) );
 }
 
-static trap_retval (* const DumbRequests[])(void) = {
+static trap_retval (* const _dumbRequests[])( void ) = {
     ReqConnect,
     ReqSimpleStub, // ReqDisconnect,
     ReqSimpleStub, // ReqSuspend,
@@ -210,7 +210,7 @@ OVL_EXTERN trap_retval TRAPENTRY DumbRequest( trap_elen num_in_mx, in_mx_entry_p
     /* unused parameters */ (void)num_in_mx; (void)num_out_mx;
 
     Out_Mx_Ptr = mx_out;
-    result = DumbRequests[TRP_REQUEST( mx_in )]();
+    result = _dumbRequests[TRP_REQUEST( mx_in )]();
     return( result );
 }
 

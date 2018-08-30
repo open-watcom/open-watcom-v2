@@ -110,7 +110,7 @@ mad_status MADCLIENTRY( TypeToString )( mad_radix radix, const mad_type_info *mt
     return( MADTypeToString( radix, mti, data, buff, buff_size_p ) );
 }
 
-mad_client_routines MADClientInterface = {
+static mad_client_routines MADClientInterface = {
     MAD_MAJOR,
     MAD_MINOR,
     sizeof( mad_client_routines ),
