@@ -95,6 +95,7 @@ void GUImain( void )
     seteuid( getuid() );
     sa.sa_flags = SA_RESTART;
     sa.sa_handler = BrkHandler;
+    sigemptyset( &sa.sa_mask );
     sigaction( SIGINT, &sa, NULL );
     DebugMain();
 }

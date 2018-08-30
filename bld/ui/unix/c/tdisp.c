@@ -892,8 +892,7 @@ static bool initmonitor( void )
 
     sa.sa_handler = size_handler;
     sa.sa_flags = SA_RESTART;
-    memset( &sa.sa_mask, '\0', sizeof( sa.sa_mask ) );
-
+    sigemptyset( &sa.sa_mask );
     sigaction( SIGWINCH, &sa, NULL );
 
     return( true );

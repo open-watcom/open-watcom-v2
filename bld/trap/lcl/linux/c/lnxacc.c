@@ -397,6 +397,7 @@ static sighandler_t setsig( int sig, sighandler_t handler )
     struct sigaction sa, old_sa;
 
     sa.sa_flags = SA_RESTART;
+    sigemptyset( &sa.sa_mask );
     sa.sa_handler = handler;
     sigaction( sig, &sa, &old_sa );
     return old_sa.sa_handler;
