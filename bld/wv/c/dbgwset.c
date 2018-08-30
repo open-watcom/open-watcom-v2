@@ -438,6 +438,7 @@ wnd_macro *MacAddDel( gui_key key, wnd_class_wv wndclass, cmd_list *cmds )
         }
     }
     if( cmds != NULL ) {
+        // add
         if( curr == NULL ) {
             _Alloc( curr, sizeof( wnd_macro ) );
             if( curr == NULL ) {
@@ -464,11 +465,13 @@ wnd_macro *MacAddDel( gui_key key, wnd_class_wv wndclass, cmd_list *cmds )
             curr->type = MACRO_POPUP_MENU;
         }
     } else {
+        // remove
         if( curr != NULL ) {
             *owner = curr->link;
             WndMenuSetHotKey( curr->menu, curr->type == MACRO_MAIN_MENU, LIT_ENG( Empty ) );
             FreeCmdList( curr->cmd );
             _Free( curr );
+            curr = NULL;
         }
     }
     DbgUpdate( UP_MACRO_CHANGE );
