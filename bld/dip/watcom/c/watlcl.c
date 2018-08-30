@@ -40,16 +40,16 @@
 #include "clibext.h"
 
 
+#define NO_BASE ((unsigned_16)-1)
+
 typedef struct lclinfo {
     section_info        *inf;
     const char          *start;
     const char          *end;
-    unsigned            base_off;
     address             code_base;
+    unsigned_16         base_off;
     imp_mod_handle      imh;
 } lclinfo;
-
-#define NO_BASE ((unsigned short)-1)
 
 const char *GetIndex( const char *ptr, unsigned *value )
 {

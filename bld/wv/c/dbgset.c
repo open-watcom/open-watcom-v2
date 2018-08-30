@@ -486,9 +486,6 @@ static bool DoOneToggle( mad_window_toggles wt )
     if( !ScanItem( true, &start, &len ) )
         return( false );
     switch( wt ) {
-    case MWT_ASM:
-        rsd = NULL;
-        break;
     case MWT_FPU:
         RegFindData( MTK_FLOAT, &rsd );
         if( rsd == NULL ) {
@@ -516,6 +513,9 @@ static bool DoOneToggle( mad_window_toggles wt )
             PendingAdd( SysConfig.mad, wt, start, len );
             return( true );
         }
+        break;
+    default:
+        rsd = NULL;
         break;
     }
     bit = 1;

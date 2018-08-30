@@ -93,8 +93,6 @@ struct imp_image_handle {
     msym_hunk   *hunks;
 };
 
-extern address  NilAddr;
-
 extern msym_block       *FindAddrBlock( imp_image_handle *, addr_ptr );
 
 #define SameAddrSpace( a, b )   ((a).segment == (b).segment)

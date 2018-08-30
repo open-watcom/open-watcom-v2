@@ -165,7 +165,6 @@ struct imp_image_handle {
     bool                is_byteswapped;
 };
 
-extern address  NilAddr;
 #ifdef DEBUG
 extern void myprintf( char *ctl, ... );
 #endif

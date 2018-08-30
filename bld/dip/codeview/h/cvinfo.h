@@ -102,8 +102,6 @@ typedef struct {
     unsigned long       int_val; /* only if k == TK_INTEGER */
 } numeric_leaf;
 
-extern address  NilAddr;
-
 extern imp_image_handle         *ImageList;
 
 extern dip_status               VMInit( imp_image_handle *, unsigned long );

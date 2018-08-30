@@ -94,8 +94,6 @@ struct imp_image_handle {
     exp_hunk    *hunks;
 };
 
-extern address  NilAddr;
-
 extern exp_block        *FindAddrBlock( imp_image_handle *, addr_ptr );
 
 #define SameAddrSpace( a, b )   ((a).segment == (b).segment)

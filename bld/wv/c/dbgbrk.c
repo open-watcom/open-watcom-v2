@@ -1452,6 +1452,7 @@ OVL_EXTERN brkp *SetPoint( memory_expr def_seg, mad_type_handle mth )
             mapaddress = true;
             ScanItem( true, &start, &len );
             image_name = DupStrLen( start, len );
+            loc = NilAddr;
             loc.mach.segment = ReqLongExpr();
             loc.mach.offset = ReqLongExpr();
             ReqComma();

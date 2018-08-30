@@ -34,11 +34,17 @@
 
 #include "diptypes.h"
 
+
+/*
+ *      Global Data
+ */
+
+extern char             DIPDefaults[];
+extern const address    NilAddr;
+
 /*
  *      Control Routines
  */
-
-extern char     DIPDefaults[];
 
 dip_status      DIPInit( void );
 dip_status      DIPLoad( const char *path );

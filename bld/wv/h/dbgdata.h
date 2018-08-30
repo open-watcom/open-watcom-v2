@@ -56,8 +56,6 @@ global char_ring        *SrcSpec;
 global debug_level      DbgLevel;
 global debug_level      ActiveWindowLevel;
 
-global address          NilAddr;
-
 global machine_state    *DbgRegs;
 global machine_state    *PrevRegs;
 

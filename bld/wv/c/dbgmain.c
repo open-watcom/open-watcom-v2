@@ -126,7 +126,6 @@ void DebugInit( void )
     UpdateFlags = 0;
     _SwitchOn( SW_ERROR_STARTUP );
     _SwitchOn( SW_CHECK_SOURCE_EXISTS );
-    SET_NIL_ADDR( NilAddr );
     TxtBuff  = DbgBuffers;
     *TxtBuff = NULLCHAR;
     NameBuff = DbgBuffers + TXT_LEN + 1;

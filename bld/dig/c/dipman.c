@@ -154,7 +154,7 @@ char DIPDefaults[] = {
     "\0"
 };
 
-static const address    NilAddr = { 0 };
+const address    NilAddr = { 0 };
 
 /*
  * Client interface
