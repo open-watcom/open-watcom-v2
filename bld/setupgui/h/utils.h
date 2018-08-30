@@ -42,7 +42,6 @@ extern bool             InitInfo( char *, char * );
 extern bool             GetDirParams( int, char **, char **, char **, char ** );
 extern bool             FreeDirParams( char **, char **, char ** );
 extern void             CloseDownMessage( bool state );
-extern void             CloseDownProgram();
 extern bool             IsFixedDisk( char drive );
 extern bool             IsDiskette( unsigned drive );
 extern unsigned         GetClusterSize( char drive );

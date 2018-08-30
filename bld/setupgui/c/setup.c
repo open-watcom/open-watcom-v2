@@ -51,7 +51,6 @@
 
 
 extern void DoSpawn( when_time );
-extern void SetupTitle();
 extern void DeleteObsoleteFiles();
 extern void ResetDiskInfo( void );
 
@@ -303,7 +302,7 @@ void GUImain( void )
     char                *arc_name;
     char                *new_inf;
     char                current_dir[_MAX_PATH];
-    bool                ret = false;
+    bool                ok;
     dlg_state           state;
 
     GUIMemOpen();
@@ -311,82 +310,79 @@ void GUImain( void )
 
     // initialize paths and env. vbls.
 
-    if( !SetupPreInit( argc, argv ) )
-        return;
-    if( !GetDirParams( argc, argv, &inf_name, &src_path, &arc_name ) )
-        return;
-    if( !SetupInit() ) {
+    if( SetupPreInit( argc, argv ) ) {
+        if( GetDirParams( argc, argv, &inf_name, &src_path, &arc_name ) ) {
+            SetupInit();
+            StatusInit();
+            GUIDrainEvents();   // push things along
+            FileInit( arc_name );
+            InitGlobalVarList();
+            strcpy( current_dir, src_path );
+            ConcatDirSep( current_dir );
+            ok = false;
+            while( !ok && InitInfo( inf_name, src_path ) ) {
+
+                ok = DoMainLoop( &state );
+
+                if( state == DLG_DONE ) {
+                    ok = true;
+//                if( CancelSetup || !ok ) break;
+                } else if( CancelSetup ) {
+                    ok = true;
+//                if( !ok ) break;
+
+                // look for another SETUP.INF
+                } else if( GetVariableByName( "SetupPath" ) == NO_VAR ) {
+                    if( !DirParamStack( &inf_name, &src_path, Stack_IsEmpty ) ) {  // "IsEmpty"?
+                        DirParamStack( &inf_name, &src_path, Stack_Pop ); // "Pop"
+                        CloseDownMessage( ok );
+                        CancelSetup = false;
+                        ok = false;
+                    } else {
+                        CloseDownMessage( ok );
+                        ok = true;
+                    }
+                } else {
+                    if( GetVariableIntVal( "IsMultiInstall" ) ) {
+                        // push current script on stack
+                        DirParamStack( &inf_name, &src_path, Stack_Push ); // "Push"
+                    }
+                    new_inf = GUIMemAlloc( _MAX_PATH );
+                    drive = GUIMemAlloc( _MAX_DRIVE );
+                    dir = GUIMemAlloc( _MAX_PATH );
+                    ok = ( new_inf == NULL || drive == NULL || dir == NULL );
+                    if( ok ) {
+                        // construct new path relative to previous
+                        ReplaceVars( new_inf, _MAX_PATH, GetVariableStrVal( "SetupPath" ) );
+                        _splitpath( current_dir, drive, dir, NULL, NULL );
+                        _makepath( inf_name, drive, dir, new_inf, NULL );
+
+                        _splitpath( inf_name, drive, dir, NULL, NULL );
+                        _makepath( src_path, drive, dir, NULL, NULL );
+                        RemoveDirSep( src_path );
+//                        strcpy( current_dir, src_path );
+//                        ConcatDirSep( current_dir );
+                    }
+
+                    GUIMemFree( new_inf );
+                    GUIMemFree( drive );
+                    GUIMemFree( dir );
+                } /* if */
+
+                FreeGlobalVarList( false );
+                FreeDefaultDialogs();
+                FreeAllStructs();
+                ConfigModified = false;
+            } /* while */
+
+            FileFini();
+            FreeGlobalVarList( true );
+            FreeDefaultDialogs();
+            FreeAllStructs();
+            StatusFini();
+            SetupFini();
+        }
         FreeDirParams( &inf_name, &src_path, &arc_name );
-        return;
     }
-    GUIDrainEvents();   // push things along
-    FileInit( arc_name );
-    InitGlobalVarList();
-    strcpy( current_dir, src_path );
-    ConcatDirSep( current_dir );
-    while( InitInfo( inf_name, src_path ) ) {
-
-        ret = DoMainLoop( &state );
-
-        if( state == DLG_DONE )
-            break;
-//        if( CancelSetup || !ret ) break;
-        if( CancelSetup )
-            break;
-//        if( !ret ) break;
-
-        // look for another SETUP.INF
-        if( GetVariableByName( "SetupPath" ) == NO_VAR ) {
-            if( !DirParamStack( &inf_name, &src_path, Stack_IsEmpty ) ) {  // "IsEmpty"?
-                DirParamStack( &inf_name, &src_path, Stack_Pop ); // "Pop"
-                CloseDownMessage( ret );
-                CancelSetup = false;
-                ret = true;
-            } else {
-                CloseDownMessage( ret );
-                break;
-            }
-        } else {
-            if( GetVariableIntVal( "IsMultiInstall" ) ) {
-                // push current script on stack
-                DirParamStack( &inf_name, &src_path, Stack_Push ); // "Push"
-            }
-            new_inf = GUIMemAlloc( _MAX_PATH );
-            drive = GUIMemAlloc( _MAX_DRIVE );
-            dir = GUIMemAlloc( _MAX_PATH );
-            if( new_inf == NULL || drive == NULL || dir == NULL ) {
-                GUIMemFree( new_inf );
-                GUIMemFree( drive );
-                GUIMemFree( dir );
-                break;
-            }
-            // construct new path relative to previous
-            ReplaceVars( new_inf, _MAX_PATH, GetVariableStrVal( "SetupPath" ) );
-            _splitpath( current_dir, drive, dir, NULL, NULL );
-            _makepath( inf_name, drive, dir, new_inf, NULL );
-
-            _splitpath( inf_name, drive, dir, NULL, NULL );
-            _makepath( src_path, drive, dir, NULL, NULL );
-            RemoveDirSep( src_path );
-//            strcpy( current_dir, src_path );
-//            ConcatDirSep( current_dir );
-
-            GUIMemFree( new_inf );
-            GUIMemFree( drive );
-            GUIMemFree( dir );
-        } /* if */
-
-        FreeGlobalVarList( false );
-        FreeDefaultDialogs();
-        FreeAllStructs();
-        ConfigModified = false;
-    } /* while */
-
-
-    FileFini();
-    FreeGlobalVarList( true );
-    FreeDefaultDialogs();
-    FreeAllStructs();
-    FreeDirParams( &inf_name, &src_path, &arc_name );
-    CloseDownProgram();
+    GUIMemClose();
 }

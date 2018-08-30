@@ -197,9 +197,7 @@ static bool CheckForSetup32( int argc, char **argv )
     }
     return( false );
 }
-#endif
-
-#if defined( __NT__ ) && !defined( _M_X64 )
+#elif defined( __NT__ ) && !defined( _M_X64 )
 static bool CheckWin95Uninstall( int argc, char **argv )
 {
 // The Windows 95 version of setup gets installed as the
@@ -262,13 +260,13 @@ bool SetupPreInit( int argc, char **argv )
 {
     gui_rect            rect;
 
-#if defined( __NT__ ) && !defined( _M_X64 )
+#if defined( __WINDOWS__ )
+    if( CheckForSetup32( argc, argv ) )
+        return false;
+#elif defined( __NT__ ) && !defined( _M_X64 )
     if( CheckWin95Uninstall( argc, argv ) )
         return false;
     if( CheckWow64() )
-        return false;
-#elif defined( __WINDOWS__ )
-    if( CheckForSetup32( argc, argv ) )
         return false;
 #else
     (void)argc; (void)argv;

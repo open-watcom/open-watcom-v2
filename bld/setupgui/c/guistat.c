@@ -365,9 +365,6 @@ static bool OpenStatusWindow( const char *title )
 void StatusShow( bool show )
 /**************************/
 {
-    if( StatusWnd == NULL && show ) {
-        StatusInit();
-    }
     if( StatusWnd != NULL ) {
         if( show ) {
             GUIShowWindow( StatusWnd );
@@ -492,21 +489,23 @@ bool StatusCancelled( void )
     return( CancelSetup );
 }
 
-bool StatusInit( void )
+void StatusInit( void )
 /*********************/
 {
     char        buff[MAXBUF];
 
-    ReplaceVars( buff, sizeof( buff ), GetVariableStrVal( "AppName" ) );
-    return( OpenStatusWindow( buff ) );
+    if( StatusWnd == NULL ) {
+        ReplaceVars( buff, sizeof( buff ), GetVariableStrVal( "AppName" ) );
+        if( OpenStatusWindow( buff ) ) {
+            GUIHideWindow( StatusWnd );
+        }
+    }
 }
 
 void StatusFini( void )
 /*********************/
 {
-    if( StatusWnd == NULL ){
-        return;
-    } else {
+    if( StatusWnd != NULL ){
         if( StatusInfo.title != NULL ) {
             GUIMemFree( (void *)StatusInfo.title );
         }

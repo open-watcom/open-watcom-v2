@@ -2628,14 +2628,6 @@ void CloseDownMessage( bool installed_ok )
 }
 
 
-void CloseDownProgram( void )
-/***************************/
-{
-    StatusFini();
-    SetupFini();
-}
-
-
 #ifdef DO_DEBUGGING
 void CheckHeap( void )
 /********************/
