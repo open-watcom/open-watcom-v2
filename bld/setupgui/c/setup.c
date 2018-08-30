@@ -326,44 +326,42 @@ void GUImain( void )
 
                 if( state == DLG_DONE ) {
                     ok = true;
-//                if( CancelSetup || !ok ) break;
                 } else if( CancelSetup ) {
                     ok = true;
-//                if( !ok ) break;
-
-                // look for another SETUP.INF
                 } else if( GetVariableByName( "SetupPath" ) == NO_VAR ) {
-                    if( !DirParamStack( &inf_name, &src_path, Stack_IsEmpty ) ) {  // "IsEmpty"?
-                        DirParamStack( &inf_name, &src_path, Stack_Pop ); // "Pop"
+                    // look for another SETUP.INF
+                    if( !DirParamStack( &inf_name, &src_path, Stack_IsEmpty ) ) {   // "IsEmpty"?
+                        // pop script from stack
+                        DirParamStack( &inf_name, &src_path, Stack_Pop );           // "Pop"
                         CloseDownMessage( ok );
+                        // process next script
                         CancelSetup = false;
                         ok = false;
                     } else {
                         CloseDownMessage( ok );
+                        // finish
                         ok = true;
                     }
                 } else {
                     if( GetVariableIntVal( "IsMultiInstall" ) ) {
                         // push current script on stack
-                        DirParamStack( &inf_name, &src_path, Stack_Push ); // "Push"
+                        DirParamStack( &inf_name, &src_path, Stack_Push );          // "Push"
                     }
                     new_inf = GUIMemAlloc( _MAX_PATH );
                     drive = GUIMemAlloc( _MAX_DRIVE );
                     dir = GUIMemAlloc( _MAX_PATH );
-                    ok = ( new_inf == NULL || drive == NULL || dir == NULL );
+                    ok = ( new_inf != NULL && drive != NULL && dir != NULL );
                     if( ok ) {
                         // construct new path relative to previous
                         ReplaceVars( new_inf, _MAX_PATH, GetVariableStrVal( "SetupPath" ) );
                         _splitpath( current_dir, drive, dir, NULL, NULL );
                         _makepath( inf_name, drive, dir, new_inf, NULL );
-
                         _splitpath( inf_name, drive, dir, NULL, NULL );
                         _makepath( src_path, drive, dir, NULL, NULL );
                         RemoveDirSep( src_path );
 //                        strcpy( current_dir, src_path );
 //                        ConcatDirSep( current_dir );
                     }
-
                     GUIMemFree( new_inf );
                     GUIMemFree( drive );
                     GUIMemFree( dir );

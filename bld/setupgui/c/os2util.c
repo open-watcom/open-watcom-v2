@@ -175,7 +175,7 @@ bool CreatePMInfo( bool uninstall )
                 } else {
                     len = p - PMParams - 1;
                     memcpy( Folder, &PMParams[1], len );
-                    Folder[ len ] = '\0';
+                    Folder[len] = '\0';
                     ++p;
                     memmove( PMParams, p, strlen( p ) );
                 }

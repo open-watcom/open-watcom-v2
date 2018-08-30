@@ -156,7 +156,7 @@ static bool MainSetupWndGUIEventProc( gui_window *gui, gui_event gui_ev, void *p
 
 gui_coord               GUIScale;
 
-#ifdef __WINDOWS__
+#if defined( __WINDOWS__ )
 static bool CheckForSetup32( int argc, char **argv )
 {
     DWORD       version = GetVersion();
@@ -212,7 +212,7 @@ static bool CheckWin95Uninstall( int argc, char **argv )
     char                dir[_MAX_DIR];
     char                name[_MAX_FNAME];
 
-    if( argc > 1 && stricmp( argv[ 1 ], "-u" ) == 0 ) {
+    if( argc > 1 && stricmp( argv[1], "-u" ) == 0 ) {
         // copy setup program to unsetup.exe in system directory
         GetWindowsDirectory( buff, _MAX_PATH );
         strcat( buff, "\\UnSetup.exe" );
