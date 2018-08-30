@@ -56,6 +56,7 @@
 #include "genvbl.h"
 #include "gendlg.h"
 #include "guiutil.h"
+#include "guiutils.h"
 #include "utils.h"
 #include "setupio.h"
 #include "iopath.h"

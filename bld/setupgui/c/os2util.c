@@ -38,6 +38,7 @@
 #include "setup.h"
 #include "setupwpi.h"
 #include "setupinf.h"
+#include "guistat.h"
 
 
 #define ICONFILETAG     "ICONFILE="

@@ -125,16 +125,7 @@ enum {
 extern bool             ConfigModified;
 extern gui_window       *MainWnd;
 
-extern bool             SetupPreInit( void );
-extern bool             SetupInit( void );
-extern void             SetupFini( void );
 extern char             *ReplaceVars( char *, size_t, const char * );
-extern bool             StatusInit( void );
-extern void             StatusFini( void );
-extern void             StatusShow( bool );
-extern void             StatusLines( int, const char * );
-extern void             StatusAmount( long, long );
-extern bool             StatusCancelled( void );
 extern gui_message_return CheckInstallDLL( char*, vhandle );
 extern gui_message_return CheckInstallNLM( const char *, vhandle );
 extern bool             IsNLMNewerThanExistingNLM(char *name);

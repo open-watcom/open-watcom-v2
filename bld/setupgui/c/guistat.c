@@ -97,136 +97,6 @@ static gui_control_info Cancel = {
     GUI_DEFPUSH_BUTTON, NULL, {0, 0, 0, 0}, NULL, GUI_NOSCROLL, GUI_STYLE_CONTROL_TAB_GROUP | GUI_STYLE_CONTROL_AUTOMATIC, CTL_CANCEL
 };
 
-void StatusShow( bool show )
-/**************************/
-{
-    if( StatusWnd == NULL && show ) {
-        StatusInit();
-    }
-    if( StatusWnd != NULL ) {
-        if( show ) {
-            GUIShowWindow( StatusWnd );
-        } else {
-            GUIHideWindow( StatusWnd );
-        }
-        GUIWndDirty( StatusWnd );
-    }
-}
-
-void StatusLines( int msg0, const char *message1 )
-/************************************************/
-{
-    if( StatusWnd != NULL ) {
-        if( message1 != NULL ) {
-            if( strcmp( message1, StatusLine1 ) != 0 ) {
-                strcpy( StatusLine1, message1 );
-                GUIWndDirtyRow( StatusWnd, LINE1_ROW );
-            }
-        }
-        if( msg0 != STAT_SAME ) {
-            if( msg0 != MsgLine0 ) {
-                MsgLine0 = msg0;
-                GUIWndDirty( StatusWnd );
-            }
-        }
-    }
-}
-
-void BumpStatus( long by )
-/************************/
-{
-    if( !IsPatch ) {
-        // if a patch, don't change status because denominator of status
-        // fraction is the number of operations, not a number of bytes
-        StatusAmount( Parts_Complete + by, Parts_Injob );
-    }
-}
-
-void StatusAmount( long parts_complete, long parts_injob )
-/********************************************************/
-// Display slider bar indicating percentage complete
-{
-    int                 old_percent;
-
-    Parts_Injob = parts_injob;
-    Parts_Complete = parts_complete;
-    old_percent = Percent;
-    if( parts_injob == 0 ) {
-        if( parts_complete == 0 ) {
-            Percent = 0;
-        } else {
-            Percent = 100;
-        }
-    } else {
-        if( Parts_Complete > Parts_Injob ) {
-            Parts_Complete = Parts_Injob;
-        }
-        if( Parts_Injob > 100000 ) {
-            Percent = Parts_Complete / (Parts_Injob / 100);
-        } else {
-            Percent = (100 * Parts_Complete) / Parts_Injob;
-        }
-        if( Percent > 100 ) {
-            Percent = 100;
-        }
-    }
-    if( old_percent == Percent ) return;
-    if( Percent != 0 && Percent < old_percent ) {
-        Percent = old_percent;
-        return;
-    }
-    if( StatusWnd == NULL ) return;
-#ifdef _UI
-    GUIWndDirty( StatusWnd );
-#else
-    {
-        gui_ord         bar_width, old_divider, divider;
-        gui_rect        rect;
-
-        sprintf( StatusBarBuf, "%d%%", Percent );
-
-        // calculate where divider splits rectangle
-        bar_width = StatusBarRect.width;
-        divider = (bar_width * (long)Percent) / 100;
-        if( divider < 0 ) {
-            divider = 0;
-        } else if( divider > bar_width ) {
-            divider = bar_width;
-        }
-        old_divider = (bar_width * (long)old_percent) / 100;
-        if( old_divider < 0 ) {
-            old_divider = 0;
-        } else if( old_divider > bar_width ) {
-            old_divider = bar_width;
-        }
-        if( divider <= old_divider ) {
-            GUIWndDirty( StatusWnd );
-        } else {
-            // dirty new bit of bar
-            divider += StatusBarRect.x;
-            old_divider += StatusBarRect.x;
-            rect = StatusBarRect;
-            rect.width = GUIGetExtentX( StatusWnd, StatusBarBuf, strlen( StatusBarBuf ) );
-            rect.x = StatusBarRect.x + (StatusBarRect.width - rect.width) / 2;
-            rect.x -= CharSize.x / 2;
-            rect.width += CharSize.x;
-            GUIWndDirtyRect( StatusWnd, &rect ); // dirty text
-            rect.x = old_divider - CharSize.x;
-            rect.width = divider - old_divider + 2 * CharSize.x;
-            GUIWndDirtyRect( StatusWnd, &rect ); // dirty new bit of bar
-        }
-    }
-#endif
-}
-
-bool StatusCancelled( void )
-/**************************/
-{
-    // update windows and let other apps execute
-    GUIDrainEvents();
-    return( CancelSetup );
-}
-
 static bool StatusGUIEventProc( gui_window *gui, gui_event gui_ev, void *parm )
 /*****************************************************************************/
 {
@@ -490,6 +360,136 @@ static bool OpenStatusWindow( const char *title )
         return( false );
     }
     return( true );
+}
+
+void StatusShow( bool show )
+/**************************/
+{
+    if( StatusWnd == NULL && show ) {
+        StatusInit();
+    }
+    if( StatusWnd != NULL ) {
+        if( show ) {
+            GUIShowWindow( StatusWnd );
+        } else {
+            GUIHideWindow( StatusWnd );
+        }
+        GUIWndDirty( StatusWnd );
+    }
+}
+
+void StatusLines( int msg0, const char *message1 )
+/************************************************/
+{
+    if( StatusWnd != NULL ) {
+        if( message1 != NULL ) {
+            if( strcmp( message1, StatusLine1 ) != 0 ) {
+                strcpy( StatusLine1, message1 );
+                GUIWndDirtyRow( StatusWnd, LINE1_ROW );
+            }
+        }
+        if( msg0 != STAT_SAME ) {
+            if( msg0 != MsgLine0 ) {
+                MsgLine0 = msg0;
+                GUIWndDirty( StatusWnd );
+            }
+        }
+    }
+}
+
+void BumpStatus( long by )
+/************************/
+{
+    if( !IsPatch ) {
+        // if a patch, don't change status because denominator of status
+        // fraction is the number of operations, not a number of bytes
+        StatusAmount( Parts_Complete + by, Parts_Injob );
+    }
+}
+
+void StatusAmount( long parts_complete, long parts_injob )
+/********************************************************/
+// Display slider bar indicating percentage complete
+{
+    int                 old_percent;
+
+    Parts_Injob = parts_injob;
+    Parts_Complete = parts_complete;
+    old_percent = Percent;
+    if( parts_injob == 0 ) {
+        if( parts_complete == 0 ) {
+            Percent = 0;
+        } else {
+            Percent = 100;
+        }
+    } else {
+        if( Parts_Complete > Parts_Injob ) {
+            Parts_Complete = Parts_Injob;
+        }
+        if( Parts_Injob > 100000 ) {
+            Percent = Parts_Complete / (Parts_Injob / 100);
+        } else {
+            Percent = (100 * Parts_Complete) / Parts_Injob;
+        }
+        if( Percent > 100 ) {
+            Percent = 100;
+        }
+    }
+    if( old_percent == Percent ) return;
+    if( Percent != 0 && Percent < old_percent ) {
+        Percent = old_percent;
+        return;
+    }
+    if( StatusWnd == NULL ) return;
+#ifdef _UI
+    GUIWndDirty( StatusWnd );
+#else
+    {
+        gui_ord         bar_width, old_divider, divider;
+        gui_rect        rect;
+
+        sprintf( StatusBarBuf, "%d%%", Percent );
+
+        // calculate where divider splits rectangle
+        bar_width = StatusBarRect.width;
+        divider = (bar_width * (long)Percent) / 100;
+        if( divider < 0 ) {
+            divider = 0;
+        } else if( divider > bar_width ) {
+            divider = bar_width;
+        }
+        old_divider = (bar_width * (long)old_percent) / 100;
+        if( old_divider < 0 ) {
+            old_divider = 0;
+        } else if( old_divider > bar_width ) {
+            old_divider = bar_width;
+        }
+        if( divider <= old_divider ) {
+            GUIWndDirty( StatusWnd );
+        } else {
+            // dirty new bit of bar
+            divider += StatusBarRect.x;
+            old_divider += StatusBarRect.x;
+            rect = StatusBarRect;
+            rect.width = GUIGetExtentX( StatusWnd, StatusBarBuf, strlen( StatusBarBuf ) );
+            rect.x = StatusBarRect.x + (StatusBarRect.width - rect.width) / 2;
+            rect.x -= CharSize.x / 2;
+            rect.width += CharSize.x;
+            GUIWndDirtyRect( StatusWnd, &rect ); // dirty text
+            rect.x = old_divider - CharSize.x;
+            rect.width = divider - old_divider + 2 * CharSize.x;
+            GUIWndDirtyRect( StatusWnd, &rect ); // dirty new bit of bar
+        }
+    }
+#endif
+}
+
+bool StatusCancelled( void )
+/**************************/
+{
+    // update windows and let other apps execute
+    GUIDrainEvents();
+    return( CancelSetup );
 }
 
 bool StatusInit( void )
