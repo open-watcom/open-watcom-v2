@@ -181,8 +181,10 @@ static dip_status DoLocAssign( location_list *dst, location_list *src,
     padding = false;
     sidx = 0;
     didx = 0;
+    sitem.bit_start = 0;
     sitem.bit_length = 0;
     sitem.type = 0;
+    ditem.bit_start = 0;
     ditem.bit_length = 0;
     ditem.type = 0;
     for( ; bits > 0; bits -= size ) {
