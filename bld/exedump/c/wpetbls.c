@@ -96,6 +96,7 @@ static void dmp_exp_addr( unsigned_32 offset, unsigned_32 num_ent,
             Wdputs( "     " );
         }
     }
+    free( address );
 }
 
 /*
@@ -132,6 +133,8 @@ static void dmp_exp_ord_name( unsigned_32 nam_off, unsigned_32 ord_off,
         Dump_asciiz( nam_addr[i] - export_rva + Exp_off );
         Wdputslc( "\n" );
     }
+    free( ord_addr );
+    free( nam_addr );
 }
 
 /*
@@ -292,6 +295,8 @@ static void dmp_ord_name( unsigned_32 nam_off, unsigned_32 ord_off,
         Putdec( ord_addr[i] + base );
         Wdputslc( "\n" );
     }
+    free( ord_addr );
+    free( nam_addr );
 }
 
 /*

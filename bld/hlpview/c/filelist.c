@@ -171,6 +171,7 @@ static void doFillFileList( const char *path, FileList *list )
     char                done;
     char                *path_start;
     char                *path_end;
+    char                *p;
     unsigned            len;
     char                buf[_MAX_PATH];
 
@@ -178,8 +179,9 @@ static void doFillFileList( const char *path, FileList *list )
     len = strlen( path ) + 1;
     path_start = HelpMemAlloc( len + 2 );
     strcpy( path_start, path );
+    p = path_start;
     for( ;; ) {
-        path_end = path_start;
+        path_end = p;
 #ifdef __UNIX__
         while( *path_end != ':' ) {
 #else
@@ -192,18 +194,21 @@ static void doFillFileList( const char *path, FileList *list )
             path_end++;
         }
         *path_end = '\0';
-        strcpy( buf, path_start );
+        strcpy( buf, p );
         len = strlen( buf );
 #ifdef __UNIX__
-        if( buf[len] == '/' ) buf[len] = '\0';
+        if( buf[len] == '/' )
+            buf[len] = '\0';
 #else
-        if( buf[len] == '/' || buf[len] == '\\' ) buf[len] = '\0';
+        if( buf[len] == '/' || buf[len] == '\\' )
+            buf[len] = '\0';
 #endif
         scanDirectory( buf, list );
         if( done )
             break;
-        path_start = path_end + 1;
+        p = path_end + 1;
     }
+    HelpMemFree( path_start );
 }
 
 static void fillFileList( HelpSrchPathItem *srch, FileList *list )

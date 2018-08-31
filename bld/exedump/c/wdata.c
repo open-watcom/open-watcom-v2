@@ -137,8 +137,8 @@ static void dmp_reloc_item( struct relocation_item *reloc )
             Wdputs( "*** import table error" );
         } else {
             Wdputs( imp_nam );
-            free( imp_nam );
         }
+        free( imp_nam );
         Wdputc( '(' );
         Puthex( reloc->xtrnl.name.impnam_off, 4 );
         Wdputc( ')' );

@@ -30,6 +30,7 @@
 
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <setjmp.h>
 #include <string.h>
 
@@ -126,12 +127,13 @@ static void dmp_module_dep( void )
     Banner( "Module Dependency Table" );
     for( i = 0; i < Nlm_head.numberOfModuleDependencies; i++ ) {
         Wread( &len, sizeof( unsigned_8 ) );
-        name = Wmalloc( len );
+        name = Wmalloc( len + 1 );
         Wread( name, len );
         name[len] = '\0';
         Wdputs( "      " );
         Wdputs( name );
         Wdputslc( "\n" );
+        free( name );
     }
 }
 
@@ -188,7 +190,7 @@ static void dmp_external_ref( void )
     Wdputslc( "40000000H = relocation to code segment\n" );
     for( i = 0; i < Nlm_head.numberOfExternalReferences; i++ ) {
         Wread( &len, sizeof( unsigned_8 ) );
-        name = Wmalloc( len );
+        name = Wmalloc( len + 1 );
         Wread( name, len );
         name[len] = '\0';
         Wdputs( name );
@@ -210,6 +212,7 @@ static void dmp_external_ref( void )
             Puthex( reloc, 8 );
         }
         Wdputslc( "\n" );
+        free( name );
     }
 }
 
@@ -235,7 +238,7 @@ static void dmp_public_entry( void )
     Wdputslc( "      =======         ====\n" );
     for( i = 0; i < Nlm_head.numberOfPublics; i++ ) {
         Wread( &len, sizeof( unsigned_8 ) );
-        name = Wmalloc( len );
+        name = Wmalloc( len + 1 );
         Wread( name, len );
         name[len] = '\0';
         Wread( &addr, sizeof( unsigned_32 ) );
@@ -244,6 +247,7 @@ static void dmp_public_entry( void )
         Wdputs( "        " );
         Wdputs( name );
         Wdputslc( "\n" );
+        free( name );
     }
 }
 

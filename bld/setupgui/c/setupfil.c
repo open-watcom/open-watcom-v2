@@ -1187,6 +1187,7 @@ static void CheckVersion( char *path, char *drive, char *dir )
     // concat date and time to end of path
     check = fstat( fp, &statbuf );
     if( check == -1 ) {
+        close( fp );
         return;         // shouldn't happen
     }
 

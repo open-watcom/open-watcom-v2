@@ -674,6 +674,9 @@ static void dmp_prog_sec( unsigned_32 start )
             offset +=  Elf_head.e_shentsize;
         }
     }
+    if( Options_dmp & DEBUG_INFO ) {
+        Free_dwarf_sections();
+    }
     if( string_table ) {
         free( string_table );
     }

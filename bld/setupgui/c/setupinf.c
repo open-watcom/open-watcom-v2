@@ -516,20 +516,23 @@ static void BurnTree( tree_node *tree )
 static int NewFileCond( char *str )
 /*********************************/
 {
-    tree_node   *new;
+    tree_node   *new_tree;
     int         num;
 
-    new = BuildExprTree( str );
+    new_tree = BuildExprTree( str );
     num = SetupInfo.fileconds.num;
     while( --num >= 0 ) {
-        if( SameExprTree( new, FileCondInfo[num].cond ) ) {
-            BurnTree( new );
+        if( SameExprTree( new_tree, FileCondInfo[num].cond ) ) {
+            BurnTree( new_tree );
             return( num );
         }
     }
     num = SetupInfo.fileconds.num;
-    if( !BumpArray( &SetupInfo.fileconds ) ) return( 0 );
-    FileCondInfo[num].cond = new;
+    if( !BumpArray( &SetupInfo.fileconds ) ) {
+        BurnTree( new_tree );
+        return( 0 );
+    }
+    FileCondInfo[num].cond = new_tree;
     FileCondInfo[num].one_uptodate = false;
     FileCondInfo[num].dont_touch = false;
     return( num );

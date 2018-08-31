@@ -253,6 +253,7 @@ static void dump_cv4_sstFileIndex( unsigned_32 base, unsigned_32 offset,
         }
     }
     Wdputslc( "\n" );
+    free( file_index );
 }
 
 
@@ -460,6 +461,7 @@ static void dump_cv4_sstSegMap( unsigned_32 base, unsigned_32 offset,
         Wdputs( "\n" );
     }
     Wdputslc( "\n" );
+    free( seg_map );
 }
 
 

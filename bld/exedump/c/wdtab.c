@@ -121,6 +121,7 @@ static void dmp_imp_tab( unsigned_32 proc_off, unsigned_32 size_proc )
         imp_nam[ string_len ] = '\0';
         Wdputs( imp_nam );
         Wdputslc( "\n" );
+        free( imp_nam );
     }
 }
 
@@ -159,6 +160,15 @@ static void dmp_mod_ref_tab( unsigned_32 mod_ref, unsigned_16 num_mod_ref )
         Int_mod_ref_tab[ ref_num ] = imp_nam;
     }
     free( mod_ref_tab );
+}
+
+static void free_mod_ref_tab( unsigned_16 num_mod_ref )
+{
+    unsigned_16                     ref_num;
+
+    for( ref_num = 0; ref_num != num_mod_ref; ++ref_num ) {
+        free( Int_mod_ref_tab[ref_num] );
+    }
 }
 
 /*
@@ -481,6 +491,7 @@ void Dmp_ne_tbls( void )
     Banner( "Nonresident Names Table" );
     dmp_res_nonres_tab( Os2_head.nonres_off, Os2_head.nonres_size );
     Dmp_relocs();
+    free_mod_ref_tab( Os2_head.modrefs );
 }
 
 /*

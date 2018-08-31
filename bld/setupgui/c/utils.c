@@ -2041,6 +2041,7 @@ static bool NukePath( char *path, int status )
     DIR                 *d;
     struct dirent       *info;
     char                *path_end;
+    bool                ok;
 #if defined( __UNIX__ )
     struct stat         statbuf;
 #endif
@@ -2048,6 +2049,7 @@ static bool NukePath( char *path, int status )
     d = opendir( path );
     ConcatDirSep( path );
     path_end = path + strlen( path );
+    ok = true;
     while( (info = readdir( d )) != NULL ) {
         strcpy( path_end, info->d_name );
 #if defined( __UNIX__ )
@@ -2057,8 +2059,10 @@ static bool NukePath( char *path, int status )
         if( info->d_attr & _A_SUBDIR ) {
 #endif
             if( info->d_name[0] != '.' ) {
-                if( !NukePath( path, status ) )
-                    return( false );
+                if( !NukePath( path, status ) ) {
+                    ok = false;
+                    break;
+                }
                 rmdir( path );
             }
         } else {
@@ -2070,14 +2074,15 @@ static bool NukePath( char *path, int status )
                 chmod( path, PMODE_W_USR );
             }
             if( remove( path ) != 0 ) {
-                return( false );
+                ok = false;
+                break;
             }
         }
         StatusLines( status, path );
     }
     *path_end = '\0';
     closedir( d );
-    return( true );
+    return( ok );
 }
 
 
@@ -2323,8 +2328,8 @@ static void AddDefine( char *def )
         *p = '\0';
         ++p;
         var = GUIMemAlloc( sizeof( DEF_VAR ) );
-        var->variable = strdup( def );
-        var->value = strdup( p );
+        var->variable = GUIStrDup( def, NULL );
+        var->value = GUIStrDup( p, NULL );
         var->link = ExtraVariables;
         ExtraVariables = var;
     }
@@ -2338,6 +2343,20 @@ static void DefineVars( void )
 
     for( var = ExtraVariables; var != NULL; var = var->link ) {
         SetVariableByName( var->variable, var->value );
+    }
+}
+
+static void FreeDefinedVars( void )
+/*********************************/
+// Create variables specified on command line
+{
+    DEF_VAR             *var;
+
+    while( (var = ExtraVariables) != NULL ) {
+        ExtraVariables = var->link;
+        GUIMemFree( var->variable );
+        GUIMemFree( var->value );
+        GUIMemFree( var );
     }
 }
 
@@ -2428,7 +2447,7 @@ bool GetDirParams( int argc, char **argv, char **inf_name, char **src_path, char
             case 'F':
                 if( argv[i][2] == '=' && argv[i][3] != '\0' &&
                     access( &argv[i][3], R_OK ) == 0 ) {
-                    VariablesFile = strdup( &argv[i][3] );
+                    VariablesFile = GUIStrDup( &argv[i][3], NULL );
                 }
                 break;
             case 'd':
@@ -2511,6 +2530,9 @@ bool FreeDirParams( char **inf_name, char **src_path, char **arc_name )
     *inf_name = NULL;
     *src_path = NULL;
     *arc_name = NULL;
+
+    FreeDefinedVars();
+    GUIMemFree( VariablesFile );
 
     return( true );
 }

@@ -147,7 +147,7 @@ static bool TryXWindows( void )
     struct termios termio;
 
     /* we're in the X (or helper)environment */
-    if ( getenv( "DISPLAY" ) == NULL )
+    if( getenv( "DISPLAY" ) == NULL )
         return( false );
     masterfd = open( "/dev/ptmx", O_RDWR );
     if( masterfd < 0 )
@@ -159,6 +159,7 @@ static bool TryXWindows( void )
     slavefd = open( slavename, O_RDWR );
     DbgConHandle = slavefd;
     if( DbgConHandle == -1 ) {
+        close( masterfd );
         StartupErr( "unable to open debugger console" );
         return( false );
     }
@@ -245,15 +246,17 @@ static bool TryVC( void )
     int             len;
 
     len = readlink( "/proc/self/fd/0", tty_name, sizeof( tty_name ) - 1 );
-    if ( len < 0 )
+    if( len < 0 )
         return( false );
     tty_name[len] = NULLCHAR;
     if( DbgConsole == 0 ) {
         DbgConHandle = open( tty_name, O_RDWR );
         if( DbgConHandle == -1 )
             return( false );
-        if( ioctl( DbgConHandle, VT_OPENQRY, &DbgConsole ) )
+        if( ioctl( DbgConHandle, VT_OPENQRY, &DbgConsole ) ) {
+            close( DbgConHandle );
             return( false );
+        }
         close( DbgConHandle );
     }
     ptr = &tty_name[len];
@@ -265,10 +268,12 @@ static bool TryVC( void )
     }
     sprintf ( ptr + 1, "%d", DbgConsole );
     DbgConHandle = open( tty_name, O_RDWR );
-    if ( DbgConHandle == -1 )
+    if( DbgConHandle == -1 )
         return( false );
-    if( ioctl( DbgConHandle, VT_GETSTATE, &vt_state ) )
+    if( ioctl( DbgConHandle, VT_GETSTATE, &vt_state ) ) {
+        close( DbgConHandle );
         return( false );
+    }
     InitConsole = vt_state.v_active;
     ioctl( DbgConHandle, TIOCGWINSZ, &winsize );
     PrevLines = winsize.ws_row;
@@ -323,7 +328,7 @@ void InitScreen( void )
     }
     _Free( DbgTerminal );
     DbgTerminal = NULL;
-    if ( DbgConHandle != -1 ) {
+    if( DbgConHandle != -1 ) {
         fcntl( DbgConHandle, F_SETFD, (int)FD_CLOEXEC );
         UIConFile = fdopen( DbgConHandle, "w+" );
         UIConHandle = DbgConHandle;

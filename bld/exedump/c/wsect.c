@@ -1333,10 +1333,23 @@ void Dump_all_sections( void )
         Wdputslc( ":\n" );
         Dump_specific_section( sect, Sections[sect].data, Sections[sect].max_offset );
         ++sect;
-        if( sect == DW_DEBUG_MAX ) break;
+        if( sect == DW_DEBUG_MAX )
+            break;
         Wdputslc( "\n" );
     }
 }
+
+void Free_dwarf_sections( void )
+/******************************/
+{
+    int         i;
+
+    for( i = 0; i < DR_DEBUG_NUM_SECTS; i++ ) {
+        free( Sections[i].data );
+    }
+}
+
+
 
 uint Lookup_section_name( const char *name )
 /******************************************/

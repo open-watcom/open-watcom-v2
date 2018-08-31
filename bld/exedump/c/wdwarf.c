@@ -94,7 +94,6 @@ static void set_sects( void )
     }
 }
 
-
 static bool os2_debug( void )
 /***************************/
 {
@@ -243,5 +242,6 @@ bool Dmp_dwarf( void )
     }
     set_sects();
     Dump_all_sections();
+    Free_dwarf_sections();
     return( true );
 }

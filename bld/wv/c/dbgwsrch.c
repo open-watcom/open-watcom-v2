@@ -78,7 +78,7 @@ struct srch_window {
     char        *expr;
     int         max_mod_name;
     wnd_row     num_rows;
-    char        magic_str[MAX_MAGIC_STR];
+    char        magic_str[MAX_MAGIC_STR + 1];
     found_item  *found;
     SRCH_WALKER *walk;
     void        *cookie;

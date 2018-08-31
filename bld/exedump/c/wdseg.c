@@ -162,4 +162,5 @@ void Dmp_seg_tab( void )
         dmp_seg_ent( segtab++ );
     }
     Wdputslc( "\n" );
+    free( segtab );
 }

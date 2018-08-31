@@ -52,7 +52,6 @@
 #include "dip.h"
 #include "sampinfo.h"
 #include "wpdata.h"
-#include "wpavals.h"
 
 
 #if defined( __OS2_PM__ )
