@@ -5,7 +5,7 @@
 #define S_ISGID     002000      /* set group id on execution        */
 #define S_ISVTX     001000      /* sticky bit (does nothing yet)    */
 
-#define S_ENFMT     S_ISGID     /* enforcement mode locking         */
+#define S_ENFMT     002000      /* enforcement mode locking         */
 
 /*
  *  Owner permissions
@@ -44,6 +44,29 @@
 /*
  *  Encoding of the file mode
  */
+:segment QNX
+#define _S_IFMT     0xF000          /* Type of file mask    */
+#define _S_IFIFO    0x1000          /* FIFO (pipe)          */
+#define _S_IFCHR    0x2000          /* Character special    */
+#define _S_IFDIR    0x4000          /* Directory            */
+#define _S_IFNAM    0x5000          /* Special named file   */
+#define _S_IFBLK    0x6000          /* Block special        */
+#define _S_IFREG    0x8000          /* Regular              */
+#define _S_IFLNK    0xA000          /* Symbolic link        */
+#define _S_IFSOCK   0xC000          /* Socket               */
+
+:include ext.sp
+#define S_IFMT      _S_IFMT
+#define S_IFIFO     _S_IFIFO
+#define S_IFCHR     _S_IFCHR
+#define S_IFDIR     _S_IFDIR
+#define S_IFNAM     _S_IFNAM
+#define S_IFBLK     _S_IFBLK
+#define S_IFREG     _S_IFREG
+#define S_IFLNK     _S_IFLNK
+#define S_IFSOCK    _S_IFSOCK
+:include extepi.sp
+:elsesegment
 #define S_IFMT      0xF000          /* Type of file mask    */
 #define S_IFIFO     0x1000          /* FIFO (pipe)          */
 #define S_IFCHR     0x2000          /* Character special    */
@@ -74,3 +97,4 @@
 #define _S_IFLNK    S_IFLNK
 #define _S_IFSOCK   S_IFSOCK
 :include extepi.sp
+:endsegment

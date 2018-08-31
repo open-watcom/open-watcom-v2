@@ -54,31 +54,12 @@ extern  unsigned short SS_Reg( void );
         "mov ax,ss"     \
     parm caller value [ax]
 
-extern  int SetBlock( unsigned short, unsigned );
-#pragma aux SetBlock =      \
-        "mov    ah,04ah"    \
-        "int    021h"       \
-        "sbb    ax,ax"      \
-    parm caller [es] [bx] value [ax]
-
 #else
 
 extern  unsigned short  GetDS( void );
 #pragma aux GetDS =     \
         "mov    ax,ds"  \
     value [ax]
-
-extern  int SetBlock( unsigned short selector, unsigned size );
-#pragma aux SetBlock =      \
-        "push   es"         \
-        "mov    es,ax"      \
-        "mov    ah,04ah"    \
-        "int    021h"       \
-        "rcl    eax,1"      \
-        "ror    eax,1"      \
-        "pop    es"         \
-    parm caller [ax] [ebx]  \
-    modify [ebx] value [eax]
 
 extern  int SegInfo( unsigned short selector );
 #pragma aux SegInfo =           \
@@ -102,18 +83,11 @@ extern  int SegmentLimit( void );
 
 #endif
 
-#if defined(__WINDOWS_386__)
+#if defined( __WINDOWS__ )
 
 _WCRTLINK void_nptr sbrk( int increment )
 {
-    increment = __ROUND_UP_SIZE_4K( increment );
-    return( (void_nptr)DPMIAlloc( increment ) );
-}
-
-#elif defined(__WINDOWS__)
-
-_WCRTLINK void_nptr sbrk( int increment )
-{
+  #if defined( _M_I86 )
     HANDLE h;
 
     if( increment > 0 ) {
@@ -126,6 +100,10 @@ _WCRTLINK void_nptr sbrk( int increment )
         _RWD_errno = EINVAL;
     }
     return( (void_nptr)-1 );
+  #else
+    increment = __ROUND_UP_SIZE_4K( increment );
+    return( (void_nptr)DPMIAlloc( increment ) );
+  #endif
 }
 
 #elif defined(__OSI__)
@@ -136,7 +114,7 @@ _WCRTLINK void_nptr sbrk( int increment )
     return( (void_nptr)TinyMemAlloc( increment ) );
 }
 
-#else
+#else       /* __DOS__ */
 
 _WCRTLINK void_nptr __brk( unsigned brk_value )
 {
@@ -149,7 +127,7 @@ _WCRTLINK void_nptr __brk( unsigned brk_value )
         return( (void_nptr)-1 );
     }
     segm = _DGroup();
-#ifdef _M_I86
+  #ifdef _M_I86
     segm_size = __ROUND_UP_SIZE_TO_PARA( brk_value );
     if( segm_size == 0 ) {
         segm_size = PARAS_IN_64K;
@@ -159,7 +137,7 @@ _WCRTLINK void_nptr __brk( unsigned brk_value )
         segm_size += SS_Reg() - _RWD_psp;    /* add in code size (in paragraphs) */
         segm = _RWD_psp;
     }
-#else
+  #else
     if( _IsOS386() ) {
         int parent;
 
@@ -168,7 +146,7 @@ _WCRTLINK void_nptr __brk( unsigned brk_value )
             segm_size = 0x0FFFFFFF;
         parent = SegInfo( segm );
         if( parent < 0 ) {
-            if( SetBlock( parent & 0xffff, segm_size ) < 0 ) {
+            if( TINY_ERROR( TinySetBlock( segm_size, parent & 0xffff ) ) ) {
                 _RWD_errno = ENOMEM;
                 return( (void_nptr)-1 );
             }
@@ -182,8 +160,8 @@ _WCRTLINK void_nptr __brk( unsigned brk_value )
             segm_size = segm_size * 256U;
         }
     }
-#endif
-    if( SetBlock( segm, segm_size ) < 0 ) {
+  #endif
+    if( TINY_ERROR( TinySetBlock( segm_size, segm ) ) ) {
         _RWD_errno = ENOMEM;
         return( (void_nptr)-1 );
     }
@@ -195,7 +173,7 @@ _WCRTLINK void_nptr __brk( unsigned brk_value )
 
 _WCRTLINK void_nptr sbrk( int increment )
 {
-#ifdef __386__
+  #ifdef __386__
     if( _IsRationalZeroBase() || _IsCodeBuilder() ) {
         void_nptr   cstg;
 
@@ -218,8 +196,8 @@ _WCRTLINK void_nptr sbrk( int increment )
     } else if( _IsPharLap() ) {
         _curbrk = SegmentLimit();
     }
-#endif
+  #endif
     return( __brk( _curbrk + increment ) );
 }
 
-#endif
+#endif      /* __DOS__ */

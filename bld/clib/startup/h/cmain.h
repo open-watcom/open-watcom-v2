@@ -34,7 +34,7 @@
     extern void _CMain(
         void __near                     *free,      /* [bx] start of free space    */
         unsigned short                  n,          /* [cx] number of bytes        */
-        const struct _proc_spawn __near *cmd,       /* [di] pointer to spawn msg   */
+        struct _proc_spawn __near       *cmd,       /* [di] pointer to spawn msg   */
         unsigned short                  stk_bot,    /* [dx] bottom of stack        */
         pid_t                           pid );      /* [ax] process id             */
     #pragma aux _CMain "_*" parm [bx] [cx] [di] [dx] [ax];

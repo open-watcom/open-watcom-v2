@@ -57,7 +57,7 @@
 #define DOSX_RATIONAL_ZEROBASE      0
 #define DOSX_RATIONAL_NONZEROBASE   1  /* Only in DOS4G Pro */
 
-#define _IsOS386()               ( _Extender == 0 )
+#define _IsOS386()               ( _Extender == DOSX_ERGO )
 #define _IsRational()            ( _Extender == DOSX_RATIONAL )
 #define _IsPharLap()             ( _Extender >= DOSX_PHAR_V2 && _Extender <= DOSX_PHAR_V8 )
 #define _IsCodeBuilder()         ( _Extender == DOSX_INTEL )

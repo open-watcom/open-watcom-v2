@@ -59,13 +59,21 @@ _WCRTLINK void_nptr _nexpand( void_nptr cstg, size_t req_size )
 
     _AccessNHeap();
 #if defined( __WARP__ ) || defined( __NT__ ) || defined( __WINDOWS__ ) || defined( __RDOS__ )
+  #if defined( _M_I86 )
     if( __HeapManager_expand( _DGroup(), cstg, req_size, &growth_size ) != __HM_SUCCESS ) {
+  #else
+    if( __HeapManager_expand( cstg, req_size, &growth_size ) != __HM_SUCCESS ) {
+  #endif
         cstg = NULL;
     }
 #else
     flags.expanded = 0;
     for( ;; ) {
+  #if defined( _M_I86 )
         retval = __HeapManager_expand( _DGroup(), cstg, req_size, &growth_size );
+  #else
+        retval = __HeapManager_expand( cstg, req_size, &growth_size );
+  #endif
         if( retval == __HM_SUCCESS ) {
             break;
         }

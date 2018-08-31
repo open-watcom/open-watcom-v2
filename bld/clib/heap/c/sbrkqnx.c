@@ -40,27 +40,30 @@
 #include "heapacc.h"
 #include "heap.h"
 #include "thread.h"
+#ifndef _M_I86
+    extern int  _brk( void * );
+#endif
 
 
 _WCRTLINK void_nptr __brk( unsigned brk_value )
 {
-    unsigned    old_brk_value;
-    unsigned    seg_size;
-    __segment   segment;
+    unsigned        old_brk_value;
+    unsigned long   seg_size;
 
     if( brk_value < _STACKTOP ) {
         _RWD_errno = ENOMEM;
         return( (void_nptr)-1 );
     }
-    seg_size = __ROUND_UP_SIZE_TO_PARA( brk_value );
-    if( seg_size == 0 ) {
-        seg_size = PARAS_IN_64K;
-    }
+    seg_size = __ROUND_UP_SIZE_PARA( brk_value );
+
     /* try setting the block of memory */
     _AccessNHeap();
 
-    segment = _DGroup();
-    if( qnx_segment_realloc( segment,((unsigned long)seg_size) << 4) == -1 ) {
+#ifdef _M_I86
+    if( qnx_segment_realloc( _DGroup(), seg_size ) == -1 ) {
+#else
+    if( _brk( (void *)seg_size ) == -1 ) {
+#endif
         _RWD_errno = ENOMEM;
         _ReleaseNHeap();
         return( (void_nptr)-1 );

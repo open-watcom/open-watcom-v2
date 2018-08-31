@@ -111,15 +111,12 @@ typedef heapblk         _WCNEAR *heapblk_nptr;
 typedef freelist        _WCNEAR *freelist_nptr;
 typedef freelist        _WCFAR *freelist_fptr;
 
-typedef union segmptr {
+typedef union heapptr {
     struct {
         __segment       segm;
-#if !defined( _M_I86 )
-        __segment       dummy;
-#endif
     } s;
     heapblk_nptr        nptr;
-} segmptr;
+} heapptr;
 
 typedef union freeptr {
     freelist_nptr       nptr;
@@ -134,8 +131,8 @@ struct freelist {
 
 struct heapblk {
     tag                 len;                /* size of heap (0 = 64K) */
-    segmptr             prev;               /* segment selector/offset for previous heap */
-    segmptr             next;               /* segment selector/offset for next heap */
+    heapptr             prev;               /* segment selector/offset for previous heap */
+    heapptr             next;               /* segment selector/offset for next heap */
     freeptr             rover;              /* roving pointer into free list */
     unsigned int        b4rover;            /* largest block before rover */
     unsigned int        largest_blk;        /* largest block in the heap  */
@@ -199,13 +196,14 @@ extern unsigned char    _os2_obj_any_supported;     // DosAllocMem supports OBJ_
 extern size_t           __LastFree( void );
 extern int              __NHeapWalk( struct _heapinfo *entry, heapblk_nptr start );
 extern int              __ExpandDGROUP( unsigned int __amt );
-extern int              __HeapManager_expand( __segment seg, void_bptr cstg, size_t req_size, size_t *growth_size );
 extern void             __UnlinkNHeap( heapblk_nptr heap, heapblk_nptr prev_heap, heapblk_nptr next_heap );
 
 #if defined( _M_I86 )
+extern int              __HeapManager_expand( __segment seg, void_bptr cstg, size_t req_size, size_t *growth_size );
 extern  void_bptr       __MemAllocator( unsigned __size, __segment __seg, heap_bptr __heap );
 extern  void            __MemFree( void_bptr __cstg, __segment __seg, heap_bptr __heap );
 #else
+extern int              __HeapManager_expand( void_bptr cstg, size_t req_size, size_t *growth_size );
 extern  void_bptr       __MemAllocator( unsigned __size, heap_bptr __heap );
 extern  void            __MemFree( void_bptr __cstg, heap_bptr __heap );
 #endif

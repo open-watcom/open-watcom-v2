@@ -45,7 +45,11 @@
 #define FRLPTRADD(s,p,o)    (freelist_nptr)((PTR)(p)+(o))
 #endif
 
+#ifdef _M_I86
 int __HeapManager_expand( __segment seg, void_bptr cstg, size_t req_size, size_t *growth_size )
+#else
+int __HeapManager_expand( void_bptr cstg, size_t req_size, size_t *growth_size )
+#endif
 {
     HEAP( seg )     heap;
     FRLPTR( seg )   p1;
@@ -78,13 +82,17 @@ int __HeapManager_expand( __segment seg, void_bptr cstg, size_t req_size, size_t
             free_size = p2->len;
             pnext = p2->next.nptr;
             pprev = p2->prev.nptr;
+#ifdef _M_I86
             if( seg == _DGroup() ) {    // near heap
+#endif
                 for( heap = __nheapbeg; heap->next.nptr != NULL; heap = heap->next.nptr ) {
                     if( IS_IN_HEAP( p1, heap ) ) {
                         break;
                     }
                 }
+#ifdef _M_I86
             }
+#endif
             if( heap->rover.nptr == p2 ) {
                 heap->rover.nptr = p2->prev.nptr;
             }
@@ -120,13 +128,17 @@ int __HeapManager_expand( __segment seg, void_bptr cstg, size_t req_size, size_t
         SET_BLK_SIZE_INUSE( p1, new_size );
         p2 = FRLPTRADD( seg, p1, new_size );
         SET_BLK_SIZE_INUSE( p2, old_size - new_size );
+#ifdef _M_I86
         if( seg == _DGroup() ) {    // near heap
+#endif
             for( heap = __nheapbeg; heap->next.nptr != NULL; heap = heap->next.nptr ) {
                 if( IS_IN_HEAP( p1, heap ) ) {
                     break;
                 }
             }
+#ifdef _M_I86
         }
+#endif
         /* ...free functions will decrement 'numalloc' */
         heap->numalloc++;
 #if defined( _M_I86 )
