@@ -424,6 +424,7 @@ dw_client DwarfInit( void )
     info.producer_name = DWARF_PRODUCER_ID " V1";
     memcpy( &info.exception_handler, Environment, sizeof( jmp_buf ) );
     info.funcs = cli_funcs;
+    info.abbrev_sym = NULL;
 
     relocValues[DW_W_LOW_PC] = 0x0;
     relocValues[DW_W_HIGH_PC] = 0x1;

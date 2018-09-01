@@ -393,6 +393,11 @@ char *DUILoadString( dui_res_id id )
     return( ret );
 }
 
+void DUIMemFree( void *ptr )
+{
+    DbgFree( ptr );
+}
+
 void DUIMsgBox( const char *text )
 {
     printf( "MSG %s\n", text );

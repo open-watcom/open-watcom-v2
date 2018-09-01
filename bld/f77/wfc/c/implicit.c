@@ -259,6 +259,7 @@ void    CpImplicit( void ) {
         for( ;; ) {
             typ = RecTypeKW();
             AdvanceITPtr();
+            size = 0;
             if( ( typ != FT_NO_TYPE ) && !LenSpec( typ, &size ) ) {
                 size = StorageSize( typ );
             }

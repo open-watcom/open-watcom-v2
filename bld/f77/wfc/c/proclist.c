@@ -86,13 +86,13 @@ static  void    PrSFList( void ) {
     sfunc_node = CITNode;
     CITNode = CITNode->list;
     AdjSFList( CITNode );
+    num_parms = 0;
     parm = sf_sym->u.ns.si.sf.header->parm_list;
     if( RecNOpn() ) {
         AdvanceITPtr();
         done_list = RecCloseParen() || RecColon();
     } else {
         done_list = false;
-        num_parms = 0;
         for(;;) {
             if( done_list )
                 break;

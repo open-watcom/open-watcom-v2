@@ -518,6 +518,9 @@ allocsize rtf_trans_line( section_def *section, allocsize alloc_size )
                 case 'r':
                     sprintf( buf, "\\{bmr %s\\}", ptr );
                     break;
+                default:
+                    *buf = '\0';
+                    break;
                 }
             } else {
                 /* centered bitmap are not directly supported in RTF */

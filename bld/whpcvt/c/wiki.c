@@ -475,6 +475,9 @@ allocsize wiki_trans_line( section_def *section, allocsize alloc_size )
             case 'c':
                 sprintf( buf, "<IMG SRC=\"%s\" ALIGN=MIDDLE>", ptr );
                 break;
+            default:
+                *buf = '\0';
+                break;
             }
             line_len += trans_add_str( buf, section, &alloc_size );
             ptr = end + 1;

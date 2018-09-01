@@ -76,7 +76,7 @@ static char     currTmpName[TMP_NAME_LEN];
 static char     checkFileName[LOCK_NAME_LEN] = AS_FILE EXTRA_EXT "a" AS_FILE_EXT;
 static char     checkFileTmpName[LOCK_NAME_LEN] = AS_FILE EXTRA_EXT "at" EXTRA_EXT AS_FILE_EXT;
 static char     lockFileName[LOCK_NAME_LEN] = AS_LOCK EXTRA_EXT "a" EXTRA_EXT AS_FILE_EXT;
-static int      lockFileHandle;
+static int      lockFileHandle = -1;
 
 /*
  * GetCurrentFilePath - build backup path from file name
@@ -386,7 +386,7 @@ void AutoSaveInit( void )
     for( ch = START_CHAR; ch <= END_CHAR; ch++ ) {
         path[off] = ch;
         lockFileHandle = sopen4( path, O_CREAT | O_TRUNC | O_RDWR | O_TEXT, SH_DENYRW, PMODE_RW );
-        if( lockFileHandle > 0 ) {
+        if( lockFileHandle >= 0 ) {
             break;
         }
     }

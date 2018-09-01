@@ -345,11 +345,11 @@ static void PrintUsage( dui_res_id first_ln )
     for( ;; ) {
         msg_buff = DUILoadString( first_ln++ );
         if( ( msg_buff[0] == '.' ) && ( msg_buff[1] == 0 ) ) {
-            WndFree( msg_buff );
+            DUIMemFree( msg_buff );
             break;
         }
         puts( msg_buff );
-        WndFree( msg_buff );
+        DUIMemFree( msg_buff );
     }
 }
 #endif

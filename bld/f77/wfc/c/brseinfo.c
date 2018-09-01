@@ -136,6 +136,7 @@ void    BIInit( void ) {
     init_dwl.language = DWLANG_FORTRAN;
     init_dwl.compiler_options = DW_CM_BROWSER | DW_CM_UPPER;
     init_dwl.producer_name = DWARF_PRODUCER_ID " V1";
+    init_dwl.abbrev_sym = NULL;
     if( !setjmp( init_dwl.exception_handler ) ) {
         CLIInit( &(init_dwl.funcs), MEM_SECTION );
         cBIId = DWInit( &init_dwl );
