@@ -713,6 +713,7 @@ static char *checkAttrib( char *s, char **ptype, char *buff, int *errs,
 {
     char        save;
     char        *type;
+    char        *p;
     int         err_count;
     long        il;
 
@@ -720,15 +721,15 @@ static char *checkAttrib( char *s, char **ptype, char *buff, int *errs,
     ++s;
     if( *s == '<' ) {
         ++s;
-        type = s;
-        s = get_typename( type );
-        if( type == s || *s != '>' )  {
+        p = s;
+        s = get_typename( p );
+        if( p == s || *s != '>' )  {
             ++err_count;
             msg( "Bad type specifier.\n" );
         }
         save = *s;
         *s = '\0';
-        type = strdup( type );
+        type = strdup( p );
         *s = save;
         ++s;
     } else {
@@ -1092,9 +1093,12 @@ void defs( FILE *fp )
                     if( sym->type != NULL ) {
                         if( strcmp( sym->type, type ) != 0 ) {
                             msg( "'%s' type redeclared from '%s' to '%s'\n", buf, sym->type, type );
+                            FREE( sym->type );
+                            sym->type = strdup( type );
                         }
+                    } else {
+                        sym->type = strdup( type );
                     }
-                    sym->type = type;
                 }
                 if( ctype == T_TYPE ) {
                     scan( 0 );
@@ -1125,6 +1129,8 @@ void defs( FILE *fp )
                     scan( 0 );
                 }
             }
+            if( type != NULL )
+                FREE( type );
             break;
         default:
             msg( "Incorrect syntax.\n" );

@@ -113,7 +113,7 @@ static void copyact( a_pro * pro, char * indent )
             }
             if( *s == '$' ) {
                 fprintf( fp, "yyval", *s );
-                if( !type ) {
+                if( type == NULL ) {
                     type = lhs->type;
                 }
                 ++s;
@@ -125,11 +125,11 @@ static void copyact( a_pro * pro, char * indent )
                     msg( "Invalid $ parameter.\n" );
                 }
                 fprintf( fp, "yysp[%d].v", i - 1 ); // Adjust yysp first
-                if( !type && i >= 1 ) {
+                if( type == NULL && i >= 1 ) {
                     type = rhs[i - 1].p.sym->type;
                 }
             }
-            if( type ) {
+            if( type != NULL ) {
                 fprintf( fp, ".%s", type );
             }
         } else if( *s == '\n' ) {
@@ -140,7 +140,7 @@ static void copyact( a_pro * pro, char * indent )
         }
     }
     type = lhs->type;
-    if( only_default_type && (type = lhs->type) != NULL ) {
+    if( only_default_type && type != NULL ) {
         fprintf( fp, "\n\t%syysp[0].v.%s = yyval.%s;", indent, type, type );
     } else {
         fprintf( fp, "\n\t%syysp[0].v = yyval;", indent );
