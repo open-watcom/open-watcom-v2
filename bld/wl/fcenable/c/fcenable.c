@@ -432,8 +432,11 @@ static void ProcFile( const char *fname )
             ExcludeList = NULL;
         } else if( ftype != OBJECT ) {
             Error( "file is not a standard OBJECT or LIBRARY file" );
+            // never return
         }
-        OutFile = QOpen( TEMP_OBJ_NAME, "wb" );
+        if( OutFile == NULL ) {
+            OutFile = QOpen( TEMP_OBJ_NAME, "wb" );
+        }
         do {
             ProcessRec();
             status = ReadRec();
@@ -443,6 +446,7 @@ static void ProcFile( const char *fname )
             DoReplace();
         } else {
             Error( "premature end of file encountered" );
+            // never return
         }
         FreeList( ExcludeList );    // do this here so concatenated .obj files
         ExcludeList = NULL;         // only have the first module excluded.
