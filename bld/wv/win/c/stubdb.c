@@ -316,7 +316,7 @@ char *DUILoadString( dui_res_id id )
     return( ret );
 }
 
-void DUIMemFree( void *ptr )
+void DUIFreeString( void *ptr )
 {
     DbgFree( ptr );
 }

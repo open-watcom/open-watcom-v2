@@ -293,9 +293,9 @@ char *DUILoadString( dui_res_id id )
     return( WndLoadString( id ) );
 }
 
-void DUIMemFree( void *ptr )
+void DUIFreeString( void *ptr )
 {
-    WndMemFree( ptr );
+    WndFree( ptr );
 }
 
 bool DUIAskIfAsynchOk( void )
