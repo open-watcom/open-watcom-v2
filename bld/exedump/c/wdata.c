@@ -93,8 +93,6 @@ static void dmp_reloc_item( struct relocation_item *reloc )
     unsigned_16             seg_num;
     unsigned_16             ord_off;
     unsigned_32             imp_off;
-    unsigned_8              string_len;
-    char                    *imp_nam;
 
     switch( reloc->reloc_type ) {
     case REL_INTERNAL_REFERENCE :
@@ -129,16 +127,8 @@ static void dmp_reloc_item( struct relocation_item *reloc )
         imp_off = reloc->xtrnl.name.impnam_off + Os2_386_head.impproc_off
                 + Os2_head.import_off + New_exe_off;
         Wlseek( imp_off );
-        Wread( &string_len, sizeof( unsigned_8 ) );
-        imp_nam = Wmalloc( string_len + 1 );
-        Wread( imp_nam, string_len );
-        imp_nam[ string_len ] = '\0';
-        if( *imp_nam == '\0' ) {
+        if( Dump_name() == 0 )
             Wdputs( "*** import table error" );
-        } else {
-            Wdputs( imp_nam );
-        }
-        free( imp_nam );
         Wdputc( '(' );
         Puthex( reloc->xtrnl.name.impnam_off, 4 );
         Wdputc( ')' );

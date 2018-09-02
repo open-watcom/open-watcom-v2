@@ -173,43 +173,6 @@ static  const_string_table hll_linnum_entry_msg[] = {
 static  int     hll_level;
 
 /*
- * read_name - read length-prefixed name into 'buffer'
- */
-static int read_name( char *buffer )
-/**********************************/
-{
-    unsigned_8      len;
-
-    Wread( &len, 1 );
-    Wread( buffer, len );
-    buffer[len] = '\0';
-    return( len );
-}
-
-
-/*
- * dump_name - dump length-prefixed name, align to n-byte boundary
- * return number of bytes read
- */
-static int dump_name( bool align )
-/********************************/
-{
-    char        name[256];
-    unsigned    len, pad = 0;
-
-    len = read_name( name ) + 1;
-    Wdputs( name );
-    if( align ) {
-        pad = align - (len & (align - 1));
-    }
-    if( pad ) {
-        lseek( Handle, pad, SEEK_CUR );
-    }
-    return( len + pad + 1 );
-}
-
-
-/*
  * dump_cv_sstPublics - dump CV sstPublic at 'offset'
  * from 'base 'containing 'size' bytes
  */
@@ -219,8 +182,6 @@ static void dump_cv_sstPublics( unsigned_32 base, unsigned_32 offset,
 {
     cv3_public_16       pub16;
     unsigned_32         read = 0;
-    unsigned_8          name_len;
-    char                name[256];
 
     Wlseek( base + offset );
     Wdputs( "==== sstPublics at offset " );
@@ -228,14 +189,11 @@ static void dump_cv_sstPublics( unsigned_32 base, unsigned_32 offset,
     Wdputslc( "\n" );
     while( read < size ) {
         Wread( &pub16, sizeof( pub16 ) );
-        name_len = pub16.name_len;
         Dump_header( &pub16, cv_sstPublics_msg, 4 );
         read += sizeof( pub16 );
-        Wread( name, name_len );
-        name[name_len] = '\0';
         Wdputs( "  symbol name: \"" );
-        Wdputs( name );
-        read += name_len;
+        Dump_namel( pub16.name_len );
+        read += pub16.name_len;
         Wdputslc( "\"\n" );
     }
     Wdputslc( "\n" );
@@ -252,8 +210,6 @@ static void dump_hll_sstPublics( unsigned_32 base, unsigned_32 offset,
 {
     hll_public_32       pub32;
     unsigned_32         read = 0;
-    unsigned_8          name_len;
-    char                name[256];
 
     Wlseek( base + offset );
     Wdputs( "==== sstPublics at offset " );
@@ -261,14 +217,11 @@ static void dump_hll_sstPublics( unsigned_32 base, unsigned_32 offset,
     Wdputslc( "\n" );
     while( read < size ) {
         Wread( &pub32, sizeof( pub32 ) );
-        name_len = pub32.name_len;
         Dump_header( &pub32, hll_sstPublics_msg, 4 );
         read += sizeof( pub32 );
-        Wread( name, name_len );
-        name[name_len] = '\0';
         Wdputs( "  symbol name: \"" );
-        Wdputs( name );
-        read += name_len;
+        Dump_namel( pub32.name_len );
+        read += pub32.name_len;
         Wdputslc( "\"\n" );
     }
     Wdputslc( "\n" );
@@ -341,7 +294,6 @@ static void dump_cv_sstSymbols( unsigned_32 base, unsigned_32 offset,
 {
     cv3_ssr_all         ssr;
     unsigned_32         read = 0;
-    char                name[256];
 
     Wlseek( base + offset );
     Wdputs( "==== sstSymbols at offset " );
@@ -369,8 +321,6 @@ static void dump_cv_sstSymbols( unsigned_32 base, unsigned_32 offset,
             break;
         case HLL_SSR_PROC:
             Wread( &ssr, sizeof( cv3_ssr_proc ) );
-            Wread( name, ssr.proc.name_len );
-            name[ssr.proc.name_len] = '\0';
             Wdputs( "PROC:     ofs=" );
             Puthex( ssr.proc.offset, 4 );
             Wdputs( " type=" );
@@ -385,7 +335,7 @@ static void dump_cv_sstSymbols( unsigned_32 base, unsigned_32 offset,
             Puthex( ssr.proc.flags, 2 );
             Wdputslc( "\n" );
             Wdputs( "      name: \"" );
-            Wdputs( name );
+            Dump_namel( ssr.proc.name_len );
             Wdputslc( "\"\n" );
             break;
         case HLL_SSR_END:
@@ -394,21 +344,17 @@ static void dump_cv_sstSymbols( unsigned_32 base, unsigned_32 offset,
             break;
         case HLL_SSR_AUTO:
             Wread( &ssr, sizeof( cv3_ssr_auto ) );
-            Wread( name, ssr.auto_.name_len );
-            name[ssr.auto_.name_len] = '\0';
             Wdputs( "AUTO:     offset=" );
             Puthex( ssr.auto_.offset, 4 );
             Wdputs( " type=" );
             Puthex( ssr.auto_.type, 4 );
             Wdputslc( "\n" );
             Wdputs( "      name: \"" );
-            Wdputs( name );
+            Dump_namel( ssr.auto_.name_len );
             Wdputslc( "\"\n" );
             break;
         case HLL_SSR_STATIC:
             Wread( &ssr, sizeof( cv3_ssr_static ) );
-            Wread( name, ssr.static_.name_len );
-            name[ssr.static_.name_len] = '\0';
             Wdputs( "STATIC:   offset=" );
             Puthex( ssr.static_.offset, 4 );
             Wdputs( " segment=" );
@@ -417,20 +363,18 @@ static void dump_cv_sstSymbols( unsigned_32 base, unsigned_32 offset,
             Puthex( ssr.static_.type, 4 );
             Wdputslc( "\n" );
             Wdputs( "      name: \"" );
-            Wdputs( name );
+            Dump_namel( ssr.static_.name_len );
             Wdputslc( "\"\n" );
             break;
         case HLL_SSR_REG:
             Wread( &ssr, sizeof( cv3_ssr_reg ) );
-            Wread( name, ssr.reg.name_len );
-            name[ssr.reg.name_len] = '\0';
             Wdputs( "REGISTER: type=" );
             Puthex( ssr.reg.type, 4 );
             Wdputs( " no=" );
             Puthex( ssr.reg.reg, 2 );
             Wdputslc( "\n" );
             Wdputs( "      name: \"" );
-            Wdputs( name );
+            Dump_namel( ssr.reg.name_len );
             Wdputslc( "\"\n" );
             break;
         case HLL_SSR_CHANGE_SEG:
@@ -443,14 +387,11 @@ static void dump_cv_sstSymbols( unsigned_32 base, unsigned_32 offset,
             break;
         case HLL_SSR_TYPEDEF:
             Wread( &ssr, sizeof( cv3_ssr_typedef ) );
-            Wread( name, ssr.typedef_.name_len );
-            name[ssr.typedef_.name_len] = '\0';
-            Wread( &ssr, sizeof( cv3_ssr_typedef ) );
             Wdputs( "TYPEDEF:  type=" );
             Puthex( ssr.typedef_.type, 4 );
             Wdputslc( "\n" );
             Wdputs( "      name: \"" );
-            Wdputs( name );
+            Dump_namel( ssr.typedef_.name_len );
             Wdputslc( "\"\n" );
             break;
         default:
@@ -483,7 +424,7 @@ static void dump_cv_sstLibraries( unsigned_32 base, unsigned_32 offset,
         Wdputs( "  index: " );
         Puthex( index, 4 );
         Wdputs( "H  name: \"" );
-        read += dump_name( 0 );
+        read += Dump_name() + 1;
         Wdputslc( "\"\n" );
         ++index;
     }
@@ -508,7 +449,7 @@ static void dump_cv_sstModules( unsigned_32 base, unsigned_32 offset )
     Wread( &mod, offsetof( cv3_module_16, name_len ) );
     Dump_header( &mod, cv_sstModules_msg, 4 );
     Wdputs( "  module name: \"" );
-    dump_name( 0 );
+    Dump_name();
     Wdputslc( "\"\n" );
     if( mod.cSeg ) {
         while( --mod.cSeg ) {
@@ -542,7 +483,7 @@ static void dump_hll_sstModules( unsigned_32 base, unsigned_32 offset )
     Dump_header( &mod, hll_sstModules_msg, 4 );
     hll_level = mod.Version >> 8;
     Wdputs( "  module name: \"" );
-    dump_name( 0 );
+    Dump_name();
     Wdputslc( "\"\n" );
     if( mod.cSeg ) {
         while( --mod.cSeg ) {
@@ -572,7 +513,8 @@ static void dump_cv_sstSrcLnSeg( unsigned_32 base, unsigned_32 offset )
     Puthex( offset, 8 );
     Wdputslc( "\n" );
     Wdputs( "  source file: \"" );
-    dump_name( 2 );
+    if( ( Dump_name() + 1 ) & 1 )
+        lseek( Handle, 1, SEEK_CUR );
     Wdputslc( "\"\n" );
     Wread( &src_ln, sizeof( src_ln ) );
     Dump_header( &src_ln, cv_sstSrcLnSeg_msg, 4 );
@@ -618,7 +560,7 @@ static void dump_hll_sstHLLSrc( unsigned_32 base, unsigned_32 offset, unsigned_3
                     Wdputs( "  file index: " );
                     Puthex( index, 4 );
                     Wdputs( "H name: \"" );
-                    count += dump_name( 0 );
+                    count += Dump_name() + 1;
                     Wdputslc( "\"\n" );
                 }
                 Wdputslc( "\n" );
@@ -658,7 +600,7 @@ static void dump_hll_sstHLLSrc( unsigned_32 base, unsigned_32 offset, unsigned_3
                 Wdputs( "  file index: " );
                 Puthex( index, 4 );
                 Wdputs( "H name: \"" );
-                dump_name( 0 );
+                Dump_name();
                 Wdputslc( "\"\n" );
             }
             Wdputslc( "\n" );

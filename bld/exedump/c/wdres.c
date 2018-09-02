@@ -91,18 +91,11 @@ static  const_string_table resource_type_os2[] = {
 /*
  * get a resource type name
  */
-static char *get_resrc_nam( unsigned_16 offset )
-/**********************************************/
+static void get_resrc_nam( unsigned_16 offset )
+/*********************************************/
 {
-    unsigned_8      num_chars;
-    char            *name;
-
     Wlseek( New_exe_off + Os2_head.resource_off + offset );
-    Wread( &num_chars, sizeof( unsigned_8 ) );
-    name = Wmalloc( num_chars + 1 );
-    Wread( name, num_chars );
-    name[ num_chars ] = '\0';
-    return( name );
+    Dump_name();
 }
 
 /*
@@ -111,8 +104,6 @@ static char *get_resrc_nam( unsigned_16 offset )
 static void dmp_resrc_nam( unsigned_16 res_type )
 /***********************************************/
 {
-    char    *name;
-
     Wdputc( ' ' );
     if( res_type & SEG_RESRC_HIGH ) {
         res_type &= ~SEG_RESRC_HIGH;
@@ -120,10 +111,8 @@ static void dmp_resrc_nam( unsigned_16 res_type )
         Putdec( res_type );
         Wdputslc( "\n" );
     } else {
-        name = get_resrc_nam( res_type );
-        Wdputs( name );
+        get_resrc_nam( res_type );
         Wdputslc( "\n" );
-        free( name );
     }
 }
 
@@ -215,8 +204,6 @@ static void dmp_resrc_ent( unsigned_16 num_resources )
 static void dmp_resrc_type_nam( unsigned_16 res_type )
 /****************************************************/
 {
-    char    *name;
-
     Wdputc( ' ' );
     if( res_type & SEG_RESRC_HIGH ) {
         res_type &= ~SEG_RESRC_HIGH;
@@ -228,10 +215,8 @@ static void dmp_resrc_type_nam( unsigned_16 res_type )
             Wdputslc( resource_type[ res_type ] );
         }
     } else {
-        name = get_resrc_nam( res_type );
-        Wdputs( name );
+        get_resrc_nam( res_type );
         Wdputslc( "\n" );
-        free( name );
     }
 }
 

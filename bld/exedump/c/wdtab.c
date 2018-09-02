@@ -45,15 +45,15 @@ struct  int_entry_pnt     *Entry_pnts = NULL;
 static unsigned_8 read_res_nonres_nam( char *name, unsigned_16 *ordinal )
 /***********************************************************************/
 {
-    unsigned_8              string_len;
+    unsigned_8              len;
 
-    Wread( &string_len, sizeof( string_len ) );
-    if( string_len ) {
-        Wread( name, string_len );
+    Wread( &len, sizeof( len ) );
+    if( len ) {
+        Wread( name, len );
         Wread( ordinal, sizeof( unsigned_16 ) );
     }
-    name[ string_len ] = '\0';
-    return( string_len );
+    name[len] = '\0';
+    return( len );
 }
 
 /*
@@ -109,19 +109,13 @@ static void dmp_res_nonres_tab( unsigned_32 res_nam_tab , unsigned_32 tab_len )
 static void dmp_imp_tab( unsigned_32 proc_off, unsigned_32 size_proc )
 /********************************************************************/
 {
-    unsigned_8              string_len;
+    unsigned_8              len;
     unsigned_32             size;
-    char                    *imp_nam;
 
     Wlseek( proc_off );
-    for( size = 0; size < size_proc; size += string_len + 1 ) {
-        Wread( &string_len, sizeof( unsigned_8 ) );
-        imp_nam = Wmalloc( string_len + 1 );
-        Wread( imp_nam, string_len );
-        imp_nam[ string_len ] = '\0';
-        Wdputs( imp_nam );
+    for( size = 0; size < size_proc; size += len + 1 ) {
+        len = Dump_name();
         Wdputslc( "\n" );
-        free( imp_nam );
     }
 }
 
@@ -134,9 +128,9 @@ static void dmp_mod_ref_tab( unsigned_32 mod_ref, unsigned_16 num_mod_ref )
     unsigned_16                     *mod_ref_tab;
     unsigned_16                     size_mod_ref;
     unsigned_16                     ref_num;
-    char                            *imp_nam;
+    char                            *name;
     unsigned_32                     imp_off;
-    unsigned_8                      string_len;
+    unsigned_8                      len;
 
     if( num_mod_ref == 0 ) {
         return;
@@ -151,13 +145,13 @@ static void dmp_mod_ref_tab( unsigned_32 mod_ref, unsigned_16 num_mod_ref )
     for( ref_num = 0; ref_num != num_mod_ref; ++ref_num ) {
         imp_off = New_exe_off + mod_ref_tab[ ref_num ] + Os2_head.import_off;
         Wlseek( imp_off );
-        Wread( &string_len, sizeof( unsigned_8 ) );
-        imp_nam = Wmalloc( string_len + 1 );
-        Wread( imp_nam, string_len );
-        imp_nam[ string_len ] = '\0';
-        Wdputs( imp_nam );
+        Wread( &len, sizeof( unsigned_8 ) );
+        name = Wmalloc( len + 1 );
+        Wread( name, len );
+        name[ len ] = '\0';
+        Wdputs( name );
         Wdputslc( "\n" );
-        Int_mod_ref_tab[ ref_num ] = imp_nam;
+        Int_mod_ref_tab[ ref_num ] = name;
     }
     free( mod_ref_tab );
 }
@@ -177,28 +171,28 @@ static void free_mod_ref_tab( unsigned_16 num_mod_ref )
 static void dmp_import_tab( unsigned_32 imp_nam_tab )
 /***************************************************/
 {
-    unsigned_8                      string_len;
+    unsigned_8                      len;
     char                            *resident;
 
     Wlseek( imp_nam_tab );
-    Wread( &string_len, sizeof( unsigned_8 ) );
-    if( string_len == 0 ) {
+    Wread( &len, sizeof( unsigned_8 ) );
+    if( len == 0 ) {
         return;
     }
     Wdputslc( "\n" );
     Banner( "Imported Name Table" );
     for( ;; ) {
-        resident = alloca( string_len );
+        resident = alloca( len );
         if( resident == NULL ) {
             Wdputslc( "Error! Dynamic memory exhausted.\n" );
             longjmp( Se_env, 1 );
         }
-        Wread( resident, string_len );
-        resident[ string_len ] = '\0';
+        Wread( resident, len );
+        resident[ len ] = '\0';
         Wdputs( resident );
         Wdputslc( "\n" );
-        Wread( &string_len, sizeof( unsigned_8 ) );
-        if( string_len == 0 ) {
+        Wread( &len, sizeof( unsigned_8 ) );
+        if( len == 0 ) {
             return;
         }
     }
@@ -530,14 +524,14 @@ void Dmp_le_lx_tbls( void )
 static void dump_exports( void )
 /******************************/
 {
-    unsigned_8      string_len;
+    unsigned_8      len;
     char            name[256];
     unsigned_16     ordinal;
 
-    while( (string_len = read_res_nonres_nam( name, &ordinal )) != 0 ) {
+    while( (len = read_res_nonres_nam( name, &ordinal )) != 0 ) {
         Wdputs( "    " );
         Wdputs( name );
-        while( string_len++ < 43 ) {
+        while( len++ < 43 ) {
             Wdputc( ' ' );
         }
         Wdputs( " @" );

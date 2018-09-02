@@ -160,6 +160,28 @@ void Wdputslc( const char *buf )
     fputs( buf, stdout );
 }
 
+void Dump_namel( unsigned_8 len )
+/*******************************/
+{
+    char            name[256];
+
+    if( len ) {
+        Wread( name, len );
+        name[len] = '\0';
+        Wdputs( name );
+    }
+}
+
+unsigned_8 Dump_name( void )
+/**************************/
+{
+    unsigned_8      len;
+
+    Wread( &len, sizeof( len ) );
+    Dump_namel( len );
+    return( len );
+}
+
 void Dump_header( void *data_ptr, const_string_table *msg, int max_width )
 /************************************************************************/
 {

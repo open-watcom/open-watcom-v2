@@ -188,6 +188,8 @@ extern unsigned long    WFileSize( void );
 extern void             Wdputc( int );
 extern void             Wdputs( const char * );
 extern void             Wdputslc( const char * );
+extern void             Dump_namel( unsigned_8 len );
+extern unsigned_8       Dump_name( void );
 extern void             Dump_header( void *, const char * const *, int );
 extern void             Dump_asciiz( unsigned long offset );
 extern void             DumpFlags( unsigned_32, unsigned_32, const char * const *, const char * );
