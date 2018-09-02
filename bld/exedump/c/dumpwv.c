@@ -64,20 +64,6 @@ static void print_info_title( const char *title )
 } /* print_info_title */
 
 /*
- * get_len_prefix_string - make a length-prefixed string a 0 terminated string
- */
-static void get_len_prefix_string( char *res, const char *str )
-/*************************************************************/
-{
-    unsigned char   len;
-
-    len = *(unsigned char *)str;
-    memcpy( res, str + 1, len );
-    res[len] = '\0';
-
-} /* get_len_prefix_string */
-
-/*
  * dump_line_numbers - dump line number info
  */
 static void dump_line_numbers( mod_dbg_info *mi )
@@ -172,18 +158,22 @@ unsigned_8 *Get_type_index( unsigned_8 *ptr, unsigned_16 *index )
 } /* Get_type_index */
 
 /*
- * Get_local_name - get a name from a local variable data structure
+ * Dump_local_name - get a name from a local variable data structure
  */
-void Get_local_name( char *name, unsigned_8 *data, unsigned_8 *start )
-/********************************************************************/
+void Dump_local_name( unsigned_8 *data, unsigned_8 *start )
+/*********************************************************/
 {
-    int len;
+    unsigned_8  len;
+    char        name[256];
 
     len = start[0] - (unsigned_8)( data - start );
-    memcpy( name, data, len );
-    name[len] = '\0';
+    if( len ) {
+        memcpy( name, data, len );
+        name[len] = '\0';
+        Wdputs( name );
+    }
 
-} /* Get_local_name */
+} /* Dump_local_name */
 
 /*
  * dump_block - dump local block record
@@ -332,29 +322,29 @@ static unsigned_8 *dump_single_location_entry( unsigned_8 *buff )
         break;
     case IND_REG_CALLOC_NEAR:
         Wdputs( "IND_REG_CALLOC_NEAR( " );
-        Wdputs( regLocStrs[ *buff ] );
+        Wdputs( regLocStrs[*buff] );
         Wdputslc( " )\n" );
         buff++;
         break;
     case IND_REG_CALLOC_FAR:
         Wdputs( "IND_REG_CALLOC_FAR( " );
-        Wdputs( regLocStrs[ *buff ] );
+        Wdputs( regLocStrs[*buff] );
         Wdputc( ':' );
-        Wdputs( regLocStrs[ *(buff+1) ] );
+        Wdputs( regLocStrs[*(buff + 1)] );
         Wdputslc( " )\n" );
         buff += 2;
         break;
     case IND_REG_RALLOC_NEAR:
         Wdputs( "IND_REG_RALLOC_NEAR( " );
-        Wdputs( regLocStrs[ *buff ] );
+        Wdputs( regLocStrs[*buff] );
         Wdputslc( " )\n" );
         buff++;
         break;
     case IND_REG_RALLOC_FAR:
         Wdputs( "IND_REG_RALLOC_FAR( " );
-        Wdputs( regLocStrs[ *buff ] );
+        Wdputs( regLocStrs[*buff] );
         Wdputc( ':' );
-        Wdputs( regLocStrs[ *(buff+1) ] );
+        Wdputs( regLocStrs[*(buff + 1)] );
         Wdputslc( " )\n" );
         buff += 2;
         break;
@@ -404,8 +394,8 @@ static unsigned_8 *dump_single_location_entry( unsigned_8 *buff )
             Putdec( num );
             Wdputs( "): " );
             for( i=0;i<num;i++ ) {
-                Wdputs( regLocStrs[ *buff ] );
-                if( i != num-1 ) {
+                Wdputs( regLocStrs[*buff] );
+                if( i != num - 1 ) {
                     Wdputs( ", " );
                 } else {
                     Wdputslc( "\n" );
@@ -414,7 +404,7 @@ static unsigned_8 *dump_single_location_entry( unsigned_8 *buff )
             }
         } else if( type & 0x40 ) {
             Wdputs( "REG: " );
-            Wdputs( regLocStrs[ type & 0x0f ] );
+            Wdputs( regLocStrs[type & 0x0f] );
             Wdputslc( "\n" );
         } else {
             Wdputslc( "**** UNKNOWN LOCATION EXPRESSION!! ****\n" );
@@ -469,7 +459,6 @@ static void dump_rtn( unsigned_8 *buff )
     unsigned_8  *ptr;
     int         num_parms;
     unsigned_16 index;
-    char        name[256];
     int         i;
 
     dump_block( buff, false );
@@ -504,9 +493,8 @@ static void dump_rtn( unsigned_8 *buff )
         Wdputs( ": " );
         ptr = Dump_location_expression( ptr, "            " );
     }
-    Get_local_name( name, ptr, buff );
     Wdputs( "          Name = \"" );
-    Wdputs( name );
+    Dump_local_name( ptr, buff );
     Wdputslc( "\"\n" );
 
 } /* dump_rtn */
@@ -522,7 +510,6 @@ static void dump_rtn386( unsigned_8 *buff )
     unsigned_8  *ptr;
     int         num_parms;
     unsigned_16 index;
-    char        name[256];
     int         i;
 
     dump_block( buff, true );
@@ -557,9 +544,8 @@ static void dump_rtn386( unsigned_8 *buff )
         Wdputs( ": " );
         ptr = Dump_location_expression( ptr, "            " );
     }
-    Get_local_name( name, ptr, buff );
     Wdputs( "          Name = \"" );
-    Wdputs( name );
+    Dump_local_name( ptr, buff );
     Wdputslc( "\"\n" );
 
 } /* dump_rtn386 */
@@ -575,7 +561,6 @@ static void dump_locals( mod_dbg_info *mi )
     int         cnt;
     unsigned_32 coff;
     unsigned_8  buff[256];
-    char        name[256];
     set_base    *sb;
     set_base386 *sb386;
     unsigned_8  *ptr;
@@ -618,9 +603,8 @@ static void dump_locals( mod_dbg_info *mi )
                 p32 = (addr32_ptr *)ptr;
                 ptr += sizeof( addr32_ptr );
                 ptr = Get_type_index( ptr, &index );
-                Get_local_name( name, ptr, buff );
                 Wdputs( "          \"" );
-                Wdputs( name );
+                Dump_local_name( ptr, buff );
                 Wdputs( "\"  addr = " );
                 Puthex( p32->segment, 4 );
                 Wdputc( ':' );
@@ -635,9 +619,8 @@ static void dump_locals( mod_dbg_info *mi )
                 Wdputs( "          address: " );
                 ptr = Dump_location_expression( ptr, "            " );
                 ptr = Get_type_index( ptr, &index );
-                Get_local_name( name, ptr, buff );
                 Wdputs( "          name = \"" );
-                Wdputs( name );
+                Dump_local_name( ptr, buff );
                 Wdputs( "\",  type = " );
                 Putdec( index );
                 Wdputslc( "\n" );
@@ -648,9 +631,8 @@ static void dump_locals( mod_dbg_info *mi )
                 p48 = (addr48_ptr *)ptr;
                 ptr += sizeof( addr48_ptr );
                 ptr = Get_type_index( ptr, &index );
-                Get_local_name( name, ptr, buff );
                 Wdputs( "          \"" );
-                Wdputs( name );
+                Dump_local_name( ptr, buff );
                 Wdputs( "\" addr = " );
                 Puthex( p48->segment, 4 );
                 Wdputc( ':' );
@@ -665,9 +647,8 @@ static void dump_locals( mod_dbg_info *mi )
                 Wdputs( "          address: " );
                 ptr = Dump_location_expression( ptr, "            " );
                 ptr = Get_type_index( ptr, &index );
-                Get_local_name( name, ptr, buff );
                 Wdputs( "          name = \"" );
-                Wdputs( name );
+                Dump_local_name( ptr, buff );
                 Wdputs( "\",  type = " );
                 Putdec( index );
                 Wdputslc( "\n" );
@@ -788,14 +769,12 @@ static void dump_module_info( section_dbg_header *sdh )
     mod_dbg_info    *mi;
     unsigned_32     total_bytes;
     long            cpos;
-    char            name[256];
     unsigned_16     index;
     mod_dbg_info    *tmi;
 
     total_bytes = sdh->gbl_offset - sdh->mod_offset;
     print_info_title( "Module" );
 
-    bytes_read = 0;
     mi = (mod_dbg_info *)Wbuff;
     tmi = alloca( sizeof( mod_dbg_info ) + 255 );
     if( tmi == NULL ) {
@@ -804,18 +783,17 @@ static void dump_module_info( section_dbg_header *sdh )
     }
     cpos = Curr_sectoff + sdh->mod_offset;
     index = 0;
-    while( bytes_read < total_bytes ) {
+    for( bytes_read = 0; bytes_read < total_bytes; ) {
         Wlseek( cpos );
         Wread( Wbuff, sizeof( mod_dbg_info ) + 255 );
         bytes_read += sizeof( mod_dbg_info ) + mi->name[0];
         cpos += sizeof( mod_dbg_info ) + mi->name[0];
-        get_len_prefix_string( name, mi->name );
         Putdecl( index, 3 );
         Wdputs( ") Name:   ");
-        Wdputs( name );
+        Wdputname( mi->name );
         Wdputslc( "\n" );
         Wdputs( "     Language is " );
-        Wdputs( &Lang_lst[ mi->language ] );
+        Wdputs( &Lang_lst[mi->language] );
         Wdputslc( "\n" );
         Wdputs( "     Locals: num = " );
         Putdec( mi->di[DMND_LOCALS].u.entries );
@@ -857,22 +835,19 @@ static void dump_global_info( section_dbg_header *sdh )
     unsigned_32 bytes_read;
     v3_gbl_info *gi;
     long        cpos;
-    char        name[256];
 
     total_bytes = sdh->addr_offset - sdh->gbl_offset;
     print_info_title( "Global" );
 
-    bytes_read = 0;
     gi = (v3_gbl_info *)Wbuff;
     cpos = Curr_sectoff + sdh->gbl_offset;
-    while( bytes_read < total_bytes ) {
+    for( bytes_read = 0; bytes_read < total_bytes; ) {
         Wlseek( cpos );
         Wread( Wbuff, sizeof( v3_gbl_info ) + 255 );
         bytes_read += sizeof( v3_gbl_info ) + gi->name[0];
         cpos += sizeof( v3_gbl_info ) + gi->name[0];
-        get_len_prefix_string( name, gi->name );
         Wdputs( "  Name:  " );
-        Wdputs(  name );
+        Wdputname( gi->name );
         Wdputslc( "\n" );
         Wdputs( "    address      = " );
         Puthex( gi->addr.segment, 4 );
@@ -916,17 +891,16 @@ static void dump_addr_info( section_dbg_header *sdh )
     total_bytes = sdh->section_size - sdh->addr_offset;
     print_info_title( "Addr" );
 
-    bytes_read = 0;
     si = (seg_dbg_info *)Wbuff;
     basepos = cpos = Curr_sectoff + sdh->addr_offset;
-    while( bytes_read < total_bytes ) {
+    for( bytes_read = 0; bytes_read < total_bytes; ) {
         Wlseek( cpos );
         Wread( Wbuff, sizeof( seg_dbg_info ) );
         Wlseek( cpos );
         len = sizeof( seg_dbg_info ) + ( si->count - 1 ) * sizeof( addr_dbg_info );
         Wread( Wbuff, len );
         Wdputs( " Base:  fileoff = " );
-        Puthex( cpos - basepos, 8 );
+        Puthex( (unsigned_32)( cpos - basepos ), 8 );
         Wdputs( "H   seg = " );
         Puthex( si->base.segment, 4 );
         Wdputs( "H,  off = " );
@@ -936,8 +910,8 @@ static void dump_addr_info( section_dbg_header *sdh )
         for( i = 0; i < si->count; i++ ) {
             Putdecl( i, 6 );
             Wdputs( ") fileoff = " );
-            Puthex( (long)cpos - basepos + sizeof( seg_dbg_info ) +
-                        i * sizeof( addr_dbg_info ) - sizeof( addr_dbg_info ), 8 );
+            Puthex( (unsigned_32)( cpos - basepos + sizeof( seg_dbg_info ) +
+                        i * sizeof( addr_dbg_info ) - sizeof( addr_dbg_info ) ), 8 );
             Wdputs( "H,  Size = " );
             Puthex( si->addr[i].size, 8 );
             Wdputs( "H @" );

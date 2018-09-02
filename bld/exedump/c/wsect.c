@@ -119,8 +119,8 @@ static void sort_tables( void )
 }
 
 
-const char *Getname( uint_32 value, readable_name *table, size_t size )
-/***************************************************************/
+const char *Getname( unsigned_32 value, readable_name *table, size_t size )
+/*************************************************************************/
 {
     readable_name       dummy;
     readable_name       *result;
@@ -132,8 +132,8 @@ const char *Getname( uint_32 value, readable_name *table, size_t size )
 }
 
 
-static void getTAG( uint_32 value )
-/*********************************/
+static void getTAG( unsigned_32 value )
+/***************************PPPP******/
 {
     const char  *result;
     size_t      i;
@@ -152,8 +152,8 @@ static void getTAG( uint_32 value )
 }
 
 
-static void getFORM( uint_32 value )
-/**********************************/
+static void getFORM( unsigned_32 value )
+/**************************************/
 {
     const char  *result;
     size_t      i;
@@ -172,8 +172,8 @@ static void getFORM( uint_32 value )
 }
 
 
-static void getAT( uint_32 value )
-/********************************/
+static void getAT( unsigned_32 value )
+/************************************/
 {
     const char  *result;
     size_t      i;
@@ -192,13 +192,13 @@ static void getAT( uint_32 value )
 }
 
 
-static void dump_hex( const uint_8 *input, uint length )
-/******************************************************/
+static void dump_hex( const unsigned_8 *input, unsigned length )
+/**************************************************************/
 {
     char        *p;
     int         i;
-    uint        offset;
-    uint        old_offset;
+    unsigned    offset;
+    unsigned    old_offset;
     char        hex[80];
     char        printable[17];
     int         ch;
@@ -239,12 +239,12 @@ static void dump_hex( const uint_8 *input, uint length )
     }
 }
 
-uint_8 *DecodeULEB128( const uint_8 *input, uint_32 *value )
-/**********************************************************/
+unsigned_8 *DecodeULEB128( const unsigned_8 *input, unsigned_32 *value )
+/**********************************************************************/
 {
-    uint_32     result;
-    uint        shift;
-    uint_8      byte;
+    unsigned_32 result;
+    unsigned    shift;
+    unsigned_8  byte;
 
     result = 0;
     shift = 0;
@@ -254,15 +254,15 @@ uint_8 *DecodeULEB128( const uint_8 *input, uint_32 *value )
         shift += 7;
     } while( byte & 0x80 );
     *value = result;
-    return( (uint_8 *)input );
+    return( (unsigned_8 *)input );
 }
 
-uint_8 *DecodeSLEB128( const uint_8 *input, int_32 *value )
-/*********************************************************/
+unsigned_8 *DecodeSLEB128( const unsigned_8 *input, signed_32 *value )
+/********************************************************************/
 {
-    int_32      result;
-    uint        shift;
-    uint_8      byte;
+    signed_32       result;
+    unsigned        shift;
+    unsigned_8      byte;
 
     result = 0;
     shift = 0;
@@ -275,16 +275,16 @@ uint_8 *DecodeSLEB128( const uint_8 *input, int_32 *value )
         result |= - ( 1 << shift );
     }
     *value = result;
-    return( (uint_8 *)input );
+    return( (unsigned_8 *)input );
 }
 
-uint_8 *find_abbrev( uint_32 start, uint_32 code )
-/************************************************/
+unsigned_8 *find_abbrev( unsigned_32 start, unsigned_32 code )
+/************************************************************/
 {
-    uint_8      *p;
-    uint_8      *stop;
-    uint_32     tmp;
-    uint_32     attr;
+    unsigned_8      *p;
+    unsigned_8      *stop;
+    unsigned_32     tmp;
+    unsigned_32     attr;
 
     p = Sections[DW_DEBUG_ABBREV].data;
     p += start;
@@ -332,8 +332,8 @@ static const_string_table RegName[] = {
 #undef DW_REG
 };
 
-static uint_8 const *GetInt( uint_8 const *p, uint_32 *ret, int size )
-/********************************************************************/
+static unsigned_8 const *GetInt( unsigned_8 const *p, unsigned_32 *ret, unsigned_16 size )
+/****************************************************************************************/
 {
     switch( size ) {
     case 0:
@@ -343,10 +343,10 @@ static uint_8 const *GetInt( uint_8 const *p, uint_32 *ret, int size )
         *ret = *p;
         break;
     case 2:
-        *ret = get_u16( (uint_16 *)p );
+        *ret = get_u16( (unsigned_16 *)p );
         break;
     case 4:
-        *ret = get_u32( (uint_32 *)p );
+        *ret = get_u32( (unsigned_32 *)p );
         break;
     default:
         *ret = 0xffffffff;
@@ -356,26 +356,25 @@ static uint_8 const *GetInt( uint_8 const *p, uint_32 *ret, int size )
     return( p );
 }
 
-static void DmpLoc( uint_8 const *p, uint length, uint addr_size )
-/****************************************************************/
+static void DmpLoc( unsigned_8 const *p, unsigned length, unsigned_16 addr_size )
+/*******************************************************************************/
 {
-    uint_8 const    *end;
-    uint_8          op;
-    dw_locop_op     opr;
-    int_32          op1s;
-    uint_32         op1u;
-    int_32          op2s;
-    uint_32         addr;
+    unsigned_8 const    *end;
+    unsigned_8          op;
+    dw_locop_op         opr;
+    signed_32           op1s;
+    unsigned_32         op1u;
+    signed_32           op2s;
+    unsigned_32         addr;
 
     end = &p[length];
 
     Wdputslc( "\n            Loc expr: " );
     if( p == end ) {
-      Wdputslc( "<NULL>\n" );
+        Wdputslc( "<NULL>\n" );
     }
     while( p  < end ) {
-        op = *p;
-        ++p;
+        op = *p++;
 
         Wdputs( OpName[op] );
         opr = LocOpr[op];
@@ -389,11 +388,11 @@ static void DmpLoc( uint_8 const *p, uint length, uint addr_size )
             break;
         case DW_LOP_ADDR:
             if( addr_size == 4 ) {
-                addr = *(uint_32 *)p;
+                addr = *(unsigned_32 *)p;
             } else if( addr_size == 2 ) {
-                addr = *(uint_16 *)p;
+                addr = *(unsigned_16 *)p;
             } else if( addr_size == 1 ) {
-                addr = *(uint_8 *)p;
+                addr = *(unsigned_8 *)p;
             } else {
                 addr = 0;
             }
@@ -401,33 +400,33 @@ static void DmpLoc( uint_8 const *p, uint length, uint addr_size )
             p += addr_size;
             break;
         case DW_LOP_OPU1:
-            op1u = *(uint_8 *)p;
-            p += sizeof( uint_8 );
+            op1u = *(unsigned_8 *)p;
+            p += sizeof( unsigned_8 );
             Putdec( op1u );
             break;
         case DW_LOP_OPS1:
-            op1s = *(int_8 *)p;
-            p += sizeof(int_8 );
+            op1s = *(signed_8 *)p;
+            p += sizeof(signed_8 );
             Putdec( op1s );
             break;
         case DW_LOP_OPU2:
-            op1u = get_u16( (uint_16 *)p );
-            p += sizeof( uint_16 );
+            op1u = get_u16( (unsigned_16 *)p );
+            p += sizeof( unsigned_16 );
             Putdec( op1u );
             break;
         case DW_LOP_OPS2:
-            op1s = get_s16( (int_16 *)p );
-            p += sizeof( int_16 );
+            op1s = get_s16( (signed_16 *)p );
+            p += sizeof( signed_16 );
             Putdec( op1s );
             break;
         case DW_LOP_OPU4:
-            op1u = get_u32( (uint_32 *)p );
-            p += sizeof( uint_32 );
+            op1u = get_u32( (unsigned_32 *)p );
+            p += sizeof( unsigned_32 );
             Putdec( op1u );
             break;
         case DW_LOP_OPS4:
-            op1s = get_s32( (int_32 *)p );
-            p += sizeof( int_32 );
+            op1s = get_s32( (signed_32 *)p );
+            p += sizeof( signed_32 );
             Putdec( op1s );
             break;
         case DW_LOP_U128:
@@ -470,63 +469,61 @@ static void DmpLoc( uint_8 const *p, uint length, uint addr_size )
         }
         Wdputslc( " " );
     }
-        Wdputslc( "\n" );
+    Wdputslc( "\n" );
 }
 
-static void DmpLocList( uint_32 start, uint addr_size )
-/*****************************************************/
+static void DmpLocList( unsigned_32 start, unsigned_16 addr_size )
+/****************************************************************/
 {
-    uint_32         low;
-    uint_32         high;
-    int             len;
-    uint_8 const    *p;
-    uint_8 const    *stop;
+    unsigned_32         low;
+    unsigned_32         high;
+    int                 len;
+    unsigned_8 const    *p;
+    unsigned_8 const    *stop;
 
     p = Sections[DW_DEBUG_LOC].data;
-    stop = p + Sections[DW_DEBUG_LOC].max_offset;
     if( p == NULL ) {
         Wdputslc( "Error: No location list section\n" );
         return;
     }
-    p += start;
-    while( p < stop ) {
+    stop = p + Sections[DW_DEBUG_LOC].max_offset;
+    for( p += start; p < stop; p += len ) {
         p = GetInt( p, &low, addr_size );
         p = GetInt( p, &high, addr_size );
         if( low == high && low == 0 ) {
             Wdputslc( "        <end>\n" );
             return;
         }
-        len = get_u16( (uint_16 *)p );
-        p+= sizeof( uint_16 );
+        len = get_u16( (unsigned_16 *)p );
+        p+= sizeof( unsigned_16 );
         Wdputslc( "\n         Range: " );
         Puthex( low, addr_size * 2 );
         Wdputs( ":" );
         Puthex( high, addr_size * 2 );
         Wdputslc( "\n" );
         DmpLoc( p, len, addr_size );
-        p += len;
     }
 }
 
 typedef struct {
-    uint_8 const    *p;
-    uint_8          *abbrev;
-    int             addr_size;
-    uint_32         cu_header;
+    unsigned_8 const    *p;
+    unsigned_8          *abbrev;
+    unsigned_16         addr_size;
+    unsigned_32         cu_header;
 } info_state;
 
 static bool dump_tag( info_state *info )
 /**************************************/
 {
-    uint_8          *abbrev;
-    uint_32         attr;
-    uint_32         offset;
-    uint_32         form;
-    uint_32         len;
-    uint_32         tmp;
-    int_32          itmp;
-    bool            is_loc;
-    uint_8 const    *p;
+    unsigned_8          *abbrev;
+    unsigned_32         attr;
+    unsigned_32         offset;
+    unsigned_32         form;
+    unsigned_32         len;
+    unsigned_32         tmp;
+    signed_32           itmp;
+    bool                is_loc;
+    unsigned_8 const    *p;
 
     p = info->p;
     abbrev = info->abbrev;
@@ -554,17 +551,17 @@ decode_form:
         switch( form ) {
         case DW_FORM_addr:
             if( info->addr_size == 4 ) {
-                tmp = get_u32( (uint_32 *)p );
+                tmp = get_u32( (unsigned_32 *)p );
             } else if( info->addr_size == 2 ) {
-                tmp = get_u16( (uint_16 *)p );
+                tmp = get_u16( (unsigned_16 *)p );
             } else if( info->addr_size == 1 ) {
-                tmp = *(uint_8 *)p;
+                tmp = *(unsigned_8 *)p;
             } else {
                 tmp = info->addr_size;
                 Wdputs( "?addr:" );
             }
             p += info->addr_size;
-            Puthex( tmp, info->addr_size*2 );
+            Puthex( tmp, info->addr_size * 2 );
             Wdputslc( "\n" );
             break;
         case DW_FORM_block:
@@ -588,8 +585,8 @@ decode_form:
             p += len;
             break;
         case DW_FORM_block2:
-            len = get_u16( (uint_16 *)p );
-            p += sizeof( uint_16 );
+            len = get_u16( (unsigned_16 *)p );
+            p += sizeof( unsigned_16 );
             if( is_loc ) {
                 DmpLoc( p, len, info->addr_size );
             } else {
@@ -599,8 +596,8 @@ decode_form:
             p += len;
             break;
         case DW_FORM_block4:
-            len = get_u32( (uint_32 *)p );
-            p += sizeof( uint_32 );
+            len = get_u32( (unsigned_32 *)p );
+            p += sizeof( unsigned_32 );
             if( is_loc ) {
                 DmpLoc( p, len, info->addr_size );
             } else {
@@ -618,28 +615,28 @@ decode_form:
             Wdputslc( "\n" );
             break;
         case DW_FORM_data2:
-            Puthex( get_u16( (uint_16 *)p ), 4 );
+            Puthex( get_u16( (unsigned_16 *)p ), 4 );
             Wdputslc( "\n" );
-            p += sizeof( uint_16 );
+            p += sizeof( unsigned_16 );
             break;
         case DW_FORM_ref2:
-            Puthex( info->cu_header + get_u16( (uint_16 *)p ), 4 );
+            Puthex( info->cu_header + get_u16( (unsigned_16 *)p ), 4 );
             Wdputslc( "\n" );
-            p += sizeof( uint_16 );
+            p += sizeof( unsigned_16 );
             break;
         case DW_FORM_data4:
             if( is_loc ) {
-                DmpLocList( get_u32( (uint_32 *)p ), info->addr_size );
+                DmpLocList( get_u32( (unsigned_32 *)p ), info->addr_size );
             } else {
-                Puthex( get_u32( (uint_32 *)p ), 8 );
+                Puthex( get_u32( (unsigned_32 *)p ), 8 );
                 Wdputslc( "\n" );
             }
-            p += sizeof( uint_32 );
+            p += sizeof( unsigned_32 );
             break;
         case DW_FORM_ref4:
-            Puthex( info->cu_header + get_u32( (uint_32 *)p ), 8 );
+            Puthex( info->cu_header + get_u32( (unsigned_32 *)p ), 8 );
             Wdputslc( "\n" );
-            p += sizeof( uint_32 );
+            p += sizeof( unsigned_32 );
             break;
         case DW_FORM_flag:
             Wdputs( *p++ ? "True" : "False" );
@@ -663,14 +660,14 @@ decode_form:
             p += strlen( (const char *)p ) + 1;
             break;
         case DW_FORM_strp:
-            offset = get_u32( (uint_32 *)p );
+            offset = get_u32( (unsigned_32 *)p );
             if( offset > Sections[DW_DEBUG_STR].max_offset ) {
                 Wdputslc( "Error: strp - invalid offset\n" );
             } else {
                 Wdputs( (const char *)Sections[DW_DEBUG_STR].data + offset );
                 Wdputslc( "\n" );
             }
-            p += sizeof( uint_32 );
+            p += sizeof( unsigned_32 );
             break;
         case DW_FORM_udata:
             p = DecodeULEB128( p, &tmp );
@@ -684,12 +681,12 @@ decode_form:
             break;
         case DW_FORM_ref_addr:
             if( is_loc ) { // history
-                DmpLocList( get_u32( (uint_32 *)p ), info->addr_size );
+                DmpLocList( get_u32( (unsigned_32 *)p ), info->addr_size );
             } else {
-                Puthex( get_u32( (uint_32 *)p ), 8 );
+                Puthex( get_u32( (unsigned_32 *)p ), 8 );
                 Wdputslc( "\n" );
             }
-            p += sizeof( uint_32 );
+            p += sizeof( unsigned_32 );
             break;
         default:
             Wdputslc( "unknown form\n" );
@@ -702,33 +699,32 @@ decode_form:
 }
 
 
-static void dump_info( const uint_8 *input, uint length )
-/*******************************************************/
+static void dump_info( const unsigned_8 *input, unsigned length )
+/***************************************************************/
 {
-    const uint_8    *p;
-    uint_32         abbrev_code;
-    uint_32         abbrev_offset;
-    uint_8          *abbrev;
-    uint_32         tag;
-    uint_32         unit_length;
-    const uint_8    *unit_base;
-    info_state      state;
+    const unsigned_8    *p;
+    unsigned_32         abbrev_code;
+    unsigned_32         abbrev_offset;
+    unsigned_8          *abbrev;
+    unsigned_32         tag;
+    unsigned_32         unit_length;
+    const unsigned_8    *unit_base;
+    info_state          state;
 
-    p = input;
     state.addr_size = 0;
-    while( p - input < length ) {
-        state.cu_header = p-input;
-        unit_length = get_u32( (uint_32 *)p );
-        unit_base = p + sizeof( uint_32 );
+    for( p = input; p - input < length; ) {
+        state.cu_header = (unsigned_32)( p - input );
+        unit_length = get_u32( (unsigned_32 *)p );
+        unit_base = p + sizeof( unsigned_32 );
 
         Wdputs( "Offset: " );
-        Puthex( p - input, 8 );
+        Puthex( (unsigned_32)( p - input ), 8 );
         Wdputs( "  Length: " );
         Puthex( unit_length, 8 );
         Wdputslc( "  Version: " );
-        Puthex( get_u16( (uint_16 *)(p + 4) ), 4 );
+        Puthex( get_u16( (unsigned_16 *)(p + 4) ), 4 );
         Wdputs( " Abbrev: " );
-        abbrev_offset =  get_u32( (uint_32 *)(p + 6) );
+        abbrev_offset =  get_u32( (unsigned_32 *)(p + 6) );
         Puthex( abbrev_offset, 8 );
         state.addr_size = *(p + 10);
         Wdputs( " Address Size " );
@@ -737,12 +733,13 @@ static void dump_info( const uint_8 *input, uint length )
         p += 11;
         while( p - unit_base < unit_length ) {
             Wdputs( "Offset: " );
-            Puthex( p - input, 8 );
+            Puthex( (unsigned_32)( p - input ), 8 );
             p = DecodeULEB128( p, &abbrev_code );
             Wdputs( "  Code: " );
             Puthex( abbrev_code, 8 );
             Wdputslc( "\n" );
-            if( abbrev_code == 0 ) continue;
+            if( abbrev_code == 0 )
+                continue;
             abbrev = find_abbrev( abbrev_offset, abbrev_code );
             if( abbrev == NULL ) {
                 Wdputs( "can't find abbreviation " );
@@ -750,7 +747,8 @@ static void dump_info( const uint_8 *input, uint length )
                 Wdputslc( "\n" );
                 break;
             }
-            if( p >= input + length ) break;
+            if( p >= input + length )
+                break;
             abbrev = DecodeULEB128( abbrev, &tag );
             Wdputs( "        " );
             getTAG( tag );
@@ -758,7 +756,8 @@ static void dump_info( const uint_8 *input, uint length )
             abbrev++;
             state.abbrev = abbrev;
             state.p = p;
-            if( !dump_tag( &state ) )break;
+            if( !dump_tag( &state ) )
+                break;
             p = state.p;
         }
     }
@@ -768,14 +767,14 @@ static void dump_info( const uint_8 *input, uint length )
 static bool skip_tag( info_state *info )
 /*****************************************************/
 {
-    uint_8      *abbrev;
-    uint_32     attr;
-    uint_32     form;
-    uint_32     len;
-    uint_32     tmp;
-    int_32      itmp;
-    bool        is_loc;
-    char const  *p;
+    unsigned_8      *abbrev;
+    unsigned_32     attr;
+    unsigned_32     form;
+    unsigned_32     len;
+    unsigned_32     tmp;
+    signed_32       itmp;
+    bool            is_loc;
+    char const      *p;
 
     p = info->p;
     abbrev = info->abbrev;
@@ -799,11 +798,11 @@ decode_form:
         switch( form ) {
         case DW_FORM_addr:
             if( info->addr_size == 4 ) {
-                tmp = get_u32( (uint_32 *)p );
+                tmp = get_u32( (unsigned_32 *)p );
             } else if( info->addr_size == 2 ) {
-                tmp = get_u16( (uint_16 *)p );
+                tmp = get_u16( (unsigned_16 *)p );
             } else if( info->addr_size == 1 ) {
-                tmp = *(uint_8 *)p;
+                tmp = *(unsigned_8 *)p;
             } else {
                 tmp = info->addr_size;
                 Wdputs( "?addr:" );
@@ -819,13 +818,13 @@ decode_form:
             p += len;
             break;
         case DW_FORM_block2:
-            len = get_u16( (uint_16 *)p );
-            p += sizeof( uint_16 );
+            len = get_u16( (unsigned_16 *)p );
+            p += sizeof( unsigned_16 );
             p += len;
             break;
         case DW_FORM_block4:
-            len = get_u32( (uint_32 *)p );
-            p += sizeof( uint_32 );
+            len = get_u32( (unsigned_32 *)p );
+            p += sizeof( unsigned_32 );
             p += len;
             break;
         case DW_FORM_data1:
@@ -835,16 +834,16 @@ decode_form:
             ++p;
             break;
         case DW_FORM_data2:
-            p += sizeof( uint_16 );
+            p += sizeof( unsigned_16 );
             break;
         case DW_FORM_ref2:
-            p += sizeof( uint_16 );
+            p += sizeof( unsigned_16 );
             break;
         case DW_FORM_data4:
-            p += sizeof( uint_32 );
+            p += sizeof( unsigned_32 );
             break;
         case DW_FORM_ref4:
-            p += sizeof( uint_32 );
+            p += sizeof( unsigned_32 );
             break;
         case DW_FORM_flag:
             ++p;
@@ -868,7 +867,7 @@ decode_form:
             p = DecodeULEB128( p, &tmp );
             break;
         case DW_FORM_ref_addr:
-            p += sizeof( uint_32 );
+            p += sizeof( unsigned_32 );
             break;
         default:
             Wdputslc( "unknown form\n" );
@@ -880,33 +879,33 @@ decode_form:
     return( true );
 }
 
-static void dump_info_headers( const char *input, uint length )
-/*************************************************************/
+static void dump_info_headers( const char *input, unsigned length )
+/*****************************************************************/
 {
-    const uint_8 *p;
-    uint_32     abbrev_code;
-    uint_32     abbrev_offset;
-    uint_8 *    abbrev;
-    uint_32     tag;
-    uint_32     unit_length;
-    uint_32     tag_offset;
-    const uint_8 *unit_base;
-    info_state  state;
-    bool        found;
+    const unsigned_8    *p;
+    unsigned_32         abbrev_code;
+    unsigned_32         abbrev_offset;
+    unsigned_8          *abbrev;
+    unsigned_32         tag;
+    unsigned_32         unit_length;
+    unsigned_32         tag_offset;
+    const unsigned_8    *unit_base;
+    info_state          state;
+    bool                found;
 
     p = input;
     state.addr_size = 0;
     found = false;
     while( p - input < length ) {
         state.cu_header = p - input;
-        unit_length = get_u32( (uint_32 *)p );
-        unit_base = p + sizeof( uint_32 );
+        unit_length = get_u32( (unsigned_32 *)p );
+        unit_base = p + sizeof( unsigned_32 );
         Wdputs( "Length: " );
         Puthex( unit_length, 8 );
         Wdputslc( "\nVersion: " );
-        Puthex( get_u16( (uint_16 *)(p + 4) ), 4 );
+        Puthex( get_u16( (unsigned_16 *)(p + 4) ), 4 );
         Wdputslc( "\nAbbrev: " );
-        abbrev_offset =  get_u32( (uint_32 *)(p + 6) );
+        abbrev_offset =  get_u32( (unsigned_32 *)(p + 6) );
         Puthex( abbrev_offset, 8 );
         state.addr_size = *(p + 10);
         Wdputslc( "\nAddress Size " );
@@ -952,14 +951,14 @@ static void dump_info_headers( const char *input, uint length )
 }
 #endif
 
-void dump_abbrevs( const uint_8 *input, uint length )
-/***************************************************/
+void dump_abbrevs( const unsigned_8 *input, unsigned length )
+/***********************************************************/
 {
-    const uint_8    *p;
-    uint_32         tmp;
-    uint_32         attr;
-    uint_32         abbr_off;
-//    bool            start;
+    const unsigned_8    *p;
+    unsigned_32         tmp;
+    unsigned_32         attr;
+    unsigned_32         abbr_off;
+//    bool                start;
 
     if( Sections[DW_DEBUG_ABBREV].data == 0 ) {
         Sections[DW_DEBUG_ABBREV].data = Wmalloc( length );
@@ -970,7 +969,7 @@ void dump_abbrevs( const uint_8 *input, uint length )
     for( ;; ) {
         if( p > input + length )
             break;
-        abbr_off = tmp = p - input;
+        abbr_off = tmp = (unsigned_32)( p - input );
         p = DecodeULEB128( p, &tmp );
         if( tmp == 0 ) {
             Wdputslc( "End_CU\n" );
@@ -1020,8 +1019,8 @@ void dump_abbrevs( const uint_8 *input, uint length )
 }
 
 
-static void get_reference_op( uint_8 value )
-/******************************************/
+static void get_reference_op( unsigned_8 value )
+/**********************************************/
 {
     const char  *result;
     size_t      i;
@@ -1040,38 +1039,38 @@ static void get_reference_op( uint_8 value )
 }
 
 typedef struct {
-    int         size;   /* available room */
-    int         free;   /* next free entry */
-    uint_32 *   stack;  /* values */
+    int             size;   /* available room */
+    int             free;   /* next free entry */
+    unsigned_32     *stack;  /* values */
 } scope_stack;
 
 typedef struct {
     scope_stack     scope;
-    uint_32         dependent;
-    uint_32         file;
-    uint_32         line;
-    uint_8          column;
+    unsigned_32     dependent;
+    unsigned_32     file;
+    unsigned_32     line;
+    unsigned_8      column;
 } ref_info;
 
 #define SCOPE_GUESS 0x50
 
-static void ScopePush( scope_stack * stack, uint_32 entry )
-/************************************************************/
+static void ScopePush( scope_stack * stack, unsigned_32 entry )
+/*************************************************************/
 {
     if( stack->stack == NULL ) {
-        stack->stack = Wmalloc( SCOPE_GUESS * sizeof( uint_32 ) );
+        stack->stack = Wmalloc( SCOPE_GUESS * sizeof( unsigned_32 ) );
     }
     if( stack->free >= stack->size ) {
         stack->size += SCOPE_GUESS;
-        stack->stack = realloc( stack->stack, stack->size * sizeof( uint_32 ) );
+        stack->stack = realloc( stack->stack, stack->size * sizeof( unsigned_32 ) );
     }
 
     stack->stack[stack->free] = entry;
     stack->free += 1;
 }
 
-static uint_32 ScopePop( scope_stack *stack )
-/*******************************************/
+static unsigned_32 ScopePop( scope_stack *stack )
+/***********************************************/
 {
     if( stack->free <= 0 ) {
         // error
@@ -1101,25 +1100,23 @@ static void PutRefRegisters( ref_info *registers )
     Wdputs( " ]" );
 }
 
-static void dump_ref( const uint_8 *input, uint length )
-/******************************************************/
+static void dump_ref( const unsigned_8 *input, uint length )
+/**********************************************************/
 {
-    const uint_8    *p;
-    uint_8          op_code;
-    uint_32         tmp;
-    int_32          itmp;
-    uint_32         unit_length;
-    const uint_8    *unit_base;
-    ref_info        registers =  { { 0, 0, NULL }, 0L, 1L, 1L, 1 };
+    const unsigned_8    *p;
+    unsigned_8          op_code;
+    unsigned_32         tmp;
+    signed_32           itmp;
+    unsigned_32         unit_length;
+    const unsigned_8    *unit_base;
+    ref_info            registers =  { { 0, 0, NULL }, 0L, 1L, 1L, 1 };
 
-    p = input;
-
-    while( p - input < length ) {
-        unit_length = get_u32( (uint_32 *)p );
-        p += sizeof( uint_32 );
+    for( p = input; p - input < length; ) {
+        unit_length = get_u32( (unsigned_32 *)p );
+        p += sizeof( unsigned_32 );
         unit_base = p;
         Wdputs( "total_length: " );
-        Puthex( get_u32( (uint_32 *)p ), 8 );
+        Puthex( get_u32( (unsigned_32 *)p ), 8 );
         Wdputslc( "\n" );
 
         while( p - unit_base < unit_length ) {
@@ -1128,9 +1125,9 @@ static void dump_ref( const uint_8 *input, uint length )
                 get_reference_op( op_code );
                 switch( op_code ) {
                 case REF_BEGIN_SCOPE:
-                    Puthex( get_u32( (uint_32 *)p ), 8 );
-                    ScopePush( &registers.scope, get_u32( (uint_32 *)p ) );
-                    p += sizeof( uint_32 );
+                    Puthex( get_u32( (unsigned_32 *)p ), 8 );
+                    ScopePush( &registers.scope, get_u32( (unsigned_32 *)p ) );
+                    p += sizeof( unsigned_32 );
                     break;
                 case REF_END_SCOPE:
                     ScopePop( &registers.scope );
@@ -1153,7 +1150,7 @@ static void dump_ref( const uint_8 *input, uint length )
                 case REF_SET_COLUMN:
                     p = DecodeULEB128( p, &tmp );
                     Putdec( tmp );
-                    registers.column = tmp;
+                    registers.column = (unsigned_8)tmp;
                     break;
                 case REF_ADD_LINE:
                     p = DecodeSLEB128( p, &itmp );
@@ -1163,7 +1160,7 @@ static void dump_ref( const uint_8 *input, uint length )
                 case REF_ADD_COLUMN:
                     p = DecodeULEB128( p, &tmp );
                     Putdec( tmp );
-                    registers.column += tmp;
+                    registers.column += (unsigned_8)tmp;
                     break;
                 }
             } else {
@@ -1177,13 +1174,13 @@ static void dump_ref( const uint_8 *input, uint length )
                 registers.column += op_code % REF_COLUMN_RANGE;
 
                 Wdputs( ", " );
-                Puthex( get_u32( (uint_32 *)p ), 8 );
-                registers.dependent = get_u32( (uint_32 *)p );
+                Puthex( get_u32( (unsigned_32 *)p ), 8 );
+                registers.dependent = get_u32( (unsigned_32 *)p );
 
                 Wdputs( "    " );
                 PutRefRegisters( &registers );
 
-                p += sizeof( uint_32 );
+                p += sizeof( unsigned_32 );
             }
             Wdputslc( "\n" );
         }
@@ -1191,30 +1188,30 @@ static void dump_ref( const uint_8 *input, uint length )
 }
 
 
-static void dump_aranges( const uint_8 *p, uint length )
-/******************************************************/
+static void dump_aranges( const unsigned_8 *p, unsigned length )
+/**************************************************************/
 {
-    const uint_8    *end;
-    const uint_8    *unit_end;
-    uint_32         unit_length;
-    uint_32         dbg_offset;
-    uint_32         addr;
-    uint_32         seg;
-    uint_32         len;
-    int             addr_size;
-    int             seg_size;
+    const unsigned_8    *end;
+    const unsigned_8    *unit_end;
+    unsigned_32         unit_length;
+    unsigned_32         dbg_offset;
+    unsigned_32         addr;
+    unsigned_32         seg;
+    unsigned_32         len;
+    unsigned_16         addr_size;
+    unsigned_16         seg_size;
 
     end = &p[length];
     addr_size = 0;
     while( p  < end ) {
-        unit_length = get_u32( (uint_32 *)p );
-        unit_end = &p[unit_length + sizeof( uint_32 )];
+        unit_length = get_u32( (unsigned_32 *)p );
+        unit_end = &p[unit_length + sizeof( unsigned_32 )];
         Wdputs( "Length: " );
         Puthex( unit_length, 8 );
         Wdputslc( "\nVersion: " );
-        Puthex( get_u16( (uint_16 *)(p + 4) ), 4 );
+        Puthex( get_u16( (unsigned_16 *)(p + 4) ), 4 );
         Wdputslc( "\nDbg Info: " );
-        dbg_offset = get_u32( (uint_32 *)(p + 6) );
+        dbg_offset = get_u32( (unsigned_32 *)(p + 6) );
         Puthex( dbg_offset, 8 );
         addr_size = *(p + 10);
         Wdputslc( "\nAddress Size " );
@@ -1249,39 +1246,39 @@ static void dump_aranges( const uint_8 *p, uint length )
 }
 
 
-static void dump_pubnames( const uint_8 *p, uint length )
-/*******************************************************/
+static void dump_pubnames( const unsigned_8 *p, unsigned length )
+/***************************************************************/
 {
-    const uint_8    *end;
-    const uint_8    *unit_end;
-    uint_32         unit_length;
-    uint_32         dbg_offset;
-    uint_32         dbg_length;
-    uint_32         offset;
+    const unsigned_8    *end;
+    const unsigned_8    *unit_end;
+    unsigned_32         unit_length;
+    unsigned_32         dbg_offset;
+    unsigned_32         dbg_length;
+    unsigned_32         offset;
 
     end = &p[length];
     while( p  < end ) {
-        unit_length = get_u32( (uint_32 *)p );
-        unit_end = &p[unit_length + sizeof( uint_32 )];
+        unit_length = get_u32( (unsigned_32 *)p );
+        unit_end = &p[unit_length + sizeof( unsigned_32 )];
         Wdputs( "Length: " );
         Puthex( unit_length, 8 );
         Wdputslc( "\nVersion: " );
-        Puthex( get_u16( (uint_16*)(p + 4) ), 2 );
+        Puthex( get_u16( (unsigned_16*)(p + 4) ), 2 );
         Wdputslc( "\nDbg Info: " );
-        dbg_offset =  get_u32( (uint_32 *)(p + 6) );
+        dbg_offset =  get_u32( (unsigned_32 *)(p + 6) );
         Puthex( dbg_offset, 8 );
         Wdputslc( "\nDbg Length: " );
-        dbg_length =  get_u32( (uint_32 *)(p + 10) );
+        dbg_length =  get_u32( (unsigned_32 *)(p + 10) );
         Puthex( dbg_length, 8 );
         Wdputslc( "\n" );
         p += 14;
         Wdputslc( "    Offset       Name\n" );
         while( p < unit_end ) {
-            offset = get_u32( (uint_32 *)p );
+            offset = get_u32( (unsigned_32 *)p );
             if( offset == 0 ) {
                 break;
             }
-            p += sizeof( uint_32 );
+            p += sizeof( unsigned_32 );
             Wdputs( "    " );
             Puthex( offset, 8 );
             Wdputs( "     " );
@@ -1293,8 +1290,8 @@ static void dump_pubnames( const uint_8 *p, uint length )
     }
 }
 
-void Dump_specific_section( uint sect, const uint_8 *data, uint len )
-/*******************************************************************/
+void Dump_specific_section( unsigned sect, const unsigned_8 *data, unsigned len )
+/*******************************************************************************/
 {
     sort_tables();
     switch( sect ) {
@@ -1325,7 +1322,7 @@ void Dump_specific_section( uint sect, const uint_8 *data, uint len )
 void Dump_all_sections( void )
 /****************************/
 {
-    uint        sect;
+    unsigned    sect;
 
     sect = 0;
     for( ;; ) {
@@ -1351,10 +1348,10 @@ void Free_dwarf_sections( void )
 
 
 
-uint Lookup_section_name( const char *name )
-/******************************************/
+unsigned Lookup_section_name( const char *name )
+/**********************************************/
 {
-    uint        sect;
+    unsigned    sect;
 
     for( sect = 0 ; sect < DW_DEBUG_MAX ; sect++ ) {
         if( stricmp( sectionNames[sect], name ) == 0 ) {

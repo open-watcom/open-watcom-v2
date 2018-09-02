@@ -210,7 +210,7 @@ static void dmp_public_entry( void )
 {
     unsigned_32     i;
     unsigned_8      len;
-    char            *name;
+    char            name[256];
     unsigned_32     addr;
 
     if( Nlm_head.numberOfPublics == 0 ) {
@@ -223,17 +223,15 @@ static void dmp_public_entry( void )
     Wdputslc( "      Address         Name\n" );
     Wdputslc( "      =======         ====\n" );
     for( i = 0; i < Nlm_head.numberOfPublics; i++ ) {
-        Wread( &len, sizeof( unsigned_8 ) );
-        name = Wmalloc( len + 1 );
+        Wread( &len, sizeof( len ) );
         Wread( name, len );
         name[len] = '\0';
-        Wread( &addr, sizeof( unsigned_32 ) );
+        Wread( &addr, sizeof( addr ) );
         Wdputs( "      " );
-        Puthex( addr, 8 );
+        Puthex( addr, 2 * sizeof( addr ) );
         Wdputs( "        " );
         Wdputs( name );
         Wdputslc( "\n" );
-        free( name );
     }
 }
 
@@ -307,7 +305,6 @@ bool Dmp_nlm_head( void )
     nlm_header_3    nlm_head3;
     nlm_header_4    nlm_head4;
     bool            extend;
-    char            nlm_name[256];
 
     Wlseek( 0 );
     Wread( &Nlm_head, sizeof( Nlm_head.signature ) );
@@ -321,9 +318,7 @@ bool Dmp_nlm_head( void )
     Puthex( Nlm_head.version, 8 );
     Wdputslc( "H\n" );
     Wdputs( "module name                               = " );
-    memcpy( nlm_name, &Nlm_head.moduleName[1], Nlm_head.moduleName[0] );
-    nlm_name[ (int)Nlm_head.moduleName[0] ] = '\0';
-    Wdputs( nlm_name );
+    Wdputname( Nlm_head.moduleName );
     Wdputslc( "\n" );
     Dump_header( (char *)&Nlm_head.codeImageOffset, nlm_exe_msg, 4 );
     offset = dmp_nlm_head2();

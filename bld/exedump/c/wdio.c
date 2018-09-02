@@ -89,12 +89,12 @@ void Wread( void *buf, unsigned_32 amount )
             Num_read = read( Handle, Read_buff, BSIZE );
             chkread( amount );
             memcpy( &buffer[Sizeleft], Read_buff, amount );
-            Sizeleft = Num_read - amount;
+            Sizeleft = (unsigned_16)( Num_read - amount );
             Num_buff++;
         }
     } else {
         memcpy( buffer, &Read_buff[Num_read - Sizeleft], amount );
-        Sizeleft -= amount;
+        Sizeleft -= (unsigned_16)amount;
     }
 }
 
@@ -115,11 +115,11 @@ void Wlseek( unsigned long offset )
             Wdputslc( ".\n" );
             longjmp( Se_env, 1 );
         }
-        Num_buff = nbuff;
+        Num_buff = (unsigned_16)nbuff;
         Num_read = read( Handle, Read_buff, BSIZE );
         chkread( offset % BSIZE );
     }
-    Sizeleft = Num_read - ( offset % BSIZE );
+    Sizeleft = (unsigned_16)( Num_read - ( offset % BSIZE ) );
 }
 
 unsigned long WFileSize( void )
@@ -160,6 +160,20 @@ void Wdputslc( const char *buf )
     fputs( buf, stdout );
 }
 
+void Wdputname( const char *str )
+/*******************************/
+{
+    char            name[256];
+    unsigned_8      len;
+
+    len = *str++;
+    if( len ) {
+        memcpy( name, str, len );
+        name[len] = '\0';
+        Wdputs( name );
+    }
+}
+
 void Dump_namel( unsigned_8 len )
 /*******************************/
 {
@@ -181,6 +195,21 @@ unsigned_8 Dump_name( void )
     Dump_namel( len );
     return( len );
 }
+
+unsigned Align_name( unsigned_8 len, unsigned_8 align )
+/*****************************************************/
+{
+    unsigned_8  pad = 0;
+
+    if( align && (len & ( align - 1 )) ) {
+        pad = align - (len & ( align - 1 ));
+        if( pad ) {
+            lseek( Handle, pad, SEEK_CUR );
+        }
+    }
+    return( len + pad );
+}
+
 
 void Dump_header( void *data_ptr, const_string_table *msg, int max_width )
 /************************************************************************/

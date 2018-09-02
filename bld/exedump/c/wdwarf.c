@@ -137,13 +137,11 @@ static void dmp_master( master_dbg_header mdh )
     Lang_lst = Wmalloc( mdh.lang_size );
     Wread( Lang_lst, mdh.lang_size );
     Curr_sectoff += (long)mdh.lang_size;
-    i = 0;
     Wdputslc( "Languages\n" );
     Wdputslc( "=========\n" );
-    while( i < mdh.lang_size ) {
+    for( i = 0; i < mdh.lang_size; i += strlen( &Lang_lst[i] ) + 1 ) {
         Wdputs( &Lang_lst[i] );
         Wdputslc( "\n" );
-        i += strlen( &Lang_lst[i] ) + 1;
     }
     Wdputslc( "\n" );
 
@@ -152,11 +150,9 @@ static void dmp_master( master_dbg_header mdh )
     Curr_sectoff += (long)mdh.segment_size;
     Wdputslc( "Segments\n" );
     Wdputslc( "========\n" );
-    i = 0;
-    while( i < mdh.segment_size ) {
+    for( i = 0; i < mdh.segment_size; i += sizeof( unsigned_16 ) ) {
         Puthex( *(unsigned_16 *)&Wbuff[i], 4 );
         Wdputslc( "\n" );
-        i += sizeof( unsigned_16);
     }
     Wdputslc( "\n" );
 }
@@ -228,8 +224,8 @@ bool Dmp_dwarf( void )
     char        buf[7];
 
     Wlseek( 0 );
-    Wread( &signature, sizeof(unsigned_16) );
-    if( signature != mbrHeaderSignature ){
+    Wread( &signature, sizeof( unsigned_16 ) );
+    if( signature != mbrHeaderSignature ) {
         return( false );
     }
     Wread( buf, mbrHeaderStringLen );

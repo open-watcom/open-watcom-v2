@@ -80,22 +80,22 @@ extern bool Dmp_mdbg_head( void );
 /*
  * wsect.c
  */
-extern const char *Getname( uint_32, readable_name *, size_t );
-extern uint_8 *DecodeULEB128( const uint_8 *, uint_32 * );
-extern uint_8 *DecodeSLEB128( const uint_8 *, int_32 * );
-uint_8 *find_abbrev( uint_32 start, uint_32 code );
-extern void dump_abbrevs( const uint_8 *input, uint length );
-extern void Dump_specific_section( uint, const uint_8 *, uint );
+extern const char *Getname( unsigned_32, readable_name *, size_t );
+extern unsigned_8 *DecodeULEB128( const unsigned_8 *, unsigned_32 * );
+extern unsigned_8 *DecodeSLEB128( const unsigned_8 *, signed_32 * );
+unsigned_8 *find_abbrev( unsigned_32 start, unsigned_32 code );
+extern void dump_abbrevs( const unsigned_8 *input, unsigned length );
+extern void Dump_specific_section( unsigned, const unsigned_8 *, unsigned );
 extern void Dump_all_sections( void );
 extern void Free_dwarf_sections( void );
-extern void Dump_lines( const uint_8 *, uint );
-extern uint Lookup_section_name( const char * );
+extern void Dump_lines( const unsigned_8 *, unsigned );
+extern unsigned Lookup_section_name( const char * );
 
 /*
  * dumpwv.c
  */
 extern void Dump_section( void );
-extern void Get_local_name( char *, unsigned_8 *, unsigned_8 * );
+extern void Dump_local_name( unsigned_8 *data, unsigned_8 *start );
 extern unsigned_8 *Get_type_index( unsigned_8 *, unsigned_16 * );
 extern unsigned_8 *Dump_location_expression( unsigned_8 *, char * );
 
@@ -163,10 +163,10 @@ extern void Putdecbz( unsigned_32, unsigned_16);
 extern void Putdecsbz( signed_32, unsigned_16);
 extern void Putdecbz64( long long, unsigned_16);
 extern void Parse_option( void );
-extern uint_32 get_u32( uint_32 *src );
-extern int_32  get_s32( int_32 *src );
-extern uint_16 get_u16( uint_16 *src );
-extern int_16  get_s16( int_16 *src );
+extern unsigned_32 get_u32( unsigned_32 *src );
+extern signed_32  get_s32( signed_32 *src );
+extern unsigned_16 get_u16( unsigned_16 *src );
+extern signed_16  get_s16( signed_16 *src );
 
 /*
  * dosexe.c
@@ -188,8 +188,10 @@ extern unsigned long    WFileSize( void );
 extern void             Wdputc( int );
 extern void             Wdputs( const char * );
 extern void             Wdputslc( const char * );
+extern void             Wdputname( const char *str );
 extern void             Dump_namel( unsigned_8 len );
 extern unsigned_8       Dump_name( void );
+extern unsigned         Align_name( unsigned_8 len, unsigned_8 align );
 extern void             Dump_header( void *, const char * const *, int );
 extern void             Dump_asciiz( unsigned long offset );
 extern void             DumpFlags( unsigned_32, unsigned_32, const char * const *, const char * );

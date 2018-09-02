@@ -148,10 +148,10 @@ static  const_string_table tss_msg[] = {
 };
 
 typedef struct {
-    unsigned_16 seg_sel;
-    unsigned_16 flags;
-    unsigned_32 base_off;
-    unsigned_32 min_extra;
+    unsigned_16     seg_sel;
+    unsigned_16     flags;
+    unsigned_32     base_off;
+    unsigned_32     min_extra;
 } seg_info_rec;
 
 /*
@@ -244,10 +244,9 @@ static void dmp_reloc_tbl( void )
     if( (Options_dmp & FIX_DMP) && Phar_ext_head.reloc_size ) {
         Wlseek( Phar_ext_head.reloc_offset );
         Banner( "Program Relocation Table" );
-        i = 0;
-        while( i < Phar_ext_head.reloc_size ) {
-            Wread( &offset, sizeof( unsigned_32 ) );
-            Wread( &segment, sizeof( unsigned_16 ) );
+        for( i = 0; i < Phar_ext_head.reloc_size; i += sizeof( offset ) + sizeof( segment ) ) {
+            Wread( &offset, sizeof( offset ) );
+            Wread( &segment, sizeof( segment ) );
             if( i != 0 ) {
                 if( i % 30 == 0 ) {
                     Wdputslc( "\n" );
@@ -258,7 +257,6 @@ static void dmp_reloc_tbl( void )
             Puthex( segment, 4 );
             Wdputc( ':' );
             Puthex( offset, 8 );
-            i += sizeof( unsigned_32 ) + sizeof(unsigned_16);
         }
     }
 }

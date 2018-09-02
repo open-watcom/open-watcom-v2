@@ -203,15 +203,14 @@ void Dmp_relocs( void )
     seg = Int_seg_tab;
     num_segs = Os2_head.segments + 1;
     for( segnum = 1; segnum != num_segs; segnum++ ) {
-        reloc_off = (unsigned_32)seg->address <<
-                       Os2_head.align;
+        reloc_off = (unsigned_32)seg->address << Os2_head.align;
         reloc_off += seg->size;
         if( seg->info & SEG_RELOC ) {
             Wdputs( "segment # " );
             Putdec( segnum );
             dmp_reloc_info( reloc_off );
         }
-    seg++;
+        seg++;
     }
 }
 
@@ -318,14 +317,13 @@ void Dmp_seg_data( unsigned long seg_off, unsigned long seg_len )
     Wlseek( seg_off );
     address = 0;
     amount = PERLINE;
-    for( ; seg_len != 0UL; ) {
-        if( seg_len < PERLINE ) {
-            amount = seg_len;
+    for( ; seg_len > 0; seg_len -= amount ) {
+        if( (unsigned long)amount > seg_len ) {
+            amount = (unsigned_16)seg_len;
         }
         Wread( buf, amount );
         dmp_data_line( buf, address, amount );
         address += amount;
-        seg_len -= amount;
     }
     Wdputslc( "\n" );
 }
@@ -333,18 +331,16 @@ void Dmp_seg_data( unsigned long seg_off, unsigned long seg_len )
 void dmp_mult_data_line( char *buf, unsigned_16 address, unsigned_16 amount )
 /***************************************************************************/
 {
-    unsigned chunk;
+    unsigned_16 chunk;
 
-    while( amount > 0 ) {
-        if( amount >= 16 ) {
-            chunk = 16;
-        } else {
+    chunk = 16;
+    for( ; amount > 0; amount -= chunk ) {
+        if( chunk > amount ) {
             chunk = amount;
         }
         dmp_data_line( buf, address, chunk );
         buf += chunk;
         address += chunk;
-        amount -= chunk;
     }
 }
 

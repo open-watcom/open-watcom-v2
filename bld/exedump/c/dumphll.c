@@ -181,19 +181,17 @@ static void dump_cv_sstPublics( unsigned_32 base, unsigned_32 offset,
 /*******************************************************************/
 {
     cv3_public_16       pub16;
-    unsigned_32         read = 0;
+    unsigned_32         read;
 
     Wlseek( base + offset );
     Wdputs( "==== sstPublics at offset " );
     Puthex( offset, 8 );
     Wdputslc( "\n" );
-    while( read < size ) {
+    for( read = 0; read < size; read += sizeof( pub16 ) + pub16.name_len ) {
         Wread( &pub16, sizeof( pub16 ) );
         Dump_header( &pub16, cv_sstPublics_msg, 4 );
-        read += sizeof( pub16 );
         Wdputs( "  symbol name: \"" );
         Dump_namel( pub16.name_len );
-        read += pub16.name_len;
         Wdputslc( "\"\n" );
     }
     Wdputslc( "\n" );
@@ -209,19 +207,17 @@ static void dump_hll_sstPublics( unsigned_32 base, unsigned_32 offset,
 /********************************************************************/
 {
     hll_public_32       pub32;
-    unsigned_32         read = 0;
+    unsigned_32         read;
 
     Wlseek( base + offset );
     Wdputs( "==== sstPublics at offset " );
     Puthex( offset, 8 );
     Wdputslc( "\n" );
-    while( read < size ) {
+    for( read = 0; read < size; read += sizeof( pub32 ) + pub32.name_len ) {
         Wread( &pub32, sizeof( pub32 ) );
         Dump_header( &pub32, hll_sstPublics_msg, 4 );
-        read += sizeof( pub32 );
         Wdputs( "  symbol name: \"" );
         Dump_namel( pub32.name_len );
-        read += pub32.name_len;
         Wdputslc( "\"\n" );
     }
     Wdputslc( "\n" );
@@ -238,15 +234,16 @@ static void dump_cv_sstTypes( unsigned_32 base, unsigned_32 offset,
 {
     cv3_lf_common       typ;
     cv3_lf_all          type;
-    unsigned_32         read = 0;
-    unsigned            idx = 0;
+    unsigned_32         read;
+    unsigned            idx;
 
     Wlseek( base + offset );
     Wdputs( "==== sstTypes at offset " );
     Puthex( offset, 8 );
     Wdputslc( "\n" );
     Wdputslc( " index: len  id type\n" );
-    while( read < size ) {
+    idx = 0;
+    for( read = 0; read < size; ) {
         /* seek to start of next type record */
         Wlseek( base + offset + read );
         Wread( &typ, sizeof( cv3_lf_common ) );
@@ -293,14 +290,14 @@ static void dump_cv_sstSymbols( unsigned_32 base, unsigned_32 offset,
 /*******************************************************************/
 {
     cv3_ssr_all         ssr;
-    unsigned_32         read = 0;
+    unsigned_32         read;
 
     Wlseek( base + offset );
     Wdputs( "==== sstSymbols at offset " );
     Puthex( offset, 8 );
     Wdputslc( "\n" );
     Wdputslc( "len/code/desc\n" );
-    while( read < size ) {
+    for( read = 0; read < size; ) {
         Wread( &ssr, sizeof( cv3_ssr_common ) );
         Wdputs( "  " );
         Puthex( ssr.common.length, 2 );
@@ -413,14 +410,15 @@ static void dump_cv_sstLibraries( unsigned_32 base, unsigned_32 offset,
                                                     unsigned_32 size )
 /*********************************************************************/
 {
-    unsigned        index = 0;
-    unsigned_32     read = 0;
+    unsigned        index;
+    unsigned_32     read;
 
     Wlseek( base + offset );
     Wdputs( "==== sstLibraries at offset " );
     Puthex( offset, 8 );
     Wdputslc( "\n" );
-    while( read < size ) {
+    index = 0;
+    for( read = 0; read < size; ) {
         Wdputs( "  index: " );
         Puthex( index, 4 );
         Wdputs( "H  name: \"" );
@@ -446,10 +444,10 @@ static void dump_cv_sstModules( unsigned_32 base, unsigned_32 offset )
     Wdputs( "==== sstModules at offset " );
     Puthex( offset, 8 );
     Wdputslc( "\n" );
-    Wread( &mod, offsetof( cv3_module_16, name_len ) );
+    Wread( &mod, sizeof( mod ) );
     Dump_header( &mod, cv_sstModules_msg, 4 );
     Wdputs( "  module name: \"" );
-    Dump_name();
+    Dump_namel( mod.name_len );
     Wdputslc( "\"\n" );
     if( mod.cSeg ) {
         while( --mod.cSeg ) {
@@ -479,11 +477,11 @@ static void dump_hll_sstModules( unsigned_32 base, unsigned_32 offset )
     Wdputs( "==== sstModules at offset " );
     Puthex( offset, 8 );
     Wdputslc( "\n" );
-    Wread( &mod, offsetof( hll_module, name_len ) );
+    Wread( &mod, sizeof( mod ) );
     Dump_header( &mod, hll_sstModules_msg, 4 );
     hll_level = mod.Version >> 8;
     Wdputs( "  module name: \"" );
-    Dump_name();
+    Dump_namel( mod.name_len );
     Wdputslc( "\"\n" );
     if( mod.cSeg ) {
         while( --mod.cSeg ) {
@@ -513,8 +511,7 @@ static void dump_cv_sstSrcLnSeg( unsigned_32 base, unsigned_32 offset )
     Puthex( offset, 8 );
     Wdputslc( "\n" );
     Wdputs( "  source file: \"" );
-    if( ( Dump_name() + 1 ) & 1 )
-        lseek( Handle, 1, SEEK_CUR );
+    Align_name( Dump_name() + 1, 2 );
     Wdputslc( "\"\n" );
     Wread( &src_ln, sizeof( src_ln ) );
     Dump_header( &src_ln, cv_sstSrcLnSeg_msg, 4 );

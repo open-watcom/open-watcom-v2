@@ -130,10 +130,9 @@ static void dmp_sec_strtab( unsigned_32 offset, unsigned_32 size )
     Wlseek( offset );
     Wread( string_table, size );
 
-    ptr = string_table;
-    while( ptr < (string_table + size) ) {
+    for( ptr = string_table; ptr < (string_table + size); ) {
         if( *ptr ) {
-            Puthex( ptr - string_table, 8 );
+            Puthex( (unsigned_32)( ptr - string_table ), 8 );
             Wdputslc( ": " );
             Wdputs( ptr );
             Wdputslc( "\n" );
@@ -155,12 +154,12 @@ static void dmp_sec_note( unsigned_32 offset, unsigned_32 size )
 /**************************************************************/
 {
     Elf_Note        note;
-    unsigned_32     read = 0;
+    unsigned_32     read;
     unsigned_32     skip;
     char            *ptr;
 
     Wlseek( offset );
-    while( read < size ) {
+    for( read = 0; read < size; ) {
         Wdputslc( "\n" );
         Wread( &note, sizeof( note ) );
         read += sizeof( note );
@@ -214,18 +213,18 @@ static void dmp_sec_progbits( char *name,
     unsigned_32 offset, unsigned_32 size )
 /****************************************/
 {
-    const uint_8    *ptr;
-    uint            sect;
+    unsigned_8  *ptr;
+    unsigned    sect;
 
     if( name == NULL ) {
         Dmp_seg_data( offset, size );
     } else {
         ptr = Wmalloc( size );
         Wlseek( offset );
-        Wread( (char *)ptr, size );
+        Wread( ptr, size );
         sect = Lookup_section_name( name );
         Dump_specific_section( sect, ptr, size );
-        free( (void *)ptr );
+        free( ptr );
     }
 }
 
@@ -414,7 +413,7 @@ static void set_dwarf( unsigned_32 start )
     unsigned_32     offset;
     char            *string_table;
     int             i;
-    uint            sect;
+    unsigned        sect;
     unsigned_32     sectsizes[DR_DEBUG_NUM_SECTS];
     unsigned_32     sections[DR_DEBUG_NUM_SECTS];
 

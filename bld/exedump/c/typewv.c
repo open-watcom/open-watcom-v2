@@ -187,16 +187,14 @@ static void bit_field_struct( unsigned_8 *buff, unsigned_8 size, bool bit )
 {
     unsigned_8  *ptr;
     unsigned_16 index;
-    char        name[256];
 
     ptr = buff+2+size;
     if( bit ) {
         ptr += 2;
     }
     ptr = Get_type_index( ptr, &index );
-    Get_local_name( name, ptr, buff );
     Wdputs( "          \"" );
-    Wdputs( name );
+    Dump_local_name( ptr, buff );
     Wdputs( "\"  offset = " );
     ptr = buff+2;
     Puthex( *ptr, 2*size );
@@ -221,7 +219,6 @@ static void bit_field_class( unsigned_8 *buff, bool bit )
 {
     unsigned_8  *ptr;
     unsigned_16 index;
-    char        name[256];
 
     ptr = buff+3;
     Wdputs( "          field locator = " );
@@ -230,9 +227,8 @@ static void bit_field_class( unsigned_8 *buff, bool bit )
         ptr += 2;
     }
     ptr = Get_type_index( ptr, &index );
-    Get_local_name( name, ptr, buff );
     Wdputs( "          name = \"" );
-    Wdputs( name );
+    Dump_local_name( ptr, buff );
     Wdputs( "\"  type idx = " );
     Putdec( index );
     Wdputslc( "\n          attribute = " );
@@ -255,10 +251,10 @@ static void range( unsigned_8 *ptr, unsigned_8 size )
 /***************************************************/
 {
     Wdputs( "          low bound = " );
-    Puthex( *ptr, 2*size );
+    Puthex( *ptr, 2 * size );
     Wdputs( "   high bound = " );
     ptr += size;
-    Puthex( *ptr, 2*size );
+    Puthex( *ptr, 2 * size );
     ptr += size;
     base_type_index( ptr );
 }
@@ -269,11 +265,8 @@ static void range( unsigned_8 *ptr, unsigned_8 size )
 static void enum_const( unsigned_8 *buff, unsigned_8 size )
 /*********************************************************/
 {
-    char        name[256];
-
-    Get_local_name( name, buff+2+size, buff );
     Wdputs( "          \"" );
-    Wdputs( name );
+    Dump_local_name( buff + 2 + size, buff );
     Wdputs( "\"   value = " );
     Puthex( *(buff+2), 2*size );
     Wdputslc( "\n" );
@@ -330,7 +323,6 @@ void Dmp_type( int cnt, unsigned_32 *offs )
     unsigned_16 index;
     unsigned_16 curr_index;
     unsigned_32 coff;
-    char        name[256];
     unsigned_8  buff[256];
 
     for( i = 0; i < cnt; i++ ) {
@@ -351,28 +343,25 @@ void Dmp_type( int cnt, unsigned_32 *offs )
             switch( buff[1] ) {
             case SCALAR:
                 StartType( "SCALAR", ++curr_index );
-                ptr = buff+3;
-                Get_local_name( name, ptr, buff );
+                ptr = buff + 3;
                 Wdputs( "          \"" );
-                Wdputs( name );
+                Dump_local_name( ptr, buff );
                 Wdputs( "\"  scalar type = " );
                 scalar_type( buff[2] );
                 Wdputslc( "\n" );
                 break;
             case SCOPE:
                 StartType( "SCOPE", ++curr_index);
-                Get_local_name( name, ptr, buff );
                 Wdputs( "          \"" );
-                Wdputs( name );
+                Dump_local_name( ptr, buff );
                 Wdputslc( "\"\n" );
                 break;
             case NAME:
                 StartType( "NAME", ++curr_index);
                 ptr = Get_type_index( ptr, &index );
                 ptr = Get_type_index( ptr, &index );
-                Get_local_name( name, ptr, buff );
                 Wdputs( "          \"" );
-                Wdputs( name );
+                Dump_local_name( ptr, buff );
                 Wdputs( "\"  type idx = " );
                 Putdec( index );
                 Wdputs( "  scope idx = " );
