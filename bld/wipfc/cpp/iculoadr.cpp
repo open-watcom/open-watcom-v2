@@ -57,7 +57,7 @@ static bool mapFile( UDataMemory *dataMemory, const char *name )
 
     std::string path( Environment.value( "WIPFC" ) );
     if( path.length() )
-        path += U_FILE_SEP_CHAR;
+        path += PATH_SEPARATOR;
     path += name;
     path += ".cnv";
     dataReset( dataMemory );
