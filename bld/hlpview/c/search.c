@@ -61,8 +61,7 @@ static void loadPage( HelpHdl hdl, unsigned long pagenum )
     } else {
         tmp = sizeof( HelpHeader );
     }
-    offset = tmp + hdl->header.str_size + pagenum * HLP_PAGE_SIZE
-           + hdl->header.datapagecnt * sizeof( uint_16 );
+    offset = tmp + hdl->header.str_size + pagenum * HLP_PAGE_SIZE + hdl->header.datapagecnt * sizeof( uint_16 );
     HelpSeek( hdl->fp, offset, HELP_SEEK_SET );
     HelpRead( hdl->fp, curPage, HLP_PAGE_SIZE );
     curFile = hdl->fp;
@@ -267,7 +266,6 @@ HelpHdl InitHelpSearch( HelpFp fp )
     size_t      len;
     char        *topic;
     char        *description;
-    uint_16     str_cnt;
     uint_16     *str_len;
     char        *ptr;
     char        *buffer;
@@ -299,25 +297,18 @@ HelpHdl InitHelpSearch( HelpFp fp )
     } else {
         buffer = HelpMemAlloc( hdl->header.str_size );
         HelpRead( fp, buffer, hdl->header.str_size );
-        ptr = buffer;
-        str_len = (uint_16 *)ptr;
-        str_cnt = *str_len;
-        str_len++;
-        if( *str_len != 0 ) {
-            topic = HelpMemAlloc( *str_len );
-            ptr += (str_cnt + 1) * sizeof( uint_16 );
-            strcpy( topic, ptr);        // assume topic is first string
+        ptr = buffer + ( *(uint_16 *)buffer + 1 ) * sizeof( uint_16 );
+        str_len = (uint_16 *)buffer + 1;
+        if( str_len[0] != 0 ) {
+            topic = HelpMemAlloc( str_len[0] );
+            strcpy( topic, ptr );        // assume topic is first string
         } else {
             topic = HelpMemAlloc( strlen( DEFAULTTOPIC ) + 1 );
             strcpy( topic, DEFAULTTOPIC );
         }
-        ptr = buffer;
-        ptr += ( str_cnt + 1 ) * ( sizeof( uint_16 ) );
-        ptr += ( *str_len ) * ( sizeof( char ) );
-        str_len++;
-        if( *str_len != 0 ) {
-            description = HelpMemAlloc( *str_len );
-            strcpy( description, ptr );
+        if( str_len[1] != 0 ) {
+            description = HelpMemAlloc( str_len[1] );
+            strcpy( description, ptr + str_len[0] );
         } else {
             description = NULL;
         }

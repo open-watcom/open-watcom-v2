@@ -39,16 +39,14 @@ static WVList SwitchTypos;
 void AddTypo( WString &good, WString &bad )
 {
     WTypo *t;
-    t =new WTypo( good, bad );
+    t = new WTypo( good, bad );
     SwitchTypos.add( t );
 }
 
 void FixTypo( WString &word )
 {
-    WTypo *t;
-    t =new WTypo( NULL, word );
-    for( int i=0; i< SwitchTypos.count(); i++ ) {
-        t=(WTypo*)SwitchTypos[i];
+    for( int i = 0; i < SwitchTypos.count(); i++ ) {
+        WTypo *t = (WTypo *)SwitchTypos[i];
         if( t->bad() == word ) {
             word = t->good();
             break;

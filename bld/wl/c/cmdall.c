@@ -443,8 +443,11 @@ static bool AddModFile( void )
     char        *membname;
 
     ptr = GetFileName( &membname, false );
-    AddHTableElem(Root->modFilesHashed, ptr);
+    AddHTableElem( Root->modFilesHashed, ptr );
     LinkFlags |= GOT_CHGD_FILES;
+    if( membname != NULL ) {
+        _LnkFree( membname );
+    }
     return( true );
 }
 

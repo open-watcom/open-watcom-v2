@@ -221,7 +221,7 @@ STATIC void setSrcLineData( wp_srcfile *wpsrc_file, sio_data *curr_sio,
         line_count = line_index + 1;
     }
     wpsrc_file->wp_line_count = line_count;
-    if( line_count != 0 ) {
+    if( line_count > 0 ) {
         wpsrc_file->src_lines = ProfRealloc( lines, sizeof( wp_srcline ) * line_count );
     }
 }

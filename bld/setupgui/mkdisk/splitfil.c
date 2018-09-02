@@ -51,7 +51,7 @@ int main( int argc, char *argv[] )
         printf( "Usage: SPLITFIL filename size max-size\n" );
         exit( 1 );
     }
-    SplitFile( atol( argv[ 2 ] ), atol( argv[ 3 ] ), argv[ 1 ] );
+    SplitFile( atol( argv[2] ), atol( argv[3] ), argv[1] );
     return( 0 );
 }
 #endif
@@ -59,8 +59,8 @@ int main( int argc, char *argv[] )
 void SplitFile( long size, long max_size, char * input_file )
 /***********************************************************/
 {
-    char                fullname[ _MAX_PATH ], drive[ _MAX_DRIVE ];
-    char                dir[ _MAX_DIR ], fname[ _MAX_FNAME ], ext[ _MAX_EXT ];
+    char                fullname[_MAX_PATH], drive[_MAX_DRIVE];
+    char                dir[_MAX_DIR], fname[_MAX_FNAME], ext[_MAX_EXT];
     FILE                *bigfile, *smallfile;
     char                *buffer;
     int                 len_read;

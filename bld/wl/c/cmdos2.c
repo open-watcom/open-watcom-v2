@@ -1144,7 +1144,11 @@ static void ParseVersion( void )
 static bool AddResource( void )
 /*****************************/
 {
-    DoAddResource( tostring() );
+    char    *str;
+
+    str = tostring();
+    DoAddResource( str );
+    _LnkFree( str );
     return( true );
 }
 

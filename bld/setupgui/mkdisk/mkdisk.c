@@ -134,7 +134,7 @@ static const char               MkdiskInf[] = "mksetup.inf";
 #define PRODUCT_LINE    3
 
 
-static char                     *BootText[ NUM_LINES ] =
+static char                     *BootText[NUM_LINES] =
 {
 "",
 "",
@@ -269,7 +269,7 @@ void CreateBootFile()
 
     line = PRODUCT_LINE;
     for( list = BootTextList; list != NULL; list = list->next ) {
-        BootText[ line ] = list->item;
+        BootText[line] = list->item;
         ++line;
     }
     fp = fopen( "__boot__", "w" );
@@ -277,7 +277,7 @@ void CreateBootFile()
         printf( "Cannot create boot text file '__boot__'\n" );
     } else {
         for( line = 0; line < NUM_LINES; ++line ) {
-            fprintf( fp, "%s\n", BootText[ line ] );
+            fprintf( fp, "%s\n", BootText[line] );
         }
         fclose( fp );
     }
@@ -460,8 +460,8 @@ bool CheckParms( int *pargc, char **pargv[] )
         printf( "Usage: mkdisk [-x] <product> <size> <file_list> <pack_dir> <rel_root>\n" );
         return( false );
     }
-    Product = argv[ 1 ];
-    size = argv[ 2 ];
+    Product = argv[1];
+    size = argv[2];
     if( strcmp( size, "360" ) == 0 ) {
         DiskSize = DISK_360;
         MaxDiskFiles = DISK_360_FN;
@@ -482,12 +482,12 @@ bool CheckParms( int *pargc, char **pargv[] )
         printf( "SIZE must be one of 360, 720, 1.2, 1.4\n" );
         return( false );
     }
-    PackDir  = argv[ 4 ];
+    PackDir  = argv[4];
     if( stat( PackDir, &stat_buf ) != 0 ) {  // exists
         printf( "\nDirectory '%s' does not exist\n", PackDir );
         return( false );
     }
-    RelRoot  = argv[ 5 ];
+    RelRoot  = argv[5];
     if( stat( RelRoot, &stat_buf ) != 0 ) {  // exists
         printf( "\nDirectory '%s' does not exist\n", RelRoot );
         return( false );
@@ -590,7 +590,7 @@ bool AddFile( char *path, char *old_path, char redist, const char *file, const c
     struct stat         stat_buf;
     char                *p;
     char                *root_file;
-    char                src[ _MAX_PATH ], dst[ _MAX_PATH ];
+    char                src[_MAX_PATH], dst[_MAX_PATH];
     size_list           *ns,*sl;
 
     if( !IS_EMPTY( rel_file ) ) {
@@ -759,14 +759,14 @@ bool ReadList( FILE *fp )
     char        *condition;
     char        *patch;
     char        *dst_var;
-    char        buf[ 512 ];
+    char        buf[512];
     char        redist;
     bool        no_error;
 
     printf( "Checking files...\n" );
     no_error = true;
     while( fgets( buf, sizeof( buf ), fp ) != NULL ) {
-        buf[ strlen( buf ) - 1 ] = '\0';
+        buf[strlen( buf ) - 1] = '\0';
         redist = buf[0];
         path = strtok( buf + 1, " \t" );
         if( path == NULL ) {
@@ -874,7 +874,7 @@ static char *ReplaceEnv( char *file_name )
 // value of the environment variable
 {
     char                *p, *q, *e, *var;
-    char                buff[ _MAX_PATH ];
+    char                buff[_MAX_PATH];
 
     // copy and make changes into 'buff'
     q = buff;
@@ -928,9 +928,9 @@ void ReadSection( FILE *fp, const char *section, LIST **list )
             printf( "%s section not found in '%s'\n", section, MkdiskInf );
             return;
         }
-        if( SectionBuf[ 0 ] == '#' || SectionBuf[ 0 ] == '\0' )
+        if( SectionBuf[0] == '#' || SectionBuf[0] == '\0' )
             continue;
-        SectionBuf[ strlen( SectionBuf ) - 1 ] = '\0';
+        SectionBuf[strlen( SectionBuf ) - 1] = '\0';
         if( stricmp( SectionBuf, section ) == 0 ) {
             break;
         }
@@ -945,10 +945,10 @@ void ReadSection( FILE *fp, const char *section, LIST **list )
                 break;
             }
         }
-        if( SectionBuf[ 0 ] == '#' || SectionBuf[ 0 ] == '\0' )
+        if( SectionBuf[0] == '#' || SectionBuf[0] == '\0' )
             continue;
-        SectionBuf[ strlen( SectionBuf ) - 1 ] = '\0';
-        if( SectionBuf[ 0 ] == '\0' )
+        SectionBuf[strlen( SectionBuf ) - 1] = '\0';
+        if( SectionBuf[0] == '\0' )
             break;
         if( strnicmp( SectionBuf, "setup=", 6 ) == 0 ) {
             Setup = strdup( &SectionBuf[6] );
@@ -1028,7 +1028,7 @@ void ReadInfFile( void )
 /**********************/
 {
     FILE                *fp;
-    char                ver_buf[ 80 ];
+    char                ver_buf[80];
 
     fp = PathOpen( MkdiskInf );
     if( fp == NULL ) {
@@ -1456,9 +1456,9 @@ int main( int argc, char *argv[] )
     if( !CheckParms( &argc, &argv ) ) {
         return( 1 );
     }
-    fp = fopen( argv[ 3 ], "r" );
+    fp = fopen( argv[3], "r" );
     if( fp == NULL ) {
-        printf( "Cannot open '%s'\n", argv[ 3 ] );
+        printf( "Cannot open '%s'\n", argv[3] );
         return( 1 );
     }
     printf( "Reading Info File...\n" );

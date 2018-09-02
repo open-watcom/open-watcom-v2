@@ -115,14 +115,14 @@ bool ReadList( FILE *fp )
 //    char                *extra;
     char                *patch;
     char                *where;
-    char                buf[ 128 ];
+    char                buf[128];
 
     while( fgets( buf, 127, fp ) != NULL ) {
-        buf[ strlen( buf ) - 1 ] = '\0';
-        if( buf[ 0 ] == '\0' ) continue;
-        if( buf[ 0 ] == '#' ) {
-            if( buf[ 2 ] == '@' ) {     // database
-                buf[ 1 ] = '-';         // (so strtok works)
+        buf[strlen( buf ) - 1] = '\0';
+        if( buf[0] == '\0' ) continue;
+        if( buf[0] == '#' ) {
+            if( buf[2] == '@' ) {     // database
+                buf[1] = '-';         // (so strtok works)
             } else {
                 continue;
             }
@@ -230,13 +230,13 @@ int main( int argc, char *argv[] )
         printf( "Usage: GEMMKFIL <file_list> [versions]\n" );
         return( 1 );
     }
-    fp = fopen( argv[ 1 ], "r" );
+    fp = fopen( argv[1], "r" );
     if( fp == NULL ) {
-        printf( "Cannot open '%s'\n", argv[ 1 ] );
+        printf( "Cannot open '%s'\n", argv[1] );
         return( 1 );
     }
-    for( i = 2; argv[ i ] != NULL; ++i ) {
-        AddVersion( argv[ i ] );
+    for( i = 2; argv[i] != NULL; ++i ) {
+        AddVersion( argv[i] );
     }
     ok = ReadList( fp );
     fclose( fp );

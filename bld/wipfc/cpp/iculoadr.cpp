@@ -313,10 +313,10 @@ UConverter* ICULoader::clone( UErrorCode *err )
     }
 
     if( localConverter == NULL || U_FAILURE( *err ) ) {
-        if( allocatedConverter != NULL && allocatedConverter->subChars != NULL ) {
+        if( allocatedConverter != NULL && allocatedConverter->subChars != (uint8_t *)allocatedConverter->subUChars ) {
             delete[] allocatedConverter->subChars;
         }
-        delete allocatedConverter;
+        delete[] (char *)allocatedConverter;
         return NULL;
     }
 

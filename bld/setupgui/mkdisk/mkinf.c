@@ -94,7 +94,7 @@ static char                 *Product;
 static long                 DiskSize;
 static int                  BlockSize;
 static char                 *RelRoot;
-static char                 *Setup;
+static char                 *Setup = NULL;
 static FILE_INFO            *FileList = NULL;
 static PATH_INFO            *PathList = NULL;
 static LIST                 *AppSection = NULL;
@@ -285,12 +285,12 @@ bool CheckParms( int *pargc, char **pargv[] )
         printf( "-x         force creation of missing files (testing only)\n" );
         return( false );
     }
-    Product = argv[ 1 ];
+    Product = argv[1];
     DiskSize = (1457664L-4096);
     MaxDiskFiles = 215;
     BlockSize = 512;
 
-    RelRoot  = argv[ 3 ];
+    RelRoot  = argv[3];
     if( stat( RelRoot, &stat_buf ) != 0 ) {  // exists
         printf( "\nDirectory '%s' does not exist\n", RelRoot );
         return( false );
@@ -415,7 +415,7 @@ static int mkdir_nested( const char *path )
 #else
     unsigned    attr;
 #endif
-    char        pathname[ FILENAME_MAX ];
+    char        pathname[FILENAME_MAX];
     char        *p;
     char        *end;
 
@@ -483,7 +483,7 @@ bool AddFile( char *path, char *old_path, char type, char redist, char *file, co
     struct stat         stat_buf;
     char                *p;
     char                *root_file;
-    char                src[ _MAX_PATH ];
+    char                src[_MAX_PATH];
     size_list           *ns,*sl;
     char                archive_name[16] = "pck00000";
     int                 pack_num = 1;
@@ -696,7 +696,7 @@ bool ReadList( FILE *fp )
     char        *desc;
     char        *dst_var;
     char        *where;
-    char        buf[ 1024 ];
+    char        buf[1024];
     char        redist;
     char        type;
     bool        no_error;
@@ -781,6 +781,7 @@ bool ReadList( FILE *fp )
         free( old_path );
         free( file );
         free( rel_fil );
+        free( where );
         free( condition );
         free( desc );
     }
@@ -844,7 +845,7 @@ static char *ReplaceEnv( char *file_name )
 // value of the environment variable
 {
     char                *p, *q, *e, *var;
-    char                buff[ _MAX_PATH ];
+    char                buff[_MAX_PATH];
 
     // copy and make changes into 'buff'
     q = buff;
@@ -898,31 +899,33 @@ void ReadSection( FILE *fp, const char *section, LIST **list )
             printf( "%s section not found in '%s'\n", section, MksetupInf );
             return;
         }
-        if( SectionBuf[ 0 ] == '#' || SectionBuf[ 0 ] == '\0' )
+        if( SectionBuf[0]== '#' || SectionBuf[0]== '\0' )
             continue;
-        SectionBuf[ strlen( SectionBuf ) - 1 ] = '\0';
+        SectionBuf[strlen( SectionBuf ) - 1]= '\0';
         if( stricmp( SectionBuf, section ) == 0 ) {
             break;
         }
     }
     for( ;; ) {
         if( mygets( SectionBuf, SECTION_BUF_SIZE, fp ) == NULL ) {
+            fclose( fp );
             if( --file_curr >= 0 ) {
-                fclose( fp );
                 fp = file_stack[file_curr];
                 continue;
             } else {
                 break;
             }
         }
-        if( SectionBuf[ 0 ] == '#' || SectionBuf[ 0 ] == '\0' )
+        if( SectionBuf[0]== '#' || SectionBuf[0]== '\0' )
             continue;
-        SectionBuf[ strlen( SectionBuf ) - 1 ] = '\0';
-        if( SectionBuf[ 0 ] == '\0' )
+        SectionBuf[strlen( SectionBuf ) - 1]= '\0';
+        if( SectionBuf[0]== '\0' )
             break;
         if( strnicmp( SectionBuf, "setup=", 6 ) == 0 ) {
-            Setup = strdup( &SectionBuf[6] );
-            Setup = ReplaceEnv( Setup );
+            char *p;
+            p = strdup( &SectionBuf[6] );
+            Setup = ReplaceEnv( p );
+            free( p );
             continue;
         }
         new = malloc( sizeof( LIST ) );
@@ -1000,7 +1003,7 @@ void ReadInfFile( void )
 /**********************/
 {
     FILE                *fp;
-    char                ver_buf[ 80 ];
+    char                ver_buf[80];
 
     fp = PathOpen( MksetupInf );
     if( fp == NULL ) {
@@ -1010,6 +1013,7 @@ void ReadInfFile( void )
     sprintf( ver_buf, "[%s]", Product );
     ReadSection( fp, ver_buf, &AppSection );
     fclose( fp );
+    free( Setup );
 }
 
 
@@ -1444,9 +1448,9 @@ int main( int argc, char *argv[] )
     if( !CheckParms( &argc, &argv ) ) {
         return( 1 );
     }
-    fp = fopen( argv[ 2 ], "r" );
+    fp = fopen( argv[2], "r" );
     if( fp == NULL ) {
-        printf( "Cannot open '%s'\n", argv[ 2 ] );
+        printf( "Cannot open '%s'\n", argv[2]);
         return( 1 );
     }
     printf( "Reading Info File...\n" );

@@ -322,7 +322,7 @@ setupterm( NCURSES_CONST char *tname, int Filedes, int *errret )
 
     term_ptr = typeCalloc( TERMINAL, 1 );
 
-    if( term_ptr == 0 ) {
+    if( term_ptr == NULL ) {
         ret_error0( -1, "Not enough memory to create terminal structure.\n" );
     }
 #if USE_DATABASE || USE_TERMCAP
