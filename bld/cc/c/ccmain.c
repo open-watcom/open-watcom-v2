@@ -1253,6 +1253,21 @@ static bool doOpenSrcFile( path_descr *fp, path_descr *fa, src_file_type typ )
     return( false );
 }
 
+static void normalizeSep( char *dir )
+{
+    char    c;
+
+    while( (c = *dir) != '\0' ) {
+#if defined( __UNIX__ )
+        if( c == '\\' )
+            *dir = '/';
+#else
+        if( c == '/' )
+            *dir = '\\';
+#endif
+        dir++;
+    }
+}
 
 bool OpenSrcFile( const char *filename, src_file_type typ )
 {
@@ -1262,6 +1277,7 @@ bool OpenSrcFile( const char *filename, src_file_type typ )
     path_descr  *fap;
 
     _splitpath2( filename, fp.buffer, &fp.drv, &fp.dir, &fp.fnm, &fp.ext );
+    normalizeSep( fp.dir );
     fap = NULL;
     switch( typ ) {
     case FT_SRC:
@@ -1274,6 +1290,7 @@ bool OpenSrcFile( const char *filename, src_file_type typ )
         alias_filename = IncludeAlias( filename, ( typ == FT_LIBRARY || typ == FT_HEADER_PRE ) );
         if( alias_filename != NULL ) {
             _splitpath2( alias_filename, fa.buffer, &fa.drv, &fa.dir, &fa.fnm, &fa.ext );
+            normalizeSep( fa.dir );
             fap = &fa;
         }
         break;
