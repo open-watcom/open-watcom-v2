@@ -739,6 +739,22 @@ static bool doIoSuppOpenSrc(    // OPEN A SOURCE FILE (PRIMARY,HEADER)
 }
 
 
+static void normalizeSep( char *dir )
+{
+    char    c;
+
+    while( (c = *dir) != '\0' ) {
+#if defined( __UNIX__ )
+        if( c == '\\' )
+            *dir = '/';
+#else
+        if( c == '/' )
+            *dir = '\\';
+#endif
+        dir++;
+    }
+}
+
 bool IoSuppOpenSrc(             // OPEN A SOURCE FILE (PRIMARY,HEADER)
     const char *file_name,      // - supplied file name
     src_file_type typ )         // - type of search path to use
@@ -765,6 +781,7 @@ bool IoSuppOpenSrc(             // OPEN A SOURCE FILE (PRIMARY,HEADER)
     }
 #endif
     splitFileName( file_name, &fd );
+    normalizeSep( fd.dir );
     fap = NULL;
     switch( typ ) {
     case FT_HEADER:
@@ -775,6 +792,7 @@ bool IoSuppOpenSrc(             // OPEN A SOURCE FILE (PRIMARY,HEADER)
         alias_file_name = IAliasLookup( file_name, typ == FT_LIBRARY );
         if( alias_file_name != file_name ) {
             splitFileName( alias_file_name, &fa );
+            normalizeSep( fa.dir );
             fap = &fa;
         }
         break;
