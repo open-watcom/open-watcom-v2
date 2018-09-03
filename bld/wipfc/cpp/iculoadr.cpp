@@ -28,7 +28,9 @@
 #include <cstring>
 #include <string>
 #include "env.hpp"
+#include "util.hpp"
 #include "iculoadr.hpp"
+
 
 /*
  * Minimised version of ICU loader for one converter only
