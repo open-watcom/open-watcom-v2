@@ -32,6 +32,7 @@
 
 #include "_aui.h"
 #include <ctype.h>
+#include "wspawn.h"
 
 
 typedef struct {
@@ -205,7 +206,7 @@ void WndInstallClickHook( WNDCLICKHOOK *rtn )
     WndClickHook = rtn;
 }
 
-static void DoMainGUIEventProc( spawn_parms *spawnp )
+static void DoMainGUIEventProc( void *_spawnp )
 {
     a_window            wnd;
     bool                ret;
@@ -215,12 +216,12 @@ static void DoMainGUIEventProc( spawn_parms *spawnp )
     int                 scroll;
     gui_mcursor_handle  old_cursor;
 
-    gui_window          *gui = spawnp->gui;
-    gui_event           gui_ev = spawnp->gui_ev;
-    void                *parm = spawnp->parm;
+    gui_window          *gui = ((spawn_parms *)_spawnp)->gui;
+    gui_event           gui_ev = ((spawn_parms *)_spawnp)->gui_ev;
+    void                *parm = ((spawn_parms *)_spawnp)->parm;
 
     wnd = GUIGetExtra( gui );
-    spawnp->ret = false;
+    ((spawn_parms *)_spawnp)->ret = false;
     if( wnd == NULL )
         return;
     if( WndIgnoreAllEvents ) {
@@ -535,7 +536,7 @@ static void DoMainGUIEventProc( spawn_parms *spawnp )
         WndSayMatchMode( wnd );
     }
     WndFreshAll();
-    spawnp->ret = ret;
+    ((spawn_parms *)_spawnp)->ret = ret;
     return;
 }
 
@@ -587,7 +588,7 @@ bool WndMainGUIEventProc( gui_window *gui, gui_event gui_ev, void *parm )
     spawnp.gui_ev = gui_ev;
     spawnp.parm = parm;
     wndProcNesting++;
-    SpawnP( (aui_spawn_funcP *)DoMainGUIEventProc, &spawnp );
+    SpawnP( DoMainGUIEventProc, &spawnp );
     wndProcNesting--;
     return( spawnp.ret );
 }

@@ -29,12 +29,12 @@
 ****************************************************************************/
 
 
-typedef void (wv_spawn_func)( void );
-typedef void (wv_spawn_funcP)( void * );
-typedef void (wv_spawn_funcPP)( void *, void * );
+typedef void (wspawn_func)( void );
+typedef void (wspawn_funcP)( void * );
+typedef void (wspawn_funcPP)( void *, void * );
 
-extern int Spawn( wv_spawn_func *func );
-extern int SpawnP( wv_spawn_funcP *func, void *parm );
-extern int SpawnPP( wv_spawn_funcPP *func, void *p1, void *p2 );
+extern int      Spawn( wspawn_func *func );
+extern int      SpawnP( wspawn_funcP *func, void *parm );
+extern int      SpawnPP( wspawn_funcPP *func, void *p1, void *p2 );
 
-extern void Suicide( void );
+extern void     Suicide( void );

@@ -36,7 +36,7 @@
 #include "dbgerr.h"
 #include "dbgmem.h"
 #include "dbgstk.h"
-#include "spawn.h"
+#include "wspawn.h"
 #include "madcli.h"
 #include "strutil.h"
 #include "dbgmad.h"

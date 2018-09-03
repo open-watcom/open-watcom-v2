@@ -35,7 +35,7 @@
 #include "dbgmem.h"
 #include "dbglit.h"
 #include "dbgio.h"
-#include "spawn.h"
+#include "wspawn.h"
 #include "dui.h"
 #include "dbgscan.h"
 #include "dbgutil.h"

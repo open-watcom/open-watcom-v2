@@ -37,7 +37,7 @@
 #include "dbgstk.h"
 #include "dbgitem.h"
 #include "dbgio.h"
-#include "spawn.h"
+#include "wspawn.h"
 #include "mad.h"
 #include "strutil.h"
 #include "dbgscan.h"
@@ -58,7 +58,7 @@ void BreakOnSelected( const char *item )
     old = ReScan( item );
     EvalLValExpr( 1 );
     ReScan( old );
-    BreakOnExprSP( item );
+    BreakOnExprSP( (void *)item );
 }
 
 

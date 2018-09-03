@@ -35,7 +35,7 @@
 #include "dbgitem.h"
 #include "dbgstk.h"
 #include "dbglit.h"
-#include "spawn.h"
+#include "wspawn.h"
 #include "mad.h"
 #include "dbgscan.h"
 #include "dbgexpr.h"
@@ -104,7 +104,7 @@ OVL_EXTERN void GetModName( void *value )
     *(mod_handle *)value = mod;
 }
 
-static bool DlgDoScan( const char *str, void *value, wv_spawn_funcP *rtn )
+static bool DlgDoScan( const char *str, void *value, wspawn_funcP *rtn )
 {
     const char  *old;
     bool        ok;

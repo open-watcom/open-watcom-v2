@@ -429,13 +429,6 @@ extern void                 WndZapped( a_window );
 extern a_window             WndFindClass( a_window, wnd_class );
 extern void                 WndForAllClass( wnd_class wndclass, void (*rtn)( a_window ) );
 
-typedef void    aui_spawn_funcP( void * );
-typedef void    aui_spawn_func( void );
-
-extern int                  SpawnP( aui_spawn_funcP *, void *parm );
-extern int                  Spawn( aui_spawn_func * );
-extern void                 Suicide( void );
-
 extern const char           *WndSetIDChars( a_window wnd, const char *id_chars );
 
 extern bool                 WndIDChar( a_window, int ch );

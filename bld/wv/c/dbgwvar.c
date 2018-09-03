@@ -40,7 +40,7 @@
 #include "dbgadget.h"
 #include "dbgitem.h"
 #include "dlgvarx.h"
-#include "spawn.h"
+#include "wspawn.h"
 #include "dbgscan.h"
 #include "dui.h"
 #include "strutil.h"

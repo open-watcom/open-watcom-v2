@@ -50,12 +50,12 @@
 #include "dbginit.h"
 #include "dlgcmd.h"
 #include "dbgcapt.h"
+#include "wspawn.h"
 
 
 extern int              ScanSavePtr;
 
 extern void             CmdError( void );
-extern void             Suicide( void );
 
 /*
  * error - output error message

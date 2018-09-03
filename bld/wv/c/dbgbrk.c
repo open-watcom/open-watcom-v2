@@ -41,7 +41,7 @@
 #include "dbgrep.h"
 #include "dbgio.h"
 #include "dui.h"
-#include "spawn.h"
+#include "wspawn.h"
 #include "enterdb.h"
 #include "strutil.h"
 #include "dbgmad.h"
@@ -1619,7 +1619,7 @@ bool BreakOnRawMemory( address addr, const char *comment, dig_type_size size )
     return( SpawnP( BreakOnAddress, &s ) == 0 );
 }
 
-void BreakOnExprSP( const char *comment )
+void BreakOnExprSP( void *_comment )
 {
     address             addr;
     dig_type_info       ti;
@@ -1638,7 +1638,7 @@ void BreakOnExprSP( const char *comment )
     case INSP_RAW_DATA:
         s.addr = addr;
         s.size = ti.size;
-        s.comment = comment;
+        s.comment = _comment;
         BreakOnAddress( &s );
         break;
     }

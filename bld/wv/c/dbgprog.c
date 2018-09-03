@@ -34,7 +34,7 @@
 #include <limits.h>
 #include "_srcmgt.h"
 #include "dbgdata.h"
-#include "spawn.h"
+#include "wspawn.h"
 #include "dbglit.h"
 #include "dbgerr.h"
 #include "dbgmem.h"

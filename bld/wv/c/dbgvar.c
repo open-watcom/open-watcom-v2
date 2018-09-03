@@ -40,7 +40,7 @@
 #include "dlgvarx.h"
 #include "dbgvar.h"
 #include "dbgmem.h"
-#include "spawn.h"
+#include "wspawn.h"
 #include "dui.h"
 #include "strutil.h"
 #include "dbgscan.h"
@@ -1798,7 +1798,7 @@ bool    VarIsPointer( type_kind class )
     return( false );
 }
 
-bool VarPrintText( var_info *i, char *buff, wv_spawn_func *rtn, int len )
+bool VarPrintText( var_info *i, char *buff, wspawn_func *rtn, int len )
 {
     StartPrintBuff( buff, len );
     if( Spawn( rtn ) == 0 ) {
@@ -1963,7 +1963,7 @@ void VarBreakOnWrite( var_info *i, var_node *v )
 
     VarBuildName( i, v, false );
     name = DupStr( TxtBuff );
-    SpawnP( (wv_spawn_funcP *)BreakOnExprSP, name );
+    SpawnP( BreakOnExprSP, name );
     DbgFree( name );
 }
 
