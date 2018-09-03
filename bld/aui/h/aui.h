@@ -557,7 +557,6 @@ extern void                 WndSetGadgetLine( a_window wnd, wnd_line_piece *line
 extern void                 WndGetGadgetSize( wnd_gadget_type type, gui_coord * );
 
 extern wnd_attr             WndMapTabAttr( wnd_attr );
-extern gui_window_styles    WndStyle;
 extern char                 WndBackgroundChar;
 
 #define DefPopUp( x )       (sizeof( x ) / sizeof( (x)[0] )), x
@@ -586,6 +585,10 @@ extern wnd_gadget_type      WndGadgetSecondary;
 
 extern gui_menu_struct      WndMainMenu[];
 extern int                  WndNumMenus;
+
+/* following data may be defined in application otherwise default will be used */
+
+extern gui_window_styles    WndStyle;
 
 /* following block of data (colours/attributes) may be defined in application otherwise default will be used */
 
