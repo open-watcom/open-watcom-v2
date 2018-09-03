@@ -2025,42 +2025,42 @@ static char *ReadIndirectFile( void )
 
 static void ProcOptions( const char *str )
 {
-    unsigned    level;
+    int         level;
     const char  *save[MAX_NESTING];
     char        *buffers[MAX_NESTING];
     const char  *penv;
     char        *ptr;
 
     if( str != NULL ) {
-        level = 0;
-        buffers[0] = NULL;
+        level = -1;
         for( ;; ) {
             while( *str == ' ' || *str == '\t' )
                 ++str;
-            if( *str == '@' && level < MAX_NESTING ) {
-                save[level] = CollectEnvOrFileName( str + 1 );
-                ++level;
-                buffers[level] = NULL;
-                penv = FEGetEnv( TokenBuf );
-                if( penv == NULL ) {
-                    ptr = ReadIndirectFile();
+            if( *str == '@' ) {
+                str = CollectEnvOrFileName( str + 1 );
+                level++;
+                if( level < MAX_NESTING ) {
+                    save[level] = str;
+                    ptr = NULL;
+                    penv = FEGetEnv( TokenBuf );
+                    if( penv == NULL ) {
+                        ptr = ReadIndirectFile();
+                        penv = ptr;
+                    }
                     buffers[level] = ptr;
-                    penv = ptr;
+                    if( penv != NULL ) {
+                        str = penv;
+                        continue;
+                    }
                 }
-                if( penv != NULL ) {
-                    str = penv;
-                    continue;
-                }
-                str = save[--level];
+                level--;
             }
             if( *str == '\0' ) {
-                if( level == 0 )
+                if( level < 0 )
                     break;
-                if( buffers[level] != NULL ) {
-                    CMemFree( buffers[level] );
-                    buffers[level] = NULL;
-                }
-                str = save[--level];
+                CMemFree( buffers[level] );
+                str = save[level];
+                level--;
                 continue;
             }
             if( *str == '-' || *str == SwitchChar ) {
