@@ -77,7 +77,7 @@ void WEXPORT MToolItem::writeSelf( WObjectFile& p )
 {
     WObject::writeSelf( p );
     p.writeObject( _toolId );
-    p.writeObject( &_toolType );
+    p.writeObject( _toolType );
     p.writeObject( &_hint );
 }
 #endif
