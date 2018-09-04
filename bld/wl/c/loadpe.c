@@ -1394,6 +1394,7 @@ void FiniPELoadFile( void )
             for( ; currpos < totalsize; currpos += buffsize ) {
                 memset( buffer, 0, CRC_BUFF_SIZE );
                 buffsize = QRead( outfile->handle, buffer, CRC_BUFF_SIZE, outfile->fname );
+                DbgAssert( buffsize == IOERROR );
                 DbgAssert( ( buffsize % 2 ) != 1 ); /* check for odd length */
 
                 crc = CalcPEChecksum( crc, (unsigned short *)buffer, buffsize / sizeof( unsigned short ) );

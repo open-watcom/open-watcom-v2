@@ -303,7 +303,7 @@ int AddTarget( const char *target )
 /*********************************/
 {
     int                 count;
-    LIST                *new, *curr, **owner;
+    LIST                *newitem, *curr, **owner;
 
     count = 1;
     for( owner = &TargetList; (curr = *owner) != NULL; owner = &(curr->next) ) {
@@ -313,18 +313,19 @@ int AddTarget( const char *target )
         ++count;
     }
 
-    new = malloc( sizeof( LIST ) );
-    if( new == NULL ) {
+    newitem = malloc( sizeof( LIST ) );
+    if( newitem == NULL ) {
         printf( "Out of memory\n" );
         return( 0 );
     }
-    new->item = strdup( target );
-    if( new->item == NULL ) {
+    newitem->item = strdup( target );
+    if( newitem->item == NULL ) {
+        free( newitem );
         printf( "Out of memory\n" );
         return( 0 );
     }
-    new->next = NULL;
-    *owner = new;
+    newitem->next = NULL;
+    *owner = newitem;
     return( count );
 }
 
@@ -358,7 +359,7 @@ int AddPath( const char *path, int target, int parent )
 /*****************************************************/
 {
     int                 count;
-    PATH_INFO           *new, *curr, **owner;
+    PATH_INFO           *newitem, *curr, **owner;
 
     count = 1;
     for( owner = &PathList; (curr = *owner) != NULL; owner = &(curr->next) ) {
@@ -368,20 +369,21 @@ int AddPath( const char *path, int target, int parent )
         ++count;
     }
 
-    new = malloc( sizeof( PATH_INFO ) );
-    if( new == NULL ) {
+    newitem = malloc( sizeof( PATH_INFO ) );
+    if( newitem == NULL ) {
         printf( "Out of memory\n" );
         return( 0 );
     }
-    new->path = strdup( path );
-    if( new->path == NULL ) {
+    newitem->path = strdup( path );
+    if( newitem->path == NULL ) {
+        free( newitem );
         printf( "Out of memory\n" );
         return( 0 );
     }
-    new->target = target;
-    new->parent = parent;
-    new->next = NULL;
-    *owner = new;
+    newitem->target = target;
+    newitem->parent = parent;
+    newitem->next = NULL;
+    *owner = newitem;
     return( count );
 }
 
@@ -477,7 +479,7 @@ bool AddFile( char *path, char *old_path, char type, char redist, char *file, co
 /***********************************************************************************************************************/
 {
     int                 path_dir, old_path_dir, target;
-    FILE_INFO           *new, *curr, **owner;
+    FILE_INFO           *newitem, *curr, **owner;
     long                act_size;
     time_t              time;
     struct stat         stat_buf;
@@ -649,20 +651,21 @@ bool AddFile( char *path, char *old_path, char type, char redist, char *file, co
     }
 
     // add to list
-    new = malloc( sizeof( FILE_INFO ) );
-    if( new == NULL ) {
+    newitem = malloc( sizeof( FILE_INFO ) );
+    if( newitem == NULL ) {
         printf( "Out of memory\n" );
         return( false );
     }
-    new->pack = strdup( archive_name );
-    new->condition = strdup( cond );
-    if( new->pack == NULL || new->condition == NULL ) {
+    newitem->pack = strdup( archive_name );
+    newitem->condition = strdup( cond );
+    if( newitem->pack == NULL || newitem->condition == NULL ) {
+        free( newitem );
         printf( "Out of memory\n" );
         return( false );
     }
-    new->path = path_dir;
-    new->old_path = old_path_dir;
-    new->num_files = 1;
+    newitem->path = path_dir;
+    newitem->old_path = old_path_dir;
+    newitem->num_files = 1;
     ns = malloc( sizeof( size_list ) + strlen( root_file ) );
     if( ns == NULL ) {
         printf( "Out of memory\n" );
@@ -676,9 +679,9 @@ bool AddFile( char *path, char *old_path, char type, char redist, char *file, co
     ns->redist = redist;
     ns->remove = remove;
     ns->dst_var = dst_var;
-    new->sizes = ns;
-    new->next = NULL;
-    *owner = new;
+    newitem->sizes = ns;
+    newitem->next = NULL;
+    *owner = newitem;
     return( true );
 }
 

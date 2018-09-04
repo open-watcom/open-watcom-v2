@@ -35,6 +35,8 @@
 #define MAX_LINE (256)
 #define FNMAX  80                   /* maximum file name length. */
 
+#define IOERROR         ((size_t)-1)
+
 /* Slot related data definition */
 /*           slot enum      prompt text    default file extension */
 #define SLOT_DEFS \

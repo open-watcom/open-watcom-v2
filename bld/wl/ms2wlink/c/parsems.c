@@ -194,6 +194,8 @@ void StartNewFile( char *fname )
         newfile->buffer = MemAlloc( size + 1 );
         if( newfile->buffer != NULL ) {
             size = QRead( newfile->fp, newfile->buffer, size, newfile->name );
+            if( size == IOERROR )
+                size = 0;
             *(newfile->buffer + size) = '\0';
             newfile->where = MIDST;
             newfile->how = BUFFERED;

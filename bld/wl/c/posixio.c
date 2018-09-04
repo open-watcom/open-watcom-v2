@@ -218,7 +218,7 @@ size_t QRead( f_handle file, void *buffer, size_t len, const char *name )
 
     CheckBreak();
     h = posread( file, buffer, len );
-    if( h == -1 ) {
+    if( h == IOERROR ) {
         LnkMsg( ERR+MSG_IO_PROBLEM, "12", name, strerror( errno ) );
     }
     return( h );
@@ -234,7 +234,7 @@ size_t QWrite( f_handle file, const void *buffer, size_t len, const char *name )
         return( 0 );
     CheckBreak();
     h = poswrite( file, buffer, len );
-    if( h == -1 ) {
+    if( h == IOERROR ) {
         LnkMsg( ERR+MSG_IO_PROBLEM, "12", name, strerror( errno ) );
     } else if( h != len ) {
         if( name != NULL ) {
@@ -332,10 +332,12 @@ bool QReadStr( f_handle file, char *dest, size_t size, const char *name )
 {
     bool            eof;
     char            ch;
+    size_t          len;
 
     eof = false;
     while( --size > 0 ) {
-        if( QRead( file, &ch, 1, name ) == 0 ) {
+        len = QRead( file, &ch, 1, name );
+        if( len == 0 || len == IOERROR ) {
             eof = true;
             break;
         } else if( ch != '\r' ) {

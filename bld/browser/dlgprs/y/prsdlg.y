@@ -111,6 +111,10 @@ dialog_line
         | T_Ident T_Dialog dialog_header_list T_Number ',' T_Number ',' T_Number ',' T_Number
           { 
             assert( CurrDialog == NULL );
+
+            if( CurrDialog != NULL ) {
+                delete CurrDialog;
+            }
             CurrDialog = new Dialog( _scanner->getIdent( $1 ), Rect( $4, $6, $8, $10 ) );
           }
         ;

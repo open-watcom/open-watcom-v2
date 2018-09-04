@@ -555,7 +555,7 @@ size_t QRead( FILE *fp, void *buffer, size_t len )
     size_t result;
 
     result = fread( buffer, 1, len, fp );
-    if( result == -1 ) {
+    if( result == IOERROR ) {
         IOError( "problem reading file" );
     }
     return( result );
@@ -567,7 +567,7 @@ size_t QWrite( FILE *fp, const void *buffer, size_t len )
     size_t result;
 
     result = fwrite( buffer, 1, len, fp );
-    if( result == -1 ) {
+    if( result == IOERROR ) {
         IOError( "problem writing file" );
     } else if( result != len ) {
         Error( "disk full" );

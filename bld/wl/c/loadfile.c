@@ -919,9 +919,11 @@ unsigned_32 CopyToLoad( f_handle handle, const char *name )
     unsigned_32     wrote;
 
     wrote = 0;
-    while( (amt_read = QRead( handle, TokBuff, TokSize, name )) != 0 ) {
+    amt_read = QRead( handle, TokBuff, TokSize, name );
+    while( amt_read != 0 && amt_read != IOERROR ) {
         WriteLoad( TokBuff, amt_read );
         wrote += amt_read;
+        amt_read = QRead( handle, TokBuff, TokSize, name );
     }
     return( wrote );
 }

@@ -755,6 +755,8 @@ void SetCommandFile( f_handle file, char *fname )
         _LnkAlloc( buff, size + 1 );
         if( buff != NULL ) {
             size = QRead( file, buff, size, fname );
+            if( size == IOERROR )
+                size = 0;
             buff[size] = '\0';
             NewCommandSource( fname, buff, BUFFERED );
         }

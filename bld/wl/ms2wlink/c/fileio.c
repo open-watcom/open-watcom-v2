@@ -68,7 +68,7 @@ size_t QRead( FILE *fp, void *buffer, size_t len, const char *name )
     size_t  ret;
 
     ret = fread( buffer, 1, len, fp );
-    if( ret == -1 ) {
+    if( ret == IOERROR ) {
         IOError( "io error processing ", name );
     }
     return( ret );
@@ -84,7 +84,7 @@ size_t QWrite( FILE *fp, const void *buffer, size_t len, const char *name )
         return( 0 );
 
     ret = fwrite( buffer, 1, len, fp );
-    if( ret == -1 ) {
+    if( ret == IOERROR ) {
         IOError( "io error processing ", name );
     }
     return( ret );
@@ -124,10 +124,12 @@ bool QReadStr( FILE *fp, char *dest, size_t size, const char *name )
 {
     bool            eof;
     char            ch;
+    size_t          len;
 
     eof = false;
     while( --size > 0 ) {
-        if( QRead( fp, &ch, 1, name ) == 0 ) {
+        len = QRead( fp, &ch, 1, name );
+        if( len == 0 || size == IOERROR ) {
             eof = true;
             break;
         } else if( ch != '\r' ) {
