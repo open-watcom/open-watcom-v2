@@ -3,5 +3,6 @@
 !inject rdos.obj    rdu
 !inject fork.obj    rdu
 !inject waitpid.obj rdu
+!inject timeday.obj rdu
 
 !include ../../../../objlist.mif
