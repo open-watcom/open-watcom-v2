@@ -36,11 +36,14 @@
     #include <windows.h>
 #elif defined( __OS2__ )
     #include <wos2.h>
+#elif defined( __RDOS__ )
+    #include <rdos.h>
 #endif
 #include "rtdata.h"
 #include "randnext.h"
 #include "thread.h"
 
+#ifndef __RDOS__
 
 static unsigned long *initrandnext( void )
 {
@@ -48,10 +51,14 @@ static unsigned long *initrandnext( void )
     return( (unsigned long *)&_RWD_randnext );
 }
 
+#endif
 
 _WCRTLINK int rand( void )
 /************************/
 {
+#if defined( __RDOS__ )
+    return( (int)( RdosGetLongRandom() & 0x7FFF ) );
+#else
     unsigned long   *randptr;
 
     randptr = initrandnext();
@@ -60,16 +67,19 @@ _WCRTLINK int rand( void )
     }
     *randptr = *randptr * 1103515245 + 12345;
     return( (int)( (*randptr >> 16) & 0x7FFF ) );
+#endif
 }
 
 
 _WCRTLINK void srand( unsigned int seed )
 /***************************************/
 {
+#ifndef __RDOS__
     unsigned long   *randptr;
 
     randptr = initrandnext();
     if( randptr != NULL ) {
         *randptr = seed;
     }
+#endif
 }
