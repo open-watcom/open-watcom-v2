@@ -54,6 +54,10 @@ all : $($(system)_dirs) $($(system)_files) .symbolic
     @%make echo_wsplice
     $(wsplice) $(wsplice_opts)
 
+{rdos}.mh.h:
+    @%make echo_wsplice
+    $(wsplice) $(wsplice_opts)
+
 {sys}.mh{sys}.h:
     @%make echo_wsplice
     $(wsplice) $(wsplice_opts)
