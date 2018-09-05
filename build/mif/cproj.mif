@@ -678,7 +678,7 @@ inc_dirs_sys_qnx     =
 inc_dirs_sys_linux   =
 inc_dirs_sys_nto     =
 inc_dirs_sys_zdos    = -I"$(hdr_dir)/dos/zdos"
-inc_dirs_sys_rdos    =
+inc_dirs_sys_rdos    = -I"$(hdr_dir)/rdos"
 inc_dirs_sys_rdosdev =
 
 inc_dirs_lang_osi     = -I"$(hdr_dir)/dos"
