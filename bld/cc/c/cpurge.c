@@ -56,7 +56,6 @@ void PurgeMemory( void )
 {
 //  MacroPurge();
     SymsPurge();        /* calls TypesPurge */
-    FreeDataQuads();
     FreeFNames();
     FreeRDir();
     SrcPurge();
