@@ -135,7 +135,6 @@ void FreeDataQuads( void )
             break;
         FEfree( DataQuadSegs[i] );
     }
-    InitDataQuads();
 }
 
 void *StartDataQuadAccess( void )
