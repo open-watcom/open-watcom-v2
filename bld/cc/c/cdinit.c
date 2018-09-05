@@ -134,6 +134,7 @@ void FreeDataQuads( void )
         if( DataQuadSegs[i] == NULL )
             break;
         FEfree( DataQuadSegs[i] );
+        DataQuadSegs[i] = NULL;
     }
 }
 
