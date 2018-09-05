@@ -1,5 +1,5 @@
-#                        noext cpp  dos  lnx  qnx
-#--------------------------------------------------
+#                        noext cpp  dos  lnx  qnx  rdos
+#-------------------------------------------------------
 !inject _algmut.h              hcpp
 !inject _algnmod.h             hcpp
 !inject _algsort.h             hcpp
@@ -314,3 +314,4 @@
 dos_files   = $(hcpp) $(hdos)
 linux_files = $(hcpp) $(hlnx)
 qnx_files   = $(hcpp) $(hqnx)
+rdos_files  = $(hrdos)
