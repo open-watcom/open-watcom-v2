@@ -291,27 +291,27 @@ UConverter* ICULoader::clone( UErrorCode *err )
     }
     *err = U_SAFECLONE_ALLOCATED_WARNING;
 
-    std::memset( localConverter, 0, bufferSizeNeeded );
+    std::memset( allocatedConverter, 0, bufferSizeNeeded );
 
     /* Copy initial state */
-    std::memcpy( localConverter, &_converter, sizeof( UConverter ) );
-    localConverter->isCopyLocal = localConverter->isExtraLocal = FALSE;
+    std::memcpy( allocatedConverter, &_converter, sizeof( UConverter ) );
+    allocatedConverter->isCopyLocal = allocatedConverter->isExtraLocal = FALSE;
 
     /* copy the substitution string */
     if( _converter.subChars == (uint8_t *)_converter.subUChars ) {
-        localConverter->subChars = (uint8_t *)localConverter->subUChars;
+        allocatedConverter->subChars = (uint8_t *)allocatedConverter->subUChars;
     } else {
-        localConverter->subChars = new uint8_t[UCNV_ERROR_BUFFER_LENGTH * U_SIZEOF_UCHAR];
-        if( localConverter->subChars == NULL ) {
+        allocatedConverter->subChars = new uint8_t[UCNV_ERROR_BUFFER_LENGTH * U_SIZEOF_UCHAR];
+        if( allocatedConverter->subChars == NULL ) {
             return NULL;
         }
-        std::memcpy( localConverter->subChars, _converter.subChars, UCNV_ERROR_BUFFER_LENGTH * U_SIZEOF_UCHAR );
+        std::memcpy( allocatedConverter->subChars, _converter.subChars, UCNV_ERROR_BUFFER_LENGTH * U_SIZEOF_UCHAR );
     }
 
     /* now either call the safeclone fcn or not */
     if( _converter.sharedData->impl->safeClone != NULL ) {
         /* call the custom safeClone function */
-        localConverter = _converter.sharedData->impl->safeClone( &_converter, localConverter, &bufferSizeNeeded, err );
+        localConverter = _converter.sharedData->impl->safeClone( &_converter, allocatedConverter, &bufferSizeNeeded, err );
     }
 
     if( localConverter == NULL || U_FAILURE( *err ) ) {

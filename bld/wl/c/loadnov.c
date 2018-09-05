@@ -227,8 +227,7 @@ void NovDBIGenGlobal( symbol *sym )
 /*********************************/
 {
     nov_dbg_info    info;
-    size_t          namelen;
-    unsigned char   val8;
+    size_t          len;
 
     if( ( DbgInfoLen != 0 ) && ( (FmtData.u.nov.flags & DO_NOV_REF_ONLY) == 0 || (sym->info & SYM_REFERENCED) ) ) {
         DbgInfoCount++;
@@ -238,16 +237,14 @@ void NovDBIGenGlobal( symbol *sym )
             info.type = DBG_CODE;
         }
         info.offset = sym->addr.off;
-        PutInfo( CurrDbgLoc, &info, offsetof( nov_dbg_info, namelen ) );
-        CurrDbgLoc += offsetof( nov_dbg_info, namelen );
-        namelen = strlen( sym->name.u.ptr );
-        if( namelen > 255 )
-            namelen = 255;
-        val8 = namelen;
-        PutInfo( CurrDbgLoc, &val8, 1 );
-        CurrDbgLoc++;
-        PutInfo( CurrDbgLoc, sym->name.u.ptr, namelen );
-        CurrDbgLoc += namelen;
+        len = strlen( sym->name.u.ptr );
+        if( len > 255 )
+            len = 255;
+        info.namelen = (unsigned char)len;
+        PutInfo( CurrDbgLoc, &info, sizeof( nov_dbg_info ) );
+        CurrDbgLoc += sizeof( nov_dbg_info );
+        PutInfo( CurrDbgLoc, sym->name.u.ptr, info.namelen );
+        CurrDbgLoc += info.namelen;
     }
 }
 
