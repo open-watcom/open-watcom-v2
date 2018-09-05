@@ -1623,6 +1623,7 @@ static void output_kw_file( void )
                 }
             }
         }
+        free( kw );
     }
 
     // the end
