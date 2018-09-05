@@ -59,7 +59,7 @@ typedef struct f77_dw_section {
     dw_out_offset       offset;
     dw_out_offset       length;
     union {
-        file_handle     fp;
+        FILE            *fp;
         size_t          size;
     } u1;
     union {
@@ -205,8 +205,10 @@ static size_t CLIRead( char *buf, size_t size, dw_sectnum sect )
     if( size == 0 )
         return( 0 );
     if( ( dw_sections[sect].sec_type == FILE_SECTION ) && dw_sections[sect].u1.fp != NULL ) {
-        SDRead( dw_sections[sect].u1.fp, buf, size );
-        chkIOErr( dw_sections[sect].u1.fp, SM_IO_READ_ERR, "temporary file" );
+        if( fread( buf, size, 1, dw_sections[sect].u1.fp ) != 1 ) {
+            Error( SM_IO_READ_ERR, dw_sections[sect].u2.filename, strerror( errno ) );
+            CSuicide();
+        }
     } else if( ( dw_sections[sect].sec_type == MEM_SECTION ) && dw_sections[sect].u2.data != NULL ) {
         memcpy( buf, dw_sections[sect].u2.data + dw_sections[sect].offset, size );
     } else {
@@ -226,8 +228,8 @@ static size_t CLIRead( char *buf, size_t size, dw_sectnum sect )
 static const dw_sectnum inSect[] = { DW_DEBUG_ABBREV, DW_DEBUG_INFO, DW_DEBUG_REF, DW_DEBUG_LINE, DW_DEBUG_MACINFO };
 #define SECTION_COUNT   (sizeof( inSect ) / sizeof( inSect[0] ))
 
-static int createBrowseFile( file_handle browseFile, const char *filename )
-/*************************************************************************/
+static int createBrowseFile( file_handle fp, const char *filename )
+/*****************************************************************/
 {
     size_t          readSize;
     int             fileNum;
@@ -241,10 +243,10 @@ static int createBrowseFile( file_handle browseFile, const char *filename )
     }
 
     // write elf header
-    mywrite( browseFile, &elf_header, sizeof( elf_header ), filename );
+    mywrite( fp, &elf_header, sizeof( elf_header ), filename );
 
     // write string table
-    mywrite( browseFile, string_table, sizeof( string_table ), filename );
+    mywrite( fp, string_table, sizeof( string_table ), filename );
 
     // calculate each of the sections, tracking offset
     // write each of the sections
@@ -256,41 +258,26 @@ static int createBrowseFile( file_handle browseFile, const char *filename )
         readSize = TOKLEN;
         for( sectionSize = dw_sections[inSect[fileNum]].length; sectionSize > 0; sectionSize -= readSize ) {
             readSize = CLIRead( TokenBuff, readSize, dw_sections[inSect[fileNum]].sec_number);
-            mywrite( browseFile, TokenBuff, readSize, filename );
+            mywrite( fp, TokenBuff, readSize, filename );
         }
     }
 
     // write section_header_index0
-    mywrite( browseFile, &section_header_index0, sizeof( section_header_index0 ), filename );
+    mywrite( fp, &section_header_index0, sizeof( section_header_index0 ), filename );
 
     // write section_header_string_table
-    mywrite( browseFile, &section_header_string_table, sizeof( section_header_string_table ), filename );
+    mywrite( fp, &section_header_string_table, sizeof( section_header_string_table ), filename );
 
     // write rest of section headers
     for( fileNum = 0; fileNum < SECTION_COUNT; fileNum++ ) {
         section_header_template.sh_name     = string_table_offsets[fileNum];
         section_header_template.sh_offset   = sectionOffset[fileNum];
         section_header_template.sh_size     = dw_sections[inSect[fileNum]].length;
-        mywrite( browseFile, &section_header_template, sizeof( section_header_template ), filename );
+        mywrite( fp, &section_header_template, sizeof( section_header_template ), filename );
     }
     return( 0 );
 }
 
-
-static void _SDWrite( file_handle fp, const void *buffer, size_t size )
-{
-    unsigned        amount;
-
-    amount = INT_MAX;
-    while( size > 0 ) {
-        if( amount > size )
-            amount = (unsigned)size;
-        SDWrite( fp, buffer, amount );
-        chkIOErr( fp, SM_IO_WRITE_ERR, "temporary file" );
-        buffer = (char *)buffer + amount;
-        size -= amount;
-    }
-}
 
 static void CLIWrite( dw_sectnum sect, const void *block, size_t size )
 /*********************************************************************/
@@ -300,12 +287,12 @@ static void CLIWrite( dw_sectnum sect, const void *block, size_t size )
     if( dw_sections[sect].sec_type == DEFAULT_SECTION ) {
         if( ( initial_section_type == DEFAULT_SECTION ) || ( initial_section_type == FILE_SECTION ) ) {
             dw_sections[sect].sec_type = FILE_SECTION;
-            SDSetAttr( REC_FIXED | SEEK );
-            temp = tmpnam( NULL );
-            dw_sections[sect].u2.filename = FMemAlloc( strlen( temp ) + 1 );
-            strcpy( dw_sections[sect].u2.filename, temp );
-            dw_sections[sect].u1.fp = SDOpen( temp, UPDATE_FILE );
-            chkIOErr( dw_sections[sect].u1.fp, SM_OPENING_FILE, temp );
+            dw_sections[sect].u2.filename = "temporary file";
+            dw_sections[sect].u1.fp = tmpfile();
+            if( dw_sections[sect].u1.fp == NULL ) {
+                Error( SM_OPENING_FILE, dw_sections[sect].u2.filename, strerror( errno ) );
+                CSuicide();
+            }
         } else {
             dw_sections[sect].sec_type = initial_section_type;
             dw_sections[sect].u1.size = MEM_INCREMENT;
@@ -325,7 +312,23 @@ static void CLIWrite( dw_sectnum sect, const void *block, size_t size )
         memcpy( ( dw_sections[sect].u2.data + dw_sections[sect].offset ), block, size );
         break;
     case( FILE_SECTION ):
-        _SDWrite( dw_sections[sect].u1.fp, block, size );
+        {
+            size_t          length;
+            unsigned        amount;
+
+            amount = INT_MAX;
+            length = size;
+            while( length > 0 ) {
+                if( amount > length )
+                    amount = (unsigned)length;
+                if( fwrite( block, amount, 1, dw_sections[sect].u1.fp ) != 1 ) {
+                    Error( SM_IO_WRITE_ERR, dw_sections[sect].u2.filename, strerror( errno ) );
+                    CSuicide();
+                }
+                block = (char *)block + amount;
+                length -= amount;
+            }
+        }
         break;
     default:
         Error( CP_FATAL_ERROR, "Internal browse generator error" );
@@ -425,14 +428,18 @@ static void CLISeek( dw_sectnum sect, dw_out_offset offset, int type )
             CLIZeroWrite( sect, new_offset );
         } else {
             if( dw_sections[sect].length < new_offset ) {
-                SDSeek( dw_sections[sect].u1.fp, dw_sections[sect].length, 1 );
-                chkIOErr( dw_sections[sect].u1.fp, SM_IO_READ_ERR, "temporary file" );
+                if( fseek( dw_sections[sect].u1.fp, dw_sections[sect].length, SEEK_SET ) ) {
+                    Error( SM_IO_READ_ERR, dw_sections[sect].u2.filename, strerror( errno ) );
+                    CSuicide();
+                }
                 dw_sections[sect].offset = dw_sections[sect].length;
                 temp = new_offset - dw_sections[sect].length;
                 CLIZeroWrite( sect, temp );
             } else {
-                SDSeek( dw_sections[sect].u1.fp, new_offset, 1 );
-                chkIOErr( dw_sections[sect].u1.fp, SM_IO_READ_ERR, "temporary file" );
+                if( fseek( dw_sections[sect].u1.fp, new_offset, SEEK_SET ) ) {
+                    Error( SM_IO_READ_ERR, dw_sections[sect].u2.filename, strerror( errno ) );
+                    CSuicide();
+                }
             }
         }
     } else {
@@ -495,6 +502,7 @@ void CLIInit( dw_funcs *cfuncs, sect_typ is_type )
     initial_section_type = is_type;
     for( sect = 0; sect < DW_DEBUG_MAX; sect++ ) {
         dw_sections[sect].sec_number = sect;
+        dw_sections[sect].sec_type = DEFAULT_SECTION;
     }
 }
 
@@ -519,11 +527,7 @@ void CLIFini( void )
 
     for( sect = 0; sect < DW_DEBUG_MAX; sect++ ) {
         if( ( dw_sections[sect].sec_type == FILE_SECTION ) && dw_sections[sect].u1.fp != NULL ) {
-            SDClose( dw_sections[sect].u1.fp );
-            if( dw_sections[sect].u2.filename != NULL ) {
-                SDScratch( dw_sections[sect].u2.filename );
-                FMemFree( dw_sections[sect].u2.filename );
-            }
+            fclose( dw_sections[sect].u1.fp );
         } else if( ( dw_sections[sect].sec_type == MEM_SECTION ) && dw_sections[sect].u2.data != NULL ) {
             FMemFree( dw_sections[sect].u2.data );
         }

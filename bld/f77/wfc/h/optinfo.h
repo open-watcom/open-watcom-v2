@@ -79,7 +79,7 @@ opt( "D2",         CGOPT_DB_LOCALS,  CMD|CG,      NULL,         &CGOption,  MS_C
 opt( "HC",         CGOPT_DI_CV,      CMD|CG,      NULL,         &CGOption,  MS_CGOPT_DI_CV ),
 opt( "HD",         CGOPT_DI_DWARF,   CMD|CG,      NULL,         &CGOption,  MS_CGOPT_DI_DWARF ),
 opt( "HW",         CGOPT_DI_WATCOM,  CMD|CG,      NULL,         &CGOption,  MS_CGOPT_DI_WATCOM ),
-//opt( "DB",       OPT_BROWSE,       CMD,         NULL,         &BitOption, MS_OPT_BROWSE ),
+//opt( "DB",         OPT_BROWSE,       CMD,         NULL,         &BitOption, MS_OPT_BROWSE ),
 #if _CPU == 8086 || _CPU == 386
 //                      Floating-Point Options
 opt( "",           0,                CTG,         NULL,         NULL,       MS_CTG_FPUOPTS ),
