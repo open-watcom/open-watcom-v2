@@ -21,7 +21,7 @@
 :segment LINUX
 :include lnxkpack.sp
 
-:elsesegment DOS
+:elsesegment DOS | RDOS
 :include pshpackl.sp
 
 :endsegment
@@ -50,7 +50,7 @@
 
 #include _ARCH_INCLUDE(sys/stat.h)
 
-:elsesegment DOS
+:elsesegment DOS | RDOS
 :include dev_t.sp
 :include ino_t.sp
 :include mode_t.sp
@@ -164,11 +164,11 @@ _WCRTLINK extern int     stat64( const char *__path, struct stat64 *__buf );
 ::
 :: ISO names + Extensions MS/Open Watcom
 :include ext.sp
-:segment DOS | LINUX
+:segment DOS | LINUX | RDOS
 _WCRTLINK extern int     _fstat( int __fildes, struct stat *__buf );
 _WCRTLINK extern int     _stat( const char *__path, struct stat *__buf );
 :endsegment
-:segment DOS
+:segment DOS | RDOS
 
 _WCRTLINK extern int     _wstat( const wchar_t *__path, struct stat *__buf );
 _WCRTLINK extern int     _wfstat( int __fildes, struct stat *__buf );

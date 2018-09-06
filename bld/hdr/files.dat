@@ -1,9 +1,9 @@
 # Headers component of install manifest
 
 #
-# Headers for DOS, Windows, OS/2, Netware and RDOS
+# Headers for DOS, Windows, OS/2 and Netware
 #
-[ DEFAULT type="s" dir="h" where="c jc f77 jf77 ac" cond="dostarg wintarg os2targ wnttarg nlmtarg rdostarg | | | | |" ]
+[ DEFAULT type="s" dir="h" where="c jc f77 jf77 ac" cond="dostarg wintarg os2targ wnttarg nlmtarg | | | | |" ]
 #
 # Standard C99 headers
 #
@@ -72,7 +72,7 @@ usr="varargs.h"
 usr="wdefwin.h"
 usr="wsample.h"
 
-[ DEFAULT type="s" dir="h/sys" where="c jc f77 jf77 ac" cond="dostarg wintarg os2targ wnttarg nlmtarg rdostarg | | | | |" ]
+[ DEFAULT type="s" dir="h/sys" where="c jc f77 jf77 ac" cond="dostarg wintarg os2targ wnttarg nlmtarg | | | | |" ]
 usr="locking.h"
 usr="stat.h"
 usr="time.h"
@@ -83,7 +83,7 @@ usr="utime.h"
 [ DEFAULT type="s" dir="h/sys" where="c jc f77 jf77 ac" cond="dostarg" ]
 usr="_lfndos.h"
 
-[ DEFAULT type="s" dir="h" where="c jc f77 jf77 ac" cond="dostarg wintarg os2targ wnttarg nlmtarg rdostarg | | | | | cplusplus" ]
+[ DEFAULT type="s" dir="h" where="c jc f77 jf77 ac" cond="dostarg wintarg os2targ wnttarg nlmtarg | | | | | cplusplus" ]
 #
 # C++ headers
 #
@@ -206,11 +206,205 @@ usr="utility"
 usr="valarray"
 usr="vector"
 
-[ DEFAULT type="s" dir="h" where="c jc f77 jf77 ac" cond="dostarg wintarg os2targ wnttarg nlmtarg rdostarg | | | | | cplusplus" ]
+[ DEFAULT type="s" dir="h" where="c jc f77 jf77 ac" cond="dostarg wintarg os2targ wnttarg nlmtarg | | | | | cplusplus" ]
 usr="except.h"
 usr="exceptio.h"
 usr="stdexcep.h"
 usr="typeinfo.h"
+
+
+#
+# Headers for RDOS
+#
+[ DEFAULT type="s" dir="rh" where="c jc f77 jf77 ac" cond="rdostarg" ]
+#
+# Standard C99 headers
+#
+usr="assert.h"
+usr="complex.h"
+usr="ctype.h"
+usr="errno.h"
+usr="fenv.h"
+usr="float.h"
+usr="inttypes.h"
+usr="iso646.h"
+usr="limits.h"
+usr="locale.h"
+usr="math.h"
+usr="setjmp.h"
+usr="signal.h"
+usr="stdarg.h"
+usr="stdbool.h"
+usr="stddef.h"
+usr="stdint.h"
+usr="stdio.h"
+usr="stdlib.h"
+usr="string.h"
+usr="time.h"
+#
+# Miscellaneous Watcom headers for C
+#
+usr="_comdef.h"
+usr="alloca.h"
+usr="conio.h"
+usr="crtdbg.h"
+usr="direct.h"
+usr="env.h"
+usr="excpt.h"
+usr="fcntl.h"
+usr="fnmatch.h"
+usr="jctype.h"
+usr="jstring.h"
+usr="jtime.h"
+usr="libgen.h"
+usr="malloc.h"
+usr="mem.h"
+usr="mmintrin.h"
+usr="process.h"
+usr="search.h"
+usr="share.h"
+usr="strings.h"
+usr="tchar.h"
+usr="unistd.h"
+usr="utime.h"
+usr="varargs.h"
+usr="wsample.h"
+
+[ DEFAULT type="s" dir="rh/sys" where="c jc f77 jf77 ac" cond="rdostarg" ]
+usr="locking.h"
+usr="stat.h"
+usr="time.h"
+usr="timeb.h"
+usr="types.h"
+
+[ DEFAULT type="s" dir="rh" where="c jc f77 jf77 ac" cond="rdostarg cplusplus" ]
+#
+# C++ headers
+#
+usr="_algmut.h"
+usr="_algnmod.h"
+usr="_algsort.h"
+usr="_hash.h"
+usr="_ialias.h"    cond="false"     desc="replaced by _preincl.h"
+usr="_meta.h"
+usr="_preincl.h"
+usr="_rbtree.h"
+usr="_strdef.h"
+usr="fstream.h"
+usr="generic.h"
+usr="iomanip.h"
+usr="ios.h"
+usr="iosfwd.h"
+usr="iostream.h"
+usr="istream.h"
+usr="new.h"
+usr="ostream.h"
+usr="sstream.h"
+usr="stdiobuf.h"
+usr="streambu.h"
+usr="string.hpp"
+usr="strstrea.h"
+usr="wcdefs.h"
+usr="wcexcept.h"
+usr="wchash.h"
+usr="wchbase.h"
+usr="wchiter.h"
+usr="wclbase.h"
+usr="wclcom.h"
+usr="wclibase.h"
+usr="wclist.h"
+usr="wclistit.h"
+usr="wcqueue.h"
+usr="wcsbase.h"
+usr="wcskip.h"
+usr="wcsibase.h"
+usr="wcskipit.h"
+usr="wcstack.h"
+usr="wcvbase.h"
+usr="wcvector.h"
+#
+# New style extensionless headers
+#
+usr="algorith"
+usr="array"
+usr="atomic"
+usr="bitset"
+usr="cassert"
+usr="cctype"
+usr="cerrno"
+usr="cfloat"
+usr="chrono"
+usr="cinttype"
+usr="ciso646"
+usr="climits"
+usr="clocale"
+usr="cmath"
+usr="codecvt"
+usr="complex"
+usr="conditio"
+usr="csetjmp"
+usr="csignal"
+usr="cstdarg"
+usr="cstdbool"
+usr="cstddef"
+usr="cstdint"
+usr="cstdio"
+usr="cstdlib"
+usr="cstring"
+usr="ctime"
+usr="cwchar"
+usr="cwctype"
+usr="deque"
+usr="exceptio"
+usr="forward_"
+usr="fstream"
+usr="function"
+usr="future"
+usr="initiali"
+usr="iomanip"
+usr="ios"
+usr="iosfwd"
+usr="iostream"
+usr="istream"
+usr="iterator"
+usr="limits"
+usr="list"
+usr="locale"
+usr="map"
+usr="memory"
+usr="mutex"
+usr="new"
+usr="numeric"
+usr="ostream"
+usr="queue"
+usr="random"
+usr="ratio"
+usr="regex"
+usr="set"
+usr="sstream"
+usr="stack"
+usr="stdexcep"
+usr="streambu"
+usr="string"
+usr="strstrea"
+usr="system_e"
+usr="thread"
+usr="tuple"
+usr="typeinde"
+usr="typeinfo"
+usr="type_tra"
+usr="unorderm"
+usr="unorders"
+usr="utility"
+usr="valarray"
+usr="vector"
+
+[ DEFAULT type="s" dir="rh" where="c jc f77 jf77 ac" cond="rdostarg cplusplus" ]
+usr="except.h"
+usr="exceptio.h"
+usr="stdexcep.h"
+usr="typeinfo.h"
+
 
 #
 # Headers for Linux

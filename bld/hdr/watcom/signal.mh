@@ -49,11 +49,11 @@ using std::raise;
 :segment LINUX
 :include lnxkpack.sp
 
-:elsesegment DOS | QNX
+:elsesegment DOS | QNX | RDOS
 :include pshpackl.sp
 
 :endsegment
-:segment DOS | LINUX
+:segment DOS | LINUX | RDOS
 /* 
  *  ISO C types
  */

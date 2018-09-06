@@ -36,7 +36,7 @@
 #else
  #define va_alist       void *__alist, ...
  #define va_dcl
-:segment DOS | QNX
+:segment DOS | QNX | RDOS
  #if defined(__HUGE__) || defined(__SW_ZU)
 :elsesegment
  #ifdef __SW_ZU

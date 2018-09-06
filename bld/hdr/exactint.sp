@@ -22,7 +22,7 @@
  typedef unsigned char       uint8_t;
  typedef short               int16_t;
  typedef unsigned short      uint16_t;
-:segment DOS | QNX
+:segment DOS | QNX | RDOS
 #ifdef _M_I86
  typedef long                int32_t;
  typedef unsigned long       uint32_t;
@@ -30,7 +30,7 @@
 :endsegment
  typedef int                 int32_t;
  typedef unsigned int        uint32_t;
-:segment DOS | QNX
+:segment DOS | QNX | RDOS
 #endif
 :endsegment
  typedef long long           int64_t;

@@ -11,7 +11,7 @@
 
 :include cpluspro.sp
 
-:segment DOS
+:segment DOS | RDOS
 #ifdef __OS2__
 #ifndef __BSEXCPT_H__
  #include <os2def.h>
@@ -44,7 +44,7 @@ EXCEPTION_DISPOSITION __cdecl _except_handler (
         void * DispatcherContext
         );
 
-:segment DOS
+:segment DOS | RDOS
 #ifdef __OS2__
  typedef struct _EXCEPTION_POINTERS {
      PEXCEPTIONREPORTRECORD ExceptionRecord;

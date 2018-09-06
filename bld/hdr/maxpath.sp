@@ -18,7 +18,7 @@
 ::
 :: NAME_MAX macro
 ::
-:segment DOS
+:segment DOS | RDOS
 #ifndef NAME_MAX
  #if defined(__OS2__) || defined(__RDOS__)
   #define NAME_MAX    255     /* maximum filename for HPFS and RDOS */
@@ -33,7 +33,7 @@
 ::
 :: PATH_MAX macro
 ::
-:segment DOS
+:segment DOS | RDOS
 :include ext.sp
 ::#ifndef PATH_MAX
  #if defined(__OS2__) || defined(__NT__) || defined(__WATCOM_LFN__) && defined(__DOS__) || defined(__OSI__)

@@ -4,7 +4,7 @@
 /* Integer type able to hold pointers. */
 #ifndef _INTPTR_T_DEFINED_
  #define _INTPTR_T_DEFINED_
-:segment DOS | QNX
+:segment DOS | QNX | RDOS
  #ifdef _M_I86
   #if defined(__SMALL__) || defined(__MEDIUM__)
    typedef int intptr_t;
@@ -18,7 +18,7 @@
   #else
    typedef long intptr_t;
   #endif
-:segment DOS | QNX
+:segment DOS | QNX | RDOS
  #endif
 :endsegment
 #endif

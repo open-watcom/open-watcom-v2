@@ -12,7 +12,7 @@
 
 #ifdef _MARK_ON
  #ifdef _M_IX86
-:segment DOS | QNX
+:segment DOS | QNX | RDOS
   #ifdef _M_I86
    extern void __mark( char __far * );
    #pragma aux __mark = 0xcc __parm __nomemory [__dx __ax] __modify __exact __nomemory []
@@ -20,7 +20,7 @@
 :endsegment
    extern void __mark( char __far * );
    #pragma aux __mark = 0xcc __parm __nomemory [__dx __eax] __modify __exact __nomemory []
-:segment DOS | QNX
+:segment DOS | QNX | RDOS
   #endif
 :endsegment
  #else

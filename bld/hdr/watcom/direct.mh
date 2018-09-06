@@ -10,7 +10,7 @@
 
 :include owrtlink.sp
 
-:segment DOS
+:segment DOS | RDOS
 :include lfndos.sp
 
 :endsegment
@@ -48,7 +48,7 @@ struct _wdirent {
     unsigned short int  d_date;             /* file's modification date */
     long                d_size;             /* file's size */
     wchar_t             d_name[NAME_MAX+1]; /* file's name */
-:segment DOS
+:segment DOS | RDOS
     unsigned short      d_ino;              /* serial number (not used) */
 :elsesegment
     ino_t               d_ino;              /* serial number (not used) */
@@ -65,7 +65,7 @@ struct dirent {
     unsigned short int  d_date;             /* file's date */
     long                d_size;             /* file's size */
     char                d_name[NAME_MAX+1]; /* file's name */
-:segment DOS
+:segment DOS | RDOS
     unsigned short      d_ino;              /* serial number (not used) */
 :elsesegment
     ino_t               d_ino;              /* serial number (not used) */

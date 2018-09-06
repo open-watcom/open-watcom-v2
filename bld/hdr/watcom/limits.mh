@@ -49,19 +49,19 @@
 
 #define SHRT_MIN    (-32767-1)  /*  minimum value of a short int        */
 #define SHRT_MAX    32767       /*  maximum value of a short int        */
-:segment DOS | QNX
+:segment DOS | QNX | RDOS
 #ifdef _M_I86
  #define USHRT_MAX  65535U      /*  maximum value of an unsigned short  */
 #else
 :endsegment
  #define USHRT_MAX  65535       /*  maximum value of an unsigned short  */
-:segment DOS | QNX
+:segment DOS | QNX | RDOS
 #endif
 :endsegment
 #define LONG_MAX    2147483647L       /* maximum value of a long int      */
 #define LONG_MIN    (-2147483647L-1L) /* minimum value of a long int      */
 #define ULONG_MAX   4294967295UL      /* maximum value of an unsigned long*/
-:segment DOS | QNX
+:segment DOS | QNX | RDOS
 #ifdef _M_I86
  #define INT_MIN    (-32767-1)      /*  minimum value of an int         */
  #define INT_MAX    32767           /*  maximum value of an int         */
@@ -71,7 +71,7 @@
  #define INT_MIN    (-2147483647-1) /*  minimum value of an int         */
  #define INT_MAX    2147483647      /*  maximum value of an int         */
  #define UINT_MAX   4294967295U     /*  maximum value of an unsigned int*/
-:segment DOS | QNX
+:segment DOS | QNX | RDOS
 #endif
 :endsegment
 #ifdef __WATCOM_INT64__
@@ -104,7 +104,7 @@
  #define _UI64_MAX  ULONGLONG_MAX /* maximum value of an unsigned 64 bit type*/
 #endif
 
-:segment DOS
+:segment DOS | RDOS
 #define TZNAME_MAX  128             /*  The maximum number of bytes         */
                                     /*  supported for the name of a time    */
                                     /*  zone (not of the TZ variable).      */
@@ -525,7 +525,7 @@
     static const bool is_specialized = true;
     static int min() { return( INT_MIN ); }
     static int max() { return( INT_MAX ); }
-:segment DOS | QNX
+:segment DOS | QNX | RDOS
 #ifdef _M_I86
     static const int digits = 15;
     static const int digits10 = 4;
@@ -533,7 +533,7 @@
 :endsegment
     static const int digits = 31;
     static const int digits10 = 9;
-:segment DOS | QNX
+:segment DOS | QNX | RDOS
 #endif
 :endsegment
     static const bool is_signed = true;
@@ -676,7 +676,7 @@
     static const bool is_specialized = true;
     static unsigned int min() { return( 0 ); }
     static unsigned int max() { return( UINT_MAX ); }
-:segment DOS | QNX
+:segment DOS | QNX | RDOS
 #ifdef _M_I86
     static const int digits = 16;
     static const int digits10 = 4;
@@ -684,7 +684,7 @@
 :endsegment
     static const int digits = 32;
     static const int digits10 = 9;
-:segment DOS | QNX
+:segment DOS | QNX | RDOS
 #endif
 :endsegment
     static const bool is_signed = false;

@@ -166,7 +166,7 @@
 :: Calling the header 'errno.h' is no good because there's already a macro
 :: called 'errno' which will fuck us up
 #include _ARCH_INCLUDE(err_no.h)
-:elsesegment DOS
+:elsesegment DOS | RDOS
 /*
  * Error codes
  */

@@ -64,19 +64,19 @@
 :include ext.sp
 
 :: Thread symbols section.
-:segment DOS | QNX
+:segment DOS | QNX | RDOS
 #ifndef _M_I86
 :endsegment
  #define _threadid (__threadid())
  _WCRTLINK extern int *__threadid( void ); /* pointer to thread id */
-:segment DOS
+:segment DOS | RDOS
  #ifdef __NT__
 :include thrdhndl.sp
  #endif
 #else
  _WCRTDATA extern int _WCFAR *_threadid;   /* pointer to thread id */
 :endsegment
-:segment DOS | QNX
+:segment DOS | QNX | RDOS
 #endif
 :endsegment
 

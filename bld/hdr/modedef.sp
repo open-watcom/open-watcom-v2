@@ -74,14 +74,14 @@
 #define S_IFNAM     0x5000          /* Special named file   */
 :segment LINUX
 #define S_IFBLK     0x6000          /* Block special        */
-:elsesegment DOS
+:elsesegment DOS | RDOS
 #define S_IFBLK     0               /* Block special        */
 :endsegment
 #define S_IFREG     0x8000          /* Regular              */
 :segment LINUX
 #define S_IFLNK     0xA000          /* Symbolic link        */
 #define S_IFSOCK    0xC000          /* Socket               */
-:elsesegment DOS
+:elsesegment DOS | RDOS
 #define S_IFLNK     0               /* Symbolic link        */
 #define S_IFSOCK    0               /* Socket               */
 :endsegment

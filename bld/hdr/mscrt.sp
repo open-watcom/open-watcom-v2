@@ -1,4 +1,4 @@
-:segment DOS
+:segment DOS | RDOS
 /* macros for MS compatibility */
 #ifndef _CRTAPI1
  #define _CRTAPI1

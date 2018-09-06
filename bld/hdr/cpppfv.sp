@@ -13,7 +13,7 @@
  #define _PNH_DEFINED_
  typedef int (*_PNH)( unsigned );
 #endif
-:segment DOS | LINUX
+:segment DOS | LINUX | RDOS
 #if defined(__SW_BR) || defined(_RTDLL)
  #ifndef _PPV_DEFINED
  #define _PPV_DEFINED

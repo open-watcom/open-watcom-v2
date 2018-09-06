@@ -14,7 +14,7 @@
 
 :segment LINUX
 :include lnxkpack.sp
-:elsesegment DOS | QNX
+:elsesegment DOS | QNX | RDOS
 :include pshpackl.sp
 :endsegment
 
@@ -30,7 +30,7 @@
  */
 :include off_t.sp
 :include pid_t.sp
-:segment DOS | QNX
+:segment DOS | QNX | RDOS
 :include mode_t.sp
 
 :endsegment
@@ -169,7 +169,7 @@ typedef struct flock {
     short int   zero[3];
 } flock_t;
 
-:elsesegment DOS
+:elsesegment DOS | RDOS
 #define O_RDONLY        0x0000  /* open for read only */
 #define O_WRONLY        0x0001  /* open for write only */
 #define O_RDWR          0x0002  /* open for read and write */
@@ -189,7 +189,7 @@ typedef struct flock {
 #define _O_APPEND       O_APPEND
 #define _O_CREAT        O_CREAT
 #define _O_TRUNC        O_TRUNC
-:segment DOS
+:segment DOS | RDOS
 #define _O_NOINHERIT    O_NOINHERIT
 :endsegment
 #define _O_TEXT         O_TEXT

@@ -22,7 +22,7 @@ wsplice_opts_mips = -i.. -kARCHMIPS $($(system)_options) ../common.sp $[@ $^@
 dos_dirs   = sys
 linux_dirs = sys netinet arpa arch arch/i386 arch/i386/sys arch/mips arch/mips/sys
 qnx_dirs   = sys
-rdos_dirs  =
+rdos_dirs  = sys
 
 dos_path   = ../watcom
 linux_path = ../watcom

@@ -6,6 +6,10 @@
 :keep NOT_QNX
 :endsegment
 ::
+:segment !RDOS
+:keep NOT_RDOS
+:endsegment
+::
 :segment !LINUX
 :keep NOT_LINUX
 :endsegment

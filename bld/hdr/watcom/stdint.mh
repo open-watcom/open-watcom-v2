@@ -77,13 +77,13 @@ using std::uintmax_t;
 #define INT64_MAX  9223372036854775807LL
 
 #define UINT8_MAX   255
-:segment DOS | QNX
+:segment DOS | QNX | RDOS
 #ifdef _M_I86
  #define UINT16_MAX  65535U
 #else
 :endsegment
  #define UINT16_MAX  65535
-:segment DOS | QNX
+:segment DOS | QNX | RDOS
 #endif
 :endsegment
 #define UINT32_MAX  4294967295UL
@@ -100,20 +100,20 @@ using std::uintmax_t;
 #define INT_LEAST64_MAX  9223372036854775807LL
 
 #define UINT_LEAST8_MAX   255
-:segment DOS | QNX
+:segment DOS | QNX | RDOS
 #ifdef _M_I86
  #define UINT_LEAST16_MAX  65535U
 #else
 :endsegment
  #define UINT_LEAST16_MAX  65535
-:segment DOS | QNX
+:segment DOS | QNX | RDOS
 #endif
 :endsegment
 #define UINT_LEAST32_MAX  4294967295UL
 #define UINT_LEAST64_MAX  18446744073709551615ULL
 
 /* Fast minimum-width types. */
-:segment DOS | QNX
+:segment DOS | QNX | RDOS
 #ifdef _M_I86
  #define INT_FAST8_MIN   (-32767-1)
  #define INT_FAST8_MAX   32767
@@ -125,7 +125,7 @@ using std::uintmax_t;
  #define INT_FAST8_MAX   2147483647
  #define INT_FAST16_MIN  (-2147483647-1)
  #define INT_FAST16_MAX  2147483647
-:segment DOS | QNX
+:segment DOS | QNX | RDOS
 #endif
 :endsegment
 #define INT_FAST32_MIN  (-2147483647L-1)
@@ -133,7 +133,7 @@ using std::uintmax_t;
 #define INT_FAST64_MIN  (-9223372036854775807LL-1)
 #define INT_FAST64_MAX  9223372036854775807LL
 
-:segment DOS | QNX
+:segment DOS | QNX | RDOS
 #ifdef _M_I86
  #define UINT_FAST8_MAX   65535U
  #define UINT_FAST16_MAX  65535U
@@ -141,14 +141,14 @@ using std::uintmax_t;
 :endsegment
  #define UINT_FAST8_MAX   4294967295U
  #define UINT_FAST16_MAX  4294967295U
-:segment DOS | QNX
+:segment DOS | QNX | RDOS
 #endif
 :endsegment
 #define UINT_FAST32_MAX  4294967295UL
 #define UINT_FAST64_MAX  18446744073709551615ULL
 
 /* Integer types able to hold object pointers. */
-:segment DOS | QNX
+:segment DOS | QNX | RDOS
 #ifdef _M_I86
  #if defined(__SMALL__) || defined(__MEDIUM__)
   #define INTPTR_MIN   (-32767-1)
@@ -170,7 +170,7 @@ using std::uintmax_t;
   #define INTPTR_MAX   2147483647L
   #define UINTPTR_MAX  4294967295UL
  #endif
-:segment DOS | QNX
+:segment DOS | QNX | RDOS
 #endif
 :endsegment
 
@@ -185,7 +185,7 @@ using std::uintmax_t;
 #define WINT_MAX        WCHAR_MAX
 
 /* Limits of other integer types. */
-:segment DOS | QNX
+:segment DOS | QNX | RDOS
 #ifdef _M_I86
  #ifdef __HUGE__
   #define PTRDIFF_MIN     (-2147483647L-1)
@@ -204,7 +204,7 @@ using std::uintmax_t;
  #define SIG_ATOMIC_MIN  (-2147483647-1)
  #define SIG_ATOMIC_MAX  2147483647
  #define SIZE_MAX        4294967295U
-:segment DOS | QNX
+:segment DOS | QNX | RDOS
 #endif
 :endsegment
 

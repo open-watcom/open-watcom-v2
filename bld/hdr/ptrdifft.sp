@@ -2,13 +2,13 @@
 #ifndef _STDPTRDIFF_T_DEFINED
 #define _STDPTRDIFF_T_DEFINED
  namespace std {
-:segment DOS | QNX
+:segment DOS | QNX | RDOS
   #ifdef __HUGE__
    typedef long ptrdiff_t;
   #else
 :endsegment
    typedef int ptrdiff_t;
-:segment DOS | QNX
+:segment DOS | QNX | RDOS
   #endif
 :endsegment
  }
@@ -19,13 +19,13 @@
  #ifndef _STDPTRDIFF_T_DEFINED
  #define _STDPTRDIFF_T_DEFINED
   namespace std {
-:segment DOS | QNX
+:segment DOS | QNX | RDOS
    #ifdef __HUGE__
     typedef long ptrdiff_t;
    #else
 :endsegment
     typedef int ptrdiff_t;
-:segment DOS | QNX
+:segment DOS | QNX | RDOS
    #endif
 :endsegment
   }
@@ -40,13 +40,13 @@
  #ifndef _PTRDIFF_T_DEFINED
  #define _PTRDIFF_T_DEFINED
   #define _PTRDIFF_T_DEFINED_
-:segment DOS | QNX
+:segment DOS | QNX | RDOS
   #ifdef __HUGE__
    typedef long ptrdiff_t;
   #else
 :endsegment
    typedef int ptrdiff_t;
-:segment DOS | QNX
+:segment DOS | QNX | RDOS
   #endif
 :endsegment
  #endif

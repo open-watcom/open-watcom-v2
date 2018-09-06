@@ -24,7 +24,7 @@
  *  ISO C types
  */
 :include wchar_t.sp
-:segment DOS | LINUX
+:segment DOS | LINUX | RDOS
 /*
  *  POSIX 1003.1 types
  */
@@ -156,7 +156,7 @@ _WCRTLINK extern int    _execvpe( const char *__file, const char *const __argv[]
 :endsegment
 #endif
 
-:segment DOS
+:segment DOS | RDOS
 /* values for __action_code used with cwait() */
 
 #define WAIT_CHILD      0
@@ -223,7 +223,7 @@ _WCRTLINK extern int    _wspawnvp( int __mode, const wchar_t *__path, const wcha
 _WCRTLINK extern int    _wspawnvpe( int __mode, const wchar_t *__path, const wchar_t * const *__argv, const wchar_t * const *__envp );
 _WCRTLINK extern int    _wsystem( const wchar_t *__cmd );
 
-:segment DOS
+:segment DOS | RDOS
 #ifdef __NT__
  // For use when access to the DLL startup is required.
  // this function pointer will be called after the C library startup

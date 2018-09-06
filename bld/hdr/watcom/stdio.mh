@@ -164,7 +164,7 @@ using std::wscanf;
 :include maxpath.sp
 :remove FILENAME
 
-:segment DOS
+:segment DOS | RDOS
 :keep PATHMAX
 :include maxpath.sp
 :remove PATHMAX
@@ -284,7 +284,7 @@ _WCRTDATA extern __w_FILE  _WCDATA __iob[];
 #define stdin   ((__w_FILE *)&__iob[0])     /* standard input file  */
 #define stdout  ((__w_FILE *)&__iob[1])     /* standard output file */
 #define stderr  ((__w_FILE *)&__iob[2])     /* standard error file  */
-:segment DOS
+:segment DOS | RDOS
 :include ext.sp
 #if defined(__DOS__) || defined(__WINDOWS__) || defined(__OSI__)
 #define stdaux  ((__w_FILE *)&__iob[3])     /* standard auxiliary file  */
@@ -298,7 +298,7 @@ _WCRTDATA extern __w_FILE  _WCDATA __iob[];
 #define stdin   (__get_std_file(0))     /* standard input file  */
 #define stdout  (__get_std_file(1))     /* standard output file */
 #define stderr  (__get_std_file(2))     /* standard error file  */
-:segment DOS
+:segment DOS | RDOS
 :include ext.sp
 #if defined(__DOS__) || defined(__WINDOWS__)
 #define stdaux  (__get_std_file(3))     /* standard auxiliary file  */
@@ -416,7 +416,7 @@ _WCRTLINK extern off_t      ftello( __w_FILE *__fp );
 
 :endsegment
 _WCRTLINK extern int        flushall( void );
-:segment DOS
+:segment DOS | RDOS
 _WCRTLINK extern __w_FILE   *_fdopen( int __handle, const char *__mode );
 _WCRTLINK extern __w_FILE   *fdopen( int __handle, const char *__mode );
 :endsegment
@@ -505,7 +505,7 @@ _WCRTLINK extern int        pclose( __w_FILE *__stream );
 #ifndef __OBSCURE_STREAM_INTERNALS
 #define getc(fp) \
         ((fp)->_cnt<=0 \
-:segment DOS
+:segment DOS | RDOS
         || (unsigned)((*(fp)->_ptr)-'\x0d')<=('\x1a'-'\x0d') \
 :endsegment
         ? fgetc(fp) \

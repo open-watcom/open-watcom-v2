@@ -220,7 +220,7 @@ using std::wcstoumax;
 #define SCNxMAX     "llx"
 #define SCNXMAX     "llX"
 
-:segment DOS | QNX
+:segment DOS | QNX | RDOS
 #ifdef _M_I86
 ::
 #if defined(__SMALL__) || defined(__MEDIUM__)
@@ -290,7 +290,7 @@ using std::wcstoumax;
 #define SCNXPTR     "lX"
 #endif
 ::
-:segment DOS | QNX
+:segment DOS | QNX | RDOS
 #endif
 :endsegment
 

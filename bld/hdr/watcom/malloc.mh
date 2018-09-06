@@ -64,7 +64,7 @@ _WCRTLINK extern int _nheapmin( void );
 _WCRTLINK extern int _heapshrink( void );
 _WCRTLINK extern int _nheapshrink( void );
 
-:segment DOS | QNX
+:segment DOS | QNX | RDOS
 #ifdef _M_I86
 _WCRTLINK extern int _fheapchk( void );
 _WCRTLINK extern int _fheapset( unsigned int __fill );
@@ -85,7 +85,7 @@ _WCRTLINK extern size_t _msize( void *__ptr );
 :include windowsx.sp
 :remove WINDOWSX_MALLOC
 
-:segment DOS | QNX
+:segment DOS | QNX | RDOS
 #ifdef _M_I86
 _WCRTLINK extern int __fmemneed( size_t );
 _WCRTLINK extern void _WCFAR *_fcalloc( size_t __n, size_t __size );
@@ -135,7 +135,7 @@ using std::_os2hmalloc;
 :endsegment
 #endif
 
-:segment DOS | QNX
+:segment DOS | QNX | RDOS
 #ifdef _M_I86
 /* based heap function prototypes */
 

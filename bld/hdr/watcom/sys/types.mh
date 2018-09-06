@@ -51,7 +51,7 @@
 
 #include _ARCH_INCLUDE(sys/types.h)
 
-:elsesegment DOS | QNX
+:elsesegment DOS | QNX | RDOS
 :include dev_t.sp
 :include ino_t.sp
 :include mode_t.sp
@@ -114,7 +114,7 @@ typedef unsigned long   fixpt_t;
 typedef int             key_t;
 typedef unsigned short  sel_t;
 
-:elsesegment DOS
+:elsesegment DOS | RDOS
 #define major(device)           ((int)(((device) >> 8) & 0xFF))
 #define minor(device)           ((int)((device) & 0xff))
 #define makedev(major,minor)    ((dev_t) (((major) << 8) | (minor)))

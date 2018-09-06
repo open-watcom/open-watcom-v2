@@ -49,7 +49,7 @@ extern void *operator new []( std::size_t, void * );
 extern void operator delete( void * );
 extern void operator delete []( void * );
 _WPRTLINK extern PFU _set_new_handler( PFU );
-:segment DOS | LINUX
+:segment DOS | LINUX | RDOS
 #if defined(__SW_BR) || defined(_RTDLL)
  _WPRTLINK extern _PUP _set_op_new( _PUP );
  _WPRTLINK extern _PUP _set_op_new_array( _PUP );
