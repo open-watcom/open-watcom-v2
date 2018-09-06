@@ -2,15 +2,12 @@
 .* Global to all books
 .*
 .if &e'&target eq 0 .do begin
-:set symbol="target"    value="AXPNT".
-:set symbol="computer"  value="AXP".
 :set symbol="target"    value="DOS".
 :set symbol="computer"  value="Intel".
 .do end
 .if &e'&company eq 0 .do begin
 :set symbol="company"   value="Open Watcom".
 .do end
-:INCLUDE file='cpyyear'.
 .dm cpyrit begin
 Copyright (c) 2002-&cpyyear. the Open Watcom Contributors. All Rights Reserved.
 Portions Copyright (c) &*.-2002 Sybase, Inc. All Rights Reserved.

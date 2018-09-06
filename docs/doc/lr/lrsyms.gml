@@ -27,8 +27,6 @@
 :set symbol='mn'        value=';.sf4 '.
 :set symbol='emn'       value=';.esf '.
 .*
-:INCLUDE file='cpyyear'.
-.*
 :set symbol="lang"      value="C".
 .*
 .* O/S specific definitions (DOS, OS/2, QNX, etc.)

@@ -475,12 +475,23 @@ prepare_wgml_opts : .PROCEDURE
     @%append $(dosemu_wgml_batch) c:\gml\dos\wgml.exe $(wgml_cmdl_params)
     @%append $(dosemu_wgml_batch) exit
 !endif
+
+#--------------------------------------
+# common settings for any processing
+#--------------------------------------
     @%create $(wgml_optfile)
 !ifeq hbook cpplib
     @%append $(wgml_optfile) ( setsymbol target DOS
 !else ifeq hbook guitool
     @%append $(wgml_optfile) ( setsymbol allinone 1
 !endif
+# add default windowing for NT
+#    @%append $(wgml_optfile) ( setsymbol defwinnt 1
+# add default windowing for OS/2
+#    @%append $(wgml_optfile) ( setsymbol defwinos2 1
+#
+    @%append $(wgml_optfile) ( setsymbol cpyyear $(curr_year)
+
 #---------------------------------------
 # settings for Post Script documentation
 #---------------------------------------
@@ -535,15 +546,10 @@ prepare_wgml_opts : .PROCEDURE
     @%append $(wgml_optfile) ( index
     @%append $(wgml_optfile) ( setsymbol dotarget $(wgml_target)
     @%append $(wgml_optfile) ( setsymbol book_ver $(bld_ver_str)
-# add default windowing for NT
-#    @%append $(wgml_optfile) ( setsymbol defwinnt 1
-# add default windowing for OS/2
-#    @%append $(wgml_optfile) ( setsymbol defwinos2 1
-#
+!else
 #--------------------------------------
 # settings for on-line help processing
 #--------------------------------------
-!else
 #
 # common setting
 #
@@ -552,10 +558,6 @@ prepare_wgml_opts : .PROCEDURE
     @%append $(wgml_optfile) ( setsymbol dohelp 1
     @%append $(wgml_optfile) ( output (text:2200)$(wgml_tmpfile)
     @%append $(wgml_optfile) ( setsymbol dotarget $(wgml_target)
-# add default windowing for NT
-#    @%append $(wgml_optfile) ( setsymbol defwinnt 1
-# add default windowing for OS/2
-#    @%append $(wgml_optfile) ( setsymbol defwinos2 1
     @%append $(wgml_optfile) ( setsymbol book $(hbook)
 !endif
 #
