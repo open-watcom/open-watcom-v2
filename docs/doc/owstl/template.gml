@@ -1,16 +1,15 @@
-:H1.Introduction
+.sect Introduction
 :P.
 The class template...
-
-:H2. Status
-:P.
+.*
+.section Status
+.np
 :AUTHOR date='1 Dec 2005'.Peter C. Chapin
-:P.
+.np
 Reviewer: Not reviewed
-:P.
+.np
 Most of the required functionality has been implemented...
-
-.H1. Design Details
-:P.
-
+.*
+.section Design Details
+.np
 :CMT. Include level two headers for various subsections as appropriate.

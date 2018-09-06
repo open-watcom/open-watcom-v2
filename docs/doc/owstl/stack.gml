@@ -1,17 +1,17 @@
-:H1.Introduction
-:P.
+.chap Stack
+.*
+.sect Introduction
+.*
 This chapter describes the std::~stack adaptor.
-
-:H2.Status
-:P.
+.*
+.section Status
+.np
 :AUTHOR date='24 Nov 2005'.D Cletheroe
-:P.
+.np
 Reviewer: Not reviewed
-:P.
-
+.np
 The default container is currently a vector as deque has yet to be written
-:P.
-
+.np
 All members complete:
 :UL.
 :LI.explicit stack( Container const & x = Container() )
@@ -23,27 +23,24 @@ All members complete:
 :LI._Sane()
 :LI.operators == != < > <= >=
 :eUL.
-
-:H1.Design Details
-:P.
+.*
+.section Design Details
+.np
 :CLASS.template < class Type, class Container = std::dequeue > class std::~stack
-
-:P.
+.np
 This template is called an adaptor because it uses a real container (the
 Container template parameter) to do the storing of the objects and just
 provides a different interface to it.
 It lacks begin() and end() so you can't use iterators with it and therefore
 you can't use the standard algorithms.
-
-
-:H2.Description of a stack
-:P.
+.*
+.sect Description of a stack
+.*
 A stack is a bit like a pile of books, where each book is the contained object.
 You can add books to the top of the pile (push), look at the top book (top),
 and discard the top book (pop).
-
-:H2.Overview of the class
-:P.
+.*
+.sect Overview of the class
+.*
 This is a very simple wrapper.
 I suggest you just look at the source code.
-

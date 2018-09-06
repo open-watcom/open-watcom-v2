@@ -1,23 +1,25 @@
-:H1.Introduction
-:P.
+.chap Vector
+.*
+.sect Introduction
+.*
 The class template :CLASS.std::~vector
 provides a dynamic array of objects with a type given by the type
 parameter. Unlike :CLASS.std::~string
 vectors can be instantiated with non-POD types. This complicates
 the implementation of :CLASS.std::~vector
 considerably, as discussed below.
-
-:H2. Status
-:P.
+.*
+.section Status
+.np
 :AUTHOR date='1 Sep 2006'.Peter C. Chapin
-:P.
+.np
 Reviewer: Not reviewed
-:P.
+.np
 Most of the required functionality has been implemented. Some of the
 methods are not yet exception safe.
-
-.H1. Design Details
-:P.
+.*
+.section Design Details
+.np
 The internal structure of :CLASS.vector
 is very similar to that of :CLASS.string.
 Any enhancement or bug fix applied to either of these templates should
@@ -30,16 +32,14 @@ copy constructors and user defined :CODE.operator=.
 In addition, copying and assigning objects in a vector might cause an
 exception to be thrown. These details make implementing :CLASS.vector
 more difficult than implementing :CLASS.string.
-
-:P.
+.np
 For example, consider a vector of size 100 with 200 units of memory
 allocated. Now suppose that 10 new objects are inserted in the middle of
 this vector. The 10 objects at the end of the vector need to be copying
 onto the raw memory just past the end using a copy constructor. However,
 the other objects that are moved will be placed on top of existing objects
 and thus must be copied with an :CODE.operator=.
-
-:P.
+.np
 If an exception occurs while the new objects are being constructed, the
 objects constructed so far can be destroyed and the vector can be left in
 an unmodifed state. However, if an exception occurs after the new objects

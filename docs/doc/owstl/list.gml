@@ -1,18 +1,19 @@
-:H1.Introduction
-:P.
-
-:H2.Status
-:P.
+.chap List
+.*
+.sect Introduction
+.*
+.section Status
+.np
 :AUTHOR date='3 Nov 2005'.P Chapin, D Cletheroe
-:P.
+.np
 Reviewer: Not reviewed
-:P.
+.np
 Missing members:
 :UL.
 :LI.err... need to look throught the standard
 :LI.
 :eUL.
-
+.*
 Completed members:
 :UL.
 :LI.explicit list( Allocator const & )
@@ -49,22 +50,22 @@ Completed members:
 :LI.reverse()
 :LI.merge( list const & )
 :eUL.
-
-:H1.Design Details
-:P.
+.*
+.section Design Details
+.np
 :CLASS.template < class Type, class Allocator > class std::~list
-
-:H2.Description of a Double Linked List
-:P.
+.*
+.sect Description of a Double Linked List
+.*
 This is a data structure that is made up of nodes, where each node
 contains the data, a pointer to the next node, and a pointer to the
 previous node. The overall structure also knows where the first element
 in the list is and usually the last. Obviously it requires two pointers
 for every piece of data held in the list, but this allows movement
 between adjacent nodes in both directions in constant time.
-
-:H2.Overview of the class
-:P.
+.*
+.sect Overview of the class
+.*
 The class defines a internal DoubleLink structure that only holds
 forward and backward pointers to itself. It then defines a Node
 structure that inherits the DoubleLink and adds to it the space for the
@@ -81,8 +82,7 @@ point of the end of the list. When the an element is inserted or deleted
 before the end or at the begining all the pointer manipulation just
 falls out in the wash. [This seems to be a good uses of sentinels, I
 can't see the point of using them in a tree structure for example.]
-
-:P.
+.np
 There are two allocators that need to be rebound for the Node and
 DoubleLink types. [For review: DJFC called the first one mMem where the
 lower case m was for
@@ -93,11 +93,9 @@ mDLMem???] The two allocators are needed because objects of different
 types are being allocated: the node allocation allocates nodes (with
 their contained value_type) while the link allocator allocates the
 sentinel node of type DoubleLink.
-
-
-
-:H2.Inserting nodes
-:P.
+.*
+.sect Inserting nodes
+.*
 The work for the functions :FUNC.push_front, push_back
 and
 :FUNC.insert
@@ -116,11 +114,8 @@ if we are trying to insert before the end o is sentinal and everything works.
 If we are trying to insert before the first node the old node
 before the first is again the sentinal, so the pointers are all valid
 and everything works.
-
-
-:H2.Deleting nodes
-:P.
-
-:H2.Clearing all
-:P.
-
+.*
+.sect Deleting nodes
+.*
+.sect Clearing all
+.*

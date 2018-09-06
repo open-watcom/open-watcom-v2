@@ -35,6 +35,7 @@
 !inject heapwalk             html  htmlhelp  nt                win
 !inject ide                  html  htmlhelp  nt  os2           win
 !inject lguide          dos  html  htmlhelp  nt  os2  pdf  ps  win docpdf
+!inject owstl                                                      docpdf
 !inject pguide          dos  html  htmlhelp  nt  os2  pdf  ps  win docpdf
 !inject readme      txt
 !inject resacc               html  htmlhelp  nt                win

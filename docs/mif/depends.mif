@@ -2299,7 +2299,6 @@ objs_lr3 = &
 incs_owstldev = ../doc/owstl
 objs_owstldev = &
 ../doc/owstl/algorith.gml &
-../doc/owstl/copy.gml &
 ../doc/owstl/deque.gml &
 ../doc/owstl/intro.gml &
 ../doc/owstl/list.gml &
@@ -2576,6 +2575,7 @@ gml_objs = &
 ../doc/gml/bantop.gml    &
 ../doc/gml/booklay.gml   &
 ../doc/gml/boxes.gml     &
+../doc/gml/copyriow.gml  &
 ../doc/gml/copyrite.gml  &
 ../doc/gml/copyrrsi.gml  &
 ../doc/gml/cppextra.gml  &
