@@ -21,7 +21,7 @@ It does not, for example, assimilate an old HP/SGI code base.
 When a new element is added to the library the topic should be researched
 by the author before they commence coding so they can make use of any new
 research and theories.
-The commercial compiler &product is based on made its name for producing high
+The commercial compiler &company is based on made its name for producing high
 quality fast code.
 The intention is to produce a high performance library to complement that.
 This means choosing and experimenting with the best algorithms possible.

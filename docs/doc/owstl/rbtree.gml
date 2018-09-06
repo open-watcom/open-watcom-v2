@@ -186,7 +186,7 @@ Usually the balancing procedure is broken down into a series of
 if represented graphically.
 These rotations can be left or right and the procedure moves up to the
 parent sub-tree and is repeated until the violation is removed.
-Instead &product uses the concept of a :Q.transformation:eQ..
+Instead &company uses the concept of a :Q.transformation:eQ..
 :CMT figure out/make reference tag
 [Alternatives to Two Classic Data Structures, Chris Okaski, 2005?]
 A sub-branch of the tree is analysed to see which case it matches 
