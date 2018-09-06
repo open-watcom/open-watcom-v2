@@ -845,22 +845,6 @@ void bmeps_copy_cfg(BmepsConfiguration *d, BmepsConfiguration *s)
   }
 }
 
-char bmeps_getpid_tmpname[32];
-char bmeps_default_tmpname[] = { "BMP2EPS.TMP" };
-static int configured_tmpname = 0;
-
-char *bmeps_tmpname(void)
-{
-  char *back = NULL;
-  back = bmeps_default_tmpname;
-  if(!configured_tmpname) {
-    configured_tmpname = 1;
-    sprintf(bmeps_getpid_tmpname, "BMP2EPS.%lu.TMP", ((unsigned long)getpid()));
-  }
-  back = bmeps_getpid_tmpname;
-  return back;
-}
-
 void bmeps_delete(char *filename)
 {
   if(filename) {
