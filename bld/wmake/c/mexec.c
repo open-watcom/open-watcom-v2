@@ -30,30 +30,27 @@
 
 
 #include <sys/types.h>
+#include <sys/stat.h>
 #ifdef __UNIX__
+    #include <sys/wait.h>
     #include <dirent.h>
-    #include <fnmatch.h>
 #else
     #include <direct.h>
-  #if defined( __WATCOMC__ )
-    #include <fnmatch.h>
-  #endif
-  #if defined( __DOS__ ) || defined( __NT__ ) || defined( __OS2__ )
-    #include <dos.h>
-  #endif
 #endif
-#include <sys/stat.h>
+#if defined( __UNIX__ ) || defined( __WATCOMC__ )
+    #include <fnmatch.h>
+#endif
+#if defined( __DOS__ ) || defined( __NT__ ) || defined( __OS2__ )
+    #include <dos.h>
+#endif
 #if defined( __WATCOMC__ ) || !defined( __UNIX__ )
     #include <process.h>
 #endif
-#ifdef __UNIX__
-    #include <sys/wait.h>
-#endif
+#include <ctype.h>
+#include <time.h>
 #ifdef __RDOS__
     #include "rdos.h"
 #endif
-#include <ctype.h>
-#include <time.h>
 #ifdef DLLS_IMPLEMENTED
     #include "idedrv.h"
 #endif

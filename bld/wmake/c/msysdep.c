@@ -51,6 +51,34 @@
 #endif
 #include "pcobj.h"
 
+
+#if defined( __DOS__ )
+
+//extern char             DOSSwitchChar(void);
+char             DOSSwitchChar(void);
+#pragma aux             DOSSwitchChar = \
+        "mov ax,3700h"  \
+        "int 21h"       \
+        parm caller     [] \
+        value           [dl] \
+        modify          [ax dx];
+
+#if defined ( _M_I86 )
+/* see page 90-91 of "Undocumented DOS" */
+
+//extern void __far *       _DOS_list_of_lists( void );
+void __far *       _DOS_list_of_lists( void );
+#pragma aux             _DOS_list_of_lists = \
+        "mov ax,5200h"  \
+        "int 21h"       \
+        parm caller     [] \
+        value           [es bx] \
+        modify          [ax es bx];
+#endif
+
+#endif
+
+
 #if defined( __DOS__ )
 
 static int __far critical_error_handler( unsigned deverr, unsigned errcode, unsigned __far *devhdr )
@@ -72,17 +100,6 @@ void InitHardErr( void )
 
 #endif
 
-#if defined( __DOS__ )
-//extern char             DOSSwitchChar(void);
-char             DOSSwitchChar(void);
-#pragma aux             DOSSwitchChar = \
-        "mov ax,3700h"  \
-        "int 21h"       \
-        parm caller     [] \
-        value           [dl] \
-        modify          [ax dx];
-#endif
-
 int SwitchChar( void )
 /***************************/
 {
@@ -92,25 +109,13 @@ int SwitchChar( void )
     return( '/' );
 #elif   defined( __UNIX__ )
     return( '-' );
-
 #endif
 }
-
-#if defined( __DOS__ ) && defined ( _M_I86 )
-/* see page 90-91 of "Undocumented DOS" */
-
-//extern void __far *       _DOS_list_of_lists( void );
-void __far *       _DOS_list_of_lists( void );
-#pragma aux             _DOS_list_of_lists = \
-        "mov ax,5200h"  \
-        "int 21h"       \
-        parm caller     [] \
-        value           [es bx] \
-        modify          [ax es bx];
 
 int OSCorrupted( void )
 /*********************/
 {
+#if defined( __DOS__ ) && defined ( _M_I86 )
     _Packed struct mcb {
         UINT8   id;
         UINT16  owner;
@@ -140,15 +145,9 @@ int OSCorrupted( void )
         }
         chain_seg = new_chain_seg;
     }
-    return( 0 );
-}
-#else
-int OSCorrupted( void )
-/****************************/
-{
-    return( 0 );
-}
 #endif
+    return( 0 );
+}
 
 RET_T TouchFile( const char *name )
 /*********************************/
