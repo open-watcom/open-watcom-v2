@@ -1989,20 +1989,22 @@ static const char *CollectEnvOrFileName( const char *str )
 
 static char *ReadIndirectFile( void )
 {
-    char        *env;
-    char        *str;
-    int         handle;
-    int         len;
-    char        ch;
+    char            *env;
+    char            *str;
+    FILE            *fp;
+    unsigned long   len;
+    char            ch;
 
     env = NULL;
-    handle = open( TokenBuf, O_RDONLY | O_BINARY );
-    if( handle != -1 ) {
-        len = filelength( handle );
+    fp = fopen( TokenBuf, "rb" );
+    if( fp != NULL ) {
+        fseek( fp, 0, SEEK_END );
+        len = ftell( fp );
         env = CMemAlloc( len + 1 );
-        read( handle, env, len );
+        rewind( fp );
+        fread( env, len, 1, fp );
         env[len] = '\0';
-        close( handle );
+        fclose( fp );
         // zip through characters changing \r, \n etc into ' '
         str = env;
         while( (ch = *str) != '\0' ) {

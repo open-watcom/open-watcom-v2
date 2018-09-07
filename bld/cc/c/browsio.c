@@ -260,9 +260,9 @@ static void dw_write( dw_sectnum sect, const void *block, size_t len )
     bufnum = dw_sections[sect].offset / C_DWARF_BUFSIZE;
     endbufnum = ( dw_sections[sect].offset + len ) / C_DWARF_BUFSIZE;
     if( endbufnum >= dw_sections[sect].bufcount ) {
-        newbufptrs = (char **)CMemAlloc( ( endbufnum + 1 ) * sizeof( char ** ) );
+        newbufptrs = (char **)CMemAlloc( ( endbufnum + 1 ) * sizeof( char * ) );
         if( dw_sections[sect].bufptrs != NULL ) {
-            memcpy( newbufptrs, dw_sections[sect].bufptrs, dw_sections[sect].bufcount * sizeof( char ** ) );
+            memcpy( newbufptrs, dw_sections[sect].bufptrs, dw_sections[sect].bufcount * sizeof( char * ) );
             CMemFree( dw_sections[sect].bufptrs );
         }
         dw_sections[sect].bufptrs = newbufptrs;

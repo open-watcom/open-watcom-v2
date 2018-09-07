@@ -1420,6 +1420,7 @@ void DoCompile( void )
 #endif
                 BEFini();
                 BEUnload();
+                SegFini();
             }
         } else {
             NoCodeGenDLL();

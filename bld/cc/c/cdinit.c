@@ -352,7 +352,7 @@ static void StoreIValue( DATA_TYPE dtype, int value, target_size size )
         }
         CurDataQuad->size += size;
     } else {
-        dq.type = dtype;
+        dq.type = (enum quad_type)dtype;
         dq.flags = Q_DATA;
         dq.u_long_value1 = value;
         if( value != 0 )
@@ -376,7 +376,7 @@ static void StoreIValue64( DATA_TYPE dtype, int64 value )
 {
     DATA_QUAD           dq;
 
-    dq.type = dtype;
+    dq.type = (enum quad_type)dtype;
     dq.flags = Q_DATA;
     dq.u.long64 = value;
     CompFlags.non_zero_data = true;
@@ -610,7 +610,7 @@ static void StoreInt64( TYPEPTR typ )
     TREEPTR     tree;
     DATA_QUAD   dq;
 
-    dq.type = typ->decl_type;
+    dq.type = (enum quad_type)typ->decl_type;
     dq.flags = Q_DATA;
     U32ToU64( 0, &dq.u.long64 );
     if( CurToken != T_RIGHT_BRACE ) {
@@ -1128,7 +1128,7 @@ static void StoreFloat( DATA_TYPE dtype, target_size size )
     TREEPTR     tree;
     DATA_QUAD   dq;
 
-    dq.type = dtype;
+    dq.type = (enum quad_type)dtype;
     dq.flags = Q_DATA;
     dq.u.double_value = 0.0;
     if( CurToken != T_RIGHT_BRACE ) {

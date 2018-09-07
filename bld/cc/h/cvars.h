@@ -597,6 +597,7 @@ extern void         InitIncFile( void );
 
 /* cinfo.c */
 extern void         SegInit(void);
+extern void         SegFini(void);
 extern segment_id   AddSegName(const char *,const char *,int);
 extern segment_id   DefThreadSeg( void );
 extern void         EmitSegLabels(void);

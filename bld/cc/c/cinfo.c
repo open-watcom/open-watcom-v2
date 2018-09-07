@@ -972,6 +972,16 @@ void SegInit( void )
     }
 }
 
+void SegFini( void )
+{
+    user_seg    *useg;
+
+    while( (useg = userSegments) != NULL ) {
+        userSegments = useg->next;
+        CMemFree( useg );
+    }
+}
+
 void SetSegAlign( SYMPTR sym )
 {
     align_type          align;
