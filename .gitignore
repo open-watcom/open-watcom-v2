@@ -131,6 +131,7 @@
 /bld/hdr/linux/*
 /bld/hdr/qnx/*
 /bld/hdr/quantum/*
+/bld/hdr/rdos/*
 /bld/hdr/regress/*
 #
 /bld/ide/cfg/*/*.cfg
