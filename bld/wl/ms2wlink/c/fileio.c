@@ -108,7 +108,7 @@ void QClose( FILE *fp, const char *name )
 unsigned long QFileSize( FILE *fp )
 /*********************************/
 {
-    unsigned long   curpos;
+    long            curpos;
     unsigned long   size;
 
     curpos = ftell( fp );
