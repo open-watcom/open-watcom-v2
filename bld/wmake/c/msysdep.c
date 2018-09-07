@@ -44,7 +44,7 @@
   #else
     #include <sys/utime.h>
   #endif
-  #if defined( __OS2__ ) // && !defined( _M_I86 )
+  #if defined( __OS2__ )
     #define INCL_DOSMISC
     #include <os2.h>
   #endif

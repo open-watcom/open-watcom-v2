@@ -66,11 +66,13 @@
         #include <fnmatch.h>    // fnmatch is found in the standard library
     #endif
 #else
+    #include <direct.h>
   #if defined( __NETWARE__ )
     #include <fnmatch.h>
-  #endif
-    #include <direct.h>
+  #elif defined( __RDOS__ )
+  #else
     #include <dos.h>
+  #endif
 #endif
 #include "walloca.h"
 #include "guifdlg.h"
@@ -530,7 +532,7 @@ static bool buildFileTypesExts( dlg_info *dlg, const char *data )
 static bool goToDir( gui_window *gui, char *dir )
 {
     char        drive[_MAX_DRIVE];
-#if !defined( __UNIX__ ) && !defined( __NETWARE__ )
+#if !defined( __UNIX__ ) && !defined( __NETWARE__ ) && !defined( __RDOS__ )
     unsigned    total;
 #endif
     bool        removed_end;
@@ -576,7 +578,9 @@ static bool goToDir( gui_window *gui, char *dir )
 
     splitPath( dir, drive, NULL, NULL, NULL );
     if( drive[0] != 0 ) {
-#if !defined( __UNIX__ ) && !defined( __NETWARE__ )
+#if defined( __RDOS__ )
+        RdosSetCurDrive( (unsigned)(toupper( drive[0] ) - 'A') );
+#elif !defined( __UNIX__ ) && !defined( __NETWARE__ )
         _dos_setdrive( toupper( drive[0] ) - 'A' + 1, &total );
 #endif
     }

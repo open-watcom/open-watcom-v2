@@ -31,7 +31,6 @@
 
 
 #include <conio.h>
-#include <dos.h>
 #include "uidef.h"
 
 

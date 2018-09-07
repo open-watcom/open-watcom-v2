@@ -32,7 +32,7 @@
 
 #include <string.h>
 #ifdef __WATCOMC__
-    #if defined( _M_IX86 )
+    #if defined( _M_I86 )
         #include <i86.h>
     #endif
     #include <conio.h>
