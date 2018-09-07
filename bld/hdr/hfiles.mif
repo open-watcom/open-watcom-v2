@@ -79,7 +79,7 @@
 !inject i86.h                       hdos hlnx hqnx
 !inject initiali         noext hcpp
 !inject inttypes.h                  hdos hlnx hqnx hrdos
-!inject io.h                        hdos
+!inject io.h                        hdos           hrdos
 !inject iomanip          noext hcpp
 !inject iomanip.h              hcpp
 !inject ios              noext hcpp
