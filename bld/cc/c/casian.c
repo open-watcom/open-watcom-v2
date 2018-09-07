@@ -41,7 +41,9 @@ switch  Character Set           of a double-byte character
 */
 #include "cvars.h"
 
-#if defined( __WATCOMC__ ) || !defined( __UNIX__ )
+#if defined( __RDOS__ )
+// !TODO fix MBCS stuff
+#elif defined( __WATCOMC__ ) || !defined( __UNIX__ )
     #include <mbstring.h>
     #include <mbctype.h>
 #endif
@@ -78,7 +80,8 @@ void SetDBChar( int character_set )
         setRange( 0xa1, 0xfe );
         break;
     case -1:
-#if defined( __WATCOMC__ ) || !defined( __UNIX__ )
+#if defined( __RDOS__ )
+#elif defined( __WATCOMC__ ) || !defined( __UNIX__ )
         {
             unsigned    i;
             _setmbcp( _MB_CP_ANSI );
