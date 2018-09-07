@@ -1989,17 +1989,17 @@ static const char *CollectEnvOrFileName( const char *str )
 
 static char *ReadIndirectFile( void )
 {
-    char            *env;
-    char            *str;
-    FILE            *fp;
-    unsigned long   len;
-    char            ch;
+    char        *env;
+    char        *str;
+    FILE        *fp;
+    size_t      len;
+    char        ch;
 
     env = NULL;
     fp = fopen( TokenBuf, "rb" );
     if( fp != NULL ) {
         fseek( fp, 0, SEEK_END );
-        len = ftell( fp );
+        len = (size_t)ftell( fp );
         env = CMemAlloc( len + 1 );
         rewind( fp );
         fread( env, len, 1, fp );
