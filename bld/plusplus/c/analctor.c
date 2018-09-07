@@ -482,7 +482,7 @@ PTREE EffectCtor(               // EFFECT A CONSTRUCTION
     PTREE initial,              // - initialization list
     SYMBOL ctor,                // - constructor
     TYPE base_type,             // - type being constructed
-    PTREE this_node,            // - NULL, or node for "this"
+    PTREE node_this,            // - NULL, or node for "this"
     TOKEN_LOCN *err_locn,       // - error location
     unsigned control )          // - control mask
 {
@@ -490,7 +490,7 @@ PTREE EffectCtor(               // EFFECT A CONSTRUCTION
     CNV_RETN retn;              // - conversion return
 
     /*
-        if the caller depends on a non-NULL 'this_node' being the final
+        if the caller depends on a non-NULL 'node_this' being the final
         value of the expression returned by EffectCtor, see the code in
         AnalyseNew()
     */
@@ -519,31 +519,31 @@ PTREE EffectCtor(               // EFFECT A CONSTRUCTION
         if( initial == NULL ) {
             initial = NodeZero();
         }
-        if( this_node == NULL ) {
+        if( node_this == NULL ) {
             node = NodeConvert( base_type, initial );
         } else {
             if( base_type->id == TYP_MEMBER_POINTER ) {
-                node = NodeBinary( CO_INIT, this_node, initial );
-                node->type = this_node->type;
+                node = NodeBinary( CO_INIT, node_this, initial );
+                node->type = node_this->type;
                 retn = MembPtrAssign( &node );
-                /* value of expression is 'this_node' */
+                /* value of expression is 'node_this' */
                 ConversionDiagnose( retn, node, &diagCtor );
             } else {
                 PTREE dup;
 
                 dup = NULL;
                 if( control & EFFECT_VALUE_THIS ) {
-                    dup = NodeDupExpr( &this_node );
+                    dup = NodeDupExpr( &node_this );
                 }
                 if( base_type->id == TYP_BITFIELD ) {
-                    this_node = NodeUnaryCopy( CO_BITFLD_CONVERT, this_node );
-                    this_node->type = base_type->of;
+                    node_this = NodeUnaryCopy( CO_BITFLD_CONVERT, node_this );
+                    node_this->type = base_type->of;
                 }
                 node = NodeBinary( NULL == TypeReference( base_type )
                                    ? CO_INIT : CO_INIT_REF
-                                 , this_node
+                                 , node_this
                                  , initial );
-                node->type = this_node->type;
+                node->type = node_this->type;
                 if( dup != NULL ) {
                     node = NodeComma( node, dup );
                 }
@@ -552,16 +552,16 @@ PTREE EffectCtor(               // EFFECT A CONSTRUCTION
         break;
     case TYP_CLASS :
         if( ctor == NULL ) {
-            node = ClassDefaultCopy( this_node, bareArg( initial ) );
+            node = ClassDefaultCopy( node_this, bareArg( initial ) );
         } else {
             bool check_dtoring;     // - true ==> need to check DTORing
             TYPE this_type;         // - type of this arg
             CALL_OPT opt;           // - type of optimization
             PTREE bare;             // - bare source operand
             PTREE co_dtor;          // - CO_DTOR operand
-            if( this_node == NULL ) {
-                this_node = NodeTemporary( base_type );
-                this_node = PTreeSetLocn( this_node, err_locn );
+            if( node_this == NULL ) {
+                node_this = NodeTemporary( base_type );
+                node_this = PTreeSetLocn( node_this, err_locn );
                 check_dtoring = true;
             } else {
                 check_dtoring = false;
@@ -582,25 +582,25 @@ PTREE EffectCtor(               // EFFECT A CONSTRUCTION
             if( opt == CALL_OPT_NONE ) {
                 arg_list *args;     // - function arguments
                 if( control & EFFECT_EXACT ) {
-                    this_node->flags |= PTF_MEMORY_EXACT;
+                    node_this->flags |= PTF_MEMORY_EXACT;
                 }
                 args = SymFuncArgList( ctor );
                 this_type = base_type;
                 if( args->qualifier != 0 ) {
                     this_type = MakeModifiedType( this_type, args->qualifier );
                 }
-                if( NULL == PointerTypeEquivalent( this_node->type ) ) {
+                if( NULL == PointerTypeEquivalent( node_this->type ) ) {
                     this_type = MakeReferenceTo( this_type );
                 } else {
                     this_type = MakePointerTo( this_type );
                 }
-                this_node = CastImplicit( this_node
+                node_this = CastImplicit( node_this
                                         , this_type
                                         , CNV_FUNC_CD_THIS
                                         , &diagCtor );
-                if( PT_ERROR == this_node->op ) {
+                if( PT_ERROR == node_this->op ) {
                     NodeFreeDupedExpr( initial );
-                    node = PTreeErrorNode( this_node );
+                    node = PTreeErrorNode( node_this );
                     break;
                 }
                 node = NodeMakeCall( ctor
@@ -612,7 +612,7 @@ PTREE EffectCtor(               // EFFECT A CONSTRUCTION
                     node = CallArgsArrange( ctor->sym_type
                                           , node
                                           , node->u.subtree[1]
-                                          , NodeArg( this_node )
+                                          , NodeArg( node_this )
                                           , CallArgumentExactCtor
                                               ( base_type
                                               , ( control & EFFECT_EXACT ) != 0 )
@@ -621,7 +621,7 @@ PTREE EffectCtor(               // EFFECT A CONSTRUCTION
             } else {
                 node = CopyOptimize( bare
                                    , initial
-                                   , this_node
+                                   , node_this
                                    , co_dtor
                                    , opt );
                 control &= ~ EFFECT_CTOR_DECOR;
@@ -629,7 +629,7 @@ PTREE EffectCtor(               // EFFECT A CONSTRUCTION
             if( node->op == PT_ERROR )
                 break;
             if( check_dtoring ) {
-                node = NodeDtorExpr( node, this_node->u.symcg.symbol );
+                node = NodeDtorExpr( node, node_this->u.symcg.symbol );
                 if( node->op == PT_ERROR ) {
                     break;
                 }
@@ -654,7 +654,7 @@ PTREE EffectCtor(               // EFFECT A CONSTRUCTION
         node->type = base_type;
         break;
     default :
-        node = this_node;
+        node = node_this;
         break;
     }
     return( node );

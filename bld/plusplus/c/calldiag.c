@@ -192,7 +192,7 @@ void CallDiagNoMatch(           // DIAGNOSE NO MATCHES FOR CALL
     PTREE expr,                 // - call expression
     MSG_NUM msg_one,            // - message: one function
     MSG_NUM msg_many,           // - message: many functions
-    PTREE this_node,            // - this node (or NULL)
+    PTREE node_this,            // - this node (or NULL)
     SYMBOL orig,                // - original symbol for overloading
     FNOV_DIAG *fnov_diag )      // - overload diagnosis information
 {
@@ -212,8 +212,8 @@ void CallDiagNoMatch(           // DIAGNOSE NO MATCHES FOR CALL
         if( !SymIsFunctionTemplateModel( orig ) ) {
             if( FnovRejectParm( fnov_diag, &bad_parm ) < 0 ) {
                 diag.bad_parm = 0;
-                diag.bad_src = NodeType( this_node );
-                diag.bad_tgt = TypeThisForCall( this_node, orig );
+                diag.bad_src = NodeType( node_this );
+                diag.bad_tgt = TypeThisForCall( node_this, orig );
             } else {
                 arg = diagnoseArg( expr, bad_parm );
                 orig = pickCorrectFunction( orig, expr );

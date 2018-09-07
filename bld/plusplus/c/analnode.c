@@ -1464,13 +1464,13 @@ PTREE NodeThis(                 // MAKE A "THIS" NODE
 PTREE NodeThisCopyLocation(     // MAKE A RVALUE "THIS" NODE WITH LOCATION
     PTREE use_locn )            // - node to grab locn from
 {
-    PTREE this_node;
+    PTREE node_this;
 
-    this_node = NodeThis();
-    if( this_node != NULL && use_locn != NULL ) {
-        this_node = PTreeCopySrcLocation( this_node, use_locn );
+    node_this = NodeThis();
+    if( node_this != NULL && use_locn != NULL ) {
+        node_this = PTreeCopySrcLocation( node_this, use_locn );
     }
-    return( this_node );
+    return( node_this );
 }
 
 

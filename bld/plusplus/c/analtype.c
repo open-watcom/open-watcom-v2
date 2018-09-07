@@ -582,13 +582,13 @@ TYPE TypeFunctionCalled(        // GET FUNCTION DECLARATION TYPE CALLED
 
 
 TYPE TypeThisForCall(           // GET "THIS" TYPE FOR A CALL
-    PTREE this_node,            // - this node
+    PTREE node_this,            // - this node
     SYMBOL sym )                // - function being called
 {
     TYPE this_type;             // - target type for "this"
 
     this_type = SymClass( sym );
-    if( ExprIsLvalue( this_node ) ) {
+    if( ExprIsLvalue( node_this ) ) {
         this_type = MakeReferenceTo( this_type );
     } else {
         this_type = MakePointerTo( this_type );

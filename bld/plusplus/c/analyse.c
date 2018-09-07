@@ -1826,7 +1826,7 @@ static unsigned classify_operand( // CLASSIFY OPERAND AS PTR, ARITH, OTHER
 
 
 static PTREE generateCtor(      // GENERATE A CTOR CALL
-    PTREE this_node,            // - object being CTOR'd
+    PTREE node_this,            // - object being CTOR'd
     PTREE ctor_node )           // - CO_CTOR node
 {
     PTREE initial;              // - parameters for initialization
@@ -1848,7 +1848,7 @@ static PTREE generateCtor(      // GENERATE A CTOR CALL
     retn = EffectCtor( initial
                      , ctor
                      , object_type
-                     , this_node
+                     , node_this
                      , &ctor_node->locn
                      , EFFECT_EXACT | EFFECT_DECOR_TEMP );
     PTreeFree( ctor_node );
