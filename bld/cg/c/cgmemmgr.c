@@ -63,16 +63,16 @@ essentially no worst case performance scenario.
 #include "_cgstd.h"
 #include <stdlib.h>
 #include <stdio.h>
-#if defined( _M_IX86 ) && defined( __WATCOMC__ )
-    #include <i86.h>
-#endif
 #if defined( __NT__ )
     #include <windows.h>
 #elif defined( __OSI__ )
     #define __CALL21__
     #include "tinyio.h"
 #elif defined( __DOS__ )
+    #include <i86.h>
     #include "tinyio.h"
+    #include "dosmem.h"
+    #include "extender.h"
 #elif defined( __QNX__ )
     #include <sys/osinfo.h>
     #include <sys/seginfo.h>
@@ -85,8 +85,6 @@ essentially no worst case performance scenario.
 #include "feprotos.h"
 
 #ifdef __DOS__
-
-#include "dosmem.h"
 
 typedef struct {
     unsigned largest_free;
@@ -111,8 +109,6 @@ extern int _TinyDPMIGetFreeMemoryInformation( dpmi_mem * );
         "pop es"       \
         "sbb eax,eax"  \
         parm[edi] value[eax];
-
-#include "extender.h"
 
 extern char int2f( short );
 #pragma aux int2f parm [ax] value [al] = "int 2fh";
