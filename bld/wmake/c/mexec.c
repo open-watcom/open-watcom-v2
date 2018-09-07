@@ -35,9 +35,11 @@
     #include <fnmatch.h>
 #else
     #include <direct.h>
-    #include <dos.h>
   #if defined( __WATCOMC__ )
     #include <fnmatch.h>
+  #endif
+  #if defined( __DOS__ ) || defined( __NT__ ) || defined( __OS2__ )
+    #include <dos.h>
   #endif
 #endif
 #include <sys/stat.h>
