@@ -38,9 +38,16 @@
 #if defined( __DOS__ )
     #include <dos.h>
     #include "tinyio.h"
-#elif defined( __OS2__ ) && !defined( _M_I86 )
+#else
+  #if defined(__UNIX__) || defined( __WATCOMC__ )
+    #include <utime.h>
+  #else
+    #include <sys/utime.h>
+  #endif
+  #if defined( __OS2__ ) // && !defined( _M_I86 )
     #define INCL_DOSMISC
     #include <os2.h>
+  #endif
 #endif
 #include "pcobj.h"
 
@@ -143,10 +150,10 @@ int OSCorrupted( void )
 }
 #endif
 
-#if defined( __DOS__ )
 RET_T TouchFile( const char *name )
 /*********************************/
 {
+#if defined( __DOS__ )
     tiny_date_t     dt;
     tiny_time_t     tm;
     tiny_ftime_t    p_hms;
@@ -175,21 +182,7 @@ RET_T TouchFile( const char *name )
             return( RET_ERROR );
         }
     }
-    return( RET_SUCCESS );
-}
 #else
-
-#include <sys/stat.h>
-#include <sys/types.h>
-#if defined(__UNIX__)
-    #include <utime.h>
-#else
-    #include <sys/utime.h>
-#endif
-
-RET_T TouchFile( const char *name )
-/*********************************/
-{
     int     fh;
 
     if( utime( name, 0 ) < 0 ) {
@@ -199,9 +192,9 @@ RET_T TouchFile( const char *name )
         }
         close( fh );
     }
+#endif
     return( RET_SUCCESS );
 }
-#endif
 
 #define FUZZY_DELTA     60      /* max allowed variance from stored time-stamp */
 
