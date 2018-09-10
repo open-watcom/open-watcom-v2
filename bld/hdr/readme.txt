@@ -44,7 +44,8 @@ maintenence.
 
 Headers for most of the target systems (DOS, Windows, WinNT, OS/2) are
 generated into the 'dos' directory. Headers for Linux are generated into
-the 'linux' directory. Headers for QNX are disabled by default. When
+the 'linux' directory. Header for RDOS are generated into the 'rdos' directory.
+Headers for QNX are disabled by default. When
 they are activated the QNX headers are generated into the 'qnx'
 directory. As is usual for Open Watcom projects, each of these
 directories contains a makefile that will cause wmake to generate the

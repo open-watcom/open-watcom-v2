@@ -92,6 +92,83 @@ set PROJDIR=<CWD>
     <CCCMD> dos/valarray       <OWRELROOT>/h/
     <CCCMD> dos/vector         <OWRELROOT>/h/
 
+    <CCCMD> rdos/*.h*          <OWRELROOT>/rh/
+    <CCCMD> rdos/*.cnv         <OWRELROOT>/rh/
+    <CCCMD> rdos/sys/*         <OWRELROOT>/rh/sys/
+    <CCCMD> rdos/algorith      <OWRELROOT>/rh/
+    <CCCMD> rdos/array         <OWRELROOT>/rh/
+    <CCCMD> rdos/atomic        <OWRELROOT>/rh/
+    <CCCMD> rdos/bitset        <OWRELROOT>/rh/
+    <CCCMD> rdos/cassert       <OWRELROOT>/rh/
+    <CCCMD> rdos/cctype        <OWRELROOT>/rh/
+    <CCCMD> rdos/cerrno        <OWRELROOT>/rh/
+    <CCCMD> rdos/cfloat        <OWRELROOT>/rh/
+    <CCCMD> rdos/chrono        <OWRELROOT>/rh/
+    <CCCMD> rdos/cinttype      <OWRELROOT>/rh/
+    <CCCMD> rdos/ciso646       <OWRELROOT>/rh/
+    <CCCMD> rdos/climits       <OWRELROOT>/rh/
+    <CCCMD> rdos/clocale       <OWRELROOT>/rh/
+    <CCCMD> rdos/cmath         <OWRELROOT>/rh/
+    <CCCMD> rdos/codecvt       <OWRELROOT>/rh/
+    <CCCMD> rdos/complex       <OWRELROOT>/rh/
+    <CCCMD> rdos/conditio      <OWRELROOT>/rh/
+    <CCCMD> rdos/csetjmp       <OWRELROOT>/rh/
+    <CCCMD> rdos/csignal       <OWRELROOT>/rh/
+    <CCCMD> rdos/cstdarg       <OWRELROOT>/rh/
+    <CCCMD> rdos/cstdbool      <OWRELROOT>/rh/
+    <CCCMD> rdos/cstddef       <OWRELROOT>/rh/
+    <CCCMD> rdos/cstdint       <OWRELROOT>/rh/
+    <CCCMD> rdos/cstdio        <OWRELROOT>/rh/
+    <CCCMD> rdos/cstdlib       <OWRELROOT>/rh/
+    <CCCMD> rdos/cstring       <OWRELROOT>/rh/
+    <CCCMD> rdos/ctime         <OWRELROOT>/rh/
+    <CCCMD> rdos/cwchar        <OWRELROOT>/rh/
+    <CCCMD> rdos/cwctype       <OWRELROOT>/rh/
+    <CCCMD> rdos/deque         <OWRELROOT>/rh/
+    <CCCMD> rdos/exceptio      <OWRELROOT>/rh/
+    <CCCMD> rdos/forward_      <OWRELROOT>/rh/
+    <CCCMD> rdos/fstream       <OWRELROOT>/rh/
+    <CCCMD> rdos/function      <OWRELROOT>/rh/
+    <CCCMD> rdos/future        <OWRELROOT>/rh/
+    <CCCMD> rdos/initiali      <OWRELROOT>/rh/
+    <CCCMD> rdos/iomanip       <OWRELROOT>/rh/
+    <CCCMD> rdos/ios           <OWRELROOT>/rh/
+    <CCCMD> rdos/iosfwd        <OWRELROOT>/rh/
+    <CCCMD> rdos/iostream      <OWRELROOT>/rh/
+    <CCCMD> rdos/istream       <OWRELROOT>/rh/
+    <CCCMD> rdos/iterator      <OWRELROOT>/rh/
+    <CCCMD> rdos/limits        <OWRELROOT>/rh/
+    <CCCMD> rdos/list          <OWRELROOT>/rh/
+    <CCCMD> rdos/locale        <OWRELROOT>/rh/
+    <CCCMD> rdos/map           <OWRELROOT>/rh/
+    <CCCMD> rdos/memory        <OWRELROOT>/rh/
+    <CCCMD> rdos/mutex         <OWRELROOT>/rh/
+    <CCCMD> rdos/new           <OWRELROOT>/rh/
+    <CCCMD> rdos/numeric       <OWRELROOT>/rh/
+    <CCCMD> rdos/ostream       <OWRELROOT>/rh/
+    <CCCMD> rdos/queue         <OWRELROOT>/rh/
+    <CCCMD> rdos/random        <OWRELROOT>/rh/
+    <CCCMD> rdos/ratio         <OWRELROOT>/rh/
+    <CCCMD> rdos/regex         <OWRELROOT>/rh/
+    <CCCMD> rdos/set           <OWRELROOT>/rh/
+    <CCCMD> rdos/sstream       <OWRELROOT>/rh/
+    <CCCMD> rdos/stack         <OWRELROOT>/rh/
+    <CCCMD> rdos/stdexcep      <OWRELROOT>/rh/
+    <CCCMD> rdos/streambu      <OWRELROOT>/rh/
+    <CCCMD> rdos/string        <OWRELROOT>/rh/
+    <CCCMD> rdos/strstrea      <OWRELROOT>/rh/
+    <CCCMD> rdos/system_e      <OWRELROOT>/rh/
+    <CCCMD> rdos/thread        <OWRELROOT>/rh/
+    <CCCMD> rdos/tuple         <OWRELROOT>/rh/
+    <CCCMD> rdos/typeinde      <OWRELROOT>/rh/
+    <CCCMD> rdos/typeinfo      <OWRELROOT>/rh/
+    <CCCMD> rdos/type_tra      <OWRELROOT>/rh/
+    <CCCMD> rdos/unorderm      <OWRELROOT>/rh/
+    <CCCMD> rdos/unorders      <OWRELROOT>/rh/
+    <CCCMD> rdos/utility       <OWRELROOT>/rh/
+    <CCCMD> rdos/valarray      <OWRELROOT>/rh/
+    <CCCMD> rdos/vector        <OWRELROOT>/rh/
+
     <CCCMD> linux/*.h*         <OWRELROOT>/lh/
     <CCCMD> linux/arpa/*       <OWRELROOT>/lh/arpa/
     <CCCMD> linux/sys/*        <OWRELROOT>/lh/sys/

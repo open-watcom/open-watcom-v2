@@ -315,4 +315,4 @@
 dos_files   = $(hcpp) $(hdos)
 linux_files = $(hcpp) $(hlnx)
 qnx_files   = $(hcpp) $(hqnx)
-rdos_files  = $(hrdos)
+rdos_files  = $(hcpp) $(hrdos)
