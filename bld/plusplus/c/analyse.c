@@ -1143,7 +1143,7 @@ static OPR_RTN_CODE opr_rtn_table[][OPCL_MAX] = {
 
 
 typedef struct                  // ERROR_CODES
-{   unsigned reqd_kind;         // - required for left operand, when binary
+{   OPCL reqd_kind;             // - required for left operand, when binary
     unsigned err_unary;         // - error when a unary operator
     unsigned err_left;          // - error when left operand is bad
     unsigned err_right;         // - error when right operand is bad
@@ -1623,7 +1623,7 @@ static TYPE analyse_err_left(   // ANALYSE KIND OF ERROR MESSAGE TO WRITE
 
 static TYPE analyse_err(        // ANALYSE KIND OF ERROR MESSAGE TO WRITE
     PTREE expr,                 // - expression in error
-    unsigned left_kind,         // - kind of operand on left
+    OPCL left_kind,             // - kind of operand on left
     ERROR_CODES *msgs )         // - messages
 {
     MSG_NUM msg;                // - message code to be used
@@ -1777,19 +1777,16 @@ static bool ptr_scales(         // TEST IF EXPRESSION IF PTR. IS SCALABLE
 }
 
 
-static unsigned classify_operand( // CLASSIFY OPERAND AS PTR, ARITH, OTHER
+static OPCL classify_operand(   // CLASSIFY OPERAND AS PTR, ARITH, OTHER
     PTREE operand )             // - the operand
 {
-    unsigned retn;              // - classification
+    OPCL retn;                  // - classification
     TYPE type;                  // - operand type
 
-    if( operand == NULL ) {
-        retn = OPCL_OTHER;
-    } else {
+    retn = OPCL_OTHER;
+    if( operand != NULL ) {
         type = operand->type;
-        if( type == NULL ) {
-            retn = OPCL_OTHER;
-        } else {
+        if( type != NULL ) {
             type = TypeReferenced( type );
             switch( operand->op ) {
             case PT_INT_CONSTANT :
@@ -1806,8 +1803,6 @@ static unsigned classify_operand( // CLASSIFY OPERAND AS PTR, ARITH, OTHER
                     retn = OPCL_PTR;
                 } else if( NULL != ArithType( type ) ) {
                     retn = OPCL_ARITH;
-                } else {
-                    retn = OPCL_OTHER;
                 }
                 break;
             // While nullptr is neither a pointer nor an arithmetic type,
@@ -1816,7 +1811,6 @@ static unsigned classify_operand( // CLASSIFY OPERAND AS PTR, ARITH, OTHER
                 retn = OPCL_ARITH;
                 break;
             default :
-                retn = OPCL_OTHER;
                 break;
             }
         }
@@ -2656,9 +2650,9 @@ PTREE AnalyseOperator(          // ANALYSE AN OPERATOR
     PTREE right;                // - right operand
     PTREE temp;                 // - temporary operand
     TYPE type;                  // - type to be used
-    unsigned index_left;        // - operand index (left)
-    unsigned index_right;       // - operand index (right)
-    unsigned index;             // - operands index
+    OPCL index_left;            // - operand index (left)
+    OPCL index_right;           // - operand index (right)
+    OPCL index;                 // - operands index
     OPR_RTN_CODE action_code;   // - code for actions
     TEMP_TYPE temp_class;       // - SC_... for next temporary
     OPAC *ap;                   // - actions pointer
@@ -2730,7 +2724,7 @@ PTREE AnalyseOperator(          // ANALYSE AN OPERATOR
         }
         expr = orig;
     }
-    index = index_left + index_left + index_right;
+    index = index_left * 2 + index_right;
     if( index > OPCL_OTHER ) {
         index = OPCL_OTHER;
     }

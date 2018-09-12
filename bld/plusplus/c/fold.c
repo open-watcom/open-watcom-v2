@@ -1326,7 +1326,6 @@ PTREE FoldBinary( PTREE expr )
     type = expr->type;
     orig1 = expr->u.subtree[0];
     orig2 = expr->u.subtree[1];
-    type = expr->type;
     op1 = overCondDecor( orig1 );
     has_decoration_left = op1 != orig1;
     op2 = overCondDecor( orig2 );
