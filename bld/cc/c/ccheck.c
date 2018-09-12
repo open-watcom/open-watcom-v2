@@ -277,7 +277,9 @@ static cmp_type DoCompatibleType( TYPEPTR typ1, TYPEPTR typ2, int ptr_indir_leve
     typ2_flags = FLAG_NONE;
     ret_val = OK;
     for( ;; ) {   // * [] loop
-        typ1 = SkipTypeFluff( typ1 ); // skip typedefs, go into enum base
+        // skip typedefs, go into enum base
+        typ1 = SkipTypeFluff( typ1 );
+        // skip typedefs, go into enum base
         typ2 = SkipTypeFluff( typ2 );
         if( typ1 == typ2 )
             break;
@@ -326,12 +328,14 @@ static cmp_type DoCompatibleType( TYPEPTR typ1, TYPEPTR typ2, int ptr_indir_leve
             if( typ1->decl_type == TYPE_POINTER && typ2->decl_type != TYPE_ARRAY ) {
                 ret_val = PW;
                 while( typ1->decl_type == TYPE_POINTER ) {
+                    // skip typedefs, go into enum base
                     typ1 = SkipTypeFluff( typ1->object );
                     ++ptr_indir_level;
                 }
             } else if( typ2->decl_type == TYPE_POINTER && typ1->decl_type != TYPE_ARRAY ) {
                 ret_val = PW;
                 while( typ2->decl_type == TYPE_POINTER ) {
+                    // skip typedefs, go into enum base
                     typ2 = SkipTypeFluff( typ2->object );
                     ++ptr_indir_level;
                 }
@@ -453,7 +457,9 @@ static cmp_type CompatibleType( TYPEPTR typ1, TYPEPTR typ2, bool assignment, boo
     typ1_flags = FLAG_NONE;
     typ2_flags = FLAG_NONE;
     ret_pq = OK;
-    typ1 = SkipTypeFluff( typ1 ); // skip typedefs go into enums base
+    // skip typedefs go into enums base
+    typ1 = SkipTypeFluff( typ1 );
+    // skip typedefs, go into enum base
     typ2 = SkipTypeFluff( typ2 );
     if( typ1->decl_type == TYPE_POINTER && typ2->decl_type == TYPE_POINTER ) {
         // top level pointer
@@ -931,8 +937,10 @@ static typecheck_err TypeCheck( TYPEPTR typ1, TYPEPTR typ2, SYMPTR sym )
         ptr_mask = ~(FLAG_NEAR | FLAG_WAS_ARRAY | MASK_LANGUAGES);
     }
     for( ;; ) {
-        typ1 = SkipTypeFluff( typ1 ); // skip typedefs, go into enum base
-        typ2 = SkipTypeFluff( typ2 );
+        // skip typedefs, go into enum base
+        typ1 = SkipTypeFluff( typ1 );
+        // skip typedefs, go into enum base
+        typ2= SkipTypeFluff( typ2);
         /* this compare was moved here */
         /* ptr to typedef struct failed when this was before typedef skips */
         if( typ1 == typ2 )

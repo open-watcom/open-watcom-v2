@@ -1866,6 +1866,7 @@ static TREEPTR GenNextParm( TREEPTR tree, TYPEPTR **plistptr )
     tree = RValue( tree );
     if( tree->op.opr == OPR_ERROR )
         return( tree );
+    // skip typedefs, go into enum base
     typ = SkipTypeFluff( tree->u.expr_type );
     plist = *plistptr;
     if( plist != NULL ) {
@@ -1892,6 +1893,7 @@ static TREEPTR GenNextParm( TREEPTR tree, TYPEPTR **plistptr )
         parm_typ = *plist;
         ParmAsgnCheck( parm_typ, tree, ParmNum(), true );
         if( parm_typ != NULL ) {
+            // skip typedefs, go into enum base
             parm_typ = SkipTypeFluff( parm_typ );
             if( parm_typ != typ ) {
                 tree = FixupAss( tree, parm_typ );

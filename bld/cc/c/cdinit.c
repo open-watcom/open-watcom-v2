@@ -911,8 +911,6 @@ void InitSymData( TYPEPTR typ, TYPEPTR ctyp, int level )
     TOKEN           token;
     target_size     size;
 
-    SKIP_TYPEDEFS( typ );
-    SKIP_ENUM( typ );
     token = CurToken;
     if( CurToken == T_LEFT_BRACE ) {
         NextToken();
@@ -920,6 +918,8 @@ void InitSymData( TYPEPTR typ, TYPEPTR ctyp, int level )
             CErr1( ERR_EMPTY_INITIALIZER_LIST );
         }
     }
+    // skip typedefs, go into enum base
+    typ = SkipTypeFluff( typ );
     size = SizeOfArg( typ );
     switch( typ->decl_type ) {
     case TYPE_ARRAY:

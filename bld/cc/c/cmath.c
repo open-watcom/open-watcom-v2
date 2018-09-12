@@ -660,7 +660,9 @@ static TREEPTR BaseConv( TYPEPTR typ1, TREEPTR op2 )
     type_modifiers  typ1_flags, typ2_flags;
 
     typ2 =  op2->u.expr_type;
-    typ1 = SkipTypeFluff( typ1 ); // skip typedefs go into enums base
+    // skip typedefs, go into enum base
+    typ1 = SkipTypeFluff( typ1 );
+    // skip typedefs, go into enum base
     typ2 = SkipTypeFluff( typ2 );
     typ1_flags = typ1->u.p.decl_flags;
     typ2_flags = typ2->u.p.decl_flags;
@@ -1792,10 +1794,12 @@ TREEPTR FixupAss( TREEPTR opnd, TYPEPTR newtyp )
 
     if( opnd->op.opr == OPR_ERROR )
         return( opnd );
+    // skip typedefs, go into enum base
+    typ = SkipTypeFluff( opnd->u.expr_type );
     opnd = BaseConv( newtyp, opnd );
     opnd = BoolConv( newtyp, opnd );
+    // skip typedefs, go into enum base
     newtyp = SkipTypeFluff( newtyp );
-    typ = SkipTypeFluff( opnd->u.expr_type );
     decl1 = DataTypeOf( typ );
     decl2 = DataTypeOf( newtyp );
     if( decl1 > TYPE_POINTER || decl2 > TYPE_POINTER ) {
