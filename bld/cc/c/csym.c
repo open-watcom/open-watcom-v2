@@ -530,6 +530,8 @@ SYM_HANDLE Sym0Look( id_hash_idx h, const char *id )
 
 static void ChkReference( SYMPTR sym, SYM_NAMEPTR name )
 {
+    TYPEPTR     typ;
+
     if( sym->flags & SYM_DEFINED ) {
         if( sym->attribs.stg_class != SC_EXTERN ) {
             if( (sym->flags & SYM_REFERENCED) == 0 ) {
@@ -541,7 +543,9 @@ static void ChkReference( SYMPTR sym, SYM_NAMEPTR name )
                     }
                 }
             } else if( (sym->flags & SYM_ASSIGNED) == 0 ) {
-                if( sym->sym_type->decl_type != TYPE_ARRAY
+                typ = sym->sym_type;
+                SKIP_TYPEDEFS( typ );
+                if( typ->decl_type != TYPE_ARRAY
                   && sym->attribs.stg_class != SC_STATIC ) {
                     CWarn2p( WARN_SYM_NOT_ASSIGNED, ERR_SYM_NOT_ASSIGNED, name );
                 }
@@ -814,6 +818,8 @@ static SYM_HASHPTR FreeSym( void )
     SYM_ENTRY       sym;
     SYM_HANDLE      head[BUCKETS];
     SYM_HANDLE      tail[BUCKETS];
+    TYPEPTR         typ;
+
   #if _CPU == 370
     void            *xlist;
     InitExtName( &xlist );
@@ -837,9 +843,11 @@ static SYM_HASHPTR FreeSym( void )
                 if( ( sym.flags & SYM_FUNCTION ) == 0 ) {
                     /* VARIABLE */
                     if( sym.attribs.stg_class == SC_NONE ) {
-                        if( sym.sym_type->decl_type == TYPE_ARRAY ) {
-                            if( sym.sym_type->u.array->dimension == 0 ) {
-                                sym.sym_type->u.array->dimension = 1;
+                        typ = sym.sym_type;
+                        SKIP_TYPEDEFS( typ );
+                        if( typ->decl_type == TYPE_ARRAY ) {
+                            if( typ->u.array->dimension == 0 ) {
+                                typ->u.array->dimension = 1;
                             }
                         }
                     }
