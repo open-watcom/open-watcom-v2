@@ -932,8 +932,7 @@ static target_size FieldAlign( target_size next_offset, FIELDPTR field, align_ty
 static DATA_TYPE UnQualifiedType( TYPEPTR typ )
 {
     // skip typedefs, go into enum base
-    SKIP_TYPEDEFS( typ );
-    SKIP_ENUM( typ );
+    typ = SkipTypeFluff( typ );
     switch( typ->decl_type ) {
     case TYPE_BOOL:
         return( TYPE_BOOL );
