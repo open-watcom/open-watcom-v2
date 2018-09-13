@@ -536,7 +536,7 @@ vi_rc DoDigit( void )
 
     RepeatString[RepeatDigits++] = LastEvent;
     RepeatString[RepeatDigits] = '\0';
-    if( BAD_ID( repeat_window_id ) ) {
+    if( !BAD_ID( repeat_window_id ) ) {
         UpdateRepeatString( RepeatString );
     }
     return( GOT_A_DIGIT );
