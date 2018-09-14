@@ -446,8 +446,6 @@ vi_rc NullResponse( void )
 
 } /* NullResponse */
 
-static window_id    repeat_window_id = NO_WINDOW;
-
 /*
  * KillRepeatWindow - just like it says
  */

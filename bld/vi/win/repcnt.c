@@ -49,7 +49,6 @@ window RepeatCountWindow = {
 
 static char         *className = "RepeatWindow";
 static char         repString[MAX_STR];
-static window_id    repeat_window_id;
 
 bool RepeatCountWindowInit( void )
 {
@@ -132,6 +131,7 @@ window_id NewRepeatCountWindow( void )
 {
     RECT        *size;
     POINT       p;
+    window_id   wid;
 
     size = &RepeatCountWindow.def_area;
 
@@ -140,13 +140,13 @@ window_id NewRepeatCountWindow( void )
     ClientToScreen( root_window_id, &p );
 
     repString[0] = '\0';
-    repeat_window_id = CreateWindow( className, "Repeat Count",
+    wid = CreateWindow( className, "Repeat Count",
         WS_POPUPWINDOW | WS_BORDER | WS_CLIPSIBLINGS,
         p.x, p.y, size->right - size->left, size->bottom - size->top,
         root_window_id, (HMENU)NULLHANDLE, InstanceHandle, NULL );
-    ShowWindow( repeat_window_id, SW_SHOWNORMAL );
-    UpdateWindow( repeat_window_id );
-    return( repeat_window_id );
+    ShowWindow( wid, SW_SHOWNORMAL );
+    UpdateWindow( wid );
+    return( wid );
 
 } /* NewRepeatCountWindow */
 
