@@ -286,7 +286,7 @@ static PTREE strLiteral         // MAKE A STRING LITERAL NODE
     PTREE new_tree;
     target_size_t str_len;
 
-    str_len = StringAWStrLen( str );
+    str_len = (target_size_t)StringAWStrLen( str );
     new_tree = PTreeAlloc();
     new_tree->op = PT_STRING_CONSTANT;
     new_tree->u.string = str;
@@ -386,7 +386,7 @@ static PTREE ptreeSetConstantType( PTREE node, type_id id )
     return( node );
 }
 
-static PTREE allocConstant( uint_8 op, type_id id )
+static PTREE allocConstant( ptree_op_t op, type_id id )
 {
     PTREE new_tree;
 
@@ -521,7 +521,7 @@ PTREE PTreeCDtorExtra( void )
 bool PTreePropogateError(       // CHECK AND PROPOGATE ERRORS FROM SUB-TREES
     PTREE curr )                // - current node
 {
-    unsigned op;                // - current expr op
+    ptree_op_t op;              // - current expr op
     PTREE left;                 // - left subtree
     PTREE right;                // - right subtree
 
@@ -1780,7 +1780,7 @@ unsigned PTreeGetFPRaw( PTREE tree, char *buff, unsigned len )
     DbgAssert( len >= 128 );
     cg_float = tree->u.floating_constant;
     end = BFCnvFS( cg_float, buff, len );
-    len = end - buff;
+    len = (unsigned)( end - buff );
     DbgAssert( buff[len] == '\0' );
     // returns strlen( buff ) + 1
     return( len + 1 );

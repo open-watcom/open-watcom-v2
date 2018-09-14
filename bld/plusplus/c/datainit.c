@@ -1760,8 +1760,8 @@ static void dataInitStashString( PTREE expr )
     target_size_t size;
     target_size_t dim;
 
-    size = StringByteLength( expr->u.string );
-    dim = StringAWStrLen( expr->u.string );
+    size = (target_size_t)StringByteLength( expr->u.string );
+    dim = (target_size_t)StringAWStrLen( expr->u.string );
     switch( currInit->location ) {
     case DL_INTERNAL_AUTO:
         mayNeedAutoStaticInitCopy();

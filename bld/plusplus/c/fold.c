@@ -519,7 +519,7 @@ static PTREE castConstant( PTREE expr, TYPE type, bool *happened )
     return( expr );
 }
 
-static bool soFarSoGood( PTREE expr, unsigned op, CGOP cgop )
+static bool soFarSoGood( PTREE expr, ptree_op_t op, CGOP cgop )
 {
     if( expr != NULL && expr->op == op && expr->cgop == cgop ) {
         return( true );
@@ -1316,8 +1316,8 @@ PTREE FoldBinary( PTREE expr )
     PTREE op2;
     PTREE op_test;
     TYPE type;
-    unsigned typ1;
-    unsigned typ2;
+    ptree_op_t typ1;
+    ptree_op_t typ2;
     bool cast_happened;
     bool has_decoration_left;
     bool has_decoration_right;
