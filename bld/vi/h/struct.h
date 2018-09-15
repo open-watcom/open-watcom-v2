@@ -553,7 +553,7 @@ typedef struct info {
     select_rgn          SelRgn;
     bool                IsColumnRegion      : 1;
     bool                linenumflag         : 1;
-    window_id           curr_num_window_id;
+    window_id           linenum_current_window_id;
     window_id           current_window_id;
     vi_ushort           DuplicateID;
     dc_line             *dclines;

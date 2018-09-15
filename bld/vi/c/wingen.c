@@ -318,7 +318,7 @@ vi_rc ResizeCurrentWindow( windim x1, windim y1, windim x2, windim y2 )
     DCDisplayAllLines();
     SetWindowCursor();
     if( EditFlags.LineNumbers ) {
-        CloseAWindow( curr_num_window_id );
+        CloseAWindow( linenum_current_window_id );
         rc = LineNumbersSetup();
         if( rc != ERR_NO_ERR ) {
             return( rc );

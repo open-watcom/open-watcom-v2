@@ -272,7 +272,7 @@ void CloseAWindow( window_id wid )
 void CloseAChildWindow( window_id wid )
 {
     if( !BAD_ID( wid ) ) {
-        SendMessage( edit_container_id, WM_MDIDESTROY, (WPARAM)wid, 0L );
+        SendMessage( edit_container_window_id, WM_MDIDESTROY, (WPARAM)wid, 0L );
     }
 }
 
@@ -329,7 +329,7 @@ void MoveWindowToFrontDammit( window_id wid, bool scrflag )
 vi_rc MaximizeCurrentWindow( void )
 {
     if( !BAD_ID( current_window_id ) ) {
-        SendMessage( edit_container_id, WM_MDIMAXIMIZE, (WPARAM)current_window_id, 0L );
+        SendMessage( edit_container_window_id, WM_MDIMAXIMIZE, (WPARAM)current_window_id, 0L );
     }
     return( ERR_NO_ERR );
 }

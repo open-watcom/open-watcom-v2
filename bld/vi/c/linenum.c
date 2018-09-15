@@ -72,12 +72,12 @@ vi_rc LineNumbersSetup( void )
             wi.area.x1 = x2 - EditVars.LineNumWinWidth + 1;
             wi.area.x2 = x2 - j;
         }
-        rc = NewWindow2( &curr_num_window_id, &wi );
+        rc = NewWindow2( &linenum_current_window_id, &wi );
         if( rc != ERR_NO_ERR ) {
             return( rc );
         }
     } else {
-        CloseAWindow( curr_num_window_id );
+        CloseAWindow( linenum_current_window_id );
         rc = ResizeWindow( current_window_id, editw_info.area.x1, editw_info.area.y1, editw_info.area.x2, editw_info.area.y2, false );
         if( rc != ERR_NO_ERR ) {
             return( rc );

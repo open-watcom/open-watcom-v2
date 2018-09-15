@@ -135,12 +135,12 @@ window_id NewEditWindow( void )
     window_data     *wd;
     MDICREATESTRUCT mdinew;
 
-    if( BAD_ID( edit_container_id ) ) {
+    if( BAD_ID( edit_container_window_id ) ) {
         return( NO_WINDOW );
     }
     style = GetEditStyle( false );
     ResizeRoot();
-    GetClientRect( edit_container_id, &rect );
+    GetClientRect( edit_container_window_id, &rect );
 
     mdinew.szClass = EditWindowClassName;
     mdinew.szTitle = "Edit Buffer";
@@ -152,7 +152,7 @@ window_id NewEditWindow( void )
     mdinew.style = style;
     mdinew.lParam = 0;
 
-    wid = (window_id)SendMessage( edit_container_id, WM_MDICREATE, 0, (LPARAM)(LPVOID)&mdinew );
+    wid = (window_id)SendMessage( edit_container_window_id, WM_MDICREATE, 0, (LPARAM)(LPVOID)&mdinew );
 
     wd = DATA_FROM_ID( wid );
 
@@ -845,7 +845,7 @@ WINEXPORT LRESULT CALLBACK EditWindowProc( window_id wid, UINT msg, WPARAM wpara
         if( !EditFlags.HoldEverything ) {
             PushMode();
             wd = DATA_FROM_ID( wid );
-            SendMessage( edit_container_id, WM_MDIRESTORE, (WPARAM)wid, 0L );
+            SendMessage( edit_container_window_id, WM_MDIRESTORE, (WPARAM)wid, 0L );
             BringUpFile( wd->info, true );
             if( NextFile() > ERR_NO_ERR ) {
                 FileExitOptionSaveChanges( CurrentFile );
@@ -931,9 +931,9 @@ void ResetExtraRects( void )
 {
     WNDENUMPROC     wndenumproc;
 
-    if( !BAD_ID( edit_container_id ) ) {
+    if( !BAD_ID( edit_container_window_id ) ) {
         wndenumproc = MakeProcInstance_WNDENUM( ResizeExtra, InstanceHandle );
-        EnumChildWindows( edit_container_id, wndenumproc, 0L );
+        EnumChildWindows( edit_container_window_id, wndenumproc, 0L );
         FreeProcInstance_WNDENUM( wndenumproc );
     }
 

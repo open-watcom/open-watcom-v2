@@ -211,11 +211,11 @@ static void fillFaceNamesBox( HWND hwnd )
 
     /* put facenames in combo box
     */
-    hdc = GetDC( edit_container_id );
+    hdc = GetDC( edit_container_window_id );
     fontenumproc = MakeProcInstance_FONTENUM( EnumFamFaceNames, InstanceHandle );
     EnumFontFamilies( hdc, NULL, fontenumproc, 0L );
     FreeProcInstance_FONTENUM( fontenumproc );
-    ReleaseDC( edit_container_id, hdc );
+    ReleaseDC( edit_container_window_id, hdc );
 
     SendMessage( hwndFaceName, LB_SETCURSEL, 0, 0L );
 }
@@ -277,9 +277,9 @@ static void fillInfoBoxes( HWND hwnd )
 
     SendMessage( hwndFaceName, LB_GETTEXT, index, (LPARAM)(LPSTR)facename );
     fontenumproc = MakeProcInstance_FONTENUM( EnumFamInfo, InstanceHandle );
-    hdc = GetDC( edit_container_id );
+    hdc = GetDC( edit_container_window_id );
     EnumFontFamilies( hdc, facename, fontenumproc, (LPARAM)(&isTrueType) );
-    ReleaseDC( edit_container_id, hdc );
+    ReleaseDC( edit_container_window_id, hdc );
     FreeProcInstance_FONTENUM( fontenumproc );
 
     if( isTrueType ) {
@@ -418,11 +418,11 @@ static int setCurLogfont( int overrideSize )
     SendMessage( hwndFaceName, LB_GETTEXT, index, (LPARAM)(LPSTR)CurLogfont.lfFaceName );
 
     /* set up defaults for charset, etc. from info for 1st font of this type */
-    hdc = GetDC( edit_container_id );
+    hdc = GetDC( edit_container_window_id );
     fontenumproc = MakeProcInstance_FONTENUM( SetupFontData, InstanceHandle );
     EnumFontFamilies( hdc, CurLogfont.lfFaceName, fontenumproc, 0L );
     FreeProcInstance_FONTENUM( fontenumproc );
-    ReleaseDC( edit_container_id, hdc );
+    ReleaseDC( edit_container_window_id, hdc );
 
     return( 1 );
 }

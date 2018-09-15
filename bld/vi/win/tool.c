@@ -154,7 +154,7 @@ static void newToolBarWindow( void )
 
     userClose = false;
 
-    GetWindowRect( edit_container_id, &rect );
+    GetWindowRect( edit_container_window_id, &rect );
     width = rect.right - rect.left;
     height = rect.bottom - rect.top;
 
@@ -188,7 +188,7 @@ static void newToolBarWindow( void )
 
     ToolBarDisplay( toolBar, &dinfo );
 
-    MoveWindow( edit_container_id, tl.x, tl.y, width, height, TRUE );
+    MoveWindow( edit_container_window_id, tl.x, tl.y, width, height, TRUE );
     ShowWindow( ToolBarWindow( toolBar ), SW_SHOWNORMAL );
     UpdateWindow( ToolBarWindow( toolBar ) );
     fixedToolBar = !fixedToolBar;
@@ -521,6 +521,6 @@ void NewToolBar( RECT *rect )
     covered = *rect;
     covered.bottom = rect->top;
     covered.top = 0;
-    InvalidateRect( edit_container_id, &covered, FALSE );
+    InvalidateRect( edit_container_window_id, &covered, FALSE );
 
 } /* NewToolBar */

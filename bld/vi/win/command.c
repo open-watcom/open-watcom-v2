@@ -77,7 +77,7 @@ bool CommandWindowFini( void )
     return( true );
 }
 
-WINEXPORT LRESULT CALLBACK CommandWindowProc( HWND hwnd, UINT msg, WPARAM w, LPARAM l )
+WINEXPORT LRESULT CALLBACK CommandWindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     PAINTSTRUCT ps;
     HDC         hdc;
@@ -96,8 +96,8 @@ WINEXPORT LRESULT CALLBACK CommandWindowProc( HWND hwnd, UINT msg, WPARAM w, LPA
         /* turn off the caret */
         MyHideCaret( hwnd );
         DestroyCaret();
-        wid = (window_id)w;
-        if( !BAD_ID( wid ) && ( wid == root_window_id || GetWindow( wid, GW_OWNER ) == edit_container_id ) ) {
+        wid = (window_id)wparam;
+        if( !BAD_ID( wid ) && ( wid == root_window_id || GetWindow( wid, GW_OWNER ) == edit_container_window_id ) ) {
             /* hmmm... losing focus to one of our own windows - suicide */
             if( ReadingAString ) {
                 KeyAdd( VI_KEY( ESC ) );
@@ -105,7 +105,7 @@ WINEXPORT LRESULT CALLBACK CommandWindowProc( HWND hwnd, UINT msg, WPARAM w, LPA
         }
         break;
     case WM_KEYDOWN:
-        if( WindowsKeyPush( w, HIWORD( l ) ) ) {
+        if( WindowsKeyPush( wparam, HIWORD( lparam ) ) ) {
             return( 0 );
         }
         break;
@@ -120,7 +120,7 @@ WINEXPORT LRESULT CALLBACK CommandWindowProc( HWND hwnd, UINT msg, WPARAM w, LPA
         command_window_id = NO_WINDOW;
         break;
     }
-    return( DefWindowProc( hwnd, msg, w, l ) );
+    return( DefWindowProc( hwnd, msg, wparam, lparam ) );
 }
 
 

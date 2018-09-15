@@ -149,7 +149,7 @@ static vi_rc goToLine( linenum lineno, bool relcurs )
         dispall = false;
         ShiftWindowUpDown( current_window_id, diff );
         if( EditFlags.LineNumbers ) {
-            ShiftWindowUpDown( curr_num_window_id, diff );
+            ShiftWindowUpDown( linenum_current_window_id, diff );
         }
         if( diff > 0 ) {
             DCDisplaySomeLines( text_lines - diff, text_lines - 1 );

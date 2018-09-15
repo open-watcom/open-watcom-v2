@@ -96,7 +96,7 @@ typedef enum window_extra {
 #define WIN_TEXT_COLOR(w)       ((w)->wi->text_style.foreground)
 #define WIN_TEXT_BACKCOLOR(w)   ((w)->wi->text_style.background)
 
-extern window_id        edit_container_id;
+extern window_id        edit_container_window_id;
 extern window_id        _NEAR root_window_id;
 extern HINSTANCE        InstanceHandle;
 extern bool             AllowDisplay;

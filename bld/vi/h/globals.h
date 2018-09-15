@@ -82,7 +82,7 @@ extern int          VirtualColumnDesired;
 extern window_id    current_window_id;
 extern window_id    message_window_id;
 extern window_id    status_window_id;
-extern window_id    curr_num_window_id;
+extern window_id    linenum_current_window_id;
 extern window_id    menu_window_id;
 extern window_id    repeat_window_id;
 extern char         *Comspec;

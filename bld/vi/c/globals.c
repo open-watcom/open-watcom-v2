@@ -96,7 +96,7 @@ window_id       current_window_id = NO_WINDOW;
 window_id       message_window_id = NO_WINDOW;
 window_id       status_window_id = NO_WINDOW;
 window_id       menu_window_id = NO_WINDOW;
-window_id       curr_num_window_id = NO_WINDOW;
+window_id       linenum_current_window_id = NO_WINDOW;
 window_id       repeat_window_id = NO_WINDOW;
 select_rgn      SelRgn;
 

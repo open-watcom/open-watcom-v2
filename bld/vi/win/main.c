@@ -46,7 +46,7 @@
 
 
 window_id       _NEAR root_window_id;
-window_id       edit_container_id;
+window_id       edit_container_window_id;
 HINSTANCE       InstanceHandle;
 char            _NEAR EditorName[] = "Open Watcom Text Editor";
 static int      showHow;
@@ -82,8 +82,8 @@ void StartWindows( void )
     }
     ShowWindow( root_window_id, showHow );
     UpdateWindow( root_window_id );
-    ShowWindow( edit_container_id, SW_SHOWNORMAL );
-    UpdateWindow( edit_container_id );
+    ShowWindow( edit_container_window_id, SW_SHOWNORMAL );
+    UpdateWindow( edit_container_window_id );
 }
 
 void FiniInstance( void )
@@ -196,7 +196,7 @@ void MessageLoop( bool block )
             if( (BAD_ID( hColorbar ) || !IsDialogMessage( hColorbar, &msg )) &&
                 (BAD_ID( hSSbar ) || !IsDialogMessage( hSSbar, &msg )) &&
                 (BAD_ID( hFontbar ) || !IsDialogMessage( hFontbar, &msg )) &&
-                !TranslateMDISysAccel( edit_container_id, &msg ) ) {
+                !TranslateMDISysAccel( edit_container_window_id, &msg ) ) {
                 TranslateMessage( &msg );
                 DispatchMessage( &msg );
                 if( EditFlags.KeyOverride ) {
