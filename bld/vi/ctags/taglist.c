@@ -38,9 +38,9 @@
 
 #define isWSorCtrlZ(x)  (isspace( x ) || (x == 0x1A))
 
-static char     **tagList = NULL;
-static unsigned tagCount = 0;
-static long     total_size = 0;
+static char             **tagList = NULL;
+static unsigned         tagCount = 0;
+static unsigned long    total_size = 0;
 
 /*
  * addToTagList - add new string to tag list
@@ -137,7 +137,7 @@ static int compareStrings( const void *p1, const void *p2 )
 void GenerateTagsFile( const char *fname )
 {
     FILE        *fp;
-    int         i;
+    unsigned    i;
 
     if( tagList != NULL ) {
         qsort( tagList, tagCount, sizeof( char * ), compareStrings );
@@ -155,7 +155,7 @@ void GenerateTagsFile( const char *fname )
     }
     if( VerboseFlag ) {
         printf( "Wrote %u tags.\n", tagCount );
-        printf( "Used %ld bytes to store tags.\n", total_size );
+        printf( "Used %lu bytes to store tags.\n", total_size );
     }
 
 } /* GenerateTagsFile */
@@ -167,19 +167,18 @@ void ReadExtraTags( const char *fname )
 {
     FILE        *fp;
     char        res[MAX_STR];
-    int         i;
+    size_t      i;
 
     fp = fopen( fname, "r" );
-    if( fp == NULL ) {
-        return;
-    }
-    while( fgets( res, sizeof( res ), fp ) != NULL ) {
-        for( i = strlen( res ); i && isWSorCtrlZ( res[i - 1] ); --i ) {
-            res[i - 1] = '\0';
+    if( fp != NULL ) {
+        while( fgets( res, sizeof( res ), fp ) != NULL ) {
+            for( i = strlen( res ); i && isWSorCtrlZ( res[i - 1] ); --i ) {
+                res[i - 1] = '\0';
+            }
+            addToTagList( res );
         }
-        addToTagList( res );
+        fclose( fp );
     }
-    fclose( fp );
 
 } /* ReadExtraTags */
 
