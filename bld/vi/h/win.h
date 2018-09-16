@@ -251,7 +251,7 @@ extern vi_rc    SetCharInWindowWithColor( window_id, windim, windim, char, type_
 extern void     StartWindows( void );
 extern void     FinishWindows( void );
 
-/* winnew.c */
+/* ui/winnew.c */
 extern vi_rc        ResetWindow( window_id * );
 extern bool         ValidDimension( windim, windim, windim, windim, bool );
 extern window_id    GimmeWindow( void );
@@ -259,6 +259,7 @@ extern window       *AllocWindow( window_id, windim, windim, windim, windim, boo
 extern void         FreeWindow( window * );
 extern vi_rc        NewWindow( window_id *, windim, windim, windim, windim, bool, vi_color, vi_color, type_style * );
 extern vi_rc        NewFullWindow( window_id *, bool, vi_color, vi_color, type_style * );
+extern vi_rc        NewWindow2( window_id *, window_info * );
 extern void         CloseAWindow( window_id );
 
 /* window.c */

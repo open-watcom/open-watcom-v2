@@ -825,7 +825,6 @@ void    PushUndoStack( undo *item, undo_stack *stack );
 /* wingen.c */
 vi_rc   DisplayExtraInfo( window_info *, window_id *, const char **, int );
 vi_rc   NewMessageWindow( void );
-vi_rc   NewWindow2( window_id *, window_info * );
 void    Message1( const char *, ... );
 void    Message1Box( const char *, ... );
 void    Message2( const char *, ... );

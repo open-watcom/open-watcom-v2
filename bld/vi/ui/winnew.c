@@ -203,6 +203,17 @@ vi_rc NewFullWindow( window_id *wid, bool has_border, vi_color bc1, vi_color bc2
 } /* NewFullWindow */
 
 /*
+ * NewWindow2 - build a new window, using window_info struct
+ */
+vi_rc NewWindow2( window_id *wid, window_info *wi )
+{
+    return( NewWindow( wid, wi->area.x1, wi->area.y1, wi->area.x2, wi->area.y2,
+                       wi->has_border, wi->border_color1,
+                       wi->border_color2, &wi->text_style ) );
+
+} /* NewWindow2 */
+
+/*
  * FreeWindow - free data associated with a window
  */
 void FreeWindow( window *w )
