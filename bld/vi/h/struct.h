@@ -611,7 +611,7 @@ typedef struct {
     const vi_key        *retevents;         // events that simulate pressing enter
     vi_key              event;              // event that caused a return
     linenum             cln;                // current line to display
-    window_id           eiw;                // alternate window to accept events in (like the options window after fgrep...)
+    window_id           event_wid;          // alternate window to accept events in (like the options window after fgrep...)
     bool                show_lineno : 1;    // show lines in top-right corner
     bool                is_menu     : 1;    // is a menu we are showing
 } selectitem;
@@ -632,7 +632,7 @@ typedef struct {
     const vi_key        *retevents;             // events that simulate pressing enter
     vi_key              event;                  // event that caused a return
     linenum             cln;                    // current line to display
-    window_id           eiw;                    // alternate window to accept events in (like the options window after fgrep...)
+    window_id           event_wid;              // alternate window to accept events in (like the options window after fgrep...)
     bool                show_lineno        : 1; // show lines in top-right corner
     bool                is_menu            : 1; // select list is a menu
     bool                has_scroll_gadgets : 1; // list has scroll gadgets

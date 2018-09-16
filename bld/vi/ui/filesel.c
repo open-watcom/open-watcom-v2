@@ -91,7 +91,7 @@ vi_rc SelectFileOpen( const char *dir, char **result_ptr, const char *mask, bool
         sfd.title = CurrentDirectory;
         sfd.show_lineno = true;
         sfd.cln = 1;
-        sfd.eiw = NO_WINDOW;
+        sfd.event_wid = NO_WINDOW;
         rc = SelectLineInFile( &sfd );
         if( rc != ERR_NO_ERR ) {
             break;
@@ -473,7 +473,7 @@ vi_rc SelectLineInFile( selflinedata *sfd )
         WindowAuxUpdate( cwid, WIND_INFO_HAS_SCROLL_GADGETS, true );
         DrawBorder( cwid );
     }
-    owid = sfd->eiw;
+    owid = sfd->event_wid;
     isMenu = sfd->is_menu;
     PushMouseEventHandler( SelectLineMouseHandler );
     KillCursor();

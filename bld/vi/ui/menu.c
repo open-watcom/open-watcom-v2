@@ -770,7 +770,7 @@ static vi_rc processMenu( int sel, menu *cmenu, windim xpos, windim ypos, windim
         si.allowrl = arl;
         si.hilite = cmenu->hilist;
         si.cln = 1;
-        si.eiw = NO_WINDOW;
+        si.event_wid = NO_WINDOW;
 
         if( xpos < 0 ) {
             lightMenu( sel, ws, true );

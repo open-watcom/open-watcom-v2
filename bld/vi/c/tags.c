@@ -149,7 +149,7 @@ static int PickATag( int tag_count, char **tag_list, const char *tagname )
     si.event = VI_KEY( DUMMY );
     si.show_lineno = show_lineno;
     si.cln = 1;
-    si.eiw = NO_WINDOW;
+    si.event_wid = NO_WINDOW;
 
     rc = SelectItem( &si );
     if( rc != ERR_NO_ERR ) {

@@ -102,7 +102,7 @@ vi_rc SelectItem( selectitem *si )
     sfd.retevents = si->retevents;
     sfd.event = si->event;
     sfd.cln = si->cln;
-    sfd.eiw = si->eiw;
+    sfd.event_wid = si->event_wid;
     sfd.is_menu = si->is_menu;
     rc = SelectLineInFile( &sfd );
     si->event = sfd.event;
@@ -157,7 +157,7 @@ vi_rc SelectItemAndValue( window_info *wi, char *title, char **list,
         sfd.title = title;
         sfd.checkres = updatertn;
         sfd.cln = 1;
-        sfd.eiw = NO_WINDOW;
+        sfd.event_wid = NO_WINDOW;
         sfd.vals = vals;
         sfd.valoff = valoff;
         rc = SelectLineInFile( &sfd );

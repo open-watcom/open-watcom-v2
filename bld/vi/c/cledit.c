@@ -436,7 +436,7 @@ vi_rc EditFileFromList( void )
         si.event = VI_KEY( DUMMY );
         si.show_lineno = show_lineno;
         si.cln = n + 1;
-        si.eiw = wid;
+        si.event_wid = wid;
         rc = SelectItem( &si );
         n = si.num;
         if( rc == ERR_NO_ERR ) {
