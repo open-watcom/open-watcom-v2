@@ -34,7 +34,6 @@
 #include <stdarg.h>
 #include <string.h>
 #include <ctype.h>
-#include "wio.h"
 #include "watcom.h"
 #include "bool.h"
 #include "banner.h"
@@ -106,34 +105,35 @@ static void MyPrintf( char *str, ... )
  */
 static void AddDataToEXE( char *exe, char *data, bind_size data_len, unsigned long tocopy )
 {
-    int                 h, newh;
-    char                buff[sizeof( MAGIC_COOKIE ) + sizeof( bind_size )];
-    unsigned            size;
-    char                *copy;
-    char                foo[128];
-    char                drive[_MAX_DRIVE], dir[_MAX_DIR];
+    FILE            *fp;
+    FILE            *newfp;
+    char            buff[sizeof( MAGIC_COOKIE ) + sizeof( bind_size )];
+    unsigned        size;
+    char            *copy;
+    char            foo[128];
+    char            drive[_MAX_DRIVE], dir[_MAX_DIR];
 
     /*
      * get files
      */
-    h = open( exe, O_RDWR | O_BINARY );
-    if( h == -1 ) {
+    fp = fopen( exe, "rb" );
+    if( fp == NULL ) {
         Abort( "Fatal error opening \"%s\"", exe );
     }
     _splitpath( exe, drive, dir, NULL, NULL );
     _makepath( foo, drive, dir, "__cge__", ".exe" );
-    newh = open( foo, O_WRONLY | O_CREAT | O_TRUNC | O_BINARY, PMODE_RWX );
-    if( newh == -1 ) {
+    newfp = fopen( foo, "wb" );
+    if( newfp == NULL ) {
         Abort( "Fatal error opening \"%s\"", foo );
     }
 
     /*
      * get trailer
      */
-    if( lseek( h, - (long)sizeof( buff ), SEEK_END ) == -1 ) {
+    if( fseek( fp, - (long)sizeof( buff ), SEEK_END ) ) {
         Abort( "Initial seek error on \"%s\"", exe );
     }
-    if( read( h, buff, sizeof( buff ) ) != sizeof( buff ) ) {
+    if( fread( buff, 1, sizeof( buff ), fp ) != sizeof( buff ) ) {
         Abort( "Read error on \"%s\"", exe );
     }
 
@@ -148,7 +148,7 @@ static void AddDataToEXE( char *exe, char *data, bind_size data_len, unsigned lo
     } else {
         tocopy -= sizeof( buff ) + *((bind_size *)( buff + sizeof( MAGIC_COOKIE ) ));
     }
-    if( lseek( h, 0, SEEK_SET ) != 0 ) {
+    if( fseek( fp, 0, SEEK_SET ) ) {
         Abort( "Seek error on \"%s\"", exe );
     }
 
@@ -163,33 +163,33 @@ static void AddDataToEXE( char *exe, char *data, bind_size data_len, unsigned lo
     while( tocopy > 0 ) {
         if( size > tocopy )
             size = (unsigned)tocopy;
-        if( read( h, copy, size ) != size ) {
+        if( fread( copy, 1, size, fp ) != size ) {
             free( copy );
             Abort( "Read error on \"%s\"", exe );
         }
-        if( write( newh, copy, size ) != size ) {
+        if( fwrite( copy, 1, size, newfp ) != size ) {
             free( copy );
             Abort( "Write error on \"%s\"", foo );
         }
         tocopy -= size;
     }
     free( copy );
-    close( h );
+    fclose( fp );
 
     /*
      * write out data and new trailer
      */
     if( !sflag ) {
-        if( write( newh, data, data_len ) != data_len ) {
+        if( fwrite( data, 1, data_len, newfp ) != data_len ) {
             Abort( "write 1 error on \"%s\"", exe );
         }
         memcpy( buff, MAGIC_COOKIE, sizeof( MAGIC_COOKIE ) );
         *((bind_size *)( buff + sizeof( MAGIC_COOKIE ) )) = data_len;
-        if( write( newh, buff, sizeof( buff ) ) != sizeof( buff ) ) {
+        if( fwrite( buff, 1, sizeof( buff ), newfp ) != sizeof( buff ) ) {
             Abort( "write 2 error on \"%s\"", exe );
         }
     }
-    close( newh );
+    fclose( newfp );
     remove( exe );
     rename( foo, exe );
 
@@ -455,4 +455,3 @@ int main( int argc, char *argv[] )
     return( 0 );
 
 } /* main */
-
