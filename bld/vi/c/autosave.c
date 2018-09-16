@@ -221,7 +221,7 @@ bool LostFileCheck( void )
     char        path[FILENAME_MAX];
     vi_key      key;
     char        ch;
-    int         off;
+    size_t      off;
     int         handle = -1;
 
     MakeTmpPath( path, lockFileName );
@@ -286,15 +286,15 @@ void AutoSaveInit( void )
     char        path2[FILENAME_MAX];
     char        as_path[FILENAME_MAX];
     char        asl_path[FILENAME_MAX];
-    int         len;
+    size_t      len;
     int         cnt;
     FILE        *fp;
     int         pid;
     int         ch;
     int         handle;
-    int         off;
+    size_t      off;
 //    int         old_len;
-    int         i;
+    size_t      i;
     char        *p;
 
     /*
@@ -311,7 +311,7 @@ void AutoSaveInit( void )
     memcpy( &currTmpName[TMP_FNAME_LEN - len], path, len );
 #ifdef __QNX__
     {
-        int     len2, len3;
+        size_t  len2, len3;
         int     nid, uid;
 
         nid = getnid();
@@ -338,8 +338,8 @@ void AutoSaveInit( void )
         MakeTmpPath( asl_path, lockFileName );
         off = strlen( as_path ) - 5;
         for( ch = START_CHAR; ch <= END_CHAR; ch++ ) {
-            as_path[off] = ch;
-            asl_path[off] = ch;
+            as_path[off] = (char)ch;
+            asl_path[off] = (char)ch;
             handle = sopen3( as_path, O_RDONLY | O_TEXT, SH_DENYRW );
             if( handle < 0 )
                 continue;
@@ -383,7 +383,7 @@ void AutoSaveInit( void )
     len = strlen( path ) - strlen( lockFileName );
     off = len + CHAR_OFF;
     for( ch = START_CHAR; ch <= END_CHAR; ch++ ) {
-        path[off] = ch;
+        path[off] = (char)ch;
         lockFileHandle = sopen4( path, O_CREAT | O_TRUNC | O_RDWR | O_TEXT, SH_DENYRW, PMODE_RW );
         if( lockFileHandle >= 0 ) {
             break;
@@ -394,9 +394,9 @@ void AutoSaveInit( void )
         MyPrintf( "Error opening temp file - '%s'\n", strerror( errno ) );
         ExitEditor( -1 );
     }
-    lockFileName[CHAR_OFF] = ch;
-    checkFileName[CHAR_OFF] = ch;
-    checkFileTmpName[CHAR_OFF] = ch;
+    lockFileName[CHAR_OFF] = (char)ch;
+    checkFileName[CHAR_OFF] = (char)ch;
+    checkFileTmpName[CHAR_OFF] = (char)ch;
 
 } /* AutoSaveInit */
 
@@ -448,7 +448,7 @@ void RemoveFromAutoSaveList( void )
     char        path2[FILENAME_MAX];
     char        data[FILENAME_MAX];
 //    bool        found;
-    int         i;
+    size_t      i;
     char        *p;
 
     if( EditVars.AutoSaveInterval == 0 ) {
