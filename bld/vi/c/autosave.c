@@ -222,28 +222,28 @@ bool LostFileCheck( void )
     vi_key      key;
     char        ch;
     int         off;
-    int         handle = 0;
+    int         handle = -1;
 
     MakeTmpPath( path, lockFileName );
     off = strlen( path ) - 5;
     for( ch = START_CHAR; ch <= END_CHAR; ch++ ) {
         path[off] = ch;
         handle = sopen3( path, O_RDONLY | O_TEXT, SH_DENYRW );
-        if( handle > 0 ) {
-            MakeTmpPath( path, checkFileName );
+        if( handle < 0 )
+            continue;
+        MakeTmpPath( path, checkFileName );
+        path[off] = ch;
+        if( access( path, F_OK ) == -1 ) {
+            MakeTmpPath( path, lockFileName );
             path[off] = ch;
-            if( access( path, F_OK ) == -1 ) {
-                MakeTmpPath( path, lockFileName );
-                path[off] = ch;
-                close( handle );
-                handle = -1;
-                remove( path );
-            } else {
-                break;
-            }
+            close( handle );
+            handle = -1;
+            remove( path );
+        } else {
+            break;
         }
     }
-    if( handle > 0 ) {
+    if( handle >= 0 ) {
         close( handle );
         if( !EditFlags.RecoverLostFiles ) {
             if( !EditFlags.IgnoreLostFiles ) {
@@ -341,9 +341,8 @@ void AutoSaveInit( void )
             as_path[off] = ch;
             asl_path[off] = ch;
             handle = sopen3( as_path, O_RDONLY | O_TEXT, SH_DENYRW );
-            if( handle < 0 ) {
+            if( handle < 0 )
                 continue;
-            }
             fp = fdopen( handle, "r" );
             if( fp != NULL ) {
                 while( (p = fgets( path2, FILENAME_MAX, fp )) != NULL ) {
@@ -361,7 +360,7 @@ void AutoSaveInit( void )
                     FTSRunCmds( p );
                     cnt++;
                 }
-                fclose( fp );
+                fclose( fp );       // close handle
                 remove( as_path );
             } else {
                 close( handle );
