@@ -95,7 +95,7 @@ bool ValidDimension( windim x1, windim y1, windim x2, windim y2, bool has_border
 /*
  * GimmeWindow - find next avaliable window
  */
-window_id GimmeWindow( void )
+static window_id GimmeWindow( void )
 {
     window_id   wid;
 

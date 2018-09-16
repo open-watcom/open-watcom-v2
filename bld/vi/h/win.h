@@ -254,7 +254,6 @@ extern void     FinishWindows( void );
 /* ui/winnew.c */
 extern vi_rc        ResetWindow( window_id * );
 extern bool         ValidDimension( windim, windim, windim, windim, bool );
-extern window_id    GimmeWindow( void );
 extern window       *AllocWindow( window_id, windim, windim, windim, windim, bool, bool, bool, vi_color, vi_color, vi_color, vi_color );
 extern void         FreeWindow( window * );
 extern vi_rc        NewWindow( window_id *, windim, windim, windim, windim, bool, vi_color, vi_color, type_style * );
