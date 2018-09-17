@@ -167,7 +167,7 @@ static void readInitialPosition( void )
 
     getProfileRect( keyInitialPosition, "0 0 0 0", &r );
     SetInitialWindowRect( &r );
-    RootState = getProfileLong( keyInitialPositionState );
+    RootState = LOWORD( getProfileLong( keyInitialPositionState ) );
 
 } /* readInitialPosition */
 

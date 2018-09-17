@@ -47,7 +47,7 @@ WINEXPORT LRESULT CALLBACK MainWindowProc( HWND, UINT, WPARAM, LPARAM );
 void    DefaultWindows( RECT *, RECT * );
 
 RECT    RootRect;
-int     RootState;
+WORD    RootState;
 
 /*
  * RegisterMainWindow - register the main (root) window class
@@ -261,12 +261,12 @@ WINEXPORT LRESULT CALLBACK MainWindowProc( HWND hwnd, UINT msg, WPARAM wparam, L
         break;
     case WM_SIZE:
         DefFrameProc( hwnd, edit_container_window_id, msg, wparam, lparam );
-        RootState = wparam;
+        RootState = LOWORD( wparam );
         if( wparam != SIZE_MINIMIZED ) {
             ResizeRoot();
             GetWindowRect( hwnd, &RootRect );
             if( wparam != SIZE_MAXIMIZED ) {
-                RootState = 0;
+                RootState = SIZE_RESTORED;
             }
         }
         return( 0 );

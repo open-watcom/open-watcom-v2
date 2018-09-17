@@ -108,7 +108,7 @@ extern window           FileCompleteWindow;
 extern window           RepeatCountWindow;
 extern RECT             ToolBarFloatRect;
 extern RECT             RootRect;
-extern int              RootState;
+extern WORD             RootState;
 extern char             _NEAR EditorName[];
 extern window_id        command_window_id;
 
