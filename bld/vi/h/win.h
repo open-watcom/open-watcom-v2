@@ -66,14 +66,17 @@ typedef struct char_info {
  * window structure
  */
 typedef struct window {
-    vi_color    border_color1, border_color2;
-    vi_color    text_color, background_color;
+    vi_color    border_color1;
+    vi_color    border_color2;
+    vi_color    text_color;
+    vi_color    background_color;
     winarea     area;
     windim      width, height;
     char_info   *text;
     window_id   *overlap;
     window_id   *whooverlapping;
-    short       text_lines, text_cols;
+    short       text_lines;
+    short       text_cols;
     char        *title;
     char        *borderdata;
     int         vert_scroll_pos;
@@ -88,7 +91,7 @@ typedef struct window {
     signed char overcnt[1];
 } window;
 
-extern window       *Windows[MAX_WINDS];
+extern window       *Windows[MAX_WINDS + 1];
 
 #define THUMB_START         2
 #define NORMAL_ATTR         7

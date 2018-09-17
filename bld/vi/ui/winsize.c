@@ -40,31 +40,31 @@
  */
 vi_rc ResizeWindow( window_id wid, windim x1, windim y1, windim x2, windim y2, bool scrflag )
 {
-    window      *oldw;
+    window      *w;
 //    int         bt, k;
 //    char        *txt, *tptr;
 //    char        *ot;
 //    int         i, j;
 
-    oldw = WINDOW_FROM_ID( wid );
-    AccessWindow( oldw );
+    w = WINDOW_FROM_ID( wid );
+    AccessWindow( w );
 
-    if( !ValidDimension( x1, y1, x2, y2, oldw->has_border ) ) {
-        ReleaseWindow( oldw );
+    if( !ValidDimension( x1, y1, x2, y2, w->has_border ) ) {
+        ReleaseWindow( w );
         return( ERR_WIND_INVALID );
     }
     RestoreOverlap( wid, scrflag );
 
-    AllocWindow( wid, x1, y1, x2, y2, oldw->has_border, oldw->has_gadgets, true,
-            oldw->border_color1, oldw->border_color2, oldw->text_color, oldw->background_color );
+    AllocWindow( wid, x1, y1, x2, y2, w->has_border, w->has_gadgets, true,
+            w->border_color1, w->border_color2, w->text_color, w->background_color );
     MarkOverlap( wid );
 
     /*
      * display the new text
      */
     ClearWindow( wid );
-    if( oldw->title != NULL ) {
-        WindowTitle( wid, oldw->title );
+    if( w->title != NULL ) {
+        WindowTitle( wid, w->title );
     } else {
         DrawBorder( wid );
     }
@@ -72,7 +72,7 @@ vi_rc ResizeWindow( window_id wid, windim x1, windim y1, windim x2, windim y2, b
     DCDisplayAllLines();
     DCUpdate();
 
-    FreeWindow( oldw );
+    FreeWindow( w );
     ReleaseWindow( WINDOW_FROM_ID( wid ) );
 
     return( ERR_NO_ERR );

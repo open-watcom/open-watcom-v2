@@ -50,12 +50,22 @@ static void allocImage( void )
 
 } /* allocImage */
 
+static void initAllWindows( void )
+{
+    window_id   wid;
+
+    for( wid = 0; wid < MAX_WINDS + 1; wid++ ) {
+        WINDOW_TO_ID( wid, NULL );
+    }
+}
+
 /*
  * StartWindows - begin windows session
  */
 void StartWindows( void )
 {
     allocImage();
+    initAllWindows();
     ClearScreen();
     EditFlags.WindowsStarted = true;
 
