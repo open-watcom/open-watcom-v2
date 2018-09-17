@@ -36,7 +36,27 @@
 #include "win.h"
 #include "menu.h"
 
+
+typedef enum {
+    MS_NONE,
+    MS_PAGEDOWN,
+    MS_PAGEUP,
+    MS_DOWN,
+    MS_UP,
+    MS_EXPOSEDOWN,
+    MS_EXPOSEUP
+} ms_type;
+
 extern int      CurrentMenuNumber;
+
+static window_id        owid;
+static window_id        mouse_wid;
+static window_id        cwid;
+static int              mouseLine = -1;
+static ms_type          mouseScroll;
+static bool             rlMenu;
+static int              rlMenuNum;
+static bool             isMenu;
 
 /*
  * SelectFileOpen - select file from specified directory
@@ -145,9 +165,6 @@ vi_rc SelectFileOpen( const char *dir, char **result_ptr, const char *mask, bool
     return( rc );
 
 } /* SelectFileOpen */
-
-static window_id        cwid;
-static bool             isMenu;
 
 /*
  * displayGenericLines - display all lines in a window
@@ -268,22 +285,6 @@ evil_goto:  if( ptr != NULL ) {
     return( ERR_NO_ERR );
 
 } /* displayGenericLines */
-
-typedef enum {
-    MS_NONE,
-    MS_PAGEDOWN,
-    MS_PAGEUP,
-    MS_DOWN,
-    MS_UP,
-    MS_EXPOSEDOWN,
-    MS_EXPOSEUP
-} ms_type;
-
-static window_id        owid, mouse_wid;
-static int              mouseLine = -1;
-static ms_type          mouseScroll;
-static bool             rlMenu;
-static int              rlMenuNum;
 
 /*
  * SelectLineMouseHandler - handle mouse events for line selector
