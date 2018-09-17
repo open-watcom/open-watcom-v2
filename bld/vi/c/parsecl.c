@@ -152,12 +152,15 @@ vi_rc ParseCommandLine( const char *cmdl, linenum *n1, bool *n1flag, linenum *n2
      */
     cmdl = GetNextWord( cmdl, tres, pkwDelims );
     if( *tres == '\0' ) {
+        *data = cmdl;
         return( ERR_NO_ERR );
     }
     if( CheckAlias( tres, tmp ) == ERR_NO_ERR ) {
         strcat( tmp, cmdl );
-        cmdl = GetNextWord( tmp, tres, pDelims );
+        strcpy( (char *)cmdl, tmp );
+        cmdl = GetNextWord( cmdl, tres, pDelims );
         if( *tres == '\0' ) {
+            *data = cmdl;
             return( ERR_NO_ERR );
         }
     }

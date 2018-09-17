@@ -185,6 +185,7 @@ static int doRedirect( int original, const char *filename, int mode )
         if( dup2( fh, original ) == 0 ) {
             return( fh );
         }
+        close( fh );
     }
     return( -1 );
 }

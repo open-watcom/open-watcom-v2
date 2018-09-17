@@ -92,7 +92,7 @@ static void setDefault( void )
  */
 window_id CreateMainWindow( HANDLE inst )
 {
-    window_id   root;
+    window_id   wid;
     int         maxx, maxy;
 
     if( initHeight <= 0 || initWidth <= 0 ) {
@@ -118,11 +118,11 @@ window_id CreateMainWindow( HANDLE inst )
         }
     }
 
-    root = CreateWindow( EditorName, EditorName,
+    wid = CreateWindow( EditorName, EditorName,
                          WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN,
                          initX, initY, initWidth, initHeight,
                          NO_WINDOW, (HMENU)NULLHANDLE, inst, NULL );
-    return( root );
+    return( wid );
 
 } /* CreateMainWindow */
 

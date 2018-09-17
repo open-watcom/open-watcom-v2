@@ -266,7 +266,7 @@ vi_rc OpenFcbData( file *f )
     }
     return( rc );
 }
- 
+
 /*
  * FcbSize - get the size (in bytes) of an fcb
  */

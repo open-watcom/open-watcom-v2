@@ -248,5 +248,5 @@ void ProcessingMessage( linenum cln )
         // WPrintfLine( message_window_id,1,"Processing line %l",cln );
         Message1( "Processing line %l", cln );
     }
-    
+
 } /* ProcessingMessage */

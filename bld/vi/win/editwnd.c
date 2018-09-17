@@ -115,7 +115,7 @@ void SetWindowTitle( window_id wid )
             if( cinfo->CurrentFile->dup_count > 0 ) {
                 MySprintf( buff, "%s [%d]", cinfo->CurrentFile->name,
                            cinfo->DuplicateID );
-                 SetWindowText( cinfo->current_window_id, buff );
+                SetWindowText( cinfo->current_window_id, buff );
             } else {
                 SetWindowText( cinfo->current_window_id, cinfo->CurrentFile->name );
             }

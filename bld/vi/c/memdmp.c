@@ -61,7 +61,7 @@ static char twoStr[] = "%Y%s";
 vi_rc DumpMemory( void )
 {
     int         ln = 1;
-    window_id   wn;
+    window_id   wid;
     window_info *wi;
     char        tmp[128], tmp2[128];
 #if defined( USE_XMS ) || defined( USE_EMS ) || defined( USE_XTD )
@@ -71,12 +71,12 @@ vi_rc DumpMemory( void )
 //    vi_rc       rc;
 
     wi = &filecw_info;
-//    rc = NewWindow2( &wn, wi );
-    NewWindow2( &wn, wi );
+//    rc = NewWindow2( &wid, wi );
+    NewWindow2( &wid, wi );
 #if defined(__OS2__ )
-    WPrintfLine( wn, ln++, "Mem:  (unlimited) (maxStatic=%d)", MaxStatic );
+    WPrintfLine( wid, ln++, "Mem:  (unlimited) (maxStatic=%d)", MaxStatic );
 #else
-    WPrintfLine( wn, ln++, "Mem:  %l bytes memory (%l for editing) (maxStatic=%d)",
+    WPrintfLine( wid, ln++, "Mem:  %l bytes memory (%l for editing) (maxStatic=%d)",
         MaxMemFree, MaxMemFreeAfterInit, MaxStatic );
 #endif
 
@@ -98,7 +98,7 @@ vi_rc DumpMemory( void )
 #else
     MySprintf( tmp2, "Flat memory addressing" );
 #endif
-    WPrintfLine( wn, ln++, twoStr, tmp, tmp2 );
+    WPrintfLine( wid, ln++, twoStr, tmp, tmp2 );
 
 #if defined( USE_EMS )
     if( EMSCtrl.inuse ) {
@@ -122,17 +122,17 @@ vi_rc DumpMemory( void )
 #if defined( USE_XMS )
     }
 #endif
-    WPrintfLine( wn, ln++, twoStr, tmp, tmp2 );
-//    WPrintfLine( wn, ln++, "Reserved %l bytes of DOS memory", MinMemoryLeft );
+    WPrintfLine( wid, ln++, twoStr, tmp, tmp2 );
+//    WPrintfLine( wid, ln++, "Reserved %l bytes of DOS memory", MinMemoryLeft );
 
-    WPrintfLine( wn, ln++, "File CB's: %d", FcbBlocksInUse );
-//    WPrintfLine( wn, ln++, "File CB's: %d, Undo blocks=%l(%l bytes)", FcbBlocksInUse,
+    WPrintfLine( wid, ln++, "File CB's: %d", FcbBlocksInUse );
+//    WPrintfLine( wid, ln++, "File CB's: %d, Undo blocks=%l(%l bytes)", FcbBlocksInUse,
 //        __undocnt, __undocnt * sizeof( undo ) );
 
-    WPrintfLine( wn, ln + 1, MSG_PRESSANYKEY );
+    WPrintfLine( wid, ln + 1, MSG_PRESSANYKEY );
 
     GetNextEvent( false );
-    CloseAWindow( wn );
+    CloseAWindow( wid );
     return( ERR_NO_ERR );
 
 } /* DumpMemory */
