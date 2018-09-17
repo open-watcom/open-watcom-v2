@@ -531,7 +531,7 @@ vi_rc DoDigit( void )
 
     RepeatString[RepeatDigits++] = LastEvent;
     RepeatString[RepeatDigits] = '\0';
-    if( !BAD_ID( repeat_wid ) ) {
+    if( !BAD_ID( repeat_window_id ) ) {
 #ifdef __WIN__
         UpdateRepeatString( RepeatString );
 #else
