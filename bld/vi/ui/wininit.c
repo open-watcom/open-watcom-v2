@@ -54,9 +54,10 @@ static void initAllWindows( void )
 {
     window_id   wid;
 
-    for( wid = 0; wid < MAX_WINDS + 1; wid++ ) {
+    for( wid = 0; wid < MAX_WINDS; wid++ ) {
         WINDOW_TO_ID( wid, NULL );
     }
+    WINDOW_TO_ID( MAX_WINDS, NULL );
 }
 
 /*

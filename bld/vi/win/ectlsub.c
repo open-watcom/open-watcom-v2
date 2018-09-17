@@ -144,7 +144,7 @@ WINEXPORT LRESULT CALLBACK EditSubClassProc( HWND hwnd, UINT msg, WPARAM wparam,
 
     switch( msg ) {
     case WM_KEYDOWN:
-        key = MapVirtualKeyToVIKey( wparam, HIWORD( lparam ) );
+        key = MapVirtualKeyToVIKey( LOWORD( wparam ), HIWORD( lparam ) );
         if( handleKey( hwnd, key, true ) ) {
             return( 0L );
         }

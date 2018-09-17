@@ -255,7 +255,7 @@ WINEXPORT LRESULT CALLBACK MainWindowProc( HWND hwnd, UINT msg, WPARAM wparam, L
         UpdateStatusWindow();
         break;
     case WM_KEYDOWN:
-        if( WindowsKeyPush( wparam, HIWORD( lparam ) ) ) {
+        if( WindowsKeyPush( LOWORD( wparam ), HIWORD( lparam ) ) ) {
             return( 0 );
         }
         break;

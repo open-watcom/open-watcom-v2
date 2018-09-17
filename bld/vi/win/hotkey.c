@@ -47,7 +47,7 @@ WINEXPORT LRESULT CALLBACK HotkeyProc( HWND hwnd, UINT msg, WPARAM wparam, LPARA
 
     switch( msg ) {
     case WM_KEYDOWN:
-        key = MapVirtualKeyToVIKey( wparam, HIWORD( lparam ) );
+        key = MapVirtualKeyToVIKey( LOWORD( wparam ), HIWORD( lparam ) );
         if( key == VI_KEY( F7 ) ||
             key == VI_KEY( F8 ) ||
             key == VI_KEY( F9 ) ) {
