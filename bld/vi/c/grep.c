@@ -52,6 +52,10 @@
 #include "clibext.h"
 
 
+/*
+ * based on assumption that FILENAME_MAX > MAX_DISP
+ */
+
 /* Local Windows CALLBACK function prototypes */
 #ifdef __WIN__
 WINEXPORT INT_PTR CALLBACK GrepListDlgProc( HWND dlg, UINT msg, WPARAM wparam, LPARAM lparam );
@@ -632,7 +636,6 @@ static void fileGrep( const char *dir, char **list, int *clist, window_id wid )
                 rc = eSearch( fn, ts );
             }
             if( rc == FGREP_FOUND_STRING ) {
-
                 ExpandTabsInABuffer( ts, strlen( ts ), data, MAX_DISP + 1 );
                 strcpy( ts, data );
                 MySprintf( data, "%X \"%s\"", fn, ts );
@@ -759,6 +762,7 @@ static vi_rc fSearch( const char *fn, char *r )
                         j = 0;
                         if( buffloc - strlen( searchString ) < buff ) {
                             // match spans blocks - see context_display
+                            // context_display isn't null terminated string
                             res = context_display + MAX_DISP - 1;
                             if( *res == LF ) {
                                 r[j] = '\0';
@@ -810,6 +814,7 @@ static vi_rc fSearch( const char *fn, char *r )
             }
             if( strloc != searchString ) {
                 // partial match -- keep the last bunch of text as context
+                // context_display isn't null terminated string
                 strncpy( context_display, buffloc - MAX_DISP, MAX_DISP );
             }
         }

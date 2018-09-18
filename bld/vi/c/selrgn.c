@@ -256,11 +256,11 @@ void UpdateDrag( window_id wid, int win_x, int win_y )
                 GoToColumnOnCurrentLine( LeftTopPos.column - 1 );
             } else if( MouseX > rect.right ) {
                 if( EditFlags.Modeless ) {
-                    GoToColumnOnCurrentLine( 1 + LeftTopPos.column +
-                        WindowAuxInfo( current_window_id, WIND_INFO_TEXT_COLS ) );
+                    GoToColumnOnCurrentLine(
+                        1 + LeftTopPos.column + WindowAuxInfo( current_window_id, WIND_INFO_TEXT_COLS ) );
                 } else {
-                    GoToColumnOnCurrentLine( LeftTopPos.column +
-                        WindowAuxInfo( current_window_id, WIND_INFO_TEXT_COLS ) );
+                    GoToColumnOnCurrentLine(
+                        LeftTopPos.column + WindowAuxInfo( current_window_id, WIND_INFO_TEXT_COLS ) );
                 }
             }
         }

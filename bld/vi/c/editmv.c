@@ -113,14 +113,14 @@ vi_rc MoveScreenUp( void )
 
 vi_rc MoveScreenDownPageML( void )
 {
-    return MoveScreenML( LeftTopPos.line +
-                         WindowAuxInfo( current_window_id, WIND_INFO_TEXT_LINES ) );
+    return MoveScreenML(
+        LeftTopPos.line + WindowAuxInfo( current_window_id, WIND_INFO_TEXT_LINES ) );
 }
 
 vi_rc MoveScreenUpPageML( void )
 {
-    return MoveScreenML( LeftTopPos.line -
-                         WindowAuxInfo( current_window_id, WIND_INFO_TEXT_LINES ) );
+    return MoveScreenML(
+        LeftTopPos.line - WindowAuxInfo( current_window_id, WIND_INFO_TEXT_LINES ) );
 }
 
 vi_rc MoveScreenLeftPageML( void )

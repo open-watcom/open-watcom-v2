@@ -892,7 +892,7 @@ bool GenericQueryBool( char *str )
 #else
     #define BUFLEN 10
     char buffer[BUFLEN];
-    PromptForString( str, buffer, BUFLEN, NULL );
+    PromptForString( str, buffer, sizeof( buffer ), NULL );
     return( tolower( buffer[0] ) == 'y' );
 #endif
 }
