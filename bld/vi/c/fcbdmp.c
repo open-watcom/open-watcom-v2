@@ -42,6 +42,8 @@ static type_style errStyle = DEF_TEXT_STYLE;
 #endif
 
 #if defined( __WATCOMC__ ) && !defined( NDEBUG )
+#include "malloc.h"
+
 static void HeapMsg( int msg )
 {
     switch( msg ) {
