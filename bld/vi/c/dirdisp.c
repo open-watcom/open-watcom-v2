@@ -108,22 +108,27 @@ static vi_rc doFileComplete( char *data, int start, int max, bool getnew, vi_key
     int         i, j, k, newstart;
     char        buff[MAX_STR * 2];
     vi_rc       rc;
+    int         c;
 
     newstart = -1;
-    for( i = start; !isspace( data[i] ) && i >= 0; --i ) {
+    for( i = start; i >= 0; --i ) {
+        c = (unsigned char)data[i];
+        if( isspace( c ) )
+            break;
+        if( newstart < 0 ) {
 #ifdef __UNIX__
-        if( data[i] == '/' && newstart < 0 ) {
+            if( c == '/' ) {
 #else
-        if( (data[i] == DRV_SEP || data[i] == '/' || data[i] == '\\') && newstart < 0 ) {
+            if( c = DRV_SEP || c == '/' || c == '\\' ) {
 #endif
-            newstart = i + 1;
+                newstart = i + 1;
+            }
         }
     }
     if( newstart < 0 ) {
         newstart = i + 1;
     }
     if( getnew ) {
-
         k = 0;
         for( j = i + 1; j <= start; j++ ) {
             buff[k++] = data[j];
@@ -148,9 +153,7 @@ static vi_rc doFileComplete( char *data, int start, int max, bool getnew, vi_key
                 DirFileCount--;
             }
         }
-
     }
-
     if( DirFileCount == 0 ) {
         return( ERR_FILE_NOT_FOUND );
     }
@@ -424,7 +427,7 @@ static void displayFiles( void )
 /*
  * StartFileComplete - handle file completion
  */
-vi_rc StartFileComplete( char *data, int start, int max, int what )
+vi_rc StartFileComplete( char *data, int start, int max, vi_key what )
 {
     vi_rc   rc;
     int     maxl;
@@ -466,7 +469,7 @@ vi_rc StartFileComplete( char *data, int start, int max, int what )
 /*
  * ContinueFileComplete
  */
-vi_rc ContinueFileComplete( char *data, int start, int max, int what )
+vi_rc ContinueFileComplete( char *data, int start, int max, vi_key what )
 {
     vi_rc   rc;
 

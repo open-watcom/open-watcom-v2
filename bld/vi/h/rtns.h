@@ -141,8 +141,8 @@ vi_rc   ConditionalChangeDirectory( const char * );
 void    FormatDirToFile( file *cfile, bool add_drives );
 
 /* dirdisp.c */
-vi_rc   StartFileComplete( char *, int, int, int );
-vi_rc   ContinueFileComplete( char *data, int start, int max, int what );
+vi_rc   StartFileComplete( char *, int, int, vi_key );
+vi_rc   ContinueFileComplete( char *data, int start, int max, vi_key what );
 void    PauseFileComplete( void );
 void    FinishFileComplete( void );
 
