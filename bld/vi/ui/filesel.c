@@ -49,9 +49,9 @@ typedef enum {
 
 extern int      CurrentMenuNumber;
 
-static window_id        owid;
-static window_id        mouse_wid;
-static window_id        cwid;
+static window_id        fs_select_window_id;
+static window_id        fs_event_window_id;
+static window_id        fs_mouse_window_id;
 static int              mouseLine = -1;
 static ms_type          mouseScroll;
 static bool             rlMenu;
@@ -192,10 +192,10 @@ static vi_rc displayGenericLines( file *f, linenum pagetop, int leftcol,
     if( rc != ERR_NO_ERR ) {
         return( rc );
     }
-    base_style.foreground = WindowAuxInfo( cwid, WIND_INFO_TEXT_COLOR );
-    base_style.background = WindowAuxInfo( cwid, WIND_INFO_BACKGROUND_COLOR );
-    base_style.font = WindowAuxInfo( cwid, WIND_INFO_TEXT_FONT );
-    text_lines = WindowAuxInfo( cwid, WIND_INFO_TEXT_LINES );
+    base_style.foreground = WindowAuxInfo( fs_select_window_id, WIND_INFO_TEXT_COLOR );
+    base_style.background = WindowAuxInfo( fs_select_window_id, WIND_INFO_BACKGROUND_COLOR );
+    base_style.font = WindowAuxInfo( fs_select_window_id, WIND_INFO_TEXT_FONT );
+    text_lines = WindowAuxInfo( fs_select_window_id, WIND_INFO_TEXT_LINES );
 
     /*
      * mark all fcb's as being not in display
@@ -244,7 +244,7 @@ static vi_rc displayGenericLines( file *f, linenum pagetop, int leftcol,
              * now, display what we can of the line on the window
              */
             if( cline->len == 0 ) {
-                DisplayCrossLineInWindow( cwid, j );
+                DisplayCrossLineInWindow( fs_select_window_id, j );
                 goto evil_goto;
             } else if( cline->len > leftcol ) {
                 if( vals != NULL ) {
@@ -255,15 +255,15 @@ static vi_rc displayGenericLines( file *f, linenum pagetop, int leftcol,
                     }
                     tmp[k] = '\0';
                     strcat( tmp, vals[j + pagetop - 2] );
-                    DisplayLineInWindowWithColor( cwid, j, tmp, text_style, 0 );
+                    DisplayLineInWindowWithColor( fs_select_window_id, j, tmp, text_style, 0 );
                 } else {
-                    DisplayLineInWindowWithColor( cwid, j, cline->data, text_style, leftcol );
+                    DisplayLineInWindowWithColor( fs_select_window_id, j, cline->data, text_style, leftcol );
                 }
             } else {
-                DisplayLineInWindowWithColor( cwid, j, SingleBlank, text_style, 0 );
+                DisplayLineInWindowWithColor( fs_select_window_id, j, SingleBlank, text_style, 0 );
             }
             if( ptr != NULL ) {
-                SetCharInWindowWithColor( cwid, j, 1 + ptr->_offs, ptr->_char, hot_key_style );
+                SetCharInWindowWithColor( fs_select_window_id, j, 1 + ptr->_offs, ptr->_char, hot_key_style );
             }
 evil_goto:  if( ptr != NULL ) {
                 ptr += 1;
@@ -278,7 +278,7 @@ evil_goto:  if( ptr != NULL ) {
             cl++;
             cfcb->on_display = true;
         } else {
-            DisplayLineInWindow( cwid, j, "~" );
+            DisplayLineInWindow( fs_select_window_id, j, "~" );
         }
 
     }
@@ -298,14 +298,14 @@ static bool SelectLineMouseHandler( window_id wid, int win_x, int win_y )
         LastMouseEvent != VI_MOUSE_REPEAT && LastMouseEvent != VI_MOUSE_PRESS_R ) {
         return( false );
     }
-    mouse_wid = wid;
+    fs_mouse_window_id = wid;
     mouseScroll = MS_NONE;
 
-    if( !isMenu && ( wid == cwid ) && (LastMouseEvent == VI_MOUSE_REPEAT ||
+    if( !isMenu && ( wid == fs_select_window_id ) && (LastMouseEvent == VI_MOUSE_REPEAT ||
                                     LastMouseEvent == VI_MOUSE_PRESS ||
                                     LastMouseEvent == VI_MOUSE_DCLICK ) ) {
-        x = WindowAuxInfo( cwid, WIND_INFO_WIDTH );
-        y = WindowAuxInfo( cwid, WIND_INFO_HEIGHT );
+        x = WindowAuxInfo( fs_select_window_id, WIND_INFO_WIDTH );
+        y = WindowAuxInfo( fs_select_window_id, WIND_INFO_HEIGHT );
         if( win_x == x - 1 ) {
             if( win_y == 1 ) {
                 mouseScroll = MS_EXPOSEUP;
@@ -323,13 +323,13 @@ static bool SelectLineMouseHandler( window_id wid, int win_x, int win_y )
         }
     }
     if( LastMouseEvent == VI_MOUSE_REPEAT ) {
-        if( wid != cwid && !isMenu ) {
-            y = WindowAuxInfo( cwid, WIND_INFO_Y1 );
+        if( wid != fs_select_window_id && !isMenu ) {
+            y = WindowAuxInfo( fs_select_window_id, WIND_INFO_Y1 );
             if( MouseRow < y ) {
                 mouseScroll = MS_UP;
                 return( true );
             }
-            y = WindowAuxInfo( cwid, WIND_INFO_Y2 );
+            y = WindowAuxInfo( fs_select_window_id, WIND_INFO_Y2 );
             if( MouseRow > y ) {
                 mouseScroll = MS_DOWN;
                 return( true );
@@ -348,7 +348,7 @@ static bool SelectLineMouseHandler( window_id wid, int win_x, int win_y )
         }
         return( true );
     }
-    if( wid != cwid && wid != owid ) {
+    if( wid != fs_select_window_id && wid != fs_event_window_id ) {
         return( true );
     }
 
@@ -466,22 +466,22 @@ vi_rc SelectLineInFile( selflinedata *sfd )
     if( sfd->hilite != NULL ) {
         hiflag = true;
     }
-    rc = NewWindow2( &cwid, sfd->wi );
+    rc = NewWindow2( &fs_select_window_id, sfd->wi );
     if( rc != ERR_NO_ERR ) {
         return( rc );
     }
     if( !sfd->is_menu ) {
-        WindowAuxUpdate( cwid, WIND_INFO_HAS_SCROLL_GADGETS, true );
-        DrawBorder( cwid );
+        WindowAuxUpdate( fs_select_window_id, WIND_INFO_HAS_SCROLL_GADGETS, true );
+        DrawBorder( fs_select_window_id );
     }
-    owid = sfd->event_wid;
+    fs_event_window_id = sfd->event_wid;
     isMenu = sfd->is_menu;
     PushMouseEventHandler( SelectLineMouseHandler );
     KillCursor();
-    text_lines = WindowAuxInfo( cwid, WIND_INFO_TEXT_LINES );
+    text_lines = WindowAuxInfo( fs_select_window_id, WIND_INFO_TEXT_LINES );
     sfd->sl = -1;
     if( sfd->title != NULL ) {
-        WindowTitle( cwid, sfd->title );
+        WindowTitle( fs_select_window_id, sfd->title );
     }
     pagetop = text_lines * (cln / text_lines);
     if( cln % text_lines != 0 ) {
@@ -501,7 +501,7 @@ vi_rc SelectLineInFile( selflinedata *sfd )
             if( sfd->show_lineno ) {
                 MySprintf(tmp, "%l/%l", cln, endline );
                 i = sfd->wi->area.x2 - sfd->wi->area.x1;
-                WindowBorderData( cwid, tmp, i - strlen( tmp ) );
+                WindowBorderData( fs_select_window_id, tmp, i - strlen( tmp ) );
                 drawbord = true;
             }
             if( hiflag ) {
@@ -516,7 +516,7 @@ vi_rc SelectLineInFile( selflinedata *sfd )
                 }
             }
             if( drawbord ) {
-                DrawBorder( cwid );
+                DrawBorder( fs_select_window_id );
             }
             displayGenericLines( sfd->f, pagetop, leftcol, cln, &(sfd->wi->hilight_style), sfd->hilite, sfd->vals, sfd->valoff );
         }
@@ -558,7 +558,7 @@ vi_rc SelectLineInFile( selflinedata *sfd )
         if( sfd->retevents != NULL ) {
             i = 0;
             if( key == VI_KEY( MOUSEEVENT ) ) {
-                if( mouse_wid == owid && LastMouseEvent == VI_MOUSE_PRESS ) {
+                if( fs_mouse_window_id == fs_event_window_id && LastMouseEvent == VI_MOUSE_PRESS ) {
                     DisplayMouse( false );
                     sfd->event = sfd->retevents[mouseLine];
                     key = VI_KEY( ENTER );
@@ -615,7 +615,7 @@ vi_rc SelectLineInFile( selflinedata *sfd )
             }
             switch( LastMouseEvent ) {
             case VI_MOUSE_DRAG:
-                if( mouse_wid != cwid ) {
+                if( fs_mouse_window_id != fs_select_window_id ) {
                     break;
                 }
                 cln = mouseLine + pagetop;
@@ -624,7 +624,7 @@ vi_rc SelectLineInFile( selflinedata *sfd )
                 if( !sfd->is_menu ) {
                     break;
                 }
-                if( mouse_wid == cwid ) {
+                if( fs_mouse_window_id == fs_select_window_id ) {
                     cln = mouseLine + pagetop;
                     if( cln <= endline ) {
                         goto evil_enter;
@@ -632,7 +632,7 @@ vi_rc SelectLineInFile( selflinedata *sfd )
                 }
                 break;
             case VI_MOUSE_DCLICK:
-                if( mouse_wid != cwid ) {
+                if( fs_mouse_window_id != fs_select_window_id ) {
                     AddCurrentMouseEvent();
                     done = true;
                 } else {
@@ -643,13 +643,13 @@ vi_rc SelectLineInFile( selflinedata *sfd )
                 }
                 break;
             case VI_MOUSE_PRESS_R:
-                if( mouse_wid != cwid ) {
+                if( fs_mouse_window_id != fs_select_window_id ) {
                     AddCurrentMouseEvent();
                     done = true;
                 }
                 break;
             case VI_MOUSE_PRESS:
-                if( mouse_wid != cwid ) {
+                if( fs_mouse_window_id != fs_select_window_id ) {
                     AddCurrentMouseEvent();
                     done = true;
                 } else {
@@ -680,7 +680,7 @@ vi_rc SelectLineInFile( selflinedata *sfd )
                 strcpy( tmp, sfd->vals[i] );
                 rc = sfd->checkres( ptr, tmp, &winflag );
                 if( winflag == 2 ) {
-                    MoveWindowToFront( cwid );
+                    MoveWindowToFront( fs_select_window_id );
                 }
                 if( rc == ERR_NO_ERR ) {
                     ReplaceString( &(sfd->vals[i]), tmp );
@@ -771,7 +771,7 @@ vi_rc SelectLineInFile( selflinedata *sfd )
 
     }
     PopMouseEventHandler();
-    CloseAWindow( cwid );
+    CloseAWindow( fs_select_window_id );
     RestoreCursor();
     SetWindowCursor();
     return( rc );
