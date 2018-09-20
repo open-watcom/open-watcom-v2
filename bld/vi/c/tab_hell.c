@@ -72,16 +72,20 @@ static bool getNextPos( int ch, int *opos )
 /*
  * InsertTabSpace - insert tabs and white space
  */
-int InsertTabSpace( int j, char *buff, bool *tabme )
+size_t InsertTabSpace( size_t j, char *buff, bool *tabme )
 {
-    int n, extra, m, i;
-    int k = 0;
+    size_t  n;
+    size_t  extra;
+    size_t  m;
+    size_t  i;
+    size_t  k;
 
+    k = 0;
     if( *tabme ) {
         *tabme = false;
         n = EditVars.HardTab - Tab( j + 1, EditVars.HardTab );
-        extra = j - n;
-        if( extra > 0 ) {
+        if( j > n ) {
+            extra = j - n;
             m = extra / EditVars.HardTab;
             if( extra % EditVars.HardTab > 0 ) {
                 m++;
@@ -420,8 +424,11 @@ int VirtualLineLen( char *buff )
 bool AddLeadingTabSpace( short *len, char *buff, int amount )
 {
     char        *tmp;
-    int         start = 0, i = 0;
-    int         j, k, l;
+    int         start;
+    int         i;
+    int         j;
+    int         k;
+    int         l;
     bool        tabme;
     bool        full = false;
 
@@ -429,11 +436,13 @@ bool AddLeadingTabSpace( short *len, char *buff, int amount )
      * expand leading stuff into spaces
      */
     j = *len;
+    start = 0;
     while( isspace( buff[start] ) ) {
         start++;
     }
     tmp = StaticAlloc();
     ExpandTabsInABuffer( buff, j, tmp, EditVars.MaxLine + 1 );
+    i = 0;
     while( tmp[i] == ' ' ) {
         i++;
     }
@@ -442,16 +451,21 @@ bool AddLeadingTabSpace( short *len, char *buff, int amount )
      * subtract/add extra spaces
      */
     if( amount <= 0 ) {
-        k = i + amount;
-        if( k < 0 ) {
+        // shift left
+        l = -amount;
+        if( i < l ) {
             k = 0;
+        } else {
+            k = i - l;
         }
     } else {
-        if( i + amount >= EditVars.MaxLine ) {
+        // shift right
+        l = i + amount;
+        if( l >= EditVars.MaxLine ) {
             full = true;
             k = i;
         } else {
-            for( k = i; k < i + amount; k++ ) {
+            for( k = i; k < l; k++ ) {
                 tmp[k] = ' ';
             }
         }
