@@ -275,8 +275,11 @@ vi_rc IMEsc( void )
  */
 vi_rc IMEnter( void )
 {
-    char        *buff, *buffx;
-    int         len, col, el;
+    char        *buff;
+    char        *buffx;
+    int         len;
+    int         col;
+    int         el;
 
     if( CurrentFile == NULL ) {
         return( ERR_NO_FILE );
@@ -291,11 +294,12 @@ vi_rc IMEnter( void )
      */
     buff = StaticAlloc();
     buffx = StaticAlloc();
-    el = WorkLine->len - CurrentPos.column + 1;
-    if( el > 0 && WorkLine->len > 0 ) {
-        memcpy( buff, &WorkLine->data[CurrentPos.column - 1], el + 1 );
-        WorkLine->len -= el;
-        WorkLine->data[CurrentPos.column - 1] = '\0';
+    len = CurrentPos.column - 1;
+    if( WorkLine->len > len && WorkLine->len > 0 ) {
+        el = WorkLine->len - len;
+        memcpy( buff, &WorkLine->data[len], el + 1 );
+        WorkLine->len = len;
+        WorkLine->data[len] = '\0';
     } else {
         el = 0;
         buff[0] = '\0';

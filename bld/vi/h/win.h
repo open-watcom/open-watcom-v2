@@ -83,11 +83,11 @@ typedef struct window {
     short       bordercol;
     window_id   id;
     bool        isswapped           : 1;
-    bool        accessed            : 1;
     bool        has_border          : 1;
     bool        has_gadgets         : 1;
     bool        min_slot            : 1;
     bool        has_scroll_gadgets  : 1;
+    signed char accessed;
     signed char overcnt[1];
 } window;
 
