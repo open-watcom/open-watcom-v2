@@ -74,11 +74,11 @@ static bool getNextPos( int ch, int *opos )
  */
 size_t InsertTabSpace( size_t j, char *buff, bool *tabme )
 {
-    size_t  n;
     size_t  extra;
-    size_t  m;
     size_t  i;
     size_t  k;
+    size_t  m;
+    size_t  n;
 
     k = 0;
     if( *tabme ) {
@@ -116,10 +116,10 @@ size_t InsertTabSpace( size_t j, char *buff, bool *tabme )
 /*
  * ExpandTabsInABufferUpToColumn - expand tabs only up to specified column
  */
-bool ExpandTabsInABufferUpToColumn( int endcol, char *in, int inlen, char *out, int outsize )
+bool ExpandTabsInABufferUpToColumn( size_t endcol, char *in, size_t inlen, char *out, size_t outsize )
 {
-    int         i;
-    int         j;
+    size_t      i;
+    size_t      j;
     bool        res;
 
     if( outsize > 0 ) {
@@ -143,11 +143,11 @@ bool ExpandTabsInABufferUpToColumn( int endcol, char *in, int inlen, char *out, 
 /*
  * ExpandTabsInABuffer - do all tabs in a buffer
  */
-bool ExpandTabsInABuffer( const char *in, int inlen, char *out, int outsize )
+bool ExpandTabsInABuffer( const char *in, size_t inlen, char *out, size_t outsize )
 {
-    int             j;
-    int             k;
-    int             tb;
+    size_t          j;
+    size_t          k;
+    size_t          tb;
     bool            tabme;
     int             c;
 
