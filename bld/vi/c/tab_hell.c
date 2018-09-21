@@ -118,16 +118,17 @@ size_t InsertTabSpace( size_t j, char *buff, bool *tabme )
  */
 bool ExpandTabsInABufferUpToColumn( int endcol, char *in, int inlen, char *out, int outsize )
 {
-    int         i, j;
+    int         i;
+    int         j;
     bool        res;
 
     if( outsize > 0 ) {
         res = ExpandTabsInABuffer( in, endcol, out, outsize );
         outsize--;  /* reserve space for '\0' terminator */
-        j = inlen - endcol;
         i = strlen( out );
-        if( i + j > outsize ) {
-            inlen = outsize - i + endcol;
+        j = outsize - i + endcol;
+        if( inlen > j ) {
+            inlen = j;
         }
         for( j = endcol; j < inlen; j++ ) {
             out[i++] = in[j];
@@ -144,7 +145,9 @@ bool ExpandTabsInABufferUpToColumn( int endcol, char *in, int inlen, char *out, 
  */
 bool ExpandTabsInABuffer( const char *in, int inlen, char *out, int outsize )
 {
-    int             j, k, tb;
+    int             j;
+    int             k;
+    int             tb;
     bool            tabme;
     int             c;
 
@@ -424,23 +427,23 @@ int VirtualLineLen( char *buff )
 bool AddLeadingTabSpace( short *len, char *buff, int amount )
 {
     char        *tmp;
-    int         start;
     int         i;
     int         j;
     int         k;
     int         l;
+    int         start;
     bool        tabme;
-    bool        full = false;
+    bool        full;
 
     /*
      * expand leading stuff into spaces
      */
-    j = *len;
     start = 0;
     while( isspace( buff[start] ) ) {
         start++;
     }
     tmp = StaticAlloc();
+    j = *len;
     ExpandTabsInABuffer( buff, j, tmp, EditVars.MaxLine + 1 );
     i = 0;
     while( tmp[i] == ' ' ) {
@@ -450,8 +453,12 @@ bool AddLeadingTabSpace( short *len, char *buff, int amount )
     /*
      * subtract/add extra spaces
      */
-    if( amount <= 0 ) {
-        // shift left
+    full = false;
+    if( amount == 0 ) {
+        // no shift
+        k = i;
+    } else if( amount < 0 ) {
+        // shift left, amount < 0
         l = -amount;
         if( i < l ) {
             k = 0;
@@ -459,7 +466,7 @@ bool AddLeadingTabSpace( short *len, char *buff, int amount )
             k = i - l;
         }
     } else {
-        // shift right
+        // shift right, amount > 0
         l = i + amount;
         if( l >= EditVars.MaxLine ) {
             full = true;
