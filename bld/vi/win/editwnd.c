@@ -34,7 +34,7 @@
 #include <limits.h>
 #include "winaux.h"
 #include "win.h"
-#include "font.h"
+#include "vifont.h"
 #include "color.h"
 #include "utils.h"
 #include "wclbproc.h"

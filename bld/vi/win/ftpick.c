@@ -33,7 +33,7 @@
 #include "vi.h"
 #include "utils.h"
 #include "ftbar.h"
-#include "font.h"
+#include "vifont.h"
 #include "sstyle.h"
 #include "wclbproc.h"
 

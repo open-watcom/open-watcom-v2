@@ -35,7 +35,7 @@
 #include "winaux.h"
 #include "win.h"
 #ifdef __WIN__
-    #include "font.h"
+    #include "vifont.h"
     #include "color.h"
 #endif
 #include <assert.h>

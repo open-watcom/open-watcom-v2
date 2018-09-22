@@ -34,7 +34,7 @@
 #include "ftbar.h"
 #include "utils.h"
 #include "sstyle.h"
-#include "font.h"
+#include "vifont.h"
 #include "subclass.h"
 #include "hotkey.h"
 

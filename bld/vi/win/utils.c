@@ -37,7 +37,7 @@
 #endif
 #include <dos.h>
 #include "color.h"
-#include "font.h"
+#include "vifont.h"
 #include "utils.h"
 #include "banner.h"
 #include "aboutdlg.h"

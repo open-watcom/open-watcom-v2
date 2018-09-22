@@ -31,7 +31,7 @@
 
 
 #include "vi.h"
-#include "font.h"
+#include "vifont.h"
 
 #ifdef __NT__
     #define STUPIDNTINT     long

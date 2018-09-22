@@ -38,7 +38,7 @@
 #endif
 #include "win.h"
 // #include "ole2def.h"
-#include "font.h"
+#include "vifont.h"
 #include "color.h"
 #include "ldstr.h"
 

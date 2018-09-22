@@ -32,7 +32,7 @@
 
 #include "vi.h"
 #include "color.h"
-#include "font.h"
+#include "vifont.h"
 #include "utils.h"
 #include "wclbproc.h"
 #include "win.h"

@@ -38,7 +38,7 @@
 #include "win.h"
 #ifdef __WIN__
     #include "filelist.h"
-    #include "font.h"
+    #include "vifont.h"
     #include "loadcc.h"
     #ifdef __NT__
         #undef _WIN32_IE

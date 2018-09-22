@@ -36,7 +36,7 @@
 #include "win.h"
 #ifdef __WIN__
 #include "utils.h"
-#include "font.h"
+#include "vifont.h"
 
 extern int MouseX;
 extern int MouseY;

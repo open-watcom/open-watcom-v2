@@ -37,7 +37,7 @@
 #ifdef __WIN__
     #include "utils.h"
     #include "color.h"
-    #include "font.h"
+    #include "vifont.h"
 #endif
 #include <assert.h>
 
