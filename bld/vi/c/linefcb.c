@@ -102,15 +102,16 @@ static int createLine( char *res, bool *crlf_reached )
 /*
  * createLinesFromBuffer - create a set of lines from specified buffer
  */
-static bool createLinesFromBuffer( int cnt, line_list *linelist, int *used,
+static bool createLinesFromBuffer( size_t cnt, line_list *linelist, size_t *used,
                             int *lcnt, short *bytecnt, bool *crlf_reached )
 {
-    int         curr, copylen, total, tmpmio;
+    size_t      curr;
+    int         copylen, total, tmpmio;
     short       bcnt, llcnt;
     char        *tmpbuff;
     bool        rc;
 
-    total = bcnt = copylen = llcnt = curr = 0;
+    total = bcnt = copylen = llcnt = 0;
     linelist->tail = linelist->head = NULL;
     tmpmio = MAX_IO_BUFFER - 2;
     tmpbuff = StaticAlloc();
@@ -121,7 +122,7 @@ static bool createLinesFromBuffer( int cnt, line_list *linelist, int *used,
      */
     ReadBuffer[cnt] = '\0';
 
-    for( curr = 0; curr < cnt; curr = (int)( buffPtr - ReadBuffer ) ) {
+    for( curr = 0; curr < cnt; curr = buffPtr - ReadBuffer ) {
 
         /*
          * get next string
@@ -159,12 +160,12 @@ static bool createLinesFromBuffer( int cnt, line_list *linelist, int *used,
 
 } /* createLinesFromBuffer */
 
-bool CreateLinesFromBuffer( int cnt, line_list *linelist, int *used, int *lcnt, short *bytecnt )
+bool CreateLinesFromBuffer( size_t cnt, line_list *linelist, size_t *used, int *lcnt, short *bytecnt )
 {
     return( createLinesFromBuffer( cnt, linelist, used, lcnt, bytecnt, NULL ) );
 }
 
-bool CreateLinesFromFileBuffer( int cnt, line_list *linelist, int *used, int *lcnt, short *bytecnt, bool *crlf_reached )
+bool CreateLinesFromFileBuffer( size_t cnt, line_list *linelist, size_t *used, int *lcnt, short *bytecnt, bool *crlf_reached )
 {
     return( createLinesFromBuffer( cnt, linelist, used, lcnt, bytecnt, crlf_reached ) );
 }

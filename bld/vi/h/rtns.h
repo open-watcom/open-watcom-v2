@@ -479,8 +479,8 @@ void    KeyAddString( const char *str );
 void    AddCurrentMouseEvent( void );
 
 /* linecfb.c */
-bool    CreateLinesFromBuffer( int, line_list *, int *, int *, short * );
-bool    CreateLinesFromFileBuffer( int, line_list *, int *, int *, short *, bool * );
+bool    CreateLinesFromBuffer( size_t, line_list *, size_t *, int *, short * );
+bool    CreateLinesFromFileBuffer( size_t, line_list *, size_t *, int *, short *, bool * );
 
 /* linedel.c */
 void    UpdateLineNumbers( linenum amt, fcb *cfcb  );

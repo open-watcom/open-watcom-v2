@@ -45,7 +45,9 @@ static void     *extraData = NULL;
  */
 vi_rc ReadFcbData( file *f, bool *crlf_reached )
 {
-    int         cnt, used, linecnt;
+    size_t      cnt;
+    size_t      used;
+    int         linecnt;
     bool        eofflag;
     fcb         *cfcb;
     vi_rc       rc;
@@ -206,7 +208,7 @@ vi_rc FindFcbWithLine( linenum lineno, file *cfile, fcb **fb )
  */
 void CreateFcbData( file *f, size_t cnt )
 {
-    int used;
+    size_t used;
     int linecnt;
     fcb *cfcb;
 

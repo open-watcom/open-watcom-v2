@@ -114,7 +114,7 @@ void SwapFcb( fcb *fb )
  */
 vi_rc RestoreToNormalMemory( fcb *fb, size_t len )
 {
-    int         used;
+    size_t      used;
     int         linecnt;
     char        *buff;
     line        *cline;
@@ -130,7 +130,7 @@ vi_rc RestoreToNormalMemory( fcb *fb, size_t len )
     /*
      * restore buffer
      */
-    CreateLinesFromBuffer( len, &fb->lines, &used, &linecnt, &(fb->byte_cnt) );
+    CreateLinesFromBuffer( len, &fb->lines, &used, &linecnt, &fb->byte_cnt );
 
     /*
      * restore line data

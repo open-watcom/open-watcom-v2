@@ -252,11 +252,11 @@ int AddFcbsToClipboard( fcb_list *fcblist )
 /*
  * addAnFcb - add a new fcb and its data
  */
-static int addAnFcb( fcb_list *fcblist, int numbytes )
+static size_t addAnFcb( fcb_list *fcblist, size_t numbytes )
 {
     fcb         *cfcb;
     int         linecnt;
-    int         used;
+    size_t      used;
 
     cfcb = FcbAlloc( NULL );
     AddLLItemAtEnd( (ss **)&fcblist->head, (ss **)&fcblist->tail, (ss *)cfcb );
@@ -281,12 +281,12 @@ int GetClipboardSavebuf( savebuf *clip )
     char                _HUGE_ *ptr;
     char                _HUGE_ *cpos;
     fcb_list            fcblist;
-    int                 i;
+    size_t              i;
     bool                is_flushed;
     bool                has_lf;
     bool                record_done;
     char                ch;
-    int                 used;
+    size_t              used;
 
     if( !openClipboardForRead() ) {
         return( ERR_CLIPBOARD_EMPTY );
