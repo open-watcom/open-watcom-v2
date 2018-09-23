@@ -47,6 +47,7 @@ int ExpandFileNames( char *p, char ***argv )
     char        *start, *new;
     bool        wildcard;
     vi_rc       rc;
+    char        c;
 
     argc = 0;
     wildcard = false;
@@ -56,12 +57,8 @@ int ExpandFileNames( char *p, char ***argv )
     /*
      * check if there is anything to expand
      */
-    for( ;; ) {
-        if( *p == '\0' ) {
-            break;
-        }
-        if( *p == '?'  ||  *p == '*' || *p == '|' || *p == '(' ||
-                *p == '[' ) {
+    for( ; (c = *p) != '\0'; ) {
+        if( c == '?' || c == '*' || c == '|' || c == '(' || c == '[' ) {
             wildcard = true;
             break;
         }
@@ -71,7 +68,11 @@ int ExpandFileNames( char *p, char ***argv )
     if( !wildcard ) {
         // don't change to lowercase any more
         //FileLower( start );
-        return( 0 );
+        *argv = MemReAlloc( *argv, sizeof( char * ) );
+        new = MemAlloc( strlen( start ) + 1 );
+        (*argv)[argc++] = new;
+        strcpy( new, start );
+        return( argc );
     }
 
     /*
@@ -79,7 +80,11 @@ int ExpandFileNames( char *p, char ***argv )
      */
     rc = GetSortDir( start, false );
     if( rc != ERR_NO_ERR ) {
-        return( 0 );
+        *argv = MemReAlloc( *argv, sizeof( char * ) );
+        new = MemAlloc( strlen( start ) + 1 );
+        (*argv)[argc++] = new;
+        strcpy( new, start );
+        return( argc );
     }
     _splitpath( start, drive, directory, name, extin );
 
@@ -96,7 +101,6 @@ int ExpandFileNames( char *p, char ***argv )
         strcpy( new, pathin );
         (*argv)[argc++] = new;
     }
-
     return( argc );
 
 } /* ExpandFileNames */

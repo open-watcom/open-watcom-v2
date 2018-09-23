@@ -214,7 +214,7 @@ static void checkFlags( int *argc, char *argv[], char *start[],
  */
 static void doInitializeEditor( int argc, char *argv[] )
 {
-    int             i, arg, cnt, ocnt, startcnt = 0;
+    int             i, arg, ocnt, startcnt = 0;
     srcline         sline;
     int             k, j;
     char            tmp[_MAX_PATH], c[1];
@@ -413,7 +413,6 @@ static void doInitializeEditor( int argc, char *argv[] )
     arg = argc - 1;
     k = 1;
     while( !EditFlags.NoInitialFileLoad ) {
-
         if( cFN == nullFN && !EditFlags.UseNoName ) {
             break;
         }
@@ -478,28 +477,17 @@ static void doInitializeEditor( int argc, char *argv[] )
 
         strcat( cmd, SingleBlank );
         strcat( cmd, cFN );
-        ocnt = cnt = ExpandFileNames( cFN, &list );
-        if( cnt == 0 ) {
-            cnt = 1;
-        } else {
-            cFN = list[0];
-        }
-
-        for( j = 0; j < cnt; j++ ) {
-            rc1 = NewFile( cFN, false );
+        ocnt = ExpandFileNames( cFN, &list );
+        for( j = 0; j < ocnt; j++ ) {
+            rc1 = NewFile( list[j], false );
             if( rc1 != ERR_NO_ERR && rc1 != NEW_FILE ) {
                 FatalError( rc1 );
             }
             if( EditFlags.BreakPressed ) {
                 break;
             }
-            if( cnt > 0 && j < cnt - 1 ) {
-                cFN = list[j + 1];
-            }
         }
-        if( ocnt > 0 ) {
-            MemFreeList( ocnt, list );
-        }
+        MemFreeList( ocnt, list );
         if( EditFlags.BreakPressed ) {
             ClearBreak();
             break;

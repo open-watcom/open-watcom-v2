@@ -97,7 +97,7 @@ static char *GetNextWordNT( const char *buff, char *res )
 vi_rc EditFile( const char *name, bool dammit )
 {
     char        *fn, **list, *currfn;
-    int         i, cnt, ocnt;
+    int         i, ocnt;
     int         j, len;
     window_id   wid = NO_WINDOW;
     char        cdir[FILENAME_MAX];
@@ -105,7 +105,6 @@ vi_rc EditFile( const char *name, bool dammit )
     bool        usedir = false;
     char        mask[FILENAME_MAX];
     bool        reset_dir;
-    int         index;
 #ifdef __WIN__
     char        *altname = NULL;
 #endif
@@ -138,17 +137,17 @@ vi_rc EditFile( const char *name, bool dammit )
         len = strlen( fn );
         if( len > 0 ) {
             strcpy( mask, fn );
-            cnt = 0;
+            ocnt = 0;
             for( i = len; i-- > 0; ) {
                 if( fn[i] == FILE_SEP ) {
                     for( j = i + 1; j <= len; j++ ) {
                         mask[j - (i + 1)] = fn[j];
                     }
-                    cnt = i;
+                    ocnt = i;
                     break;
                 }
             }
-            fn[cnt] = '\0';
+            fn[ocnt] = '\0';
         }
         if( fn[0] != '\0' ) {
             rc = SelectFileOpen( fn, &fn, mask, true );
@@ -168,7 +167,6 @@ vi_rc EditFile( const char *name, bool dammit )
             rc = SelectFileOpen( CurrentDirectory, &fn, mask, true );
 #endif
         }
-
         if( rc != ERR_NO_ERR || fn[0] == '\0' ) {
             MemFree( fn );
             SetCWD( cdir );
@@ -202,20 +200,13 @@ vi_rc EditFile( const char *name, bool dammit )
                 break;
             }
         }
-        currfn = fn;
-        ocnt = cnt = ExpandFileNames( currfn, &list );
-        if( !cnt ) {
-            cnt = 1;
-        } else {
-            currfn = list[0];
-        }
+        ocnt = ExpandFileNames( fn, &list );
 
         /*
          * loop through all expanded files
          */
-        index = 1;
-        while( cnt > 0 ) {
-            cnt--;
+        for( i = 0; i < ocnt; i++ ) {
+            currfn = list[i];
             /*
              * quit current file if ! specified, else just save current state
              */
@@ -233,8 +224,7 @@ vi_rc EditFile( const char *name, bool dammit )
                 FreeUndoStacks();
                 FreeMarkList();
                 FreeEntireFile( CurrentFile );
-                MemFree( DeleteLLItem( (ss **)&InfoHead, (ss **)&InfoTail,
-                         (ss *)CurrentInfo ) );
+                MemFree( DeleteLLItem( (ss **)&InfoHead, (ss **)&InfoTail, (ss *)CurrentInfo ) );
                 CurrentInfo = NULL;
                 current_window_id = NO_WINDOW;
             } else {
@@ -312,15 +302,9 @@ vi_rc EditFile( const char *name, bool dammit )
                     break;
                 }
             }
-            if( cnt > 0 ) {
-                currfn = list[index];
-                index++;
-            }
         }
+        MemFreeList( ocnt, list );
 
-        if( ocnt > 0 ) {
-            MemFreeList( ocnt, list );
-        }
         if( EditFlags.BreakPressed ) {
             ClearBreak();
             break;
