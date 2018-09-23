@@ -44,7 +44,7 @@ static unsigned long    *xmsPtrs;
 static int  xmsRead( long, void __far *, int );
 static int  xmsWrite( long, void __far *, int );
 
-int XMSBlockTest( unsigned short blocks )
+vi_rc XMSBlockTest( unsigned short blocks )
 {
     if( !XMSCtrl.inuse ) {
         return( ERR_NO_XMS_MEMORY );
@@ -68,58 +68,57 @@ void XMSBlockWrite( long addr, void __far *buff, unsigned len )
 
 } /* XMSBlockWrite */
 
-int XMSGetBlock( long *addr )
+vi_rc XMSGetBlock( long *addr )
 {
-    int         i;
+    vi_rc       rc;
     long        found = 0;
 
-    i = XMSBlockTest( 1 );
-    if( i ) {
-        return( i );
-    }
-    XMSBlocksInUse++;
-    for( i = 0; i < TotalXMSBlocks; i++ ) {
-        if( xmsPtrs[i] != 0 ) {
-            found = xmsPtrs[i];
-            xmsPtrs[i] = 0;
-            break;
+    rc = XMSBlockTest( 1 );
+    if( rc == ERR_NO_ERR ) {
+        XMSBlocksInUse++;
+        for( i = 0; i < TotalXMSBlocks; i++ ) {
+            if( xmsPtrs[i] != 0 ) {
+                found = xmsPtrs[i];
+                xmsPtrs[i] = 0;
+                break;
+            }
         }
+        *addr = found;
     }
-    *addr = found;
-    return( ERR_NO_ERR );
+    return( rc );
 
 } /* XMSGetBlock */
 
 /*
  * SwapToXMSMemory - move an fcb to extended memory from memory
  */
-int SwapToXMSMemory( fcb *fb )
+vi_rc SwapToXMSMemory( fcb *fb )
 {
-    int         i, len;
+    vi_rc       rc;
+    size_t      len;
     long        found = 0;
 
-    i = XMSGetBlock( &found );
-    if( i ) {
-        return( i );
+    rc = XMSGetBlock( &found );
+    if( rc == ERR_NO_ERR ) {
+        len = MakeWriteBlock( fb );
+        xmsWrite( found, WriteBuffer, len );
+    
+        /*
+         * finish up
+         */
+        fb->xmemaddr = found;
+        fb->in_xms_memory = true;
     }
-    len = MakeWriteBlock( fb );
-    xmsWrite( found, WriteBuffer, len );
-
-    /*
-     * finish up
-     */
-    fb->xmemaddr = found;
-    fb->in_xms_memory = true;
-    return( ERR_NO_ERR );
+    return( rc );
 
 } /* SwapToXMSMemory */
 
 /*
  * SwapToMemoryFromXMSMemory - bring data back from extended memory
  */
-int SwapToMemoryFromXMSMemory( fcb *fb )
+vi_rc SwapToMemoryFromXMSMemory( fcb *fb )
 {
-    int len;
+    size_t  len;
 
     len = FcbSize( fb );
     xmsRead( fb->xmemaddr, ReadBuffer, len );
@@ -154,25 +153,20 @@ static unsigned long xmsAlloc( int size )
         if( offset < XMSCtrl.size ) {
             /* reallocate the block to eliminate internal fragmentation */
             new_size = offset / 0x0400;
-            _XMSReallocate( &xmsControl, XMSCtrl.handles[XMSCtrl.next_handle - 1],
-                            new_size );
+            _XMSReallocate( &xmsControl, XMSCtrl.handles[XMSCtrl.next_handle - 1], new_size );
         }
 
         page_request = XMS_MAX_BLOCK_SIZE_IN_K;
         for( ;; ) {
-
-            if( _XMSAllocate( &xmsControl, page_request,
-                (unsigned short *) &handle ) != 0 ) {
+            if( _XMSAllocate( &xmsControl, page_request, (unsigned short *)&handle ) != 0 ) {
                 break;
             }
-
             XMSCtrl.small_block = true;
             page_request -= XMS_BLOCK_ADJUST_SIZE_IN_K;
             if( page_request == 0 ) {
                 XMSCtrl.exhausted = true;
                 return( 0 );
             }
-
         }
 
         XMSCtrl.offset = 0;

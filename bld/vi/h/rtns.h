@@ -278,8 +278,8 @@ int ExpandFileNames( char *, char *** );
 /* fcb.c */
 vi_rc   OpenFcbData( file * );
 vi_rc   ReadFcbData( file *, bool * );
-void    CreateFcbData( file *, int );
-int     FcbSize( fcb * );
+void    CreateFcbData( file *, size_t );
+size_t  FcbSize( fcb * );
 
 /* fcb2.c */
 vi_rc FindFcbWithLine( linenum, file *, fcb ** );
@@ -705,7 +705,7 @@ void    FiniSavebufs( void );
 
 /* select.c */
 vi_rc   SelectItem( selectitem *si );
-vi_rc   SelectItemAndValue( window_info *, char *, char **, int , vi_rc (*)(const char *, char *, int * ), int, char **, int );
+vi_rc   SelectItemAndValue( window_info *, char *, char **, int , vi_rc (*)(const char *, char *, int * ), size_t, char **, int );
 
 /* selrgn.c */
 void    UpdateDrag( window_id, int, int );

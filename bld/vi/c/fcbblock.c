@@ -103,16 +103,18 @@ bool GetNewBlock( long *p, unsigned char *blocks, int size )
 /*
  * MakeWriteBlock - create a writeable block from the fcb data
  */
-int MakeWriteBlock( fcb *fb )
+size_t MakeWriteBlock( fcb *fb )
 {
-    line        *cline, *tline;
+    line        *cline;
+    line        *tline;
     char        *buff;
-    int         len = 0;
+    size_t      len;
 
     /*
      * build a block
      */
     buff = WriteBuffer;
+    len = 0;
     for( cline = fb->lines.head; cline != NULL; cline = cline->next ) {
         memcpy( buff, cline->data, cline->len );
         buff += cline->len;

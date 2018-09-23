@@ -59,10 +59,10 @@ static bool checkVDISK( flat_address * );
 /*
  * SwapToExtendedMemory - move an fcb to extended memory from memory
  */
-int SwapToExtendedMemory( fcb *fb )
+vi_rc SwapToExtendedMemory( fcb *fb )
 {
     long        addr;
-    int         len;
+    size_t      len;
 
     if( !XMemCtrl.inuse ) {
         return( ERR_NO_EXTENDED_MEMORY );
@@ -91,9 +91,9 @@ int SwapToExtendedMemory( fcb *fb )
 /*
  * SwapToMemoryFromExtendedMemory - bring data back from extended memory
  */
-int SwapToMemoryFromExtendedMemory( fcb *fb )
+vi_rc SwapToMemoryFromExtendedMemory( fcb *fb )
 {
-    int len;
+    size_t  len;
 
     len = FcbSize( fb );
     xmemRead( fb->xmemaddr, ReadBuffer, len );

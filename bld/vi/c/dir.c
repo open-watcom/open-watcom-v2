@@ -37,6 +37,9 @@
 #include "clibext.h"
 
 
+static size_t   currOff;
+static size_t   totalBytes;
+
 /*
  * GetCWD1 - get current working directory, then allocate space for it
  */
@@ -135,16 +138,12 @@ vi_rc SetCWD( const char *str )
 
 } /* SetCWD */
 
-
-static int  currOff;
-static int  totalBytes;
-
 /*
  * addDirData - add directory file data to current buffer
  */
 static void addDirData( file *cfile, const char *str )
 {
-    int k;
+    size_t  k;
 
     k = strlen( str );
     if( totalBytes + k + LINE_EXTRA > MAX_IO_BUFFER - 2 ) {
@@ -176,6 +175,7 @@ void FormatDirToFile( file *cfile, bool add_drives )
             cfile->fcbs.head = cfile->fcbs.tail = NULL;
         }
     }
+
     currOff = 0;
     totalBytes = 0;
 

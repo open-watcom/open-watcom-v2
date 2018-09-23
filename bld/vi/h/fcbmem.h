@@ -32,7 +32,7 @@
 /* fcbblock.c */
 void    GiveBackBlock( long, unsigned char * );
 bool    GetNewBlock( long *, unsigned char *, int );
-int     MakeWriteBlock( fcb * );
+size_t  MakeWriteBlock( fcb * );
 
 /* fcbdisk.c */
 vi_rc   SwapToMemoryFromDisk( fcb * );
@@ -42,12 +42,12 @@ void    SwapFileClose( void );
 void    SwapBlockInit( int );
 
 /* fcbems.c */
-int     EMSBlockTest( unsigned short );
-void    EMSBlockRead( long, void *, unsigned );
-void    EMSBlockWrite( long , void *, unsigned );
-int     EMSGetBlock( long * );
-int     SwapToEMSMemory( fcb * );
-int     SwapToMemoryFromEMSMemory( fcb * );
+vi_rc   EMSBlockTest( unsigned short );
+void    EMSBlockRead( long, void *, size_t );
+void    EMSBlockWrite( long , void *, size_t );
+vi_rc   EMSGetBlock( long * );
+vi_rc   SwapToEMSMemory( fcb * );
+vi_rc   SwapToMemoryFromEMSMemory( fcb * );
 void    EMSInit( void );
 void    EMSFini( void );
 void    GiveBackEMSBlock( long );
@@ -55,22 +55,22 @@ void    EMSBlockInit( int );
 
 /* fcbswap.c */
 void    SwapFcb( fcb * );
-vi_rc   RestoreToNormalMemory( fcb *, int );
+vi_rc   RestoreToNormalMemory( fcb *, size_t );
 
 /* fcbxmem.c */
-int     SwapToExtendedMemory( fcb * );
-int     SwapToMemoryFromExtendedMemory( fcb * );
+vi_rc   SwapToExtendedMemory( fcb * );
+vi_rc   SwapToMemoryFromExtendedMemory( fcb * );
 void    XMemInit( void );
 void    XMemFini( void );
 void    GiveBackXMemBlock( long );
 
 /* fcbxms.c */
-int     XMSBlockTest( unsigned short );
-void    XMSBlockRead( long, void *, unsigned );
-void    XMSBlockWrite( long , void *, unsigned );
-int     XMSGetBlock( long * );
-int     SwapToXMSMemory( fcb * );
-int     SwapToMemoryFromXMSMemory( fcb * );
+vi_rc   XMSBlockTest( unsigned short );
+void    XMSBlockRead( long, void *, size_t );
+void    XMSBlockWrite( long , void *, size_t );
+vi_rc   XMSGetBlock( long * );
+vi_rc   SwapToXMSMemory( fcb * );
+vi_rc   SwapToMemoryFromXMSMemory( fcb * );
 void    XMSInit( void );
 void    XMSFini( void );
 void    GiveBackXMSBlock( long );

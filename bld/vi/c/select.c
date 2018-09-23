@@ -35,10 +35,12 @@
 /*
  * tempFileSetup - set up a temp file with data in it
  */
-static void tempFileSetup( file **cfile, char *list[], int maxlist, int indent,
-                           bool makelower )
+static void tempFileSetup( file **cfile, char *list[], int maxlist, size_t indent, bool makelower )
 {
-    int         j, boff, i, k;
+    int         j;
+    size_t      i;
+    size_t      k;
+    size_t      boff;
     char        dd[FILENAME_MAX];
 
     /*
@@ -137,7 +139,7 @@ vi_rc SelectItem( selectitem *si )
  */
 vi_rc SelectItemAndValue( window_info *wi, char *title, char **list,
                         int maxlist, vi_rc (*updatertn)( const char *, char *, int * ),
-                        int indent, char **vals, int valoff )
+                        size_t indent, char **vals, int valoff )
 {
 //    int                 j;
     file                *cfile;
@@ -147,7 +149,6 @@ vi_rc SelectItemAndValue( window_info *wi, char *title, char **list,
     tempFileSetup( &cfile, list, maxlist, indent, true );
 
     for( ;; ) {
-
         /*
          * go get selected line
          */
@@ -168,7 +169,6 @@ vi_rc SelectItemAndValue( window_info *wi, char *title, char **list,
             break;
         }
 //        j = (int) sfd.sl - 1;
-
     }
 
     /*

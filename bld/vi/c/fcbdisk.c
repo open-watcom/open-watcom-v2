@@ -41,7 +41,7 @@
 
 static vi_rc    swapFileOpen( void );
 static vi_rc    getNewSwapFilePosition( long * );
-static vi_rc    swapFileWrite( long *, int );
+static vi_rc    swapFileWrite( long *, size_t );
 
 static char     swapFileName[sizeof( SWAP_FILE_NAME )];
 static int      swapFileHandle = -1;
@@ -51,31 +51,28 @@ static int      swapFileHandle = -1;
  */
 vi_rc SwapToDisk( fcb *fb )
 {
-    int     len;
+    size_t  len;
     vi_rc   rc;
 
     /*
      * set up data
      */
     rc = swapFileOpen();
-    if( rc != ERR_NO_ERR ) {
-        return( rc );
+    if( rc == ERR_NO_ERR ) {
+        len = MakeWriteBlock( fb );
+    
+        /*
+         * now write the buffer
+         */
+        rc = swapFileWrite( &(fb->offset), len );
+        if( rc == ERR_NO_ERR ) {
+            /*
+             * finish up
+             */
+            fb->swapped = true;
+        }
     }
-    len = MakeWriteBlock( fb );
-
-    /*
-     * now write the buffer
-     */
-    rc = swapFileWrite( &(fb->offset), len );
-    if( rc != ERR_NO_ERR ) {
-        return( rc );
-    }
-
-    /*
-     * finish up
-     */
-    fb->swapped = true;
-    return( ERR_NO_ERR );
+    return( rc );
 
 } /* SwapToDisk */
 
@@ -84,31 +81,29 @@ vi_rc SwapToDisk( fcb *fb )
  */
 vi_rc SwapToMemoryFromDisk( fcb *fb )
 {
-    int     len, expect;
+    size_t  len;
+    size_t  expect;
     vi_rc   rc;
 
     /*
      * prepare swap file
      */
     rc = swapFileOpen();
-    if( rc != ERR_NO_ERR ) {
-        return( rc );
+    if( rc == ERR_NO_ERR ) {
+        rc = FileSeek( swapFileHandle, fb->offset );
+        if( rc == ERR_NO_ERR ) {
+            /*
+             * read in the buffer, create lines
+             */
+            expect = FcbSize( fb );
+            len = read( swapFileHandle, ReadBuffer, expect );
+            if( len == expect ) {
+                return( RestoreToNormalMemory( fb, len ) );
+            }
+            rc = ERR_SWAP_FILE_READ;
+        }
     }
-    rc = FileSeek( swapFileHandle, fb->offset );
-    if( rc != ERR_NO_ERR ) {
-        return( rc );
-    }
-
-    /*
-     * read in the buffer, create lines
-     */
-    expect = FcbSize( fb );
-    len = read( swapFileHandle, ReadBuffer, expect );
-    if( len != expect ) {
-        return( ERR_SWAP_FILE_READ );
-    }
-
-    return( RestoreToNormalMemory( fb, len ) );
+    return( rc );
 
 } /* SwapToMemoryFromDisk */
 
@@ -173,9 +168,9 @@ static vi_rc getNewSwapFilePosition( long *p )
 /*
  * swapFileWrite - write data to swap file
  */
-static vi_rc swapFileWrite( long *pos, int size )
+static vi_rc swapFileWrite( long *pos, size_t size )
 {
-    int     i;
+    size_t  written;
     vi_rc   rc;
 
     /*
@@ -183,23 +178,22 @@ static vi_rc swapFileWrite( long *pos, int size )
      */
     if( *pos < 0 ) {
         rc = getNewSwapFilePosition( pos );
-        if( rc != ERR_NO_ERR ) {
-            return( rc );
+        if( rc == ERR_NO_ERR ) {
+            rc = FileSeek( swapFileHandle, *pos );
+            if( rc == ERR_NO_ERR ) {
+                /*
+                 * write data
+                 */
+                written = write( swapFileHandle, WriteBuffer, size );
+                if( written != size ) {
+                    rc = ERR_SWAP_FILE_WRITE;
+                }
+            }
         }
+    } else {
+        rc = ERR_NO_ERR;
     }
-    rc = FileSeek( swapFileHandle, *pos );
-    if( rc != ERR_NO_ERR ) {
-        return( rc );
-    }
-
-    /*
-     * write data
-     */
-    i = write( swapFileHandle, WriteBuffer, size );
-    if( i != size ) {
-        return( ERR_SWAP_FILE_WRITE );
-    }
-    return( ERR_NO_ERR );
+    return( rc );
 
 } /* swapFileWrite */
 

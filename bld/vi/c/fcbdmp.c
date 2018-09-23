@@ -223,9 +223,10 @@ vi_rc SanityCheck( void )
                     "Fcb %d has bad bytecnt: had %d, should have had %d", fcbcnt, sum,
                     cfcb->byte_cnt );
             } else {
-                if( FcbSize( cfcb ) > MAX_IO_BUFFER )
+                if( FcbSize( cfcb ) > MAX_IO_BUFFER ) {
                     WPrintfLine( wid, lc++, "Fcb %d too big : has %d (max is %d)", fcbcnt,
-                    FcbSize( cfcb ), MAX_IO_BUFFER );
+                    (unsigned)FcbSize( cfcb ), MAX_IO_BUFFER );
+                }
             }
             if( lcnt != (cfcb->end_line-cfcb->start_line + 1) ) {
                 WPrintfLine( wid, lc++,
