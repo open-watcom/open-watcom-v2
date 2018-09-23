@@ -46,23 +46,23 @@ WNDPROC oldContainerProc;
  */
 window_id CreateContainerWindow( RECT *size )
 {
-    HWND    container;
-    CLIENTCREATESTRUCT client;
+    window_id           wid;
+    CLIENTCREATESTRUCT  client;
 
     client.hWindowMenu = (HMENU)NULLHANDLE;
     client.idFirstChild = 3000; // some arbitrary number that doesn't conflict
 
-    container = CreateWindow( className, "Container",
+    wid = CreateWindow( className, "Container",
                 WS_CHILD | WS_CLIPCHILDREN | WS_HSCROLL | WS_VSCROLL | WS_VISIBLE,
                 size->left, size->top,
                 size->right - size->left, size->bottom - size->top,
                 root_window_id, (HMENU)NULLHANDLE, InstanceHandle, (LPVOID)&client );
-    SET_WNDINFO( container, 0 );
-    oldContainerProc = (WNDPROC)GET_WNDPROC( container );
-    SET_WNDPROC( container, (LONG_PTR)MakeProcInstance_WND( ContainerWindowProc, InstanceHandle ) );
-    SetScrollRange( container, SB_VERT, 1, 1, FALSE );
-    SetScrollRange( container, SB_HORZ, 1, 1, FALSE );
-    return( container );
+    SET_WNDINFO( wid, 0 );
+    oldContainerProc = (WNDPROC)GET_WNDPROC( wid );
+    SET_WNDPROC( wid, (LONG_PTR)MakeProcInstance_WND( ContainerWindowProc, InstanceHandle ) );
+    SetScrollRange( wid, SB_VERT, 1, 1, FALSE );
+    SetScrollRange( wid, SB_HORZ, 1, 1, FALSE );
+    return( wid );
 
 } /* CreateContainerWindow */
 

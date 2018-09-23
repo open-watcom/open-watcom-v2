@@ -127,7 +127,7 @@ WINEXPORT LRESULT CALLBACK CommandWindowProc( HWND hwnd, UINT msg, WPARAM wparam
 window_id NewCommandWindow( void )
 {
     RECT        *size;
-    HWND        cmd;
+    window_id   wid;
     POINT       p;
     int         bottom;
 
@@ -137,12 +137,12 @@ window_id NewCommandWindow( void )
     p.x = size->left;
     p.y = size->top;
     ClientToScreen( root_window_id, &p );
-    cmd = CreateWindow( className, "Prompt",
+    wid = CreateWindow( className, "Prompt",
         WS_POPUPWINDOW | WS_CLIPSIBLINGS,
         p.x, p.y,
         size->right - size->left, bottom - size->top, root_window_id,
         (HMENU)NULLHANDLE, InstanceHandle, NULL );
-    ShowWindow( cmd, SW_SHOWNORMAL );
-    UpdateWindow( cmd );
-    return( cmd );
+    ShowWindow( wid, SW_SHOWNORMAL );
+    UpdateWindow( wid );
+    return( wid );
 }
