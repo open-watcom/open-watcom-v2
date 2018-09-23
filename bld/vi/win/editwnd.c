@@ -44,7 +44,7 @@
 
 /* Local Windows CALLBACK function prototypes */
 WINEXPORT LRESULT CALLBACK EditWindowProc( HWND, UINT, WPARAM, LPARAM );
-WINEXPORT BOOL CALLBACK ResizeExtra( HWND hwnd, LPARAM l );
+WINEXPORT BOOL CALLBACK ResizeExtra( HWND hwnd, LPARAM lparam );
 
 extern HWND hColorbar, hFontbar, hSSbar;
 
@@ -482,17 +482,17 @@ typedef void (*func)( HWND, int, int, bool );
 /*
  * mouseEvent - handle all mouse events in an edit window
  */
-static void mouseEvent( HWND hwnd, LPARAM l, bool flag, func f )
+static void mouseEvent( HWND hwnd, LPARAM lparam, bool flag, func f )
 {
     if( EditFlags.HoldEverything ) {
         return;
     }
     if( EditFlags.InsertModeActive ) {
         PushMode();
-        f( hwnd, GET_X( l ), GET_Y( l ), flag );
+        f( hwnd, GET_X( lparam ), GET_Y( lparam ), flag );
         PopMode();
     } else {
-        f( hwnd, GET_X( l ), GET_Y( l ), flag );
+        f( hwnd, GET_X( lparam ), GET_Y( lparam ), flag );
     }
     DCUpdate();
     SetWindowCursorForReal();
@@ -613,7 +613,7 @@ static void doVScroll( window_id wid, WPARAM wparam, LPARAM lparam )
     int         diff;
 
 #ifdef __NT__
-    lparam = lparam;
+    (void)lparam;
 #endif
     wd = DATA_FROM_ID( wid );
 
@@ -679,7 +679,7 @@ static void doHScroll( HWND hwnd, WPARAM wparam, LPARAM lparam )
     int newLeftColumn;
 
 #ifdef __NT__
-    lparam = lparam;
+    (void)lparam;
 #endif
     EditFlags.ScrollCommand = true;
     switch( GET_WM_HSCROLL_CODE( wparam, lparam ) ) {
@@ -901,13 +901,13 @@ WINEXPORT LRESULT CALLBACK EditWindowProc( window_id wid, UINT msg, WPARAM wpara
 /*
  * ResizeExtra - reset the left over rectange for an edit window
  */
-WINEXPORT BOOL CALLBACK ResizeExtra( window_id wid, LPARAM l )
+WINEXPORT BOOL CALLBACK ResizeExtra( window_id wid, LPARAM lparam )
 {
     window_data         *wd;
     char                class[MAX_STR];
     int                 len;
 
-    l = l;
+    (void)lparam;
     len = GetClassName( wid, class, sizeof( class ) );
     class[len] = '\0';
     if( stricmp( EditWindowClassName, class ) ) {

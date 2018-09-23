@@ -102,15 +102,14 @@ WINEXPORT int CALLBACK EnumFamFaceNames( const LOGFONT FAR *lf, const TEXTMETRIC
 #ifdef __WINDOWS_386__
     char                faceName[LF_FACESIZE];
     const ENUMLOGFONT   __far *elf = MK_FP32( (void *)lf );
-    tm = tm;
+    (void)tm;
 #elif defined( __WINDOWS__ )
-    ntm = ntm;
+    (void)ntm;
 #else
     const ENUMLOGFONT   FAR *elf = (const ENUMLOGFONT FAR *)lf;
-    tm = tm;
+    (void)tm;
 #endif
-    lparam = lparam;
-    FontType = FontType;
+    (void)lparam; (void)FontType;
 
 #ifdef __WINDOWS_386__
     /* On Win386, we need to pass a near 32-bit pointer with LB_ADDSTRING,
@@ -180,16 +179,15 @@ WINEXPORT int CALLBACK SetupFontData( const LOGFONT FAR *lf, const TEXTMETRIC FA
 {
 #ifdef __WINDOWS_386__
     const ENUMLOGFONT       __far *elf = MK_FP32( (void *)lf );
-    tm = tm;
+    (void)tm;
 #elif defined( __WINDOWS__ )
-    ntm = ntm;
+    (void)ntm;
 #else
     const ENUMLOGFONT       FAR *elf = (const ENUMLOGFONT FAR *)lf;
-    tm = tm;
+    (void)tm;
 #endif
 
-    FontType = FontType;
-    lparam = lparam;
+    (void)FontType; (void)lparam;
 
     /* start setting up CurLogfont based on the font data */
     CurLogfont.lfCharSet = elf->elfLogFont.lfCharSet;
@@ -440,7 +438,7 @@ WINEXPORT INT_PTR CALLBACK FtDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM
     WORD        cmd;
 
 #ifdef __NT__
-    lparam = lparam;
+    (void)lparam;
 #endif
 
     switch( msg ) {

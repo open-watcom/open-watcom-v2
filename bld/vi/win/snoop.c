@@ -65,7 +65,8 @@ static fancy_find       snoopData =
  */
 WINEXPORT int CALLBACK BrowseCallbackProc( HWND hwnd, UINT msg, LPARAM lparam, LPARAM data )
 {
-    lparam=lparam;
+    (void)lparam;
+
     switch( msg ) {
     case BFFM_INITIALIZED:
         SendMessage( hwnd, BFFM_SETSELECTION, TRUE, data );
@@ -94,7 +95,7 @@ WINEXPORT INT_PTR CALLBACK SnoopDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPA
 #endif
 
 #ifdef __NT__
-    lparam = lparam;
+    (void)lparam;
 #endif
     switch( msg ) {
     case WM_INITDIALOG:

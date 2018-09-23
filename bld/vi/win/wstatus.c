@@ -105,14 +105,14 @@ static int setCursor( int x )
     return( -1 );
 }
 
-static void processMouseMove( WPARAM w, LPARAM l )
+static void processMouseMove( WPARAM wparam, LPARAM lparam )
 {
     int         deep, delta, maxmove, movedby, i, next;
     int         x;
     int         secIndex;
 
-    x = GET_X( l ) - CURSOR_CORRECT;
-    w = w;
+    x = GET_X( lparam ) - CURSOR_CORRECT;
+    wparam = wparam;
 
     if( capIndex == -1 ) {
         setCursor( x );
@@ -165,12 +165,12 @@ static void processMouseMove( WPARAM w, LPARAM l )
     UpdateWindow( status_window_id );
 }
 
-static void processLButtonDown( HWND hwnd, WPARAM w, LPARAM l )
+static void processLButtonDown( HWND hwnd, WPARAM wparam, LPARAM lparam )
 {
     RECT        rect;
 
-    w = w;
-    capIndex = setCursor( GET_X( l ) - CURSOR_CORRECT );
+    wparam = wparam;
+    capIndex = setCursor( GET_X( lparam ) - CURSOR_CORRECT );
     if( capIndex != -1 ) {
         SetCapture( hwnd );
         sections = MemAlloc( (EditVars.NumStatusSections + 2) * sizeof( section_size ) );
@@ -195,10 +195,10 @@ static void processLButtonUp( void )
 /*
  * StatusHookProc - handle messages for the status window
  */
-bool StatusHookProc( HWND hwnd, UINT msg, WPARAM w, LPARAM l )
+bool StatusHookProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
-    w = w;
-    l = l;
+    (void)wparam; (void)lparam;
+
     switch( msg ) {
     case WM_CREATE:
         SET_WNDINFO( hwnd, (LONG_PTR)&StatusBar );
@@ -207,10 +207,10 @@ bool StatusHookProc( HWND hwnd, UINT msg, WPARAM w, LPARAM l )
         SetFocus( root_window_id );
         return( true );
     case WM_MOUSEMOVE:
-        processMouseMove( w, l );
+        processMouseMove( wparam, lparam );
         return( true );
     case WM_LBUTTONDOWN:
-        processLButtonDown( hwnd, w, l );
+        processLButtonDown( hwnd, wparam, lparam );
         return( true );
     case WM_LBUTTONUP:
         processLButtonUp();

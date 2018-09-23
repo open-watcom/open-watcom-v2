@@ -47,7 +47,8 @@ static bool     cancelPressed;
  */
 WINEXPORT INT_PTR CALLBACK GrepDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
-    lparam = lparam;
+    (void)lparam;
+
     switch( msg ) {
     case WM_INITDIALOG:
         return( TRUE );

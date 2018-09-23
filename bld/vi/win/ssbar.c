@@ -375,8 +375,7 @@ static void removeSubclasses( HWND hwnd )
  */
 WINEXPORT INT_PTR CALLBACK SSDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
-    lparam = lparam;
-    wparam = wparam;
+    (void)lparam; (void)wparam;
 
     switch( msg ) {
     case WM_INITDIALOG:

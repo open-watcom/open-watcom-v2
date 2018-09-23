@@ -143,7 +143,7 @@ static void toolBarHelp( HWND hwnd, ctl_id id, bool isdown )
 } /* toolBarHelp */
 
 #if 0
-static bool myToolBarProc( HWND hwnd, UINT msg, WPARAM w, LPARAM l );
+static bool myToolBarProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 static void newToolBarWindow( void )
 {
@@ -201,7 +201,7 @@ static void newToolBarWindow( void )
 /*
  * myToolBarProc - called by toolbar window proc
  */
-static bool myToolBarProc( HWND hwnd, UINT msg, WPARAM w, LPARAM l )
+static bool myToolBarProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     switch( msg ) {
     case WM_KILLFOCUS:
@@ -217,7 +217,7 @@ static bool myToolBarProc( HWND hwnd, UINT msg, WPARAM w, LPARAM l )
         // Whenever we are moved or sized as a floating toolbar, we
         // remember our position so that we can restore it when dbl. clicked
         if( !fixedToolBar && userClose ) {
-            DefWindowProc( hwnd, msg, w, l );
+            DefWindowProc( hwnd, msg, wparam, lparam );
             GetWindowRect( hwnd, &ToolBarFloatRect );
         }
         return( false );

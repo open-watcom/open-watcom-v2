@@ -101,7 +101,7 @@ static void drawRepeatString( void )
 /*
  * RepeatWindowProc - message procedure for the repeat count window
  */
-WINEXPORT LRESULT CALLBACK RepeatWindowProc( HWND hwnd, UINT msg, WPARAM w, LPARAM l )
+WINEXPORT LRESULT CALLBACK RepeatWindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     PAINTSTRUCT ps;
 
@@ -120,7 +120,7 @@ WINEXPORT LRESULT CALLBACK RepeatWindowProc( HWND hwnd, UINT msg, WPARAM w, LPAR
         SetFocus( root_window_id );
         return( 0 );
     }
-    return( DefWindowProc( hwnd, msg, w, l ) );
+    return( DefWindowProc( hwnd, msg, wparam, lparam ) );
 
 } /* RepeatWindowProc */
 

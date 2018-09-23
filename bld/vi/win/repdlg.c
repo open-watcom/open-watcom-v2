@@ -57,7 +57,7 @@ WINEXPORT INT_PTR CALLBACK RepDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARA
     RECT                pos;
 
 #ifdef __NT__
-    lparam = lparam;
+    (void)lparam;
 #endif
     switch( msg ) {
     case WM_INITDIALOG:

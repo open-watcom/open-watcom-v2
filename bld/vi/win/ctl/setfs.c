@@ -105,9 +105,9 @@ static bool dynIsLanguage( WPARAM wparam, LPARAM lparam, HWND hwndDlg )
     WORD        id;
     WORD        cmd;
 
-    hwndDlg = hwndDlg;
+    (void)hwndDlg;
 #ifdef __NT__
-    lparam = lparam;
+    (void)lparam;
 #endif
     id = LOWORD( wparam );
     cmd = GET_WM_COMMAND_CMD( wparam, lparam );
@@ -122,9 +122,9 @@ static bool dynIsCRLFAutoDetect( WPARAM wparam, LPARAM lparam, HWND hwndDlg )
     WORD        id;
     WORD        cmd;
 
-    hwndDlg = hwndDlg;
+    (void)hwndDlg;
 #ifdef __NT__
-    lparam = lparam;
+    (void)lparam;
 #endif
     id = LOWORD( wparam );
     cmd = GET_WM_COMMAND_CMD( wparam, lparam );
