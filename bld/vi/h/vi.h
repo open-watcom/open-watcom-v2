@@ -60,15 +60,6 @@
 
 typedef unsigned int U_INT;
 
-#if defined( __WATCOMC__ ) && !defined( __AXP__ )
-char            *_inline_strchr( const char *__s, int __c );
-unsigned int    _inline_strlen( const char *__s );
-int             _inline_strcmp( const char *__s1, const char *__s2 );
-char            *_inline_strcat( char *__s1, const char *__s2 );
-void            *_inline_memcpy( void *__s1, const void *__s2, unsigned int __n );
-void            *_inline_memset( void *__s, int __c, unsigned int __n );
-#endif
-
 extern int      FileSysNeedsCR( int handle );
 
 #endif

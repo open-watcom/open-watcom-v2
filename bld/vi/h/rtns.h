@@ -141,8 +141,8 @@ vi_rc   ConditionalChangeDirectory( const char * );
 void    FormatDirToFile( file *cfile, bool add_drives );
 
 /* dirdisp.c */
-vi_rc   StartFileComplete( char *, int, int, vi_key );
-vi_rc   ContinueFileComplete( char *data, int start, int max, vi_key what );
+vi_rc   StartFileComplete( char *data, size_t start, size_t max, vi_key what );
+vi_rc   ContinueFileComplete( char *data, size_t start, size_t max, vi_key what );
 void    PauseFileComplete( void );
 void    FinishFileComplete( void );
 
@@ -608,7 +608,7 @@ void    FiniMem( void );
 
 /* misc.c */
 long    ExecCmd( const char *, const char *, const char * );
-vi_rc   GetResponse( char *, char * );
+vi_rc   GetResponse( char *, char *, size_t );
 bool    ExitWithVerify( void );
 bool    ExitWithPrompt( bool, bool );
 bool    PromptFilesForSave( void );
@@ -677,9 +677,9 @@ void    MyFprintf( FILE *,const char *, ... );
 void    Lead( char c, int num, char *buff );
 
 /* readstr.c */
-bool    ReadStringInWindow( window_id, int, char *, char *, int, history_data * );
-vi_rc   PromptForString( char *prompt, char *buff, int maxbuff, history_data *h );
-bool    GetTextForSpecialKey( vi_key event, char *buff, int buffsize );
+bool    ReadStringInWindow( window_id, int, char *, char *, size_t, history_data * );
+vi_rc   PromptForString( char *prompt, char *buff, size_t maxbuff, history_data *h );
+bool    GetTextForSpecialKey( vi_key event, char *buff, size_t buffsize );
 void    InsertTextForSpecialKey( vi_key event, char *buff );
 
 /* replace.c */
@@ -841,7 +841,7 @@ void    ResetAllWindows( void );
 void    InitWordSearch( char *regword );
 vi_rc   FindColumnOfNextWordForward( line *, int *, bool, bool );
 vi_rc   FindColumnOfNextWordBackwards( line *, int *, bool, bool );
-vi_rc   GimmeCurrentWord( char *, int, bool );
+vi_rc   GimmeCurrentWord( char *, size_t, bool );
 vi_rc   GetWordBound( line *, int, bool, int *, int * );
 vi_rc   GimmeCurrentEntireWordDim( int *sc, int *ec, bool big );
 vi_rc   MarkStartOfNextWordForward( i_mark *, i_mark *, bool );

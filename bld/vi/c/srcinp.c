@@ -59,7 +59,7 @@ static vi_rc srcGenericInput( const char *data, vlist *vl, bool input )
         } else {
             strcpy( str, "Enter value:" );
         }
-        resp = GetResponse( str, tmp );
+        resp = GetResponse( str, tmp, sizeof( tmp ) );
     } else {
         resp = GOT_RESPONSE;
         tmp[0] = GetKey( false );

@@ -315,10 +315,11 @@ vi_rc MarkStartOfNextWordBackward( i_mark *result, i_mark *curr, bool big )
 /*
  * GimmeCurrentWord - fetch word at cursor position
  */
-vi_rc GimmeCurrentWord( char *buff, int buffsize, bool big )
+vi_rc GimmeCurrentWord( char *buff, size_t buffsize, bool big )
 {
     i_mark      curr, end, start;
-    int         i, j;
+    int         i;
+    size_t      j;
     line        *line;
     fcb         *fcb;
     vi_rc       rc;

@@ -365,11 +365,11 @@ long ExecCmd( const char *file_in, const char *file_out, const char *cmd )
 /*
  * GetResponse - get a response from the user
  */
-vi_rc GetResponse( char *str, char *res )
+vi_rc GetResponse( char *str, char *res, size_t maxlen )
 {
     vi_rc   rc;
 
-    rc = PromptForString( str, res, MAX_STR, NULL );
+    rc = PromptForString( str, res, maxlen, NULL );
     if( rc == ERR_NO_ERR ) {
         return( GOT_RESPONSE );
     }
@@ -527,7 +527,7 @@ bool ExitWithVerify( void )
     bool        modified;
     bool        resp_yes;
 #ifndef __WIN__
-    char        st[MAX_STR];
+    char        st[5];
 #endif
 
     if( entered ) {
@@ -545,7 +545,7 @@ bool ExitWithVerify( void )
         if( MessageBox( root_window_id, "Files are modified, really exit?",
                          EditorName, MB_YESNO | MB_TASKMODAL ) == IDYES ) {
 #else
-        if( GetResponse( "Files are modified, really exit?", st ) == GOT_RESPONSE && st[0] == 'y' ) {
+        if( GetResponse( "Files are modified, really exit?", st, sizeof( st ) ) == GOT_RESPONSE && st[0] == 'y' ) {
 #endif
             resp_yes = true;
         }
@@ -603,7 +603,7 @@ bool ExitWithVerify( void )
     bool        modified;
     bool        resp_yes;
 #ifndef __WIN__
-    char        st[MAX_STR];
+    char        st[5];
 #endif
 
     if( entered ) {
@@ -621,7 +621,7 @@ bool ExitWithVerify( void )
                         EditorName, MB_YESNO | MB_TASKMODAL );
         if( i == IDYES ) {
 #else
-        i = GetResponse( "Files are modified, really exit?", st );
+        i = GetResponse( "Files are modified, really exit?", st, sizeof( st ) );
         if( i == GOT_RESPONSE && st[0] == 'y' ) {
 #endif
             resp_yes = true;
@@ -676,7 +676,7 @@ vi_rc EnterHexKey( void )
         return( ERR_LINE_FULL );
     }
 
-    rc = PromptForString( "Enter the number of char to insert:", st, sizeof( st ) - 1, NULL );
+    rc = PromptForString( "Enter the number of char to insert:", st, sizeof( st ), NULL );
     if( rc != ERR_NO_ERR ) {
         if( rc == NO_VALUE_ENTERED ) {
             return( ERR_NO_ERR );

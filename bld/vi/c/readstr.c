@@ -44,7 +44,7 @@
 
 
 typedef struct input_win_info {
-    int             width;
+    unsigned        width;
     int             line;       /* we don't support multi-line input yet */
     type_style      style;
     window_id       id;
@@ -57,12 +57,12 @@ typedef struct input_buffer {
     char            *cache;
 #endif
     char            *last_str;
-    int             buffer_length;
+    unsigned        buffer_length;
     history_data    *h;
     int             curr_hist;
     input_win_info  window;
-    int             curr_pos;
-    int             left_column;
+    unsigned        curr_pos;
+    unsigned        left_column;
     int             line;
     type_style      style;
     bool            overstrike  : 1;
@@ -90,7 +90,7 @@ bool    ReadingAString = false;
 static bool insertChar( input_buffer *input, int ch )
 {
     char            *ptr;
-    int             len;
+    size_t          len;
 
     if( input->curr_pos >= input->buffer_length - 1 ) {
         return( false );
@@ -141,7 +141,7 @@ static void displayLine( input_buffer *input )
 {
     char            display[MAX_STR];
     char            *buffer, *dest;
-    int             length;
+    size_t          length;
     int             cursor_pos;
 
     if( EditFlags.NoInputWindow ) {
@@ -194,16 +194,18 @@ static void displayLine( input_buffer *input )
 
 static bool endColumn( input_buffer *input )
 {
-    int         width, left;
-    int         column;
+    size_t      width;
+    size_t      left;
+    size_t      column;
 
     column = strlen( input->buffer );
     width = input->window.width - strlen( input->prompt );
     left = input->left_column;
     if( column >= left + width || column < left ) {
-        left = column - width + 1;
-        if( left < 0 ) {
+        if( column < width - 1 ) {
             left = 0;
+        } else {
+        	left = column - ( width - 1 );
         }
     }
     input->curr_pos = column;
@@ -435,7 +437,7 @@ static bool insertString( input_buffer *input, char *str )
 /*
  * GetTextForSpecialKey - get text for ^D,^E,^W, ALT_L, ^L, ^R
  */
-bool GetTextForSpecialKey( vi_key event, char *buff, int buffsize )
+bool GetTextForSpecialKey( vi_key event, char *buff, size_t buffsize )
 {
     int         i;
     int         len;
@@ -564,16 +566,17 @@ static bool fileComplete( input_buffer *input, vi_key first_event )
     bool        exit, done;
     vi_rc       rc;
     vi_key      event;
-    int         old_len;
+    size_t      old_len;
+    size_t      len;
 
     exit = false;
-    if( input->curr_pos != strlen( input->buffer ) ) {
+    len = strlen( input->buffer );
+    if( input->curr_pos != len ) {
         MyBeep();
     } else {
+        old_len = len;
         saveStr( input );
-        old_len = strlen( input->buffer ) - 1;
-        rc = StartFileComplete( input->buffer, old_len,
-                                 input->buffer_length, first_event );
+        rc = StartFileComplete( input->buffer, old_len, input->buffer_length, first_event );
         if( rc > ERR_NO_ERR ) {
             MyBeep();
         } else {
@@ -595,8 +598,7 @@ static bool fileComplete( input_buffer *input, vi_key first_event )
                     case VI_KEY( PAGEDOWN ):
                     case VI_KEY( PAGEUP ):
                     case VI_KEY( ALT_END ):
-                        rc = ContinueFileComplete( input->buffer, old_len,
-                                                    input->buffer_length, event );
+                        rc = ContinueFileComplete( input->buffer, old_len, input->buffer_length, event );
                         if( rc != ERR_NO_ERR ) {
                             FinishFileComplete();
                             if( rc == FILE_COMPLETE_ENTER ) {
@@ -778,7 +780,7 @@ static bool getStringInWindow( input_buffer *input )
 
 } /* getStringInWindow */
 
-bool ReadStringInWindow( window_id wid, int line, char *prompt, char *str, int max_len, history_data *h )
+bool ReadStringInWindow( window_id wid, int line, char *prompt, char *str, size_t max_len, history_data *h )
 {
     input_buffer        input;
     bool                rc;
@@ -801,7 +803,7 @@ bool ReadStringInWindow( window_id wid, int line, char *prompt, char *str, int m
 
 } /* ReadStringInWindow */
 
-vi_rc PromptForString( char *prompt, char *buffer, int buffer_length, history_data *h )
+vi_rc PromptForString( char *prompt, char *buffer, size_t buffer_length, history_data *h )
 {
     window_id           wid;
     vi_rc               rc;

@@ -316,7 +316,7 @@ static vi_rc GetNewValueDialog( char *value )
         return( rc );
     }
     WPrintfLine( wid, 1, "Old: %s", value );
-    ret = ReadStringInWindow( wid, 2, prompt, st, MAX_STR - 1, NULL );
+    ret = ReadStringInWindow( wid, 2, prompt, st, sizeof( st ), NULL );
     CloseAWindow( wid );
     SetWindowCursor();
     KillCursor();

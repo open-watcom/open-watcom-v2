@@ -103,34 +103,42 @@ static vi_rc appendExtra( char *data, int start, int max, direct_ent *fi, int le
 /*
  * doFileComplete - complete file name
  */
-static vi_rc doFileComplete( char *data, int start, int max, bool getnew, vi_key key )
+static vi_rc doFileComplete( char *data, size_t start, size_t max, bool getnew, vi_key key )
 {
-    int         i, j, k, newstart;
+    size_t      i;
+    size_t      j;
+    size_t      k;
+    int         m;
+    int         n;
+    size_t      newstart;
+    bool        newstartdef;
     char        buff[MAX_STR * 2];
     vi_rc       rc;
     int         c;
 
-    newstart = -1;
-    for( i = start; i >= 0; --i ) {
-        c = (unsigned char)data[i];
+    newstartdef = false;
+    newstart = 0;
+    for( i = start; i > 0; --i ) {
+        c = (unsigned char)data[i - 1];
         if( isspace( c ) )
             break;
-        if( newstart < 0 ) {
+        if( newstartdef )
+            continue;
 #ifdef __UNIX__
-            if( c == '/' ) {
+        if( c == '/' ) {
 #else
-            if( c = DRV_SEP || c == '/' || c == '\\' ) {
+        if( c = DRV_SEP || c == '/' || c == '\\' ) {
 #endif
-                newstart = i + 1;
-            }
+            newstartdef = true;
+            newstart = i;
         }
     }
-    if( newstart < 0 ) {
-        newstart = i + 1;
+    if( !newstartdef ) {
+        newstart = i;
     }
     if( getnew ) {
         k = 0;
-        for( j = i + 1; j <= start; j++ ) {
+        for( j = i; j < start; j++ ) {
             buff[k++] = data[j];
         }
         lastFilec = -1;
@@ -143,13 +151,13 @@ static vi_rc doFileComplete( char *data, int start, int max, bool getnew, vi_key
         /*
          * remove any crap from the list
          */
-        for( i = 0; i < DirFileCount; i++ ) {
-            if( !IsTextFile( DirFiles[i]->name ) || (DirFiles[i]->name[0] == '.') ) {
-                MemFree( DirFiles[i] );
-                for( j = i + 1; j < DirFileCount; j++ ) {
-                    DirFiles[j - 1] = DirFiles[j];
+        for( m = 0; m < DirFileCount; m++ ) {
+            if( !IsTextFile( DirFiles[m]->name ) || (DirFiles[m]->name[0] == '.') ) {
+                MemFree( DirFiles[m] );
+                for( n = m + 1; n < DirFileCount; n++ ) {
+                    DirFiles[n - 1] = DirFiles[n];
                 }
-                i--;
+                m--;
                 DirFileCount--;
             }
         }
@@ -161,7 +169,7 @@ static vi_rc doFileComplete( char *data, int start, int max, bool getnew, vi_key
         if( !BAD_ID( dir_wid ) ) {
             ClearWindow( dir_wid );
         }
-        return( appendExtra( data, newstart,max, DirFiles[0], strlen( DirFiles[0]->name ) ) );
+        return( appendExtra( data, newstart, max, DirFiles[0], strlen( DirFiles[0]->name ) ) );
     }
 
     /*
@@ -427,7 +435,7 @@ static void displayFiles( void )
 /*
  * StartFileComplete - handle file completion
  */
-vi_rc StartFileComplete( char *data, int start, int max, vi_key what )
+vi_rc StartFileComplete( char *data, size_t start, size_t max, vi_key what )
 {
     vi_rc   rc;
     int     maxl;
@@ -469,7 +477,7 @@ vi_rc StartFileComplete( char *data, int start, int max, vi_key what )
 /*
  * ContinueFileComplete
  */
-vi_rc ContinueFileComplete( char *data, int start, int max, vi_key what )
+vi_rc ContinueFileComplete( char *data, size_t start, size_t max, vi_key what )
 {
     vi_rc   rc;
 
