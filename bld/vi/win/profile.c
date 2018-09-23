@@ -268,7 +268,7 @@ static void readConfigFile( void )
     } else {
         cfgTime = new_cfgtime;
     }
-    saveConfig = getProfileLong( keySaveConfig );
+    saveConfig = ( getProfileLong( keySaveConfig ) != 0 );
 
 } /* readConfigFile */
 
