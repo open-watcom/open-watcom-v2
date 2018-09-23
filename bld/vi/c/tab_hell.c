@@ -427,11 +427,11 @@ int VirtualLineLen( char *buff )
 bool AddLeadingTabSpace( short *len, char *buff, int amount )
 {
     char        *tmp;
-    int         i;
-    int         j;
-    int         k;
-    int         l;
-    int         start;
+    size_t      i;
+    size_t      j;
+    size_t      k;
+    size_t      l;
+    size_t      start;
     bool        tabme;
     bool        full;
 

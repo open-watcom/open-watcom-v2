@@ -66,29 +66,30 @@ typedef struct char_info {
  * window structure
  */
 typedef struct window {
-    vi_color    border_color1;
-    vi_color    border_color2;
-    vi_color    text_color;
-    vi_color    background_color;
-    winarea     area;
-    windim      width, height;
-    char_info   *text;
-    window_id   *overlap;
-    window_id   *whooverlapping;
-    short       text_lines;
-    short       text_cols;
-    char        *title;
-    char        *borderdata;
-    int         vert_scroll_pos;
-    short       bordercol;
-    window_id   id;
-    bool        isswapped           : 1;
-    bool        has_border          : 1;
-    bool        has_gadgets         : 1;
-    bool        min_slot            : 1;
-    bool        has_scroll_gadgets  : 1;
-    signed char accessed;
-    signed char overcnt[1];
+    vi_color        border_color1;
+    vi_color        border_color2;
+    vi_color        text_color;
+    vi_color        background_color;
+    winarea         area;
+    windim          width;
+    windim          height;
+    char_info       *text;
+    window_id       *overlap;
+    window_id       *whooverlapping;
+    short           text_lines;
+    short           text_cols;
+    char            *title;
+    char            *borderdata;
+    int             vert_scroll_pos;
+    short           bordercol;
+    window_id       id;
+    bool            isswapped           : 1;
+    bool            has_border          : 1;
+    bool            has_gadgets         : 1;
+    bool            min_slot            : 1;
+    bool            has_scroll_gadgets  : 1;
+    signed char     accessed;
+    signed char     overcnt[1];
 } window;
 
 extern window       *Windows[MAX_WINDS + 1];
