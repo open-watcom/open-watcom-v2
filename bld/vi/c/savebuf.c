@@ -325,7 +325,7 @@ vi_rc GetSavebufString( char **data )
                 FetchFcb( cfcb );
                 for( cline = cfcb->lines.head; cline != NULL; cline = cline->next ) {
                     char *src = cline->data;
-                    while( *src == '\0' ) {
+                    while( *src != '\0' ) {
                         *p++ = *src++;
                     }
                     *p++ = '\\';
