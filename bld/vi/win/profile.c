@@ -52,7 +52,7 @@ static char     *keyInitialPositionState = "InitialPositionState";
 static char     *keySaveConfig = "SaveConfig";
 static char     *keyCfgTime = "CfgTime";
 static char     *keyChildrenMaximized = "ChildrenMaximized";
-static DWORD    cfgTime;
+static time_t   cfgTime;
 
 static bool     saveConfig;
 #if defined(__WINDOWS_386__)
@@ -235,9 +235,9 @@ static void readConfigFile( void )
     char        *cfgname;
     struct stat cfg;
     int         rc;
-    DWORD       new_cfgtime = 0;
+    time_t      new_cfgtime = 0;
 
-    cfgTime = getProfileLong( keyCfgTime );
+    cfgTime = (time_t)getProfileLong( keyCfgTime );
     cfgname = GetConfigFileName();
     GetFromEnv( cfgname, cname );
     if( cname[0] != '\0' ) {
@@ -281,13 +281,13 @@ static void writeConfigFile( void )
 
     writeProfileLong( keySaveConfig, EditFlags.SaveConfig );
     if( !EditFlags.SaveConfig ) {
-        writeProfileLong( keyCfgTime, cfgTime );
+        writeProfileLong( keyCfgTime, (long)cfgTime );
         return;
     }
     writeProfileLong( keyChildrenMaximized, 0 );
     GenerateConfiguration( cfgFile, false );    /* never write over %watcom%\eddat\weditor.ini */
     stat( cfgFile, &cfg );
-    writeProfileLong( keyCfgTime, cfg.st_mtime );
+    writeProfileLong( keyCfgTime, (long)cfg.st_mtime );
 
 } /* writeConfigFile */
 
