@@ -8,10 +8,11 @@
 !inject cwaitos2.obj                                        o16 o32
 !inject cwaitwnt.obj                     nt nta ntp
 !inject delay.obj    d16 d32                                                w16
+!inject delaylnx.obj                                                                    l32 lpc lmp
 !inject delayos2.obj                                        o16 o32
+!inject delayrd.obj                                                                                 rdu rdk
 !inject delayw32.obj                                                            w32
 !inject delaywnt.obj                     nt nta ntp
-!inject delayrd.obj                                                                                 rdu rdk
 !inject doexec.obj   d16
 !inject doexerdu.obj                                                                                rdu
 !inject dospnos2.obj                                        o16 o32
