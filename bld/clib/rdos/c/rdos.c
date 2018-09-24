@@ -31,7 +31,7 @@
 
 #include "variety.h"
 #include "widechar.h"
-#include <memory.h>
+#include <string.h>
 #include <process.h>
 #include "rdos.h"
 #include "printf.h"
