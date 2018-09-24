@@ -81,6 +81,7 @@ libs_linux = $(gui_lib) $(ui_lib) $(wres_lib)
 libs_osx   = $(gui_lib) $(ui_lib) $(wres_lib)
 libs_nt    = $(gui_lib) $(ui_lib) $(wres_lib)
 libs_os2   = $(gui_lib) $(ui_lib) $(wres_lib)
+libs_osx   = $(gui_lib) $(ui_lib) $(wres_lib)
 
 !endif
 
@@ -90,6 +91,7 @@ libs_osx    += ../ziplib/osx$(host_cpu)/ziplib.lib
 libs_nt     += ../ziplib/osi$(host_cpu)/ziplib.lib
 libs_os2    += ../ziplib/osi386/ziplib.lib
 libs_win386 += ../ziplib/osi386/ziplib.lib
+libs_osx    += ../ziplib/osx$(host_cpu)/ziplib.lib
 
 libs_dos    += ../zlib/osi386/zlib.lib
 libs_linux  += ../zlib/osi$(host_cpu)/zlib.lib
@@ -97,6 +99,7 @@ libs_osx    += ../zlib/osi$(host_cpu)/zlib.lib
 libs_nt     += ../zlib/osi$(host_cpu)/zlib.lib
 libs_os2    += ../zlib/osi386/zlib.lib
 libs_win386 += ../zlib/osi386/zlib.lib
+libs_osx    += ../zlib/osi$(host_cpu)/zlib.lib
 
 libs = $(libs_$(host_os)) $(libs_$(host_os)$(host_cpu))
 
