@@ -34,6 +34,7 @@
 #define _MEMWND_H_INCLUDED
 
 #include <stdlib.h>
+#include "wresid.h"
 #include "selinfo.h"
 #include "hdlinfo.h"
 

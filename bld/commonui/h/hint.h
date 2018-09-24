@@ -33,6 +33,7 @@
 #ifndef _HINT_H_INCLUDED
 #define _HINT_H_INCLUDED
 
+#include "wresid.h"
 #include "statwnd.h"
 #include "ldstr.h"
 

@@ -60,8 +60,6 @@ WINEXPORT WPI_MRESULT CALLBACK  FrameProc( HWND, WPI_MSG, WPI_PARAM1, WPI_PARAM2
 #define WPI_GET_WNDINFO( w )    ((toolbar *)_wpi_getwindowlongptr( w, 0 ))
 #define WPI_SET_WNDINFO( w, d ) (_wpi_setwindowlongptr( w, 0, d ))
 
-#define NO_ID   ((ctl_id)-1)
-
 typedef int     tb_idx;
 
 #ifdef __NT__

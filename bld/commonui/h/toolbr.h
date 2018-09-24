@@ -33,6 +33,7 @@
 #ifndef _TOOLBR_H_INCLUDED
 #define _TOOLBR_H_INCLUDED
 
+#include "wresid.h"
 #include "wpi.h"
 
 
