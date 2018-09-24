@@ -86,7 +86,7 @@ void        Draw3DBox( window_id, RECT *, RECT * );
 void        ResetExtraRects( void );
 void        HandleInitMenu( HMENU hmenu );
 void        ResetMenuBits( void );
-HWND        GetToolbarWindow( void );
+window_id   GetToolbarWindow( void );
 vi_key      GetAutosaveResponse( void );
 void        ReadProfile( void );
 void        WriteProfile( void );

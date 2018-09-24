@@ -729,13 +729,14 @@ WINEXPORT LRESULT CALLBACK EditWindowProc( window_id wid, UINT msg, WPARAM wpara
     HDC         hdc;
     RECT        rect;
     window_data *wd;
-    HWND        win;
-    HWND        tbwin;
+    window_id   parent_wid;
+    window_id   toolbar_wid;
     bool        killsel;
     info        *cinfo;
     info        *sinfo;
 
     w = WINDOW_FROM_ID( wid );
+
     switch( msg ) {
     case WM_CREATE:
         wd = MemAlloc( sizeof( window_data ) );
@@ -769,13 +770,13 @@ WINEXPORT LRESULT CALLBACK EditWindowProc( window_id wid, UINT msg, WPARAM wpara
             // losing focus
             cancelDrag();
             killsel = true;
-            win = (HWND)wparam;
-            if( win != NULL ) {
-                tbwin = GetToolbarWindow();
-                if( win == root_window_id || win == tbwin || win == command_window_id ||
-                    (!BAD_ID( hColorbar ) && IsChild( hColorbar, win )) ||
-                    (!BAD_ID( hFontbar ) && IsChild( hFontbar, win )) ||
-                    (!BAD_ID( hSSbar ) && IsChild( hSSbar, win )) ) {
+            parent_wid = (window_id)wparam;
+            if( parent_wid != NULL ) {
+                toolbar_wid = GetToolbarWindow();
+                if( parent_wid == root_window_id || parent_wid == toolbar_wid || parent_wid == command_window_id ||
+                    (!BAD_ID( hColorbar ) && IsChild( hColorbar, parent_wid )) ||
+                    (!BAD_ID( hFontbar ) && IsChild( hFontbar, parent_wid )) ||
+                    (!BAD_ID( hSSbar ) && IsChild( hSSbar, parent_wid )) ) {
                     killsel = false;
                 }
             }

@@ -420,7 +420,7 @@ void DestroyToolBar( void )
 /*
  * GetToolbarWindow - return the current toolbar window
  */
-HWND GetToolbarWindow( void )
+window_id GetToolbarWindow( void )
 {
     return( ToolBarWindow( toolBar ) );
 

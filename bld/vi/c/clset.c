@@ -1035,9 +1035,14 @@ static vi_rc processSetToken( int j, char *new, const char **pvalue, int *winfla
             case SETVAR_T_TOOLBARCOLOR:
                 EditVars.ToolBarColor = lval;
   #ifdef __WIN__
-                if( GetToolbarWindow() != NULL ) {
-                    InvalidateRect( GetToolbarWindow(), NULL, TRUE );
-                    UpdateWindow( GetToolbarWindow() );
+                {
+                    window_id   toolbar_wid;
+
+                    toolbar_wid = GetToolbarWindow();
+                    if( toolbar_wid != NULL ) {
+                        InvalidateRect( toolbar_wid, NULL, TRUE );
+                        UpdateWindow( toolbar_wid );
+                    }
                 }
   #endif
                 break;
