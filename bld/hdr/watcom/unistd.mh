@@ -20,7 +20,7 @@
 
 :include cpluspro.sp
 
-:segment DOS | RDOS
+:segment DOS
 #if defined(__OS2__) && !defined(_M_I86) && defined(__TCPIP_HEADERS)
  #include <tcpustd.h>  /* unistd.h conflicts with OS/2 TCP/IP headers */
 #endif
@@ -268,11 +268,12 @@ _WCRTLINK extern pid_t  getpid( void );
 _WCRTLINK extern int    rmdir( const char *__path );
 _WCRTLINK extern unsigned sleep( unsigned int __seconds );
 _WCRTLINK extern int    usleep( unsigned long __usec );
-:segment DOS | RDOS
-#ifdef __RDOS__
+:include ext.sp
+:include delay.sp
+:include extepi.sp
+:segment RDOS
 _WCRTLINK extern pid_t  fork( void );
 _WCRTLINK extern pid_t  waitpid( pid_t __pid, int *__stat_loc, int __options );
-#endif
 :endsegment
 
 :include brk.sp
