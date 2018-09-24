@@ -439,16 +439,14 @@ bool AddLeadingTabSpace( short *len, char *buff, int amount )
      * expand leading stuff into spaces
      */
     start = 0;
-    while( isspace( buff[start] ) ) {
+    while( isspace( buff[start] ) )
         start++;
-    }
     tmp = StaticAlloc();
     j = *len;
     ExpandTabsInABuffer( buff, j, tmp, EditVars.MaxLine + 1 );
     i = 0;
-    while( tmp[i] == ' ' ) {
+    while( tmp[i] == ' ' )
         i++;
-    }
 
     /*
      * subtract/add extra spaces

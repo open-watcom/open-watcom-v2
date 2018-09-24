@@ -469,7 +469,7 @@ static vi_rc barfScript( const char *fn, sfile *sf, vlist *vl, srcline *sline, c
     char        path[FILENAME_MAX];
     char        buff[MAX_SRC_LINE];
     const char  *tmp;
-    int         i, k;
+    size_t      i, k;
     vi_rc       rc;
 
     /*

@@ -77,7 +77,9 @@ static vi_rc getDir( const char *dname, bool want_all_dirs )
     DIR                 *d;
     struct dirent       *dire;
     direct_ent          *tmp;
-    int                 i, j, len;
+    size_t              i;
+    size_t              j;
+    size_t              len;
     char                wild[FILENAME_MAX];
     char                path[FILENAME_MAX];
     char                ch;
@@ -87,26 +89,27 @@ static vi_rc getDir( const char *dname, bool want_all_dirs )
      * initialize for file scan
      */
     len = strlen( dname );
-    for( i = len - 1; i >= 0; i-- ) {
+    for( i = len; i > 0; i-- ) {
+        ch = dname[i - 1];
 #ifdef __UNIX__
-        if( dname[i] == '/' ) {
+        if( ch == '/' ) {
 #else
-        if( dname[i] == '/' || dname[i] == '\\' || dname[i] == DRV_SEP ) {
+        if( ch == '/' || ch == '\\' || ch == DRV_SEP ) {
 #endif
             break;
         }
     }
-    for( j = 0; j < i + 1; j++ ) {
+    for( j = 0; j < i; j++ ) {
         path[j] = dname[j];
     }
-    path[i + 1] = '\0';
-    if( i >= 0 ) {
-        ch = path[i];
+    path[i] = '\0';
+    if( i > 0 ) {
+        ch = path[i - 1];
     } else {
         ch = '\0';
     }
-    for( j = i + 1; j <= len; j++ ) {
-        wild[j - i - 1] = dname[j];
+    for( j = i; j <= len; j++ ) {
+        wild[j - i] = dname[j];
     }
     rc = FileMatchInit( wild );
     if( rc != ERR_NO_ERR ) {

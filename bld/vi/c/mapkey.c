@@ -372,13 +372,13 @@ vi_rc AddKeyMap( key_map *scr, const char *data )
 {
     char            c;
     vi_key          *sdata;
-    int             len;
+    size_t          len;
 
     /*
      * get storage for key map
      */
     len = strlen( data );
-    scr->data = MemAlloc( (len + 1) * sizeof( vi_key ) );
+    scr->data = MemAlloc( ( len + 1 ) * sizeof( vi_key ) );
     scr->inuse = false;
 
     /*

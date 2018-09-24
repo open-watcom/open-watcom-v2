@@ -42,10 +42,15 @@
 #include <assert.h>
 
 static window_id    dir_wid = NO_WINDOW;
-static int          oldFilec, lastFilec;
+static int          oldFilec;
+static int          lastFilec;
 static int          oldPage = -1;
-static int          maxJ, perPage, maxPage, cPage;
-static bool         hasWrapped, isDone;
+static int          maxJ;
+static int          perPage;
+static int          maxPage;
+static int          cPage;
+static bool         hasWrapped = false;
+static bool         isDone = false;
 static int          mouseFilec = -1;
 static char         strFmt[] = " %c%S";
 
@@ -79,15 +84,14 @@ static bool FileCompleteMouseHandler( window_id wid, int win_x, int win_y )
 /*
  * appendExtra - add extra to end
  */
-static vi_rc appendExtra( char *data, int start, int max, direct_ent *fi, int len )
+static vi_rc appendExtra( char *data, size_t start, size_t max, direct_ent *fi, size_t len )
 {
-    int     i;
+    size_t  i;
     vi_rc   rc;
 
-    for( i = start; i < start + len; i++ ) {
-        if( i >= max ) {
-            break;
-        }
+    if( max > start + len )
+        max = start + len;
+    for( i = start; i < max; i++ ) {
         data[i] = fi->name[i - start];
     }
     if( IS_SUBDIR( fi ) ) {
@@ -227,8 +231,12 @@ static int calcColumns( window_id wid )
 
 void FileCompleteMouseClick( window_id wid, int x, int y, bool dclick )
 {
-    int         file, column_width, column_height, c;
-    int         left_margin, columns;
+    int         file;
+    int         column_width;
+    int         column_height;
+    int         c;
+    int         left_margin;
+    int         columns;
     RECT        rect;
     window      *w;
 
@@ -291,10 +299,15 @@ static void getBounds( int *start, int *end )
 
 static void displayFiles( void )
 {
-    int         i, start, end;
-    int         column, right_edge, left_edge;
+    int         i;
+    int         start;
+    int         end;
+    int         column;
+    int         right_edge;
+    int         left_edge;
     int         outer_bound;
-    int         font_height, column_width;
+    int         font_height;
+    int         column_width;
     window      *w;
     RECT        rect;
     type_style  *style;
@@ -364,12 +377,18 @@ static void displayFiles( void )
  */
 static void displayFiles( void )
 {
-    char        tmp[FILENAME_MAX], tmp2[FILENAME_MAX], dirc;
-    int         j, i, k, hilite, z;
-    int         st, end, l;
-
-    tmp[0] = '\0';
-    j = 0;
+    char        tmp[FILENAME_MAX];
+    char        tmp2[FILENAME_MAX];
+    char        dirc;
+    size_t      j;
+    size_t      z;
+    size_t      k;
+    int         i;
+    int         st;
+    int         end;
+    int         l;
+    size_t      hilite;
+    bool        hiliteon;
 
     st = 0;
     end = perPage;
@@ -384,11 +403,14 @@ static void displayFiles( void )
         hasWrapped = false;
     }
 
-    hilite = -1;
     l = 1;
+    j = 0;
+    hilite = 0;
+    tmp[0] = '\0';
+    hiliteon = false;
     for( i = st; i < end; i++ ) {
-
         if( i == lastFilec ) {
+            hiliteon = true;
             hilite = j;
         }
         if( i >= DirFileCount ) {
@@ -406,7 +428,7 @@ static void displayFiles( void )
         j++;
         if( j == maxJ || i == ( end - 1 ) ) {
             DisplayLineInWindow( dir_wid, l++, tmp );
-            if( hilite >= 0 ) {
+            if( hiliteon ) {
                 j = hilite * NAMEWIDTH;
                 if( IS_SUBDIR( DirFiles[lastFilec] ) ) {
                     dirc = FILE_SEP;
@@ -418,12 +440,11 @@ static void displayFiles( void )
                 for( k = j; k < z; k++ ) {
                     SetCharInWindowWithColor( dir_wid, l - 1, k + 1, tmp2[k - j], &filecw_info.hilight_style );
                 }
-                hilite = -1;
+                hiliteon = false;
             }
             j = 0;
             tmp[0] = '\0';
         }
-
     }
     if( mouseFilec >= 0 ) {
         mouseFilec = -1;

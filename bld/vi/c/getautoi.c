@@ -72,7 +72,9 @@ static vi_rc getBracketLoc( i_mark *pos )
  */
 int GetAutoIndentAmount( char *buff, int extra, bool above_line )
 {
-    int         i, j = 0, k;
+    int         i;
+    int         j;
+    int         k;
     bool        tabme;
     vi_rc       rc;
     line        *cline;
@@ -81,6 +83,7 @@ int GetAutoIndentAmount( char *buff, int extra, bool above_line )
     int         indent_amount;
     i_mark      pos;
 
+    j = 0;
     while( EditFlags.AutoIndent ) {
         i = FindStartOfCurrentLine();
         cline = CurrentLine;
@@ -90,8 +93,8 @@ int GetAutoIndentAmount( char *buff, int extra, bool above_line )
         if( EditFlags.CMode ) {
             if( EditFlags.CaseShift ) {
             }
-            for( k = cline->len - 1; k >= 0; k-- ) {
-                ch = cline->data[k];
+            for( k = cline->len; k > 0; k-- ) {
+                ch = cline->data[k - 1];
                 if( ch == '{' || ch == '}' ) {
                     if( ch == '{' && above_line ) {
                         break;
@@ -101,7 +104,7 @@ int GetAutoIndentAmount( char *buff, int extra, bool above_line )
                     }
                     extra += EditVars.ShiftWidth;
                     SaveCurrentFilePos();
-                    CurrentPos.column = k + 1;
+                    CurrentPos.column = k;
                     /* add a { to keep matches even! */
                     if( ch == '}' ) {
                         rc = FindMatch( &pos );

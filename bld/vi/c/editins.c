@@ -587,7 +587,7 @@ vi_rc IMTabs( void )
     bool        back;
     int         cp, vc, tc, add;
     int         i, j;
-    int         len;
+    size_t      len;
 
     startNewLineUndo();
     CheckAbbrev( abbrevBuff, &abbrevCnt );

@@ -57,12 +57,12 @@ typedef struct input_buffer {
     char            *cache;
 #endif
     char            *last_str;
-    unsigned        buffer_length;
+    size_t          buffer_length;
     history_data    *h;
     int             curr_hist;
     input_win_info  window;
-    unsigned        curr_pos;
-    unsigned        left_column;
+    size_t          curr_pos;
+    size_t          left_column;
     int             line;
     type_style      style;
     bool            overstrike  : 1;
@@ -439,8 +439,8 @@ static bool insertString( input_buffer *input, char *str )
  */
 bool GetTextForSpecialKey( vi_key event, char *buff, size_t buffsize )
 {
-    int         i;
-    int         len;
+    size_t      i;
+    size_t      len;
 
     if( buffsize > 0 )
         buff[0] = '\0';
@@ -451,9 +451,9 @@ bool GetTextForSpecialKey( vi_key event, char *buff, size_t buffsize )
         break;
     case VI_KEY( ALT_L ):
         if( CurrentLine != NULL ) {
-            i = CurrentPos.column - 1;
-            if( i < 0 )
-                i = 0;
+            i = 0;
+            if( CurrentPos.column > 0 )
+                i = CurrentPos.column - 1;
             ExpandTabsInABuffer( &CurrentLine->data[i], CurrentLine->len - i, buff, buffsize );
         }
         break;

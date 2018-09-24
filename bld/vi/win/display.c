@@ -267,7 +267,8 @@ int DisplayLineInWindowWithSyntaxStyle( window_id wid, int c_line_no,
     char        *tmp, *otmp;
     dc_line     *c_line;
     RECT        rect;
-    int         height, len;
+    int         height;
+    size_t      len;
     int         x, y, indent;
     bool        changed;
     int         ssDifIndex;
@@ -453,7 +454,8 @@ int DisplayLineInWindowWithSyntaxStyle( window_id wid, int c_line_no,
     char        *tmp, *otmp;
     dc_line     *c_line;
     RECT        rect;
-    int         width, height, len;
+    int         width, height;
+    size_t      len;
     int         x, y, indent;
     bool        changed;
     int         ssDifIndex;

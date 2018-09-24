@@ -225,7 +225,7 @@ vi_rc SanityCheck( void )
             } else {
                 if( FcbSize( cfcb ) > MAX_IO_BUFFER ) {
                     WPrintfLine( wid, lc++, "Fcb %d too big : has %d (max is %d)", fcbcnt,
-                    (unsigned)FcbSize( cfcb ), MAX_IO_BUFFER );
+                        (int)FcbSize( cfcb ), MAX_IO_BUFFER );
                 }
             }
             if( lcnt != (cfcb->end_line-cfcb->start_line + 1) ) {

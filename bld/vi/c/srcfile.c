@@ -125,7 +125,7 @@ vi_rc SrcOpen( sfile *curr, vlist *vl, files *fi, const char *data )
 vi_rc SrcRead( sfile *curr, files *fi, const char *data, vlist *vl )
 {
     int         i;
-    int         j;
+    size_t      j;
     char        id[MAX_SRC_LINE], v1[MAX_SRC_LINE];
     char        tmp[MAX_SRC_LINE];
 

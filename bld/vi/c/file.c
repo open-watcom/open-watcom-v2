@@ -235,7 +235,7 @@ bool RestoreInfo( info *ci  )
 
 } /* RestoreInfo */
 
-static int getFileInfoString( char *st, bool is_small )
+static size_t getFileInfoString( char *st, bool is_small )
 {
     long        pc;
     bool        write_crlf;
@@ -321,13 +321,14 @@ static void make_short_name( char *name, size_t len, char *buffer )
 {
     char    *start;
     char    *end;
-    int     newlen;
+    size_t  newlen;
 
     len -= 2; /* for 2 quotes */
     strcpy( buffer, SingleQuote );
     start = strchr( name, '\\' );
     if( start ) {
-        for( end = name + strlen( name ) - 1; *end != '\\'; end-- );
+        for( end = name + strlen( name ) - 1; *end != '\\'; end-- )
+            ;
         newlen = strlen( end ) + ( start - name );
         if( newlen <= len ) {
             strncat( buffer, name, start - name + 1 );
@@ -338,7 +339,7 @@ static void make_short_name( char *name, size_t len, char *buffer )
         }
     }
     strcat( buffer, "..." );
-    strncat( buffer, name + strlen(name) - len + 3, len - 3 );
+    strncat( buffer, name + strlen( name ) - len + 3, len - 3 );
     strcat( buffer, SingleQuote );
 }
 
@@ -360,7 +361,7 @@ vi_rc DisplayFileStatus( void )
         free_len = MAX_STR;
     }
 
-    free_len -= (getFileInfoString( st, false ) + 3); /* for 2 quotes + NULL */
+    free_len -= getFileInfoString( st, false ) + 3; /* for 2 quotes + NULL */
 
     /* file name */
     if( strlen( CurrentFile->name ) < free_len ) {
@@ -372,7 +373,7 @@ vi_rc DisplayFileStatus( void )
         if( free_len > MAX_STR ) {
             free_len = MAX_STR;
         }
-        free_len -= (getFileInfoString( st, true ) + 3); /* for 2 quotes + NULL */
+        free_len -= getFileInfoString( st, true ) + 3;  /* for 2 quotes + NULL */
         if( strlen( CurrentFile->name ) < free_len ) {
             MySprintf( data, "\"%s\"", CurrentFile->name );
             strcat( data, st );
@@ -454,12 +455,13 @@ void FileIOMessage( const char *name, linenum lnecnt, long bytecnt )
  */
 bool IsTextFile( const char *file )
 {
-    int         i, j;
+    size_t      len;
+    int         j;
     const char  *fign;
     const char  *fend;
 
-    i = strlen( file );
-    fend = file + i;
+    len = strlen( file );
+    fend = file + len;
     fign = EditVars.FIgnore;
     for( j = 0; j < EditVars.CurrFIgnore; j++ ) {
          if( strcmp( fend - strlen( fign ), fign ) == 0 ) {

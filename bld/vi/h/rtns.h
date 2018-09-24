@@ -273,7 +273,7 @@ void    FreeErrorMsgData( void );
 void    ErrorFini( void );
 
 /* expandfn.c */
-int ExpandFileNames( char *, char *** );
+int     ExpandFileNames( char *, char *** );
 
 /* fcb.c */
 vi_rc   OpenFcbData( file * );
@@ -282,19 +282,19 @@ void    CreateFcbData( file *, size_t );
 size_t  FcbSize( fcb * );
 
 /* fcb2.c */
-vi_rc FindFcbWithLine( linenum, file *, fcb ** );
+vi_rc   FindFcbWithLine( linenum, file *, fcb ** );
 
 /* fcb3.c */
-vi_rc MergeFcbs( fcb_list *, fcb *, fcb * );
-vi_rc MergeAllFcbs( fcb_list * );
+vi_rc   MergeFcbs( fcb_list *, fcb *, fcb * );
+vi_rc   MergeAllFcbs( fcb_list * );
 
 /* fcbdmp.c */
-vi_rc WalkUndo( void );
-vi_rc HeapCheck( void );
-vi_rc FcbDump( void );
-vi_rc FcbThreadDump( void );
-vi_rc LineInfo( void );
-vi_rc SanityCheck( void );
+vi_rc   WalkUndo( void );
+vi_rc   HeapCheck( void );
+vi_rc   FcbDump( void );
+vi_rc   FcbThreadDump( void );
+vi_rc   LineInfo( void );
+vi_rc   SanityCheck( void );
 
 /* fcbdup.c */
 void    CreateDuplicateFcbList( fcb *, fcb_list * );
@@ -306,8 +306,8 @@ void    FreeEntireFcb( fcb * );
 void    FreeFcbList( fcb * );
 
 /* fcbsplit.c */
-vi_rc SplitFcbAtLine( linenum, file *, fcb * );
-vi_rc CheckCurrentFcbCapacity( void );
+vi_rc   SplitFcbAtLine( linenum, file *, fcb * );
+vi_rc   CheckCurrentFcbCapacity( void );
 
 /* fcbswap.c */
 void    FetchFcb( fcb * );
