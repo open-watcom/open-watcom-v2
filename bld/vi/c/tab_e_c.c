@@ -39,7 +39,7 @@ extern long TabCnt;
  */
 static vi_rc doCompressExpand( bool compress )
 {
-    int         k;
+    size_t      k;
     long        bytes_saved = 0;
     long        bytes_added = 0;
     long        otabcnt;

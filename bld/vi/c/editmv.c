@@ -60,7 +60,8 @@ vi_rc MoveScreenML( linenum ntop )
  */
 vi_rc MoveScreenDown( void )
 {
-    linenum     lne, cnt, lines, top, x;
+    linenum     lne, lines, top, x;
+    long        repcnt;
 
     CFindLastLine( &lne );
     lines = WindowAuxInfo( current_window_id, WIND_INFO_TEXT_LINES );
@@ -68,8 +69,8 @@ vi_rc MoveScreenDown( void )
     if( x <= 0 ) {
         return( ERR_NO_ERR );
     }
-    cnt = GetRepeatCount();
-    top = LeftTopPos.line + cnt;
+    repcnt = GetRepeatCount();
+    top = LeftTopPos.line + repcnt;
     if( top > x ) {
         top = x;
     }
@@ -88,12 +89,13 @@ vi_rc MoveScreenDown( void )
  */
 vi_rc MoveScreenUp( void )
 {
-    linenum     lne, cnt, lines, top, nlne;
+    linenum     lne, lines, top, nlne;
+    long        repcnt;
 
     lines = WindowAuxInfo( current_window_id, WIND_INFO_TEXT_LINES );
     CFindLastLine( &lne );
-    cnt = GetRepeatCount();
-    top = LeftTopPos.line - cnt;
+    repcnt = GetRepeatCount();
+    top = LeftTopPos.line - repcnt;
     if( top < 1 ) {
         top = 1;
     }

@@ -73,10 +73,14 @@ vi_rc Shift( linenum s, linenum e, char dir, bool msgflag )
         /*
          * Add/Subtract leading tab space
          */
+        size_t  len;
+
         GetCurrentLine();
-        if( AddLeadingTabSpace( &WorkLine->len, WorkLine->data, shv ) ) {
+        len = WorkLine->len;
+        if( AddLeadingTabSpace( &len, WorkLine->data, shv ) ) {
             ++fullcnt;
         }
+        WorkLine->len = len;
         ReplaceCurrentLine();
 
         if( CurrentPos.line != e ) {

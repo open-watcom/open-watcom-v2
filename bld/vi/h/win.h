@@ -151,7 +151,6 @@ extern void     WindowTitle( window_id wid, const char *title );
 extern void     ClearWindow( window_id wid );
 extern void     ShiftWindowUpDown( window_id wid, int lines );
 extern bool     SetDrawingObjects( HDC hdc, type_style *ts );
-extern void     MyTabbedTextOut( HDC, char **, int, bool, POINT *, type_style *, RECT *, window_id, char *, int );
 extern int      DisplayLineInWindowWithSyntaxStyle( window_id, int, line *, linenum, char *, int, HDC );
 
 /* win/stubs.c */

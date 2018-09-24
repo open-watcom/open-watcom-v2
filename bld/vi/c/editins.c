@@ -585,8 +585,12 @@ vi_rc IMTabs( void )
 {
     char        *buff;
     bool        back;
-    int         cp, vc, tc, add;
-    int         i, j;
+    int         cp;
+    int         vc;
+    size_t      tc;
+    int         add;
+    size_t      i;
+    int         j;
     size_t      len;
 
     startNewLineUndo();
@@ -870,17 +874,17 @@ vi_rc IMCloseBrace( void )
                 CGimmeLinePtr( pos.line, &cfcb, &cline );
                 i = FindStartOfALine( cline );
                 i = GetVirtualCursorPosition( cline->data, i );
-                j = i - VirtualColumnOnCurrentLine( CurrentPos.column );
+                j = VirtualColumnOnCurrentLine( CurrentPos.column );
                 ts = EditVars.ShiftWidth;
-                if( j > 0 ) {
-                    EditVars.ShiftWidth = j;
+                if( i > j ) {
+                    EditVars.ShiftWidth = i - j;
                     Shift( CurrentPos.line, CurrentPos.line, '>', false );
-                } else if( j < 0 ) {
-                    EditVars.ShiftWidth = -j;
+                } else if( i < j ) {
+                    EditVars.ShiftWidth = j - i;
                     Shift( CurrentPos.line, CurrentPos.line, '<', false );
                 }
                 EditVars.ShiftWidth = ts;
-                newcol = 1 + RealColumnOnCurrentLine( j + newcol );
+                newcol = 1 + RealColumnOnCurrentLine( newcol + i - j );
             }
             GetCurrentLine();
         }

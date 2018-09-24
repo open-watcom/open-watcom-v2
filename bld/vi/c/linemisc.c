@@ -135,14 +135,15 @@ vi_rc GenericJoinCurrentLineToNext( bool remsp )
  */
 vi_rc JoinCurrentLineToNext( void )
 {
-    int     i, j;
+    long    i;
+    long    j;
     vi_rc   rc;
 
     rc = ModificationTest();
     if( rc != ERR_NO_ERR ) {
         return( rc );
     }
-    i = (int) GetRepeatCount();
+    i = GetRepeatCount();
     StartUndoGroup( UndoStack );
     for( j = 0; j < i; j++ ) {
         rc = GenericJoinCurrentLineToNext( true );

@@ -141,10 +141,8 @@ static vi_rc getDir( const char *dname, bool want_all_dirs )
      * loop through all directory entries
      */
     while( (dire = readdir( d )) != NULL ) {
-
         if( skipEntry( dire ) )
             continue;
-
         if( DirFileCount >= MAX_FILES ) {
             break;
         }
@@ -155,7 +153,6 @@ static vi_rc getDir( const char *dname, bool want_all_dirs )
         } else if( !FileMatch( dire->d_name ) ) {
             continue;
         }
-
         len = strlen( dire->d_name );
         tmp = MemAlloc( offsetof( direct_ent, name ) + len + 1 );
         GetFileInfo( tmp, dire, path );
@@ -164,7 +161,6 @@ static vi_rc getDir( const char *dname, bool want_all_dirs )
         FileLower( tmp->name );
 #endif
         DirFiles[DirFileCount++] = tmp;
-
     }
     closedir( d );
     FileMatchFini();

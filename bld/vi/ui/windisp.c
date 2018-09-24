@@ -65,7 +65,8 @@ static vi_rc displayLineInWindowGeneric( window_id wid, int c_line_no,
     char                *otmp;
     char_info           _FAR *scr;
     size_t              oscr;
-    int                 addr, start, end, a, spend;
+    int                 addr, start, end, spend;
+    size_t              len;
     int                 cnt1, cnt2, startc, spl;
     char_info           blank = {0, 0};
     char_info           what = {0, 0};
@@ -82,15 +83,15 @@ static vi_rc displayLineInWindowGeneric( window_id wid, int c_line_no,
     otmp = NULL;
     write_eol = false;
     if( EditFlags.RealTabs ) {
-        a = strlen( text );
+        len = strlen( text );
         otmp = StaticAlloc();
-        ExpandTabsInABuffer( text, a, otmp, EditVars.MaxLine + 1 );
+        ExpandTabsInABuffer( text, len, otmp, EditVars.MaxLine + 1 );
         tmp = otmp;
     } else {
         tmp = text;
     }
     tmp += start_col;
-    a = strlen( tmp );
+    len = strlen( tmp );
 
     /*
      * find dimensions of line
@@ -105,9 +106,9 @@ static vi_rc displayLineInWindowGeneric( window_id wid, int c_line_no,
         start = 1;
         spl = c_line_no;
         spend = end = w->width - 1;
-        if( a < end - 1 ) {
-            end = a + 1;
-        } else if( a >= end ) {
+        if( end > len + 1 ) {
+            end = len + 1;
+        } else if( end <= len ) {
             write_eol = true;
         }
     } else {
@@ -120,9 +121,9 @@ static vi_rc displayLineInWindowGeneric( window_id wid, int c_line_no,
         start = 0;
         spl = c_line_no - 1;
         spend = end = w->width;
-        if( a < end ) {
-            end = a;
-        } else if( a > end ) {
+        if( end > len ) {
+            end = len;
+        } else if( end < len ) {
             write_eol = true;
         }
     }
@@ -240,7 +241,7 @@ vi_rc DisplayLineInWindowWithSyntaxStyle( window_id wid, int c_line_no, line *li
     static ss_block     ss[MAX_SS_BLOCKS];
     int                 dummy;
     bool                saveRealTabs;
-    int                 a;
+    size_t              len;
     vi_rc               rc;
     char                *tmp;
 //    dc_line             *c_line;
@@ -248,9 +249,9 @@ vi_rc DisplayLineInWindowWithSyntaxStyle( window_id wid, int c_line_no, line *li
     /* unused parameters */ (void)junk;
 
     if( EditFlags.RealTabs ) {
-        a = strlen( text );
+        len = strlen( text );
         tmp = StaticAlloc();
-        ExpandTabsInABuffer( text, a, tmp, EditVars.MaxLine + 1 );
+        ExpandTabsInABuffer( text, len, tmp, EditVars.MaxLine + 1 );
     } else {
         tmp = text;
     }

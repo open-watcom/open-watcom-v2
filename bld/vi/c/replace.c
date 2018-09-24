@@ -37,7 +37,8 @@
  */
 vi_rc ReplaceChar( void )
 {
-    int         start, end, i, ai;
+    int         start, end, ai;
+    size_t      i;
     char        *buff;
     bool        redrawAll;
     vi_rc       rc;
@@ -59,7 +60,6 @@ vi_rc ReplaceChar( void )
     CurrentLineReplaceUndoEnd( key != VI_KEY( ENTER ) );
 
     if( key == VI_KEY( ENTER ) ) {
-
         buff = StaticAlloc();
         GetAutoIndentAmount( buff, 0, false );
         CurrentLine->data[CurrentPos.column - 1] = (char) 1;
@@ -90,14 +90,13 @@ vi_rc ReplaceChar( void )
         }
         StaticFree( buff );
         DCDisplayAllLines();
-
     } else {
         if( key == VI_KEY( TAB ) ) {
             key = '\t';
         }
         GetCurrentLine();
         start = CurrentPos.column - 1;
-        end = start + (int) GetRepeatCount();
+        end = start + (int)GetRepeatCount();
         if( end > WorkLine->len ) {
             end = WorkLine->len;
         }
@@ -106,13 +105,12 @@ vi_rc ReplaceChar( void )
             if( !redrawAll && SSKillsFlags( WorkLine->data[i] ) ) {
                 redrawAll = true;
             }
-            WorkLine->data[i] = (char) key;
+            WorkLine->data[i] = (char)key;
         }
         redrawAll |= SSKillsFlags( key );
         DisplayWorkLine( redrawAll );
         ReplaceCurrentLine();
         GoToColumnOK( CurrentPos.column );
-
     }
 
     EditFlags.Dotable = true;
