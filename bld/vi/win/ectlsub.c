@@ -47,7 +47,7 @@ static int          currHist;
  */
 static void setEditText( HWND hwnd, const char *tmp )
 {
-    int     len;
+    size_t  len;
 
     if( tmp == NULL ) {
         return;

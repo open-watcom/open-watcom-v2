@@ -889,8 +889,7 @@ WINEXPORT LRESULT CALLBACK EditWindowProc( window_id wid, UINT msg, WPARAM wpara
         }
         /* either way we remember to reset extra */
         GetClientRect( wid, &wd->extra );
-        wd->extra.top = WindowAuxInfo( wid, WIND_INFO_TEXT_LINES ) *
-                                         FontHeight( WIN_TEXT_FONT( &EditWindow ) );
+        wd->extra.top = WindowAuxInfo( wid, WIND_INFO_TEXT_LINES ) * FontHeight( WIN_TEXT_FONT( &EditWindow ) );
         break;
     default:
         break;
@@ -917,8 +916,7 @@ WINEXPORT BOOL CALLBACK ResizeExtra( window_id wid, LPARAM lparam )
 
     wd = DATA_FROM_ID( wid );
     GetClientRect( wid, &wd->extra );
-    wd->extra.top = WindowAuxInfo( wid, WIND_INFO_TEXT_LINES ) *
-                                     FontHeight( WIN_TEXT_FONT( &EditWindow ) );
+    wd->extra.top = WindowAuxInfo( wid, WIND_INFO_TEXT_LINES ) * FontHeight( WIN_TEXT_FONT( &EditWindow ) );
 
     return( TRUE );
 

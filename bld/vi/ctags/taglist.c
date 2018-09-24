@@ -59,7 +59,7 @@ static void addToTagList( char *res )
         ErrorMsgExit( "Out of memory!\n" );
     }
     memcpy( tagList[tagCount], res, len );
-    total_size += len;
+    total_size += (unsigned long)len;
     tagCount++;
 
 } /* addToTagList */
@@ -146,7 +146,7 @@ void GenerateTagsFile( const char *fname )
             ErrorMsgExit( "Could not open tags file \"%s\"\n", fname );
         }
         if( tagList != NULL ) {
-            total_size += tagCount * sizeof( char * );
+            total_size += (unsigned long)( tagCount * sizeof( char * ) );
         }
         for( i = 0; i < tagCount; i++ ) {
             fprintf( fp, "%s\n", tagList[i] );
