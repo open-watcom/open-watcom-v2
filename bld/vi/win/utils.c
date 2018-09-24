@@ -47,6 +47,23 @@
 #include "clibext.h"
 
 
+char *windowName[] = {
+    "Buffer Window",
+    "MessageWindow",
+    "RepeatWindow",
+    "FileCompleteWindow",
+    "CommandWindow",
+    "StatusWnd",
+    "WTool",
+#ifdef __NT__
+    STATUSCLASSNAME,
+#endif
+#if 0
+    EditorName,         // nothing to change
+    "Edit Container"    // should use standard Windows colour for this
+#endif
+};
+
 static char windowBordersG[] =  {
 #if defined( __UNIX__ )
     #define vi_pick( enum, UnixNG, UnixG, DosNG, DosG ) UnixG,
@@ -67,19 +84,19 @@ int FileSysNeedsCR( int handle )
 
 void SetGadgetString( char *str )
 {
-    size_t  i;
+    size_t  len;
 
     if( str != NULL && *str != '\0' ) {
-        i = strlen( str );
-        if( i > GADGET_SIZE ) {
-            i = GADGET_SIZE;
+        len = strlen( str );
+        if( len > GADGET_SIZE ) {
+            len = GADGET_SIZE;
         }
         if( EditVars.GadgetString == NULL ) {
             EditVars.GadgetString = MemAlloc( GADGET_SIZE + 1 );
             EditVars.GadgetString[GADGET_SIZE] = '\0';
         }
         memset( EditVars.GadgetString, ' ', GADGET_SIZE );
-        memcpy( EditVars.GadgetString, str, i );
+        memcpy( EditVars.GadgetString, str, len );
     } else {
         ReplaceString( &EditVars.GadgetString, windowBordersG );
     }
@@ -437,9 +454,6 @@ long MemSize( void )
 #endif
 }
 
-#ifdef __AXP__
-extern void     delay( unsigned int __milliseconds );
-#endif
 void MyDelay( int ms )
 {
 #if !defined( __WATCOMC__ ) && defined( _WIN64 )
@@ -558,23 +572,6 @@ void CursorOp( CursorOps op )
     lastop = op;
 }
 
-char *windowName[] = {
-    "Buffer Window",
-    "MessageWindow",
-    "RepeatWindow",
-    "FileCompleteWindow",
-    "CommandWindow",
-    "StatusWnd",
-    "WTool",
-#ifdef __NT__
-    STATUSCLASSNAME,
-#endif
-#if 0
-    EditorName,         // nothing to change
-    "Edit Container"    // should use standard Windows colour for this
-#endif
-};
-
 HWND GetOwnedWindow( POINT pt )
 {
     char        textBuffer[80];
@@ -627,11 +624,16 @@ void MoveWindowTopRight( HWND hwnd )
     /* move window to top-right corner of container
        (a tool-bar-like position)
     */
-    RECT    rcClient, rcUs;
-    RECT    rcTB;
-    POINT   pt;
-    int     clientWidth, usWidth, usHeight;
-    int     xshift, xshiftmax;
+    RECT        rcClient;
+    RECT        rcUs;
+    RECT        rcTB;
+    POINT       pt;
+    int         clientWidth;
+    int         usWidth;
+    int         usHeight;
+    int         xshift;
+    int         xshiftmax;
+    window_id   toolbar_wid;
 
     if( !BAD_ID( current_window_id ) ) {
         GetClientRect( current_window_id, &rcClient );
@@ -651,8 +653,9 @@ void MoveWindowTopRight( HWND hwnd )
         }
         pt.x += xshift;
         pt.y += 30;
-        if( GetToolbarWindow() ) {
-            GetWindowRect( GetToolbarWindow(), &rcTB );
+        toolbar_wid = GetToolbarWindow();
+        if( toolbar_wid != NULL ) {
+            GetWindowRect( toolbar_wid, &rcTB );
             pt.y += rcTB.bottom - rcTB.top;
         }
         ScreenToClient( GetParent( hwnd ), &pt );
