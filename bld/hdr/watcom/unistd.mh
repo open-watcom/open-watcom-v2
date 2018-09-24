@@ -271,9 +271,15 @@ _WCRTLINK extern int    usleep( unsigned long __usec );
 :include ext.sp
 :include delay.sp
 :include extepi.sp
-:segment RDOS
+:segment DOS
+#ifdef __RDOS__
+:endsegment
+:segment DOS | RDOS
 _WCRTLINK extern pid_t  fork( void );
 _WCRTLINK extern pid_t  waitpid( pid_t __pid, int *__stat_loc, int __options );
+:endsegment
+:segment DOS
+#endif
 :endsegment
 
 :include brk.sp
