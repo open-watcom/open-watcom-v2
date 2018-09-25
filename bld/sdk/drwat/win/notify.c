@@ -30,9 +30,8 @@
 ****************************************************************************/
 
 
-#include <string.h>
-#include <ctype.h>
 #include "drwatcom.h"
+#include <ctype.h>
 
 typedef struct {
     HANDLE      task;

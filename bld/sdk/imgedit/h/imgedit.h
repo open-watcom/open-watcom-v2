@@ -62,13 +62,13 @@ typedef enum {
 #include "img_wpi.h"
 #include "fill.h"
 #include "bits.h"
-#include "errors.h"
 #include "dialogs.h"
 #include "icon.h"
 #include "menuids.h"
 #include "mem.h"
 #include "statwnd.h"
 #include "toolbr.h"
+#include "errors.h"
 
 #define MAX_DIM             2048
 #define MIN_DIM             0

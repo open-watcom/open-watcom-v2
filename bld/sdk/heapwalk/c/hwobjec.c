@@ -30,10 +30,8 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <string.h>
-#include <ctype.h>
 #include "heapwalk.h"
+#include <ctype.h>
 #include "wclbproc.h"
 #include "jdlg.h"
 

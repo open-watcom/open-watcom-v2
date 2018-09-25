@@ -30,8 +30,6 @@
 ****************************************************************************/
 
 
-#include <wwindows.h>
-#include <string.h>
 #include "wrglbl.h"
 
 /* forward declaration */

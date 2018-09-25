@@ -30,14 +30,9 @@
 ****************************************************************************/
 
 
-#include "commonui.h"
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include "wio.h"
-#include "watcom.h"
-#include "wresall.h"
 #include "wglbl.h"
+#include "wio.h"
+#include "wresall.h"
 #include "wmenu.h"
 #include "winst.h"
 #include "wmemf.h"

@@ -33,7 +33,6 @@
 #ifndef WSTAT_INCLUDED
 #define WSTAT_INCLUDED
 
-#include <stdlib.h>
 #include "statwnd.h"
 
 /****************************************************************************/

@@ -31,10 +31,6 @@
 ****************************************************************************/
 
 
-#include "commonui.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include "wddespy.h"
 #include "inipath.h"
 #include "watini.h"

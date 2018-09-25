@@ -30,12 +30,8 @@
 ****************************************************************************/
 
 
-#include "commonui.h"
-#include <stdlib.h>
-#include <ddeml.h>
-
-#include "watcom.h"
 #include "wreglbl.h"
+#include <ddeml.h>
 #include "wremsg.h"
 #include "rcstr.gh"
 #include "wrewait.h"

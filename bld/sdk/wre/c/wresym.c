@@ -30,13 +30,8 @@
 ****************************************************************************/
 
 
-#include "commonui.h"
-#include <stdlib.h>
-#include <string.h>
-#include <setjmp.h>
-
-#include "watcom.h"
 #include "wreglbl.h"
+#include <setjmp.h>
 #include "wremain.h"
 #include "wregetfn.h"
 #include "wrestat.h"

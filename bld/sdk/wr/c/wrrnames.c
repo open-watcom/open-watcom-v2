@@ -31,9 +31,6 @@
 ****************************************************************************/
 
 
-#include "commonui.h"
-#include <stdio.h>
-#include <string.h>
 #include "wrglbl.h"
 #include "wrstrdup.h"
 #include "wrmsg.h"

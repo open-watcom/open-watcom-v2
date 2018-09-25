@@ -30,11 +30,8 @@
 ****************************************************************************/
 
 
-#include <wwindows.h>
-#include <stdlib.h>
-#include <string.h>
-#include <mbstring.h>
 #include "wrglbl.h"
+#include <mbstring.h>
 #include "wresall.h"
 
 #include "clibext.h"

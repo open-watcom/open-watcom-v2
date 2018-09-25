@@ -30,11 +30,7 @@
 ****************************************************************************/
 
 
-#include "commonui.h"
-#include <string.h>
-#include "watcom.h"
 #include "wglbl.h"
-
 #include "wisedit.h"
 
 bool WIsEdit( HWND hwnd )

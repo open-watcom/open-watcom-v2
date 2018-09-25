@@ -30,14 +30,8 @@
 ****************************************************************************/
 
 
-#include "commonui.h"
-#include <ddeml.h>
-#include <string.h>
-#include <stdlib.h>
-#include <stdio.h>
-
-#include "watcom.h"
 #include "wreglbl.h"
+#include <ddeml.h>
 #include "wresall.h"
 #include "wre_wres.h"
 #include "wremsg.h"

@@ -30,8 +30,8 @@
 ****************************************************************************/
 
 
-#include <ctype.h>
 #include "drwatcom.h"
+#include <ctype.h>
 #include "mem.h"
 #include "menu.h"
 

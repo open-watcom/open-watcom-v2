@@ -30,10 +30,8 @@
 ****************************************************************************/
 
 
-#include <dos.h>
-#include <stdio.h>
-#include <string.h>
 #include "drwatcom.h"
+#include <dos.h>
 #include "wdebug.h"
 
 /*

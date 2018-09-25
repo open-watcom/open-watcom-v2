@@ -30,9 +30,8 @@
 ****************************************************************************/
 
 
-#include <windows.h>
-#include <process.h>
 #include "drwatcom.h"
+#include <process.h>
 #include "menu.h"
 
 static DWORD    *noGetList;

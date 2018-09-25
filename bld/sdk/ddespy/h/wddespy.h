@@ -30,7 +30,9 @@
 ****************************************************************************/
 
 #include <stdlib.h>
-#define DDEMLDB
+#include <stdio.h>
+#include <string.h>
+#include "commonui.h"
 #include <ddeml.h>
 #include <dde.h>
 #include "bool.h"

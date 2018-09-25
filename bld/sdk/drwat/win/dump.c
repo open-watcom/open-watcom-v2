@@ -31,11 +31,9 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <string.h>
+#include "drwatcom.h"
 #include <dos.h>
 #include <sys/stat.h>
-#include "drwatcom.h"
 #include "wclbproc.h"
 #include "wdebug.h"
 #include "dump.h"

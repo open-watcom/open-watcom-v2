@@ -30,9 +30,6 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <string.h>
-#include "bool.h"
 #include "heapwalk.h"
 #include "wclbproc.h"
 #include "aboutdlg.h"

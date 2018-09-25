@@ -33,7 +33,12 @@
 #ifndef WRGLBL_INCLUDED
 #define WRGLBL_INCLUDED
 
+#include "commonui.h"
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
 #include "watcom.h"
+#include "wresid.h"
 #include "wrdll.h"
 
 /****************************************************************************/

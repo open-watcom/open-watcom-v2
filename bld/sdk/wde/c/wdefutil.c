@@ -32,7 +32,6 @@
 
 
 #include "wdeglbl.h"
-#include <stdio.h>
 #include <mbstring.h>
 #include <ctype.h>
 #include "wrdll.h"

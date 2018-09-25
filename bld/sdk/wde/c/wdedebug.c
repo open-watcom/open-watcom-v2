@@ -32,7 +32,6 @@
 
 #include "wdeglbl.h"
 #include <ctype.h>
-#include <stdio.h>
 #include "wdestat.h"
 #include "wdemain.h"
 #include "wdedebug.h"

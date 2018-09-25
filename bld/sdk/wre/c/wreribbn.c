@@ -31,7 +31,6 @@
 ****************************************************************************/
 
 
-#include "commonui.h"
 #include "wreglbl.h"
 #include "wremain.h"
 #include "wretoolb.h"

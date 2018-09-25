@@ -31,8 +31,6 @@
 ****************************************************************************/
 
 
-#include "commonui.h"
-#include "watcom.h"
 #include "wglbl.h"
 #include "wmain.h"
 #include "wtoolbar.h"

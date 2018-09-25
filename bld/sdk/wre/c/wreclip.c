@@ -30,12 +30,9 @@
 ****************************************************************************/
 
 
-#include "commonui.h"
-#include <limits.h>
-#include <string.h>
-#include <ddeml.h>
-#include "watcom.h"
 #include "wreglbl.h"
+#include <limits.h>
+#include <ddeml.h>
 #include "wremain.h"
 #include "wregcres.h"
 #include "wre_wres.h"

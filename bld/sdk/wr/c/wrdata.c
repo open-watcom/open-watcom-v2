@@ -30,15 +30,12 @@
 ****************************************************************************/
 
 
-#include "commonui.h"
+#include "wrglbl.h"
 #include <sys/types.h>
 #include <fcntl.h>
-#include <stdio.h>
 #include <sys/stat.h>
 #include <io.h>
 #include <limits.h>
-#include <string.h>
-#include "wrglbl.h"
 #include "wrmsg.h"
 #include "wresall.h"
 #include "wrdatai.h"

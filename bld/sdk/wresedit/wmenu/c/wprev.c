@@ -30,8 +30,6 @@
 ****************************************************************************/
 
 
-#include "commonui.h"
-#include "watcom.h"
 #include "wglbl.h"
 #include "sys_rc.h"
 #include "wedit.h"

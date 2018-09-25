@@ -30,15 +30,12 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <string.h>
+#include "drwatcom.h"
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <dos.h>
-#include <malloc.h>
 #include <io.h>
-#include "drwatcom.h"
 #include "sopen.h"
 #include "dip.h"
 #include "dipimp.h"

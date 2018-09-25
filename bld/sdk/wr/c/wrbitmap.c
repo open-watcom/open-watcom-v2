@@ -30,13 +30,12 @@
 ****************************************************************************/
 
 
-#include <wwindows.h>
-#include <limits.h>
-#include <string.h>
-#include <malloc.h>
-#include <dos.h>
-#include <stdlib.h>
 #include "wrglbl.h"
+#include <limits.h>
+#include <dos.h>
+#if defined( _M_I86 )
+    #include <malloc.h>
+#endif
 #include "wrmemi.h"
 #include "wr_wres.h"
 #include "palette.h"
@@ -50,6 +49,19 @@
 #define RGBQ_SIZE( bc )         (sizeof( RGBQUAD ) * ((size_t)1 << (bc)))
 #define SCANLINE_SIZE           32
 #define MAX_CHUNK               32768
+
+#if defined( _M_I86 )
+    #define _HUGE __huge
+    #define __halloc halloc
+    #define __hfree hfree
+#else
+    #ifdef _HUGE
+        #undef _HUGE
+    #endif
+    #define _HUGE
+    #define __halloc( a, b ) malloc( a )
+    #define __hfree free
+#endif
 
 /****************************************************************************/
 /* external function prototypes                                             */
@@ -72,10 +84,6 @@ static HBITMAP          WRReadBitmap( BYTE *data, long offset, bool core, bitmap
 static WResID   *BitmapName = NULL;
 
 #if defined( _M_I86 )
-
-#define _HUGE __huge
-#define __halloc halloc
-#define __hfree hfree
 static void HugeMemCopy( void __far *dst, void __far *src, unsigned bytes )
 {
     long                offset, selector;
@@ -94,15 +102,7 @@ static void HugeMemCopy( void __far *dst, void __far *src, unsigned bytes )
     _fmemcpy( dst, src, bytes );
 }
 #else
-
 #define HugeMemCopy( a, b, c ) memcpy( a, b, c )
-#ifdef _HUGE
-    #undef _HUGE
-#endif
-#define _HUGE
-#define __halloc( a, b ) malloc( a )
-#define __hfree free
-
 #endif
 
 static BITMAPINFO *WRReadDIBInfo( BYTE **data )

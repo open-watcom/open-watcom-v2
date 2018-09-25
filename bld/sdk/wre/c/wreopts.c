@@ -30,10 +30,6 @@
 ****************************************************************************/
 
 
-#include "commonui.h"
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
 #include "wreglbl.h"
 #include "wregetfn.h"
 #include "wrestrdp.h"

@@ -30,9 +30,8 @@
 ****************************************************************************/
 
 
-#include "commonui.h"
-#include <stdio.h>
 #include "wddespy.h"
+
 
 /* position of the list window within the main window */
 

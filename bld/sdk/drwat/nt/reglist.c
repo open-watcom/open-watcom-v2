@@ -34,7 +34,6 @@
 #include "regstr.h"
 #include "reglist.h"
 #include "mem.h"
-#include <malloc.h>
 #include "bitman.h"
 #include "madcli.h"
 #include "regcrt.h"

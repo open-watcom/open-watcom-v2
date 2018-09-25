@@ -34,9 +34,7 @@
 #include "srchmsg.h"
 #include "madrtn.h"
 #include "madx86.h"
-#include <string.h>
 #include "dip.h"
-#include <malloc.h>
 #include "madsys1.h"
 #include "madcli.h"
 

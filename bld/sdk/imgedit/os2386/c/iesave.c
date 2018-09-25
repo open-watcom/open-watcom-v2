@@ -31,7 +31,6 @@
 
 
 #include "imgedit.h"
-#include <malloc.h>
 #include <math.h>
 #include "..\h\wbitmap.h"
 

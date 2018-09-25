@@ -32,6 +32,9 @@
 
 #include "commonui.h"
 #include <stdlib.h>
+#include <stdio.h>
+#include <stdarg.h>
+#include <string.h>
 #include "bool.h"
 #include "pmdbg.h"
 #include "const.h"
@@ -49,11 +52,11 @@
 #include "segmem.h"
 #include "ismod32.h"
 #include "di386cli.h"
-#include "listbox.h"
 #include "rcstr.gh"
 #include "ldstr.h"
 #include "dbgopt.h"
 #include "rvalue.h"
+#include "listbox.h"
 
 
 #define INT_PTR int

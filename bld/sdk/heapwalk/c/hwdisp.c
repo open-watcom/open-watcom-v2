@@ -30,9 +30,7 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include "heapwalk.h"
-#include <windows.h>
 #include "wclbproc.h"
 #include "jdlg.h"
 

@@ -31,12 +31,8 @@
 ****************************************************************************/
 
 
-#include "commonui.h"
-#include <stdio.h>
-#include <string.h>
-#include "watcom.h"
-#include "wrdll.h"
 #include "wreglbl.h"
+#include "wrdll.h"
 #include "wretoolb.h"
 #include "wrestrdp.h"
 #include "wreres.h"

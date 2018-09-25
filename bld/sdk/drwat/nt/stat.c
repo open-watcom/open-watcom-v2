@@ -31,10 +31,9 @@
 ****************************************************************************/
 
 
-#include <ctype.h>
-#include <string.h>
-#include <dos.h>
 #include "drwatcom.h"
+#include <ctype.h>
+#include <dos.h>
 #include "wclbproc.h"
 #include "segmap.h"
 #include "jdlg.h"

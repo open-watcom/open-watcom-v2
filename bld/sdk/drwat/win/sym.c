@@ -30,16 +30,13 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <string.h>
+#include "drwatcom.h"
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <dos.h>
-#include <malloc.h>
 #include <io.h>
-#include "drwatcom.h"
-#include "walloca.h"
+#include <alloca.h>
 #include "sopen.h"
 #include "dip.h"
 #include "dipimp.h"
@@ -186,7 +183,7 @@ static BOOL doFindSymbol( ADDRESS *addr, syminfo *si, int getsrcinfo )
         DIPSymName( symhdl, NULL, SNT_OBJECT, si->name, MAX_SYM_NAME );
 //      DIPSymName( symhdl, NULL, SNT_SOURCE, si->name, MAX_SYM_NAME );
         if( getsrcinfo ) {
-            cueh = walloca( DIPHandleSize( HK_CUE ) );
+            cueh = alloca( DIPHandleSize( HK_CUE ) );
             if( DIPAddrCue( NO_MOD, dipaddr, cueh ) == SR_NONE ) {
                 ret = FALSE;
             } else {

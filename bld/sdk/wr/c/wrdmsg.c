@@ -29,7 +29,6 @@
 ****************************************************************************/
 
 
-#include <wwindows.h>
 #include "wrglbl.h"
 #include "wrlist.h"
 #include "wrdmsgi.h"

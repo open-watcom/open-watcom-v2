@@ -30,12 +30,9 @@
 ****************************************************************************/
 
 
-#include <string.h>
-#include <stdio.h>
-#include <malloc.h>
+#include "drwatcom.h"
+#include <alloca.h>
 #include <ctype.h>
-#include <stdlib.h>
-#include "bool.h"
 #include "mad.h"
 #include "regcrt.h"
 #include "mem.h"

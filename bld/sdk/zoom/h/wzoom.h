@@ -32,6 +32,8 @@
 
 #include "commonui.h"
 #include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
 #include "watcom.h"
 #include "mem.h"
 #include "config.h"

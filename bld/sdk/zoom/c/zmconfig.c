@@ -30,11 +30,8 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
 #include "wzoom.h"
+#include <ctype.h>
 #include "wclbproc.h"
 #include "watini.h"
 #include "inipath.h"

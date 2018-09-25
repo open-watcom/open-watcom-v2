@@ -40,7 +40,6 @@
 #include "imgedit.h"
 #include <commdlg.h>
 #include <dos.h>
-#include <malloc.h>
 #include <math.h>
 #include <limits.h>
 #include "wrbitmap.h"

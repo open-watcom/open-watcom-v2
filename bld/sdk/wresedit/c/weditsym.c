@@ -30,13 +30,9 @@
 ****************************************************************************/
 
 
-#include "commonui.h"
-#include <stdlib.h>
-#include <string.h>
-#include <setjmp.h>
-#include "watcom.h"
-#include "wrdll.h"
 #include "wglbl.h"
+#include <setjmp.h>
+#include "wrdll.h"
 #include "wwait.h"
 #include "wgetfn.h"
 #include "wmsg.h"

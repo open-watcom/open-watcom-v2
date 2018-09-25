@@ -33,7 +33,6 @@
 
 #include "wdeglbl.h"
 #include <io.h>
-#include <stdio.h>
 #include "wderes.h"
 #include "wdetest.h"
 #include "wdestat.h"

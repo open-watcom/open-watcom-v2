@@ -30,8 +30,8 @@
 ****************************************************************************/
 
 
-#include "commonui.h"
 #include "wddespy.h"
+
 
 typedef struct ddetoolinfo {
     toolbar             *hdl;

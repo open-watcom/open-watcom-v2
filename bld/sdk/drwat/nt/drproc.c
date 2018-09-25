@@ -30,8 +30,8 @@
 ****************************************************************************/
 
 
-#include <time.h>
 #include "drwatcom.h"
+#include <time.h>
 #include "menu.h"
 #include "aboutdlg.h"
 #include "savelbox.h"

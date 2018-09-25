@@ -31,7 +31,6 @@
 
 
 #include "wdeglbl.h"
-#include <stdio.h>
 #include <io.h>
 #include "wresall.h"
 #include "wderesin.h"

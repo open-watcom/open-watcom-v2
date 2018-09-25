@@ -30,11 +30,8 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <stdarg.h>
-#include <string.h>
-#include <i86.h>
 #include "drwatcom.h"
+#include <i86.h>
 #include "watcom.h"
 #include "wdebug.h"
 #include "jdlg.h"

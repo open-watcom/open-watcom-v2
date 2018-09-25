@@ -30,13 +30,10 @@
 ****************************************************************************/
 
 
-#include "commonui.h"
-#include <string.h>
-#include <stdlib.h>
+#include "wreglbl.h"
 #include <commdlg.h>
 #include <dlgs.h>
 #include <direct.h>
-#include "wreglbl.h"
 #include "wremain.h"
 #include "wremsg.h"
 #include "ldstr.h"

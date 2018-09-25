@@ -32,7 +32,6 @@
 
 
 #include "wdeglbl.h"
-#include <stdio.h>
 #include <ctype.h>
 #include "fmedit.def"
 #include "wdecust.h"

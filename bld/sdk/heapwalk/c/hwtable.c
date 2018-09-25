@@ -31,7 +31,6 @@
 
 
 #include "heapwalk.h"
-#include "watcom.h"
 
 msglist FlagMsg[] = {
     LF_FREE,                    (char *)(pointer_int)STR_FREE,

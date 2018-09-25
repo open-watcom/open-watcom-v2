@@ -30,11 +30,11 @@
 ****************************************************************************/
 
 
+#include "drwatcom.h"
 #include <io.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#include "drwatcom.h"
 #include "dip.h"
 #include "dipimp.h"
 #include "dipcli.h"

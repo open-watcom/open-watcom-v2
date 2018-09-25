@@ -30,13 +30,10 @@
 ****************************************************************************/
 
 
-#include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include "heapwalk.h"
 #include <ctype.h>
 #include <dos.h>
 #include <io.h>
-#include "heapwalk.h"
 #include "wdebug.h"
 #include "jdlg.h"
 

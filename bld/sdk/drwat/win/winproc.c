@@ -30,10 +30,8 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <time.h>
-#include <string.h>
 #include "drwatcom.h"
+#include <time.h>
 #include "savelbox.h"
 #include "mark.h"
 #include "aboutdlg.h"

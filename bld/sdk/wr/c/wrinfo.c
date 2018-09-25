@@ -30,9 +30,6 @@
 ****************************************************************************/
 
 
-#include "commonui.h"
-#include <stdlib.h>
-#include <string.h>
 #include "wrglbl.h"
 #include "wrinfoi.h"
 #include "wrmsg.h"

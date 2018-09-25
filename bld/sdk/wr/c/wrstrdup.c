@@ -30,11 +30,9 @@
 ****************************************************************************/
 
 
-#include <wwindows.h>
-#include <ctype.h>
-#include <string.h>
-#include <mbstring.h>
 #include "wrglbl.h"
+#include <ctype.h>
+#include <mbstring.h>
 #include "wrstrdup.h"
 
 /****************************************************************************/

@@ -30,16 +30,12 @@
 ****************************************************************************/
 
 
-#include "commonui.h"
+#include "wrglbl.h"
 #include <limits.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <sys/types.h>
 #include <direct.h>
 #include <errno.h>
 #include "wio.h"
-#include "wrglbl.h"
 #include "wrmsg.h"
 #include "wrmemi.h"
 

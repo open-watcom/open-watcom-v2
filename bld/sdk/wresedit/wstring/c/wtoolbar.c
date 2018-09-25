@@ -31,11 +31,8 @@
 ****************************************************************************/
 
 
-#include "commonui.h"
-#include <string.h>
-#include <limits.h>
-#include "watcom.h"
 #include "wglbl.h"
+#include <limits.h>
 #include "ldstr.h"
 #include "wstat.h"
 #include "wmain.h"

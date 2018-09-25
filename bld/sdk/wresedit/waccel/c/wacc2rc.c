@@ -30,11 +30,6 @@
 ****************************************************************************/
 
 
-#include "commonui.h"
-#include <string.h>
-#include <stdio.h>
-
-#include "watcom.h"
 #include "wglbl.h"
 #include "wvk2str.h"
 #include "wacc2rc.h"

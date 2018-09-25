@@ -32,7 +32,6 @@
 
 
 #include "wdeglbl.h"
-#include <stdio.h>
 #include <ctype.h>
 #include "wdecust.h"
 #include "wdemain.h"
@@ -48,7 +47,6 @@
 #include "wde_rc.h"
 #include "jdlg.h"
 #include "wrdll.h"
-#include "commonui.h"
 #include "wresdefn.h"
 #include "wclbproc.h"
 

@@ -30,8 +30,6 @@
 ****************************************************************************/
 
 
-#include "commonui.h"
-#include "watcom.h"
 #include "wglbl.h"
 #include "wrdll.h"
 #include "wrselft.h"

@@ -32,7 +32,6 @@
 
 #include "imgedit.h"
 #include <commdlg.h>
-#include <malloc.h>
 #include <dos.h>
 #include <cderr.h>
 #include "colours.h"
@@ -77,7 +76,7 @@ static bool readIconFromData( BYTE *data, const char *fname  )
         }
     }
 #endif
-        
+
     node = MemAlloc( sizeof( img_node ) * num_of_images );
 
     hdc = GetDC( NULL );

@@ -30,11 +30,8 @@
 ****************************************************************************/
 
 
-#include "commonui.h"
-#include <ddeml.h>
-
-#include "watcom.h"
 #include "wreglbl.h"
+#include <ddeml.h>
 #include "wresall.h"
 #include "wreres.h"
 #include "wregcres.h"

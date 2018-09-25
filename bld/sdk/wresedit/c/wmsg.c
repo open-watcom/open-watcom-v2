@@ -30,10 +30,10 @@
 ****************************************************************************/
 
 
-#include "commonui.h"
-#include "wmsg.h"
+#include "wglbl.h"
 #include "ldstr.h"
 #include "rcstr.gh"
+#include "wmsg.h"
 
 /* routine to create a message box */
 void WDisplayErrorMsg( msg_id msg )

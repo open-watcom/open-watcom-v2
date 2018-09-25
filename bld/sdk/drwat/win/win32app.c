@@ -30,10 +30,8 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <string.h>
-#include <dos.h>
 #include "drwatcom.h"
+#include <dos.h>
 
 /*
  * CheckIsWin32App - check if task is a win 32 app

@@ -30,8 +30,6 @@
 ****************************************************************************/
 
 
-#include <wwindows.h>
-#include <stdlib.h>
 #include "wrglbl.h"
 #include "clibint.h"
 

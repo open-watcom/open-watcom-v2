@@ -30,8 +30,7 @@
 ****************************************************************************/
 
 
-#include "commonui.h"
-#include <string.h>
+#include "wglbl.h"
 #include "wstrdup.h"
 #include "wrdll.h"
 

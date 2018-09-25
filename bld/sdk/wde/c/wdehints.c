@@ -31,7 +31,6 @@
 
 
 #include "wdeglbl.h"
-#include <stdio.h>
 #include "wdestat.h"
 #include "wdemain.h"
 #include "wde_rc.h"

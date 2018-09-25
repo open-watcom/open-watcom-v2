@@ -30,10 +30,8 @@
 ****************************************************************************/
 
 
-#include "commonui.h"
-#include <string.h>
-#include <math.h>
 #include "wddespy.h"
+#include <math.h>
 #include "aboutdlg.h"
 #include "wwinhelp.h"
 #include "jdlg.h"

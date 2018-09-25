@@ -30,12 +30,8 @@
 ****************************************************************************/
 
 
-#include "commonui.h"
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <stdarg.h>
 #include "wrglbl.h"
+#include <stdarg.h>
 #include "global.h"     /* this is a WRC header file */
 #include "rcspawn.h"    /* this is a WRC header file */
 #include "rccore.h"     /* this is a WRC header file */
