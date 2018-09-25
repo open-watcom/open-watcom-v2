@@ -7,7 +7,7 @@ wipfc_autodepends = .autodepend
 !include defrule.mif
 !include deftarg.mif
 
-extra_cpp_flags = -D__STDC_LIMIT_MACROS -DU_NOEXCEPT=
+extra_cpp_flags = -D__STDC_LIMIT_MACROS -DU_NOEXCEPT= -DU_DISABLE_RENAMING
 
 extra_cxx_flags = -xs
 !ifeq release 0

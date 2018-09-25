@@ -3,10 +3,10 @@ AC_INIT([wipfc], [2.0], [])
 AM_INIT_AUTOMAKE
 
 # allow to use a plain gcc compiler (gcc-3.4.6)
-#CPPFLAGS="-std=c++0x -D __STDC_LIMIT_MACROS -D U_NOEXCEPT= -I$srcdir/cpp -I$srcdir/icu/common -I$srcdir/../watcom/h"
+#CPPFLAGS="-std=c++0x -D __STDC_LIMIT_MACROS -D U_NOEXCEPT= -D U_DISABLE_RENAMING -I$srcdir/cpp -I$srcdir/icu/common -I$srcdir/../watcom/h"
 #CXXFLAGS="-pipe -g -Wall -march=native"
 
-CPPFLAGS="-D __STDC_LIMIT_MACROS -D U_NOEXCEPT= -I$srcdir/cpp -I$srcdir/icu/common -I$srcdir/../watcom/h -D _BLDVER=$OWBLDVERTOOL -D _CYEAR=`date +'%Y'`"
+CPPFLAGS="-D __STDC_LIMIT_MACROS -D U_NOEXCEPT= -D U_DISABLE_RENAMING -I$srcdir/cpp -I$srcdir/icu/common -I$srcdir/../watcom/h -D _BLDVER=$OWBLDVERTOOL -D _CYEAR=`date +'%Y'`"
 CXXFLAGS="-pipe -g -Wall"
 
 AC_CONFIG_SRCDIR([cpp/main.cpp])
