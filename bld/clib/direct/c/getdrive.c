@@ -34,7 +34,8 @@
 #include <dos.h>
 #include <direct.h>
 
-_WCRTLINK unsigned _getdrive( void ) {
+_WCRTLINK int _getdrive( void )
+{
     unsigned dnum;
     _dos_getdrive( &dnum );
     return( dnum );

@@ -82,7 +82,7 @@ _WCRTLINK int _chdrive( int drive )
     return( dnum == drive ? 0 : -1 );
 }
 
-_WCRTLINK unsigned _getdrive( void ) 
+_WCRTLINK int _getdrive( void )
 {
     int    dnum;
 
@@ -104,9 +104,9 @@ _WCRTLINK unsigned _getdiskfree( unsigned dnum, struct diskfree_t *df )
     int bios_sectors_per_cyl;
     int bios_heads;
 
-    stat = RdosGetDriveInfo( dnum, 
-                             &free_units, 
-                             &bytes_per_unit, 
+    stat = RdosGetDriveInfo( dnum,
+                             &free_units,
+                             &bytes_per_unit,
                              &total_units );
 
     if( stat ) {
@@ -128,7 +128,7 @@ _WCRTLINK unsigned _getdiskfree( unsigned dnum, struct diskfree_t *df )
         df->total_clusters = total_units;
         df->avail_clusters = free_units;
         df->sectors_per_cluster = bytes_per_unit;
-        df->bytes_per_sector = sector_size;                             
+        df->bytes_per_sector = sector_size;
     }
 
     if( stat ) {
@@ -228,11 +228,11 @@ static int IsMatch( struct dirent *dir, const char *fname )
 static int GetSingleFile( struct dirent *dir )
 {
     for( ;; ) {
-        if( RdosReadDir( dir->d_handle, 
-                     dir->d_entry_nr, 
-                     NAME_MAX, 
+        if( RdosReadDir( dir->d_handle,
+                     dir->d_entry_nr,
+                     NAME_MAX,
                      dir->d_name,
-                     &dir->d_size, 
+                     &dir->d_size,
                      &dir->d_attr,
                      &dir->d_msb_time,
                      &dir->d_lsb_time ) ) {
@@ -255,7 +255,7 @@ _WCRTLINK DIR *opendir( const char *name )
     char            *ptr;
     int             size;
     char            tmp[NAME_MAX + 1];
-        
+
     parent = lib_malloc( sizeof( DIR ) );
     if( parent == NULL )
         return( NULL );
@@ -280,13 +280,13 @@ _WCRTLINK DIR *opendir( const char *name )
             *ptr = 0;
             handle = RdosOpenDir( tmp );
         } else {
-            handle = RdosOpenDir( "." );       
+            handle = RdosOpenDir( "." );
             strcpy( tmp, name );
             strupr( tmp );
             strcpy( parent->d_match_mask, tmp );
         }
     } else {
-        strcpy( parent->d_match_mask, "*" );    
+        strcpy( parent->d_match_mask, "*" );
     }
 
     if( handle == 0 ) {
