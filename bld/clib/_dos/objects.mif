@@ -62,7 +62,6 @@
 !inject sdrveos2.obj                                        o16 o32
 !inject sdrvewnt.obj                     nt nta ntp
 !inject sfattdos.obj d16 d32 dpm                                            w16 w32 osi
-!inject sdrverdu.obj                                                                        rdu
 !inject sfattos2.obj                                        o16 o32
 !inject sfattwnt.obj                     nt nta ntp
 !inject sftimos2.obj                                        o16 o32
