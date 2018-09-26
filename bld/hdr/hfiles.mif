@@ -76,7 +76,7 @@
 !inject graph.h                     hdos      hqnx
 !inject graph2.h                    hdos      hqnx
 !inject grp.h                            hlnx hqnx
-!inject i86.h                       hdos hlnx hqnx
+!inject i86.h                       hdos hlnx hqnx hrdos
 !inject initiali         noext hcpp
 !inject inttypes.h                  hdos hlnx hqnx hrdos
 !inject io.h                        hdos           hrdos
