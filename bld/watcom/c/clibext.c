@@ -2344,59 +2344,6 @@ static BOOL __NTFindNextFileWithAttr( HANDLE h, DWORD attr, LPWIN32_FIND_DATA ff
     }
 }
 
-unsigned _dos_findfirst( const char *path, unsigned attr, struct find_t *buf )
-{
-    HANDLE              h;
-    int                 error;
-    WIN32_FIND_DATA     ffd;
-
-    h = FindFirstFile( (LPTSTR)path, &ffd );
-    if( h == INVALID_HANDLE_VALUE ) {
-        DTAXXX_HANDLE_OF( buf->reserved ) = h;
-        __set_errno( ENOENT );
-        return( (unsigned)-1 );
-    }
-    if( !__NTFindNextFileWithAttr( h, attr, &ffd ) ) {
-        error = GetLastError();
-        DTAXXX_HANDLE_OF( buf->reserved ) = INVALID_HANDLE_VALUE;
-        FindClose( h );
-        __set_errno( ENOENT );
-        return( (unsigned)-1 );
-    }
-    DTAXXX_HANDLE_OF( buf->reserved ) = h;
-    DTAXXX_ATTR_OF( buf->reserved ) = attr;
-    __GetNTDirInfo( (struct dirent *)buf, &ffd );
-    return( 0 );
-}
-
-unsigned _dos_findnext( struct find_t *buf )
-{
-    WIN32_FIND_DATA     ffd;
-
-    if( !FindNextFile( DTAXXX_HANDLE_OF( buf->reserved ), &ffd ) ) {
-        __set_errno( ENOENT );
-        return( (unsigned)-1 );
-    }
-    if( !__NTFindNextFileWithAttr( DTAXXX_HANDLE_OF( buf->reserved ), DTAXXX_ATTR_OF( buf->reserved ), &ffd ) ) {
-        __set_errno( ENOENT );
-        return( (unsigned)-1 );
-    }
-    __GetNTDirInfo( (struct dirent *)buf, &ffd );
-
-    return( 0 );
-}
-
-unsigned _dos_findclose( struct find_t *buf )
-{
-    if( DTAXXX_HANDLE_OF( buf->reserved ) != INVALID_HANDLE_VALUE ) {
-        if( !FindClose( DTAXXX_HANDLE_OF( buf->reserved ) ) ) {
-            __set_errno( ENOENT );
-            return( (unsigned)-1 );
-        }
-    }
-    return( 0 );
-}
-
 char        *optarg;            // pointer to option argument
 int         optind = 1;         // current argv[] index
 int         optopt;             // currently processed chracter
