@@ -130,7 +130,6 @@ _WCRTLINK extern unsigned _dos_freemem( unsigned __seg );
 #endif
 _WCRTLINK extern void     _dos_getdate( struct dosdate_t *__date );
 _WCRTLINK extern unsigned _dos_getdiskfree( unsigned __drive, struct _diskfree_t *__diskspace );
-_WCRTLINK extern unsigned _getdiskfree( unsigned __drive, struct _diskfree_t *__diskspace );
 _WCRTLINK extern void     _dos_getdrive( unsigned *__drive );
 _WCRTLINK extern unsigned _dos_getfileattr( const char *__path, unsigned *__attr );
 _WCRTLINK extern unsigned _dos_getftime( int __handle, unsigned *__date, unsigned *__time );

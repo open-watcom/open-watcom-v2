@@ -97,9 +97,7 @@ _WCRTLINK extern char             *getcwd( char *__buf, size_t __size );
 _WCRTLINK extern char             *_getcwd( char *__buf, size_t __size );
 _WCRTLINK extern char             *_getdcwd( int __drive, char *__buffer, size_t __maxlen );
 _WCRTLINK extern int              _getdrive( void );
-_WCRTLINK extern unsigned         _getdiskfree( unsigned __drive,
-                                                struct _diskfree_t
-                                                *__diskspace);
+_WCRTLINK extern unsigned         _getdiskfree( unsigned __drive, struct _diskfree_t *__diskspace );
 _WCRTLINK extern int              mkdir( const char *__path );
 _WCRTLINK extern int              _mkdir( const char *__path );
 _WCRTLINK extern DIR              *opendir( const char * );
