@@ -53,7 +53,7 @@ WCLASS WFileName : public WString {
         bool WEXPORT setCWD() const;
         bool WEXPORT makeDir() const;
         bool WEXPORT dirExists() const;
-        bool WEXPORT attribs( char* attribs = NULL ) const;
+        bool WEXPORT attribs( unsigned* attribs = NULL ) const;
         void WEXPORT touch( time_t tm=0 ) const;
 
         void WEXPORT setDrive( const char* drive );

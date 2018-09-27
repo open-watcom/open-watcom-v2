@@ -89,7 +89,7 @@ WCLASS MItem : public WFileName
                 MRule*          _rule;
                 WVList          _states;
                 MItem*          _parent;
-                char            _attribs;
+                unsigned        _attribs;
                 bool            _exists;
                 bool            _isTarget;
                 WVList          _actionStates;

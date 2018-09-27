@@ -341,7 +341,7 @@ bool WEXPORT WFileName::dirExists() const
 }
 
 #ifdef __UNIX__
-bool WEXPORT WFileName::attribs( char* attribs ) const
+bool WEXPORT WFileName::attribs( unsigned* attribs ) const
 {
     /* XXX needs to be fixed: just to get it going */
     struct stat st;
@@ -351,21 +351,25 @@ bool WEXPORT WFileName::attribs( char* attribs ) const
     return( stat( *this, &st ) == 0 );
 }
 #else
-bool WEXPORT WFileName::attribs( char* attribs ) const
+bool WEXPORT WFileName::attribs( unsigned* attribs ) const
 {
-    struct find_t fileinfo;
+    struct _finddata_t fileinfo;
+    long handle;
+    long rc;
+
     #define FIND_STYLE _A_NORMAL
-    int rc = _dos_findfirst( *this, FIND_STYLE, &fileinfo );
-    if( rc == 0 ) {
+    rc = handle = _findfirst( *this, &fileinfo );
+    while( rc != -1 && (fileinfo.attrib & FIND_STYLE) == 0 ) {
+        rc = _findnext( handle, &fileinfo );
+    }
+    #undef FIND_STYLE
+    if( rc != -1 ) {
         if( attribs != NULL ) {
             *attribs = fileinfo.attrib;
         }
     }
-    #undef FIND_STYLE
-    #ifndef __WINDOWS__
-    _dos_findclose( &fileinfo );
-    #endif
-    return( rc == 0 );
+    _findclose( handle );
+    return( rc != -1 );
 }
 #endif
 
