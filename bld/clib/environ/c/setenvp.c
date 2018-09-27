@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,8 +37,8 @@
 #include <stdlib.h>
 #include <env.h>
 #include <string.h>
-#if !defined(__UNIX__)
-    #include <dos.h>
+#if defined( _M_IX86 )
+    #include <i86.h>
 #endif
 #if defined(__OS2__)
     #define INCL_DOSMISC
@@ -170,7 +171,7 @@ void __setenvp( void )
             while( *src ) {
                 src++;
                 size++;
-            }        
+            }
             src++;
             size++;
 
@@ -178,7 +179,7 @@ void __setenvp( void )
                 break;
         }
         size++;
-        
+
         startp = lib_malloc( size );
         memcpy( startp, ptr, size );
         RdosUnlockSysEnv();

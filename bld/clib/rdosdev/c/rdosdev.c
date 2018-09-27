@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -28,10 +28,11 @@
 *
 ****************************************************************************/
 
-#include <memory.h>
+
 #include <process.h>
 #include "rdos.h"
 #include "rdosdev.h"
+
 
 #define FALSE 0
 
@@ -153,14 +154,14 @@ void RdosGetBitmapInfo( int handle, int *BitPerPixel, int *width, int *height, i
         lds ebx,buffer
         mov [ebx],edi
         mov [ebx+4],es
-        pop ds        
+        pop ds
     }
 }
 
 int RdosReadDir( int Handle, int EntryNr, int MaxNameSize, char *PathName, long *FileSize, int *Attribute, unsigned long *MsbTime, unsigned long *LsbTime )
 {
     int val;
-    
+
     __asm {
         mov ebx,Handle
         mov edx,EntryNr

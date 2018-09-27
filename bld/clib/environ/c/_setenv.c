@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +35,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include <mbstring.h>
+#if !defined( __RDOS__ ) && !defined( __RDOSDEV__ )
+    #include <mbstring.h>
+#endif
 #ifdef __WIDECHAR__
     #include <wctype.h>
 #endif

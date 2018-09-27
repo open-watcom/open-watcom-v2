@@ -79,3 +79,4 @@
 !include ../../../../objlist.mif
 
 ptkill_opts  =-I"$(clib_dir)/linux/h"
+fnmatch_opts =-I"$(clib_dir)/char/h"

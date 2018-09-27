@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,7 +34,7 @@
 #include "widechar.h"
 #include <stdlib.h>
 #include <string.h>
-#if !defined( __WIDECHAR__ ) && !defined( __UNIX__ )
+#if !defined( __WIDECHAR__ ) && !defined( __UNIX__ ) && !defined( __RDOS__ ) && !defined( __RDOSDEV__ )
     #include <mbstring.h>
 #endif
 #include "pathmac.h"
@@ -64,7 +65,7 @@ static void copypart( CHAR_TYPE *buf, const CHAR_TYPE *p, int len, int maxlen )
     if( buf != NULL ) {
         if( len > maxlen )
             len = maxlen;
-#if defined( __WIDECHAR__ ) || defined( __UNIX__ )
+#if defined( __WIDECHAR__ ) || defined( __UNIX__ ) || defined( __RDOS__ ) || defined( __RDOSDEV__ )
         memcpy( buf, p, len * CHARSIZE );
         /*strncpy( buf, p, len ); */
         buf[len ] = NULLCHAR;
@@ -169,7 +170,7 @@ _WCRTLINK void __F_NAME(_splitpath,_wsplitpath)( const CHAR_TYPE *path,
     for( ;; ) {         /* 07-jul-91 DJG -- save *path in ch for speed */
         if( *path == NULLCHAR )
             break;
-#if defined( __WIDECHAR__ ) || defined( __UNIX__ )
+#if defined( __WIDECHAR__ ) || defined( __UNIX__ ) || defined( __RDOS__ ) || defined( __RDOSDEV__ )
         ch = *path;
 #else
         ch = _mbsnextc( (unsigned char *)path );
@@ -179,7 +180,7 @@ _WCRTLINK void __F_NAME(_splitpath,_wsplitpath)( const CHAR_TYPE *path,
             ++path;
             continue;
         }
-#if defined( __WIDECHAR__ ) || defined( __UNIX__ )
+#if defined( __WIDECHAR__ ) || defined( __UNIX__ ) || defined( __RDOS__ ) || defined( __RDOSDEV__ )
         ++path;
 #else
         path = (char *)_mbsinc( (unsigned char *)path );

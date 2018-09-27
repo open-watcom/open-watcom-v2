@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,12 +32,36 @@
 
 
 #include "variety.h"
-#include <dos.h>
 #include <direct.h>
+#if defined( __DOS__ ) || defined( __WINDOWS__ )
+    #include <dos.h>
+#elif defined( __OS2__ )
+    #include <wos2.h>
+#elif defined( __NT__ )
+    #include <windows.h>
+#elif defined( __RDOS__ ) || defined( __RDOSDEV__ )
+    #include <rdos.h>
+#endif
 
 _WCRTLINK int _getdrive( void )
 {
+#if defined( __DOS__ ) || defined( __WINDOWS__ )
     unsigned dnum;
+
     _dos_getdrive( &dnum );
     return( dnum );
+#elif defined( __OS2__ )
+    OS_UINT     dnum;
+    ULONG       ndrv;
+
+    DosQCurDisk( &dnum, &ndrv );
+    return( (int)dnum );
+#elif defined( __NT__ )
+    char        dir[MAX_PATH];  // [4]
+
+    GetCurrentDirectory( sizeof( dir ), dir );
+    return( tolower( (unsigned char)dir[0] ) - 'a' + 1 );
+#elif defined( __RDOS__ ) || defined( __RDOSDEV__ )
+    return( RdosGetCurDrive() + 1 );
+#endif
 }

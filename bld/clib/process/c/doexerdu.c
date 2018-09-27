@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -34,10 +34,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <conio.h>
-#include <dos.h>
 #include <string.h>
 #include <stddef.h>
-#include <malloc.h>
 #include <process.h>
 #include <rdos.h>
 #include "rtdata.h"
@@ -46,7 +44,7 @@
 #include "_rdos.h"
 
 int _doexec( CHAR_TYPE *pgmname, CHAR_TYPE *cmdline,
-             CHAR_TYPE *envpar, 
+             CHAR_TYPE *envpar,
              const CHAR_TYPE * const argv[] )
 {
     int len;
@@ -99,11 +97,11 @@ int _doexec( CHAR_TYPE *pgmname, CHAR_TYPE *cmdline,
                     } else {
                         envp = 0;
                     }
-                }                
+                }
             }
         }
     } else {
-        RdosCloseFile( fh );    
+        RdosCloseFile( fh );
         ok = 1;
     }
 

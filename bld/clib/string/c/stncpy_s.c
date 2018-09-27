@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,7 +34,7 @@
 #include "widechar.h"
 #include "saferlib.h"
 #include <string.h>
-#include <wchar.h>
+#include "libwchar.h"
 
 
 _WCRTLINK errno_t __F_NAME(strncpy_s,wcsncpy_s)( CHAR_TYPE * __restrict s1,

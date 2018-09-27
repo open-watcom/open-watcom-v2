@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,7 +41,7 @@
 #elif defined(__OS2__)
     #define INCL_DOSMEMMGR
     #include <wos2.h>
-#elif defined(_M_IX86)
+#elif defined(__DOS__)
     #include "tinyio.h"
 #endif
 #include "heap.h"

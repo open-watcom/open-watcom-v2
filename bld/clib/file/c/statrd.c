@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -39,7 +39,6 @@
 #include <string.h>
 #include <direct.h>
 #include <rdos.h>
-#include <mbstring.h>
 #include <ctype.h>
 #include <time.h>
 #include "rtdata.h"
@@ -68,7 +67,7 @@ _WCRTLINK int stat( CHAR_TYPE const *path, struct stat *buf )
     int                 i;
 
     /* reject null string and names that has wildcard */
-    if( *path == NULLCHAR || _mbspbrk( (unsigned char *)path, (unsigned char *)"*?" ) != NULL )
+    if( *path == NULLCHAR || strpbrk( path, "*?" ) != NULL )
         return( -1 );
 
     /*** Determine if 'path' refers to a root directory ***/
@@ -81,7 +80,7 @@ _WCRTLINK int stat( CHAR_TYPE const *path, struct stat *buf )
     }
 
     ptr = path;
-    if( *_mbsinc( (unsigned char *)path ) )
+    if( path[1] == DRV_SEP )
         ptr += 2;
     if( IS_DIR_SEP( ptr[0] ) && ptr[1] == NULLCHAR || isrootdir ) {
         /* handle root directory */
@@ -151,7 +150,7 @@ _WCRTLINK int stat( CHAR_TYPE const *path, struct stat *buf )
     }
 
     /* process drive number */
-    if( *_mbsinc( (unsigned char *)path ) ) {
+    if( path[1] == DRV_SEP ) {
         buf->st_dev = tolower( (UCHAR_TYPE)fullpath[0] ) - STRING( 'a' );
     } else {
         buf->st_dev = RdosGetCurDrive();
@@ -198,16 +197,16 @@ _WCRTLINK int stat( CHAR_TYPE const *path, struct stat *buf )
 static unsigned short at2mode( int attr, char *fname )
 {
     register unsigned short mode;
-    register unsigned char  *ext;
+    register char           *ext;
 
     if( attr & _A_SUBDIR )
         mode = S_IFDIR | S_IXUSR | S_IXGRP | S_IXOTH;
     else {
         mode = S_IFREG;
         /* determine if file is executable, very PC specific */
-        if( (ext = _mbschr( (unsigned char *)fname, '.' )) != NULL ) {
+        if( (ext = strchr( fname, '.' )) != NULL ) {
             ++ext;
-            if( _mbscmp( ext, (unsigned char *)"EXE" ) == 0 || _mbscmp( ext, (unsigned char *)"COM" ) == 0 ) {
+            if( strcmp( ext, "EXE" ) == 0 || strcmp( ext, "COM" ) == 0 ) {
                 mode |= S_IXUSR | S_IXGRP | S_IXOTH;
             }
         }

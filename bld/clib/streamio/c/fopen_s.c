@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,12 +34,9 @@
 #include "widechar.h"
 #include "saferlib.h"
 #include <stddef.h>
-#include <wchar.h>
+#include "libwchar.h"
 #include <stdio.h>
 #include <ctype.h>
-#ifdef __WIDECHAR__
-    #include <wctype.h>
-#endif
 #include <fcntl.h>
 #include <sys/stat.h>
 #include "rtdata.h"

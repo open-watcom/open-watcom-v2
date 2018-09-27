@@ -25,63 +25,30 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation of fputs() - put string to stream.
+* Description:  Implementation of wctype().
 *
 ****************************************************************************/
 
 
 #include "variety.h"
-#include "widechar.h"
-#include <stddef.h>
-#include <stdio.h>
-#include "libwchar.h"
-#include "fileacc.h"
-#include "rtdata.h"
-#include "clibsupp.h"
-#include "streamio.h"
+#include <string.h>
+#include "intwctyp.h"
 
-
-_WCRTLINK int __F_NAME(fputs,fputws)( const CHAR_TYPE *s, FILE *fp )
+/* It is used also by POSIX fnmatch function */
+/* Return a type ID usable by iswctype on success, or zero on error. */
+char __wctype( const char *property )
 {
-    const CHAR_TYPE     *start;
-    INTCHAR_TYPE        c;
-    int                 not_buffered;
-    int                 rc;
-
-    _ValidFile( fp, INTCHAR_EOF );
-    _AccessFile( fp );
-
-    if( _FP_BASE( fp ) == NULL ) {
-        __ioalloc( fp );                /* allocate buffer */
-    }
-    not_buffered = 0;
-    if( fp->_flag & _IONBF ) {
-        not_buffered = 1;
-        fp->_flag &= ~_IONBF;
-        fp->_flag |= _IOLBF;
-    }
-    rc = 0;
-    start = s;
-    while( c = *s ) {
-        s++;
-        if( __F_NAME(fputc,fputwc)( c, fp ) == INTCHAR_EOF ) {
-            rc = EOF;
-            break;
-        }
-    }
-    if( not_buffered ) {
-        fp->_flag &= ~_IOLBF;
-        fp->_flag |= _IONBF;
-        if( rc == 0 ) {
-            rc = __flush( fp );
-        }
-    }
-    if( rc == 0 ) {
-        /* return the number of items written */
-        /* this is ok by ANSI which says that success is */
-        /* indicated by a non-negative return value */
-        rc = s - start;
-    }
-    _ReleaseFile( fp );
-    return( rc );
+    if( !strcmp( property, "alnum" ) )   return( WCTYPE_ALNUM );
+    if( !strcmp( property, "alpha" ) )   return( WCTYPE_ALPHA );
+    if( !strcmp( property, "blank" ) )   return( WCTYPE_BLANK );
+    if( !strcmp( property, "cntrl" ) )   return( WCTYPE_CNTRL );
+    if( !strcmp( property, "digit" ) )   return( WCTYPE_DIGIT );
+    if( !strcmp( property, "graph" ) )   return( WCTYPE_GRAPH );
+    if( !strcmp( property, "lower" ) )   return( WCTYPE_LOWER );
+    if( !strcmp( property, "print" ) )   return( WCTYPE_PRINT );
+    if( !strcmp( property, "punct" ) )   return( WCTYPE_PUNCT );
+    if( !strcmp( property, "space" ) )   return( WCTYPE_SPACE );
+    if( !strcmp( property, "upper" ) )   return( WCTYPE_UPPER );
+    if( !strcmp( property, "xdigit" ) )  return( WCTYPE_XDIGIT );
+    return( 0 );
 }

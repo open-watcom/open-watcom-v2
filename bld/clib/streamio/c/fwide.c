@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,7 +44,7 @@ _WCRTLINK int fwide( FILE *fp, int mode )
     _ValidFile( fp, EOF );
     _AccessFile( fp );
 
-#ifndef __NETWARE__
+#if !defined( __NETWARE__ )
     /* Set orientation if possible */
     if( mode > 0 && _FP_ORIENTATION(fp) == _NOT_ORIENTED )
         _FP_ORIENTATION(fp) = _WIDE_ORIENTED;

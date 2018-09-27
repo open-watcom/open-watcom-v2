@@ -3,7 +3,6 @@
 *                            Open Watcom Project
 *
 * Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -25,63 +24,43 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation of fputs() - put string to stream.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
 #include "variety.h"
-#include "widechar.h"
-#include <stddef.h>
-#include <stdio.h>
-#include "libwchar.h"
-#include "fileacc.h"
-#include "rtdata.h"
-#include "clibsupp.h"
-#include "streamio.h"
+#include <stdlib.h>
+#include <string.h>
+#include <direct.h>
+#include "liballoc.h"
+#include <rdos.h>
+#include "pathmac.h"
 
 
-_WCRTLINK int __F_NAME(fputs,fputws)( const CHAR_TYPE *s, FILE *fp )
+_WCRTLINK char *getcwd( char *buf, size_t size )
 {
-    const CHAR_TYPE     *start;
-    INTCHAR_TYPE        c;
-    int                 not_buffered;
-    int                 rc;
+    int drive;
+    char *p;
+    char cwd[256];
 
-    _ValidFile( fp, INTCHAR_EOF );
-    _AccessFile( fp );
+    if( buf == NULL ) {
+        size = sizeof( cwd );
+        p = lib_malloc( size );
+    } else {
+        p = buf;
+    }
 
-    if( _FP_BASE( fp ) == NULL ) {
-        __ioalloc( fp );                /* allocate buffer */
+    drive = RdosGetCurDrive();
+
+    cwd[0] = drive + 'A';
+    cwd[1] = DRV_SEP;
+    cwd[2] = DIR_SEP;
+
+    if( RdosGetCurDir( drive, &cwd[3] ) ) {
+        return( strncpy( p, cwd, size ) );
+    } else {
+        return( NULL );
     }
-    not_buffered = 0;
-    if( fp->_flag & _IONBF ) {
-        not_buffered = 1;
-        fp->_flag &= ~_IONBF;
-        fp->_flag |= _IOLBF;
-    }
-    rc = 0;
-    start = s;
-    while( c = *s ) {
-        s++;
-        if( __F_NAME(fputc,fputwc)( c, fp ) == INTCHAR_EOF ) {
-            rc = EOF;
-            break;
-        }
-    }
-    if( not_buffered ) {
-        fp->_flag &= ~_IOLBF;
-        fp->_flag |= _IONBF;
-        if( rc == 0 ) {
-            rc = __flush( fp );
-        }
-    }
-    if( rc == 0 ) {
-        /* return the number of items written */
-        /* this is ok by ANSI which says that success is */
-        /* indicated by a non-negative return value */
-        rc = s - start;
-    }
-    _ReleaseFile( fp );
-    return( rc );
 }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,7 +35,6 @@
 #include "widechar.h"
 #include <stdlib.h>
 #include <direct.h>
-#include <dos.h>
 #if defined( __NT__ )
     #include <windows.h>
 #elif defined( __OS2__ )
@@ -47,19 +46,18 @@
 
 _WCRTLINK CHAR_TYPE *__F_NAME(_getdcwd,_wgetdcwd)( int drive, CHAR_TYPE *buffer, size_t maxlen )
 {
-    unsigned            olddrive, tmpdrive;
+    int     old_drive;
 
     /*** Change drive if necessary ***/
     if( drive != 0 ) {
-        _dos_getdrive( &olddrive );
-        _dos_setdrive( drive, &tmpdrive );
-        _dos_getdrive( &tmpdrive );
-        if( drive != tmpdrive ) {
+        old_drive = _getdrive();
+        if( _chdrive( drive ) ) {
             _RWD_errno = ENODEV;
             return( NULL );
         }
     }
     buffer = __F_NAME(getcwd,_wgetcwd)( buffer, maxlen );
-    if( drive != 0 )  _dos_setdrive( olddrive, &tmpdrive );
+    if( drive != 0 )
+        _chdrive( old_drive );
     return( buffer );
 }

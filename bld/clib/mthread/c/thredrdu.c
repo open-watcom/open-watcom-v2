@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -34,8 +34,6 @@
 #include <stdlib.h>
 #include <process.h>
 #include <string.h>
-#include <dos.h>
-#include <malloc.h>
 #include <rdos.h>
 #include "rterrno.h"
 #include "stacklow.h"
@@ -71,7 +69,7 @@ static void begin_thread_helper( void *param )
     int                 thread_handle;
     REGISTRATION_RECORD rr;
 
-    td->tid = RdosGetThreadHandle();    
+    td->tid = RdosGetThreadHandle();
     start_addr = (__thread_fn *)td->start_addr;
     arg = td->argument;
     thread_handle = td->thread_handle;

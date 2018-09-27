@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,9 +33,8 @@
 #include "variety.h"
 #include "widechar.h"
 #include <ctype.h>
-#ifdef __WIDECHAR__
- #include <wchar.h>
-#endif
+#include "libwchar.h"
+
 
 _WCRTLINK INTCHAR_TYPE __F_NAME(tolower,towlower)( INTCHAR_TYPE c )
 {

@@ -3,7 +3,6 @@
 *                            Open Watcom Project
 *
 * Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -25,63 +24,22 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation of fputs() - put string to stream.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
 #include "variety.h"
-#include "widechar.h"
-#include <stddef.h>
-#include <stdio.h>
-#include "libwchar.h"
-#include "fileacc.h"
-#include "rtdata.h"
-#include "clibsupp.h"
-#include "streamio.h"
+#include <direct.h>
+#include <rdos.h>
 
 
-_WCRTLINK int __F_NAME(fputs,fputws)( const CHAR_TYPE *s, FILE *fp )
+_WCRTLINK int rmdir( const char *path )
 {
-    const CHAR_TYPE     *start;
-    INTCHAR_TYPE        c;
-    int                 not_buffered;
-    int                 rc;
-
-    _ValidFile( fp, INTCHAR_EOF );
-    _AccessFile( fp );
-
-    if( _FP_BASE( fp ) == NULL ) {
-        __ioalloc( fp );                /* allocate buffer */
+    if( RdosRemoveDir( path ) ) {
+        return 0;
+    } else {
+        return -1;
     }
-    not_buffered = 0;
-    if( fp->_flag & _IONBF ) {
-        not_buffered = 1;
-        fp->_flag &= ~_IONBF;
-        fp->_flag |= _IOLBF;
-    }
-    rc = 0;
-    start = s;
-    while( c = *s ) {
-        s++;
-        if( __F_NAME(fputc,fputwc)( c, fp ) == INTCHAR_EOF ) {
-            rc = EOF;
-            break;
-        }
-    }
-    if( not_buffered ) {
-        fp->_flag &= ~_IOLBF;
-        fp->_flag |= _IONBF;
-        if( rc == 0 ) {
-            rc = __flush( fp );
-        }
-    }
-    if( rc == 0 ) {
-        /* return the number of items written */
-        /* this is ok by ANSI which says that success is */
-        /* indicated by a non-negative return value */
-        rc = s - start;
-    }
-    _ReleaseFile( fp );
-    return( rc );
 }

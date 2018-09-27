@@ -2,8 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -34,9 +33,9 @@
 #include <fnmatch.h>
 #include <ctype.h>
 #include <string.h>
-#include <wctype.h>
 #include "bool.h"
 #include "pathmac.h"
+#include "intwctyp.h"
 
 
 /* Implementation note: On non-UNIX systems, backslashes in the string
@@ -81,12 +80,26 @@ static int sub_bracket( const char *p, int c )
             return( 0 );
         if( *p++ != ']' )
             return( 0 );
-        type = wctype( sname );
+        type = __wctype( sname );
         if( type ) {
             int     rc;
 
             rc = p - s;
-            return( iswctype( c, type ) ? rc : -rc );
+            switch( type ) {
+            case WCTYPE_ALNUM:  if( isalnum( c ) ) return( rc );    break;
+            case WCTYPE_ALPHA:  if( isalpha( c ) ) return( rc );    break;
+            case WCTYPE_BLANK:  if( isblank( c ) ) return( rc );    break;
+            case WCTYPE_CNTRL:  if( iscntrl( c ) ) return( rc );    break;
+            case WCTYPE_DIGIT:  if( isdigit( c ) ) return( rc );    break;
+            case WCTYPE_GRAPH:  if( isgraph( c ) ) return( rc );    break;
+            case WCTYPE_LOWER:  if( islower( c ) ) return( rc );    break;
+            case WCTYPE_PRINT:  if( isprint( c ) ) return( rc );    break;
+            case WCTYPE_PUNCT:  if( ispunct( c ) ) return( rc );    break;
+            case WCTYPE_SPACE:  if( isspace( c ) ) return( rc );    break;
+            case WCTYPE_UPPER:  if( isupper( c ) ) return( rc );    break;
+            case WCTYPE_XDIGIT: if( isxdigit( c ) ) return( rc );   break;
+            }
+            return( -rc );
         }
         return( 0 );
     case '=':
