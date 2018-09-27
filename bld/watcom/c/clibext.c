@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -1946,27 +1946,6 @@ int unsetenv( const char *name )
     putenv( buff );
     free( buff );
     return( 0 );
-}
-
-void _dos_getdrive( unsigned *drive )
-{
-    char        buff[MAX_PATH];
-
-    GetCurrentDirectory( sizeof( buff ), buff );
-    *drive = tolower( buff[0] ) - 'a'+1;
-}
-
-void _dos_setdrive( unsigned drivenum, unsigned *drives )
-{
-    char        dir[4];
-
-    dir[0] = (char)drivenum + 'a' - 1;
-    dir[1] = ':';
-    dir[2] = '.';
-    dir[3] = 0;
-
-    SetCurrentDirectory( dir );
-    *drives = (unsigned)-1;
 }
 
 unsigned _dos_getfileattr( const char *path, unsigned *attribute )

@@ -46,7 +46,7 @@
 
 extern void __buffered_keyboard_input( char * );
 #pragma aux __buffered_keyboard_input = \
-        _MOV_AH 0x0a \
+        _MOV_AH DOS_BUFF_INPUT \
         _INT_21 \
         parm caller [ds dx] \
         modify [ax];

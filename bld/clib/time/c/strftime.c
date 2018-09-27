@@ -34,7 +34,7 @@
 #include <stdlib.h>
 #ifdef __WIDECHAR__
     #include <mbstring.h>
-    #include <malloc.h>
+    #include <alloca.h>
 #endif
 #include <stdio.h>
 #include <time.h>

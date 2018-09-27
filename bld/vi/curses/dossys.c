@@ -32,7 +32,6 @@
 
 
 #include "vi.h"
-#include <dos.h>
 #include <curses.h>
 #include "win.h"
 #include "dosx.h"
@@ -43,46 +42,10 @@ extern int PageCnt;
 
 WINDOW *CursesWindow;
 
-static char oldPath[_MAX_PATH];
-static char oldDrive;
-
 int FileSysNeedsCR( int handle )
 {
     return( true );
 }
-
-/*
- * PushDirectory
- */
-void PushDirectory( const char *orig )
-{
-    unsigned    c;
-
-    oldPath[0] = '\0';
-    _dos_getdrive( &c );
-    oldDrive = (char)c;
-    if( orig[1] == DRV_SEP ) {
-        ChangeDrive( orig[0] );
-    }
-    GetCWD2( oldPath, sizeof( oldPath ) );
-    ChangeDirectory( orig );
-
-} /* PushDirectory */
-
-/*
- * PopDirectory
- */
-void PopDirectory( void )
-{
-    unsigned    total;
-
-    if( oldPath[0] != '\0' ) {
-        ChangeDirectory( oldPath );
-    }
-    _dos_setdrive( oldDrive, &total );
-    ChangeDirectory( CurrentDirectory );
-
-} /* PopDirectory */
 
 /*
  * NewCursor - change cursor to insert mode type
@@ -177,26 +140,6 @@ void ScreenPage( int page )
     PageCnt += page;
 
 } /* ScreenPage */
-
-/*
- * ChangeDrive - change the working drive
- */
-int ChangeDrive( int drive )
-{
-    char        a;
-    unsigned    b;
-    unsigned    total, c;
-
-    a = (char)tolower( drive ) - 'a';
-    b = a + 1;
-    _dos_setdrive( b, &total );
-    _dos_getdrive( &c );
-    if( b != c ) {
-        return( ERR_NO_SUCH_DRIVE );
-    }
-    return( ERR_NO_ERR );
-
-}/* ChangeDrive */
 
 #if defined( _M_I86 )
     #define KEY_PTR (char _FAR *)0x00400017;

@@ -25,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation of _chdrive().
+* Description:  Set active drive.
 *
 ****************************************************************************/
 
@@ -41,6 +41,7 @@
 #elif defined( __RDOS__ ) || defined( __RDOSDEV__ )
     #include <rdos.h>
 #endif
+#include "pathmac.h"
 
 
 _WCRTLINK int _chdrive( int drive )
@@ -50,27 +51,32 @@ _WCRTLINK int _chdrive( int drive )
 
     _dos_setdrive( drive, &ndrv );
     _dos_getdrive( &dnum );
-    return( (int)dnum == drive ? 0 : -1 );
+    if( (int)dnum == drive )
+        return( 0 );
 #elif defined( __OS2__ )
     OS_UINT     dnum;
     ULONG       ndrv;
 
     DosSelectDisk( drive );
     DosQCurDisk( &dnum, &ndrv );
-    return( (int)dnum == drive ? 0 : -1 );
+    if( (int)dnum == drive )
+        return( 0 );
 #elif defined( __NT__ )
     char        dir[MAX_PATH];  // [4]
 
     dir[0] = drive + 'a' - 1;
-    dir[1] = ':';
+    dir[1] = DRV_SEP;
     dir[2] = '.';
     dir[3] = '\0';
 
     SetCurrentDirectory( dir );
     GetCurrentDirectory( sizeof( dir ), dir );
-    return( tolower( (unsigned char)dir[0] ) - 'a' + 1 == drive ? 0 : -1 );
+    if( tolower( (unsigned char)dir[0] ) - 'a' + 1 == drive )
+        return( 0 );
 #elif defined( __RDOS__ ) || defined( __RDOSDEV__ )
     RdosSetCurDrive( drive - 1 );
-    return( RdosGetCurDrive() + 1 == drive ? 0 : -1 );
+    if( RdosGetCurDrive() + 1 == drive )
+        return( 0 );
 #endif
+    return( -1 );
 }

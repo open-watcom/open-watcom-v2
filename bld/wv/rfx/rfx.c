@@ -433,10 +433,10 @@ static char GetDrv( object_loc loc )
     }
 }
 
-static void SetDrv( int drive, object_loc loc )
-/*********************************************/
+static void SetDrv( char drive, object_loc loc )
+/**********************************************/
 {
-    drive = toupper( drive );
+    drive = toupper( (unsigned char)drive );
     if( loc == LOC_REMOTE ) {
         RemoteSetDrv( drive - 'A' );
     } else {

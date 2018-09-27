@@ -50,9 +50,6 @@ static unsigned ChgDir( char *dir )
 {
     char        *end;
     size_t      len;
-#ifndef __UNIX__
-    unsigned    total;
-#endif
 
     if( dir[0] == '\0' )
         return( 0 );
@@ -68,7 +65,7 @@ static unsigned ChgDir( char *dir )
         }
     }
     if( len > 1 && dir[1] == ':' ) {
-        _dos_setdrive( toupper( dir[0] ) - 'A' + 1, &total );
+        _chdrive( toupper( dir[0] ) - 'A' + 1 );
 #endif
     }
     return( chdir( dir ) );

@@ -33,7 +33,7 @@
 #include "widechar.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include <malloc.h>
+#include <alloca.h>
 #include "initarg.h"
 #include "rtstack.h"
 #include "cmain.h"

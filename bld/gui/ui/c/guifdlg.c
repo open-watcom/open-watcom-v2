@@ -532,9 +532,6 @@ static bool buildFileTypesExts( dlg_info *dlg, const char *data )
 static bool goToDir( gui_window *gui, char *dir )
 {
     char        drive[_MAX_DRIVE];
-#if !defined( __UNIX__ ) && !defined( __NETWARE__ ) && !defined( __RDOS__ )
-    unsigned    total;
-#endif
     bool        removed_end;
     size_t      len;
     int         rc;
@@ -578,10 +575,8 @@ static bool goToDir( gui_window *gui, char *dir )
 
     splitPath( dir, drive, NULL, NULL, NULL );
     if( drive[0] != 0 ) {
-#if defined( __RDOS__ )
-        RdosSetCurDrive( (unsigned)(toupper( drive[0] ) - 'A') );
-#elif !defined( __UNIX__ ) && !defined( __NETWARE__ )
-        _dos_setdrive( toupper( drive[0] ) - 'A' + 1, &total );
+#if !defined( __UNIX__ ) && !defined( __NETWARE__ )
+        _chdrive( toupper( drive[0] ) - 'A' + 1 );
 #endif
     }
     return( true );

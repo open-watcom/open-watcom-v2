@@ -35,7 +35,6 @@
 #include <dos.h>
 #include <string.h>
 #include <stddef.h>
-#include <malloc.h>
 #include <process.h>
 #define INCL_DOSPROCESS
 #define INCL_DOSERRORS

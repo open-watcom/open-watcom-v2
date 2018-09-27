@@ -24,7 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  Spawn another application.
+* Description:  Spawn another application (Windows 3.x version).
 *
 ****************************************************************************/
 

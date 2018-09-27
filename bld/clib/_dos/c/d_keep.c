@@ -36,7 +36,7 @@
 
 _WCNORETURN extern  void    _keep( unsigned, unsigned );
 #pragma aux     _keep = \
-    "mov ah,31h"        \
+    _MOV_AH DOS_TERM_STAY_RESID \
     "int 21h"           \
     parm [ax] [dx];
 

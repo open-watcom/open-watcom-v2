@@ -46,7 +46,7 @@
 
 extern void __GetFullPathName( char *buff, const char *path, size_t size );
 #pragma aux __GetFullPathName = \
-        "mov    AH,60h" \
+        _MOV_AH DOS_TRUENAME \
         _INT_21         \
         parm [ebx] [edx] [ecx];
 

@@ -32,12 +32,12 @@
 
 
 #include "vi.h"
-#include <dos.h>
 #ifdef __NT__
     #include <shlobj.h>
     typedef HRESULT (CALLBACK *GetFolderPath)( HWND, int, HANDLE, DWORD, LPTSTR );
 #endif
 #include "posix.h"
+
 
 #define CONFIG_INI "weditor.ini"
 #define CONFIG_DIR "Open Watcom"

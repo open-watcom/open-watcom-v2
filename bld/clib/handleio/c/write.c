@@ -34,7 +34,7 @@
 #include <stdio.h>
 #include <io.h>
 #include <fcntl.h>
-#include <malloc.h>
+#include <alloca.h>
 #include <stddef.h>
 #include <string.h>
 #if defined(__NT__)

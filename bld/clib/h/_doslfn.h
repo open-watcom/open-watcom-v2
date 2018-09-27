@@ -36,8 +36,6 @@
 #include "tinyio.h"
 #include "rtdata.h"
 
-#define DOS_GET_DTA         0x2F
-#define DOS_CREATE_NEW      0x5B
 
 #define EX_LFN_OPEN         0x01
 #define EX_LFN_CREATE       0x12

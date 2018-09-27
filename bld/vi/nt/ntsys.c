@@ -30,10 +30,10 @@
 
 
 #include "vi.h"
-#include <dos.h>
 #include "win.h"
 #include "dosx.h"
 #include "vibios.h"
+
 
 HANDLE  InputHandle = INVALID_HANDLE_VALUE;
 HANDLE  OutputHandle = INVALID_HANDLE_VALUE;
@@ -41,36 +41,11 @@ COORD   BSize = {0, 0};
 
 extern int PageCnt;
 
-static char oldDir[_MAX_PATH];
-
 int FileSysNeedsCR( int handle )
 {
     handle=handle;
     return( true );
 }
-
-/*
- * PushDirectory
- */
-void PushDirectory( const char *orig )
-{
-    oldDir[0] = '\0';
-    GetCWD2( oldDir, sizeof( oldDir ) );
-    ChangeDirectory( orig );
-
-} /* PushDirectory */
-
-/*
- * PopDirectory
- */
-void PopDirectory( void )
-{
-    if( oldDir[0] != '\0' ) {
-        ChangeDirectory( oldDir );
-    }
-    ChangeDirectory( CurrentDirectory );
-
-} /* PopDirectory */
 
 /*
  * NewCursor - change cursor to insert mode type
@@ -176,25 +151,6 @@ void ScreenPage( int page )
     PageCnt += page;
 
 } /* ScreenPage */
-
-/*
- * ChangeDrive - change the working drive
- */
-vi_rc ChangeDrive( int drive )
-{
-    char        dir[4];
-
-    dir[0] = drive;
-    dir[1] = DRV_SEP;
-    dir[2] = '.';
-    dir[3] = '\0';
-
-    if( !SetCurrentDirectory( dir ) ) {
-        return( ERR_NO_SUCH_DRIVE );
-    }
-    return( ERR_NO_ERR );
-
-}/* ChangeDrive */
 
 /*
  * ShiftDown - test if shift key is down

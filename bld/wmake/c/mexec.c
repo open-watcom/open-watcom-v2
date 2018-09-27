@@ -40,9 +40,6 @@
 #if defined( __UNIX__ ) || defined( __WATCOMC__ )
     #include <fnmatch.h>
 #endif
-#if defined( __DOS__ ) || defined( __NT__ ) || defined( __OS2__ )
-    #include <dos.h>
-#endif
 #if defined( __WATCOMC__ ) || !defined( __UNIX__ )
     #include <process.h>
 #endif
@@ -1344,53 +1341,26 @@ STATIC RET_T handleCD( char *cmd )
 }
 
 
-#if defined( __OS2__ ) || defined( __NT__ )
+#if defined( __OS2__ ) || defined( __NT__ ) || defined( __RDOS__ )
 STATIC RET_T handleChangeDrive( const char *cmd )
 /***********************************************/
 {
-    unsigned    drive_index;
-    unsigned    total;
-    unsigned    curr_drive;
+    int         drive_index;
 
 #ifdef DEVELOPMENT
     PrtMsg( DBG | INF | INTERPRETING, dosInternals[CNUM] );
 #endif
 
-    drive_index = (unsigned)(ctoupper( *cmd ) - 'A' + 1);
+    drive_index = (ctoupper( *cmd ) - 'A' + 1);
     if( drive_index == 0 || drive_index > 26 ) {
         return( RET_ERROR );
     }
-    _dos_setdrive( drive_index, &total );
-    _dos_getdrive( &curr_drive );
-    if( curr_drive != drive_index ) {
+    if( _chdrive( drive_index ) ) {
         return( RET_ERROR );
     }
     return( RET_SUCCESS );
 }
 #endif
-
-
-#if defined( __RDOS__ )
-STATIC RET_T handleChangeDrive( const char *cmd )
-/***********************************************/
-{
-    unsigned    drive_index;
-    unsigned    curr_drive;
-
-#ifdef DEVELOPMENT
-    PrtMsg( DBG | INF | INTERPRETING, dosInternals[CNUM] );
-#endif
-
-    drive_index = (unsigned)(ctoupper( *cmd ) - 'A');
-    RdosSetCurDrive( drive_index );
-    curr_drive = RdosGetCurDrive();
-    if( curr_drive != drive_index ) {
-        return( RET_ERROR );
-    }
-    return( RET_SUCCESS );
-}
-#endif
-
 #endif
 
 

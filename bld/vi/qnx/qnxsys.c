@@ -43,12 +43,11 @@
 #include "win.h"
 #include "dosx.h"
 
+
 extern int                      PageCnt;
 extern struct _console_ctrl     *QNXCon;
 extern int                      QNXConHandle;
 extern unsigned int             QNXConsole;
-
-static char                     oldPath[_MAX_PATH];
 
 int FileSysNeedsCR( int handle )
 {
@@ -70,30 +69,6 @@ int FileSysNeedsCR( int handle )
     }
     return( dos_pid == fd_info.pid );
 }
-
-/*
- * PushDirectory - save the current directory
- */
-void PushDirectory( const char *orig )
-{
-    orig = orig;
-    oldPath[0] = '\0';
-    GetCWD2( oldPath, sizeof( oldPath ) );
-    ChangeDirectory( orig );
-
-} /* PushDirectory */
-
-/*
- * PopDirectory - restore the current directory
- */
-void PopDirectory( void )
-{
-    if( oldPath[0] != '\0' ) {
-        ChangeDirectory( oldPath );
-    }
-    ChangeDirectory( CurrentDirectory );
-
-} /* PopDirectory */
 
 /*
  * NewCursor - change cursor to insert mode type
@@ -215,16 +190,6 @@ void ScreenPage( int page )
     PageCnt += page;
 
 } /* ScreenPage */
-
-/*
- * ChangeDrive - change the working drive
- */
-int ChangeDrive( int drive )
-{
-    drive = drive;
-    return( ERR_NO_ERR );
-
-}/* ChangeDrive */
 
 /*
  * ShiftDown - test if shift key is down

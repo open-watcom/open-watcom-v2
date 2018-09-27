@@ -33,7 +33,6 @@
 #include "commonui.h"
 #include <string.h>
 #include <stdio.h>
-#include <dos.h>
 #include <ctype.h>
 #include <direct.h>
 #include <stdlib.h>
@@ -227,8 +226,7 @@ bool GenTmpFileName( const char *tmpname, char *buf )
 static void relToAbs( const char *path, char *out )
 {
     char        *cwd;
-    unsigned    old_dir;
-    unsigned    tot;
+    int         old_drive;
     char        dir[_MAX_DIR];
     char        drive[_MAX_DRIVE];
     char        fname[_MAX_FNAME];
@@ -236,7 +234,7 @@ static void relToAbs( const char *path, char *out )
     char        *ptr;
 
     cwd = getcwd( NULL, 0 );
-    _dos_getdrive( &old_dir );
+    old_drive = _getdrive();
     _splitpath( path, drive, dir, fname, ext );
     if( strcmp( dir, "\\" ) != 0 ) {
         if( *dir != '\0' ) {
@@ -248,10 +246,10 @@ static void relToAbs( const char *path, char *out )
             *ptr = '\0';
         }
     }
-    _dos_setdrive( toupper( drive[0] ) - 'A' + 1, &tot );
+    _chdrive( toupper( drive[0] ) - 'A' + 1 );
     chdir( dir );
     getcwd( out, _MAX_PATH );
-    _dos_setdrive( old_dir, &tot );
+    _chdrive( old_drive );
     chdir( cwd );
     free( cwd );
     ptr = out;

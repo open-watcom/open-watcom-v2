@@ -61,9 +61,9 @@
     #pragma aux __wNTMain "*"
   #endif
 
-  #if defined( __AXP__ ) && defined( __PPC__ )
-    void mainCRTStartup( void );
-    void wmainCRTStartup( void );
+  #if defined( __AXP__ ) || defined( __PPC__ )
+    extern void mainCRTStartup( void );
+    extern void wmainCRTStartup( void );
   #endif
 
 #endif

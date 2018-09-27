@@ -1,5 +1,5 @@
 #                    d16 d32 dpm g16 g32 nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
-#======================================================================================================
+#===========================================================================================================
 !inject chdir.obj    d16 d32                                                w16 w32 osi
 !inject chdiros2.obj                                        o16 o32
 !inject chdirwnt.obj                     nt nta ntp
@@ -17,7 +17,7 @@
 !inject gtcwdlnx.obj                                                                    l32 lpc lmp
 !inject gtcwdrd.obj                                                                                 rdu rdk
 !inject _getdcwd.obj d16 d32                                                w16 w32 osi
-!inject getdcwd.obj  d16 d32             nt nta ntp         o16 o32         w16 w32 osi
+!inject getdcwd.obj  d16 d32             nt nta ntp         o16 o32         w16 w32 osi             rdu rdk
 !inject mkdir.obj    d16 d32                                                w16 w32 osi
 !inject mkdiros2.obj                                        o16 o32
 !inject mkdirwnt.obj                     nt nta ntp

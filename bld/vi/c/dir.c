@@ -39,6 +39,10 @@
 
 static size_t   currOff;
 static size_t   totalBytes;
+static char     oldPath[_MAX_PATH];
+#if !defined( __UNIX__ )
+static char     oldDrive;
+#endif
 
 /*
  * GetCWD1 - get current working directory, then allocate space for it
@@ -70,31 +74,24 @@ void GetCWD2( char *str, size_t maxlen )
  */
 vi_rc ChangeDirectory( const char *dir )
 {
-#ifdef __UNIX__
-    if( chdir( dir ) )
-        return( ERR_DIRECTORY_OP_FAILED );
-    return( ERR_NO_ERR );
-#else
-    vi_rc       rc;
+#if !defined( __UNIX__ )
     size_t      shift;
-    const char  *tmp;
-    int         i;
 
     shift = 0;
     if( dir[1] == DRV_SEP ) {
-        rc = ChangeDrive( dir[0] );
-        if( rc != ERR_NO_ERR || dir[2] == '\0' ) {
-            return( rc );
+        if( _chdrive( tolower( (unsigned char)dir[0] ) - 'a' + 1 ) ) {
+            return( ERR_NO_SUCH_DRIVE );
+        }
+        if( dir[2] == '\0' ) {
+            return( ERR_NO_ERR );
         }
         shift = 2;
     }
-    tmp = dir + shift;
-    i = chdir( tmp );
-    if( i != 0 ) {
-        return( ERR_DIRECTORY_OP_FAILED );
-    }
-    return( ERR_NO_ERR );
+    dir += shift;
 #endif
+    if( chdir( dir ) )
+        return( ERR_DIRECTORY_OP_FAILED );
+    return( ERR_NO_ERR );
 } /* ChangeDirectory */
 
 /*
@@ -224,3 +221,35 @@ void FormatDirToFile( file *cfile, bool add_drives )
     CreateFcbData( cfile, currOff );
 
 } /* FormatDirToFile */
+
+/*
+ * PushDirectory
+ */
+void PushDirectory( const char *orig )
+{
+#if !defined( __UNIX__ )
+    oldDrive = _getdrive();
+    if( orig[1] == DRV_SEP ) {
+        _chdrive( tolower( (unsigned char)orig[0] ) - 'a' + 1 );
+    }
+#endif
+    oldPath[0] = '\0';
+    GetCWD2( oldPath, sizeof( oldPath ) );
+    ChangeDirectory( orig );
+
+} /* PushDirectory */
+
+/*
+ * PopDirectory
+ */
+void PopDirectory( void )
+{
+#if !defined( __UNIX__ )
+    _chdrive( oldDrive );
+#endif
+    if( oldPath[0] != '\0' ) {
+        ChangeDirectory( oldPath );
+    }
+    ChangeDirectory( CurrentDirectory );
+
+} /* PopDirectory */

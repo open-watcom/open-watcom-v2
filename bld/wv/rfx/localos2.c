@@ -144,11 +144,7 @@ error_handle LocalRmDir( const char *name )
 error_handle LocalSetDrv( int drv )
 /*********************************/
 {
-#ifdef _M_I86
     return( StashErrCode( DosSelectDisk( drv + 1 ), OP_LOCAL ) );
-#else
-    return( StashErrCode( DosSetDefaultDisk( drv + 1 ), OP_LOCAL ) );
-#endif
 }
 
 int LocalGetDrv( void )
@@ -157,11 +153,7 @@ int LocalGetDrv( void )
     APIRET    drive;
     ULONG     map;
 
-#ifdef _M_I86
     if( DosQCurDisk( &drive, &map ) ) {
-#else
-    if( DosQueryCurrentDisk( &drive, &map ) ) {
-#endif
         return( -1 );
     }
     return( drive - 1 );

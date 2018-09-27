@@ -25,8 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Get active drive.
 *
 ****************************************************************************/
 
@@ -46,7 +45,7 @@
 _WCRTLINK int _getdrive( void )
 {
 #if defined( __DOS__ ) || defined( __WINDOWS__ )
-    unsigned dnum;
+    unsigned    dnum;
 
     _dos_getdrive( &dnum );
     return( dnum );

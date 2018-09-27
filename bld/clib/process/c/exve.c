@@ -49,8 +49,6 @@
 #include "_int23.h"
 #include "rterrno.h"
 
-extern execveaddr_type  __Exec_addr;
-extern void _WCFAR __cdecl _doexec(char _WCI86NEAR *,char _WCI86NEAR *,int,unsigned,unsigned,unsigned,unsigned );
 
 #define TRUE            1
 #define FALSE           0
@@ -84,13 +82,17 @@ typedef struct a_blk {
 
 extern unsigned doslowblock( void );
 #pragma aux doslowblock =\
-    "mov ah, 52h"       \
+    _MOV_AH DOS_GET_LIST_OF_LIST \
     "int 21h"           \
     "dec bx"            \
     "dec bx"            \
     "mov ax, es:[bx]"   \
     "inc ax"            \
     modify [bx es] nomemory;
+
+extern execveaddr_type      __Exec_addr;
+extern void _WCFAR __cdecl  _doexec( char _WCI86NEAR *, char _WCI86NEAR *, int, unsigned, unsigned, unsigned, unsigned );
+extern unsigned             __exec_para;
 
 static void dosexpand( unsigned block )
 {
@@ -235,7 +237,6 @@ _WCRTLINK int execve( path, argv, envp )
     char                cmdline[128];   /* Command line build up here */
     char                pgmname[80];    /* file name */
     int                 isexe;
-    extern unsigned     __exec_para;
     unsigned            para;
     const char          **argvv;
     int                 i;

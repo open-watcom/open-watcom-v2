@@ -31,11 +31,10 @@
 
 
 #include "vi.h"
-#include <malloc.h>
 #include <process.h>
-#include <dos.h>
 #include "fcbmem.h"
 #include "win.h"
+
 
 void ResetSpawnScreen( void )
 {

@@ -35,37 +35,13 @@
 #include "stdui.h"
 #include "vibios.h"
 
-extern int  PageCnt;
 
-static char oldPath[FILENAME_MAX];
+extern int  PageCnt;
 
 int FileSysNeedsCR( int handle )
 {
     return( false );
 }
-
-/*
- * PushDirectory
- */
-void PushDirectory( const char *orig )
-{
-    oldPath[0] = '\0';
-    GetCWD2( oldPath, sizeof( oldPath ) );
-    ChangeDirectory( orig );
-
-} /* PushDirectory */
-
-/*
- * PopDirectory
- */
-void PopDirectory( void )
-{
-    if( oldPath[0] != '\0' ) {
-        ChangeDirectory( oldPath );
-    }
-    ChangeDirectory( CurrentDirectory );
-
-} /* PopDirectory */
 
 /*
  * NewCursor - change cursor to insert mode type
@@ -142,17 +118,6 @@ void ScreenPage( int page )
     PageCnt += page;
 
 } /* ScreenPage */
-
-/*
- * ChangeDrive - change the working drive
- */
-vi_rc ChangeDrive( int drive )
-{
-    /* unused parameters */ (void)drive;
-
-    return( ERR_NO_ERR );
-
-}/* ChangeDrive */
 
 /*
  * ShiftDown - test if shift key is down

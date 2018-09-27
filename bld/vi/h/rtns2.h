@@ -79,7 +79,6 @@ extern void         ScreenPage( int );
 extern void         GetClockStart( void );
 extern void         GetSpinStart( void );
 extern bool         SameFile( const char *, const char * );
-extern vi_rc        ChangeDrive( int );
 extern void         PushDirectory( const char * );
 extern void         PopDirectory( void );
 extern bool         ShiftDown( void );

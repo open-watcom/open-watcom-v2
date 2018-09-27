@@ -41,7 +41,9 @@
 */
 
 #include "vi.h"
-#include <dos.h>
+#if defined( _M_IX86 )
+    #include <i86.h>
+#endif
 #include "win.h"
 
 #if defined( __NT__ )

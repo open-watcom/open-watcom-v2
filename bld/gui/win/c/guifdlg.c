@@ -30,22 +30,17 @@
 ****************************************************************************/
 
 
-#include "guiwind.h"
 #if defined( __WINDOWS__ ) && !defined( __WINDOWS_386__ )
     #pragma library( "commdlg.lib" );
 #endif
 
+#include "guiwind.h"
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
 #include <sys/stat.h>
-
-#define HAVE_DRIVES
-
 #include <direct.h>
-#include <dos.h>
-
 #include "guidlg.h"
 #include "guifdlg.h"
 #include "guixutil.h"
@@ -92,9 +87,8 @@ int GUIGetFileName( gui_window *wnd, open_file_name *ofn )
     int                 rc;
     ULONG               i;
     ULONG               slen, flen;
-    unsigned            drive;
-    unsigned            old_drive;
-    unsigned            drives;
+    int                 drive;
+    int                 old_drive;
     char                initial_path[_MAX_PATH];
     char                old_path[_MAX_PATH];
     char                fname[_MAX_FNAME + _MAX_EXT];
@@ -107,12 +101,13 @@ int GUIGetFileName( gui_window *wnd, open_file_name *ofn )
         _splitpath( cwd, NULL, old_path, NULL, NULL );
     }
 
+    old_drive = 0;
     drive = 0;
+    if( ofn->initial_dir != NULL && ofn->initial_dir[0] != '\0' && ofn->initial_dir[1] == ':' ) {
+        drive = tolower( (unsigned char)ofn->initial_dir[0] ) - 'a' + 1;
+    }
     initial_path[0] = '\0';
     if( ofn->initial_dir != NULL && ofn->initial_dir[0] != '\0' ) {
-        if( ofn->initial_dir[1] == ':' ) {
-            drive = ofn->initial_dir[0];
-        }
         _splitpath( ofn->initial_dir, NULL, initial_path, NULL, NULL );
     }
 
@@ -159,15 +154,13 @@ int GUIGetFileName( gui_window *wnd, open_file_name *ofn )
         }
     }
 
-  #if defined( HAVE_DRIVES )
     if( drive ) {
-        _dos_getdrive( &old_drive );
-        _dos_setdrive( tolower( drive ) - 'a' + 1, &drives );
+        old_drive = _getdrive();
+        _chdrive( drive );
         if( *initial_path && *old_path ) {
             chdir( initial_path );
         }
     }
-  #endif
 
     rc = (int)WinFileDlg( HWND_DESKTOP, GUIGetParentFrameHWND( wnd ), &fdlg );
 
@@ -205,14 +198,12 @@ int GUIGetFileName( gui_window *wnd, open_file_name *ofn )
         }
     }
 
-  #if defined( HAVE_DRIVES )
     if( drive ) {
-        _dos_setdrive( old_drive, &drives );
+        _chdrive( old_drive );
         if( *initial_path && *old_path ) {
             chdir( old_path );
         }
     }
-  #endif
 
     if( fdlg.lReturn == DID_CANCEL ) {
         return( FN_RC_NO_FILE_SELECTED );
@@ -286,18 +277,15 @@ int GUIGetFileName( gui_window *wnd, open_file_name *ofn )
     OPENFILENAME        wofn;
     bool                issave;
     int                 rc;
-    unsigned            drive;
-#if defined(HAVE_DRIVES)
-    unsigned            old_drive = 0;
-    unsigned            drives;
-#endif
+    int                 drive;
+    int                 old_drive;
 
     LastPath = NULL;
+    old_drive = 0;
+    drive = 0;
     if( ofn->initial_dir != NULL && ofn->initial_dir[0] != '\0' && ofn->initial_dir[1] == ':' ) {
-        drive = ofn->initial_dir[0];
+        drive = tolower( (unsigned char)ofn->initial_dir[0] ) - 'a' + 1;
         memmove( ofn->initial_dir, ofn->initial_dir + 2, strlen( ofn->initial_dir + 2 ) + 1 );
-    } else {
-        drive = 0;
     }
 
     memset( &wofn, 0 , sizeof( wofn ) );
@@ -347,12 +335,10 @@ int GUIGetFileName( gui_window *wnd, open_file_name *ofn )
         wofn.lpfnHook = MakeProcInstance_OFNHOOK( OpenOFNHookProc, GUIMainHInst );
     }
 
-#if defined( HAVE_DRIVES )
     if( drive ) {
-        _dos_getdrive( &old_drive );
-        _dos_setdrive( tolower( drive ) - 'a' + 1, &drives );
+        old_drive = _getdrive();
+        _chdrive( drive );
     }
-#endif
     if( issave ) {
         rc = GetSaveFileName( &wofn );
     } else {
@@ -368,11 +354,9 @@ int GUIGetFileName( gui_window *wnd, open_file_name *ofn )
         LastPath = NULL;
     }
     ofn->last_path = LastPath;
-#if defined( HAVE_DRIVES )
     if( drive ) {
-        _dos_setdrive( old_drive, &drives );
+        _chdrive( old_drive );
     }
-#endif
     if( rc ) {
         return( FN_RC_FILE_SELECTED );
     }

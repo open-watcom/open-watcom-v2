@@ -129,19 +129,14 @@ error_handle LocalRmDir( const char *name )
 error_handle LocalSetDrv( int drv )
 /*********************************/
 {
-    unsigned    total;
-
-    _dos_setdrive( drv - 1, &total );
+    _chdrive( drv + 1 );
     return( 0 );
 }
 
 int LocalGetDrv( void )
 /*********************/
 {
-    unsigned    drive;
-
-    _dos_getdrive( &drive );
-    return( drive - 1 );
+    return( _getdrive() - 1 );
 }
 
 error_handle LocalGetCwd( int drive, char *where )
@@ -196,7 +191,7 @@ long LocalGetFreeSpace( int drv )
 {
     struct diskfree_t   dfre;
 
-    _dos_getdiskfree( drv, &dfre );
+    _getdiskfree( drv, &dfre );
     return( dfre.avail_clusters * dfre.sectors_per_cluster * dfre.bytes_per_sector );
 }
 

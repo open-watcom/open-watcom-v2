@@ -43,11 +43,11 @@
 #if defined(__OS2__)
     #define INCL_DOSMISC
     #include <wos2.h>
-#elif defined(__NT__)
+#elif defined( __NT__ )
     #include <windows.h>
-#elif defined( __RDOS__)
+#elif defined( __RDOS__ )
     #include <rdos.h>
-#elif defined( __RDOSDEV__)
+#elif defined( __RDOSDEV__ )
     #include <rdos.h>
     #include <rdosdev.h>
 #endif
