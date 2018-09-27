@@ -35,7 +35,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <time.h>
-#include <dos.h>
+#include <io.h>
 #include <direct.h>
 #include "bool.h"
 #include "watcom.h"
@@ -84,9 +84,11 @@ int main( int argc, char *argv[] )
     char                destination[_MAX_PATH];
     char                c;
     timedate            *t_d;
-    int                 rc;
-    struct find_t       ft;
     int                 ch;
+    long                handle;
+    long                rc;
+    struct _finddata_t  fdt;
+    int                 is_dir;
 
     /*
      * initialization
@@ -168,21 +170,27 @@ int main( int argc, char *argv[] )
     } else {
         strcpy( destination, argv[ argc-1 ] );
     }
-    rc = _dos_findfirst( destination, _A_NORMAL | _A_RDONLY | _A_HIDDEN | _A_SYSTEM | _A_SUBDIR | _A_ARCH, &ft );
+
+    rc = handle = _findfirst( destination, &fdt );
+    while( rc != -1 && (fdt.attrib & (_A_NORMAL | _A_RDONLY | _A_HIDDEN | _A_SYSTEM | _A_SUBDIR | _A_ARCH)) == 0 ) {
+        rc = _findnext( handle, &fdt );
+    }
+    is_dir = ( rc != -1 && (fdt.attrib & _A_SUBDIR) );
+    _findclose( handle );
 
     StartTime = clock();
 
     /*
      * see if destination is a directory
      */
-    c = destination[ strlen(destination)-1 ];
-    if( ( !rc && (ft.attrib & _A_SUBDIR) ) || c=='.' || IS_PATH_SEP( c ) ) {
+    c = destination[strlen( destination ) - 1];
+    if( is_dir || c=='.' || IS_PATH_SEP( c ) ) {
         if( !IS_PATH_SEP( c ) ) {
             size_t len = strlen( destination );
             destination[len++] = DIR_SEP;
             destination[len] = '\0';
         }
-        for( i=1;i<argc-1;i++ ) {
+        for( i = 1; i < argc - 1; i++ ) {
             DoCP( argv[i] , destination );
         }
         doneCP();
