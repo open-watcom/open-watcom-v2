@@ -114,7 +114,7 @@ or to
 .ct .li .
 Otherwise,
 .id &_func.
-and returns &minus.1 and sets
+returns &minus.1 and sets
 .kw errno
 to one of the following values:
 .begterm
