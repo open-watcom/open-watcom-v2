@@ -129,10 +129,7 @@ static int PickATag( int tag_count, char **tag_list, const char *tagname )
     memcpy( &wi, &dirw_info, sizeof( window_info ) );
     wi.area.x1 = 12;
     wi.area.x2 = EditVars.WindMaxWidth - 12;
-    i = wi.area.y2 - wi.area.y1 + 1;
-    if( wi.has_border ) {
-        i -= 2;
-    }
+    i = wi.area.y2 - wi.area.y1 + BORDERDIFF( wi );
     if( tag_count < i ) {
         wi.area.y2 -= i - tag_count;
     }

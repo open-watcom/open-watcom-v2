@@ -32,6 +32,9 @@
 #ifndef _CONST_INCLUDED
 #define _CONST_INCLUDED
 
+#include "bool.h"
+
+
 #ifdef __WIN__
     #define CFG_NAME    "weditor.ini"
 #else
@@ -88,8 +91,6 @@ typedef enum {
 #define LINE_EXTRA      (2 + sizeof( linedata_t ))
 
 #define Tab( col, ta )  ((ta == 0) ? 0 : ((((col - 1) / ta) + 1) * ta - (col - 1)))
-
-#include "bool.h"
 
 #define INITIAL_MATCH_COUNT     4
 #define MIN_LINE_LEN            128
@@ -332,5 +333,7 @@ enum border_char {
     #include "borders.h"
     #undef vi_pick
 };
+
+#define BORDERDIFF(wi)  ((wi.has_border) ? -1 : 1)
 
 #endif

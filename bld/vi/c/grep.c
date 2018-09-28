@@ -502,15 +502,11 @@ static vi_rc doGREP( const char *dirlist )
             memcpy( &wi_disp, &dirw_info, sizeof( window_info ) );
             wi_disp.area.x1 = 14;
             wi_disp.area.x2 = EditVars.WindMaxWidth - 2;
-            i = wi_disp.area.y2 - wi_disp.area.y1 + 1;
-            if( wi_disp.has_border ) {
-                i -= 2;
-            }
+            i = wi_disp.area.y2 - wi_disp.area.y1 + BORDERDIFF( wi_disp );
             if( clist < i ) {
                 wi_disp.area.y2 -= ( i - clist );
             }
             show_lineno = ( clist > i );
-
             /*
              * build options window
              */

@@ -355,7 +355,6 @@ vi_rc EditFileFromList( void )
     bool        repeat = true;
     info        *cinfo;
     char        **list, modchar;
-    bool        show_lineno;
     window_info wi;
     selectitem  si;
     vi_rc       rc;
@@ -395,15 +394,10 @@ vi_rc EditFileFromList( void )
         }
         fcnt = j;
         tmp = filelistw_info.area.y2;
-        i = filelistw_info.area.y2 - filelistw_info.area.y1 + 1;
-        if( filelistw_info.has_border ) {
-            i -= 2;
-        }
+        i = filelistw_info.area.y2 - filelistw_info.area.y1 + BORDERDIFF( filelistw_info );
         if( j < i ) {
             filelistw_info.area.y2 -= ( i - j );
         }
-        show_lineno = true;
-
         /*
          * get file
          */
@@ -418,7 +412,7 @@ vi_rc EditFileFromList( void )
         si.num = n;
         si.retevents = fileopts_evlist;
         si.event = VI_KEY( DUMMY );
-        si.show_lineno = show_lineno;
+        si.show_lineno = true;
         si.cln = n + 1;
         si.event_wid = wid;
         rc = SelectItem( &si );

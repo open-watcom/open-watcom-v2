@@ -1197,15 +1197,11 @@ vi_rc Set( const char *name )
   #ifndef __WIN__
         tc = getSetInfo( &vals, &list, &longest );
         tmp = setw_info.area.y2;
-        i = setw_info.area.y2 - setw_info.area.y1 + 1;
-        if( setw_info.has_border ) {
-            i -= 2;
-        }
+        i = setw_info.area.y2 - setw_info.area.y1 + BORDERDIFF( setw_info );
         if( tc < i ) {
             setw_info.area.y2 -= (i - tc);
         }
-        rc = SelectItemAndValue( &setw_info, "Settings", list,
-                          tc, SettingSelected, 1, vals, longest + 3 );
+        rc = SelectItemAndValue( &setw_info, "Settings", list, tc, SettingSelected, 1, vals, longest + 3 );
         setw_info.area.y2 = tmp;
         MemFreeList( tc, vals );
         MemFreeList( tc, list );
