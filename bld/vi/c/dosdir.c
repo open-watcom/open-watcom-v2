@@ -33,6 +33,8 @@
 #include <direct.h>
 #include "wio.h"
 
+#include "clibext.h"
+
 
 /*
  * MyGetFileSize - do just that
