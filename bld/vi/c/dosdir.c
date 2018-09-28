@@ -31,10 +31,7 @@
 
 #include "vi.h"
 #include <direct.h>
-#include <dos.h>
 #include "wio.h"
-
-#include "clibext.h"
 
 
 /*
@@ -59,7 +56,7 @@ vi_rc MyGetFileSize( const char *name, long *size )
  */
 bool IsDirectory( char *name )
 {
-    struct find_t       dta;
+    struct _finddata_t  fdt;
     unsigned            rc;
 
     if( strpbrk( name, "?*" ) != NULL ) {
@@ -75,11 +72,7 @@ bool IsDirectory( char *name )
     }
 
     /* check if it is actually a sub-directory */
-    rc = _dos_findfirst( name, _A_NORMAL | _A_RDONLY | _A_HIDDEN | _A_SYSTEM | _A_SUBDIR | _A_ARCH, &dta );
-    if( rc != 0 ) {
-        return( false );
-    }
-    return( (dta.attrib & _A_SUBDIR) != 0 );
+    return( _findfirst( name, &fdt ) != -1 && (fdt.attrib & _A_SUBDIR) );
 
 } /* IsDirectory */
 
