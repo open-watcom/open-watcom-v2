@@ -180,7 +180,7 @@ plib_c_inc_dirs_os2_386 =-I"$(os2api_dir)/os2386/h"
 plib_c_inc_dirs_os2     =-I"$(hdr_dir)/dos" $(plib_c_inc_dirs_os2_$(plib_$(processor)))
 plib_c_inc_dirs_winnt   =-I"$(hdr_dir)/dos" -I"$(w32api_dir)/nt"
 plib_c_inc_dirs_qnx     =-I"$(hdr_dir)/qnx"
-plib_c_inc_dirs_rdos    =-I"$(hdr_dir)/dos"
+plib_c_inc_dirs_rdos    =-I"$(hdr_dir)/rdos"
 plib_c_inc_dirs_linux   =-I"$(hdr_dir)/linux"
 
 plib_inc_dirs = -I"$(lib_misc_dir)/h" -I"../../h" -I"$(plusplus_dir)/h" -I"$(cpplib_dir)/runtime/h" $(plib_c_inc_dirs_$(system)) -I"$(watcom_dir)/h" -I"$(comp_cfg_dir)/h"
