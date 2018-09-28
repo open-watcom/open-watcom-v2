@@ -85,8 +85,8 @@ int main( int argc, char *argv[] )
     char                c;
     timedate            *t_d;
     int                 ch;
-    long                handle;
-    long                rc;
+    intptr_t            handle;
+    intptr_t            rc;
     struct _finddata_t  fdt;
     int                 is_dir;
 

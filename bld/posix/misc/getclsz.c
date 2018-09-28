@@ -41,26 +41,24 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <dos.h>
+#include <direct.h>
 #if defined( __OS2__ )
-#define INCL_DOS
-#include <os2.h>
-#endif
-#if defined( __NT__ )
-#include <windows.h>
+    #define INCL_DOS
+    #include <os2.h>
+#elif defined( __NT__ )
+    #include <windows.h>
+#elif defined( __DOS__ )
+    #include <dos.h>
 #endif
 #include "misc.h"
 
 #include "clibext.h"
 
 
-long GetClusterSize( unsigned char drive )
+long GetClusterSize( int drive )
 {
-    unsigned cur_drive;
-
     if( drive == 0 ) {
-        _dos_getdrive( &cur_drive );
-        drive = (unsigned char)cur_drive;
+        drive = _getdrive();
     }
   #if defined( __NT__ )
     {
@@ -72,7 +70,7 @@ long GetClusterSize( unsigned char drive )
             proot = NULL;
         } else {
             proot = root;
-            root[0] = 'a' + drive - 1;
+            root[0] = (char)( 'a' + drive - 1 );
             root[1] = ':';
             root[2] = '\\';
             root[3] = 0;

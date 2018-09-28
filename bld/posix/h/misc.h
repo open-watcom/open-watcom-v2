@@ -40,7 +40,7 @@ void    Die( const char *str, ... );
 #pragma aux Die aborts;
 #endif
 
-long    GetClusterSize( unsigned char drive );
+long    GetClusterSize( int drive );
 
 void    *MemAlloc( size_t size );
 void    *MemRealloc( void *orig, size_t size );
