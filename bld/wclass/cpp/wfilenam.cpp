@@ -354,8 +354,8 @@ bool WEXPORT WFileName::attribs( unsigned* attribs ) const
 bool WEXPORT WFileName::attribs( unsigned* attribs ) const
 {
     struct _finddata_t fileinfo;
-    long handle;
-    long rc;
+    intptr_t handle;
+    intptr_t rc;
 
     #define FIND_STYLE _A_NORMAL
     rc = handle = _findfirst( *this, &fileinfo );
