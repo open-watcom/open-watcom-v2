@@ -755,18 +755,21 @@ static vi_rc processMenu( int sel, menu *cmenu, windim xpos, windim ypos, windim
         /*
          * go get a selected item from the menu
          */
-        memset( &si, 0, sizeof( si ) );
         allowrl = 0;
         si.is_menu = true;
+        si.show_lineno = false;
         si.wi = &menuw_info;
+        si.title = NULL;
         si.list = cmenu->list;
         si.maxlist = (int)cmenu->itemcnt;
         si.result = result;
+        si.num = 0;
         si.allowrl = arl;
         si.hilite = cmenu->hilist;
+        si.retevents = NULL;
+        si.event = VI_KEY( DUMMY );
         si.cln = 1;
         si.event_wid = NO_WINDOW;
-
         if( xpos < 0 ) {
             lightMenu( sel, ws, true );
         }

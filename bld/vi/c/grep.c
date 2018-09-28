@@ -522,21 +522,22 @@ static vi_rc doGREP( const char *dirlist )
                     if( n + 1 > clist ) {
                         n = clist - 1;
                     }
-                    memset( &si, 0, sizeof( si ) );
+                    si.is_menu = false;
+                    si.show_lineno = show_lineno;
                     si.wi = &wi_disp;
                     si.title = "Files With Matches";
                     si.list = list;
                     si.maxlist = clist;
+                    si.result = NULL;
                     si.num = n;
+                    si.allowlr = NULL;
+                    si.hilite = NULL;
                     si.retevents = editopts_evlist;
                     si.event = VI_KEY( DUMMY );
-                    si.show_lineno = show_lineno;
                     si.cln = n + 1;
                     si.event_wid = wid;
-
                     rc = SelectItem( &si );
                     n = si.num;
-
                     if( rc != ERR_NO_ERR || n < 0 ) {
                         break;
                     }

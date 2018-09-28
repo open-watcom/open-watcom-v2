@@ -404,15 +404,18 @@ vi_rc EditFileFromList( void )
         if( n + 1 > j ) {
             n = j - 1;
         }
-        memset( &si, 0, sizeof( si ) );
+        si.is_menu = false;
+        si.show_lineno = true;
         si.wi = &filelistw_info;
         si.title = "Current Files";
         si.list = list;
         si.maxlist = j;
+        si.result = NULL;
         si.num = n;
+        si.allowlr = NULL;
+        si.hilite = NULL;
         si.retevents = fileopts_evlist;
         si.event = VI_KEY( DUMMY );
-        si.show_lineno = true;
         si.cln = n + 1;
         si.event_wid = wid;
         rc = SelectItem( &si );
