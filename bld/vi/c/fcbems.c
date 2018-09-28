@@ -40,6 +40,7 @@
 #include "fcbmem.h"
 #include "pragmas.h"
 
+#define EMS_IO_ERROR    ((size_t)-1)
 
 ems_struct              EMSCtrl;
 static unsigned long    *emsPtrs;
@@ -105,7 +106,7 @@ vi_rc SwapToEMSMemory( fcb *fb )
     if( rc == ERR_NO_ERR ) {
         len = MakeWriteBlock( fb );
         emsWrite( found, WriteBuffer, len );
-    
+
         /*
          * finish up
          */
@@ -331,7 +332,7 @@ static void emsRelease( ems_addr x )
 /*
  * emsRead - read some expanded memory
  */
-static int emsRead( long addr, void __far *buff, int size )
+static size_t emsRead( long addr, void __far *buff, size_t size )
 {
     void        *ptr;
     ems_addr    h;
@@ -339,7 +340,7 @@ static int emsRead( long addr, void __far *buff, int size )
     h.external = addr;
     ptr = emsAccess( h );
     if( ptr == NULL ) {
-        return( -1 );
+        return( EMS_IO_ERROR );
     }
     _fmemcpy( buff, ptr, size );
     emsRelease( h );
@@ -350,7 +351,7 @@ static int emsRead( long addr, void __far *buff, int size )
 /*
  * emsWrite - write expanded memory
  */
-static int emsWrite( long addr, void __far *buff, int size )
+static size_t emsWrite( long addr, void __far *buff, size_t size )
 {
     void        *ptr;
     ems_addr    h;
@@ -358,7 +359,7 @@ static int emsWrite( long addr, void __far *buff, int size )
     h.external = addr;
     ptr = emsAccess( h );
     if( ptr == NULL ) {
-        return( -1 );
+        return( EMS_IO_ERROR );
     }
     _fmemcpy( ptr, buff, size );
     emsRelease( h );

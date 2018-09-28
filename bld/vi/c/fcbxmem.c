@@ -52,8 +52,8 @@ static descriptor GDT[] = {
 
 xtd_struct XMemCtrl;
 
-static void xmemWrite( long , void *, unsigned );
-static void xmemRead( long , void *, unsigned );
+static void xmemWrite( long , void *, size_t );
+static void xmemRead( long , void *, size_t );
 static bool checkVDISK( flat_address * );
 
 /*
@@ -71,7 +71,7 @@ vi_rc SwapToExtendedMemory( fcb *fb )
     /*
      * dump the fcb
      */
-    if( !GetNewBlock( &addr, XMemBlocks, XMemBlockArraySize )) {
+    if( !GetNewBlock( &addr, XMemBlocks, XMemBlockArraySize ) ) {
         return( ERR_NO_EXTENDED_MEMORY );
     }
     XMemCtrl.allocated++;
@@ -98,7 +98,6 @@ vi_rc SwapToMemoryFromExtendedMemory( fcb *fb )
     len = FcbSize( fb );
     xmemRead( fb->xmemaddr, ReadBuffer, len );
     GiveBackXMemBlock( fb->xmemaddr );
-
     return( RestoreToNormalMemory( fb, len ) );
 
 } /* SwapToMemoryFromExtendedMemory */
@@ -130,7 +129,8 @@ void XMemInit( void )
     }
 
     amount = rc;
-    if( amount <= 16 ) return;      /* to allow for ibm cache bug */
+    if( amount <= 16 )
+        return;         /* to allow for ibm cache bug */
     amount -= 16;
 
     XMemCtrl.amount_left = (((unsigned long)amount) * 1024 +
@@ -146,9 +146,9 @@ void XMemInit( void )
     /*
      * build allocation blocks
      */
-    blocks = XMemCtrl.amount_left / (long) MAX_IO_BUFFER;
-    XMemBlockArraySize = (int) (blocks >> 3);
-    extra = (int) (blocks - ((long) (XMemBlockArraySize) << 3));
+    blocks = XMemCtrl.amount_left / (long)MAX_IO_BUFFER;
+    XMemBlockArraySize = (int)( blocks >> 3 );
+    extra = (int)( blocks - ((long)(XMemBlockArraySize) << 3) );
     if( extra > 0 ) {
         XMemBlockArraySize++;
     }
@@ -167,7 +167,7 @@ void XMemInit( void )
             j >>= 1;
             i |= j;
         }
-        XMemBlocks[XMemBlockArraySize - 1] = (char) i;
+        XMemBlocks[XMemBlockArraySize - 1] = (char)i;
     }
 
     XMemCtrl.allocated = 0;
@@ -198,7 +198,7 @@ void XMemFini( void )
 /*
  * xmemRead - read from extended memory
  */
-static void xmemRead( long addr, void *buff, unsigned size )
+static void xmemRead( long addr, void *buff, size_t size )
 {
     flat_address        source, target;
 
@@ -217,7 +217,7 @@ static void xmemRead( long addr, void *buff, unsigned size )
 /*
  * xmemWrite - write to extended memory
  */
-static void xmemWrite( long addr, void *buff, unsigned size )
+static void xmemWrite( long addr, void *buff, size_t size )
 {
     flat_address        source, target;
 

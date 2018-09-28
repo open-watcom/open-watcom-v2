@@ -108,9 +108,10 @@ static vi_rc getDir( const char *dname, bool want_all_dirs )
     } else {
         ch = '\0';
     }
-    for( j = i; j <= len; j++ ) {
+    for( j = i; j < len; j++ ) {
         wild[j - i] = dname[j];
     }
+    wild[j - i] = '\0';
     rc = FileMatchInit( wild );
     if( rc != ERR_NO_ERR ) {
         return( rc );
