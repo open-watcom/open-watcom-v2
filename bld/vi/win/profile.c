@@ -198,8 +198,7 @@ static void getConfigFilePaths( void )
     HINSTANCE library = LoadLibrary( "shfolder.dll" );
     if( library ) {
         GetFolderPath getpath = (GetFolderPath)GetProcAddress( library, "SHGetFolderPathA" );
-        if( SUCCEEDED( getpath( NULL, CSIDL_APPDATA | CSIDL_FLAG_CREATE, NULL, 0,
-                                path ) ) ) {
+        if( SUCCEEDED( getpath( NULL, CSIDL_APPDATA | CSIDL_FLAG_CREATE, NULL, 0, path ) ) ) {
             if( strlen( path ) + strlen( "\\" CONFIG_DIR ) + 12 < FILENAME_MAX ) {
                 strcat( path, "\\" CONFIG_DIR );
                 if( access( path, F_OK ) ) {    /* make sure CONFIG_DIR diretory is present */
@@ -208,8 +207,7 @@ static void getConfigFilePaths( void )
             }
         }
         FreeLibrary( library );
-    }
-    else {                                          /* should only get here on old machines */
+    } else {                                        /* should only get here on old machines */
         GetWindowsDirectory( path, FILENAME_MAX );  /* that don't have shfolder.dll */
     }
 #else
