@@ -70,9 +70,15 @@
 
 
 #ifdef __UNIX__
-  #define MASK_ALL_ITEMS  "*"
+    #define MASK_ALL_ITEMS      "*"
+    #define ENTRY_INVALID(n,e)  (IsDotOrDotDot(e->d_name) || fnmatch(n, e->d_name, FNM_PATHNAME | FNM_NOESCAPE) == FNM_NOMATCH)
+    #define ENTRY_SUBDIR(n,e)   chk_is_dir(n)
+    #define ENTRY_RDONLY(n,e)   (access( n, W_OK ) == -1 && errno == EACCES)
 #else
-  #define MASK_ALL_ITEMS  "*.*"
+    #define MASK_ALL_ITEMS      "*.*"
+    #define ENTRY_INVALID(n,e)  (IsDotOrDotDot(e->d_name) || fnmatch(n, e->d_name, FNM_PATHNAME | FNM_NOESCAPE | FNM_IGNORECASE) == FNM_NOMATCH)
+    #define ENTRY_SUBDIR(n,e)   (e->d_attr & _A_SUBDIR)
+    #define ENTRY_RDONLY(n,e)   (e->d_attr & _A_RDONLY)
 #endif
 
 #define SkipUntilWSorEqual(p)   while( *p != NULLCHAR && !cisws( *p ) && *p != '=' ) ++p
@@ -1463,16 +1469,23 @@ static bool IsDotOrDotDot( const char *fname )
     return( fname[0] == '.' && ( fname[1] == NULLCHAR || ( fname[1] == '.' && fname[2] == NULLCHAR ) ) );
 }
 
+#ifdef __UNIX__
+static bool chk_is_dir( const char *name )
+{
+    struct stat     s;
+
+    return( stat( n, &s ) == 0 && S_ISDIR( s.st_mode ) );
+}
+#endif
+
 static bool doRM( const char *f, const rm_flags *flags )
 {
     iolist              *tmp;
     iolist              *dhead = NULL;
     iolist              *dtail = NULL;
-
     char                fpath[_MAX_PATH];
     char                fname[_MAX_PATH];
     char                *fpathend;
-
     size_t              i;
     size_t              j;
     size_t              len;
@@ -1515,31 +1528,17 @@ static bool doRM( const char *f, const rm_flags *flags )
     }
 
     while( ( nd = readdir( d ) ) != NULL ) {
-#ifdef __UNIX__
-        struct stat buf;
-
-        if( fnmatch( fname, nd->d_name, FNM_PATHNAME | FNM_NOESCAPE ) == FNM_NOMATCH )
-#else
-        if( fnmatch( fname, nd->d_name, FNM_PATHNAME | FNM_NOESCAPE | FNM_IGNORECASE ) == FNM_NOMATCH )
-#endif
+        if( ENTRY_INVALID( fname, nd ) )
             continue;
         /* set up file name, then try to delete it */
         len = strlen( nd->d_name );
         memcpy( fpathend, nd->d_name, len );
         fpathend[len] = NULLCHAR;
-        len += i + 1;
-#ifdef __UNIX__
-        stat( fpath, &buf );
-        if( S_ISDIR( buf.st_mode ) ) {
-#else
-        if( nd->d_attr & _A_SUBDIR ) {
-#endif
+        if( ENTRY_SUBDIR( fpath, nd ) ) {
             /* process a directory */
-            if( IsDotOrDotDot( nd->d_name ) )
-                continue;
-
             if( flags->bDirs ) {
                 /* build directory list */
+                len += i + 1;
                 tmp = MallocSafe( offsetof( iolist, name ) + len );
                 tmp->next = NULL;
                 if( dtail == NULL ) {
@@ -1554,11 +1553,7 @@ static bool doRM( const char *f, const rm_flags *flags )
 //                retval = EACCES;
                 rc = false;
             }
-#ifdef __UNIX__
-        } else if( access( fpath, W_OK ) == -1 && errno == EACCES && !flags->bDirs ) {
-#else
-        } else if( (nd->d_attr & _A_RDONLY) && !flags->bDirs ) {
-#endif
+        } else if( !flags->bDirs && ENTRY_RDONLY( fpath, nd ) ) {
 //            Log( false, "%s is read-only, use -f\n", fpath );
 //            retval = EACCES;
             rc = false;

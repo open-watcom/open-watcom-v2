@@ -418,15 +418,13 @@ const char *DoWildCard( const char *base )
     assert( path != NULL && parent != NULL );
 
     while( (entry = readdir( parent )) != NULL ) {
-#ifndef __UNIX__
-        if( (entry->d_attr & IGNORE_MASK) == 0 ) {
+#if !defined( __UNIX__ )
+        if( entry->d_attr & IGNORE_MASK )
+            continue;
 #endif
-            if( __fnmatch( pattern, entry->d_name ) ) {
-                break;
-            }
-#ifndef __UNIX__
+        if( __fnmatch( pattern, entry->d_name ) ) {
+            break;
         }
-#endif
     }
     if( entry == NULL ) {
         DoWildCardClose();

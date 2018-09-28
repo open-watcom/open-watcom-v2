@@ -62,26 +62,30 @@
 #define WILD_METAS      "*?"
 
 #ifdef __UNIX__
-  #define MASK_ALL_ITEMS  "*"
+    #define MASK_ALL_ITEMS              "*"
+    #define ENTRY_INVALID1(e)           IsDotOrDotDot(e->d_name)
+    #define ENTRY_INVALID2(n,e)         (IsDotOrDotDot(e->d_name) || fnmatch(n, e->d_name, FNM_PATHNAME | FNM_NOESCAPE) == FNM_NOMATCH)
+    #define ENTRY_SUBDIR(n,e)           chk_is_dir(n)
+    #define ENTRY_RDONLY(n,e)           (access( n, W_OK ) == -1 && errno == EACCES)
+    /* Linux has (strangely) no 'archive' attribute, compare modification times */
+    #define ENTRY_CHANGED1(n1,n2)       !chk_same_time(n1, n2)
+    #define ENTRY_CHANGED2(n1,e1,n2)    !chk_same_time(n1, n2)
 #else
-  #define MASK_ALL_ITEMS  "*.*"
-#endif
-
-#ifndef __UNIX__
-#define ENTRY_NOT_CHANGED1() (access( entry_dst, R_OK ) == 0 && _dos_getfileattr( entry_src, &attr ) == 0 && (attr & _A_ARCH) == 0)
-#define ENTRY_NOT_CHANGED2() (access( entry_dst, R_OK ) == 0 && (dent->d_attr & _A_ARCH) == 0)
-#else
-/* Linux has (strangely) no 'archive' attribute, compare modification times */
-#define ENTRY_NOT_CHANGED1() ((stat(entry_dst, &statdst) == 0) && (stat(entry_src, &statsrc) == 0) && (statdst.st_mtime == statsrc.st_mtime))
-#define ENTRY_NOT_CHANGED2() ((stat(entry_dst, &statdst) == 0) && (stat(entry_src, &statsrc) == 0) && (statdst.st_mtime == statsrc.st_mtime))
+    #define MASK_ALL_ITEMS              "*.*"
+    #define ENTRY_INVALID1(e)           (IsDotOrDotDot(e->d_name) || (e->d_attr & _A_VOLID))
+    #define ENTRY_INVALID2(n,e)         (IsDotOrDotDot(e->d_name) || fnmatch(n, e->d_name, FNM_PATHNAME | FNM_NOESCAPE | FNM_IGNORECASE) == FNM_NOMATCH)
+    #define ENTRY_SUBDIR(n,e)           (e->d_attr & _A_SUBDIR)
+    #define ENTRY_RDONLY(n,e)           (e->d_attr & _A_RDONLY)
+    #define ENTRY_CHANGED1(n1,n2)       (access(n2, R_OK) == -1 || chk_is_archived(n1))
+    #define ENTRY_CHANGED2(n1,e1,n2)    (access(n2, R_OK) == -1 || (e1->d_attr & _A_ARCH) != 0)
 #endif
 
 #define COPY_BUFF_SIZE  (32 * 1024)
 
 typedef struct dd {
-  struct dd     *next;
-  char          attr;
-  char          name[1];
+    struct dd   *next;
+    char        attr;
+    char        name[1];
 } iolist;
 
 static int      rflag = false;
@@ -89,6 +93,30 @@ static int      fflag = false;
 static int      sflag = true;
 
 static int RecursiveRM( const char *dir );
+
+#ifdef __UNIX__
+static bool chk_is_dir( const char *name )
+{
+    struct stat     s;
+
+    return( stat( n, &s ) == 0 && S_ISDIR( s.st_mode ) );
+}
+
+static bool chk_same_time( const char *name1, const char *name2 )
+{
+    struct stat     s1;
+    struct stat     s2;
+
+    return( stat( name1, &s1 ) == 0 && stat( name2, &s2 ) == 0 && ( s1.st_mtime == s2.st_mtime ) );
+}
+#else
+static bool chk_is_archived( const char *name )
+{
+    unsigned    attr;
+
+    return( _dos_getfileattr( name, &attr ) == 0 && (attr & _A_ARCH) );
+}
+#endif
 
 static void LogDir( const char *dir )
 {
@@ -159,10 +187,7 @@ static int BuildList( const char *src, char *dst, bool test_abit, bool cond_copy
     char                *ext;
     DIR                 *directory;
     struct dirent       *dent;
-#ifndef __UNIX__
-    unsigned            attr;
-#else
-    struct stat         statsrc, statdst;
+#ifdef __UNIX__
     char                pattern[_MAX_PATH];
 #endif
     int                 rc;
@@ -191,16 +216,13 @@ static int BuildList( const char *src, char *dst, bool test_abit, bool cond_copy
             _fullpath( entry_dst, dst, sizeof( entry_dst ) );
             break;
         }
-        if( test_abit ) {
-            if( ENTRY_NOT_CHANGED1() ) {
-                return( 0 );
-            }
+        if( !test_abit || ENTRY_CHANGED1( entry_src, entry_dst ) ) {
+            head = MAlloc( sizeof( *head ) );
+            head->next = NULL;
+            strcpy( head->src, entry_src );
+            strcpy( head->dst, entry_dst );
+            *list = head;
         }
-        head = MAlloc( sizeof( *head ) );
-        head->next = NULL;
-        strcpy( head->src, entry_src );
-        strcpy( head->dst, entry_dst );
-        *list = head;
         return( 0 );
     }
 #ifdef __UNIX__
@@ -225,33 +247,17 @@ static int BuildList( const char *src, char *dst, bool test_abit, bool cond_copy
 #endif
         owner = &head;
         while( (dent = readdir( directory )) != NULL ) {
-#ifdef __UNIX__
-            struct stat buf;
-
-            if( fnmatch( pattern, dent->d_name, FNM_PATHNAME | FNM_NOESCAPE ) == FNM_NOMATCH ) {
-                if( !IsDotOrDotDot( dent->d_name ) )
-                    rc = 0;
+            if( ENTRY_INVALID1( dent ) )
                 continue;
-            }
-
-            strcpy( srcdir_end, dent->d_name );
-            stat( srcdir, &buf );
-            *srcdir_end = '\0';
-            if( S_ISDIR( buf.st_mode ) ) {
-                if( !IsDotOrDotDot( dent->d_name ) )
-                    rc = 0;
-                continue;
-            }
-#else
-            if( dent->d_attr & _A_VOLID ) {
-                continue;
-            } else if( dent->d_attr & _A_SUBDIR ) {
-                if( !IsDotOrDotDot( dent->d_name ) )
-                    rc = 0;
-                continue;
-            }
-#endif
             rc = 0;
+#ifdef __UNIX__
+            if( fnmatch( pattern, dent->d_name, FNM_PATHNAME | FNM_NOESCAPE ) == FNM_NOMATCH )
+                continue;
+            strcpy( srcdir_end, dent->d_name );
+#endif
+            if( ENTRY_SUBDIR( srcdir, dent ) )
+                continue;
+            *srcdir_end = '\0';
             _splitpath2( srcdir, path_buffer, &drive, &dir, &fn, &ext );
             _makepath( full, drive, dir, dent->d_name, NULL );
             _fullpath( entry_src, full, sizeof( entry_src ) );
@@ -263,17 +269,14 @@ static int BuildList( const char *src, char *dst, bool test_abit, bool cond_copy
                 break;
             }
             _fullpath( entry_dst, full, sizeof( entry_dst ) );
-            if( test_abit ) {
-                if( ENTRY_NOT_CHANGED2() ) {
-                    continue;
-                }
+            if( !test_abit || ENTRY_CHANGED2( entry_src, dent, entry_dst ) ) {
+                curr = MAlloc( sizeof( *curr ) );
+                curr->next = NULL;
+                strcpy( curr->src, entry_src );
+                strcpy( curr->dst, entry_dst );
+                *owner = curr;
+                owner = &curr->next;
             }
-            curr = MAlloc( sizeof( *curr ) );
-            curr->next = NULL;
-            strcpy( curr->src, entry_src );
-            strcpy( curr->dst, entry_dst );
-            *owner = curr;
-            owner = &curr->next;
         }
         closedir( directory );
     }
@@ -287,11 +290,7 @@ static int BuildList( const char *src, char *dst, bool test_abit, bool cond_copy
 static int mkdir_nested( const char *path )
 /*****************************************/
 {
-#ifdef __UNIX__
     struct stat sb;
-#else
-    unsigned    attr;
-#endif
     char        pathname[ FILENAME_MAX ];
     char        *p;
     char        *end;
@@ -317,11 +316,7 @@ static int mkdir_nested( const char *path )
         *p = '\0';
 
         /* check if pathname exists */
-#ifdef __UNIX__
-        if( stat( pathname, &sb ) != 0 ) {
-#else
-        if( _dos_getfileattr( pathname, &attr ) != 0 ) {
-#endif
+        if( stat( pathname, &sb ) == -1 ) {
             int rc;
 
 #ifdef __UNIX__
@@ -333,16 +328,9 @@ static int mkdir_nested( const char *path )
                 Log( false, "Can not create directory '%s': %s\n", pathname, strerror( errno ) );
                 return( -1 );
             }
-        } else {
-            /* make sure it really is a directory */
-#ifdef __UNIX__
-            if( !S_ISDIR( sb.st_mode ) ) {
-#else
-            if( (attr & _A_SUBDIR) == 0 ) {
-#endif
-                Log( false, "Can not create directory '%s': file with the same name already exists\n", pathname );
-                return( -1 );
-            }
+        } else if( !S_ISDIR( sb.st_mode ) ) {   /* make sure it really is a directory */
+            Log( false, "Can not create directory '%s': file with the same name already exists\n", pathname );
+            return( -1 );
         }
         /* put back the path separator - forward slash always works */
         *p++ = '/';
@@ -550,7 +538,7 @@ static int remove_item( const char *name, bool dir )
         inf_msg = "File %s deleted\n";
         rc = unlink( name );
     }
-    if( rc != 0 && fflag && errno == EACCES ) {
+    if( fflag && rc != 0 && errno == EACCES ) {
         rc = chmod( name, PMODE_RW );
         if( rc == 0 ) {
             if( dir ) {
@@ -560,7 +548,7 @@ static int remove_item( const char *name, bool dir )
             }
         }
     }
-    if( rc != 0 && fflag && errno == ENOENT ) {
+    if( fflag && rc != 0 && errno == ENOENT ) {
         rc = 0;
     }
     if( rc != 0 ) {
@@ -579,11 +567,9 @@ static int DoRM( const char *f )
     iolist              *tmp;
     iolist              *dhead = NULL;
     iolist              *dtail = NULL;
-
     char                fpath[_MAX_PATH];
     char                fname[_MAX_PATH];
     char                *fpathend;
-
     size_t              i;
     size_t              j;
     size_t              len;
@@ -627,31 +613,17 @@ static int DoRM( const char *f )
     }
 
     while( (nd = readdir( d )) != NULL ) {
-#ifdef __UNIX__
-        struct stat buf;
-
-        if( fnmatch( fname, nd->d_name, FNM_PATHNAME | FNM_NOESCAPE ) == FNM_NOMATCH )
-#else
-        if( fnmatch( fname, nd->d_name, FNM_PATHNAME | FNM_NOESCAPE | FNM_IGNORECASE ) == FNM_NOMATCH )
-#endif
+        if( ENTRY_INVALID2( fname, nd ) )
             continue;
         /* set up file name, then try to delete it */
         len = strlen( nd->d_name );
         memcpy( fpathend, nd->d_name, len );
-        fpathend[len] = 0;
-        len += i + 1;
-#ifdef __UNIX__
-        stat( fpath, &buf );
-        if( S_ISDIR( buf.st_mode ) ) {
-#else
-        if( nd->d_attr & _A_SUBDIR ) {
-#endif
+        fpathend[len] = '\0';
+        if( ENTRY_SUBDIR( fpath, nd ) ) {
             /* process a directory */
-            if( IsDotOrDotDot( nd->d_name ) )
-                continue;
-
             if( rflag ) {
                 /* build directory list */
+                len += i + 1;
                 tmp = MAlloc( offsetof( iolist, name ) + len );
                 tmp->next = NULL;
                 if( dtail == NULL ) {
@@ -665,11 +637,7 @@ static int DoRM( const char *f )
                 Log( false, "%s is a directory, use -r\n", fpath );
                 retval = EACCES;
             }
-#ifdef __UNIX__
-        } else if( access( fpath, W_OK ) == -1 && errno == EACCES && !fflag ) {
-#else
-        } else if( (nd->d_attr & _A_RDONLY) && !fflag ) {
-#endif
+        } else if( !fflag && ENTRY_RDONLY( fpath, nd ) ) {
             Log( false, "%s is read-only, use -f\n", fpath );
             retval = EACCES;
         } else {

@@ -41,6 +41,12 @@
 #include "clibext.h"
 
 
+#ifdef __UNIX__
+    #define FNMATCH_FLAGS   (FNM_NOESCAPE)
+#else
+    #define FNMATCH_FLAGS   (FNM_NOESCAPE | FNM_IGNORECASE)
+#endif
+
 static int closeAFile( void );
 
 /*
@@ -308,11 +314,7 @@ void FileLower( char *str )
  */
 bool FileTemplateMatch( const char *name, const char *template )
 {
-#ifdef __UNIX__
-    return( fnmatch( template, name, FNM_NOESCAPE ) == 0 );
-#else
-    return( fnmatch( template, name, FNM_NOESCAPE | FNM_IGNORECASE ) == 0 );
-#endif
+    return( fnmatch( template, name, FNMATCH_FLAGS ) == 0 );
 
 } /* FileTemplateMatch */
 

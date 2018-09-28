@@ -69,7 +69,7 @@ static bool setdrive( const char* drive, int* olddrive )
 {
     if( strlen( drive ) > 0 ) {
         *olddrive = _getdrive();
-        int drv = toupper( drive[0]) - 'A' + 1;    // 1='A'; 2='B'; ...
+        int drv = toupper( (unsigned char)drive[0] ) - 'A' + 1;    // 1='A'; 2='B'; ...
         if( *olddrive != drv ) {
             if( _chdrive( drv ) ) {
                 return( false );
