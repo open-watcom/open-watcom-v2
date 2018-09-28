@@ -1474,7 +1474,7 @@ static bool chk_is_dir( const char *name )
 {
     struct stat     s;
 
-    return( stat( n, &s ) == 0 && S_ISDIR( s.st_mode ) );
+    return( stat( name, &s ) == 0 && S_ISDIR( s.st_mode ) );
 }
 #endif
 
