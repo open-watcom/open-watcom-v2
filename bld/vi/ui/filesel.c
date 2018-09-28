@@ -423,7 +423,7 @@ static bool adjustCLN( linenum *cln, linenum *pagetop, int amt,
     if( *pagetop < 1 ) {
         *pagetop = 1;
     }
-    if( endline - *pagetop + 1 < text_lines ) {
+    if( *pagetop > endline - text_lines + 1 ) {
         *pagetop = endline - text_lines + 1;
         drawbord = true;
         if( *pagetop < 1 ) {

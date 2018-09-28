@@ -144,7 +144,7 @@ static int PickATag( int tag_count, char **tag_list, const char *tagname )
     si.maxlist = tag_count;
     si.result = NULL;
     si.num = 0;
-    si.allowlr = NULL;
+    si.allowrl = NULL;
     si.hilite = NULL;
     si.retevents = NULL;
     si.event = VI_KEY( DUMMY );

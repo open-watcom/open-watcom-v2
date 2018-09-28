@@ -519,7 +519,7 @@ static vi_rc doGREP( const char *dirlist )
                  * process selections
                  */
                 for( ;; ) {
-                    if( n + 1 > clist ) {
+                    if( n > clist - 1 ) {
                         n = clist - 1;
                     }
                     si.is_menu = false;
@@ -530,7 +530,7 @@ static vi_rc doGREP( const char *dirlist )
                     si.maxlist = clist;
                     si.result = NULL;
                     si.num = n;
-                    si.allowlr = NULL;
+                    si.allowrl = NULL;
                     si.hilite = NULL;
                     si.retevents = editopts_evlist;
                     si.event = VI_KEY( DUMMY );

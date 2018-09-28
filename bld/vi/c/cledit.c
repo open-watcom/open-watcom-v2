@@ -401,7 +401,7 @@ vi_rc EditFileFromList( void )
         /*
          * get file
          */
-        if( n + 1 > j ) {
+        if( n > j - 1 ) {
             n = j - 1;
         }
         si.is_menu = false;
@@ -412,7 +412,7 @@ vi_rc EditFileFromList( void )
         si.maxlist = j;
         si.result = NULL;
         si.num = n;
-        si.allowlr = NULL;
+        si.allowrl = NULL;
         si.hilite = NULL;
         si.retevents = fileopts_evlist;
         si.event = VI_KEY( DUMMY );

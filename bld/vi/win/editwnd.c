@@ -184,7 +184,7 @@ static void doPaint( window *w, RECT *r, window_data *wd )
     start = r->top / height;
     stop = (r->bottom + height - 1) / height;
     max_lines = WindowAuxInfo( current_window_id, WIND_INFO_TEXT_LINES );
-    if( stop + 1 > max_lines ) {
+    if( stop > max_lines - 1 ) {
         stop = max_lines - 1;
     }
     DCInvalidateSomeLines( start, stop );
