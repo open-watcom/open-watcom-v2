@@ -8,24 +8,10 @@
 .if &e'&company eq 0 .do begin
 :set symbol="company"   value="Open Watcom".
 .do end
-.dm cpyrit begin
-Copyright (c) 2002-&cpyyear. the Open Watcom Contributors. All Rights Reserved.
-Portions Copyright (c) &*.-2002 Sybase, Inc. All Rights Reserved.
-.dm cpyrit end
-.dm trdmrk begin
-Source code is available under the Sybase Open Watcom Public License.
-See http://www.openwatcom.org/ for details.
-.dm trdmrk end
-.dm tmarkunix begin
-UNIX is a registered trademark of The Open Group.
-.dm tmarkunix end
-.dm tmarkd4g begin
-DOS/4G and DOS/16M are trademarks of Tenberry Software, Inc.
-.dm tmarkd4g end
-.dm tmarkqnx begin
-QNX is a registered trademark of QNX Software Systems Ltd.
-.dm tmarkqnx end
-
+.if &e'&startyear eq 0 .do begin
+:set symbol="startyear" value="1984".
+.do end
+.*
 :set symbol="ver"       value="2".
 :set symbol="rev"       value="0".
 :set symbol="pver"      value="10".
@@ -237,3 +223,25 @@ QNX is a registered trademark of QNX Software Systems Ltd.
 .*
 .sr colour='color'
 .sr ccolour='Color'
+.*
+.dm cpyrit begin
+Copyright (c) 2002-&cpyyear. the Open Watcom Contributors. All Rights Reserved.
+Portions Copyright (c) &*.-2002 Sybase, Inc. All Rights Reserved.
+.dm cpyrit end
+.*
+.dm trdmrk begin
+Source code is available under the Sybase Open Watcom Public License.
+See http://www.openwatcom.org/ for details.
+.dm trdmrk end
+.*
+.dm tmarkunix begin
+UNIX is a registered trademark of The Open Group.
+.dm tmarkunix end
+.*
+.dm tmarkd4g begin
+DOS/4G and DOS/16M are trademarks of Tenberry Software, Inc.
+.dm tmarkd4g end
+.*
+.dm tmarkqnx begin
+QNX is a registered trademark of QNX Software Systems Ltd.
+.dm tmarkqnx end
