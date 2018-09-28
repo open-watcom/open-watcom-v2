@@ -1,18 +1,18 @@
 .func _findfirst _findfirsti64 _wfindfirst _wfindfirsti64
 .synop begin
 #include <&iohdr>
-long _findfirst( const char *filespec,
+intptr_t _findfirst( const char *filespec,
                  struct _finddata_t *fileinfo );
 .ixfunc2 '&DosFunc' _findfirst
-long _findfirsti64( const char *filespec,
+intptr_t _findfirsti64( const char *filespec,
                     struct _finddatai64_t *fileinfo );
 .ixfunc2 '&DosFunc' _findfirsti64
 .if &'length(&wfunc.) ne 0 .do begin
-long _wfindfirst( const wchar_t *filespec,
+intptr_t _wfindfirst( const wchar_t *filespec,
                   struct _wfinddata_t *fileinfo );
 .ixfunc2 '&DosFunc' _wfindfirst
 .ixfunc2 '&Wide' _wfindfirst
-long _wfindfirsti64( const wchar_t *filespec,
+intptr_t _wfindfirsti64( const wchar_t *filespec,
                   struct _wfinddatai64_t *fileinfo );
 .ixfunc2 '&DosFunc' _wfindfirsti64
 .ixfunc2 '&Wide' _wfindfirsti64
@@ -137,7 +137,7 @@ Invalid filename specification
 void main()
   {
     struct _finddata_t  fileinfo;
-    long                handle;
+    intptr_t            handle;
     int                 rc;
 .exmp break
     /* Display name and size of "*.c" files */
