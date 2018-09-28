@@ -70,15 +70,15 @@
 
 #ifdef __WIDECHAR__
  #ifdef __INT64__
-  _WCRTLINK long _wfindfirsti64( const wchar_t *filespec, struct _wfinddatai64_t *fileinfo )
+  _WCRTLINK intptr_t _wfindfirsti64( const wchar_t *filespec, struct _wfinddatai64_t *fileinfo )
  #else
-  _WCRTLINK long _wfindfirst( const wchar_t *filespec, struct _wfinddata_t *fileinfo )
+  _WCRTLINK intptr_t _wfindfirst( const wchar_t *filespec, struct _wfinddata_t *fileinfo )
  #endif
 #else
  #ifdef __INT64__
-  _WCRTLINK long _findfirsti64( const char *filespec, struct _finddatai64_t *fileinfo )
+  _WCRTLINK intptr_t _findfirsti64( const char *filespec, struct _finddatai64_t *fileinfo )
  #else
-  _WCRTLINK long _findfirst( const char *filespec, struct _finddata_t *fileinfo )
+  _WCRTLINK intptr_t _findfirst( const char *filespec, struct _finddata_t *fileinfo )
  #endif
 #endif
 /******************************************************************************/
@@ -105,7 +105,7 @@
   #else
     __F_NAME(__nt_finddata_cvt,__nt_wfinddata_cvt)( &ffb, fileinfo );
   #endif
-    return( (long)h );
+    return( (intptr_t)h );
 #elif defined( __OS2__ )
     APIRET          rc;
     HDIR            h = HDIR_CREATE;
@@ -121,7 +121,7 @@
     rc = DosFindFirst( (char*)__F_NAME(filespec,mbFilespec), &h, FIND_ATTR,
                                 &ffb, sizeof( ffb ), &searchcount, FF_LEVEL );
     if( rc != 0 ) {
-        return( -1L );
+        return( -1 );
     }
     /*** Got one! ***/
  #ifdef __INT64__
@@ -129,18 +129,19 @@
  #else
     __F_NAME(__os2_finddata_cvt,__os2_wfinddata_cvt)( &ffb, fileinfo );
  #endif
-    return( (long)h );
+    return( (intptr_t)h );
 #elif defined( __RDOS__ )
-    RDOSFINDTYPE *  findbuf;
+    RDOSFINDTYPE    *findbuf;
 
-    findbuf = (RDOSFINDTYPE*) lib_malloc( sizeof( RDOSFINDTYPE ) );
-    if( findbuf == NULL )  return( -1L );
+    findbuf = (RDOSFINDTYPE *)lib_malloc( sizeof( RDOSFINDTYPE ) );
+    if( findbuf == NULL )
+        return( -1 );
 
     findbuf->handle = RdosOpenDir( filespec );
     findbuf->entry = 0;
 
     if( __rdos_finddata_get( findbuf, fileinfo ) )
-        return( (long) findbuf );
+        return( (intptr_t)findbuf );
     else {
         lib_free( findbuf );
         return( -1 );
@@ -150,12 +151,13 @@
     unsigned       rc;
 
     /*** Start a new find using _dos_findfirst ***/
-    findbuf = (DOSFINDTYPE*) lib_malloc( sizeof( DOSFINDTYPE ) );
-    if( findbuf == NULL )  return( -1L );
+    findbuf = (DOSFINDTYPE*)lib_malloc( sizeof( DOSFINDTYPE ) );
+    if( findbuf == NULL )
+        return( -1 );
     rc = __F_NAME(_dos_findfirst,_wdos_findfirst)( filespec, FIND_ATTR, findbuf );
     if( rc != 0 ) {
         lib_free( findbuf );
-        return( -1L );
+        return( -1 );
     }
 
     /*** Got one! ***/
@@ -164,7 +166,7 @@
   #else
     __F_NAME(__dos_finddata_cvt,__dos_wfinddata_cvt)( findbuf, fileinfo );
   #endif
-    return( (long)findbuf );
+    return( (intptr_t)findbuf );
 #endif
 }
 

@@ -47,7 +47,7 @@
 #endif
 
 
-_WCRTLINK int _findclose( long handle )
+_WCRTLINK int _findclose( intptr_t handle )
 {
 #if defined( __NT__ )
     if( FindClose( (HANDLE)handle ) != TRUE ) {
@@ -58,10 +58,10 @@ _WCRTLINK int _findclose( long handle )
         return( -1 );
     }
 #elif defined( __RDOS__ )
-    RDOSFINDTYPE * handlebuf = ( RDOSFINDTYPE * )handle;
+    RDOSFINDTYPE    *handlebuf = (RDOSFINDTYPE *)handle;
 
     RdosCloseDir( handlebuf->handle );
-    lib_free( (void*) handle );
+    lib_free( (void *)handle );
     return( 0 );
 #else   /* DOS */
     unsigned        rc;

@@ -51,15 +51,15 @@
 
 #ifdef __WIDECHAR__
  #ifdef __INT64__
-  _WCRTLINK int _wfindnexti64( long handle, struct _wfinddatai64_t *fileinfo )
+  _WCRTLINK int _wfindnexti64( intptr_t handle, struct _wfinddatai64_t *fileinfo )
  #else
-  _WCRTLINK int _wfindnext( long handle, struct _wfinddata_t *fileinfo )
+  _WCRTLINK int _wfindnext( intptr_t handle, struct _wfinddata_t *fileinfo )
  #endif
 #else
  #ifdef __INT64__
-  _WCRTLINK int _findnexti64( long handle, struct _finddatai64_t *fileinfo )
+  _WCRTLINK int _findnexti64( intptr_t handle, struct _finddatai64_t *fileinfo )
  #else
-  _WCRTLINK int _findnext( long handle, struct _finddata_t *fileinfo )
+  _WCRTLINK int _findnext( intptr_t handle, struct _finddata_t *fileinfo )
  #endif
 #endif
 {
@@ -98,14 +98,15 @@
   #endif
 
 #elif defined( __RDOS__ )
-    RDOSFINDTYPE *   findbuf = (RDOSFINDTYPE*) handle;
+    RDOSFINDTYPE    *findbuf = (RDOSFINDTYPE *)handle;
 
     findbuf->entry++;
 
-    if( __rdos_finddata_get( findbuf, fileinfo ) )
+    if( __rdos_finddata_get( findbuf, fileinfo ) ) {
         return( 0 );
-    else
+    } else {
         return( -1 );
+    }
 
 #else   /* DOS */
     if( __F_NAME(_dos_findnext,_wdos_findnext)( (DOSFINDTYPE *)handle ) ) {
