@@ -619,14 +619,10 @@ tiny_ret_t  tiny_call   _nTinyCreateTemp( const char __far *__n, create_attr __a
 tiny_ret_t  tiny_call   _TinyClose( tiny_handle_t );
 tiny_ret_t  tiny_call   _TinyCommitFile( tiny_handle_t );
 tiny_ret_t              _fTinyWrite( tiny_handle_t, const void __far *, uint );
-tiny_ret_t              _fTinyAbsWrite( uint_8 __drive, uint __sector,
-                                uint __sectorcount, const void __far *__buff );
-tiny_ret_t              _nTinyAbsWrite( uint_8 __drive, uint __sector,
-                                uint __sectorcount, const void __near *__buff );
-tiny_ret_t              _fTinyAbsRead( uint_8 __drive, uint __sector,
-                                uint __sectorcount, const void __far *__buff );
-tiny_ret_t              _nTinyAbsRead( uint_8 __drive, uint __sector,
-                                uint __sectorcount, const void __near *__buff );
+tiny_ret_t              _fTinyAbsWrite( uint_8 __drive, uint __sector, uint __sectorcount, const void __far *__buff );
+tiny_ret_t              _nTinyAbsWrite( uint_8 __drive, uint __sector, uint __sectorcount, const void __near *__buff );
+tiny_ret_t              _fTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, const void __far *__buff );
+tiny_ret_t              _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, const void __near *__buff );
 tiny_ret_t  tiny_call   _nTinyWrite( tiny_handle_t, const void __near *, uint );
 tiny_ret_t              _fTinyRead( tiny_handle_t, void __far *, uint );
 tiny_ret_t  tiny_call   _nTinyRead( tiny_handle_t, void __near *, uint );
@@ -634,10 +630,8 @@ tiny_ret_t  tiny_call   _TinySeek( tiny_handle_t, uint_32, uint_16 __ax );
 tiny_ret_t  tiny_call   _TinyLSeek( tiny_handle_t, uint_32, uint_16 __ax, u32_stk_ptr );
 tiny_ret_t              _fTinyDelete( const char __far * );
 tiny_ret_t  tiny_call   _nTinyDelete( const char __near * );
-tiny_ret_t              _fTinyRename( const char __far *__o,
-                                const char __far *__n );
-tiny_ret_t  tiny_call   _nTinyRename( const char __near *__o,
-                                const char __near *__n);
+tiny_ret_t              _fTinyRename( const char __far *__o, const char __far *__n );
+tiny_ret_t  tiny_call   _nTinyRename( const char __near *__o, const char __near *__n);
 tiny_ret_t              _fTinyMakeDir( const char __far *__name );
 tiny_ret_t  tiny_call   _nTinyMakeDir( const char __near *__name );
 tiny_ret_t              _fTinyRemoveDir( const char __far *__name );
@@ -667,23 +661,18 @@ void          __far *   _TinyGetDTA( void );
 void          __far *   _TinyChangeDTA( void __far * );
 void                    _fTinySetDTA( void __far * );
 void        tiny_call   _nTinySetDTA( void __near * );
-tiny_ret_t              _fTinyFindFirst( const char __far *__pattern,
-                                create_attr __attr);
+tiny_ret_t              _fTinyFindFirst( const char __far *__pattern, create_attr __attr);
 tiny_ret_t  tiny_call   _nTinyFindFirst( const char __near *, create_attr );
-tiny_ret_t  tiny_call   _nTinyFindFirstDTA( const char __near *, create_attr,
-                                void * );
+tiny_ret_t  tiny_call   _nTinyFindFirstDTA( const char __near *, create_attr, void * );
 tiny_ret_t  tiny_call   _TinyFindNext( void );
 tiny_ret_t  tiny_call   _TinyFindNextDTA( void * );
 tiny_ret_t  tiny_call   _TinyFindCloseDTA( void * );
 tiny_ret_t  tiny_call   _TinyGetFileStamp( tiny_handle_t );
-tiny_ret_t  tiny_call   _TinySetFileStamp( tiny_handle_t, tiny_ftime_t __hms,
-                                tiny_fdate_t __ymd );
+tiny_ret_t  tiny_call   _TinySetFileStamp( tiny_handle_t, tiny_ftime_t __hms, tiny_fdate_t __ymd );
 tiny_ret_t  tiny_call   _nTinyGetFileAttr( const char __near *__file );
 tiny_ret_t              _fTinyGetFileAttr( const char __far *__file );
-tiny_ret_t  tiny_call   _nTinySetFileAttr( const char __near *__file,
-                                create_attr );
-tiny_ret_t              _fTinySetFileAttr( const char __far *__file,
-                                create_attr );
+tiny_ret_t  tiny_call   _nTinySetFileAttr( const char __near *__file, create_attr );
+tiny_ret_t              _fTinySetFileAttr( const char __far *__file, create_attr );
 void        tiny_call   _TinySetIntr( uint_8, uint );
 #ifdef __WINDOWS_386__
 void        tiny_call   _TinySetVect( uint_8, void __near * );
@@ -701,10 +690,8 @@ uint_32     tiny_call   _TinyFreeSpace( uint_8 );
 tiny_ret_t  tiny_call   _nTinyGetCountry( const tiny_country_info __near * );
 tiny_ret_t              _fTinyGetCountry( const tiny_country_info __far * );
 tiny_ret_t  tiny_call   _TinySetCountry( uint_16 );
-tiny_ret_t  tiny_call   _nTinyFCBPrsFname( const char __near *__str,
-                                tiny_fcb_t __far *__fcb, uint_8 __ctrl );
-tiny_ret_t  tiny_call   _fTinyFCBPrsFname( const char __far *__str,
-                                tiny_fcb_t __far *__fcb, uint_8 __ctrl );
+tiny_ret_t  tiny_call   _nTinyFCBPrsFname( const char __near *__str, tiny_fcb_t __far *__fcb, uint_8 __ctrl );
+tiny_ret_t  tiny_call   _fTinyFCBPrsFname( const char __far *__str, tiny_fcb_t __far *__fcb, uint_8 __ctrl );
 tiny_ret_t  tiny_call   _nTinyFCBDeleteFile( tiny_fcb_t __near *__fcb );
 tiny_ret_t              _fTinyFCBDeleteFile( tiny_fcb_t __far *__fcb );
 tiny_ret_t  tiny_call   _TinyLock(tiny_handle_t,uint_32 __start,uint_32 __l);
@@ -722,23 +709,14 @@ uint_32     tiny_call   _TinyDPMIDOSAlloc( uint_16 __paras );
 void        tiny_call   _TinyDPMIDOSFree( uint_16 __sel );
 uint_32     tiny_call   _TinyDPMIBase( uint_16 __sel );
 void __far *tiny_call   _TinyDPMIGetProtectVect( uint_8 __intr );
-tiny_ret_t  tiny_call   _TinyDPMISetProtectVect( uint_8 __intr,
-                                    void ( __far __interrupt *__f )() );
+tiny_ret_t  tiny_call   _TinyDPMISetProtectVect( uint_8 __intr, void ( __far __interrupt *__f )() );
 void __far *tiny_call   _TinyDPMIGetProtectExcpt( uint_8 __intr );
-tiny_ret_t  tiny_call   _TinyDPMISetProtectExcpt( uint_8 __intr,
-                                    void ( __far __interrupt *__f )() );
+tiny_ret_t  tiny_call   _TinyDPMISetProtectExcpt( uint_8 __intr, void ( __far __interrupt *__f )() );
 uint_32     tiny_call   _TinyDPMIGetRealVect( uint_8 __intr );
-tiny_ret_t  tiny_call   _TinyDPMISetRealVect( uint_8 __intr,
-                                    uint_16 __seg, uint_16 __offs );
-tiny_ret_t  tiny_call   _TinyDPMISimulateRealInt( uint_8 __intr,
-                                    uint_8 __flags, uint_16 __copy,
-                                    call_struct __far *__struct );
-tiny_ret_t  tiny_call   _TinyDPMICallRealIntFrame( uint_8 __flags,
-                                    uint_16 __copy,
-                                    call_struct __far *__struct );
-tiny_ret_t  tiny_call   _TinyDPMICallRealFarFrame( uint_8 __flags,
-                                    uint_16 __copy,
-                                    call_struct __far *__struct );
+tiny_ret_t  tiny_call   _TinyDPMISetRealVect( uint_8 __intr, uint_16 __seg, uint_16 __offs );
+tiny_ret_t  tiny_call   _TinyDPMISimulateRealInt( uint_8 __intr, uint_8 __flags, uint_16 __copy, call_struct __far *__struct );
+tiny_ret_t  tiny_call   _TinyDPMICallRealIntFrame( uint_8 __flags, uint_16 __copy, call_struct __far *__struct );
+tiny_ret_t  tiny_call   _TinyDPMICallRealFarFrame( uint_8 __flags, uint_16 __copy, call_struct __far *__struct );
 void __far  *tiny_call  _TinyDPMIRawPMtoRMAddr( void );
 uint_32     tiny_call   _TinyDPMIRawRMtoPMAddr( void );
 void __far  *tiny_call  _TinyDPMISaveRMStateAddr( void );
