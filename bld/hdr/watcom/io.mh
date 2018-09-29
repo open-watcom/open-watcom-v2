@@ -27,8 +27,9 @@
  */
 :include time_t.sp
 :include wchar_t.sp
-:include maxpath.sp
 :include intptr_t.sp
+
+:include maxpath.sp
 
 :include access.sp
 
@@ -152,20 +153,20 @@ _WCRTLINK extern int  _waccess( const wchar_t *__path, int __mode );
 _WCRTLINK extern int  _wchmod( const wchar_t *__path, mode_t __pmode );
 _WCRTLINK extern int  _wunlink( const wchar_t *__path );
 
-_WCRTLINK extern intptr_t _findfirst( const char *__filespec, struct _finddata_t *__fileinfo );
-_WCRTLINK extern intptr_t _wfindfirst( const wchar_t *__filespec, struct _wfinddata_t *__fileinfo );
-_WCRTLINK extern int      _findnext( intptr_t __handle, struct _finddata_t *__fileinfo );
-_WCRTLINK extern int      _wfindnext( intptr_t __handle, struct _wfinddata_t *__fileinfo );
-_WCRTLINK extern int      _findclose( intptr_t __handle );
+_WCRTLINK extern __w_intptr_t _findfirst( const char *__filespec, struct _finddata_t *__fileinfo );
+_WCRTLINK extern __w_intptr_t _wfindfirst( const wchar_t *__filespec, struct _wfinddata_t *__fileinfo );
+_WCRTLINK extern int      _findnext( __w_intptr_t __handle, struct _finddata_t *__fileinfo );
+_WCRTLINK extern int      _wfindnext( __w_intptr_t __handle, struct _wfinddata_t *__fileinfo );
+_WCRTLINK extern int      _findclose( __w_intptr_t __handle );
 
 _WCRTLINK extern char     *_mktemp( char *__template );
 _WCRTLINK extern wchar_t  *_wmktemp( wchar_t *__template );
 
 #ifdef __WATCOM_INT64__
-_WCRTLINK extern intptr_t _findfirsti64( const char *__filespec, struct _finddatai64_t *__fileinfo );
-_WCRTLINK extern intptr_t _wfindfirsti64( const wchar_t *__filespec, struct _wfinddatai64_t *__fileinfo );
-_WCRTLINK extern int      _findnexti64( intptr_t __handle, struct _finddatai64_t *__fileinfo );
-_WCRTLINK extern int      _wfindnexti64( intptr_t __handle, struct _wfinddatai64_t *__fileinfo );
+_WCRTLINK extern __w_intptr_t _findfirsti64( const char *__filespec, struct _finddatai64_t *__fileinfo );
+_WCRTLINK extern __w_intptr_t _wfindfirsti64( const wchar_t *__filespec, struct _wfinddatai64_t *__fileinfo );
+_WCRTLINK extern int      _findnexti64( __w_intptr_t __handle, struct _finddatai64_t *__fileinfo );
+_WCRTLINK extern int      _wfindnexti64( __w_intptr_t __handle, struct _wfinddatai64_t *__fileinfo );
 _WCRTLINK extern __int64  _filelengthi64( int __handle );
 _WCRTLINK extern __int64  _lseeki64( int __handle, __int64 __offset, int __origin );
 _WCRTLINK extern __int64  _telli64( int __handle );

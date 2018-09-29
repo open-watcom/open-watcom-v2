@@ -135,6 +135,7 @@ options_h_signal   = -kCONLY
 options_h_stdarg   = -kCONLY
 options_h_stdbool  = -kCONLY
 options_h_stddef   = -kCONLY
+options_h_stdint   = -kCONLY
 options_h_stdio    = -kCONLY
 options_h_stdlib   = -kCONLY
 options_h_string   = -kCONLY

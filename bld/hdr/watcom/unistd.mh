@@ -119,7 +119,6 @@
 :include off_t.sp
 :include size_t.sp
 :include ssize_t.sp
-:include intptr_t.sp
 
 _WCRTLINK extern int    access( const char *__path, int __mode );
 _WCRTLINK extern int    close( int __fildes );

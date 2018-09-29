@@ -177,7 +177,7 @@ fcntl_deps     = $(crwatqnx_sp) ../readonly.sp ../owrtlink.sp ../systypes.sp $(c
 graph_deps     = ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packll)
 pgchart_deps   = ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packll)
 process_deps   = $(crwatqnx_sp) ../readonly.sp ../owrtlink.sp ../lfndos.sp ../systypes.sp $(cplus) ../pid_t.sp ../wchar_t.sp ../thrdhndl.sp ../process1.sp ../_exit.sp $(extension)
-unistd_deps    = $(crwatqnx_sp) ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) ../null.sp ../access.sp ../seekpos.sp ../pid_t.sp ../uid_t.sp ../gid_t.sp ../off_t.sp ../size_t.sp ../ssize_t.sp ../intptr_t.sp ../_exit.sp ../brk.sp $(posixext) $(unixext) $(extension)
+unistd_deps    = $(crwatqnx_sp) ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) ../null.sp ../access.sp ../seekpos.sp ../pid_t.sp ../uid_t.sp ../gid_t.sp ../off_t.sp ../size_t.sp ../ssize_t.sp ../_exit.sp ../brk.sp $(posixext) $(unixext) $(extension)
 sys_stat_deps  = ../crwat.sp ../readonly.sp ../owrtlink.sp ../lfndos.sp $(cplus) $(packll) $(packlnxk) ../incdir.sp ../time_t.sp ../off_t.sp ../dev_t.sp ../ino_t.sp ../mode_t.sp ../nlink_t.sp ../uid_t.sp ../gid_t.sp ../wchar_t.sp ../modedef.sp $(extension) $(posixext)
 sys_time_deps  = ../crwatcnt.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packll) $(packlnxk) ../time_t.sp ../timeval.sp
 sys_types_deps = ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packll) $(packlnxk) ../incdir.sp ../time_t.sp ../size_t.sp ../exactint.sp ../ssize_t.sp ../pid_t.sp ../off_t.sp ../timer_t.sp ../clockidt.sp ../schedp.sp ../dev_t.sp ../ino_t.sp ../mode_t.sp ../nlink_t.sp ../uid_t.sp ../gid_t.sp ../id_t.sp ../schedp.sp ../sem_t.sp ../pthread1.sp ../pthread2.sp $(extension)
@@ -219,7 +219,7 @@ graph.h         : graph.mh $(graph_deps)
 graph2.h        : graph2.mh graph.mh $(graph_deps)
 i86.h           : i86.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packll) ../delay.sp
 inttypes.h      : $(inttypes_deps)
-io.h            : io.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../lfndos.sp ../systypes.sp $(cplus) $(packll) ../time_t.sp ../wchar_t.sp $(maxpath_sp) ../access.sp ../seekpos.sp $(extension)
+io.h            : io.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../lfndos.sp ../systypes.sp $(cplus) $(packll) ../time_t.sp ../wchar_t.sp $(maxpath_sp) ../intptr_t.sp ../access.sp ../seekpos.sp $(extension)
 iomanip.h       : $(iomanip_deps)
 ios.h           : $(ios_deps)
 iosfwd.h        : $(iosfwd_deps)
