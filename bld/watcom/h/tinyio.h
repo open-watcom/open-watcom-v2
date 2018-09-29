@@ -393,8 +393,8 @@ typedef union {
     /* from MSDOS Encyclopedia pg 1476 */
     struct {
         uint_8          extended_fcb_flag;  /* == TIO_EXTFCB_FLAG */
-        char            reserved1[ 6 ];
-        create_attr     file_attribute;
+        char            reserved1[ 5 ];
+        uint_8          file_attribute;
         uint_8          drive_identifier;
         char            filename[ 8 ];
         char            file_extension[ 3 ];
@@ -403,7 +403,7 @@ typedef union {
         uint_32         file_size;
         tiny_fdate_t    date_stamp;
         tiny_ftime_t    time_stamp;
-        char            reserved2[ 9 ];
+        char            reserved2[ 8 ];
         uint_8          current_record_num;
         uint_8          random_record_number[ 4 ];
     } extended;
