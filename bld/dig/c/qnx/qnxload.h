@@ -32,10 +32,10 @@
 
 #include <string.h>
 #include <errno.h>
+#include <i86.h>
 #include "digcli.h"
 #include "digld.h"
 #include "exeqnx.h"
-#include "i86.h"
 #include "sys/lmf.h"
 #include "sys/seginfo.h"
 
