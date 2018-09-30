@@ -275,8 +275,6 @@ static bool __NTFindNextFileWithAttr( HANDLE h, unsigned attr, LPWIN32_FIND_DATA
 static void makeDOSDTA( LPWIN32_FIND_DATA ffb, trap_dta *trp )
 /************************************************************/
 {
-    trp->dos.dir_entry_num = 0;
-    trp->dos.cluster = 0;
     trp->attr = ffb->dwFileAttributes;
     __MakeDOSDT( &ffb->ftLastWriteTime, &trp->date, &trp->time );
     trp->size = ffb->nFileSizeLow;

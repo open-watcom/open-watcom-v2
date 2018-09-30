@@ -240,7 +240,7 @@ void    ProcType( int argc, char **argv );
 bool    ProcDrive( int argc, char **argv );
 
 static void     CopyStrMax( const char *src, char *dst, size_t max_len );
-static void     FormatDTA( char *buff, const trap_dta *dir, bool wide );
+static void     FormatDTA( char *buff, const trap_dta *dta, bool wide );
 
 /**************************************************************************/
 /* UTILITIES                                                              */
@@ -1172,7 +1172,11 @@ static error_handle   CopyASpec( const char *f1, const char *f2, object_loc f1lo
         Squish( &Parse2, Name2 );
         errh = FindFirst( Name2, f2loc, IO_SUBDIRECTORY, &info );
         if( errh == 0 ) {
+#ifdef __NT__
+            dst_cluster = 0;
+#else
             dst_cluster = info.dos.cluster;
+#endif
         }
     }
     endpath = Squish( &Parse1, Name1 );
@@ -1180,7 +1184,11 @@ static error_handle   CopyASpec( const char *f1, const char *f2, object_loc f1lo
     WrtCopy( Name1, Name2, f1loc, f2loc );
     errh = FindFirst( Name1, f1loc, 0, &info );
     if( errh == 0 ) {
+#ifdef __NT__
+        src_cluster = 0;
+#else
         src_cluster = info.dos.cluster;
+#endif
         for(;;) {
             CopyStr( info.name, endpath );
             if( Parse2.device ) {
@@ -1427,7 +1435,7 @@ static void    DirReadf( dir_handle *dh, char *buff, bool wide )
     }
 }
 
-void    FormatDTA( char *buff, const trap_dta *dir, bool wide )
+void    FormatDTA( char *buff, const trap_dta *dta, bool wide )
 {
     char                *d;
     const char          *src;
@@ -1437,8 +1445,8 @@ void    FormatDTA( char *buff, const trap_dta *dir, bool wide )
 
     Fill( buff, 39, ' ' );
     buff[39] = NULLCHAR;
-    if( dir->attr & IO_SUBDIRECTORY ) {
-        *CopyStr( dir->name, buff ) = ' ';
+    if( dta->attr & IO_SUBDIRECTORY ) {
+        *CopyStr( dta->name, buff ) = ' ';
         if( wide ) {                    /* 11-jun-90 */
             Copy( "     ", buff + 13, 5 );
         } else {
@@ -1446,7 +1454,7 @@ void    FormatDTA( char *buff, const trap_dta *dir, bool wide )
         }
     } else {
         d = buff;
-        src = dir->name;
+        src = dta->name;
         while( *src != '.' && *src != NULLCHAR ) {
             *d++ = *src++;
         }
@@ -1458,19 +1466,19 @@ void    FormatDTA( char *buff, const trap_dta *dir, bool wide )
             }
         }
         d = buff + 20;
-        if( dir->size == 0 ) {
+        if( dta->size == 0 ) {
             *d = '0';
         } else {
-            DItoD( dir->size, d );
+            DItoD( dta->size, d );
         }
     }
-    date = dir->date;
+    date = dta->date;
     ItoD( ( date >> 5 ) & 0x000F, buff + 23 ); /* month */
     ItoD( date & 0x0001F, buff + 26 );         /* day */
     ItoD( ( date >> 9 ) + 1980, buff + 29 );
     buff[28] = '-';
     buff[25] = '-';
-    time = dir->time;
+    time = dta->time;
     hour = time >> 11;
     if( hour <= 11 ) {
         buff[38] = 'a';
