@@ -35,13 +35,12 @@
 #include <conio.h>
 #include <ctype.h>
 #include <process.h>
-#include <dos.h>
 #include "dbgdefn.h"
 #include "rfxdata.h"
 #include "fparse.h"
 #include "banner.h"
 #include "dbgio.h"
-#include "dta.h"
+#include "objloc.h"
 #include "tcerr.h"
 #include "trprfx.h"
 #include "local.h"
@@ -85,6 +84,12 @@ enum {
 #define IO_SUBDIRECTORY 0x10
 #define BUFF_LEN        4096
 
+enum {
+    RFX_EOR,
+    RFX_EOF,
+    RFX_OK
+};
+
 typedef struct copyspec {
     struct copyspec *next;
     char            *src;
@@ -93,10 +98,18 @@ typedef struct copyspec {
     object_loc      dst_loc;
 } COPYSPEC, *COPYPTR;
 
+typedef struct dir_handle {
+    trap_dta    dta;
+    char        path[64];
+    long        free;
+    object_loc  location;
+    char        status;
+} dir_handle;
+
 extern  bool            InitTrap( const char * );
 extern  bool            InitRFXSupp( void );
 extern  void            FiniTrap( void );
-extern  long            FreeSpace( char drive, object_loc loc );
+extern  long            FreeSpace( int drive, object_loc loc );
 
 extern  const char      *_FileParse( const char *name, file_parse *file );
 extern  char            *Squish( file_parse *parse, char *into );
@@ -117,7 +130,6 @@ static  char            Name2[MAX_DRIVE+MAX_PATH+MAX_NAME+MAX_EXT+2];
 static  char            Name3[MAX_DRIVE+MAX_PATH+MAX_NAME+MAX_EXT+2];
 static  int             FilesCopied;
 static  int             DirectoriesMade;
-trap_dta                Info;
 system_config           SysConfig;
 
 
@@ -212,7 +224,7 @@ static const char * const Day[] = {
 /* Forward declarations */
 extern void     Replace( const char *frum, const char *to, char *into );
 extern void     FinishName( const char *fn, file_parse *parse, object_loc loc, int addext );
-extern int      GetFreeSpace( dir_handle *h, object_loc loc );
+extern int      GetFreeSpace( dir_handle *dh, object_loc loc );
 
 void    FreeCopySpec( COPYPTR junk );
 void    ProcCD( int argc, char **argv, int crlf );
@@ -228,7 +240,7 @@ void    ProcType( int argc, char **argv );
 bool    ProcDrive( int argc, char **argv );
 
 static void     CopyStrMax( const char *src, char *dst, size_t max_len );
-static void     FormatDTA( char *buff, trap_dta *dir, bool wide );
+static void     FormatDTA( char *buff, const trap_dta *dir, bool wide );
 
 /**************************************************************************/
 /* UTILITIES                                                              */
@@ -436,7 +448,6 @@ static char GetDrv( object_loc loc )
 static void SetDrv( char drive, object_loc loc )
 /**********************************************/
 {
-    drive = toupper( (unsigned char)drive );
     if( loc == LOC_REMOTE ) {
         RemoteSetDrv( drive - 'A' );
     } else {
@@ -510,7 +521,7 @@ static int IsDevice( const char *name, object_loc loc )
 {
     file_handle     fh;
 
-    if( GetAttrs( name, loc ) >= 0 )
+    if( GetAttrs( name, loc ) != RFX_INVALID_FILE_ATTRIBUTES )
         return( false );
     fh = FileOpen( name, OP_READ | RFX2Acc( loc ) );
     if( fh == NIL_HANDLE )
@@ -520,23 +531,23 @@ static int IsDevice( const char *name, object_loc loc )
 }
 
 
-static error_handle FindFirst( const char *name, object_loc loc, int attr )
-/*************************************************************************/
+static error_handle FindFirst( const char *name, object_loc loc, int attr, trap_dta *info )
+/*****************************************************************************************/
 {
     if( loc == LOC_REMOTE ) {
-        return( RemoteFindFirst( name, &Info, sizeof( Info ), attr ) );
+        return( RemoteFindFirst( name, info, sizeof( *info ), attr ) );
     } else {
-        return( LocalFindFirst( name, &Info, sizeof( Info ), attr ) );
+        return( LocalFindFirst( name, info, sizeof( *info ), attr ) );
     }
 }
 
-static int FindNext( object_loc loc )
-/***********************************/
+static int FindNext( object_loc loc, trap_dta *info )
+/****************************************************/
 {
     if( loc == LOC_REMOTE ) {
-        return( RemoteFindNext( &Info, sizeof( Info ) ) );
+        return( RemoteFindNext( info, sizeof( *info ) ) );
     } else {
-        return( LocalFindNext( &Info, sizeof( Info ) ) );
+        return( LocalFindNext( info, sizeof( *info ) ) );
     }
 }
 
@@ -550,8 +561,8 @@ static error_handle Rename( const char *f1, const char *f2, object_loc loc )
     }
 }
 
-long FreeSpace( char drive, object_loc loc )
-/******************************************/
+long FreeSpace( int drive, object_loc loc )
+/*****************************************/
 {
     if( loc == LOC_REMOTE ) {
         return( RemoteGetFreeSpace( drive ) );
@@ -850,6 +861,7 @@ static error_handle   Renamef( const char *fn1, object_loc f1loc, const char *fn
 {
     error_handle    errh;
     char            *endpath;
+    trap_dta        info;
 
     fn1 = _FileParse( fn1, &Parse1 );
     fn2 = _FileParse( fn2, &Parse2 );
@@ -868,7 +880,7 @@ static error_handle   Renamef( const char *fn1, object_loc f1loc, const char *fn
         SysSetLclErr( IO_DIFF_DEV );
         return( 0 );
     }
-    if( toupper( Parse1.drive[0] ) != toupper( Parse2.drive[0] ) ) {
+    if( Parse1.drive[0] != Parse2.drive[0] ) {
         SysSetLclErr( IO_DIFF_DEV );
         return( 0 );
     }
@@ -877,7 +889,7 @@ static error_handle   Renamef( const char *fn1, object_loc f1loc, const char *fn
         return( 0 );
     }
     endpath = Squish( &Parse1, Name1 );
-    errh = FindFirst( Name1, f1loc, 0 );
+    errh = FindFirst( Name1, f1loc, 0, &info );
     if( errh != 0 ) {
         SysSetLclErr( IO_FILE_NOT_FOUND );
         return( errh );
@@ -887,7 +899,7 @@ static error_handle   Renamef( const char *fn1, object_loc f1loc, const char *fn
             errh = SysSetLclErr( IO_INTERRUPT );
             break;
         }
-        CopyStr( Info.name, endpath );
+        CopyStr( info.name, endpath );
         _FileParse( Name1, &Parse3 );
         Replace( Parse1.name, Parse2.name, Parse3.name );
         Replace( Parse1.ext, Parse2.ext, Parse3.ext );
@@ -902,7 +914,7 @@ static error_handle   Renamef( const char *fn1, object_loc f1loc, const char *fn
             }
             break;
         }
-        if( FindNext( f1loc ) != 0 ) {
+        if( FindNext( f1loc, &info ) ) {
             break;
         }
     }
@@ -987,7 +999,7 @@ static bool IsDir( const char *src, object_loc src_loc )
     long rc;
 
     rc = GetAttrs( src, src_loc );
-    if( rc < 0 ) {
+    if( rc == RFX_INVALID_FILE_ATTRIBUTES ) {
         return( false );
     }
     return( (rc & IO_SUBDIRECTORY) != 0 );
@@ -1094,6 +1106,7 @@ static void    RRecurse( const char *f1, const char *f2, object_loc f1loc, objec
     char            *endptr;
     char            *endpath;
     char            ch;
+    trap_dta        info;
 
     f1 = _FileParse( f1, &Parse1 );
     FinishName( f1, &Parse1, f1loc, 1 );
@@ -1103,22 +1116,22 @@ static void    RRecurse( const char *f1, const char *f2, object_loc f1loc, objec
     endpath = Squish( &Parse3, Name1 );
     f2 = _FileParse( f2, &Parse2 );
     FinishName( f2, &Parse2, f2loc, 1 );
-    errh = FindFirst( Name1, f1loc, IO_SUBDIRECTORY );
+    errh = FindFirst( Name1, f1loc, IO_SUBDIRECTORY, &info );
     if( errh == 0 ) {
         endpath = Squish( &Parse1, Name1 );
         for(;;) {
-            if( Info.attr & IO_SUBDIRECTORY ) {
-                if( Info.name[0] != '.' ) {
+            if( info.attr & IO_SUBDIRECTORY ) {
+                if( info.name[0] != '.' ) {
                     CopyStr( endpath, Name3 );
-                    CopyStr( Name3, CopyStr( "\\", CopyStr( Info.name,endpath ) ) );
+                    CopyStr( Name3, CopyStr( "\\", CopyStr( info.name, endpath ) ) );
                     endpath = Squish( &Parse2, Name2 );
                     CopyStr( endpath, Name3 );
-                    endptr = CopyStr( Info.name, endpath );
+                    endptr = CopyStr( info.name, endpath );
                     CopyStr( Name3, CopyStr( "\\", endptr ) );
                     ch = *endptr;
                     *endptr = NULLCHAR;
                     retl = GetAttrs( Name2, f2loc );
-                    if( retl < 0 || ( retl & IO_SUBDIRECTORY ) == 0 ) {
+                    if( retl == RFX_INVALID_FILE_ATTRIBUTES || ( retl & IO_SUBDIRECTORY ) == 0 ) {
                         errh = MakeDir( Name2, f2loc );
                         if( errh != 0 ) {
                             Error( "Unable to make directory" );
@@ -1131,7 +1144,7 @@ static void    RRecurse( const char *f1, const char *f2, object_loc f1loc, objec
                     endpath = Squish( &Parse1, Name1 );
                 }
             }
-            if( FindNext( f1loc ) != 0 ) {
+            if( FindNext( f1loc, &info ) ) {
                 break;
             }
         }
@@ -1145,6 +1158,7 @@ static error_handle   CopyASpec( const char *f1, const char *f2, object_loc f1lo
     char            *endpath;
     unsigned        dst_cluster;
     unsigned        src_cluster;
+    trap_dta        info;
 
     f1 = _FileParse( f1, &Parse1 );
     FinishName( f1, &Parse1, f1loc, 1 );
@@ -1156,19 +1170,19 @@ static error_handle   CopyASpec( const char *f1, const char *f2, object_loc f1lo
     dst_cluster = 0xFFFF;
     if( ( f1loc == f2loc ) && ( Parse1.drive[0] == Parse2.drive[0] ) ) {
         Squish( &Parse2, Name2 );
-        errh = FindFirst( Name2, f2loc, IO_SUBDIRECTORY );
+        errh = FindFirst( Name2, f2loc, IO_SUBDIRECTORY, &info );
         if( errh == 0 ) {
-            dst_cluster = Info.dos.cluster;
+            dst_cluster = info.dos.cluster;
         }
     }
     endpath = Squish( &Parse1, Name1 );
     Squish( &Parse2, Name2 );
     WrtCopy( Name1, Name2, f1loc, f2loc );
-    errh = FindFirst( Name1, f1loc, 0 );
+    errh = FindFirst( Name1, f1loc, 0, &info );
     if( errh == 0 ) {
-        src_cluster = Info.dos.cluster;
+        src_cluster = info.dos.cluster;
         for(;;) {
-            CopyStr( Info.name, endpath );
+            CopyStr( info.name, endpath );
             if( Parse2.device ) {
                 Squish( &Parse2, Name2 );
                 errh = DoCopy( Name1, Name2, f1loc, f2loc );
@@ -1187,7 +1201,7 @@ static error_handle   CopyASpec( const char *f1, const char *f2, object_loc f1lo
             }
             if( errh != 0 )
                 break;
-            if( FindNext( f1loc ) != 0 ) {
+            if( FindNext( f1loc, &info ) ) {
                 break;
             }
         }
@@ -1284,8 +1298,8 @@ void ProcCopy( int argc, char **argv )
         dst_name = name;
         endp = name + strlen( name );
         if( endp[-1] == ':' || endp[-1] == '\\' ) {
-            *endp = '.';
-            *++endp = NULLCHAR;
+            *endp++ = '.';
+            *endp = NULLCHAR;
         }
         if( !HasWildCards( dst_name ) ) {
             i = 0;
@@ -1337,89 +1351,86 @@ void ProcType( int argc, char **argv )
 /* DIR                                                                    */
 /**************************************************************************/
 
-static  void    DirClosef( dir_handle *h )
+static  void    DirClosef( dir_handle *dh )
 {
-    DbgFree( h );
+    DbgFree( dh );
 }
 
 static dir_handle      *DirOpenf( const char *fspec, object_loc fnloc )
 {
-    dir_handle      *h;
+    dir_handle      *dh;
     error_handle    errh;
     long            retl;
-    char            *append;
     file_parse      parse;
 
-    h = (dir_handle *)DbgAlloc( sizeof( dir_handle ) );
-    if( h == NULL ) {
+    dh = (dir_handle *)DbgAlloc( sizeof( dir_handle ) );
+    if( dh == NULL ) {
         SysSetLclErr( IO_FIND_ERROR );
         return( NULL );
     }
-    h->status = RFX_OK;
-    h->location = fnloc;
+    dh->status = RFX_OK;
+    dh->location = fnloc;
     fspec = _FileParse( fspec, &parse );
-    append = NULL;
     if( parse.name[0] == NULLCHAR ) {
+        parse.name[0] = '*';
+        parse.name[1] = NULLCHAR;
         if( parse.ext[0] == NULLCHAR ) {
-            if( parse.slash || parse.path[0] == NULLCHAR ) {
-                append = "*.*";
-            } else {
-                append = "\\*.*";
+            parse.ext[0] = '.';
+            parse.ext[1] = '*';
+            parse.ext[2] = NULLCHAR;
+            if( !parse.slash && parse.path[0] != NULLCHAR ) {
+                CopyStr( "\\", parse.path + strlen( parse.path ) );
             }
-        } else {
-            parse.name[0] = '*';
-            parse.name[1] = NULLCHAR;
         }
     } else {
         retl = GetAttrs( fspec, fnloc );
-        if( retl >= 0 && ( retl & IO_SUBDIRECTORY ) != 0 ) {    /* 11-jun-90 */
-            append = "\\*.*";
+        if( retl != RFX_INVALID_FILE_ATTRIBUTES && ( retl & IO_SUBDIRECTORY ) != 0 ) {
+            CopyStr( "\\", CopyStr( parse.ext, CopyStr( parse.name, parse.path + strlen( parse.path ) ) ) );
+            parse.name[0] = '*';
+            parse.name[1] = NULLCHAR;
+            parse.ext[0] = '.';
+            parse.ext[1] = '*';
+            parse.ext[2] = NULLCHAR;
         } else if( parse.ext[0] == NULLCHAR ) {
-            CopyStr( ".*", parse.ext );
+            parse.ext[0] = '.';
+            parse.ext[1] = '*';
+            parse.ext[2] = NULLCHAR;
         }
     }
-    if( append != NULL ) {
-        CopyStr( append, CopyStr( fspec, h->path ) );
-    } else {
-        append = CopyStr( parse.drive, h->path );
-        append = CopyStr( parse.path, append );
-        append = CopyStr( parse.name, append );
-        append = CopyStr( parse.ext, append );
-    }
-    if( GetFreeSpace( h, fnloc ) ) {
-        errh = FindFirst( h->path, h->location, IO_SUBDIRECTORY );
+    Squish( &parse, dh->path );
+    if( GetFreeSpace( dh, fnloc ) ) {
+        errh = FindFirst( dh->path, dh->location, IO_SUBDIRECTORY, &dh->dta );
         if( errh != 0 ) {
             SysSetLclErr( IO_FIND_ERROR );
-            DirClosef( h );
+            DirClosef( dh );
             return( NULL );
         } else {
-            return( h );
+            return( dh );
         }
     } else {
         SysSetLclErr( IO_BAD_DRIVE );
-        DirClosef( h );
+        DirClosef( dh );
         return( NULL );
     }
 }
 
 
-static void    DirReadf( dir_handle *h, char *buff, bool wide )
+static void    DirReadf( dir_handle *dh, char *buff, bool wide )
 {
-    if( h->status == RFX_EOF ) {
+    if( dh->status == RFX_EOF ) {
         *buff = NULLCHAR;
     } else {
-        FormatDTA( buff, &Info, wide );
-        if( FindNext( h->location ) != 0 ) {
-            h->status = RFX_EOF;
+        FormatDTA( buff, &dh->dta, wide );
+        if( FindNext( dh->location, &dh->dta ) ) {
+            dh->status = RFX_EOF;
         }
     }
 }
 
-void    FormatDTA( char *buff, trap_dta *dir, bool wide )
+void    FormatDTA( char *buff, const trap_dta *dir, bool wide )
 {
-    char                *b;
     char                *d;
-    long                s;
+    const char          *src;
     unsigned int        date;
     unsigned int        time;
     unsigned int        hour;
@@ -1434,24 +1445,23 @@ void    FormatDTA( char *buff, trap_dta *dir, bool wide )
             Copy( "<DIR>", buff + 13, 5 );
         }
     } else {
-        b = buff;
-        d = dir->name;
-        while( *d != '.' && *d != NULLCHAR ) {
-            *b++ = *d++;
+        d = buff;
+        src = dir->name;
+        while( *src != '.' && *src != NULLCHAR ) {
+            *d++ = *src++;
         }
-        if( *d == '.' ) {
-            d++;
-            b = buff + 9;
-            while( *d != NULLCHAR ) {
-                *b++ = *d++;
+        if( *src == '.' ) {
+            src++;
+            d = buff + 9;
+            while( *src != NULLCHAR ) {
+                *d++ = *src++;
             }
         }
-        s = dir->size;
         d = buff + 20;
-        if( s == 0 ) {
+        if( dir->size == 0 ) {
             *d = '0';
         } else {
-            DItoD( s, d );
+            DItoD( dir->size, d );
         }
     }
     date = dir->date;
@@ -1475,18 +1485,16 @@ void    FormatDTA( char *buff, trap_dta *dir, bool wide )
     ItoD( ( time >> 5 ) & 0x003F, buff + 36 );
 }
 
-int     GetFreeSpace( dir_handle *h, object_loc loc )
+int     GetFreeSpace( dir_handle *dh, object_loc loc )
 {
-    char                *path;
-    char                drive;
+    int         drive;
 
-    path = h->path;
-    if( path[1] == ':' ) {
-        drive = tolower( path[0] ) - 'a' + 1;
+    if( dh->path[1] == ':' ) {
+        drive = dh->path[0] - 'A' + 1;
     } else {
         drive = 0;
     }
-    h->free = FreeSpace( drive, loc );
+    dh->free = FreeSpace( drive, loc );
     return( 1 );
 }
 
@@ -1496,7 +1504,7 @@ void ProcDir( int argc, char **argv )
     int         pause;
     object_loc  src_loc;
     const char  *src;
-    dir_handle  *io;
+    dir_handle  *dh;
     int         count;
     int         i;
     int         line;
@@ -1520,13 +1528,13 @@ void ProcDir( int argc, char **argv )
         src = "*.*";
     }
     src = RealName( src, &src_loc );
-    io = DirOpenf( src, src_loc );
+    dh = DirOpenf( src, src_loc );
     count = 0;
-    if( io != NULL ) {
+    if( dh != NULL ) {
         i = 0;
         line = 0;
         while( !CtrlCHit() ) {
-            DirReadf( io, Buff, wide );
+            DirReadf( dh, Buff, wide );
             if( Buff[0] == NULLCHAR )
                 break;
             ++i;
@@ -1553,15 +1561,15 @@ void ProcDir( int argc, char **argv )
                 line = 0;
             }
         }
-        DirClosef( io );
         if( count != 0 ) {
             WriteNL( STD_OUT );
         }
         #define MSG "        x File(s)         x bytes free"
         strcpy( Buff, MSG );
         DItoD( i, Buff + 8 );
-        DItoD( io->free, Buff + 26 );
+        DItoD( dh->free, Buff + 26 );
         WriteText( STD_OUT, Buff, sizeof( MSG ) - 1 );
+        DirClosef( dh );
     } else {
         SysSetLclErr( IO_FILE_NOT_FOUND );
     }
@@ -1609,7 +1617,7 @@ void ProcCD( int argc, char **argv, int crlf )
         } else {
             WriteStream( STD_OUT, "@L", 2 );
         }
-        Buff[0] = toupper( *src );
+        Buff[0] = DRIVECHAR( *src );
         Buff[1] = ':';
         Buff[2] = '\\';
         WriteStream( STD_OUT, Buff, 3 );
@@ -1648,11 +1656,12 @@ static error_handle   Scratchf( const char *fn, object_loc fnloc )
 {
     error_handle    errh;
     char            *endptr;
+    trap_dta        info;
 
     fn = _FileParse( fn, &Parse1 );
     FinishName( fn, &Parse1, fnloc, 0 );
     Squish( &Parse1, Name1 );
-    errh = FindFirst( Name1, fnloc, 0 );
+    errh = FindFirst( Name1, fnloc, 0, &info );
     if( errh != 0 ) {
         SysSetLclErr( IO_FILE_NOT_FOUND );
     } else {
@@ -1662,13 +1671,13 @@ static error_handle   Scratchf( const char *fn, object_loc fnloc )
         }
         endptr = CopyStr( Parse1.path, endptr );
         for(;;) {
-            CopyStr( Info.name, endptr );
+            CopyStr( info.name, endptr );
             errh = Erase( Parse1.drive, fnloc );
             if( errh != 0 ) {
                 TransSetErr( errh );
                 return( errh );
             }
-            if( FindNext( fnloc ) != 0 ) {
+            if( FindNext( fnloc, &info ) ) {
                 break;
             }
         }
@@ -1839,10 +1848,10 @@ const char    *_FileParse( const char *name, file_parse *file )
     char        ch;
     int         extlen;
 
-    Fill( (char *)file, sizeof( file_parse ), 0 );
+    Fill( file, sizeof( file_parse ), 0 );
     dosname = name;
     if( dosname[1] == ':' ) {
-        file->drive[0] = *dosname;
+        file->drive[0] = DRIVECHAR( *dosname );
         file->drive[1] = ':';
         file->drive[2] = NULLCHAR;
     }
@@ -1893,10 +1902,10 @@ const char    *_FileParse( const char *name, file_parse *file )
         }
     }
     *p1 = NULLCHAR;
-    strupr( file->drive );
-    strupr( file->path );
-    strupr( file->name );
-    strupr( file->ext );
+//    strupr( file->drive );
+//    strupr( file->path );
+//    strupr( file->name );
+//    strupr( file->ext );
     return( dosname );
 }
 
@@ -1968,7 +1977,7 @@ void    FinishName( const char *fn, file_parse *parse, object_loc loc, int addex
         parse->device = 1;
     } else {
         rc = GetAttrs( fn, loc );
-        if( rc >= 0 && ( rc & IO_SUBDIRECTORY ) != 0 ) {
+        if( rc != RFX_INVALID_FILE_ATTRIBUTES && ( rc & IO_SUBDIRECTORY ) != 0 ) {
             endptr = CopyStr( parse->name, endptr );
             endptr = CopyStr( parse->ext, endptr );
             endptr = CopyStr( "\\", endptr );

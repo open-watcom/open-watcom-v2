@@ -31,18 +31,4 @@
 
 
 extern bool         InitRFXSupp( void );
-extern error_handle RemoteRename( const char *from, const char *to );
-extern error_handle RemoteMkDir( const char *name );
-extern error_handle RemoteRmDir( const char *name );
-extern error_handle RemoteSetDrv( int drv );
-extern int          RemoteGetDrv( void );
-extern error_handle RemoteSetCWD( const char *name );
-extern long         RemoteGetFileAttr( const char *name );
-extern error_handle RemoteSetFileAttr( const char *name, long attrib );
-extern long         RemoteGetFreeSpace( int drv );
-extern error_handle RemoteDateTime( sys_handle sh, int *time, int *date, int set );
-extern error_handle RemoteGetCwd( int drv, char *where );
-extern error_handle RemoteFindFirst( const char *pattern, void *info, trap_elen info_len, int attrib );
-extern int          RemoteFindNext( void *info, trap_elen info_len );
-extern error_handle RemoteFindClose( void );
 extern size_t       RenameNameToCannonical( char *name, char *fullname, trap_elen fullname_len );

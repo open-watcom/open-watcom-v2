@@ -39,6 +39,7 @@
 #include "remote.h"
 #include "trapglbl.h"
 #include "trpld.h"
+#include "rfx.h"
 #include "rfxacc.h"
 
 extern char *TxtBuff;
@@ -171,7 +172,7 @@ long RemoteGetFileAttr( const char * name )
     TrapAccess( 2, in, 1, out );
     if( (ret.attribute & 0xffff0000) == 0xffff0000 ) {
         StashErrCode( ret.attribute, OP_REMOTE );
-        return( -1L );
+        return( RFX_INVALID_FILE_ATTRIBUTES );
     }
     return( ret.attribute );
 }

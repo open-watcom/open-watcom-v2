@@ -30,6 +30,10 @@
 ****************************************************************************/
 
 
+#define RFX_INVALID_FILE_ATTRIBUTES     (-1)
+
+#define DRIVECHAR(x)    ((x >= 'a' && x <= 'z') ? x & ~0x20 : x)
+
 extern void     StartupErr( const char * );
 extern char     *StrCopy( const char *src, char *dest );
 extern void     InitInt( void );

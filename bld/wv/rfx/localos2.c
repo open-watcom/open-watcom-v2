@@ -38,14 +38,16 @@
 #include "dbgdefn.h"
 #include "rfxdata.h"
 #include "dbgio.h"
-#ifdef _M_I86
-#include "dta.h"
-#else
 #include "trprfx.h"
-#endif
 #include "local.h"
 #include "rfx.h"
 
+
+#ifdef _M_I86
+#define FINDBUF     FILEFINDBUF
+#else
+#define FINDBUF     FILEFINDBUF3
+#endif
 
 #define SYSH2LH(sh)     (HFILE)((sh).u._32[0])
 #define LH2SYSH(sh,lh)  (sh).u._32[0]=lh;(sh).u._32[1]=0
@@ -176,14 +178,14 @@ long LocalGetFileAttr( const char *name )
     USHORT attr;
 
     if( DosQFileMode( (char *)name, &attr, 0 ) ) {
-        return( -1L );
+        return( RFX_INVALID_FILE_ATTRIBUTES );
     }
     return( attr );
 #else
     FILESTATUS3 fileinfo;
 
     if( DosQueryPathInfo( name, FIL_STANDARD, &fileinfo, sizeof( fileinfo ) ) ) {
-        return( -1L );
+        return( RFX_INVALID_FILE_ATTRIBUTES );
     }
     return( fileinfo.attrFile );
 #endif
@@ -255,65 +257,55 @@ error_handle LocalGetCwd( int drive, char *where )
 #endif
 }
 
-#ifdef _M_I86
-static void makeDOSDTA( struct _FILEFINDBUF *os2, dta *dos )
-#else
-static void makeDOSDTA( struct _FILEFINDBUF3 *os2, trap_dta *dos )
-#endif
+static void makeDOSDTA( FINDBUF *findbuf, trap_dta *dta )
+/*******************************************************/
 {
-    dos->dos.dir_entry_num = *(USHORT *)&os2->fdateLastWrite;
-    dos->dos.cluster = *(USHORT *)&os2->ftimeLastWrite;
-    dos->attr = os2->attrFile;
-    dos->time = *(USHORT *)&os2->ftimeLastWrite;
-    dos->date = *(USHORT *)&os2->fdateLastWrite;
-    dos->size = os2->cbFile;
-    strcpy( dos->name, os2->achName );
+    dta->dos.dir_entry_num = *(USHORT *)&findbuf->fdateLastWrite;
+    dta->dos.cluster = *(USHORT *)&findbuf->ftimeLastWrite;
+    dta->attr = findbuf->attrFile;
+    dta->time = *(USHORT *)&findbuf->ftimeLastWrite;
+    dta->date = *(USHORT *)&findbuf->fdateLastWrite;
+    dta->size = findbuf->cbFile;
+    strncpy( dta->name, findbuf->achName, TRAP_DTA_NAME_MAX - 1 );
+    dta->name[TRAP_DTA_NAME_MAX - 1] = '\0';
 }
 
 error_handle LocalFindFirst( const char *pattern, void *info, unsigned info_len, int attrib )
 /*******************************************************************************************/
 {
-#ifdef _M_I86
-    FILEFINDBUF dta;
-#else
-    FILEFINDBUF3  dta;
-#endif
-    HDIR handle = 1;
-    APIRET count = 1;
-    APIRET err;
+    FINDBUF     findbuf;
+    HDIR        handle = 1;
+    APIRET      count = 1;
+    APIRET      err;
 
-    info_len = info_len;
+    (void)info_len;
+
 #ifdef _M_I86
-    err = DosFindFirst( (char *)pattern, &handle, attrib, &dta, sizeof( dta ), &count, 0 );
+    err = DosFindFirst( (char *)pattern, &handle, attrib, &findbuf, sizeof( findbuf ), &count, 0 );
 #else
-    err = DosFindFirst( pattern, &handle, attrib, &dta, sizeof( dta ), &count, FIL_STANDARD );
+    err = DosFindFirst( pattern, &handle, attrib, &findbuf, sizeof( findbuf ), &count, FIL_STANDARD );
 #endif
-    if( err != 0 )
-        return( StashErrCode( err, OP_LOCAL ) );
-    makeDOSDTA( &dta, info );
-    return( 0 );
+    if( err == 0 )
+        makeDOSDTA( &findbuf, info );
+    return( StashErrCode( err, OP_LOCAL ) );
 }
 
 int LocalFindNext( void *info, unsigned info_len )
 /************************************************/
 {
-#ifdef _M_I86
-    FILEFINDBUF   dta;
-#else
-    FILEFINDBUF3  dta;
-#endif
-    APIRET        count = 1;
-    APIRET        rc;
+    FINDBUF     findbuf;
+    APIRET      count = 1;
+    APIRET      rc;
 
     info_len = info_len;
-    rc = DosFindNext( 1, &dta, sizeof( dta ), &count );
+    rc = DosFindNext( 1, &findbuf, sizeof( findbuf ), &count );
     if( rc != 0 )
         return( -1 );
     if( count == 0 ) {
         DosFindClose( 1 );
         return( -1 );
     }
-    makeDOSDTA( &dta, info );
+    makeDOSDTA( &findbuf, info );
     return( 0 );
 }
 
