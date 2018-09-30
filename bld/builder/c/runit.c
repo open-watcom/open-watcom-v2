@@ -172,11 +172,20 @@ static int IsDotOrDotDot( const char *fname )
     return( fname[0] == '.' && ( fname[1] == 0 || fname[1] == '.' && fname[2] == 0 ) );
 }
 
+static copy_entry **add_copy_entry( copy_entry **list, char *src, char *dst )
+{
+    copy_entry  *entry;
+
+    entry = MAlloc( sizeof( *entry ) );
+    entry->next = NULL;
+    strcpy( entry->src, src );
+    strcpy( entry->dst, dst );
+    *list = entry;
+    return( &entry->next );
+}
+
 static int BuildList( const char *src, char *dst, bool test_abit, bool cond_copy, copy_entry **list )
 {
-    copy_entry          *head;
-    copy_entry          *curr;
-    copy_entry          **owner;
     char                *end;
     char                path_buffer[_MAX_PATH2];
     char                full[_MAX_PATH];
@@ -217,26 +226,23 @@ static int BuildList( const char *src, char *dst, bool test_abit, bool cond_copy
             break;
         }
         if( !test_abit || ENTRY_CHANGED1( entry_src, entry_dst ) ) {
-            head = MAlloc( sizeof( *head ) );
-            head->next = NULL;
-            strcpy( head->src, entry_src );
-            strcpy( head->dst, entry_dst );
-            *list = head;
+            add_copy_entry( list, entry_src, entry_dst );
         }
         return( 0 );
     }
-#ifdef __UNIX__
     _splitpath2( srcdir, path_buffer, &drive, &dir, &fn, &ext );
+#ifdef __UNIX__
     _makepath( srcdir, drive, dir, NULL, NULL );
     _makepath( pattern, NULL, NULL, fn, ext );
     if( srcdir[0] == '\0' ) {
-        srcdir[0] = '.';
-        srcdir[1] = '\0';
+        directory = opendir( "." );
+    } else {
+        directory = opendir( srcdir );
     }
-#endif
-    head = NULL;
-    rc = 1;
+#else
     directory = opendir( srcdir );
+#endif
+    rc = 1;
     if( directory == NULL ) {
         if( !cond_copy ) {
             Log( false, "Can not open source directory '%s': %s\n", srcdir, strerror( errno ) );
@@ -245,7 +251,6 @@ static int BuildList( const char *src, char *dst, bool test_abit, bool cond_copy
 #ifdef __UNIX__
         char *srcdir_end = srcdir + strlen( srcdir );
 #endif
-        owner = &head;
         while( (dent = readdir( directory )) != NULL ) {
             if( ENTRY_INVALID1( dent ) )
                 continue;
@@ -254,11 +259,12 @@ static int BuildList( const char *src, char *dst, bool test_abit, bool cond_copy
             if( fnmatch( pattern, dent->d_name, FNM_PATHNAME | FNM_NOESCAPE ) == FNM_NOMATCH )
                 continue;
             strcpy( srcdir_end, dent->d_name );
-#endif
-            if( ENTRY_SUBDIR( srcdir, dent ) )
+            if( chk_is_dir( srcdir ) )
                 continue;
-            *srcdir_end = '\0';
-            _splitpath2( srcdir, path_buffer, &drive, &dir, &fn, &ext );
+#else
+            if( dent->d_attr & _A_SUBDIR )
+                continue;
+#endif
             _makepath( full, drive, dir, dent->d_name, NULL );
             _fullpath( entry_src, full, sizeof( entry_src ) );
             strcpy( full, dst );
@@ -270,17 +276,11 @@ static int BuildList( const char *src, char *dst, bool test_abit, bool cond_copy
             }
             _fullpath( entry_dst, full, sizeof( entry_dst ) );
             if( !test_abit || ENTRY_CHANGED2( entry_src, dent, entry_dst ) ) {
-                curr = MAlloc( sizeof( *curr ) );
-                curr->next = NULL;
-                strcpy( curr->src, entry_src );
-                strcpy( curr->dst, entry_dst );
-                *owner = curr;
-                owner = &curr->next;
+                list = add_copy_entry( list, entry_src, entry_dst );
             }
         }
         closedir( directory );
     }
-    *list = head;
     if( cond_copy ) {
         return( 0 );
     }
