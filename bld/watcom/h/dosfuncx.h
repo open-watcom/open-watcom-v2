@@ -32,6 +32,7 @@
 #include <dosfunc.h>
 
 #define DOS_GET_CHAR_ECHO_CHECK     0x01
+#define DOS_OUTPUT_CHAR             0x06
 #define DOS_GET_CHAR_NO_ECHO_CHECK  0x08
 #define DOS_BUFF_INPUT              0x0A
 #define DOS_SET_DRIVE               0x0E
