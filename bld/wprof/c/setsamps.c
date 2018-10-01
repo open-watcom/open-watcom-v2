@@ -791,7 +791,7 @@ void SetSampleInfo( sio_data *curr_sio )
         curr_sio->dip_process = NULL;
     }
     CurrSIOData = curr_sio;
-    SetCurrentMAD( CurrSIOData->config.mad );
+    SetCurrentMAD( CurrSIOData->config.arch );
     if( CurrSIOData->samples != NULL ) {
         if( !CurrSIOData->massaged_mapped || CurrSIOData->massaged_sample == NULL ) {
             calcAggregates();

@@ -491,13 +491,13 @@ trap_retval ReqGet_sys_config( void )
 
     _DBG( "AccGetConfig\r\n" );
     ret = GetOutPtr( 0 );
-    ret->sys.os = MAD_OS_RATIONAL;      // Pretend we're DOS/4G
+    ret->sys.os = DIG_OS_RATIONAL;      // Pretend we're DOS/4G
     ret->sys.osmajor = _osmajor;
     ret->sys.osminor = _osminor;
     ret->sys.cpu = X86CPUType();
     ret->sys.huge_shift = 12;
     ret->sys.fpu = NPXType();       //RealNPXType;
-    ret->sys.mad = MAD_X86;
+    ret->sys.arch = DIG_ARCH_X86;
     _DBG( "os = %d, cpu=%d, fpu=%d, osmajor=%d, osminor=%d\r\n",
         ret->sys.os, ret->sys.cpu, ret->sys.fpu, ret->sys.osmajor, ret->sys.osminor );
     return( sizeof( *ret ) );

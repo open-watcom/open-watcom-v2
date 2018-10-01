@@ -130,8 +130,8 @@ trap_retval ReqGet_sys_config( void )
     } else {
         qnx_osinfo( 0, &info );
     }
-    ret->sys.mad = MAD_X86;
-    ret->sys.os = MAD_OS_QNX;
+    ret->sys.arch = DIG_ARCH_X86;
+    ret->sys.os = DIG_OS_QNX;
     ret->sys.osmajor = info.version / 100;
     ret->sys.osminor = info.version % 100;
     if( info.sflags & _PSF_EMULATOR_INSTALLED ) {

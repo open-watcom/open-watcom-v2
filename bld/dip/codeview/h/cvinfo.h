@@ -92,7 +92,7 @@ struct imp_image_handle {
     unsigned                    map_count;
     seg_desc                    *mapping;
     virt_mem                    types_base;
-    dig_mad                     mad;
+    dig_arch                    arch;
 };
 
 typedef struct {

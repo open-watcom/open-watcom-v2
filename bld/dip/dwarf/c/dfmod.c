@@ -130,7 +130,7 @@ static bool ModFill( void *_mod, drmem_hdl mod_handle )
     }
     modinfo->name = name;
     model = DRGetMemModelAT( cu_tag );
-    if( DCCurrMAD() == MAD_X86 ) {
+    if( DCCurrMAD() == DIG_ARCH_X86 ) {
         switch( model ) {
         case DR_MODEL_NONE:
         case DR_MODEL_FLAT:

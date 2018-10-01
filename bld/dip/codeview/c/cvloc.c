@@ -188,8 +188,8 @@ dip_status LocationManyReg( imp_image_handle *iih,
     j = 0;
     for( i = count; i-- > 0; ) {
         idx = reg_list[i];
-        switch( iih->mad ) {
-        case MAD_X86:
+        switch( iih->arch ) {
+        case DIG_ARCH_X86:
             if( idx >= CV_X86_AL && idx <= CV_X86_EFLAGS ) {
                 reg = &X86_CPURegTable[idx-CV_X86_AL];
             } else if( idx >= CV_X86_ST0 && idx <= CV_X86_STATUS ) {
@@ -199,7 +199,7 @@ dip_status LocationManyReg( imp_image_handle *iih,
                 return( DS_ERR | DS_FAIL );
             }
             break;
-        case MAD_AXP:
+        case DIG_ARCH_AXP:
             if( !(idx >= CV_AXP_f0 && idx <= CV_AXP_fltfsr) ) {
                 DCStatus( DS_ERR | DS_FAIL );
                 return( DS_ERR | DS_FAIL );

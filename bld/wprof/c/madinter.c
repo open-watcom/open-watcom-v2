@@ -57,7 +57,7 @@
 mad_status              MADStatus;
 
 system_config           DefSysConfig =
-    { X86_386, X86_387, 1, 0, MAD_OS_IDUNNO, 12, MAD_X86 };
+    { X86_386, X86_387, 1, 0, DIG_OS_IDUNNO, 12, DIG_ARCH_X86 };
 
 /*
  * Client support routines
@@ -200,16 +200,16 @@ void FiniMADInfo( void )
 
 static void ReportMADFailure( mad_status ms )
 {
-    dig_mad     mad_old;
+    dig_arch    mad_old;
     char        buff[256];
 
-    if( CurrSIOData->config.mad == MAD_NIL ) {
+    if( CurrSIOData->config.arch == DIG_ARCH_NIL ) {
         /* we're in deep do do */
         fatal( LIT( LMS_RECURSIVE_MAD_FAILURE ) );
     }
-    mad_old = CurrSIOData->config.mad;
+    mad_old = CurrSIOData->config.arch;
     MADNameFile( mad_old, buff, sizeof( buff ) );
-    CurrSIOData->config.mad = MAD_NIL;
+    CurrSIOData->config.arch = DIG_ARCH_NIL;
     /* this deregisters the MAD, and sets the active one to the dummy */
     MADRegister( mad_old, NULL, NULL );
     switch( ms & ~MS_ERR ) {
@@ -240,7 +240,7 @@ static void ReportMADFailure( mad_status ms )
     }
 }
 
-void SetCurrentMAD( dig_mad mad )
+void SetCurrentMAD( dig_arch mad )
 {
     mad_status          ms;
 

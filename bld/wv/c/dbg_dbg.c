@@ -294,7 +294,7 @@ void InternalValue( internal_idx index, void *d )
         AddrFix( d );
         break;
     case INTERNAL_machine:
-        *(unsigned_16 *)d = SysConfig.mad;
+        *(unsigned_16 *)d = SysConfig.arch;
         break;
     case INTERNAL_cpu:
         *(unsigned_16 *)d = SysConfig.cpu;

@@ -295,10 +295,10 @@ static dip_status SetMADType( imp_image_handle *iih )
         return( DS_OK );
     switch( rec->machine & 0xf0 ) {
     case MACH_INTEL_8080:
-        iih->mad = MAD_X86;
+        iih->arch = DIG_ARCH_X86;
         break;
     case MACH_DECALPHA:
-        iih->mad = MAD_AXP;
+        iih->arch = DIG_ARCH_AXP;
         break;
     default:
         return( DS_ERR | DS_INFO_INVALID );

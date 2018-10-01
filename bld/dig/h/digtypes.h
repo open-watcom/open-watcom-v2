@@ -385,18 +385,18 @@ typedef unsigned_8  dig_open; enum {
 };
 
 enum archtypes {
-    MAD_NIL,
-    #define pick(enum,file,desc) enum,
+    DIG_ARCH_NIL,
+    #define pick(enum,file,desc) DIG_ ## enum,
     #include "digarch.h"
     #undef pick
-    MAD_MAX
+    DIG_ARCH_MAX
 };
 
 enum ostypes {                  //NYI: redo these for PIL
-    #define pick(enum,desc) MAD_ ## enum,
+    #define pick(enum,desc) DIG_ ## enum,
     #include "digos.h"
     #undef pick
-    MAD_OS_MAX
+    DIG_OS_MAX
 };
 
 enum {
@@ -409,7 +409,7 @@ typedef unsigned        dig_info_type;
 
 typedef unsigned_16     dig_size_bits;
 
-typedef unsigned_16     dig_mad;
+typedef unsigned_16     dig_arch;
 
 /* these must be unsigned/signed type pair */
 typedef unsigned_32     dig_type_size;
@@ -431,7 +431,7 @@ typedef struct {                //NYI: redo this for PIL
     unsigned_8          osminor;
     unsigned_8          os;
     unsigned_8          huge_shift;
-    dig_mad             mad;
+    dig_arch            arch;
 } system_config;
 
 #include "digunpck.h"

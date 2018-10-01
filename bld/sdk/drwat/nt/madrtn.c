@@ -161,10 +161,10 @@ bool InitMADInfo( void )
     if( MADInit() != MS_OK ) {
         return( false );
     }
-    if ( MADActiveSet( SysConfig.mad ) != MS_OK ){
+    if ( MADActiveSet( SysConfig.arch ) != MS_OK ){
         return( false );
     }
-    if( MADLoad(SysConfig.mad) != MS_OK  ) {
+    if( MADLoad( SysConfig.arch ) != MS_OK  ) {
         return( false );
     }
     if( !AllocMadDisasmData() ) {

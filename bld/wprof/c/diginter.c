@@ -138,8 +138,8 @@ unsigned DIGCLIENTRY( MachineData )( address addr, unsigned info_type,
 
     /* unused parameters */ (void)info_type; (void)in_size; (void)in; (void)out_size;
 
-    switch( CurrSIOData->config.mad ) {
-    case MAD_X86:
+    switch( CurrSIOData->config.arch ) {
+    case DIG_ARCH_X86:
         d = out;
         *d = 0;
         if( IsX86BigAddr( addr ) ) {

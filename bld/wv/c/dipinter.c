@@ -235,9 +235,9 @@ void DIPCLIENTRY( Status )( dip_status ds )
     DIPStatus = ds;
 }
 
-dig_mad DIPCLIENTRY( CurrMAD )( void )
+dig_arch DIPCLIENTRY( CurrMAD )( void )
 {
-    return( SysConfig.mad );
+    return( SysConfig.arch );
 }
 
 /*

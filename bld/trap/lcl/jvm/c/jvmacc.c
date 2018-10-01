@@ -293,13 +293,13 @@ trap_retval ReqGet_sys_config( void )
     get_sys_config_ret  *ret;
 
     ret = GetOutPtr( 0 );
-    ret->sys.os = MAD_OS_NT;
+    ret->sys.os = DIG_OS_NT;
     ret->sys.osmajor = 1;
     ret->sys.osminor = 0;
     ret->sys.huge_shift = 3;
     ret->sys.cpu = 0;
     ret->sys.fpu = 0;
-    ret->sys.mad = MAD_JVM;
+    ret->sys.arch = DIG_ARCH_JVM;
     return( sizeof( *ret ) );
 }
 

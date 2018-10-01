@@ -392,7 +392,7 @@ trap_retval ReqGet_sys_config( void )
     get_sys_config_ret  *ret;
 
     ret = GetOutPtr( 0 );
-    ret->sys.os = MAD_OS_LINUX;
+    ret->sys.os = DIG_OS_LINUX;
 
     // TODO: Detect OS version (kernel version?)!
     ret->sys.osmajor = 1;
@@ -405,7 +405,7 @@ trap_retval ReqGet_sys_config( void )
         ret->sys.fpu = ret->sys.cpu & X86_CPU_MASK;
     }
     ret->sys.huge_shift = 3;
-    ret->sys.mad = MAD_X86;
+    ret->sys.arch = DIG_ARCH_X86;
     return( sizeof( *ret ) );
 }
 

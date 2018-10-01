@@ -422,7 +422,7 @@ unsigned MakeProgRun( bool single )
         GetSysConfig();
         CheckMADChange();
     }
-    DbgRegs->mad = SysConfig.mad;
+    DbgRegs->arch = SysConfig.arch;
     /* Use 'tmp' because of alignment problems */
     tmp = ret.stack_pointer;
     MADRegSpecialSet( MSR_SP, &DbgRegs->mr, &tmp );
@@ -695,7 +695,7 @@ void GetSysConfig( void )
 
     acc.req = REQ_GET_SYS_CONFIG;
     TrapSimpAccess( sizeof( acc ), &acc, sizeof( SysConfig ), &SysConfig );
-    CONV_LE_16( SysConfig.mad );
+    CONV_LE_16( SysConfig.arch );
 }
 
 bool InitCoreSupp( void )

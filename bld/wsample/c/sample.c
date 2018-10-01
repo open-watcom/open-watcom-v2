@@ -626,14 +626,14 @@ int main( int argc, char **argv )
     Info.d.config.fpu           = 0;
     Info.d.config.osmajor       = 0;
     Info.d.config.osminor       = 0;
-    Info.d.config.os            = MAD_OS_IDUNNO;
+    Info.d.config.os            = DIG_OS_IDUNNO;
     Info.d.config.huge_shift    = 12;
 #if defined( _M_IX86 )
-    Info.d.config.mad           = MAD_X86;
+    Info.d.config.arch          = DIG_ARCH_X86;
 #elif defined( __AXP__ )
-    Info.d.config.mad           = MAD_AXP;
+    Info.d.config.arch          = DIG_ARCH_AXP;
 #elif defined( __PPC__ )
-    Info.d.config.mad           = MAD_PPC;
+    Info.d.config.arch          = DIG_ARCH_PPC;
 #else
     #error Machine type not configured
 #endif

@@ -252,11 +252,11 @@ void DCStatus( dip_status ds )
     DIPClient->Status( ds );
 }
 
-dig_mad DCCurrMAD( void )
+dig_arch DCCurrMAD( void )
 {
     /* check for old client */
     if( DIPClient->sizeof_struct < offsetof(dip_client_routines,CurrMAD) )
-        return( MAD_X86 );
+        return( DIG_ARCH_X86 );
     return( DIPClient->CurrMAD() );
 }
 

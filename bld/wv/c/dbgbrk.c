@@ -1209,7 +1209,7 @@ static brkp *AddPoint( address loc, mad_type_handle mth, bool unmapped )
     _Alloc( bp, sizeof( brkp ) );
     InitMappableAddr( &bp->loc );
     bp->mth = mth;
-    bp->mad = SysConfig.mad;
+    bp->arch = SysConfig.arch;
     NullStatus( bp );
     bp->status.b.active = true;
     bp->source_line = NULL;

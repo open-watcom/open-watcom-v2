@@ -191,7 +191,7 @@ trap_retval ReqGet_sys_config( void )
 
     _DBG(("AccGetConfig\r\n"));
     ret = GetOutPtr(0);
-    ret->sys.os = MAD_OS_PHARLAP;
+    ret->sys.os = DIG_OS_PHARLAP;
     ret->sys.osmajor = _osmajor;
     ret->sys.osminor = _osminor;
     ret->sys.cpu = X86CPUType();
@@ -205,7 +205,7 @@ trap_retval ReqGet_sys_config( void )
     } else {
         ret->sys.fpu = RealNPXType;
     }
-    ret->sys.mad = MAD_X86;
+    ret->sys.arch = DIG_ARCH_X86;
     return( sizeof( *ret ) );
 }
 

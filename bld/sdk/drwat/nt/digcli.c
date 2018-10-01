@@ -172,8 +172,8 @@ unsigned DIGCLIENTRY( MachineData )( address addr, dig_info_type info_type,
 {
     enum x86_addr_characteristics       *a_char;
 
-    switch( SysConfig.mad ) {
-    case MAD_X86:
+    switch( SysConfig.arch ) {
+    case DIG_ARCH_X86:
         a_char = out;
         *a_char = X86AC_BIG;
         return( sizeof( *a_char ) );

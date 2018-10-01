@@ -236,21 +236,21 @@ void    GetMADTypeDefault( mad_type_kind mtk, mad_type_info *mti )
 
 void ReportMADFailure( mad_status ms )
 {
-    dig_mad     mad_old;
+    dig_arch    arch_old;
     char        buff[TXT_LEN];
 
-    if( SysConfig.mad == MAD_NIL ) {
+    if( SysConfig.arch == DIG_ARCH_NIL ) {
         /* we're in deep do do */
         StartupErr( LIT_ENG( LMS_RECURSIVE_MAD_FAILURE ) );
     }
-    mad_old = SysConfig.mad;
-    MADNameFile( mad_old, buff, sizeof( buff ) );
-    SysConfig.mad = MAD_NIL;
+    arch_old = SysConfig.arch;
+    MADNameFile( arch_old, buff, sizeof( buff ) );
+    SysConfig.arch = DIG_ARCH_NIL;
     /* this deregisters the MAD, and sets the active one to the dummy */
-    MADRegister( mad_old, NULL, NULL );
+    MADRegister( arch_old, NULL, NULL );
     switch( ms & ~MS_ERR ) {
     case MS_UNREGISTERED_MAD:
-        ErrorRet( ERR_NONE, LIT_ENG( LMS_UNREGISTERED_MAD ), mad_old );
+        ErrorRet( ERR_NONE, LIT_ENG( LMS_UNREGISTERED_MAD ), arch_old );
         break;
     case MS_INVALID_MAD_VERSION:
         ErrorRet( ERR_NONE, LIT_ENG( LMS_INVALID_MAD_VERSION ), buff );
@@ -280,9 +280,9 @@ void CheckMADChange( void )
     mad_status          ms;
     mad_type_info       mti;
 
-    if( MADActiveSet( SysConfig.mad ) != SysConfig.mad ) {
-        if( MADLoaded( SysConfig.mad ) != MS_OK ) {
-            ms = MADLoad( SysConfig.mad );
+    if( MADActiveSet( SysConfig.arch ) != SysConfig.arch ) {
+        if( MADLoaded( SysConfig.arch ) != MS_OK ) {
+            ms = MADLoad( SysConfig.arch );
             if( ms != MS_OK ) {
                 ReportMADFailure( ms );
             }
@@ -373,38 +373,38 @@ mad_type_handle FindMADTypeHandle( mad_type_kind tk, unsigned size )
 struct find_mad {
     const char      *name;
     unsigned        len;
-    dig_mad         mad;
+    dig_arch        arch;
 };
 
-OVL_EXTERN walk_result FindTheMad( dig_mad mad, void *d )
+OVL_EXTERN walk_result FindTheMad( dig_arch arch, void *d )
 {
     struct find_mad     *fd = d;
     char                buff[80];
 //    char                *p;
 
-    MADNameFile( mad, buff, sizeof( buff ) );
+    MADNameFile( arch, buff, sizeof( buff ) );
 //    p = SkipPathInfo( buff, 0 );
     SkipPathInfo( buff, 0 );
     if( memicmp( buff, fd->name, fd->len ) == 0 ) {
-        fd->mad = mad;
+        fd->arch = arch;
         return( WR_STOP );
     }
-    MADNameDescription( mad, buff, sizeof( buff ) );
+    MADNameDescription( arch, buff, sizeof( buff ) );
     NormalizeString( buff );
     if( memicmp( buff, fd->name, fd->len ) == 0 ) {
-        fd->mad = mad;
+        fd->arch = arch;
         return( WR_STOP );
     }
     return( WR_CONTINUE );
 }
 
-dig_mad FindMAD( const char *name, unsigned len )
+dig_arch FindMAD( const char *name, unsigned len )
 {
     struct find_mad     data;
 
     data.name = name;
     data.len = len;
-    data.mad = MAD_NIL;
+    data.arch = DIG_ARCH_NIL;
     MADWalk( FindTheMad, &data );
-    return( data.mad );
+    return( data.arch );
 }

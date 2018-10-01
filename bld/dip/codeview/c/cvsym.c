@@ -1395,7 +1395,7 @@ dip_status DIPIMPENTRY( SymInfo )( imp_image_handle *iih,
     case S_LPROC32:
         si->kind = SK_PROCEDURE;
         si->rtn_far = p->lproc32.f.flags.f.far_ret;
-        if( iih->mad == MAD_AXP ) {
+        if( iih->arch == DIG_ARCH_AXP ) {
             si->ret_addr_offset = 0;
         } else {
             si->ret_addr_offset = sizeof( unsigned_32 );
@@ -1498,8 +1498,8 @@ dip_status DIPIMPENTRY( SymParmLocation )( imp_image_handle *iih,
         case TK_CHAR:
         case TK_INTEGER:
         case TK_POINTER:
-            switch( iih->mad ) {
-            case MAD_X86:
+            switch( iih->arch ) {
+            case DIG_ARCH_X86:
                 switch( ti.size ) {
                 case 1:
                     return( LocationOneReg( iih, CV_X86_AL, lc, ll ) );
@@ -1515,21 +1515,21 @@ dip_status DIPIMPENTRY( SymParmLocation )( imp_image_handle *iih,
                     return( LocationManyReg( iih, sizeof( DXEAXList ), DXEAXList, lc, ll ) );
                 }
                 break;
-            case MAD_AXP:
+            case DIG_ARCH_AXP:
                  return( LocationOneReg( iih, CV_AXP_r0, lc, ll ) );
             }
             return( DS_ERR | DS_FAIL );
         case TK_REAL:
-            switch( iih->mad ) {
-            case MAD_X86:
+            switch( iih->arch ) {
+            case DIG_ARCH_X86:
                 return( LocationOneReg( iih, CV_X86_ST0, lc, ll ) );
-            case MAD_AXP:
+            case DIG_ARCH_AXP:
                 return( LocationOneReg( iih, CV_AXP_f0, lc, ll ) );
             }
             return( DS_ERR | DS_FAIL );
         case TK_COMPLEX:
-            switch( iih->mad ) {
-            case MAD_X86:
+            switch( iih->arch ) {
+            case DIG_ARCH_X86:
                 return( LocationManyReg( iih, sizeof( ST1ST0List ), ST1ST0List, lc, ll ) );
             }
             return( DS_ERR | DS_FAIL );

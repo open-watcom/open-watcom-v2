@@ -148,8 +148,8 @@ void DIPCLIENTRY( Status )( dip_status ds )
 /*
  * DIPCliCurrMAD
  */
-dig_mad DIPCLIENTRY( CurrMAD )( void )
+dig_arch DIPCLIENTRY( CurrMAD )( void )
 {
     //dprintf(( "DIPCliCurrMAD\n" ));
-    return( MAD_X86 ); ///@todo option!
+    return( DIG_ARCH_X86 ); ///@todo option!
 }

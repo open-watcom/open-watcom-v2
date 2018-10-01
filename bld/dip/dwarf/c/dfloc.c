@@ -492,21 +492,21 @@ static bool Ref( void *_d, uint_32 offset, uint_32 size, dr_loc_kind kind )
         tmp.e[0].u.addr.mach.offset = offset;
         tmp.e[0].bit_length = size * 8;
     } else {
-        dig_mad       mad;
+        dig_arch      arch;
         int           areg;
         int           start;
 
-        mad =  DCCurrMAD();
-        switch( mad ) {
-        case MAD_X86:
+        arch =  DCCurrMAD();
+        switch( arch ) {
+        case DIG_ARCH_X86:
             areg = CLRegX86[offset].ci;
             start = CLRegX86[offset].start;
             break;
-        case MAD_AXP:
+        case DIG_ARCH_AXP:
             areg = CLRegAXP[offset];
             start = 0;
             break;
-        case MAD_PPC:
+        case DIG_ARCH_PPC:
             areg  = CLRegPPC[offset].ci;
             // This should really be dynamic; anyway the registers are really
             // stored as 64-bit values, so if we want to get at the lower 32
@@ -521,7 +521,7 @@ static bool Ref( void *_d, uint_32 offset, uint_32 size, dr_loc_kind kind )
             start = CLRegPPC[offset].start;
 #endif
             break;
-        case MAD_MIPS:
+        case DIG_ARCH_MIPS:
             areg  = CLRegMIPS[offset].ci;
             // See PowerPC comments above
 #if defined( __BIG_ENDIAN__ )
@@ -534,7 +534,7 @@ static bool Ref( void *_d, uint_32 offset, uint_32 size, dr_loc_kind kind )
             start = CLRegMIPS[offset].start;
 #endif
             break;
-        case MAD_NIL:
+        case DIG_ARCH_NIL:
         default:
             DCStatus( DS_ERR | DS_BAD_LOCATION );
             return( false );
@@ -609,10 +609,10 @@ static bool Frame( void *_d, uint_32 *where )
 {
     loc_handle  *d = _d;
     location_list ll;
-//    dig_mad     mad;
+//    dig_arch    arch;
 
 // Get frame location
-//    mad =  DCCurrMAD();
+//    arch =  DCCurrMAD();
     DCCurrMAD();
     d->ds = SafeDCItemLocation( d->lc, CI_FRAME, &ll );
     if( d->ds != DS_OK ) {
@@ -630,19 +630,19 @@ static bool Reg( void *_d, uint_32 *where, uint_16 reg )
     loc_handle  *d = _d;
     location_list ll;
     location_list tmp;
-    dig_mad     mad;
+    dig_arch    arch;
     int         areg;
     int         start;
     unsigned    size;
 
-    mad =  DCCurrMAD();
-    switch( mad ) {
-    case MAD_X86:
+    arch =  DCCurrMAD();
+    switch( arch ) {
+    case DIG_ARCH_X86:
         areg = CLRegX86[reg].ci;
         start = CLRegX86[reg].start;
         size = CLRegX86[reg].len;
         break;
-    case MAD_AXP:
+    case DIG_ARCH_AXP:
         areg = CLRegAXP[reg];
         start = 0;
         /* a massive kludge here */
@@ -652,7 +652,7 @@ static bool Reg( void *_d, uint_32 *where, uint_16 reg )
             size = 32;
         }
         break;
-    case MAD_PPC:
+    case DIG_ARCH_PPC:
         areg  = CLRegPPC[reg].ci;
         /* yep, another and even worse kludge */
 #if defined( __BIG_ENDIAN__ )
@@ -666,7 +666,7 @@ static bool Reg( void *_d, uint_32 *where, uint_16 reg )
 #endif
         size  = CLRegPPC[reg].len;
         break;
-    case MAD_MIPS:
+    case DIG_ARCH_MIPS:
         areg  = CLRegMIPS[reg].ci;
         /* just as bad as PPC */
 #if defined( __BIG_ENDIAN__ )
@@ -680,7 +680,7 @@ static bool Reg( void *_d, uint_32 *where, uint_16 reg )
 #endif
         size  = CLRegMIPS[reg].len;
         break;
-    case MAD_NIL:
+    case DIG_ARCH_NIL:
     default:
         DCStatus( DS_ERR | DS_BAD_LOCATION );
         return( false );
@@ -700,7 +700,7 @@ static bool Reg( void *_d, uint_32 *where, uint_16 reg )
         DCStatus( d->ds );
         return( false );
     }
-    if( mad == MAD_X86 && (reg == DW_X86_esp || reg == DW_X86_sp) ) { /* kludge for now */
+    if( arch == DIG_ARCH_X86 && (reg == DW_X86_esp || reg == DW_X86_sp) ) { /* kludge for now */
         d->ds = SafeDCItemLocation( d->lc, CI_STACK, &ll );
         if( d->ds != DS_OK ) {
             DCStatus( d->ds );

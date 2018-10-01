@@ -39,22 +39,22 @@
  */
 
 mad_status      MADInit( void );
-mad_status      MADRegister( dig_mad, const char *file, const char *desc );
-mad_status      MADLoad( dig_mad );
-void            MADUnload( dig_mad );
-mad_status      MADLoaded( dig_mad );
-dig_mad         MADActiveSet( dig_mad );
+mad_status      MADRegister( dig_arch, const char *file, const char *desc );
+mad_status      MADLoad( dig_arch );
+void            MADUnload( dig_arch );
+mad_status      MADLoaded( dig_arch );
+dig_arch        MADActiveSet( dig_arch );
 mad_state_data  *MADStateCreate( void );
 mad_state_data  *MADStateSet( mad_state_data * );
 void            MADStateCopy( const mad_state_data *src, mad_state_data *dst );
 void            MADStateDestroy( mad_state_data * );
 void            MADFini( void );
 
-typedef         walk_result (MAD_WALKER)( dig_mad, void * );
+typedef         walk_result (MAD_WALKER)( dig_arch, void * );
 walk_result     MADWalk( MAD_WALKER *, void * );
 
-size_t          MADNameFile( dig_mad, char *buff, size_t buff_size );
-size_t          MADNameDescription( dig_mad, char *buff, size_t buff_size );
+size_t          MADNameFile( dig_arch, char *buff, size_t buff_size );
+size_t          MADNameDescription( dig_arch, char *buff, size_t buff_size );
 
 /*
  *      Address Arithmetic

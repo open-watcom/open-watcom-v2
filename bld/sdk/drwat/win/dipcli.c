@@ -241,8 +241,8 @@ void DIPCLIENTRY( Status )( dip_status ds )
 /*
  * DIPCliCurrMAD
  */
-dig_mad DIPCLIENTRY( CurrMAD )( void )
-/************************************/
+dig_arch DIPCLIENTRY( CurrMAD )( void )
+/*************************************/
 {
-    return( MAD_X86 );
+    return( DIG_ARCH_X86 );
 }

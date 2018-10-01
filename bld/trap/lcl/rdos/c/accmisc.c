@@ -61,7 +61,7 @@ trap_retval ReqMachine_data( void )
             bitness = 32;
         ret->cache_start = 0;
         ret->cache_end = size;
-        if( bitness == 16 )            
+        if( bitness == 16 )
             data->u8 = 0;
         else
             data->u8 = 1;
@@ -88,7 +88,7 @@ trap_retval ReqGet_sys_config( void )
     ret->sys.osminor = (char)minor;
     ret->sys.os = 0;
     ret->sys.huge_shift = 3;
-    ret->sys.mad = MAD_X86;
+    ret->sys.arch = DIG_ARCH_X86;
 
     return( sizeof( *ret ) );
 }
@@ -107,7 +107,7 @@ trap_retval ReqGet_message_text( void )
     err_txt = GetOutPtr( sizeof( *ret ) );
 
     if( obj->CurrentThread )
-        msg = obj->CurrentThread->FaultText;    
+        msg = obj->CurrentThread->FaultText;
     else
         msg = "Exception fault";
 

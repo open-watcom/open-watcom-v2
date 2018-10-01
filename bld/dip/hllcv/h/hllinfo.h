@@ -140,7 +140,7 @@ struct imp_image_handle {
     hll_dir_entry       **directory;    /* The subsection directory, 2 levels. */
     unsigned            dir_count;      /* Number of entries in the directory. */
     virt_mem            types_base;     /* HLLPack types, NULL if per-module. */
-    dig_mad             mad;            /* MAD_X86 */
+    dig_arch            arch;           /* DIG_ARCH_X86 */
     hllinfo_seg         *segments;      /* Segment mappings and attribs. */
     unsigned            seg_count;      /* Number of segments. */
     hllinfo_level       format_lvl;     /* The format level. */

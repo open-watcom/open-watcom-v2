@@ -604,7 +604,7 @@ dip_status DIPIMPENTRY( LoadInfo )( FILE *fp, imp_image_handle *iih )
 
     /* Init the module handle. */
     memset( iih, 0, sizeof( *iih ) );
-    iih->mad = MAD_X86;                  /* No known non-x86 support */
+    iih->arch = DIG_ARCH_X86;                  /* No known non-x86 support */
     iih->sym_fp = fp;
     iih->is_32bit = 1;
     iih->format_lvl = HLL_LVL_NB04;

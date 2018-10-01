@@ -345,7 +345,7 @@ trap_retval ReqGet_sys_config( void )
     char        tmp[108];
 
     ret = GetOutPtr(0);
-    ret->sys.os = MAD_OS_OS2;
+    ret->sys.os = DIG_OS_OS2;
     DosGetVersion( &version );
     ret->sys.osmajor = version >> 8;
     ret->sys.osminor = version & 0xff;
@@ -376,7 +376,7 @@ trap_retval ReqGet_sys_config( void )
     }
     DosGetHugeShift( &shift );
     ret->sys.huge_shift = shift;
-    ret->sys.mad = MAD_X86;
+    ret->sys.arch = DIG_ARCH_X86;
     return( sizeof( *ret ) );
 }
 

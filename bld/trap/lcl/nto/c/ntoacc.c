@@ -98,7 +98,7 @@ trap_retval ReqGet_sys_config( void )
     get_sys_config_ret  *ret;
 
     ret = GetOutPtr( 0 );
-    ret->sys.os = MAD_OS_QNX;
+    ret->sys.os = DIG_OS_QNX;
 
     get_nto_version( &ret->sys.osmajor, &ret->sys.osminor );
 
@@ -109,7 +109,7 @@ trap_retval ReqGet_sys_config( void )
         ret->sys.fpu = ret->sys.cpu & X86_CPU_MASK;
     }
     ret->sys.huge_shift = 3;
-    ret->sys.mad = MAD_X86;
+    ret->sys.arch = DIG_ARCH_X86;
     return( sizeof( *ret ) );
 }
 

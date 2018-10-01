@@ -481,7 +481,7 @@ STATIC bool sampleWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
         curr_sio->curr_proc_row = -WND_MAX_ROW;
         curr_sio->curr_display_row = -WND_MAX_ROW;
         WPDipSetProc( curr_sio->dip_process );
-        SetCurrentMAD( curr_sio->config.mad );
+        SetCurrentMAD( curr_sio->config.arch );
         CurrSIOData = curr_sio;
         return( true );
     case GUI_NO_EVENT:
