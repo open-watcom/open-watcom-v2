@@ -35,6 +35,7 @@
 
 extern "C" {
     #include <stdio.h>
+    #include <stdint.h>
     #include <stdlib.h>
 #ifndef __UNIX__
     #include <direct.h>
