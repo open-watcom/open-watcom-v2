@@ -208,7 +208,7 @@ mad_status      MADInit( void )
 #else
         #define pick_mad(enum,file,desc) {enum,file,desc},
 #endif
-        #include "madarch.h"
+        #include "digarch.h"
         #undef pick_mad
     };
 
