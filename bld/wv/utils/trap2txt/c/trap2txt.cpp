@@ -185,15 +185,15 @@ extern int SSD_Capabilities( int, unsigned char * , unsigned short );
 
 static char *mad_desc[] = {
     "Unknown",
-#define pick_mad(enum,file,desc) desc,
+#define pick(enum,file,desc) desc,
 #include "digarch.h"
-#undef pick_mad
+#undef pick
 };
 
 static char *mad_os_desc[] = {
-#define pick_mad(enum,desc) desc,
+#define pick(enum,desc) desc,
 #include "digos.h"
-#undef pick_mad
+#undef pick
 };
 
 SVC_DECODE * get_supp_service_decoder( const char * service_name )

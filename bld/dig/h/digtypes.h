@@ -386,16 +386,16 @@ typedef unsigned_8  dig_open; enum {
 
 enum archtypes {
     MAD_NIL,
-    #define pick_mad(enum,file,desc) enum,
+    #define pick(enum,file,desc) enum,
     #include "digarch.h"
-    #undef pick_mad
+    #undef pick
     MAD_MAX
 };
 
 enum ostypes {                  //NYI: redo these for PIL
-    #define pick_mad(enum,desc) MAD_ ## enum,
+    #define pick(enum,desc) MAD_ ## enum,
     #include "digos.h"
-    #undef pick_mad
+    #undef pick
     MAD_OS_MAX
 };
 

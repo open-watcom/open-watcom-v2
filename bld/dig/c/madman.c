@@ -204,12 +204,12 @@ mad_status      MADInit( void )
         const char      *desc;
     } list[] = {
 #ifdef USE_FILENAME_VERSION
-        #define pick_mad(enum,file,desc) {enum,file strx(USE_FILENAME_VERSION),desc},
+        #define pick(enum,file,desc) {enum,file strx(USE_FILENAME_VERSION),desc},
 #else
-        #define pick_mad(enum,file,desc) {enum,file,desc},
+        #define pick(enum,file,desc) {enum,file,desc},
 #endif
         #include "digarch.h"
-        #undef pick_mad
+        #undef pick
     };
 
     mad_status  ms = MS_OK;

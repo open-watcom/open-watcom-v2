@@ -29,11 +29,11 @@
 ****************************************************************************/
 
 
-//        enum      mad file        desc
-pick_mad( MAD_X86,  "madx86",       "Intel Architecture [80(x)86]" )
-pick_mad( MAD_X64,  "madx64",       "Intel Architecture [x64]" )
-pick_mad( MAD_AXP,  "madaxp",       "Alpha Architecture" )
-pick_mad( MAD_PPC,  "madppc",       "PowerPC Architecture" )
-pick_mad( MAD_MIPS, "madmps",       "MIPS Architecture" )
-pick_mad( MAD_MSJ,  "msj",          "Java Virtual Machine (Microsoft)" )
-pick_mad( MAD_JVM,  "jvm",          "Java Virtual Machine (Sun)" )
+//    enum      mad file        desc
+pick( MAD_X86,  "madx86",       "Intel Architecture [80(x)86]" )
+pick( MAD_X64,  "madx64",       "Intel Architecture [x64]" )
+pick( MAD_AXP,  "madaxp",       "Alpha Architecture" )
+pick( MAD_PPC,  "madppc",       "PowerPC Architecture" )
+pick( MAD_MIPS, "madmps",       "MIPS Architecture" )
+pick( MAD_MSJ,  "msj",          "Java Virtual Machine (Microsoft)" )
+pick( MAD_JVM,  "jvm",          "Java Virtual Machine (Sun)" )
