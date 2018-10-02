@@ -989,7 +989,7 @@ static void ProcLxdata( bool islidata )
         ObjBuff += sizeof( unsigned_16 );
     }
 #ifdef _DEVELOPMENT
-    if( stricmp( seg->entry->u.leader->segname, "_BSS" ) == 0 ) {
+    if( stricmp( seg->entry->u.leader->segname.u.ptr, "_BSS" ) == 0 ) {
         LnkMsg( LOC_REC+ERR+MSG_INTERNAL, "s", "Initialized BSS found" );
     }
 #endif
