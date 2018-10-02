@@ -92,17 +92,21 @@ static char *get_line( char *buf, FILE *file )
     return( ret );
 }
 
-static bool empty_data( char *ret )
+static bool empty_data( char *str )
 /*********************************/
 {
-    char                *end;
+    char    c;
 
-    if( ret != NULL && *ret == '*' ) {
-        for( end = ret + 1; *end != '\0'; ++end ) {
-            if( *end != ' ' && *end != '\t' ) {
-                return( false );
-            }
+    if( str == NULL )
+        return( true );
+    c = *str++;
+    if( c == '*' )
+        c = *str++;
+    while( c != '\0' ) {
+        if( c != ' ' && c != '\t' ) {
+            return( false );
         }
+        c = *str++;
     }
     return( true );
 }
@@ -197,10 +201,10 @@ int main( int argc, char *argv[] )
         fprintf( out, " %s", line );
 
         line = get_line( buf, in );
-        if( !empty_data( line ) ) {
-            fprintf( out, ", %s },\n", line );
-        } else {
+        if( empty_data( line ) ) {
             fputs( " },\n", out );
+        } else {
+            fprintf( out, ", %s },\n", line );
         }
     }
     fputs( "};\n\n", out );
