@@ -33,9 +33,9 @@
 #define _LANG_INCLUDED
 
 typedef enum {
-    #define pick_lang(enum,enumrc,name,namej,fname,desc,filter) enum,
+    #define pick(enum,enumrc,name,namej,fname,desc,filter) enum,
     #include "langdef.h"
-    #undef pick_lang
+    #undef pick
     LANG_MAX
 } lang_t;
 

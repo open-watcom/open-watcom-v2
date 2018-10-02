@@ -37,9 +37,9 @@
 
 
 static lang_info    langInfo[] = {
-    #define pick_lang(enum,enumrc,name,namej,fname,desc,filter) { NULL, 0, 0, NULL },
+    #define pick(enum,enumrc,name,namej,fname,desc,filter) { NULL, 0, 0, NULL },
     #include "langdef.h"
-    #undef pick_lang
+    #undef pick
 };
 
 static hash_entry   *pragma_table           = NULL;
@@ -232,9 +232,9 @@ void LangInit( lang_t newLanguage )
     vi_rc       rc;
     char        *buff;
     char        *fname[] = {
-        #define pick_lang(enum,enumrc,name,namej,fname,desc,filter) fname,
+        #define pick(enum,enumrc,name,namej,fname,desc,filter) fname,
         #include "langdef.h"
-        #undef pick_lang
+        #undef pick
     };
 
     assert( CurrentInfo != NULL );

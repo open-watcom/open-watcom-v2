@@ -42,9 +42,9 @@ WINEXPORT UINT_PTR CALLBACK OpenOFNHookProc( HWND hwnd, UINT msg, WPARAM wparam,
 
 static char filterList[] = {
     #define LANG_FILTER
-    #define pick_lang(enum,enumrc,name,namej,fname,desc,filter) desc " (" filter ")\0" filter "\0"
+    #define pick(enum,enumrc,name,namej,fname,desc,filter) desc " (" filter ")\0" filter "\0"
     #include "langdef.h"
-    #undef pick_lang
+    #undef pick
 };
 
 static char *FileNameList;
