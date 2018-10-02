@@ -356,21 +356,26 @@ bool WEXPORT WFileName::attribs( unsigned* attribs ) const
 {
     struct _finddata_t fileinfo;
     intptr_t handle;
-    intptr_t rc;
+    int rc;
+    bool found;
 
-    #define FIND_STYLE _A_NORMAL
-    rc = handle = _findfirst( *this, &fileinfo );
-    while( rc != -1 && (fileinfo.attrib & FIND_STYLE) == 0 ) {
-        rc = _findnext( handle, &fileinfo );
-    }
-    #undef FIND_STYLE
-    if( rc != -1 ) {
-        if( attribs != NULL ) {
-            *attribs = fileinfo.attrib;
+    found = false;
+    handle = _findfirst( *this, &fileinfo );
+    if( handle != -1 ) {
+        rc = 0;
+        while( rc != -1 ) {
+            if( (fileinfo.attrib & (_A_HIDDEN | _A_SYSTEM | _A_SUBDIR | _A_VOLID)) == 0 ) {
+                if( attribs != NULL ) {
+                    *attribs = fileinfo.attrib;
+                }
+                found = true;
+                break;
+            }
+            rc = _findnext( handle, &fileinfo );
         }
+        _findclose( handle );
     }
-    _findclose( handle );
-    return( rc != -1 );
+    return( found );
 }
 #endif
 
