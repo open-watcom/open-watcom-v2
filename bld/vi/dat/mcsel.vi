@@ -10,7 +10,7 @@ menuitem "&Delete" execute "1\<ALT_F2>r
 menuitem "&Yank" execute "1\<ALT_F3>r
 menuitem "T&oggle case" execute \<ALT_F4>r
 menuitem ""
-menuitem "&Search" execute \<CTRL_S>%1\n
+menuitem "&Search" execute /%1\n
 menuitem "&Fgrep" fgrep "%1"
 menuitem "&Tag" tag %1
 endmenu
