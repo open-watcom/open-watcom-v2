@@ -895,7 +895,7 @@ vi_rc DoFloatMenu( int flt_id, int slen, windim x1, windim y1 )
 vi_rc ActivateFloatMenu( const char *data )
 {
     char        str[MAX_STR];
-    int         id, slen, x1, y1;
+    int         flt_id, slen, x1, y1;
 
     /*
      * get input syntax :
@@ -905,7 +905,7 @@ vi_rc ActivateFloatMenu( const char *data )
     if( *str == '\0' ) {
         return( ERR_INVALID_MENU );
     }
-    id = atoi( str );
+    flt_id = atoi( str );
     data = GetNextWord1( data, str );
     if( *str == '\0' ) {
         return( ERR_INVALID_MENU );
@@ -921,7 +921,7 @@ vi_rc ActivateFloatMenu( const char *data )
         return( ERR_INVALID_MENU );
     }
     y1 = atoi( str );
-    return( DoFloatMenu( id, slen, x1, y1 ) );
+    return( DoFloatMenu( flt_id, slen, x1, y1 ) );
 
 } /* ActivateFloatMenu */
 
