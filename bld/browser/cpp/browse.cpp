@@ -179,7 +179,7 @@ bool Browse::makeFileName( char *buff )
     char        *q;
 
     file = buff;
-    if( file.attribs( NULL ) ) {
+    if( file.attribs() ) {
         // file exists
         return( true );
     }
@@ -199,7 +199,7 @@ bool Browse::makeFileName( char *buff )
         nfile.setDir( q );
         nfile.setFName( file.fName() );
         nfile.setExt( file.ext() );
-        if( nfile.attribs( NULL ) ) {
+        if( nfile.attribs() ) {
             strcpy( buff, nfile.gets() );
             delete[] p;
             return( true );
