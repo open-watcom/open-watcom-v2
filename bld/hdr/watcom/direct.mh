@@ -10,7 +10,7 @@
 
 :include owrtlink.sp
 
-:segment DOS | RDOS
+:segment DOS
 :include lfndos.sp
 
 :endsegment
@@ -25,7 +25,7 @@
 :include maxpath.sp
 :remove NAMEMAX
 
-#if defined( __RDOS__ ) || defined( __RDOSDEV__ )
+:segment RDOS
 
 struct dirent {
     int                d_handle;                  /* directory handle */
@@ -39,7 +39,9 @@ struct dirent {
 };
 typedef struct dirent   DIR;
 
-#else
+:endsegment
+
+:segment DOS
 
 struct _wdirent {
     char                d_dta[21];          /* disk transfer area */
@@ -48,7 +50,7 @@ struct _wdirent {
     unsigned short int  d_date;             /* file's modification date */
     long                d_size;             /* file's size */
     wchar_t             d_name[NAME_MAX+1]; /* file's name */
-:segment DOS | RDOS
+:segment DOS
     unsigned short      d_ino;              /* serial number (not used) */
 :elsesegment
     ino_t               d_ino;              /* serial number (not used) */
@@ -65,7 +67,7 @@ struct dirent {
     unsigned short int  d_date;             /* file's date */
     long                d_size;             /* file's size */
     char                d_name[NAME_MAX+1]; /* file's name */
-:segment DOS | RDOS
+:segment DOS
     unsigned short      d_ino;              /* serial number (not used) */
 :elsesegment
     ino_t               d_ino;              /* serial number (not used) */
@@ -75,7 +77,7 @@ struct dirent {
 };
 typedef struct dirent   DIR;
 
-#endif
+:endsegment
 
 /* File attribute constants for d_attr field */
 
@@ -106,7 +108,7 @@ _WCRTLINK extern void             rewinddir( DIR * );
 _WCRTLINK extern int              rmdir( const char *__path );
 _WCRTLINK extern int              _rmdir( const char *__path );
 
-#if !( defined( __RDOS__ ) || defined( __RDOSDEV__ ) )
+:segment DOS
 _WCRTLINK extern int              _wchdir( const wchar_t *__path );
 _WCRTLINK extern wchar_t          *_wgetcwd( wchar_t *__buf, size_t __size );
 _WCRTLINK extern wchar_t          *_wgetdcwd( int __drive, wchar_t *__buffer, size_t __maxlen );
@@ -117,7 +119,7 @@ _WCRTLINK extern WDIR             *_wopendir( const wchar_t * );
 _WCRTLINK extern struct _wdirent  *_wreaddir( WDIR * );
 _WCRTLINK extern int              _wclosedir( WDIR * );
 _WCRTLINK extern void             _wrewinddir( WDIR * );
-#endif
+:endsegment
 
 :include poppack.sp
 
