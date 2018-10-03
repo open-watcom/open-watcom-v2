@@ -113,6 +113,15 @@ _WCRTLINK extern int    execvpe( const char *__file, const char *const __argv[],
 _WCRTLINK extern int    _execlpe( const char *__file, const char *__arg0, ... );
 _WCRTLINK extern int    _execvpe( const char *__file, const char *const __argv[], const char *const __envp[] );
 
+:segment RDOS
+ _WCRTLINK extern int  _beginthread(
+                void (_WCCALLBACK *__start_address)(void *), int prio,
+                const char *thread_name,
+                unsigned __stack_size, void *__arglist );
+ #pragma intrinsic(_beginthread)
+ _WCRTLINK extern void  _endthread( void );
+:elsesegment
+
 :segment LINUX | QNX
 #ifdef __386__
  _WCRTLINK extern int   _beginthread( void (_WCCALLBACK *__start_address)(void *),
@@ -142,11 +151,6 @@ _WCRTLINK extern int    _execvpe( const char *__file, const char *const __argv[]
   #pragma intrinsic(_beginthread,_beginthreadex)
   _WCRTLINK extern void _endthreadex( unsigned __retval );
 :include thrdhndl.sp
- #elif defined(__RDOS__) || defined(__RDOSDEV__)
-  _WCRTLINK extern int  _beginthread(
-                void (_WCCALLBACK *__start_address)(void *), int prio,
-                const char *thread_name,
-                unsigned __stack_size, void *__arglist );
  #else
   _WCRTLINK extern int  _beginthread( void (_WCCALLBACK *__start_address)(void *),
       void *__stack_bottom, unsigned __stack_size, void *__arglist );
@@ -155,6 +159,7 @@ _WCRTLINK extern int    _execvpe( const char *__file, const char *const __argv[]
  _WCRTLINK extern void  _endthread( void );
 :endsegment
 #endif
+:endsegment
 
 :segment DOS | RDOS
 /* values for __action_code used with cwait() */
