@@ -734,15 +734,15 @@ bool IsMenuHotKey( vi_key key )
 /*
  * doFloatMenu - create a floating popup menu
  */
-static vi_rc doFloatMenu( int id, int x, int y )
+static vi_rc doFloatMenu( int flt_id, int x, int y )
 {
     menu        *m;
     HMENU       f;
     item        *citem;
     POINT       p;
 
-    assert( id >= 0 && id < MAX_FLOAT_MENUS );
-    m = &floatMenus[id];
+    assert( flt_id >= 0 && flt_id < MAX_FLOAT_MENUS );
+    m = &floatMenus[flt_id];
     f = CreatePopupMenu();
     for( citem = m->item_head; citem != NULL; citem = citem->next ) {
         if( citem->name == NULL ) {
@@ -766,7 +766,7 @@ static vi_rc doFloatMenu( int id, int x, int y )
 vi_rc ActivateFloatMenu( const char *data )
 {
     char        str[MAX_STR];
-    int         id, len, x, y;
+    int         flt_id, len, x, y;
 
     /*
      * get input syntax :
@@ -776,7 +776,7 @@ vi_rc ActivateFloatMenu( const char *data )
     if( *str == '\0' ) {
         return( ERR_INVALID_MENU );
     }
-    id = atoi( str );
+    flt_id = atoi( str );
     data = GetNextWord1( data, str );
     if( *str == '\0' ) {
         return( ERR_INVALID_MENU );
@@ -792,7 +792,7 @@ vi_rc ActivateFloatMenu( const char *data )
         return( ERR_INVALID_MENU );
     }
     y = atoi( str );
-    return( doFloatMenu( id, x, y ) );
+    return( doFloatMenu( flt_id, x, y ) );
 
 } /* ActivateFloatMenu */
 
