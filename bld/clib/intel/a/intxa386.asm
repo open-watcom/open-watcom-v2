@@ -30,6 +30,38 @@
 ;*****************************************************************************
 
 
+include mdef.inc
+include struct.inc
+
+        modstart int386xa
+
+        xdefp   __int386x_
+        xdefp   _DoINTR_
+
+;struct REGS {
+;        unsigned int    eax, ebx, ecx, edx, esi, edi;
+;        unsigned int    cflag;
+;};
+
+RS_EAX  equ     0
+RS_EBX  equ     4
+RS_ECX  equ     8
+RS_EDX  equ     12
+RS_ESI  equ     16
+RS_EDI  equ     20
+RS_F    equ     24
+
+;struct SREGS {
+;        unsigned short es, cs, ss, ds, fs, gs;
+;};
+
+SS_ES  equ     0
+SS_CS  equ     2
+SS_SS  equ     4
+SS_DS  equ     6
+SS_FS  equ     8
+SS_GS  equ     10
+
 ;
 ;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 ;<>
@@ -39,14 +71,6 @@
 ;<>
 ;<>  =========    ===           =======
 ;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
-include mdef.inc
-include struct.inc
-
-        modstart int386xa
-
-        xdefp   __int386x_
-        xdefp   _DoINTR_
-
         defp    __int386x_
 
         push    ebp                     ; save EBP
@@ -58,22 +82,22 @@ include struct.inc
         push    ds                      ; save new DS
         push    edi                     ; save EDI
         mov     ebp,esp                 ; get address of outregs struct
-        mov     edi,8[ebp]              ; ...
-        mov     ds,12[ebp]              ;
-        mov     [edi],eax               ; update registers
-        mov     4[edi],ebx              ; ...
-        mov     8[edi],ecx              ; ...
-        mov     12[edi],edx             ; ...
-        mov     16[edi],esi             ; ...
-        pop     20[edi]                 ; update edi
+        mov     edi,(8+0)[ebp]          ; ...
+        mov     ds,(8+4)[ebp]           ;
+        mov     RS_EAX[edi],eax         ; update registers
+        mov     RS_EBX[edi],ebx         ; ...
+        mov     RS_ECX[edi],ecx         ; ...
+        mov     RS_EDX[edi],edx         ; ...
+        mov     RS_ESI[edi],esi         ; ...
+        pop     RS_EDI[edi]             ; update edi
         sbb     eax,eax                 ; calc. value of carry flag
-        mov     24[edi],eax             ; save carry flag status
+        mov     RS_F[edi],eax           ; save carry flag status
         pop     eax                     ; (ds)
         pop     ebx
         pop     ebx
         pop     ebx                     ; restore address of segregs
-        mov     6[ebx],ax               ; update DS
-        mov     [ebx],es                ; update ES
+        mov     SS_DS[ebx],ax           ; update DS
+        mov     SS_ES[ebx],es           ; update ES
         pop     es                      ; restore ES
         pop     ebp                     ; restore EBP
         ret                             ; return
@@ -83,14 +107,14 @@ include struct.inc
         lea     esi,[esi+esi*2]         ; calc interrupt # times 3
         lea     eax,inttable[esi]       ; calc address of "int nn" instruction
         push    eax                     ; push address of "int nn" instruction
-        mov     es,[ebx]                ; load ES
-        mov     bp,6[ebx]               ; get value for DS
-        mov     eax, [edi]              ; load registers
-        mov     ebx,4[edi]              ; ...
-        mov     ecx,8[edi]              ; ...
-        mov     edx,12[edi]             ; ...
-        mov     esi,16[edi]             ; ...
-        mov     edi,20[edi]             ; ...
+        mov     es,SS_ES[ebx]           ; load ES
+        mov     bp,SS_DS[ebx]           ; get value for DS
+        mov     eax,RS_EAX[edi]         ; load registers
+        mov     ebx,RS_EBX[edi]         ; ...
+        mov     ecx,RS_ECX[edi]         ; ...
+        mov     edx,RS_EDX[edi]         ; ...
+        mov     esi,RS_ESI[edi]         ; ...
+        mov     edi,RS_EDI[edi]         ; ...
         mov     ds,bp                   ; load DS
         ret                             ; return to "int nn" instruction
 
@@ -129,8 +153,8 @@ RP_F    equ     36
         push    ds              ; ...
         push    ebp             ; save ebp
         mov     ebp,esp         ; get access to stack
-        mov     ebx,12[ebp]     ; restore address of REGPACK
-        mov     ds,16[ebp]      ; ...
+        mov     ebx,(12+0)[ebp] ; restore address of REGPACK
+        mov     ds,(12+4)[ebp]  ; ...
         mov     RP_EAX[ebx],eax ; update registers
         pushfd
         pop     eax
