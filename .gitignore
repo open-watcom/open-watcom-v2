@@ -187,6 +187,7 @@
 /bld/wipfc/*/config.status
 /bld/wipfc/*/Makefile
 /bld/wipfc/*/stamp-h1
+/bld/wipfc/test/*/*.inf
 #
 /bld/wmake/regress/cmds/*
 #
