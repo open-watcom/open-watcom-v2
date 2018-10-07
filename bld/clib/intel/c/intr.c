@@ -37,5 +37,5 @@
 
 _WCRTLINK void intr( int intno, union REGPACK *regs )
 {
-    _DoINTR( intno, regs );
+    _DoINTR( intno, regs, 0 );
 }

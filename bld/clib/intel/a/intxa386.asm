@@ -74,8 +74,9 @@ SS_GS  equ     10
         push    ebp                     ; save regs
         push    es                      ; ...
         push    ds                      ; ...
-        push    ebx                     ; save EBX (segregs)
         push    edx                     ; save EDX (outregs)
+        push    ebx                     ; save EBX (segregs)
+        xor     edx,edx                 ; set interrupt flags to 0
         call    dointerrupt             ; load registers and interrupt
         push    ds                      ; save new DS
         push    edx                     ; save EDI
@@ -92,11 +93,11 @@ SS_GS  equ     10
         and     eax,1                   ; ...
         mov     RS_F[edx],eax           ; save carry flag status
         pop     eax                     ; get ds for update
-        pop     edx                     ; restore EDX
         pop     ebx                     ; restore EBX address of segregs
         mov     word ptr SS_ES[ebx],es  ; update regs
         mov     word ptr SS_DS[ebx],ax  ; ...
-        pop     ds                      ; restore regs
+        pop     edx                     ; restore regs
+        pop     ds                      ; ...
         pop     es                      ; ...
         pop     ebp                     ; ...
         ret                             ; return
@@ -106,6 +107,8 @@ SS_GS  equ     10
         lea     eax,[eax+eax*2]         ; calc interrupt # times 3
         lea     eax,inttable[eax]       ; calc address of "int nn" instruction
         push    eax                     ; push address of "int nn" instruction
+        mov     ah,dl                   ; get flags
+        sahf                            ; load flags
         mov     es,word ptr SS_ES[ebx]  ; load regs
         mov     bp,word ptr SS_DS[ebx]  ; ...
         mov     eax,RS_EAX[edi]         ; ...
@@ -136,8 +139,8 @@ RP_FS   equ     32
 RP_GS   equ     34
 RP_F    equ     36
 
-; void _DoINTR( unsigned char intnum, struct REGPACK *regs )
-; /************* EAX ***************** EBX ****************/
+; void _DoINTR( unsigned char intnum, struct REGPACK *regs, unsigned char flags )
+; /************ EAX ****************** EBX **************** EDX ****************/
 
         defp    _DoINTR_
         pushad                          ; save regs
@@ -179,6 +182,8 @@ RP_F    equ     36
         lea     eax,[eax+eax*2]         ; calc interrupt # times 3
         lea     eax,inttable[eax]       ; calc address of "int nn" instruction
         push    eax                     ; push address of "int nn" instruction
+        mov     ah,dl                   ; get flags
+        sahf                            ; load flags
         mov     eax,RP_EAX[ebx]         ; load regs
         mov     ecx,RP_ECX[ebx]         ; ...
         mov     edx,RP_EDX[ebx]         ; ...

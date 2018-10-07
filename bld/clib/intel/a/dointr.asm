@@ -53,8 +53,8 @@ RP_DS   equ     14
 RP_ES   equ     16
 RP_F    equ     18
 
-; void _DoINTR( unsigned char intnum, struct REGPACK far *regs )
-; /************* ax ****************** cx:bx ******************/
+; void _DoINTR( unsigned char intnum, struct REGPACK __far *regs, unsigned char )
+; /************* AX ****************** CX:BX ********************* DX **********/
 
         xdefp   _DoINTR_
 
@@ -87,7 +87,6 @@ RP_F    equ     18
         ret
         endproc _DoINTR_
 
-
 doit    proc    far
         mov     cx,ax                   ; calc. interrupt # times 3
         shl     ax,1                    ; ...
@@ -95,6 +94,8 @@ doit    proc    far
         add     ax,offset inttable      ; calc address of "int nn" instruction
         push    cs                      ; push address of interrupt handler
         push    ax                      ; ...
+        mov     ah,dl                   ; get flags into AH
+        sahf                            ; load flags into CPU
         mov     ax,RP_AX[bx]            ; load regs
         mov     cx,RP_CX[bx]            ; ...
         mov     dx,RP_DX[bx]            ; ...

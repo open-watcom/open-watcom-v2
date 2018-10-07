@@ -117,7 +117,7 @@ extern  int                     BDDoDosxCall( union REGS __far *, union REGS __f
 
 void _fintr( int intno, union REGPACK __far *regs )
 {
-    _DoINTR( intno, regs );
+    _DoINTR( intno, regs, 0 );
 }
 
 int _fintdos( union REGS __far *inregs, union REGS __far *outregs )
@@ -125,7 +125,7 @@ int _fintdos( union REGS __far *inregs, union REGS __far *outregs )
     int             status;
 
     status = BDDoDosCall( inregs, outregs );
-    outregs->x.cflag = status;
+    outregs->x.cflag = status & 1;
     _dosretax( outregs->x.ax, status );
     return( outregs->x.ax );
 }
@@ -135,7 +135,7 @@ int _fintdosx( union REGS __far *inregs, union REGS __far *outregs, struct SREGS
     int             status;
 
     status = BDDoDosxCall( inregs, outregs, segregs );
-    outregs->x.cflag = status;
+    outregs->x.cflag = status & 1;
     _dosretax( outregs->x.ax, status );
     return( outregs->x.ax );
 }
@@ -152,14 +152,18 @@ int _fint86x( int intno, union REGS __far *inr, union REGS __far *outr, struct S
     r.x.di = inr->x.di;
     r.x.ds = sr->ds;
     r.x.es = sr->es;
-    _fintr( intno, (union REGPACK __far *) &r );
+//    r.x.bp = 0;             /* no bp in REGS union, set to 0 */
+//    r.x.flags = ( inr->x.cflag ) ? INTR_CF : 0;
+
+    _DoINTR( intno, &r, 0 );
+
     outr->x.ax = r.x.ax;
     outr->x.bx = r.x.bx;
     outr->x.cx = r.x.cx;
     outr->x.dx = r.x.dx;
     outr->x.si = r.x.si;
     outr->x.di = r.x.di;
-    outr->x.cflag = r.x.flags & INTR_CF;
+    outr->x.cflag = ( (r.x.flags & INTR_CF) != 0 );
     sr->ds = r.x.ds;
     sr->es = r.x.es;
     return( r.x.ax );

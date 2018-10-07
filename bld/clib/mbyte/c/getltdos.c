@@ -114,7 +114,7 @@ unsigned short __far *dos_get_dbcs_lead_table( void )
         regs.x.edx = FP_OFF( &pblock );         /* DS:EDX -> parameter block */
         sregs.ds = FP_SEG( &pblock );
         intdosx( &regs, &regs, &sregs );
-        if( (regs.x.cflag & 1) == 0 && pblock.real_eax.b.l == 0 ) {
+        if( regs.x.cflag == 0 && pblock.real_eax.b.l == 0 ) {
             if( pblock.real_ds != 0xFFFF ) {    /* weird OS/2 value */
                 return( EXTENDER_RM2PM( pblock.real_ds, regs.w.si ) );
             }
