@@ -30,7 +30,7 @@
 
 
 #if defined( _M_IX86 )
-extern  void            _DoINTR( unsigned char, union REGPACK _WCI86FAR *, unsigned char );
+extern  void            _DoINTR( unsigned char intno, union REGPACK _WCI86FAR *regs, unsigned char flags );
 #if defined( _M_I86 )
 #pragma aux             _DoINTR parm [ax] [cx bx] [dx] modify [si di es];
 #else

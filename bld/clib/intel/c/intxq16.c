@@ -61,7 +61,7 @@ _WCRTLINK int (int86x)( int intno,
     outregs->w.dx = regs.w.dx;
     outregs->w.si = regs.w.si;
     outregs->w.di = regs.w.di;
-    outregs->w.cflag = (regs.w.flags & INTR_CF) != 0;
+    outregs->w.cflag = ( (regs.w.flags & INTR_CF) != 0 );
     segregs->ds = regs.w.ds;
     segregs->es = regs.w.es;
 

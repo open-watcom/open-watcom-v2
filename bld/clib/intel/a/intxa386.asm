@@ -65,7 +65,7 @@ SS_GS  equ     10
 ;
 ;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 ;<>
-;<>  int __int386x( int intno, union REGS *inregs, union REGS *outregs, struct SREGS *segregs )
+;<>  int __int386x( unsigned char intno, union REGS *inregs, union REGS *outregs, struct SREGS *segregs )
 ;<>     parm caller [eax] [edi] [edx] [ebx]
 ;<>
 ;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
@@ -77,9 +77,9 @@ SS_GS  equ     10
         push    edx                     ; save EDX (outregs)
         push    ebx                     ; save EBX (segregs)
         xor     edx,edx                 ; set interrupt flags to 0
-        call    dointerrupt             ; load registers and interrupt
+        call    dointerrupt             ; load registers and invoke interrupt handler
         push    ds                      ; save new DS
-        push    edx                     ; save EDI
+        push    edx                     ; save new EDX
         mov     ebp,esp                 ; get access to stack
         mov     ds,word ptr (8+8)[ebp]  ; restore DS
         mov     edx,(8+4)[ebp]          ; get address of outregs struct
@@ -92,7 +92,7 @@ SS_GS  equ     10
         sbb     eax,eax                 ; calc. value of carry flag
         and     eax,1                   ; ...
         mov     RS_F[edx],eax           ; save carry flag status
-        pop     eax                     ; get ds for update
+        pop     eax                     ; get DS for update
         pop     ebx                     ; restore EBX address of segregs
         mov     word ptr SS_ES[ebx],es  ; update regs
         mov     word ptr SS_DS[ebx],ax  ; ...
@@ -107,8 +107,8 @@ SS_GS  equ     10
         lea     eax,[eax+eax*2]         ; calc interrupt # times 3
         lea     eax,inttable[eax]       ; calc address of "int nn" instruction
         push    eax                     ; push address of "int nn" instruction
-        mov     ah,dl                   ; get flags
-        sahf                            ; load flags
+        mov     ah,dl                   ; load flags
+        sahf                            ; ...
         mov     es,word ptr SS_ES[ebx]  ; load regs
         mov     bp,word ptr SS_DS[ebx]  ; ...
         mov     eax,RS_EAX[edi]         ; ...
@@ -139,8 +139,8 @@ RP_FS   equ     32
 RP_GS   equ     34
 RP_F    equ     36
 
-; void _DoINTR( unsigned char intnum, struct REGPACK *regs, unsigned char flags )
-; /************ EAX ****************** EBX **************** EDX ****************/
+;void _DoINTR( unsigned char intnum, struct REGPACK *regs, unsigned char flags )
+;/************* EAX ***************** EBX ***************** EDX ***************/
 
         defp    _DoINTR_
         pushad                          ; save regs
@@ -148,11 +148,11 @@ RP_F    equ     36
         push    fs                      ; ...
         push    es                      ; ...
         push    ds                      ; ...
-        push    ebx                     ; save pointer to REGPACK
-        call    dointr386               ; load regs and interrupt
-        push    ds                      ; save DS
-        push    ebp                     ; save EBP
-        push    ebx                     ; save EBX
+        push    ebx                     ; ... (pointer to REGPACK)
+        call    dointr386               ; load registers and invoke interrupt handler
+        push    ds                      ; save regs
+        push    ebp                     ; ...
+        push    ebx                     ; ...
         mov     ebp,esp                 ; get access to stack
         mov     ds,word ptr (12+4)[ebp] ; restore DS
         mov     ebx,(12+0)[ebp]         ; restore EBX address of REGPACK
@@ -182,8 +182,8 @@ RP_F    equ     36
         lea     eax,[eax+eax*2]         ; calc interrupt # times 3
         lea     eax,inttable[eax]       ; calc address of "int nn" instruction
         push    eax                     ; push address of "int nn" instruction
-        mov     ah,dl                   ; get flags
-        sahf                            ; load flags
+        mov     ah,dl                   ; load flags
+        sahf                            ; ...
         mov     eax,RP_EAX[ebx]         ; load regs
         mov     ecx,RP_ECX[ebx]         ; ...
         mov     edx,RP_EDX[ebx]         ; ...

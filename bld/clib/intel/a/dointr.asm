@@ -53,18 +53,18 @@ RP_DS   equ     14
 RP_ES   equ     16
 RP_F    equ     18
 
-; void _DoINTR( unsigned char intnum, struct REGPACK __far *regs, unsigned char )
-; /************* AX ****************** CX:BX ********************* DX **********/
+;void _DoINTR( unsigned char intnum, struct REGPACK __far *regs, unsigned char flags )
+;/************* AX ****************** CX:BX ********************* DX ****************/
 
         xdefp   _DoINTR_
 
         defp    _DoINTR_
         push    bp                      ; save regs
         push    ds                      ; ...
-        push    cx                      ; save pointer to REGPACK
+        push    cx                      ; save CX:BX pointer to REGPACK
         push    bx                      ; ...
         mov     ds,cx                   ; get DS:BX pointer to REGPACK
-        call    near ptr doit           ; invoke interrupt handler
+        call    near ptr doit           ; load registers and invoke interrupt handler
         push    ds                      ; ...
         push    bp                      ; save bp
         push    bx                      ; save bx and ds
@@ -81,9 +81,9 @@ RP_F    equ     18
         mov     RP_ES[bx],es            ; ...
         pushf                           ; ...
         pop     RP_F[bx]                ; ...
-        add     sp,4
-        pop     ds
-        pop     bp
+        add     sp,4                    ; restore regs
+        pop     ds                      ; ...
+        pop     bp                      ; ...
         ret
         endproc _DoINTR_
 
@@ -94,8 +94,8 @@ doit    proc    far
         add     ax,offset inttable      ; calc address of "int nn" instruction
         push    cs                      ; push address of interrupt handler
         push    ax                      ; ...
-        mov     ah,dl                   ; get flags into AH
-        sahf                            ; load flags into CPU
+        mov     ah,dl                   ; load flags
+        sahf                            ; ...
         mov     ax,RP_AX[bx]            ; load regs
         mov     cx,RP_CX[bx]            ; ...
         mov     dx,RP_DX[bx]            ; ...

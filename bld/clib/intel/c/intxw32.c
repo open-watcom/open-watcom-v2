@@ -34,15 +34,18 @@
 #include <dos.h>
 #include "clibxw32.h"
 
+
 _WCRTLINK int int86( int no, union REGS *in, union REGS * out )
 {
-        return( _clib_int86( no, in, out ) );
+    return( _clib_int86( no, in, out ) );
 }
+
 _WCRTLINK int int86x( int no, union REGS *in, union REGS *out, struct SREGS *sr )
 {
-        return( _clib_int86x( no, in, out,sr ) );
+    return( _clib_int86x( no, in, out,sr ) );
 }
+
 _WCRTLINK void intr( int no, union REGPACK *r )
 {
-        _clib_intr( no, r );
+    _clib_intr( no, r );
 }

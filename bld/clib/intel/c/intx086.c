@@ -58,7 +58,7 @@ _WCRTLINK int int86x( int intno, union REGS *inr, union REGS *outr, struct SREGS
     outr->x.dx = r.x.dx;
     outr->x.si = r.x.si;
     outr->x.di = r.x.di;
-    outr->x.cflag = (r.x.flags & INTR_CF) != 0;
+    outr->x.cflag = ( (r.x.flags & INTR_CF) != 0 );
     sr->ds = r.x.ds;
     sr->es = r.x.es;
     return( r.x.ax );

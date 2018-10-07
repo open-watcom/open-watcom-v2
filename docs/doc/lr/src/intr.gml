@@ -1,12 +1,18 @@
-.func intr
+.func begin intr
+.func2 intrf
+.func end
 .synop begin
 #include <i86.h>
 void intr( int inter_no, union REGPACK *regs );
+void intrf( int inter_no, union REGPACK *regs );
 .ixfunc2 '&CpuInt' &funcb
+.ixfunc2 '&CpuInt' &funcb.f
 .synop end
 .desc begin
 The
 .id &funcb.
+,
+.id &funcb.f
 function causes the computer's central processor (CPU) to
 be interrupted with an interrupt whose number is given by
 .arg inter_no
@@ -15,6 +21,9 @@ Before the interrupt, the CPU registers are loaded from the structure
 located by
 .arg regs
 .ct .li .
+Low 8-bit of CPU flags are set before interrupt to zero for &funcb.
+and to regs->w.flags value for &funcb.f.
+.np
 All of the segment registers must contain valid values.
 Failure to do so will cause a segment violation when running
 in protect mode.

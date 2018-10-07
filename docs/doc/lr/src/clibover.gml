@@ -2154,6 +2154,7 @@ the 80286, 80386, 80486 and Pentium processors.
 .fd *fun="int86" cause 8086 CPU interrupt
 .fd *fun="int86x" cause 8086 CPU interrupt, with segment registers
 .fd *fun="intr" cause 8086 CPU interrupt, with segment registers
+.fd *fun="intrf" cause 8086 CPU interrupt, with segment registers and CPU flags
 .fd *fun="MK_FP" make a far pointer from the segment and offset values
 .fd *fun="nosound" turn off the speaker
 .fd *fun="outp" write one byte to hardware port

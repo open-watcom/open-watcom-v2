@@ -266,6 +266,7 @@ _WCRTLINK extern int     int386x( int, union REGS *, union REGS *, struct SREGS 
 #endif
 :endsegment
 _WCRTLINK extern void    intr( int, union REGPACK * );
+_WCRTLINK extern void    intrf( int, union REGPACK * );
 _WCRTLINK extern void    nosound( void );
 _WCRTLINK extern void    segread( struct SREGS * );
 _WCRTLINK extern void    sound( unsigned __frequency );
