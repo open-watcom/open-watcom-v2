@@ -30,6 +30,7 @@
 
 
 #include "vi.h"
+#include <i86.h>
 #include "win.h"
 #include "dosx.h"
 #include "vibios.h"

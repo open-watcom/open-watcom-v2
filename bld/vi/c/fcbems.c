@@ -35,6 +35,7 @@
 
 #if defined( USE_EMS )
 
+#include <i86.h>
 #include "dosx.h"
 #include "xmem.h"
 #include "fcbmem.h"
@@ -76,6 +77,7 @@ vi_rc EMSGetBlock( long *addr )
 {
     vi_rc       rc;
     long        found = 0;
+    int         i;
 
     rc = EMSBlockTest( 1 );
     if( rc == ERR_NO_ERR ) {

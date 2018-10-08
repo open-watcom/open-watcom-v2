@@ -30,6 +30,7 @@
 
 
 #include "vi.h"
+#include <i86.h>
 #include "mouse.h"
 #include "dosmouse.h"
 
