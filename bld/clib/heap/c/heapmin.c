@@ -63,7 +63,10 @@ int __HeapMin( __segment seg, __segment one_heap )
     FRLPTR( seg )       end_tag;
 #if defined(__OS2__)
     APIRET              rc;
+#elif defined(__WINDOWS__)
+    HANDLE              hmem;
 #elif defined(__DOS__)
+    tag                 heap_size_para;
     tiny_ret_t          rc;
 #endif
 
@@ -105,18 +108,14 @@ int __HeapMin( __segment seg, __segment one_heap )
             return( -1 );
         }
 #elif defined(__WINDOWS__)
-        {
-            HANDLE hmem;
-
-            hmem = (HANDLE)GlobalHandle( seg );
-            if( hmem == NULL ) {
-                _ReleaseFHeap();
-                return( -1 );
-            }
-            if( GlobalReAlloc( hmem, new_heap_len, GMEM_ZEROINIT ) == NULL ) {
-                _ReleaseFHeap();
-                return( -1 );
-            }
+        hmem = (HANDLE)GlobalHandle( seg );
+        if( hmem == NULL ) {
+            _ReleaseFHeap();
+            return( -1 );
+        }
+        if( GlobalReAlloc( hmem, new_heap_len, GMEM_ZEROINIT ) == NULL ) {
+            _ReleaseFHeap();
+            return( -1 );
         }
 #elif defined(__OS2__)
         rc = DosReallocSeg( new_heap_len, seg );
@@ -124,12 +123,13 @@ int __HeapMin( __segment seg, __segment one_heap )
             _ReleaseFHeap();
             return( __set_errno_dos( rc ) );
         }
-#else
-        if( new_heap_len != 0 ) {
-            rc = TinySetBlock( __ROUND_DOWN_SIZE_TO_PARA( new_heap_len ), seg );
+#else   /* __DOS__ */
+        if( new_heap_len == 0 ) {
+            heap_size_para = PARAS_IN_64K;
         } else {
-            rc = TinySetBlock( PARAS_IN_64K, seg );
+            heap_size_para = __ROUND_DOWN_SIZE_TO_PARA( new_heap_len );
         }
+        rc = TinySetBlock( heap_size_para, seg );
         if( TINY_ERROR( rc ) ) {
             _ReleaseFHeap();
             return( __set_errno_dos( TINY_INFO( rc ) ) );

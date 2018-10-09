@@ -141,10 +141,9 @@ _WCRTLINK void_nptr _nmalloc( size_t amt )
     void_bptr       cstg;
     unsigned char   expanded;
     heapblk_nptr    heap;
-
 #if defined(__WARP__)
     unsigned char   use_obj_any;
-#endif // __WARP__
+#endif
 
     if( (amt == 0) || (amt > -sizeof( heapblk )) ) {
         return( NULL );
@@ -182,20 +181,20 @@ _WCRTLINK void_nptr _nmalloc( size_t amt )
             largest = heap->largest_blk;
 #if defined(__WARP__)
             if( use_obj_any == ( heap->used_obj_any != 0 ) ) {
-#endif // __WARP__
-              if( largest >= amt ) {
-#ifdef _M_I86
-                  cstg = __MemAllocator( amt, _DGroup(), heap );
-#else
-                  cstg = __MemAllocator( amt, heap );
 #endif
-                  if( cstg != NULL ) {
-                      goto lbl_release_heap;
-                  }
-              }
+                if( largest >= amt ) {
+#ifdef _M_I86
+                    cstg = __MemAllocator( amt, _DGroup(), heap );
+#else
+                    cstg = __MemAllocator( amt, heap );
+#endif
+                    if( cstg != NULL ) {
+                        goto lbl_release_heap;
+                    }
+                }
 #if defined(__WARP__)
             }
-#endif // __WARP__
+#endif
             if( __LargestSizeB4MiniHeapRover < largest ) {
                 __LargestSizeB4MiniHeapRover = largest;
             }
