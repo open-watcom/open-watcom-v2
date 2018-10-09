@@ -44,15 +44,15 @@ _WCRTLINK int _bfreeseg( __segment seg )
 
     _AccessFHeap();
     /* unlink from heap list */
-    prev_seg = BHEAP( seg )->prev.s.segm;
-    next_seg = BHEAP( seg )->next.s.segm;
+    prev_seg = BHEAP( seg )->prev.segm;
+    next_seg = BHEAP( seg )->next.segm;
     if( next_seg != _NULLSEG ) {
-        BHEAP( next_seg )->prev.s.segm = prev_seg;
+        BHEAP( next_seg )->prev.segm = prev_seg;
     }
     if( prev_seg == _NULLSEG ) {
         __bheapbeg = next_seg;
     } else {
-        BHEAP( prev_seg )->next.s.segm = next_seg;
+        BHEAP( prev_seg )->next.segm = next_seg;
     }
     _ReleaseFHeap();
     return( __FreeSeg( seg ) );

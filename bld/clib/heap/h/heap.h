@@ -112,9 +112,7 @@ typedef freelist        _WCNEAR *freelist_nptr;
 typedef freelist        _WCFAR *freelist_fptr;
 
 typedef union heapptr {
-    struct {
-        __segment       segm;
-    } s;
+    __segment           segm;
     heapblk_nptr        nptr;
 } heapptr;
 

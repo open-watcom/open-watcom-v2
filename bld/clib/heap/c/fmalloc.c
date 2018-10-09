@@ -100,8 +100,8 @@ _WCRTLINK void_fptr _fmalloc( size_t amt )
                 if( __fheapbeg == _NULLSEG ) {
                     __fheapbeg = seg;
                 } else {
-                    BHEAP( seg )->prev.s.segm = prev_seg;
-                    BHEAP( prev_seg )->next.s.segm = seg;
+                    BHEAP( seg )->prev.segm = prev_seg;
+                    BHEAP( prev_seg )->next.segm = seg;
                 }
             }
             for( ;; ) {
@@ -117,7 +117,7 @@ _WCRTLINK void_fptr _fmalloc( size_t amt )
                 __LargestSizeB4Rover = BHEAP( seg )->largest_blk;
             }
             prev_seg = seg;
-            seg = BHEAP( seg )->next.s.segm;
+            seg = BHEAP( seg )->next.segm;
         }
         if( __fmemneed( amt ) == 0 ) {
             break;

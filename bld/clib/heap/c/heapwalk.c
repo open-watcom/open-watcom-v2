@@ -46,25 +46,25 @@ static int verifyHeapList( __segment start )
 
     /* check previous heaps end in NULL */
     for( seg = start; ; seg = prev_seg ) {
-        prev_seg = BHEAP( seg )->prev.s.segm;
+        prev_seg = BHEAP( seg )->prev.segm;
         if( prev_seg == start ) {
             return( _HEAPBADBEGIN );
         }
         if( prev_seg == _NULLSEG )
             break;
-        if( BHEAP( prev_seg )->next.s.segm != seg ) {
+        if( BHEAP( prev_seg )->next.segm != seg ) {
             return( _HEAPBADBEGIN );
         }
     }
     /* check next heaps end in NULL */
     for( ; ; seg = next_seg ) {
-        next_seg = BHEAP( seg )->next.s.segm;
+        next_seg = BHEAP( seg )->next.segm;
         if( next_seg == start ) {
             return( _HEAPBADBEGIN );
         }
         if( next_seg == _NULLSEG )
             break;
-        if( BHEAP( next_seg )->prev.s.segm != seg ) {
+        if( BHEAP( next_seg )->prev.segm != seg ) {
             return( _HEAPBADBEGIN );
         }
     }
@@ -90,15 +90,15 @@ int __HeapWalk( struct _heapinfo *entry, __segment seg, __segment one_heap )
         }
     }
     for( ; ; seg = next_seg ) {
-        prev_seg = BHEAP( seg )->prev.s.segm;
-        next_seg = BHEAP( seg )->next.s.segm;
+        prev_seg = BHEAP( seg )->prev.segm;
+        next_seg = BHEAP( seg )->next.segm;
         if( prev_seg != _NULLSEG ) {
-            if( BHEAP( prev_seg )->next.s.segm != seg || prev_seg == next_seg ) {
+            if( BHEAP( prev_seg )->next.segm != seg || prev_seg == next_seg ) {
                 return( _HEAPBADBEGIN );
             }
         }
         if( next_seg != _NULLSEG ) {
-            if( BHEAP( next_seg )->prev.s.segm != seg ) {
+            if( BHEAP( next_seg )->prev.segm != seg ) {
                 return( _HEAPBADBEGIN );
             }
         }

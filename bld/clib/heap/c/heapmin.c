@@ -70,7 +70,7 @@ int __HeapMin( __segment seg, __segment one_heap )
     _AccessFHeap();
     for( ; seg != _NULLSEG; seg = next_seg ) {
         /* we might free this segment so get the next one now */
-        next_seg = BHEAP( seg )->next.s.segm;
+        next_seg = BHEAP( seg )->next.segm;
         if( BHEAP( seg )->numfree == 0 ) {      /* full heap */
             if( one_heap != _NULLSEG )
                 break;

@@ -45,7 +45,7 @@ static int checkFreeList( unsigned long *free_size, __segment req_seg )
     unsigned long       total_size;
 
     total_size = 0;
-    for( seg = (req_seg == _NULLSEG ? __bheapbeg : req_seg); seg != _NULLSEG; seg = BHEAP( seg )->next.s.segm ) {
+    for( seg = (req_seg == _NULLSEG ? __bheapbeg : req_seg); seg != _NULLSEG; seg = BHEAP( seg )->next.segm ) {
         frl = BHEAP( seg )->freehead.next.nptr;
         while( (unsigned)frl != offsetof( heapblk, freehead ) ) {
             total_size += frl->len;

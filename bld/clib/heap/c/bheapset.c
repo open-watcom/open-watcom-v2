@@ -43,7 +43,7 @@ _WCRTLINK int _bheapset( __segment seg, unsigned int fill )
     if( seg == _DGroup() )
         return( _nheapset( fill ) );
     if( seg == _NULLSEG ) {
-        for( seg = __bheapbeg; seg != _NULLSEG; seg = BHEAP( seg )->next.s.segm ) {
+        for( seg = __bheapbeg; seg != _NULLSEG; seg = BHEAP( seg )->next.segm ) {
             heap_status = _bheapset( seg, fill );
             if( heap_status != _HEAPOK ) {
                 return( heap_status );

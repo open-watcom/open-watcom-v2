@@ -117,8 +117,8 @@ __segment __AllocSeg( unsigned int amount )
 #endif
     heaplen = num_of_paras << 4;
     BHEAP( seg )->len = heaplen;
-    BHEAP( seg )->prev.s.segm = _NULLSEG;
-    BHEAP( seg )->next.s.segm = _NULLSEG;
+    BHEAP( seg )->prev.segm = _NULLSEG;
+    BHEAP( seg )->next.segm = _NULLSEG;
     BHEAP( seg )->rover.offs = sizeof( heapblk );
     BHEAP( seg )->b4rover = 0;
     BHEAP( seg )->numalloc = 0;

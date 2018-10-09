@@ -47,7 +47,7 @@ static int checkFreeList( unsigned long *free_size )
     unsigned long       total_size;
 
     total_size = 0;
-    for( seg = __fheapbeg; seg != _NULLSEG; seg = BHEAP( seg )->next.s.segm ) {
+    for( seg = __fheapbeg; seg != _NULLSEG; seg = BHEAP( seg )->next.segm ) {
         __fheapchk_current = frl = BHEAP( seg )->freehead.next.nptr;
         while( (unsigned)frl != offsetof( heapblk, freehead ) ) {
             total_size += frl->len;
