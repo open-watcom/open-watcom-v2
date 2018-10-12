@@ -42,7 +42,7 @@
 #elif defined(__WINDOWS__)
     #include <dos.h>
     #include <windows.h>
-#else
+#else   /* __DOS__ */
     #include <dos.h>
     #include "tinyio.h"
 #endif
@@ -143,7 +143,7 @@ int __FreeSeg( __segment seg )
     if( rc ) {
         return( __set_errno_dos( rc ) );
     }
-#else
+#else   /* __DOS__ */
     tiny_ret_t rc;
 
     rc = TinyFreeBlock( seg );

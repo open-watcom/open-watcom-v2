@@ -45,7 +45,7 @@
 #elif defined(__WINDOWS__)
     #include <dos.h>
     #include <windows.h>
-#else
+#else   /* __DOS__ */
     #include <dos.h>
     #include "tinyio.h"
 #endif
@@ -67,7 +67,7 @@ __segment __AllocSeg( unsigned int amount )
 #elif defined(__QNX__)
     unsigned    rc;
 #elif defined(__WINDOWS__)
-#else
+#else   /* __DOS__ */
     tiny_ret_t  rc;
 #endif
 
@@ -108,7 +108,7 @@ __segment __AllocSeg( unsigned int amount )
         }
         seg = FP_SEG( px );
     }
-#else
+#else   /* __DOS__ */
     rc = TinyAllocBlock( num_of_paras );
     if( TINY_ERROR( rc ) ) {
         return( _NULLSEG );
