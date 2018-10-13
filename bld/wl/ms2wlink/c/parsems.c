@@ -41,12 +41,13 @@
 
 #include "clibext.h"
 
+
 cmdfilelist         *CmdFile;
 
 static int          OverlayLevel = 0;
 
 void EatWhite( void )
-/**************************/
+/*******************/
 {
     while( *CmdFile->current == ' ' || *CmdFile->current == '\t' || *CmdFile->current == '\r' ) {
         CmdFile->current++;
@@ -54,7 +55,7 @@ void EatWhite( void )
 }
 
 bool InitParsing( void )
-/*****************************/
+/**********************/
 // initialize the parsing stuff, and see if there is anything on the command
 // line.
 {
@@ -73,7 +74,7 @@ bool InitParsing( void )
 }
 
 void FreeParserMem( void )
-/*******************************/
+/************************/
 {
     cmdfilelist     *curr;
 
@@ -89,7 +90,7 @@ void FreeParserMem( void )
 }
 
 static void GetNewLine( prompt_slot slot )
-/******************************************/
+/****************************************/
 {
     if( CmdFile->how == NONBUFFERED ) {
         if( QReadStr( CmdFile->fp, CmdFile->buffer, MAX_LINE, CmdFile->name ) ) {
@@ -135,7 +136,7 @@ static void RestoreCmdLine( void )
 }
 
 void ParseDefFile( void )
-/******************************/
+/***********************/
 // parse a .def file
 {
     char        hmm;
@@ -225,7 +226,7 @@ static void ProcessDefFile( void )
 }
 
 void DirectiveError( void )
-/********************************/
+/*************************/
 {
     char    *msg;
     size_t  len;
@@ -350,7 +351,7 @@ bool MakeToken( sep_type separator, bool include_fn )
 }
 
 char *ToString( void )
-/****************************/
+/********************/
 {
     char            *src;
     size_t          len;
@@ -447,6 +448,7 @@ static int ReadNextChar( prompt_slot slot )
 }
 
 static char *StrDup( const char *src )
+/************************************/
 {
     size_t          len;
     char            *str;
@@ -606,7 +608,7 @@ static void DoOptions( char *buf )
 /********************************/
 // process options in a string, if present
 {
-    char    opt[LINE_BUF_SIZE];
+    char    *opt;
     char    *cmd;
 
     for( cmd = buf; *cmd != '\0'; ++cmd ) {
@@ -617,7 +619,7 @@ static void DoOptions( char *buf )
     /* See if option separator was found. */
     if( *cmd == '/' ) {
         *cmd = '\0';
-        strcpy( opt, cmd + 1 );
+        opt = cmd + 1;
         /* Strip trailing spaces from text preceding the option. */
         --cmd;
         while( cmd > buf && *cmd == ' ' ) {
@@ -724,7 +726,7 @@ static void GetNextInput( char *buf, size_t len, prompt_slot slot )
 }
 
 void ParseMicrosoft( void )
-/********************************/
+/*************************/
 // read in Microsoft linker commands
 {
     char        cmd[LINE_BUF_SIZE];
@@ -742,12 +744,12 @@ void ParseMicrosoft( void )
     is_new_line = true;
     do {
         more_objs = false;  /* No more unless we discover otherwise. */
-        if( first )
+        if( first ) {
             len = GetLine( cmd, sizeof( cmd ), OPTION_SLOT );
-        else
+        } else {
             len = GetLine( cmd, sizeof( cmd ), OBJECT_SLOT );
-
-        if( !len )
+        }
+        if( len == 0 )
             break;
         end = LastStringChar( cmd );
         if( *end == mask_spc_chr ) {
