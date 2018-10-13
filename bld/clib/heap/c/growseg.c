@@ -58,7 +58,7 @@ int __GrowSeg( __segment seg, unsigned int amount )
     unsigned        num_of_paras;   /* number of paragraphs desired   */
     unsigned        new_heaplen;
     unsigned int    old_heaplen;
-    unsigned int    old_heap_paras;
+    unsigned int    old_num_of_paras;
     FRLPTR( seg )   pfree;
     FRLPTR( seg )   pnew;
 
@@ -76,8 +76,8 @@ int __GrowSeg( __segment seg, unsigned int amount )
     num_of_paras = __ROUND_UP_SIZE_TO_PARA( amount );
     if( num_of_paras == 0 )
         num_of_paras = PARAS_IN_64K;
-    old_heap_paras = __ROUND_DOWN_SIZE_TO_PARA( old_heaplen );
-    num_of_paras += old_heap_paras;
+    old_num_of_paras = __ROUND_DOWN_SIZE_TO_PARA( old_heaplen );
+    num_of_paras += old_num_of_paras;
     /*
         We shouldn't extend segments to 64k if we are not going to
         use the space for this allocation.  In protected-mode
@@ -102,7 +102,7 @@ int __GrowSeg( __segment seg, unsigned int amount )
     if( DosReallocSeg( num_of_paras << 4, seg ) != 0 )
         return( 0 );
   #else   /* __WINDOWS__ */
-    if( old_heap_paras < ( PARAS_IN_64K - 2 ) && num_of_paras == PARAS_IN_64K ) {
+    if( old_num_of_paras < ( PARAS_IN_64K - 2 ) && num_of_paras == PARAS_IN_64K ) {
         num_of_paras = PARAS_IN_64K - 2;
     } else if( num_of_paras > ( PARAS_IN_64K - 2 ) ) {
         /*

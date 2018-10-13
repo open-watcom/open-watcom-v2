@@ -122,7 +122,7 @@ _WCRTLINK void_nptr __brk( unsigned brk_value )
 {
     unsigned        old_brk_value;
     unsigned short  segm;
-    unsigned        segm_size;
+    unsigned        num_of_paras;
 
     if( brk_value < _STACKTOP ) {
         _RWD_errno = ENOMEM;
@@ -130,40 +130,40 @@ _WCRTLINK void_nptr __brk( unsigned brk_value )
     }
     segm = _DGroup();
   #ifdef _M_I86
-    segm_size = __ROUND_UP_SIZE_TO_PARA( brk_value );
-    if( segm_size == 0 ) {
-        segm_size = PARAS_IN_64K;
+    num_of_paras = __ROUND_UP_SIZE_TO_PARA( brk_value );
+    if( num_of_paras == 0 ) {
+        num_of_paras = PARAS_IN_64K;
     }
     /* try setting the block of memory */
     if( _RWD_osmode == DOS_MODE ) {
-        segm_size += SS_Reg() - _RWD_psp;    /* add in code size (in paragraphs) */
+        num_of_paras += SS_Reg() - _RWD_psp;    /* add in code size (in paragraphs) */
         segm = _RWD_psp;
     }
   #else
     if( _IsOS386() ) {
         int parent;
 
-        segm_size = __ROUND_UP_SIZE_TO_PARA( brk_value );
-        if( segm_size == 0 )
-            segm_size = 0x0FFFFFFF;
+        num_of_paras = __ROUND_UP_SIZE_TO_PARA( brk_value );
+        if( num_of_paras == 0 )
+            num_of_paras = 0x0FFFFFFF;
         parent = SegInfo( segm );
         if( parent < 0 ) {
-            if( TINY_ERROR( TinySetBlock( segm_size, parent & 0xffff ) ) ) {
+            if( TINY_ERROR( TinySetBlock( num_of_paras, parent & 0xffff ) ) ) {
                 _RWD_errno = ENOMEM;
                 return( (void_nptr)-1 );
             }
         }
     } else {        /* _IsPharLap() || IsRationalNonZeroBase() */
-        segm_size = __ROUND_UP_SIZE_TO_4K( brk_value );
-        if( segm_size == 0 )
-            segm_size = 0x000FFFFF;
+        num_of_paras = __ROUND_UP_SIZE_TO_4K( brk_value );
+        if( num_of_paras == 0 )
+            num_of_paras = 0x000FFFFF;
         if( _IsRationalNonZeroBase() ) {
             // convert from 4k pages to paragraphs
-            segm_size = segm_size * 256U;
+            num_of_paras *= 256U;
         }
     }
   #endif
-    if( TINY_ERROR( TinySetBlock( segm_size, segm ) ) ) {
+    if( TINY_ERROR( TinySetBlock( num_of_paras, segm ) ) ) {
         _RWD_errno = ENOMEM;
         return( (void_nptr)-1 );
     }

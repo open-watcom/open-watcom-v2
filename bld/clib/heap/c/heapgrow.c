@@ -105,7 +105,7 @@ _WCRTLINK void _nheapgrow( void )
         return;
     }
     max_paras = PARAS_IN_64K;
-#else
+#else   /* __DOS__ */
     if( _RWD_osmode != DOS_MODE ) {
         max_paras = PARAS_IN_64K;
     } else {

@@ -66,7 +66,7 @@ int __HeapMin( __segment seg, __segment one_heap )
 #elif defined(__WINDOWS__)
     HANDLE              hmem;
 #elif defined(__DOS__)
-    tag                 heap_size_para;
+    unsigned            num_of_paras;
     tiny_ret_t          rc;
 #endif
 
@@ -125,11 +125,11 @@ int __HeapMin( __segment seg, __segment one_heap )
         }
 #else   /* __DOS__ */
         if( new_heap_len == 0 ) {
-            heap_size_para = PARAS_IN_64K;
+            num_of_paras = PARAS_IN_64K;
         } else {
-            heap_size_para = __ROUND_DOWN_SIZE_TO_PARA( new_heap_len );
+            num_of_paras = __ROUND_DOWN_SIZE_TO_PARA( new_heap_len );
         }
-        rc = TinySetBlock( heap_size_para, seg );
+        rc = TinySetBlock( num_of_paras, seg );
         if( TINY_ERROR( rc ) ) {
             _ReleaseFHeap();
             return( __set_errno_dos( TINY_INFO( rc ) ) );
