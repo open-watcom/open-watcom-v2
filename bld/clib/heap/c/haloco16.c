@@ -66,24 +66,24 @@ static int only_one_bit( size_t x )
 
 _WCRTLINK void_hptr halloc( long n, unsigned size )
 {
-    unsigned long len;
-    USHORT      error, tseg;
-    SEL         seg;
-    USHORT      number_segments, remaining_bytes;
-    USHORT      increment;
+    unsigned long   amount;
+    USHORT          error, tseg;
+    SEL             seg;
+    USHORT          number_segments, remaining_bytes;
+    USHORT          increment;
 
-    len = (unsigned long)n * size;
-    if( len == 0 )
+    amount = (unsigned long)n * size;
+    if( amount == 0 )
         return( NULL );
-    if( (unsigned long)n > 65536 && !only_one_bit( size ) )
+    if( OVERFLOW_64K( (unsigned long)n ) && !only_one_bit( size ) )
         return( NULL );
     error = DosGetHugeShift( &increment );
     if( error ) {
         __set_errno_dos( error );
         return( NULL );
     }
-    number_segments = len >> 16;
-    remaining_bytes = len & 0xffff;
+    number_segments = amount >> 16;
+    remaining_bytes = amount & 0xffff;
     error = DosAllocHuge( number_segments, remaining_bytes, &seg, 0, 0 );
     if( error ) {
         __set_errno_dos( error );

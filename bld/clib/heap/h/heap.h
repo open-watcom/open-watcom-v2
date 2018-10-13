@@ -58,17 +58,18 @@
 #define FRL_SIZE                    __ROUND_UP_SIZE( sizeof( freelist ), HEAP_ROUND_SIZE )
 
 #if defined( _M_IX86 )
- #define _DGroup()      FP_SEG((&__nheapbeg))
+ #define _DGroup()          FP_SEG((&__nheapbeg))
 #else
- #define _DGroup()      0
+ #define _DGroup()          0
 #endif
 
-#define __HM_SUCCESS    0
-#define __HM_FAIL       1
-#define __HM_TRYGROW    2
+#define __HM_SUCCESS        0
+#define __HM_FAIL           1
+#define __HM_TRYGROW        2
 
-#define PARAS_IN_64K    (0x1000)
-#define END_TAG         (/*0x....ffff*/ ~0U)
+#define PARAS_IN_64K        (0x1000)
+#define END_TAG             (/*0x....ffff*/ ~0U)
+#define OVERFLOW_64K(x)     ((x) > 0x10000)
 
 #define GET_BLK_SIZE(p)             ((p)->len & ~1U)
 #define IS_BLK_INUSE(p)             (((p)->len & 1) != 0)

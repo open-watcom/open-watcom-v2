@@ -56,14 +56,14 @@ static int only_one_bit( size_t x )
 _WCRTLINK void_hptr (halloc)( long n, size_t size )
 {
     short           seg;
-    unsigned long   len;
+    unsigned long   amount;
 
-    len = (unsigned long)n * size;
-    if( len == 0 )
+    amount = (unsigned long)n * size;
+    if( amount == 0 )
         return( NULL );
-    if( len > 65536 && !only_one_bit( size ) )
+    if( OVERFLOW_64K( amount ) && !only_one_bit( size ) )
         return( NULL );
-    seg = qnx_segment_huge( len );
+    seg = qnx_segment_huge( amount );
     if( seg == -1 )
         seg = 0;
     return( (void_hptr)MK_FP( seg , 0 ) );

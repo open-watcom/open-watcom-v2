@@ -94,13 +94,13 @@ _WCRTLINK void _nheapgrow( void )
         return;
     }
 #if defined(__QNX__)
-    if( qnx_segment_realloc( _DGroup(), 65536L ) == -1 ) {
+    if( qnx_segment_realloc( _DGroup(), (long)PARAS_IN_64K << 4 ) == -1 ) {
         _ReleaseNHeap();
         return;
     }
     max_paras = PARAS_IN_64K;
 #elif defined(__OS2__)
-    if( DosReallocSeg( 0, _DGroup() ) )  {
+    if( DosReallocSeg( PARAS_IN_64K << 4, _DGroup() ) )  {
         _ReleaseNHeap();
         return;
     }
