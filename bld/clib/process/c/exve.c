@@ -96,18 +96,18 @@ extern unsigned             __exec_para;
 
 static void dosexpand( unsigned block )
 {
-    unsigned new_size;
+    unsigned num_of_paras;
 
-    new_size = TinyMaxSet( block );
-    TinySetBlock( new_size, block );
+    num_of_paras = TinyMaxSet( block );
+    TinySetBlock( num_of_paras, block );
 }
 
-static unsigned dosalloc( unsigned min )
+static unsigned dosalloc( unsigned num_of_paras )
 {
     tiny_ret_t rc;
     unsigned block;
 
-    rc = TinyAllocBlock( min );
+    rc = TinyAllocBlock( num_of_paras );
     if( TINY_ERROR( rc ) ) {
         return( 0 );
     }
@@ -116,17 +116,16 @@ static unsigned dosalloc( unsigned min )
     return( block );
 }
 
-static unsigned doscalve( block, size )
-    unsigned            block;
-    unsigned            size;
+static unsigned doscalve( unsigned block, unsigned req_paras )
 {
-    unsigned            have;
+    unsigned    block_num_of_paras;
 
-    if( (have = _mcbptr( block )->size) < size + 1 ) {
+    block_num_of_paras = _mcbptr( block )->size;
+    if( block_num_of_paras < req_paras + 1 ) {
         return( 0 );
     } else {
-        TinySetBlock( have - ( size + 1 ), block );
-        return( dosalloc( size ) );
+        TinySetBlock( block_num_of_paras - ( req_paras + 1 ), block );
+        return( dosalloc( req_paras ) );
     }
 }
 
@@ -136,10 +135,7 @@ static void resetints( void )
     (*__int23_exit)();
 }
 
-static int doalloc( size, envdata, envsize )
-    unsigned            size;
-    unsigned            envdata;
-    unsigned            envsize;
+static int doalloc( unsigned size, unsigned envdata, unsigned envsize_paras )
 {
     unsigned            p, q, free, dosseg, envseg;
 
@@ -153,7 +149,7 @@ static int doalloc( size, envdata, envsize )
         }
     }
     for( p = free; p != 0; p = _blkptr( p )->next ) {
-        if( (envseg = doscalve( p, envsize )) != 0 ) {
+        if( (envseg = doscalve( p, envsize_paras )) != 0 ) {
             break;
         }
     }
@@ -168,7 +164,7 @@ static int doalloc( size, envdata, envsize )
         }
     }
     _pspptr( _RWD_psp )->envp = envseg;
-    movedata( envdata, 0, envseg, 0, envsize * 16 );
+    movedata( envdata, 0, envseg, 0, envsize_paras << 4 );
     resetints();
     for( ;; ) {
         for( p = doslowblock(); ; p = p + _mcbptr( p )->size + 1 ) {

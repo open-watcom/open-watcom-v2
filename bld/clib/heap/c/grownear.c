@@ -218,7 +218,7 @@ static heapblk_nptr RationalAlloc( size_t size )
         /* checks for users that want >1M real memory saved */
         __minreal = 0xfffff;
     }
-    if( size > 0x00010000 ) {
+    if( OVERFLOW_64K( size ) ) {
         /* cannot allocate more than 64k from DOS real memory */
         return( NULL );
     }

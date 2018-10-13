@@ -51,7 +51,7 @@
   #error platform not supported
 #endif
 
-_WCRTLINK unsigned _dos_allocmem( unsigned size, mem_id *p_mem )
+_WCRTLINK unsigned _dos_allocmem( unsigned num_of_paras, mem_id *p_mem )
 // Note: size is in paragraphs of 16 bytes
 {
     APIRET      rc;
@@ -60,8 +60,8 @@ _WCRTLINK unsigned _dos_allocmem( unsigned size, mem_id *p_mem )
     SEL         mem;
     USHORT      number_segments, remaining_bytes;
 
-    number_segments = size >> 12;       // Number of 64k segments
-    remaining_bytes = (size << 4) & 0xFFFF;     // remainder, < 64k
+    number_segments = num_of_paras >> 12;           // Number of 64k segments
+    remaining_bytes = (num_of_paras << 4) & 0xFFFF; // remainder, < 64k
     rc = DosAllocHuge( number_segments, remaining_bytes, &mem, 0, 0 );
 #elif defined( _M_IX86 ) || defined( __PPC__ )
     /*
@@ -70,7 +70,7 @@ _WCRTLINK unsigned _dos_allocmem( unsigned size, mem_id *p_mem )
     */
     void        *mem;
 
-    rc = DosAllocMem( &mem, size << 4, PAG_COMMIT | PAG_READ | PAG_WRITE );
+    rc = DosAllocMem( &mem, num_of_paras << 4, PAG_COMMIT | PAG_READ | PAG_WRITE );
 #else
     #error platform not supported
 #endif
