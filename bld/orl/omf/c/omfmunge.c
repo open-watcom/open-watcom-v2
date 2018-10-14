@@ -307,7 +307,7 @@ static omf_sec_handle   newSegSection( omf_file_handle ofh, orl_sec_type typ )
 
 static omf_grp_handle   newGroup( omf_file_handle ofh )
 {
-    omf_grp_handle      gr;
+    omf_grp_handle      grp;
 
     assert( ofh );
 
@@ -315,18 +315,18 @@ static omf_grp_handle   newGroup( omf_file_handle ofh )
     if( ofh->groups == NULL )
         return( NULL );
 
-    gr = _ClientAlloc( ofh, sizeof( ORL_STRUCT( omf_grp_handle ) ) );
-    if( gr == NULL )
-        return( gr );
-    memset( gr, 0, sizeof( ORL_STRUCT( omf_grp_handle ) ) );
+    grp = _ClientAlloc( ofh, sizeof( ORL_STRUCT( omf_grp_handle ) ) );
+    if( grp == NULL )
+        return( grp );
+    memset( grp, 0, sizeof( ORL_STRUCT( omf_grp_handle ) ) );
 
-    ofh->groups[ofh->num_groups] = gr;
+    ofh->groups[ofh->num_groups] = grp;
     ofh->num_groups++;
-    gr->id = ofh->num_groups;
-    gr->file_format = ORL_OMF;
-    gr->omf_file_hnd = ofh;
+    grp->idx = ofh->num_groups;
+    grp->file_format = ORL_OMF;
+    grp->omf_file_hnd = ofh;
 
-    return( gr );
+    return( grp );
 }
 
 
@@ -1113,7 +1113,7 @@ orl_return OmfAddFixupp( omf_file_handle ofh, bool is32, int mode, int location,
     omf_tmp_fixup           ftr;
     ORL_STRUCT( orl_reloc ) *orel;
     omf_sec_handle          sh;
-    omf_grp_handle          gr;
+    omf_grp_handle          grp;
 
     assert( ofh );
 
@@ -1234,10 +1234,10 @@ orl_return OmfAddFixupp( omf_file_handle ofh, bool is32, int mode, int location,
         break;
     case( TARGET_GRPWD ):            /* group index with displacement        */
     case( TARGET_GRP ):              /* group index, no displacement         */
-        gr = findGroup( ofh, tidx );
-        if( gr == NULL )
+        grp = findGroup( ofh, tidx );
+        if( grp == NULL )
             return( ORL_ERROR );
-        orel->symbol = (orl_symbol_handle)(gr->sym);
+        orel->symbol = (orl_symbol_handle)(grp->sym);
         break;
     case( TARGET_EXTWD ):            /* external index with displacement     */
     case( TARGET_EXT ):              /* external index, no displacement      */
@@ -1260,10 +1260,10 @@ orl_return OmfAddFixupp( omf_file_handle ofh, bool is32, int mode, int location,
         orel->frame = (orl_symbol_handle)(sh->assoc.seg.sym);
         break;
     case( FRAME_GRP ):                      /* group index                  */
-        gr = findGroup( ofh, fidx );
-        if( gr == NULL )
+        grp = findGroup( ofh, fidx );
+        if( grp == NULL )
             return( ORL_ERROR );
-        orel->frame = (orl_symbol_handle)(gr->sym);
+        orel->frame = (orl_symbol_handle)(grp->sym);
         break;
     case( FRAME_EXT ):                      /* external index               */
         orel->frame = (orl_symbol_handle)(findExtDefSym( ofh, fidx ));
@@ -1558,7 +1558,8 @@ orl_return OmfAddPubDef( omf_file_handle ofh, bool is32, omf_idx group, omf_idx 
         /* we currently don't handle this, presumably it does not occur.
          */
         return( ORL_ERROR );
-    } else if( seg == 0 && group == 0 ) {
+    }
+    if( seg == 0 && group == 0 ) {
         styp = ORL_SYM_TYPE_ABSOLUTE;
     } else {
         styp = ORL_SYM_TYPE_DEFINED;
@@ -1592,7 +1593,7 @@ orl_return  OmfAddGrpDef( omf_file_handle ofh, omf_idx name, omf_idx *segs, unsi
 {
     omf_symbol_handle   sym;
     omf_sec_handle      sh;
-    omf_grp_handle      gr;
+    omf_grp_handle      grp;
     omf_string          grpname;
 
     assert( ofh );
@@ -1601,13 +1602,13 @@ orl_return  OmfAddGrpDef( omf_file_handle ofh, omf_idx name, omf_idx *segs, unsi
     if( name == 0 )
         return( ORL_ERROR );
 
-    gr = newGroup( ofh );
-    if( gr == NULL )
+    grp = newGroup( ofh );
+    if( grp == NULL )
         return( ORL_OUT_OF_MEMORY );
 
-    gr->num_segs = num_segs;
-    gr->segs = segs;
-    gr->name = name;
+    grp->num_segs = num_segs;
+    grp->segs = segs;
+    grp->name = name;
 
     while( num_segs > 0 ) {
         num_segs--;
@@ -1615,7 +1616,7 @@ orl_return  OmfAddGrpDef( omf_file_handle ofh, omf_idx name, omf_idx *segs, unsi
         if( sh == NULL )
             return( ORL_ERROR );
         sh->flags |= ORL_SEC_FLAG_GROUPED;
-        sh->assoc.seg.group = gr;
+        sh->assoc.seg.group = grp;
     }
 
     grpname = OmfGetLName( ofh->lnames, name );
@@ -1627,8 +1628,8 @@ orl_return  OmfAddGrpDef( omf_file_handle ofh, omf_idx name, omf_idx *segs, unsi
         return( ORL_OUT_OF_MEMORY );
 
     sym->flags |= OMF_SYM_FLAGS_GRPDEF;
-    sym->idx = gr->id;
-    gr->sym = sym;
+    sym->idx = grp->idx;
+    grp->sym = sym;
 
     return( addToSymbolTable( ofh, sym ) );
 }
