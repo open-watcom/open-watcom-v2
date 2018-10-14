@@ -202,7 +202,7 @@ static omf_sec_handle   findSegment( omf_file_handle ofh, omf_idx seg )
 }
 
 
-static omf_symbol_handle newSymbol( omf_file_handle ofh, orl_symbol_type typ, char *buffer, omf_string_len len )
+static omf_symbol_handle newSymbol( omf_file_handle ofh, orl_symbol_type typ, const char *buffer, omf_string_len len )
 {
     omf_symbol_handle   sym;
 
@@ -355,7 +355,7 @@ static omf_sec_handle   newStringTable( omf_file_handle ofh, omf_quantity idx )
 }
 
 
-static orl_return       addString( omf_sec_handle sh, char *buffer, omf_string_len len )
+static orl_return       addString( omf_sec_handle sh, const char *buffer, omf_string_len len )
 {
     omf_string          str;
     omf_file_handle     ofh;
@@ -1002,39 +1002,18 @@ orl_return OmfAddLEData( omf_file_handle ofh, bool is32, omf_idx seg, omf_sec_of
 }
 
 
-orl_return  OmfAddLName( omf_file_handle ofh, char *buffer, omf_string_len len, omf_rectyp typ )
+orl_return OmfAddLName( omf_file_handle ofh, const char *buffer, omf_string_len len )
 {
     assert( ofh );
     assert( buffer );
-
-    /* unused parameters */ (void)typ;
 
     if( ofh->lnames == NULL ) {
         ofh->lnames = newStringTable( ofh, OMF_SEC_LNAME_INDEX );
-        if( ofh->lnames == NULL )
+        if( ofh->lnames == NULL ) {
             return( ORL_OUT_OF_MEMORY );
-        ofh->lnames->flags = ORL_SEC_FLAG_REMOVE;
+        }
     }
-
     return( addString( ofh->lnames, buffer, len ) );
-}
-
-
-orl_return  OmfAddExtName( omf_file_handle ofh, char *buffer, omf_string_len len, omf_rectyp typ )
-{
-    assert( ofh );
-    assert( buffer );
-
-    /* unused parameters */ (void)typ;
-
-    if( ofh->extdefs == NULL ) {
-        ofh->extdefs = newStringTable( ofh, OMF_SEC_IMPORT_INDEX );
-        if( ofh->extdefs == NULL )
-            return( ORL_OUT_OF_MEMORY );
-        ofh->extdefs->flags = ORL_SEC_FLAG_REMOVE;
-    }
-
-    return( addString( ofh->extdefs, buffer, len ) );
 }
 
 
@@ -1285,41 +1264,52 @@ orl_return OmfAddFixupp( omf_file_handle ofh, bool is32, int mode, int location,
 }
 
 
-orl_return  OmfAddExtDef( omf_file_handle ofh, omf_string extname, omf_rectyp typ )
+orl_return  OmfAddExtDef( omf_file_handle ofh, const char *extname, omf_string_len len, omf_rectyp typ )
 {
     omf_symbol_handle   sym;
     orl_symbol_type     styp;
+    orl_return          return_val;
 
     assert( ofh );
     assert( extname );
 
-    styp = ORL_SYM_TYPE_OBJECT;
-    if( ( typ == CMD_COMDEF ) || ( typ == CMD_LCOMDEF ) ) {
-        styp |= ORL_SYM_TYPE_COMMON;
-    } else {
-        styp |= ORL_SYM_TYPE_UNDEFINED;
-    }
-    sym = _NewSymbol( ofh, styp, extname );
-    if( sym == NULL )
-        return( ORL_OUT_OF_MEMORY );
-
-    sym->idx = ofh->extdefs->assoc.string.num + 1;
-    sym->rec_typ = typ;
-    switch( typ ) {
-    case( CMD_COMDEF ):
-    case( CMD_LCOMDEF ):
-        sym->flags |= OMF_SYM_FLAGS_COMDEF;
-        sym->binding = ORL_SYM_BINDING_GLOBAL;
-        if( typ == CMD_COMDEF ) {
-            break;
+    if( ofh->extdefs == NULL ) {
+        ofh->extdefs = newStringTable( ofh, OMF_SEC_IMPORT_INDEX );
+        if( ofh->extdefs == NULL ) {
+            return( ORL_OUT_OF_MEMORY );
         }
-    case( CMD_LEXTDEF ):
-    case( CMD_LEXTDEF32 ):
-        sym->flags |= OMF_SYM_FLAGS_LOCAL;
-        sym->binding = ORL_SYM_BINDING_LOCAL;
     }
-
-    return( addToSymbolTable( ofh, sym ) );
+    return_val = addString( ofh->extdefs, extname, len );
+    if( return_val == ORL_OKAY ) {
+        styp = ORL_SYM_TYPE_OBJECT;
+        if( ( typ == CMD_COMDEF ) || ( typ == CMD_LCOMDEF ) ) {
+            styp |= ORL_SYM_TYPE_COMMON;
+        } else {
+            styp |= ORL_SYM_TYPE_UNDEFINED;
+        }
+        return_val = ORL_OUT_OF_MEMORY;
+        sym = newSymbol( ofh, styp, extname, len );
+        if( sym != NULL ) {
+            sym->idx = ofh->extdefs->assoc.string.num;
+            sym->rec_typ = typ;
+            switch( typ ) {
+            case( CMD_COMDEF ):
+                sym->flags |= OMF_SYM_FLAGS_COMDEF;
+                sym->binding = ORL_SYM_BINDING_GLOBAL;
+                break;
+            case( CMD_LCOMDEF ):
+                sym->flags |= OMF_SYM_FLAGS_COMDEF;
+                /* fall through */
+            case( CMD_LEXTDEF ):
+            case( CMD_LEXTDEF32 ):
+                sym->flags |= OMF_SYM_FLAGS_LOCAL;
+                sym->binding = ORL_SYM_BINDING_LOCAL;
+                break;
+            }
+            return_val = addToSymbolTable( ofh, sym );
+        }
+    }
+    return( return_val );
 }
 
 
@@ -1544,7 +1534,7 @@ orl_return OmfAddSegDef( omf_file_handle ofh, bool is32, orl_sec_alignment align
 
 
 orl_return OmfAddPubDef( omf_file_handle ofh, bool is32, omf_idx group, omf_idx seg, omf_frame frame,
-                            char *buffer, omf_string_len len, omf_sec_offset offset, omf_rectyp typ )
+                            const char *buffer, omf_string_len len, omf_sec_offset offset, omf_rectyp typ )
 {
     omf_symbol_handle   sym;
     orl_symbol_type     styp;
@@ -1559,13 +1549,12 @@ orl_return OmfAddPubDef( omf_file_handle ofh, bool is32, omf_idx group, omf_idx 
          */
         return( ORL_ERROR );
     }
+    styp = ORL_SYM_TYPE_OBJECT;
     if( seg == 0 && group == 0 ) {
-        styp = ORL_SYM_TYPE_ABSOLUTE;
+        styp |= ORL_SYM_TYPE_ABSOLUTE;
     } else {
-        styp = ORL_SYM_TYPE_DEFINED;
+        styp |= ORL_SYM_TYPE_DEFINED;
     }
-    styp |= ORL_SYM_TYPE_OBJECT;
-
     sym = newSymbol( ofh, styp, buffer, len );
     if( sym == NULL )
         return( ORL_OUT_OF_MEMORY );
@@ -1574,11 +1563,15 @@ orl_return OmfAddPubDef( omf_file_handle ofh, bool is32, omf_idx group, omf_idx 
     sym->frame = frame;
     sym->offset = offset;
     sym->rec_typ = typ;
-    if( ( typ == CMD_LPUBDEF ) || ( typ == CMD_LPUBDEF32 ) ) {
+    switch( typ ) {
+    case( CMD_LPUBDEF ):
+    case( CMD_LPUBDEF32 ):
         sym->flags |= OMF_SYM_FLAGS_LOCAL;
         sym->binding = ORL_SYM_BINDING_LOCAL;
-    } else {
+        break;
+    default:
         sym->binding = ORL_SYM_BINDING_GLOBAL;
+        break;
     }
 
     if( styp & ORL_SYM_TYPE_DEFINED ) {
