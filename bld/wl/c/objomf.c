@@ -201,7 +201,7 @@ static void Pass1Cmd( byte cmd )
         CurrMod->modinfo |= MOD_NEED_PASS_2;
         UseSymbols( isstatic, false );
         break;
-    case CMD_CEXTDF:
+    case CMD_CEXTDEF:
         CurrMod->modinfo |= MOD_NEED_PASS_2;
         UseSymbols( false, true );
         break;
@@ -243,7 +243,7 @@ static void Pass1Cmd( byte cmd )
         break;
     case CMD_FIXU32:
         ObjFormat |= FMT_MS_386;
-    case CMD_FIXUP:         /* count the fixups for each seg_leader */
+    case CMD_FIXUPP:        /* count the fixups for each seg_leader */
         CurrMod->modinfo |= MOD_NEED_PASS_2;
         DoRelocs();
         ObjFormat &= ~FMT_UNSAFE_FIXUPP;

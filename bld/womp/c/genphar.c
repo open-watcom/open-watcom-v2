@@ -148,10 +148,10 @@ STATIC int writeFixup( obj_rec *objr, pobj_state *state ) {
     uint_16     len_written;
 
 /**/myassert( objr != NULL );
-/**/myassert( objr->command == CMD_FIXUP );
+/**/myassert( objr->command == CMD_FIXUPP );
 /**/myassert( state != NULL );
 /**/myassert( state->pass == POBJ_WRITE_PASS );
-    walk = objr->d.fixup.fixup;
+    walk = objr->d.fixupp.fixup;
     if( walk == NULL ) {
             /* huh? this shouldn't really happen... */
         return( 0 );
@@ -161,7 +161,7 @@ STATIC int writeFixup( obj_rec *objr, pobj_state *state ) {
        our records to approximately 1024 bytes */
     do {
         len_written = 0;
-        ObjWBegRec( out, CMD_FIXUP );
+        ObjWBegRec( out, CMD_FIXUPP );
         while( walk != NULL && len_written < 1024 - FIX_GEN_MAX ) {
             walk->loc_offset += LifixDelta( &lifList, walk->loc_offset );
             len = FixGenFix( walk, buf, FIX_GEN_PHARLAP );
@@ -476,14 +476,14 @@ STATIC const pobj_list myFuncs[] = {
     { CMD_COMENT,       POBJ_WRITE_PASS, writeComent },
     { CMD_MODEND,       POBJ_WRITE_PASS, writeModend },
     { CMD_EXTDEF,       POBJ_WRITE_PASS, writeMisc },
-    { CMD_CEXTDF,       POBJ_WRITE_PASS, writeMisc },
+    { CMD_CEXTDEF,      POBJ_WRITE_PASS, writeMisc },
     { CMD_TYPDEF,       POBJ_WRITE_PASS, writeMisc },
     { CMD_PUBDEF,       POBJ_WRITE_PASS, writePubdef },
     { CMD_LINNUM,       POBJ_WRITE_PASS, writeLinnum },
     { CMD_LNAMES,       POBJ_WRITE_PASS, writeMisc },
     { CMD_SEGDEF,       POBJ_WRITE_PASS, writeSegdef },
     { CMD_GRPDEF,       POBJ_WRITE_PASS, writeMisc },
-    { CMD_FIXUP,        POBJ_WRITE_PASS, writeFixup },
+    { CMD_FIXUPP,       POBJ_WRITE_PASS, writeFixup },
     { CMD_LEDATA,       POBJ_WRITE_PASS, writeLedata },
     { CMD_LIDATA,       POBJ_WRITE_PASS, writeLidata },
     { CMD_COMDEF,       POBJ_WRITE_PASS, writeMisc },

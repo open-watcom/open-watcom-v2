@@ -225,17 +225,17 @@ STATIC int writeFixup( obj_rec *objr, pobj_state *state ) {
     uint_8      cmd2;
 
 /**/myassert( objr != NULL );
-/**/myassert( objr->command == CMD_FIXUP );
+/**/myassert( objr->command == CMD_FIXUPP );
 /**/myassert( state != NULL );
 /**/myassert( state->pass == POBJ_WRITE_PASS );
-    walk = objr->d.fixup.fixup;
+    walk = objr->d.fixupp.fixup;
     if( walk == NULL ) {
             /* huh? this shouldn't really happen... */
         return( 0 );
     }
     out = state->file_out;
     is32 = objr->is_32 || objr->is_phar;
-    cmd1 = is32 ? CMD_FIXU32 : CMD_FIXUP;
+    cmd1 = is32 ? CMD_FIXU32 : CMD_FIXUPP;
     cmd2 = is32 ? FIX_GEN_MS386 : FIX_GEN_INTEL;
     /* we don't want to write FIXUP records that are too large, so we limit
        our records to approximately 1024 bytes */
@@ -632,13 +632,13 @@ STATIC const pobj_list myFuncs[] = {
     { CMD_GRPDEF,       POBJ_WRITE_PASS, writeMisc },
     { CMD_LEDATA,       POBJ_WRITE_PASS, writeLedata },
 #if ( _WOMP_OPT & _WOMP_WATFOR ) == 0
-    { CMD_FIXUP,        POBJ_WRITE_PASS, writeFixup },
+    { CMD_FIXUPP,       POBJ_WRITE_PASS, writeFixup },
     { CMD_PUBDEF,       POBJ_WRITE_PASS, writePubdef },
     { CMD_TYPDEF,       POBJ_WRITE_PASS, writeMisc },
     { CMD_LINNUM,       POBJ_WRITE_PASS, writeLinnum },
     { CMD_LIDATA,       POBJ_WRITE_PASS, writeLidata },
     { CMD_COMDEF,       POBJ_WRITE_PASS, writeMisc },
-    { CMD_CEXTDF,       POBJ_WRITE_PASS, writeMisc },
+    { CMD_CEXTDEF,      POBJ_WRITE_PASS, writeMisc },
     { CMD_STATIC_EXTDEF,POBJ_WRITE_PASS, writeMisc32 },
     { CMD_STATIC_PUBDEF,POBJ_WRITE_PASS, writePubdef },
     { CMD_STATIC_COMDEF,POBJ_WRITE_PASS, writeMisc },
@@ -650,10 +650,10 @@ STATIC const pobj_list myFuncs[] = {
     { CMD_LLNAMES,      POBJ_WRITE_PASS, writeMisc }
 #else
   #ifdef _WOMP_WATFOR_8086
-    { CMD_FIXUP,        POBJ_WRITE_PASS, writeMisc },
+    { CMD_FIXUPP,       POBJ_WRITE_PASS, writeMisc },
     { CMD_PUBDEF,       POBJ_WRITE_PASS, writeMisc }
   #else
-    { CMD_FIXUP,        POBJ_WRITE_PASS, writeMisc32 },
+    { CMD_FIXUPP,       POBJ_WRITE_PASS, writeMisc32 },
     { CMD_PUBDEF,       POBJ_WRITE_PASS, writeMisc32 }
   #endif
 #endif

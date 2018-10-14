@@ -95,10 +95,10 @@
         objr->d.comdef.num_names = number of names in record
         record pointer is at end of record
 
-    FIXUP:
-        objr->d.fixup.idx_last_data = seg index from most recent le/lidata
-        objr->d.fixup.offset_last_data = offset from most recent le/lidata
-        objr->d.fixup.fixup = linked list of processed fixups
+    FIXUPP:
+        objr->d.fixupp.idx_last_data = seg index from most recent le/lidata
+        objr->d.fixupp.offset_last_data = offset from most recent le/lidata
+        objr->d.fixupp.fixup = linked list of processed fixups
             The fixups can be "stolen" if the record is not going to be
             passed on.  i.e., the WATPRS FIXUP filter steals all the fixups
             for the $$TYPES and $$SYMBOLS segments.  This eliminates the
@@ -168,10 +168,10 @@
     During the WRITE_PASS, this is the ordering of the records:
         THEADR
         ( LNAMES | LLNAMES | SEGDEF | GRPDEF | COMENT ) *
-        ( EXTDEF | STATIC_EXTDEF | COMDEF | STATIC_COMDEF | COMENT | CEXTDF ) *
+        ( EXTDEF | STATIC_EXTDEF | COMDEF | STATIC_COMDEF | COMENT | CEXTDEF ) *
         ( PUBDEF | STATIC_PUBDEF | COMENT ) *
         -- LAST_DEFN is called here
-        ( LEDATA | LIDATA | FIXUP | COMENT | LINNUM |
+        ( LEDATA | LIDATA | FIXUPP | COMENT | LINNUM |
             COMDAT | BAKPAT | LINSYM ) *
         MODEND
 

@@ -183,8 +183,7 @@ typedef enum {
     CMD_SEGDEF32        = 0x99,     /* 32-bit segment definition        */
     CMD_SEGD32          = 0x99,     /* 32-bit segment definition        */
     CMD_GRPDEF          = 0x9a,     /* group definition record          */
-    CMD_FIXUP           = 0x9c,     /* relocation record                */
-    CMD_FIXUPP          = 0x9c,     /* for those who stuttttttter       */
+    CMD_FIXUPP          = 0x9c,     /* relocation record                */
     CMD_FIXUPP32        = 0x9d,     /* 32-bit relocation record         */
     CMD_FIXU32          = 0x9d,     /* 32-bit relocation record         */
     CMD_LEDATA          = 0xa0,     /* object record                    */
@@ -211,7 +210,7 @@ typedef enum {
     CMD_STATIC_PUBD32   = 0xb7,
     CMD_LCOMDEF         = 0xb8,     /* local comdev */
     CMD_STATIC_COMDEF   = 0xb8,
-    CMD_CEXTDF          = 0xbc,     /* external reference to a COMDAT */
+    CMD_CEXTDEF         = 0xbc,     /* external reference to a COMDAT */
     CMD_COMDAT          = 0xc2,     /* initialized communal data record */
     CMD_COMDAT32        = 0xc3,     /* initialized 32-bit communal data record */
     CMD_COMD32          = 0xc3,     /* initialized 32-bit communal data record */

@@ -87,7 +87,7 @@ struct fixup {
 };
 
 /*
-    fixup.loc_offset has two purposes:  when the fixup is built by FixGetFix,
+    fixupp.loc_offset has two purposes:  when the fixup is built by FixGetFix,
     this field will contain the value of the "data_rec_offset" 10-bit offset
     into the previous LE/LIDATA.  When the fixup is written, this field must
     contain a similar value (10-bit number which is offset from beginning of

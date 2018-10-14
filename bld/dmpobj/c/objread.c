@@ -111,7 +111,7 @@ const char *RecNumberToName( byte code )
         return( "SEGDEF" );
     case CMD_GRPDEF:
         return( "GRPDEF" );
-    case CMD_FIXUP:
+    case CMD_FIXUPP:
          return( "FIXUPP" );
     case CMD_LEDATA:
         return( "LEDATA" );
@@ -135,7 +135,7 @@ const char *RecNumberToName( byte code )
         return( "static COMDEF" );
     case CMD_BAKPAT:
         return( "BAKPAT" );
-    case CMD_CEXTDF:
+    case CMD_CEXTDEF:
         return( "CEXTDF" );
     case CMD_COMDAT:
         return( "COMDAT" );
@@ -210,7 +210,7 @@ byte RecNameToNumber( char *name )
     } else if( strnicmp( name, "GRPDEF", 6 ) == 0 ) {
         return( CMD_GRPDEF );
     } else if( strnicmp( name, "FIXUPP", 6 ) == 0 ) {
-        return( CMD_FIXUP );
+        return( CMD_FIXUPP );
     } else if( strnicmp( name, "LEDATA", 6 ) == 0 ) {
         return( CMD_LEDATA );
     } else if( strnicmp( name, "LIDATA", 6 ) == 0 ) {
@@ -228,7 +228,9 @@ byte RecNameToNumber( char *name )
     } else if( strnicmp( name, "BAKPAT", 6 ) == 0 ) {
         return( CMD_BAKPAT );
     } else if( strnicmp( name, "CEXTDF", 6 ) == 0 ) {
-        return( CMD_CEXTDF );
+        return( CMD_CEXTDEF );
+    } else if( strnicmp( name, "CEXTDEF", 7 ) == 0 ) {
+        return( CMD_CEXTDEF );
     } else if( strnicmp( name, "COMDAT", 6 ) == 0 ) {
         return( CMD_COMDAT );
     } else if( strnicmp( name, "LINSYM", 6 ) == 0 ) {
@@ -869,7 +871,7 @@ void ProcFile( FILE *fp, bool is_intel )
             case CMD_GRPDEF:
                 ProcGrpDef();
                 break;
-            case CMD_FIXUP:
+            case CMD_FIXUPP:
                 ProcFixup();
                 break;
             case CMD_LEDATA:
@@ -889,7 +891,7 @@ void ProcFile( FILE *fp, bool is_intel )
             case CMD_BAKPAT:
                 ProcBackPat();
                 break;
-            case CMD_CEXTDF:
+            case CMD_CEXTDEF:
                 ProcComExtDef();
                 break;
             case CMD_COMDAT:

@@ -75,12 +75,12 @@ void ObjKillRec( obj_rec *objr )
     }
 #if ( _WOMP_OPT & _WOMP_WATFOR ) == 0
     switch( objr->command ) {
-    case CMD_FIXUP:
+    case CMD_FIXUPP:
         {
             fixup   *cur;
             fixup   *next;
 
-            cur = objr->d.fixup.fixup;
+            cur = objr->d.fixupp.fixup;
             while( cur != NULL ) {
                 next = cur->next;
                 FixKill( cur );

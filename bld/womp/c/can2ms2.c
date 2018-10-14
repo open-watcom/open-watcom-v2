@@ -160,9 +160,9 @@ STATIC void flushLedata( void ) {
         writeLEOffset += length;
 
         if( doneFixups != NULL ) {
-            fixups = Can2MsRec( CMD_FIXUP );
-            fixups->d.fixup.data_rec = ledata;
-            fixups->d.fixup.fixup = doneFixups;
+            fixups = Can2MsRec( CMD_FIXUPP );
+            fixups->d.fixupp.data_rec = ledata;
+            fixups->d.fixupp.fixup = doneFixups;
             fixups->is_32 = done386Fixups;
             doneFixups = NULL;
             done386Fixups = 0;

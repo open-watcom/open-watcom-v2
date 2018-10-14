@@ -1162,7 +1162,7 @@ static orl_return   procRecord( omf_file_handle ofh, omf_rectyp typ )
     case( CMD_LEXTDEF32 ):      /* 32-bit local import names record     */
         return( doEXTDEF( ofh, typ ) );
 
-    case( CMD_CEXTDF ):        /* external reference to a COMDAT       */
+    case( CMD_CEXTDEF ):        /* external reference to a COMDAT       */
         return( doCEXTDEF( ofh, typ ) );
 
     case( CMD_PUBDEF ):         /* export names record                  */

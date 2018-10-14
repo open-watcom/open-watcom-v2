@@ -947,7 +947,7 @@ static void check_need_32bit( obj_rec *objr ) {
 
     struct fixup        *fix;
 
-    fix = objr->d.fixup.fixup;
+    fix = objr->d.fixupp.fixup;
     for( ;; ) {
         if( fix == NULL )
             break;
@@ -994,21 +994,21 @@ static void write_ledata( void )
             get_fixup_list( CurrSeg->seg->e.seginfo->start_loc, &fl16, &fl32 );
             /* Process Fixup, if any */
             if( fl16 != NULL ) {
-                objr = ObjNewRec( CMD_FIXUP );
+                objr = ObjNewRec( CMD_FIXUPP );
                 objr->is_32 = 0;
-                objr->d.fixup.fixup = fl16;
+                objr->d.fixupp.fixup = fl16;
                 write_record( objr, true );
             }
             if( fl32 != NULL ) {
-                objr = ObjNewRec( CMD_FIXUP );
+                objr = ObjNewRec( CMD_FIXUPP );
                 objr->is_32 = 1;
-                objr->d.fixup.fixup = fl32;
+                objr->d.fixupp.fixup = fl32;
                 write_record( objr, true );
             }
 #else
             get_fixup_list( CurrSeg->seg->e.seginfo->start_loc, &fl );
-            objr = ObjNewRec( CMD_FIXUP );
-            objr->d.fixup.fixup = FixupListHead;
+            objr = ObjNewRec( CMD_FIXUPP );
+            objr->d.fixupp.fixup = FixupListHead;
             check_need_32bit( objr );
             write_record( objr, true );
 #endif

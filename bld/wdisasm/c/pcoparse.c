@@ -93,7 +93,7 @@ void  ParseObjectOMF()
         case CMD_STATIC_EXTD32:
             ExtDef( false );
             break;
-        case CMD_CEXTDF:
+        case CMD_CEXTDEF:
             CExtDef();
             break;
         case CMD_GRPDEF:
