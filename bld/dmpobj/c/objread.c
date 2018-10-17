@@ -145,7 +145,7 @@ const char *RecNumberToName( byte code )
         return( "ALIAS" );
     case CMD_NBKPAT:
         return( "NBKPAT" );
-    case CMD_LLNAME:
+    case CMD_LLNAMES:
         return( "LLNAME" );
     case LIB_HEADER_REC:
         /* this is the oddball in the MS386 format */
@@ -227,9 +227,9 @@ byte RecNameToNumber( char *name )
         return( CMD_COMDEF );
     } else if( strnicmp( name, "BAKPAT", 6 ) == 0 ) {
         return( CMD_BAKPAT );
-    } else if( strnicmp( name, "CEXTDF", 6 ) == 0 ) {
-        return( CMD_CEXTDEF );
     } else if( strnicmp( name, "CEXTDEF", 7 ) == 0 ) {
+        return( CMD_CEXTDEF );
+    } else if( strnicmp( name, "CEXTDF", 6 ) == 0 ) {
         return( CMD_CEXTDEF );
     } else if( strnicmp( name, "COMDAT", 6 ) == 0 ) {
         return( CMD_COMDAT );
@@ -239,8 +239,10 @@ byte RecNameToNumber( char *name )
         return( CMD_ALIAS );
     } else if( strnicmp( name, "NBKPAT", 6 ) == 0 ) {
         return( CMD_NBKPAT );
+    } else if( strnicmp( name, "LLNAMES", 7 ) == 0 ) {
+        return( CMD_LLNAMES );
     } else if( strnicmp( name, "LLNAME", 6 ) == 0 ) {
-        return( CMD_LLNAME );
+        return( CMD_LLNAMES );
     } else if( strnicmp( name, "STATIC_EXTDEF", 13 ) == 0 ) {
         return( CMD_STATIC_EXTDEF );
     } else if( strnicmp( name, "STATIC_PUBDEF", 13 ) == 0 ) {
@@ -860,7 +862,7 @@ void ProcFile( FILE *fp, bool is_intel )
             case CMD_LINNUM:
                 ProcLinNums();
                 break;
-            case CMD_LLNAME:
+            case CMD_LLNAMES:
                 /* fall through */
             case CMD_LNAMES:
                 ProcLNames( &Nameindex );

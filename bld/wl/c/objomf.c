@@ -174,7 +174,7 @@ static void Pass1Cmd( byte cmd )
     case CMD_COMENT:
         Comment();
         break;
-    case CMD_LLNAME:
+    case CMD_LLNAMES:
     case CMD_LNAMES:
         AddNames();
         break;

@@ -473,7 +473,7 @@ static file_offset OmfProc( libfile io, sym_file *sfile, omf_oper oper )
                 case CMD_LNAMES:
                     getlname( false );
                     break;
-                case CMD_LLNAME:
+                case CMD_LLNAMES:
                     getlname( true );
                     break;
                 case CMD_ALIAS:

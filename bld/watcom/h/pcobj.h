@@ -221,8 +221,7 @@ typedef enum {
     CMD_NBKPAT          = 0xc8,     /* named backpatch record (quick c?) */
     CMD_NBKPAT32        = 0xc9,     /* 32-bit named backpatch record */
     CMD_NBKP32          = 0xc9,     /* 32-bit named backpatch record */
-    CMD_LLNAME          = 0xca,     /* a "local" lnames */
-    CMD_LLNAMES         = 0xca,
+    CMD_LLNAMES         = 0xca,     /* a "local" lnames */
     CMD_VERNUM          = 0xcc,     /* TIS version number record        */
     CMD_VENDEXT         = 0xce,     /* TIS vendor extension record      */
     CMD_MAX_CMD         = 0xce      /* maximum cmd enum                 */

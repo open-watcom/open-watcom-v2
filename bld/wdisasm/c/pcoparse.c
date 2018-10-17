@@ -63,7 +63,7 @@ void  ParseObjectOMF()
         GetObjRec();
         switch( RecType ) {
         case CMD_LNAMES:
-        case CMD_LLNAME:
+        case CMD_LLNAMES:
             LName();
             break;
         case CMD_SEGDEF:

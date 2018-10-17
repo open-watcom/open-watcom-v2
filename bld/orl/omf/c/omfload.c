@@ -1172,7 +1172,7 @@ static orl_return   procRecord( omf_file_handle ofh, omf_rectyp typ )
         return( doPUBDEF( ofh, typ ) );
 
     case( CMD_LNAMES ):         /* list of names record                 */
-    case( CMD_LLNAME ):         /* a "local" lnames                     */
+    case( CMD_LLNAMES ):        /* a "local" lnames                     */
         return( doLNAMES( ofh, typ ) );
 
     case( CMD_SEGDEF ):         /* segment definition record            */
