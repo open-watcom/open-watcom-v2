@@ -1124,22 +1124,22 @@ void DumpFile( FILE *out, const char *fname )
     buf = malloc( SECTION_BUF_SIZE );
     if( buf == NULL ) {
         printf( "Out of memory\n" );
-        return;
-    }
-    for( ;; ) {
-        if( mygets( buf, SECTION_BUF_SIZE, in ) == NULL ) {
-            break;
+    } else {
+        for( ;; ) {
+            if( mygets( buf, SECTION_BUF_SIZE, in ) == NULL ) {
+                break;
+            }
+            if( strnicmp( buf, "include=", 8 ) == 0 ) {
+                len = strlen( buf );
+                if( buf[len - 1] == '\n' )
+                    buf[len - 1] = '\0';
+                DumpFile( out, buf + 8 );
+            } else {
+                fputs( buf, out );
+            }
         }
-        if( strnicmp( buf, "include=", 8 ) == 0 ) {
-            len = strlen( buf );
-            if( buf[len - 1] == '\n' )
-                buf[len - 1] = '\0';
-            DumpFile( out, buf + 8 );
-        } else {
-            fputs( buf, out );
-        }
+        free( buf );
     }
-    free( buf );
     fclose( in );
 }
 
