@@ -33,6 +33,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <limits.h>
 #ifndef __UNIX__
     #include <direct.h>
     #include <dos.h>
@@ -160,25 +161,26 @@ static char *mygets( char *buf, size_t len, FILE *fp )
         if( fgets( p, (int)len, fp ) == NULL )
             return( NULL );
         q = p;
-        while( *q == ' ' || *q == '\t' ) ++q;
+        while( *q == ' ' || *q == '\t' )
+            ++q;
+        got = strlen( q );
         if( p != q )
-            strcpy( p, q );
-        got = strlen( p );
+            memmove( p, q, got + 1 );
         if( got <= 1 )
             break;
-        got-=2;
+        got -= 2;
         if( p[got] != '\\' || p[got + 1] != '\n' )
             break;
         p += got;
         len -= got;
     }
     p = buf;
-    while( *p ) {
+    while( *p != '\0' ) {
         if( p[0] == '/' && p[1] == '/' && isdigit( p[2] ) ) {
             start = p;
             lang = p[2] - '0';
             if( lang == 0 ) {
-                strcpy( start, start + 3 );
+                memmove( start, start + 3, strlen( start + 3 ) + 1 );
                 continue;
             }
             p += 3;
@@ -186,10 +188,10 @@ static char *mygets( char *buf, size_t len, FILE *fp )
                 ++p;
             }
             if( lang == Lang ) {
-                strcpy( start, start + 3 );
+                memmove( start, start + 3, strlen( start + 3 ) + 1 );
                 p -= 3;
             } else {
-                strcpy( start, p );
+                memmove( start, p, strlen( p ) + 1 );
                 p = start;
             }
         } else {
@@ -215,7 +217,7 @@ static long FileSize( const char *file )
 {
     struct stat         stat_buf;
 
-    if( (file == NULL) || (stat( file, &stat_buf ) != 0) ) {
+    if( stat( file, &stat_buf ) != 0 ) {
         printf( "Can't find '%s'\n", file );
         return( 0 );
     } else {
@@ -286,9 +288,17 @@ bool CheckParms( int *pargc, char **pargv[] )
         return( false );
     }
     Product = argv[1];
+#if 0
+    // diskete 1.44 MB capacity info
     DiskSize = (1457664L-4096);
     MaxDiskFiles = 215;
     BlockSize = 512;
+#else
+    // single ZIP archive
+    DiskSize = LONG_MAX;
+    MaxDiskFiles = UINT_MAX;
+    BlockSize = 512;
+#endif
 
     RelRoot  = argv[3];
     if( stat( RelRoot, &stat_buf ) != 0 ) {  // exists
@@ -636,6 +646,7 @@ bool AddFile( char *path, char *old_path, char type, char redist, char *file, co
         for( sl = curr->sizes; sl != NULL; sl = sl->next ) {
             if( stricmp( sl->name, ns->name ) == 0 ) {
                 printf( "file '%s' included in archive '%s' more than once\n", sl->name, curr->pack );
+                free( ns );
                 return( false );
             }
         }
@@ -872,7 +883,8 @@ static char *ReplaceEnv( char *file_name )
             }
         } else {
             *q = *p;
-            if( *p == '\0' ) break;
+            if( *p == '\0' )
+                break;
             ++p;
             ++q;
         }
@@ -880,9 +892,9 @@ static char *ReplaceEnv( char *file_name )
     if( strcmp( buff, file_name ) == 0 ) {
         // no environment variables found
         return( file_name );
-    } else {
-        return( strdup( buff ) );
     }
+    free( file_name );
+    return( strdup( buff ) );
 }
 
 #define SECTION_BUF_SIZE 8192   // allow long text strings
@@ -896,7 +908,6 @@ void ReadSection( FILE *fp, const char *section, LIST **list )
     int                 file_curr = 0;
     FILE                *file_stack[20];
 
-    Setup = "setup.exe";
     for( ;; ) {
         if( mygets( SectionBuf, SECTION_BUF_SIZE, fp ) == NULL ) {
             printf( "%s section not found in '%s'\n", section, MksetupInf );
@@ -928,7 +939,6 @@ void ReadSection( FILE *fp, const char *section, LIST **list )
             char *p;
             p = strdup( &SectionBuf[6] );
             Setup = ReplaceEnv( p );
-            free( p );
             continue;
         }
         new = malloc( sizeof( LIST ) );
@@ -1016,7 +1026,6 @@ void ReadInfFile( void )
     sprintf( ver_buf, "[%s]", Product );
     ReadSection( fp, ver_buf, &AppSection );
     fclose( fp );
-    free( Setup );
 }
 
 
@@ -1441,6 +1450,17 @@ void MakeLaundryList( void )
     }
 }
 
+static void setupInit( void )
+/***************************/
+{
+    Setup = strdup( "setup.exe" );
+}
+
+static void setupFini( void )
+/***************************/
+{
+    free( Setup );
+}
 
 int main( int argc, char *argv[] )
 /********************************/
@@ -1456,6 +1476,7 @@ int main( int argc, char *argv[] )
         printf( "Cannot open '%s'\n", argv[2]);
         return( 1 );
     }
+    setupInit();
     printf( "Reading Info File...\n" );
     ReadInfFile();
     ok = ReadList( fp );
@@ -1471,5 +1492,6 @@ int main( int argc, char *argv[] )
         MakeScript();
         MakeLaundryList();
     }
+    setupFini();
     return( 0 );
 }
