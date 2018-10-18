@@ -426,6 +426,7 @@ static int mkdir_nested( const char *path )
     char        pathname[FILENAME_MAX];
     char        *p;
     char        *end;
+    char        c;
 
     p = pathname;
     strncpy( pathname, path, FILENAME_MAX );
@@ -445,7 +446,8 @@ static int mkdir_nested( const char *path )
     while( p < end ) {
         while( (p < end) && (*p != '/') && (*p != '\\') )
             ++p;
-        *p = '\0';
+        c = *p;     // save path separator
+        *p = '\0';  // terminate path by NULL character
 
         /* check if pathname exists */
 #ifdef __UNIX__
@@ -475,8 +477,8 @@ static int mkdir_nested( const char *path )
                 return( -1 );
             }
         }
-        /* put back the path separator - forward slash always works */
-        *p++ = '/';
+        /* put back the path separator */
+        *p++ = c;
     }
     return( 0 );
 }
@@ -973,8 +975,8 @@ void ReadSection( FILE *fp, const char *section, LIST **list )
         } else if( STRING_IS( SectionBuf, new, STRING_boottext ) ) {
             AddToList( new, &BootTextList );
         } else if( STRING_IS( SectionBuf, new, STRING_exe ) ) {
-            AddToList( new, &ExeList );
             new->item = ReplaceEnv( new->item );
+            AddToList( new, &ExeList );
         } else if( STRING_IS( SectionBuf, new, STRING_label ) ) {
             AddToList( new, &LabelList );
         } else if( STRING_IS( SectionBuf, new, STRING_upgrade ) ) {
@@ -1113,30 +1115,26 @@ void DumpFile( FILE *out, const char *fname )
     size_t              len;
 
     in = PathOpen( fname );
-    if( in == NULL ) {
-        printf( "Cannot open '%s'\n", fname );
-        return;
-    }
-    buf = malloc( SECTION_BUF_SIZE );
-    if( buf == NULL ) {
-        printf( "Out of memory\n" );
-    } else {
-        for( ;; ) {
-            if( mygets( buf, SECTION_BUF_SIZE, in ) == NULL ) {
-                break;
+    if( in != NULL ) {
+        buf = malloc( SECTION_BUF_SIZE );
+        if( buf != NULL ) {
+            for( ; mygets( buf, SECTION_BUF_SIZE, in ) != NULL; ) {
+                if( strnicmp( buf, "include=", 8 ) == 0 ) {
+                    len = strlen( buf );
+                    if( buf[len - 1] == '\n' )
+                        buf[len - 1] = '\0';
+                    DumpFile( out, buf + 8 );
+                } else {
+                    fputs( buf, out );
+                }
             }
-            if( strnicmp( buf, "include=", 8 ) == 0 ) {
-                len = strlen( buf );
-                if( buf[len - 1] == '\n' )
-                    buf[len - 1] = '\0';
-                DumpFile( out, buf + 8 );
-            } else {
-                fputs( buf, out );
-            }
+            free( buf );
+        } else {
+            printf( "Out of memory\n" );
         }
-        free( buf );
+        fclose( in );
     }
-    fclose( in );
+    printf( "Cannot open '%s'\n", fname );
 }
 
 
