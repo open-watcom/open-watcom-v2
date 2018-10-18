@@ -324,19 +324,17 @@ int AddTarget( const char *target )
     }
 
     newitem = malloc( sizeof( LIST ) );
-    if( newitem == NULL ) {
-        printf( "Out of memory\n" );
-        return( 0 );
-    }
-    newitem->item = strdup( target );
-    if( newitem->item == NULL ) {
+    if( newitem != NULL ) {
+        newitem->item = strdup( target );
+        if( newitem->item != NULL ) {
+            newitem->next = NULL;
+            *owner = newitem;
+            return( count );
+        }
         free( newitem );
-        printf( "Out of memory\n" );
-        return( 0 );
     }
-    newitem->next = NULL;
-    *owner = newitem;
-    return( count );
+    printf( "Out of memory\n" );
+    return( 0 );
 }
 
 
@@ -380,21 +378,19 @@ int AddPath( const char *path, int target, int parent )
     }
 
     newitem = malloc( sizeof( PATH_INFO ) );
-    if( newitem == NULL ) {
-        printf( "Out of memory\n" );
-        return( 0 );
-    }
-    newitem->path = strdup( path );
-    if( newitem->path == NULL ) {
+    if( newitem != NULL ) {
+        newitem->path = strdup( path );
+        if( newitem->path != NULL ) {
+            newitem->target = target;
+            newitem->parent = parent;
+            newitem->next = NULL;
+            *owner = newitem;
+            return( count );
+        }
         free( newitem );
-        printf( "Out of memory\n" );
-        return( 0 );
     }
-    newitem->target = target;
-    newitem->parent = parent;
-    newitem->next = NULL;
-    *owner = newitem;
-    return( count );
+    printf( "Out of memory\n" );
+    return( 0 );
 }
 
 
@@ -663,37 +659,37 @@ bool AddFile( char *path, char *old_path, char type, char redist, char *file, co
 
     // add to list
     newitem = malloc( sizeof( FILE_INFO ) );
-    if( newitem == NULL ) {
-        printf( "Out of memory\n" );
-        return( false );
-    }
-    newitem->pack = strdup( archive_name );
-    newitem->condition = strdup( cond );
-    if( newitem->pack == NULL || newitem->condition == NULL ) {
+    if( newitem != NULL ) {
+        newitem->pack = strdup( archive_name );
+        if( newitem->pack != NULL ) {
+            newitem->condition = strdup( cond );
+            if( newitem->condition != NULL ) {
+                newitem->path = path_dir;
+                newitem->old_path = old_path_dir;
+                newitem->num_files = 1;
+                ns = malloc( sizeof( size_list ) + strlen( root_file ) );
+                if( ns != NULL ) {
+                    strcpy( ns->name, root_file );
+                    ns->size = act_size;
+                    ns->stamp = time;
+                    ns->next = NULL;
+                    ns->type = type;
+                    ns->redist = redist;
+                    ns->remove = remove;
+                    ns->dst_var = dst_var;
+                    newitem->sizes = ns;
+                    newitem->next = NULL;
+                    *owner = newitem;
+                    return( true );
+                }
+                free( newitem->condition );
+            }
+            free( newitem->pack );
+        }
         free( newitem );
-        printf( "Out of memory\n" );
-        return( false );
     }
-    newitem->path = path_dir;
-    newitem->old_path = old_path_dir;
-    newitem->num_files = 1;
-    ns = malloc( sizeof( size_list ) + strlen( root_file ) );
-    if( ns == NULL ) {
-        printf( "Out of memory\n" );
-        return( false );
-    }
-    strcpy( ns->name, root_file );
-    ns->size = act_size;
-    ns->stamp = time;
-    ns->next = NULL;
-    ns->type = type;
-    ns->redist = redist;
-    ns->remove = remove;
-    ns->dst_var = dst_var;
-    newitem->sizes = ns;
-    newitem->next = NULL;
-    *owner = newitem;
-    return( true );
+    printf( "Out of memory\n" );
+    return( false );
 }
 
 
