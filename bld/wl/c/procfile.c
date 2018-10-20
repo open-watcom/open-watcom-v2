@@ -307,7 +307,7 @@ static void SetAltDefData( void *_sym )
 {
     symbol *sym = _sym;
 
-    if( (sym->info & SYM_IS_ALTDEF) && (sym->info & SYM_COMDAT) && (sym->info & SYM_HAS_DATA) == 0 ) {
+    if( (sym->info & SYM_IS_ALTDEF) && IS_SYM_COMDAT( sym ) && (sym->info & SYM_HAS_DATA) == 0 ) {
         sym->p.seg->u1.vm_ptr = sym->e.mainsym->p.seg->u1.vm_ptr;
     }
 }
@@ -318,9 +318,8 @@ static void FixModAltDefs( mod_entry *mod )
     Ring2Walk( mod->publist, SetAltDefData );
 }
 
-static void IncIterateMods( mod_entry *mod, void (*proc_fn)(mod_entry *),
-                            bool dochanged )
-/***********************************************************************/
+static void IncIterateMods( mod_entry *mod, void (*proc_fn)(mod_entry *), bool dochanged )
+/****************************************************************************************/
 {
     bool haschanged;
 
@@ -433,7 +432,7 @@ static void IncLoadObjFiles( void )
 }
 
 void LoadObjFiles( section *sect )
-/***************************************/
+/********************************/
 {
     file_list   *list;
 
@@ -445,7 +444,7 @@ void LoadObjFiles( section *sect )
 }
 
 static member_list *FindMember( file_list *list, char *name )
-/************************************************************/
+/***********************************************************/
 // see if name is in the member list of list
 {
     member_list         **memb;
