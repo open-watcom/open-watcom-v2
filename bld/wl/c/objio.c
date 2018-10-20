@@ -246,19 +246,6 @@ bool DoObjOpen( infilelist *file )
     return( false );
 }
 
-unsigned_16 CalcAlign( unsigned_32 pos, unsigned_16 align )
-/****************************************************************/
-/* align file */
-{
-    unsigned_16 modulus;
-
-    modulus = pos % align;
-    if( modulus != 0 ) {
-        modulus = align - modulus;  // go to boundary.
-    }
-    return( modulus );
-}
-
 void InitTokBuff( void )
 /*****************************/
 {

@@ -469,14 +469,14 @@ static void DoPass1( mod_entry *next, file_list *list )
     char                *membname;
     unsigned long       loc;
     unsigned long       size;
-    unsigned            reclength;
+    unsigned_16         reclength;
     bool                lastmod;
     bool                ignoreobj;
 
     loc = 0;
     lastmod = false;
     if( CacheOpen( list ) ) {
-        reclength = CheckLibraryType( list, &loc, false );
+        reclength = (unsigned_16)CheckLibraryType( list, &loc, false );
         for( ;; ) { /*  there may be more than 1 object module in a file */
             member = NULL;
             ignoreobj = false;
@@ -531,8 +531,13 @@ static void DoPass1( mod_entry *next, file_list *list )
                 next = NULL;
             }
             ObjFormat = 0;
-            if( list->status & STAT_IS_LIB ) {             // skip padding.
-                loc += CalcAlign( loc, reclength );
+            if( list->status & STAT_IS_LIB ) {      // skip library padding.
+                unsigned_16 modulus;
+
+                modulus = (unsigned_16)( loc % reclength );
+                if( modulus != 0 ) {
+                    loc += reclength - modulus;     // go to library boundary.
+                }
             } else if( !IS_FMT_OMF( CurrMod->modinfo ) ) {
                 break;          // can only concat omf.
             }
