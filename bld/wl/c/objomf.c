@@ -587,7 +587,7 @@ static void ProcModuleEnd( void )
             return;
         target = *ObjBuff++;
         frame = (target >> 4) & 0x7;
-        hasdisp = (target & 0x4) == 0;
+        hasdisp = ( (target & 0x4) == 0 );
         target &= 0x3;
         if( frame <= 2 ) {              /* frame requires an index */
             SkipIdx();
@@ -1007,7 +1007,7 @@ static void ProcLinnum( void )
     seg = (segnode *) FindNode( SegNodes, GetIdx() );
     if( seg->info & SEG_DEAD )                  /* ignore dead segments */
         return;
-    is32bit = (ObjFormat & FMT_32BIT_REC) != 0;
+    is32bit = ( (ObjFormat & FMT_32BIT_REC) != 0 );
     DBIAddLines( seg->entry, ObjBuff, EOObjRec - ObjBuff, is32bit );
 }
 

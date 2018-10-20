@@ -601,9 +601,8 @@ static orl_return ProcSymbol( orl_symbol_handle symhdl )
     }
     if( type & ORL_SYM_TYPE_DEBUG )
         return( ORL_OKAY );
-    if( type & (ORL_SYM_TYPE_OBJECT | ORL_SYM_TYPE_FUNCTION) ||
-        (type & (ORL_SYM_TYPE_NOTYPE | ORL_SYM_TYPE_UNDEFINED) &&
-         name != NULL)) {
+    if( (type & (ORL_SYM_TYPE_OBJECT | ORL_SYM_TYPE_FUNCTION))
+      || ((type & (ORL_SYM_TYPE_NOTYPE | ORL_SYM_TYPE_UNDEFINED)) && name != NULL ) ) {
         namelen = strlen( name );
         if( namelen == 0 ) {
             BadObject();

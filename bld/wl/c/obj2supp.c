@@ -796,7 +796,8 @@ static void PatchOffset( fix_relo_data *fix, offset val, bool isdelta )
     case FIX_OFFSET_16:
         if( fix->type & FIX_HIGH ) {
             val >>= 16;
-        }                       // NOTE the fall through
+        }
+        /* fall through */
     case FIX_NO_OFFSET:         // used for FIX_BASE
         if( fix->type & FIX_SIGNED ) {
             oldval = val;
@@ -1490,8 +1491,10 @@ static void FmtReloc( fix_relo_data *fix, target_spec *tthread )
                 if( FIX_GET_FRAME( fix->type ) == FIX_FRAME_FLAT ) {
                     break;
                 }
+                /* fall through */
             case 3:     // 16:16 pointer           NOTE the fall through
                 fixtype |= OSF_FIXUP_TO_ALIAS;  // YET more fall through
+                /* fall through */
             case 5:     // 16-bit offset
                 for( grp = Groups; grp != NULL; grp = grp->next_group ) {
                     if( grp->grp_addr.seg == target.seg ) {

@@ -108,7 +108,7 @@ void BinOutput( void )
         Root->u.file_loc = Root->sect_addr.off - FmtData.output_offset;
         /* write groups */
         for( group = Groups; group != NULL; group = group->next_group ) {
-            if (group->leaders->class->flags & CLASS_COPY ) {
+            if( group->leaders->class->flags & CLASS_COPY ) {
                 size = CalcGroupSize( group->leaders->class->DupClass->segs->group );
             } else {
                 size = CalcGroupSize( group );
@@ -252,10 +252,9 @@ static bool WriteHexData( void *_sdata, void *_offs )
 static bool DoHexLeader( void *seg, void *_grp_offs )
 /***************************************************/
 {
-    if ( !(((seg_leader *)seg)->class->flags & CLASS_NOEMIT ||
-           ((seg_leader *)seg)->segflags & SEG_NOEMIT) ) {
+    if( (((seg_leader *)seg)->class->flags & CLASS_NOEMIT) == 0
+      && (((seg_leader *)seg)->segflags & SEG_NOEMIT) == 0 ) {
         hex_offset   offs = *(hex_offset *)_grp_offs + SEG_GROUP_DELTA( (seg_leader *)seg );
-
         RingLookup( ((seg_leader *)seg)->pieces, WriteHexData, &offs );
     }
     return( false );

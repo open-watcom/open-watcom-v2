@@ -110,7 +110,7 @@ bool TestBit( byte *array, unsigned num )
 
     mask = 1 << ( num % 8 );
     num /= 8;
-    return( *( array + num ) & mask );
+    return( (*( array + num ) & mask) != 0 );
 }
 
 void ClearBit( byte *array, unsigned num )
@@ -164,7 +164,7 @@ static void WalkSectModsList( section *sect, void *mods_walk_cb )
 }
 
 void WalkMods( mods_walk_fn *cbfn )
-/********************************/
+/*********************************/
 {
     mods_walk_data      mods_walk_cb;
 
@@ -175,13 +175,13 @@ void WalkMods( mods_walk_fn *cbfn )
 }
 
 static void WalkClass( class_entry *class, class_walk_fn *cbfn )
-/*************************************************************/
+/**************************************************************/
 {
     RingWalk( class->segs, (ring_walk_fn *)cbfn );
 }
 
 void SectWalkClass( section *sect, class_walk_fn *cbfn )
-/*****************************************************/
+/******************************************************/
 {
     class_entry         *class;
 
@@ -203,7 +203,7 @@ static void _SectWalkClass( section *sect, void *class_walk_cb )
 }
 
 void WalkLeaders( class_walk_fn *cbfn )
-/************************************/
+/*************************************/
 {
     class_walk_data     class_walk_cb;
 
@@ -220,8 +220,8 @@ seg_leader *FindSegment( section *sect, const char *name )
  *
  */
 {
-static seg_leader   *seg = NULL;
-static class_entry  *class = NULL;
+    static seg_leader   *seg = NULL;
+    static class_entry  *class = NULL;
 
     if( sect != NULL ) {
         class = sect->classlist;
@@ -252,7 +252,7 @@ void LinkList( void *in_head, void *newnode )
 }
 
 void FreeList( void *_curr )
-/*********************************/
+/**************************/
 /* Free a list of nodes. */
 {
     node        *curr;
@@ -312,7 +312,7 @@ unsigned_16 blog_16( unsigned_16 value )
 }
 
 unsigned_16 blog_32( unsigned_32 value )
-/*********************************************/
+/**************************************/
 // This calculates the binary log of a 32-bit value, truncating decimals.
 {
     unsigned_16 log;
@@ -369,7 +369,7 @@ const char *GetBaseName( const char *namestart, size_t len, size_t *lenp )
 void VMemQSort( virt_mem base, size_t n, size_t width,
                         void (*swapfn)( virt_mem, virt_mem ),
                         int (*cmpfn)( virt_mem, virt_mem ) )
-/***************************************************************/
+/***********************************************************/
 // qsort stolen from clib, and suitably modified since we need to be able
 // to swap parallel arrays.
 {
@@ -464,7 +464,7 @@ void VMemQSort( virt_mem base, size_t n, size_t width,
 static void *SpawnStack;
 
 int Spawn( void (*fn)( void ) )
-/******************************/
+/*****************************/
 {
     void    *save_env;
     jmp_buf env;
@@ -574,7 +574,7 @@ f_handle FindPath( const char *name, char *fullname )
 }
 
 group_entry *FindGroup( segment seg )
-/******************************************/
+/***********************************/
 {
     group_entry *group;
 
@@ -587,7 +587,7 @@ group_entry *FindGroup( segment seg )
 }
 
 offset FindLinearAddr( targ_addr *addr )
-/*********************************************/
+/**************************************/
 {
     group_entry *group;
 
@@ -599,7 +599,7 @@ offset FindLinearAddr( targ_addr *addr )
 }
 
 offset FindLinearAddr2( targ_addr *addr )
-/*********************************************/
+/***************************************/
 {
     group_entry *group;
 
