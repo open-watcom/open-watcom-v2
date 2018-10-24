@@ -1004,7 +1004,7 @@ static bool DoGroupLeader( void *_seg, void *_info )
     grpwriteinfo    *info = _info;
 
     // If class or sector should not be output, skip it
-    if ( !( (seg->class->flags & CLASS_NOEMIT) || (seg->segflags & SEG_NOEMIT) ) ) {
+    if( EMIT_CLASS( seg->class ) && EMIT_SEG( seg ) ) {
         info->seg_start = info->grp_start + SEG_GROUP_DELTA( seg );
         DoWriteLeader( seg, info );
     }

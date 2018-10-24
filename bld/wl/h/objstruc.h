@@ -32,6 +32,7 @@
 #include "orl.h"
 #include "hash.h"
 
+
 typedef struct file_list        FILE_LIST;
 typedef struct path_entry       PATH_ENTRY;
 typedef struct mod_entry        MOD_ENTRY;
@@ -299,6 +300,8 @@ typedef enum {
     CLASS_IS_FREE       = 0x80000000,   // not used, but guarantees 4 byte enum
 } class_status;
 
+#define EMIT_CLASS(c)   (((c)->flags & CLASS_NOEMIT) == 0)
+
 typedef struct class_entry {
     CLASS_ENTRY         *next_class;
     SEG_LEADER          *segs;
@@ -410,6 +413,8 @@ enum {
     SEG_NOEMIT          = 0x2000,   // Segment should not generate output
     SEG_BOTH_MASK       = 0x8641    /* flags common to both structures */
 };
+
+#define EMIT_SEG(s)     (((s)->segflags & SEG_NOEMIT) == 0)
 
 enum {
     NOT_DEBUGGING_INFO  = 0x0000,
