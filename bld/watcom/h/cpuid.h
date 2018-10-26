@@ -31,35 +31,37 @@
 
 
 extern int cpu_id( void );
-
 #pragma aux cpu_id = \
-    "           .586            " \
-    "           pushfd          " /* save flags register */ \
-    "           mov eax,3       " /* assume 386 */ \
-    "           pushfd          " \
-    "           pop ebx         " \
-    "           xor ebx,040000h " /* change AC bit */ \
-    "           push ebx        " \
-    "           popfd           " \
-    "           pushfd          " \
-    "           pop edx         " \
-    "           xor ebx, edx    " \
-    "           test ebx,040000h" /* check if AC bit changed */ \
-    "           jne done        " \
-    "           mov eax,4       " /* at least a 486 */ \
-    "           pushfd          " \
-    "           pop ebx         " \
-    "           xor ebx,200000h " /* change ID bit */ \
-    "           push ebx        " \
-    "           popfd           " \
-    "           pushfd          " \
-    "           pop edx         " \
-    "           xor ebx, edx    " \
-    "           test ebx,200000h" /* check if ID bit changed */ \
-    "           jne done        " \
-    "           mov eax,1       " /* want version information */ \
-    "           cpuid           " \
-    "           shr eax,8       " /* get family bits into bottom of eax */ \
-    "           and eax,0Fh     " \
-    " done:     popfd           " \
-    modify exact [ ebx edx eax ] value [eax];
+        ".586"              \
+        "pushfd"            /* save flags register */ \
+        "mov  eax,3"        /* assume 386 */ \
+        "pushfd"            \
+        "pop  ebx"          \
+        "xor  ebx,040000h"  /* change AC bit */ \
+        "push ebx"          \
+        "popfd"             \
+        "pushfd"            \
+        "pop  edx"          \
+        "xor  ebx, edx"     \
+        "test ebx,040000h"  /* check if AC bit changed */ \
+        "jne short done"    \
+        "mov  eax,4"        /* at least a 486 */ \
+        "pushfd"            \
+        "pop  ebx"          \
+        "xor  ebx,200000h"  /* change ID bit */ \
+        "push ebx"          \
+        "popfd"             \
+        "pushfd"            \
+        "pop  edx"          \
+        "xor  ebx,edx"      \
+        "test ebx,200000h"  /* check if ID bit changed */ \
+        "jne short done"    \
+        "mov  eax,1"        /* want version information */ \
+        "cpuid"             \
+        "shr  eax,8"        /* get family bits into bottom of eax */ \
+        "and  eax,0Fh"      \
+    "done:"                 \
+        "popfd"             \
+    parm                    \
+    value [eax]             \
+    modify exact [eax ebx edx]
