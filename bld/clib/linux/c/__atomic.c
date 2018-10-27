@@ -2,8 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 2016 Open Watcom Contributors.
-*    All Rights Reserved.
+* Copyright (c) 2016-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -36,7 +35,7 @@
 
 /* Simple wrapper around Intel CMPXCHG */
 static unsigned cmpxchg( volatile int *i, int j, int k );
-#pragma aux cmpxchg = \
+#pragma aux cmpxchg =               \
         "lock cmpxchg [edx],ecx"    \
         "jnz short noxchg"          \
         "mov    eax,1"              \
@@ -51,14 +50,14 @@ static unsigned cmpxchg( volatile int *i, int j, int k );
 static void increment( volatile int *i );
 #pragma aux increment = \
         "lock inc dword ptr [eax]" \
-    parm caller     [eax]
+    parm caller     [eax] \
     value           \
     modify exact
 
 static void decrement( volatile int *i );
 #pragma aux decrement = \
         "lock dec dword ptr [eax]" \
-    parm caller     [eax]
+    parm caller     [eax] \
     value           \
     modify exact
 
