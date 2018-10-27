@@ -341,7 +341,8 @@ extern tiny_ret_t __mkdir_lfn( const char *path );
         "xor  ax,ax"    \
 "L1:"                   \
         parm caller     [dx] \
-        value           [dx ax];
+        value           [dx ax] \
+        modify exact    [ax dx]
   #endif
 
 extern tiny_ret_t __rmdir_lfn( const char *path );
