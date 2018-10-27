@@ -38,11 +38,11 @@
  Minimum delay is 50-60 milliseconds.
  Seems to be accurate to within 10 milliseconds.
  -------------------------------------------
- 
+
    The trouble with the old code is that in a multitasking OS, the
  initial calibration may be wildly inaccurate! That's why the algorithm
  was scrapped.
-*/ 
+*/
 
 #include "variety.h"
 #include <stdio.h>
@@ -58,24 +58,26 @@
  *      DL = seconds / 100 (but not hundredths accuracy!)
  */
 #ifdef __386__
-    extern unsigned long GetDosTime(void);
+    extern unsigned long GetDosTime( void );
     #pragma aux GetDosTime =    \
-        "mov    ah,2ch"         \
-        "xor    edx,edx"        \
-        "int    21h"            \
-        "mov    eax,edx"        \
-        "sal    eax,16"         \
-        "or     ax,cx"          \
-        value [eax]             \
-        modify [eax ecx edx];
+            "mov    ah,2ch"     \
+            "xor    edx,edx"    \
+            "int 21h"           \
+            "mov    eax,edx"    \
+            "sal    eax,16"     \
+            "or     ax,cx"      \
+        parm caller     \
+        value           [eax] \
+        modify exact    [eax ecx edx]
 #else
-    extern unsigned long GetDosTime(void);
+    extern unsigned long GetDosTime( void );
     #pragma aux GetDosTime =    \
-        "mov    ah,2ch"         \
-        "int    21h"            \
-        "mov    ax,cx"          \
-        value [dx ax]           \
-        modify [ax cx dx];
+            "mov    ah,2ch"     \
+            "int 21h"           \
+            "mov    ax,cx"      \
+        parm caller     \
+        value           [dx ax] \
+        modify exact    [ax cx dx]
 #endif
 
 
@@ -140,7 +142,8 @@ _WCRTLINK void delay( unsigned milliseconds )
     signed short res;
     unsigned char o_hsec;
 
-    if( milliseconds == 0 ) return;
+    if( milliseconds == 0 )
+        return;
 
     time = GetDosTime();
     clk.w.h_m = time;

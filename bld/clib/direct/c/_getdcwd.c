@@ -41,16 +41,19 @@
   #ifdef __BIG_DATA__
     #define AUX_INFO    \
         parm caller     [si ax] [dl] \
-        modify exact    [ax si];
+        value           [ax] \
+        modify exact    [ax si]
   #else
     #define AUX_INFO    \
         parm caller     [si] [dl] \
-        modify exact    [ax];
+        value           [ax] \
+        modify exact    [ax]
   #endif
 #else
     #define AUX_INFO    \
         parm caller     [esi] [dl] \
-        modify exact    [eax];
+        value           [eax] \
+        modify exact    [eax]
 #endif
 
 extern unsigned __getdcwd_sfn( char *buff, unsigned char drv );
@@ -60,7 +63,7 @@ extern unsigned __getdcwd_sfn( char *buff, unsigned char drv );
         _INT_21         \
         _RST_DS         \
         "call __doserror_" \
-        AUX_INFO
+    AUX_INFO
 
 #ifdef __WATCOM_LFN__
 static tiny_ret_t __getdcwd_lfn( char *buff, unsigned char drv )

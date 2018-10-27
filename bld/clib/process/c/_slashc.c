@@ -37,18 +37,12 @@
 
 #if defined(_M_IX86)
 extern  char    _DOS_Switch_Char( void );
-#ifdef _M_I86
-#pragma aux     _DOS_Switch_Char = \
-        "mov ax,3700h"  \
-        "int 21h"       \
-        value [dl] modify [ax]
-#else
-#pragma aux     _DOS_Switch_Char = \
-        "xor eax,eax"   \
-        "mov ah,37h"    \
-        "int 21h"       \
-        value [dl] modify [eax]
-#endif
+#pragma aux _DOS_Switch_Char = \
+        "mov    ax,3700h"   \
+        "int 21h"           \
+    parm caller     \
+    value           [dl] \
+    modify exact    [ax dl]
 #endif
 
 

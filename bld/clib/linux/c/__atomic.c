@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 2016 Open Watcom Contributors. 
+*    Portions Copyright (c) 2016 Open Watcom Contributors.
 *    All Rights Reserved.
 *
 *  ========================================================================
@@ -37,31 +37,37 @@
 /* Simple wrapper around Intel CMPXCHG */
 static unsigned cmpxchg( volatile int *i, int j, int k );
 #pragma aux cmpxchg = \
-    "lock cmpxchg [edx], ecx" \
-    "jnz noxchg" \
-    "mov eax,1" \
-    "jmp donexchg" \
-    "noxchg:" \
-    "mov eax,0" \
-    "donexchg:" \
-    parm [edx] [eax] [ecx] \
-    value [eax];
+        "lock cmpxchg [edx],ecx"    \
+        "jnz short noxchg"          \
+        "mov    eax,1"              \
+        "jmp short donexchg"        \
+    "noxchg:"                       \
+        "mov    eax,0"              \
+    "donexchg:"                     \
+    parm caller     [edx] [eax] [ecx] \
+    value           [eax] \
+    modify exact    [eax]
 
 static void increment( volatile int *i );
 #pragma aux increment = \
-    "lock inc dword ptr [eax]" \
-    parm [eax];
+        "lock inc dword ptr [eax]" \
+    parm caller     [eax]
+    value           \
+    modify exact
 
 static void decrement( volatile int *i );
 #pragma aux decrement = \
-    "lock dec dword ptr [eax]" \
-    parm [eax];
-    
+        "lock dec dword ptr [eax]" \
+    parm caller     [eax]
+    value           \
+    modify exact
+
 #endif
 
 int __atomic_compare_and_swap( volatile int *dest, int expected, int source )
 {
-unsigned ret;
+    unsigned ret;
+
 #ifdef __386__
     ret = cmpxchg( dest, expected, source );
 #else

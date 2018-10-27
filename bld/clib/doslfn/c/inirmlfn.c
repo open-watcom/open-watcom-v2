@@ -43,25 +43,27 @@
 
 extern unsigned __alloc_dos_tb( unsigned short size, unsigned short *segm );
 #pragma aux __alloc_dos_tb = \
-        "mov  ax,100h"  \
-        "int  31h"      \
-        "jc short L1"   \
-        "mov  [ecx],ax" \
-        "xor  eax,eax"  \
-        "mov  ax,dx"    \
-        "jmp short L2"  \
-"L1:     xor  eax,eax"  \
-"L2:"                   \
-        parm caller     [bx] [ecx] \
-        modify exact    [eax bx edx];
+        "mov    ax,100h"    \
+        "int 31h"           \
+        "jc short L1"       \
+        "mov    [ecx],ax"   \
+        "xor    eax,eax"    \
+        "mov    ax,dx"      \
+        "jmp short L2"      \
+    "L1: xor    eax,eax"    \
+    "L2:"                   \
+    parm caller     [bx] [ecx] \
+    value           [eax] \
+    modify exact    [eax bx dx]
 
 extern unsigned __free_dos_tb( unsigned short );
 #pragma aux __free_dos_tb = \
-        "mov  ax,101h"  \
-        "int  31h"      \
-        "sbb  eax,eax"  \
-        parm caller     [dx] \
-        modify exact    [eax dx];
+        "mov    ax,101h"    \
+        "int 31h"           \
+        "sbb    eax,eax"    \
+    parm caller     [dx] \
+    value           [eax] \
+    modify exact    [eax]
 
 char                    * const __lfn_rm_tb_linear = 0;
 unsigned short          const __lfn_rm_tb_segment = 0;
@@ -73,7 +75,7 @@ static unsigned short   __lfn_rm_tb_selector = 0;
 static void init( void )
 /**********************/
 {
-    __lfn_rm_tb_selector = __alloc_dos_tb( TOTAL_RM_TB_SIZE_PARA, 
+    __lfn_rm_tb_selector = __alloc_dos_tb( TOTAL_RM_TB_SIZE_PARA,
                                       (unsigned short *)&__lfn_rm_tb_segment );
     if( __lfn_rm_tb_selector == 0 ) {
         __fatal_runtime_error( "Unable to allocate LFN real mode transfer buffer", -1 );

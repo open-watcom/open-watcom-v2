@@ -56,7 +56,7 @@
 
 extern unsigned __rename_sfn( const char *old, const char *new );
 #pragma aux __rename_sfn = \
-        _SET_ESDI       \
+        _SET_ES         \
         _SET_DSDX       \
         _MOV_AH DOS_RENAME \
         _INT_21         \
