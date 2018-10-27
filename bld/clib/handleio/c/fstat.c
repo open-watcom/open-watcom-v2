@@ -54,10 +54,10 @@ extern long __getfilestamp_sfn( int handle );
         "call __doserror_" \
         "mov  cx,-1"    \
         "mov  dx,cx"    \
-"L1:     mov  ax,cx"    \
-        parm caller     [bx] \
-        value           [dx ax] \
-        modify exact    [cx];
+    "L1: mov  ax,cx"    \
+    parm caller     [bx] \
+    value           [dx ax] \
+    modify exact    [ax cx dx]
 #else
 #pragma aux __getfilestamp_sfn = \
         _MOV_AX_W _GET_ DOS_FILE_DATE \
@@ -66,11 +66,11 @@ extern long __getfilestamp_sfn( int handle );
         "call __doserror_" \
         "mov  cx,-1"    \
         "mov  dx,cx"    \
-"L1:     shl  edx,16"   \
+    "L1: shl  edx,16"   \
         "mov  dx,cx"    \
-        parm caller     [ebx] \
-        value           [edx] \
-        modify exact    [eax ecx];
+    parm caller     [ebx] \
+    value           [edx] \
+    modify exact    [eax ecx edx]
 #endif
 
 
