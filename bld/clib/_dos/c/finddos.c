@@ -49,160 +49,175 @@ extern unsigned __dos_find_close_dta( struct find_t *fdta );
 #if defined( _M_I86 )
   #ifdef __BIG_DATA__
     #pragma aux __dos_find_first_dta = \
-        _SET_DSDX       \
-        "push es"       \
-        "push bx"       \
-        _MOV_AH DOS_SET_DTA \
-        _INT_21         \
-        "pop  dx"       \
-        "pop  ds"       \
-        _MOV_AH DOS_FIND_FIRST \
-        _INT_21         \
-        _RST_DS         \
-        "call __doserror_" \
+            _SET_DSDX           \
+            "push es"           \
+            "push bx"           \
+            _MOV_AH DOS_SET_DTA \
+            _INT_21             \
+            "pop  dx"           \
+            "pop  ds"           \
+            _MOV_AH DOS_FIND_FIRST \
+            _INT_21             \
+            _RST_DS             \
+            "call __doserror_"  \
         parm caller     [es bx] [cx] [dx ax] \
-        modify exact    [ax dx];
+        value           [ax] \
+        modify exact    [ax dx]
 
     #pragma aux __dos_find_next_dta = \
-        _SET_DSDX       \
-        _MOV_AH DOS_SET_DTA \
-        _INT_21         \
-        _RST_DS         \
-        _MOV_AH DOS_FIND_NEXT \
-        _INT_21         \
-        "call __doserror_" \
+            _SET_DSDX           \
+            _MOV_AH DOS_SET_DTA \
+            _INT_21             \
+            _RST_DS             \
+            _MOV_AH DOS_FIND_NEXT \
+            _INT_21             \
+            "call __doserror_"  \
         parm caller     [dx ax] \
-        modify exact    [ax dx];
+        value           [ax] \
+        modify exact    [ax dx]
 
     #pragma aux __dos_find_close_dta = \
-        "xor  ax,ax"    \
+            "xor    ax,ax"      \
         parm caller     [dx ax] \
-        modify exact    [ax];
+        value           [ax] \
+        modify exact    [ax]
 
   #else                 // 16-bit near data
     #pragma aux __dos_find_first_dta = \
-        _MOV_AH DOS_SET_DTA \
-        _INT_21         \
-        "mov  dx,bx"    \
-        _MOV_AH DOS_FIND_FIRST \
-        _INT_21         \
-        "call __doserror_" \
+            _MOV_AH DOS_SET_DTA \
+            _INT_21             \
+            "mov  dx,bx"        \
+            _MOV_AH DOS_FIND_FIRST \
+            _INT_21             \
+            "call __doserror_"  \
         parm caller     [bx] [cx] [dx] \
-        modify exact    [ax];
+        value           [ax] \
+        modify exact    [ax]
 
     #pragma aux __dos_find_next_dta = \
-        _MOV_AH DOS_SET_DTA \
-        _INT_21         \
-        _MOV_AH DOS_FIND_NEXT \
-        _INT_21         \
-        "call __doserror_" \
+            _MOV_AH DOS_SET_DTA \
+            _INT_21             \
+            _MOV_AH DOS_FIND_NEXT \
+            _INT_21             \
+            "call __doserror_"  \
         parm caller     [dx] \
-        modify exact    [ax];
+        value           [ax] \
+        modify exact    [ax]
 
     #pragma aux __dos_find_close_dta = \
-        "xor  ax,ax"    \
+            "xor    ax,ax"      \
         parm caller     [dx] \
-        modify exact    [ax];
+        value           [ax] \
+        modify exact    [ax]
 
   #endif
 #elif defined( __OSI__ )    // 32-bit near data
     #pragma aux __dos_find_first_dta = \
-        _MOV_AH DOS_FIND_FIRST \
-        _INT_21         \
-        "call __doserror_" \
+            _MOV_AH DOS_FIND_FIRST \
+            _INT_21             \
+            "call __doserror_"  \
         parm caller     [edx] [ecx] [ebx] \
-        modify exact    [eax];
+        value           [eax] \
+        modify exact    [eax]
 
     #pragma aux __dos_find_next_dta = \
-        _MOV_AX_W 0 DOS_FIND_NEXT \
-        _INT_21         \
-        "call __doserror_" \
+            _MOV_AX_W 0 DOS_FIND_NEXT \
+            _INT_21             \
+            "call __doserror_"  \
         parm caller     [edx] \
-        modify exact    [eax];
+        value           [eax] \
+        modify exact    [eax]
 
     #pragma aux __dos_find_close_dta = \
-        _MOV_AX_W 1 DOS_FIND_NEXT \
-        _INT_21         \
-        "call __doserror_" \
-        "xor  eax,eax"  \
+            _MOV_AX_W 1 DOS_FIND_NEXT \
+            _INT_21             \
+            "call __doserror_"  \
+            "xor  eax,eax"      \
         parm caller     [edx] \
-        modify exact    [eax];
+        value           [eax] \
+        modify exact    [eax]
 
 #elif defined( __CALL21__ )    // 32-bit near data
     #pragma aux __dos_find_first_dta = \
-        _MOV_AH DOS_SET_DTA \
-        _INT_21         \
-        "mov  edx,ebx"  \
-        _MOV_AH DOS_FIND_FIRST \
-        _INT_21         \
-        "call __doserror_" \
+            _MOV_AH DOS_SET_DTA \
+            _INT_21             \
+            "mov    edx,ebx"    \
+            _MOV_AH DOS_FIND_FIRST \
+            _INT_21             \
+            "call __doserror_"  \
         parm caller     [ebx] [ecx] [edx] \
-        modify exact    [eax edx];
+        value           [eax] \
+        modify exact    [eax edx]
 
     #pragma aux __dos_find_next_dta = \
-        _MOV_AH DOS_SET_DTA \
-        _INT_21         \
-        _MOV_AH DOS_FIND_NEXT \
-        _INT_21         \
-        "call __doserror_" \
+            _MOV_AH DOS_SET_DTA \
+            _INT_21             \
+            _MOV_AH DOS_FIND_NEXT \
+            _INT_21             \
+            "call __doserror_"  \
         parm caller     [edx] \
-        modify exact    [eax];
+        value           [eax] \
+        modify exact    [eax]
 
     #pragma aux __dos_find_close_dta = \
-        "xor  eax,eax"  \
+            "xor    eax,eax"    \
         parm caller     [edx] \
-        modify exact    [eax];
+        value           [eax] \
+        modify exact    [eax]
 
 #else                   // 32-bit near data
     #pragma aux __dos_find_first_dta = \
-        "push edx"      \
-        _MOV_AH DOS_SET_DTA \
-        _INT_21         \
-        "mov  edx,ebx"  \
-        _MOV_AH DOS_FIND_FIRST \
-        _INT_21         \
-        "pop  edx"      \
-        "call __doserror_" \
-        "test eax,eax"  \
-        "jnz  L1"       \
-        CMP_EXTENDER_INTEL \
-        "jnz  L1"       \
-        "push es"       \
-        _MOV_AH DOS_GET_DTA \
-        _INT_21         \
-        MOV_DATA_FROM_DTA \
-        "pop  es"       \
-        "xor  eax,eax"  \
-    "L1:"                   \
+            "push   edx"        \
+            _MOV_AH DOS_SET_DTA \
+            _INT_21             \
+            "mov    edx,ebx"    \
+            _MOV_AH DOS_FIND_FIRST \
+            _INT_21             \
+            "pop    edx"        \
+            "call __doserror_"  \
+            "test   eax,eax"    \
+            "jnz short L1"      \
+            CMP_EXTENDER_INTEL  \
+            "jnz short L1"      \
+            "push   es"         \
+            _MOV_AH DOS_GET_DTA \
+            _INT_21             \
+            MOV_DATA_FROM_DTA   \
+            "pop    es"         \
+            "xor    eax,eax"    \
+        "L1:"                   \
         parm caller     [ebx] [ecx] [edx] \
-        modify exact    [eax ebx ecx edi esi];
+        value           [eax] \
+        modify exact    [eax ebx ecx edx edi esi]
 
     #pragma aux __dos_find_next_dta = \
-        "push es"       \
-        _MOV_AH DOS_SET_DTA \
-        _INT_21         \
-        CMP_EXTENDER_INTEL \
-        "jnz  L1"       \
-        _MOV_AH DOS_GET_DTA \
-        _INT_21         \
-        MOV_DATA_TO_DTA \
-    "L1:"               \
-        _MOV_AH DOS_FIND_NEXT \
-        _INT_21         \
-        "call __doserror_" \
-        "test eax,eax"  \
-        "jnz  L2"       \
-        CMP_EXTENDER_INTEL \
-        "jnz  L2"       \
-        MOV_DATA_FROM_DTA \
-    "L2: pop  es"       \
+            "push   es"         \
+            _MOV_AH DOS_SET_DTA \
+            _INT_21             \
+            CMP_EXTENDER_INTEL  \
+            "jnz short L1"      \
+            _MOV_AH DOS_GET_DTA \
+            _INT_21             \
+            MOV_DATA_TO_DTA     \
+        "L1:"                   \
+            _MOV_AH DOS_FIND_NEXT \
+            _INT_21             \
+            "call __doserror_"  \
+            "test   eax,eax"    \
+            "jnz short L2"      \
+            CMP_EXTENDER_INTEL  \
+            "jnz short L2"      \
+            MOV_DATA_FROM_DTA   \
+        "L2: pop    es"         \
         parm caller     [edx] \
-        modify exact    [eax ebx ecx edi esi];
+        value           [eax] \
+        modify exact    [eax ebx ecx edi esi]
 
     #pragma aux __dos_find_close_dta = \
-        "xor  eax,eax"  \
+            "xor    eax,eax"    \
         parm caller     [edx] \
-        modify exact    [eax];
+        value           [eax] \
+        modify exact    [eax]
 
 #endif
 

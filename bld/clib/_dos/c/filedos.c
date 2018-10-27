@@ -37,30 +37,32 @@
 #ifdef _M_I86
     #define AUX_INFO    \
         parm caller     [bx] \
-        modify exact    [ax];
+        value           [ax] \
+        modify exact    [ax]
 #else
     #define AUX_INFO    \
         parm caller     [ebx] \
-        modify exact    [eax];
+        value           [eax] \
+        modify exact    [eax]
 #endif
 
 extern unsigned __doserror_( unsigned );
 #pragma aux __doserror_ "*"
 
 extern unsigned __dos_close( unsigned handle );
-#pragma aux __dos_close = \
-        _MOV_AH DOS_CLOSE \
-        _INT_21         \
-        "call __doserror_" \
-        AUX_INFO
+#pragma aux __dos_close =   \
+        _MOV_AH DOS_CLOSE   \
+        _INT_21             \
+        "call __doserror_"  \
+    AUX_INFO
 
 extern unsigned __dos_commit( unsigned handle );
-#pragma aux __dos_commit = \
+#pragma aux __dos_commit =  \
         _MOV_AH DOS_COMMIT_FILE \
-        "clc"           \
-        _INT_21         \
-        "call __doserror_" \
-        AUX_INFO
+        "clc"               \
+        _INT_21             \
+        "call __doserror_"  \
+    AUX_INFO
 
 _WCRTLINK unsigned _dos_close( int handle )
 {

@@ -41,42 +41,45 @@
     #define SAVE_VALUE  "mov es:[bx],ax"
     #define AUX_INFO    \
         parm caller     [dx ax] [cx] [es bx] \
-        modify exact    [ax dx];
+        value           [ax] \
+        modify exact    [ax dx]
   #else
     #define SAVE_VALUE  "mov [bx],ax"
     #define AUX_INFO    \
         parm caller     [dx] [cx] [bx] \
-        modify exact    [ax];
+        value           [ax] \
+        modify exact    [ax]
   #endif
 #else
     #define INIT_VALUE  "xor eax,eax"
     #define SAVE_VALUE  "mov [ebx],eax"
     #define AUX_INFO    \
         parm caller     [edx] [ecx] [ebx] \
-        modify exact    [eax];
+        value           [eax] \
+        modify exact    [eax]
 #endif
 
 extern unsigned __dos_create_sfn( const char *name, unsigned attrib, int *handle );
 #pragma aux __dos_create_sfn = \
-        _SET_DSDX       \
-        INIT_VALUE      \
-        _MOV_AH DOS_CREAT \
-        _INT_21         \
-        _RST_DS         \
-        RETURN_VALUE    \
-        "call __doserror_" \
-        AUX_INFO
+        _SET_DSDX           \
+        INIT_VALUE          \
+        _MOV_AH DOS_CREAT   \
+        _INT_21             \
+        _RST_DS             \
+        RETURN_VALUE        \
+        "call __doserror_"  \
+    AUX_INFO
 
 extern unsigned __dos_create_new_sfn( const char *name, unsigned attrib, int *handle );
 #pragma aux __dos_create_new_sfn = \
-        _SET_DSDX       \
-        INIT_VALUE      \
+        _SET_DSDX           \
+        INIT_VALUE          \
         _MOV_AH DOS_CREATE_NEW \
-        _INT_21         \
-        _RST_DS         \
-        RETURN_VALUE    \
-        "call __doserror_" \
-        AUX_INFO
+        _INT_21             \
+        _RST_DS             \
+        RETURN_VALUE        \
+        "call __doserror_"  \
+    AUX_INFO
 
 #ifdef __WATCOM_LFN__
 static tiny_ret_t _dos_create_ex_lfn( const char *path, unsigned attrib, unsigned style )

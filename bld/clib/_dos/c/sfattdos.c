@@ -39,26 +39,29 @@
   #ifdef __BIG_DATA__
     #define AUX_INFO    \
         parm caller     [dx ax] [cx] \
-        modify exact    [ax dx];
+        value           [ax] \
+        modify exact    [ax dx]
   #else
     #define AUX_INFO    \
         parm caller     [dx] [cx] \
-        modify exact    [ax];
+        value           [ax] \
+        modify exact    [ax]
   #endif
 #else
     #define AUX_INFO    \
         parm caller     [edx] [ecx] \
-        modify exact    [eax];
+        value           [eax] \
+        modify exact    [eax]
 #endif
 
 extern unsigned __dos_setfileattr_sfn( const char *path, unsigned attrib );
 #pragma aux __dos_setfileattr_sfn = \
-        _SET_DSDX       \
+        _SET_DSDX           \
         _MOV_AX_W _SET_ DOS_CHMOD \
-        _INT_21         \
-        _RST_DS         \
-        "call __doserror_" \
-        AUX_INFO
+        _INT_21             \
+        _RST_DS             \
+        "call __doserror_"  \
+    AUX_INFO
 
 #ifdef __WATCOM_LFN__
 static tiny_ret_t _dos_setfileattr_lfn( const char *path, unsigned attrib )
