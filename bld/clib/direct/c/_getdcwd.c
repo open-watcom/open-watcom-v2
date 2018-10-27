@@ -58,11 +58,11 @@
 
 extern unsigned __getdcwd_sfn( char *buff, unsigned char drv );
 #pragma aux __getdcwd_sfn = \
-        _SET_DSSI       \
-        _MOV_AH DOS_GETCWD \
-        _INT_21         \
-        _RST_DS         \
-        "call __doserror_" \
+        _SET_DSSI           \
+        _MOV_AH DOS_GETCWD  \
+        _INT_21             \
+        _RST_DS             \
+        "call __doserror_"  \
     AUX_INFO
 
 #ifdef __WATCOM_LFN__

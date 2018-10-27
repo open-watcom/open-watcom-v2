@@ -42,28 +42,31 @@
   #ifdef __BIG_DATA__
     #define AUX_INFO    \
         parm caller     [dx ax] [es di] \
-        modify exact    [ax dx];
+        value           [ax] \
+        modify exact    [ax dx]
   #else
     #define AUX_INFO    \
         parm caller     [dx] [di] \
-        modify exact    [ax];
+        value           [ax] \
+        modify exact    [ax]
   #endif
 #else
     #define AUX_INFO    \
         parm caller     [edx] [edi] \
-        modify exact    [eax];
+        value           [eax] \
+        modify exact    [eax]
 #endif
 
 extern unsigned __rename_sfn( const char *old, const char *new );
-#pragma aux __rename_sfn = \
-        _SET_ES         \
-        _SET_DSDX       \
-        _MOV_AH DOS_RENAME \
-        _INT_21         \
-        _RST_DS         \
-        _RST_ES         \
+#pragma aux __rename_sfn =  \
+        _SET_ES             \
+        _SET_DSDX           \
+        _MOV_AH DOS_RENAME  \
+        _INT_21             \
+        _RST_DS             \
+        _RST_ES             \
         "call __doserror1_" \
-        AUX_INFO
+    AUX_INFO
 
 #if !defined( __WIDECHAR__ ) && defined( __WATCOM_LFN__ )
 static tiny_ret_t _rename_lfn( const char *old, const char *new )

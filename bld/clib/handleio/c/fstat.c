@@ -49,25 +49,25 @@ extern long __getfilestamp_sfn( int handle );
 #ifdef _M_I86
 #pragma aux __getfilestamp_sfn = \
         _MOV_AX_W _GET_ DOS_FILE_DATE \
-        _INT_21         \
-        "jnc short L1"   \
-        "call __doserror_" \
-        "mov  cx,-1"    \
-        "mov  dx,cx"    \
-    "L1: mov  ax,cx"    \
+        _INT_21             \
+        "jnc short L1"      \
+        "call __doserror_"  \
+        "mov  cx,-1"        \
+        "mov  dx,cx"        \
+    "L1: mov  ax,cx"        \
     parm caller     [bx] \
     value           [dx ax] \
     modify exact    [ax cx dx]
 #else
 #pragma aux __getfilestamp_sfn = \
         _MOV_AX_W _GET_ DOS_FILE_DATE \
-        _INT_21         \
-        "jnc short L1"  \
-        "call __doserror_" \
-        "mov  cx,-1"    \
-        "mov  dx,cx"    \
-    "L1: shl  edx,16"   \
-        "mov  dx,cx"    \
+        _INT_21             \
+        "jnc short L1"      \
+        "call __doserror_"  \
+        "mov  cx,-1"        \
+        "mov  dx,cx"        \
+    "L1: shl  edx,16"       \
+        "mov  dx,cx"        \
     parm caller     [ebx] \
     value           [edx] \
     modify exact    [eax ecx edx]
