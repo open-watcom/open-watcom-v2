@@ -41,53 +41,53 @@ typedef unsigned __based(__segname("_STACK")) *uint_stk_ptr;
 
 unsigned long __uldiv( unsigned long, uint_stk_ptr );
 #if defined(__386__) && defined(__SMALL_DATA__)
-    #pragma aux __uldiv = \
-        "xor edx,edx" \
-        "div dword ptr [ebx]" \
-        "mov [ebx],edx" \
-        parm caller [eax] [ebx] \
-        modify exact [eax edx] \
-        value [eax];
+    #pragma aux __uldiv =               \
+            "xor    edx,edx"            \
+            "div    dword ptr [ebx]"    \
+            "mov    [ebx],edx"          \
+        parm caller     [eax] [ebx] \
+        value           [eax] \
+        modify exact    [eax edx]
 #elif defined( __386__ ) && defined(__BIG_DATA__)
-    #pragma aux __uldiv = \
-        "xor edx,edx" \
-        "div dword ptr ss:[ebx]" \
-        "mov ss:[ebx],edx" \
-        parm caller [eax] [ebx] \
-        modify exact [eax edx] \
-        value [eax];
+    #pragma aux __uldiv =               \
+            "xor    edx,edx"            \
+            "div    dword ptr ss:[ebx]" \
+            "mov    ss:[ebx],edx"       \
+        parm caller     [eax] [ebx] \
+        value           [eax] \
+        modify exact    [eax edx]
 #elif defined( _M_I86 ) && defined(__BIG_DATA__)
-    #pragma aux __uldiv = \
-        "xor cx,cx" \
-        "cmp dx,ss:[bx]" \
-        "jb short SMALL_ENOUGH" \
-        "xchg ax,dx" \
-        "xchg cx,dx" \
-        "div word ptr ss:[bx]" \
-        "xchg ax,cx" \
-        "SMALL_ENOUGH:" \
-        "div word ptr ss:[bx]" \
-        "mov ss:[bx],dx" \
-        "mov dx,cx" \
-        parm caller [ax dx] [bx] \
-        modify exact [ax cx dx] \
-        value [ax dx];
+    #pragma aux __uldiv =               \
+            "xor    cx,cx"              \
+            "cmp    dx,ss:[bx]"         \
+            "jb short SMALL_ENOUGH"     \
+            "xchg   ax,dx"              \
+            "xchg   cx,dx"              \
+            "div    word ptr ss:[bx]"   \
+            "xchg   ax,cx"              \
+        "SMALL_ENOUGH:"                 \
+            "div    word ptr ss:[bx]"   \
+            "mov    ss:[bx],dx"         \
+            "mov    dx,cx"              \
+        parm caller     [ax dx] [bx] \
+        value           [ax dx] \
+        modify exact    [ax cx dx]
 #elif defined( _M_I86 ) && defined(__SMALL_DATA__)
-    #pragma aux __uldiv = \
-        "xor cx,cx" \
-        "cmp dx,[bx]" \
-        "jb short SMALL_ENOUGH" \
-        "xchg ax,dx" \
-        "xchg cx,dx" \
-        "div word ptr [bx]" \
-        "xchg ax,cx" \
-        "SMALL_ENOUGH:" \
-        "div word ptr [bx]" \
-        "mov [bx],dx" \
-        "mov dx,cx" \
-        parm caller [ax dx] [bx] \
-        modify exact [ax cx dx] \
-        value [ax dx];
+    #pragma aux __uldiv =               \
+            "xor    cx,cx"              \
+            "cmp    dx,[bx]"            \
+            "jb short SMALL_ENOUGH"     \
+            "xchg   ax,dx"              \
+            "xchg   cx,dx"              \
+            "div    word ptr [bx]"      \
+            "xchg   ax,cx"              \
+        "SMALL_ENOUGH:"                 \
+            "div    word ptr [bx]"      \
+            "mov    [bx],dx"            \
+            "mov    dx,cx"              \
+        parm caller     [ax dx] [bx] \
+        value           [ax dx] \
+        modify exact    [ax cx dx]
 #endif
 
 _WCRTLINK CHAR_TYPE *__F_NAME(ultoa,_ultow)( unsigned long value, CHAR_TYPE *buffer, int radix )

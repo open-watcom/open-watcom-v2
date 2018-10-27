@@ -44,143 +44,149 @@ typedef unsigned __based(__segname("_STACK")) *uint_stk_ptr;
 #if defined( _M_IX86 )
 unsigned long long __ulldiv( unsigned long long, uint_stk_ptr );
 #if defined(__386__) && defined(__SMALL_DATA__)
-    #pragma aux __ulldiv = \
-        "xor ecx,ecx"     /* set high word of quotient to 0 */ \
-        "cmp edx,dword ptr[ebx]" /* if quotient will be >= 4G */ \
-        "jb less4g"       /* then */ \
-        "mov ecx,eax"     /* - save low word of dividend */ \
-        "mov eax,edx"     /* - get high word of dividend */ \
-        "xor edx,edx"     /* - zero high part */ \
-        "div dword ptr[ebx]"  /* - divide into high part of dividend */ \
-        "xchg eax,ecx"    /* - swap high part of quot,low word of dvdnd */ \
-      "less4g:"           \
-        "div dword ptr[ebx]" /* calculate low part */ \
-        "mov [ebx],edx"   /* store remainder */ \
-        parm [eax edx] [ebx] value [eax ecx];
+    #pragma aux __ulldiv =              \
+            "xor    ecx,ecx"            /* set high word of quotient to 0 */ \
+            "cmp    edx,dword ptr[ebx]" /* if quotient will be >= 4G */ \
+            "jb short less4g"           /* then */ \
+            "mov    ecx,eax"            /* - save low word of dividend */ \
+            "mov    eax,edx"            /* - get high word of dividend */ \
+            "xor    edx,edx"            /* - zero high part */ \
+            "div    dword ptr[ebx]"     /* - divide into high part of dividend */ \
+            "xchg   eax,ecx"            /* - swap high part of quot,low word of dvdnd */ \
+        "less4g:"                       \
+            "div    dword ptr[ebx]"     /* calculate low part */ \
+            "mov    [ebx],edx"          /* store remainder */ \
+        parm    [eax edx] [ebx] \
+        value   [eax ecx]
 #elif defined( __386__ )  && defined(__BIG_DATA__)
     #pragma aux __ulldiv = \
-        "xor ecx,ecx"     /* set high word of quotient to 0 */ \
-        "cmp edx,dword ptr ss:[ebx]" /* if quotient will be >= 4G */ \
-        "jb less4g"       /* then */ \
-        "mov ecx,eax"     /* - save low word of dividend */ \
-        "mov eax,edx"     /* - get high word of dividend */ \
-        "xor edx,edx"     /* - zero high part */ \
-        "div dword ptr ss:[ebx]"  /* - divide into high part of dividend */ \
-        "xchg eax,ecx"    /* - swap high part of quot,low word of dvdnd */ \
-      "less4g:"           \
-        "div dword ptr ss:[ebx]" /* calculate low part */ \
-        "mov ss:[ebx],edx"   /* store remainder */ \
-        parm [eax edx] [ebx] value [eax ecx];
+            "xor    ecx,ecx"            /* set high word of quotient to 0 */ \
+            "cmp    edx,dword ptr ss:[ebx]" /* if quotient will be >= 4G */ \
+            "jb short less4g"           /* then */ \
+            "mov    ecx,eax"            /* - save low word of dividend */ \
+            "mov    eax,edx"            /* - get high word of dividend */ \
+            "xor    edx,edx"            /* - zero high part */ \
+            "div    dword ptr ss:[ebx]" /* - divide into high part of dividend */ \
+            "xchg   eax,ecx"            /* - swap high part of quot,low word of dvdnd */ \
+        "less4g:"                       \
+            "div    dword ptr ss:[ebx]" /* calculate low part */ \
+            "mov    ss:[ebx],edx"       /* store remainder */ \
+        parm    [eax edx] [ebx] \
+        value   [eax ecx]
 #elif defined( _M_I86 )  && defined(__BIG_DATA__)
     #pragma aux __ulldiv = \
-        "mov di,dx"        /* initial dividend = ax:bx:cx:dx(di); save dx */ \
-        "test ax,ax"       /* less work to do if ax == 0 */ \
-        "jz skip1"  \
-        "mov dx,ax"        /* dx:ax = ax:bx */ \
-        "mov ax,bx" \
-        "xor bx,bx"           /* set word 3 of quotient to 0 */ \
-        "cmp dx,word ptr ss:[si]" /* if quotient will be >= 64K */ \
-        "jb div2"             /* then */ \
-        "mov bx,ax"       /* restore word 2 of dividend */ \
-        "mov ax,dx"       /* restore word 3 of dividend */ \
-        "xor dx,dx"       /* - zero high part */ \
-        "div word ptr ss:[si]"  /* - divide into word 3 of dividend */ \
-        "xchg ax,bx"      /* - swap word 3,word 2 of dvdnd */ \
-      "div2:"           \
-        "div word ptr ss:[si]"  /* - divide into word 2 of dividend */ \
-        "xchg ax,cx"      /* - swap word 2,word 1 of dvdnd */ \
-      "div3:"           \
-        "div word ptr ss:[si]"  /* - divide into word 1 of dividend */ \
-        "xchg ax,di"      /* - swap word 1,word 0 of dvdnd */ \
-      "div4:"           \
-        "div word ptr ss:[si]" /* calculate low part */ \
-        "mov  ss:[si],dx"      /* store remainder */ \
-        "mov dx,ax"        /* dx is word 0 */ \
-        "mov ax,bx"        /* ax:bx:cx:dx = bx:cx:di:ax */ \
-        "mov bx,cx" \
-        "mov cx,di" \
-        "jmp end_div" \
-      "skip1:"      /* ax==0 */  \
-        "test bx,bx"       /* even less work to do if bx == 0 too */ \
-        "jz skip2" \
-        "mov dx,bx"        /* dx:ax = bx:cx */ \
-        "mov ax,cx" \
-        "xor bx,bx"        /* set word 3 of quotient to 0 */ \
-        "xor cx,cx"        /* set word 2 of quotient to 0 */ \
-        "cmp dx,word ptr ss:[si]" /* if quotient will be < 64K */ \
-        "jb div3"             /* then need to do two divisions */ \
-        "mov cx,ax"        /* restore word 1 of dividend */ \
-        "mov ax,dx"        /* restore word 2 of dividend */ \
-        "xor dx,dx"        /* zero high part */ \
-        "jmp div2"         /* do three divisions*/ \
-      "skip2:"      /* ax==bx==0 */ \
-        "mov dx,cx"        /* dx:ax = cx:di */ \
-        "mov ax,di" \
-        "xor cx,cx"        /* set word 2 of quotient to 0 */ \
-        "xor di,di"        /* set word 1 of quotient to 0 */ \
-        "cmp dx,word ptr ss:[si]" /* if quotient will be < 64K */ \
-        "jb div4"             /* then only one division to do */ \
-        "mov di,ax"        /* restore word 0 of dividend */ \
-        "mov ax,dx"        /* restore word 1 of dividend */ \
-        "xor dx,dx"        /* zero high part */ \
-        "jmp div3"         /* do two divisions */ \
-      "end_div:" \
-        parm [ax bx cx dx] [si] modify [di] value [ax bx cx dx];
+            "mov    di,dx"              /* initial dividend = ax:bx:cx:dx(di); save dx */ \
+            "test   ax,ax"              /* less work to do if ax == 0 */ \
+            "jz short skip1"            \
+            "mov    dx,ax"              /* dx:ax = ax:bx */ \
+            "mov    ax,bx"              \
+            "xor    bx,bx"              /* set word 3 of quotient to 0 */ \
+            "cmp    dx,word ptr ss:[si]" /* if quotient will be >= 64K */ \
+            "jb short div2"             /* then */ \
+            "mov    bx,ax"              /* restore word 2 of dividend */ \
+            "mov    ax,dx"              /* restore word 3 of dividend */ \
+            "xor    dx,dx"              /* - zero high part */ \
+            "div    word ptr ss:[si]"   /* - divide into word 3 of dividend */ \
+            "xchg   ax,bx"              /* - swap word 3,word 2 of dvdnd */ \
+        "div2:"                         \
+            "div    word ptr ss:[si]"   /* - divide into word 2 of dividend */ \
+            "xchg   ax,cx"              /* - swap word 2,word 1 of dvdnd */ \
+        "div3:"                         \
+            "div    word ptr ss:[si]"   /* - divide into word 1 of dividend */ \
+            "xchg   ax,di"              /* - swap word 1,word 0 of dvdnd */ \
+        "div4:"                         \
+            "div    word ptr ss:[si]"   /* calculate low part */ \
+            "mov    ss:[si],dx"         /* store remainder */ \
+            "mov    dx,ax"              /* dx is word 0 */ \
+            "mov    ax,bx"              /* ax:bx:cx:dx = bx:cx:di:ax */ \
+            "mov    bx,cx"              \
+            "mov    cx,di"              \
+            "jmp short end_div"         \
+        "skip1:"                        /* ax==0 */  \
+            "test   bx,bx"              /* even less work to do if bx == 0 too */ \
+            "jz short skip2"            \
+            "mov    dx,bx"              /* dx:ax = bx:cx */ \
+            "mov    ax,cx"              \
+            "xor    bx,bx"              /* set word 3 of quotient to 0 */ \
+            "xor    cx,cx"              /* set word 2 of quotient to 0 */ \
+            "cmp    dx,word ptr ss:[si]" /* if quotient will be < 64K */ \
+            "jb short div3"             /* then need to do two divisions */ \
+            "mov    cx,ax"              /* restore word 1 of dividend */ \
+            "mov    ax,dx"              /* restore word 2 of dividend */ \
+            "xor    dx,dx"              /* zero high part */ \
+            "jmp short div2"            /* do three divisions*/ \
+        "skip2:"                        /* ax==bx==0 */ \
+            "mov    dx,cx"              /* dx:ax = cx:di */ \
+            "mov    ax,di"              \
+            "xor    cx,cx"              /* set word 2 of quotient to 0 */ \
+            "xor    di,di"              /* set word 1 of quotient to 0 */ \
+            "cmp    dx,word ptr ss:[si]" /* if quotient will be < 64K */ \
+            "jb short div4"             /* then only one division to do */ \
+            "mov    di,ax"              /* restore word 0 of dividend */ \
+            "mov    ax,dx"              /* restore word 1 of dividend */ \
+            "xor    dx,dx"              /* zero high part */ \
+            "jmp short div3"            /* do two divisions */ \
+        "end_div:"                      \
+        parm    [ax bx cx dx] [si] \
+        value   [ax bx cx dx] \
+        modify  [di]
 #elif defined( _M_I86 ) && defined(__SMALL_DATA__)
     #pragma aux __ulldiv = \
-        "mov di,dx"        /* initial dividend = ax:bx:cx:dx(di); save dx */ \
-        "test ax,ax"       /* less work to do if ax == 0 */ \
-        "jz skip1"  \
-        "mov dx,ax"        /* dx:ax = ax:bx */ \
-        "mov ax,bx" \
-        "xor bx,bx"           /* set word 3 of quotient to 0 */ \
-        "cmp dx,word ptr[si]" /* if quotient will be >= 64K */ \
-        "jb div2"             /* then */ \
-        "mov bx,ax"       /* restore word 2 of dividend */ \
-        "mov ax,dx"       /* restore word 3 of dividend */ \
-        "xor dx,dx"       /* - zero high part */ \
-        "div word ptr[si]"  /* - divide into word 3 of dividend */ \
-        "xchg ax,bx"      /* - swap word 3,word 2 of dvdnd */ \
-      "div2:"           \
-        "div word ptr[si]"  /* - divide into word 2 of dividend */ \
-        "xchg ax,cx"      /* - swap word 2,word 1 of dvdnd */ \
-      "div3:"           \
-        "div word ptr[si]"  /* - divide into word 1 of dividend */ \
-        "xchg ax,di"      /* - swap word 1,word 0 of dvdnd */ \
-      "div4:"           \
-        "div word ptr[si]" /* calculate low part */ \
-        "mov [si],dx"      /* store remainder */ \
-        "mov dx,ax"        /* dx is word 0 */ \
-        "mov ax,bx"        /* ax:bx:cx:dx = bx:cx:di:ax */ \
-        "mov bx,cx" \
-        "mov cx,di" \
-        "jmp end_div" \
-      "skip1:"      /* dx==0 */  \
-        "test bx,bx"       /* even less work to do if bx == 0 too */ \
-        "jz skip2" \
-        "mov dx,bx"        /* dx:ax = bx:cx */ \
-        "mov ax,cx" \
-        "xor bx,bx"        /* set word 3 of quotient to 0 */ \
-        "xor cx,cx"        /* set word 2 of quotient to 0 */ \
-        "cmp dx,word ptr[si]" /* if quotient will be < 64K */ \
-        "jb div3"             /* then need to do two divisions */ \
-        "mov cx,ax"        /* restore word 1 of dividend */ \
-        "mov ax,dx"        /* restore word 2 of dividend */ \
-        "xor dx,dx"        /* zero high part */ \
-        "jmp div2"         /* do three divisions*/ \
-      "skip2:"      /* ax==bx==0 */ \
-        "mov dx,cx"        /* dx:ax = cx:di */ \
-        "mov ax,di" \
-        "xor cx,cx"        /* set word 2 of quotient to 0 */ \
-        "xor di,di"        /* set word 1 of quotient to 0 */ \
-        "cmp dx,word ptr[si]" /* if quotient will be < 64K */ \
-        "jb div4"             /* then only one division to do */ \
-        "mov di,ax"        /* restore word 0 of dividend */ \
-        "mov ax,dx"        /* restore word 1 of dividend */ \
-        "xor dx,dx"        /* zero high part */ \
-        "jmp div3"         /* do two divisions */ \
-      "end_div:" \
-        parm [ax bx cx dx] [si] modify [di] value [ax bx cx dx];
+            "mov    di,dx"              /* initial dividend = ax:bx:cx:dx(di); save dx */ \
+            "test   ax,ax"              /* less work to do if ax == 0 */ \
+            "jz short skip1"            \
+            "mov    dx,ax"              /* dx:ax = ax:bx */ \
+            "mov    ax,bx"              \
+            "xor    bx,bx"              /* set word 3 of quotient to 0 */ \
+            "cmp    dx,word ptr[si]"    /* if quotient will be >= 64K */ \
+            "jb short div2"             /* then */ \
+            "mov    bx,ax"              /* restore word 2 of dividend */ \
+            "mov    ax,dx"              /* restore word 3 of dividend */ \
+            "xor    dx,dx"              /* - zero high part */ \
+            "div    word ptr[si]"       /* - divide into word 3 of dividend */ \
+            "xchg   ax,bx"              /* - swap word 3,word 2 of dvdnd */ \
+        "div2:"                         \
+            "div    word ptr[si]"       /* - divide into word 2 of dividend */ \
+            "xchg   ax,cx"              /* - swap word 2,word 1 of dvdnd */ \
+        "div3:"                         \
+            "div    word ptr[si]"       /* - divide into word 1 of dividend */ \
+            "xchg   ax,di"              /* - swap word 1,word 0 of dvdnd */ \
+        "div4:"                         \
+            "div    word ptr[si]"       /* calculate low part */ \
+            "mov    [si],dx"            /* store remainder */ \
+            "mov    dx,ax"              /* dx is word 0 */ \
+            "mov    ax,bx"              /* ax:bx:cx:dx = bx:cx:di:ax */ \
+            "mov    bx,cx"              \
+            "mov    cx,di"              \
+            "jmp short end_div"         \
+        "skip1:"                        /* dx==0 */  \
+            "test   bx,bx"              /* even less work to do if bx == 0 too */ \
+            "jz short skip2"            \
+            "mov    dx,bx"              /* dx:ax = bx:cx */ \
+            "mov    ax,cx"              \
+            "xor    bx,bx"              /* set word 3 of quotient to 0 */ \
+            "xor    cx,cx"              /* set word 2 of quotient to 0 */ \
+            "cmp    dx,word ptr[si]"    /* if quotient will be < 64K */ \
+            "jb short div3"             /* then need to do two divisions */ \
+            "mov    cx,ax"              /* restore word 1 of dividend */ \
+            "mov    ax,dx"              /* restore word 2 of dividend */ \
+            "xor    dx,dx"              /* zero high part */ \
+            "jmp short div2"            /* do three divisions*/ \
+        "skip2:"                        /* ax==bx==0 */ \
+            "mov    dx,cx"              /* dx:ax = cx:di */ \
+            "mov    ax,di"              \
+            "xor    cx,cx"              /* set word 2 of quotient to 0 */ \
+            "xor    di,di"              /* set word 1 of quotient to 0 */ \
+            "cmp    dx,word ptr[si]"    /* if quotient will be < 64K */ \
+            "jb short div4"             /* then only one division to do */ \
+            "mov    di,ax"              /* restore word 0 of dividend */ \
+            "mov    ax,dx"              /* restore word 1 of dividend */ \
+            "xor    dx,dx"              /* zero high part */ \
+            "jmp short div3"            /* do two divisions */ \
+        "end_div:"                      \
+        parm    [ax bx cx dx] [si] \
+        value   [ax bx cx dx] \
+        modify  [di]
 #endif
 #endif
 

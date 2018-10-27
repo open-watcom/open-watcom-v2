@@ -45,26 +45,29 @@
   #ifdef __BIG_DATA__
     #define AUX_INFO    \
         parm caller     [dx ax] \
-        modify exact    [ax dx];
+        value           [ax] \
+        modify exact    [ax dx]
   #else
     #define AUX_INFO    \
         parm caller     [dx] \
-        modify exact    [ax];
+        value           [ax] \
+        modify exact    [ax]
   #endif
 #else
     #define AUX_INFO    \
         parm caller     [edx] \
-        modify exact    [eax];
+        value           [eax] \
+        modify exact    [eax]
 #endif
 
 extern unsigned __chdir_sfn( const char *path );
-#pragma aux __chdir_sfn = \
-        _SET_DSDX       \
-        _MOV_AH DOS_CHDIR \
-        _INT_21         \
-        _RST_DS         \
+#pragma aux __chdir_sfn =   \
+        _SET_DSDX           \
+        _MOV_AH DOS_CHDIR   \
+        _INT_21             \
+        _RST_DS             \
         "call __doserror1_" \
-        AUX_INFO
+    AUX_INFO
 
 #if defined( __WATCOM_LFN__ ) && !defined( __WIDECHAR__ )
 static tiny_ret_t _chdir_lfn( const char *path )

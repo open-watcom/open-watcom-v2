@@ -42,37 +42,37 @@ typedef unsigned __based(__segname("_STACK")) *uint_stk_ptr;
 #if defined(__WATCOMC__)
 unsigned __udiv( unsigned, uint_stk_ptr );
 #if defined(__386__) && defined(__SMALL_DATA__)
-    #pragma aux __udiv = \
-        "xor edx,edx" \
-        "div dword ptr [ebx]" \
-        "mov [ebx],eax" \
-        parm caller [eax] [ebx] \
-        modify exact [eax edx] \
-        value [edx];
+    #pragma aux __udiv =                \
+            "xor    edx,edx"            \
+            "div    dword ptr [ebx]"    \
+            "mov    [ebx],eax"          \
+        parm caller     [eax] [ebx] \
+        value           [edx] \
+        modify exact    [eax edx]
 #elif defined( __386__ ) && defined(__BIG_DATA__)
-    #pragma aux __udiv = \
-        "xor edx,edx" \
-        "div dword ptr ss:[ebx]" \
-        "mov ss:[ebx],eax" \
-        parm caller [eax] [ebx] \
-        modify exact [eax edx] \
-        value [edx];
+    #pragma aux __udiv =                \
+            "xor    edx,edx"            \
+            "div    dword ptr ss:[ebx]" \
+            "mov    ss:[ebx],eax"       \
+        parm caller     [eax] [ebx] \
+        value           [edx] \
+        modify exact    [eax edx]
 #elif defined( _M_I86 ) && defined(__BIG_DATA__)
-    #pragma aux __udiv = \
-        "xor dx,dx" \
-        "div word ptr ss:[bx]" \
-        "mov ss:[bx],ax" \
-        parm caller [ax] [bx] \
-        modify exact [ax dx] \
-        value [dx];
+    #pragma aux __udiv =                \
+            "xor    dx,dx"              \
+            "div    word ptr ss:[bx]"   \
+            "mov    ss:[bx],ax"         \
+        parm caller     [ax] [bx] \
+        value           [dx] \
+        modify exact    [ax dx]
 #elif defined( _M_I86 ) && defined(__SMALL_DATA__)
-    #pragma aux __udiv = \
-        "xor dx,dx" \
-        "div word ptr [bx]" \
-        "mov [bx],ax" \
-        parm caller [ax] [bx] \
-        modify exact [ax dx] \
-        value [dx];
+    #pragma aux __udiv =                \
+            "xor    dx,dx"              \
+            "div    word ptr [bx]"      \
+            "mov    [bx],ax"            \
+        parm caller     [ax] [bx] \
+        value           [dx] \
+        modify exact    [ax dx]
 #endif
 #endif /* __WATCOMC__ */
 
