@@ -607,7 +607,7 @@ bool SetToggleFlag( char const *name, int const value )
     return( ret );
 }
 
-static void PragFlag( int value )
+static void pragFlag( int value )
 /******************************/
 {
 
@@ -663,7 +663,7 @@ static void GetLibraryNames( void )
     }
 }
 
-static void PragLibs( void )
+static void pragLibs( void )
 /*************************/
 {
     if( CurToken == T_LEFT_PAREN ) {
@@ -675,8 +675,8 @@ static void PragLibs( void )
     }
 }
 
-static void PragComment( void )
-/****************************/
+static void pragComment( void )
+/*****************************/
 {
     if( ExpectingToken( T_LEFT_PAREN ) ) {
         NextToken();
@@ -738,8 +738,8 @@ static void getPackArgs( void )
     }
 }
 
-static void PragPack( void )
-/*************************/
+static void pragPack( void )
+/**************************/
 {
     if( ExpectingToken( T_LEFT_PAREN ) ) {
         PPCTL_ENABLE_MACROS();
@@ -797,8 +797,8 @@ textsegment *LkSegName( const char *segname, const char *classname )
     return( NewTextSeg( segname, "", classname ) );
 }
 
-static void PragAllocText( void )
-/******************************/
+static void pragAllocText( void )
+/*******************************/
 {
     struct textsegment  *tseg;
     SYM_HANDLE          sym_handle;
@@ -865,8 +865,8 @@ void EnableDisableMessage( int enable, unsigned msg_num )
 //
 // dis- enable display of selected message number
 //
-static void PragEnableDisableMessage( int enable )
-/***********************************************/
+static void pragEnableDisableMessage( int enable )
+/************************************************/
 {
     if( ExpectingToken( T_LEFT_PAREN ) ) {
         NextToken();
@@ -887,7 +887,7 @@ static void PragEnableDisableMessage( int enable )
 // output these strings to stdout
 // this output is _not_ dependent on setting
 // of #pragma enable_message or disable_message.
-static void PragMessage( void )
+static void pragMessage( void )
 /*****************************/
 {
     if( ExpectingToken( T_LEFT_PAREN ) ) {
@@ -939,7 +939,7 @@ static void PopEnum( void ) {
     }
 }
 
-static void PragEnum( void )    // #pragma enum PARSING
+static void pragEnum( void )    // #pragma enum PARSING
 /**************************/
 {
     if( PragRecog( "int" ) ) {
@@ -956,7 +956,7 @@ static void PragEnum( void )    // #pragma enum PARSING
     }
 }
 
-static void PragIntrinsic( int intrinsic )
+static void pragIntrinsic( int intrinsic )
 /****************************************/
 {
     SYM_HANDLE  sym_handle;
@@ -982,7 +982,7 @@ static void PragIntrinsic( int intrinsic )
     }
 }
 
-static void PragCodeSeg( void )
+static void pragCodeSeg( void )
 /*****************************/
 {
     textsegment     *tseg;
@@ -1019,7 +1019,7 @@ static void PragCodeSeg( void )
     }
 }
 
-static void PragDataSeg( void )
+static void pragDataSeg( void )
 /*****************************/
 {
     char        *segname;
@@ -1051,7 +1051,7 @@ static void PragDataSeg( void )
     }
 }
 
-static void PragUnroll( void )
+static void pragUnroll( void )
 /****************************/
 {
     unroll_type unroll_count;
@@ -1075,7 +1075,7 @@ static void PragUnroll( void )
 // (2) causes indicated file to be marked read-only
 //      - file must have started inclusion (may have completed)
 //
-static void PragReadOnlyFile( void )
+static void pragReadOnlyFile( void )
 /**********************************/
 {
     if( CurToken == T_STRING ) {
@@ -1096,7 +1096,7 @@ static void PragReadOnlyFile( void )
 //
 // (1) causes all files within directory to be marked read-only
 //
-static void PragReadOnlyDir( void )
+static void pragReadOnlyDir( void )
 /*********************************/
 {
     while( CurToken == T_STRING ) {
@@ -1114,7 +1114,7 @@ static void PragReadOnlyDir( void )
 // causes include directives referencing alias_name to be refer
 // to real_name instead
 //
-static void PragIncludeAlias( void )
+static void pragIncludeAlias( void )
 /**********************************/
 {
     if( ExpectingToken( T_LEFT_PAREN ) ) {
@@ -1165,7 +1165,7 @@ static void PragIncludeAlias( void )
 //
 // (1) include file once
 //
-static void PragOnce( void )
+static void pragOnce( void )
 /**************************/
 {
     SetSrcFNameOnce();
@@ -1184,7 +1184,7 @@ static void pragSTDCOption( void )
 //
 // #pragma STDC (FP_CONTRACT|FENV_ACCESS|CX_LIMITED_RANGE) (ON|OFF|DEFAULT)
 //
-static void PragSTDC( void )
+static void pragSTDC( void )
 /**************************/
 {
     if( pragmaNameRecog( "FP_CONTRACT" ) ) {
@@ -1248,7 +1248,7 @@ static void parseExtRef ( void )
 // #pragma extref ( symbolid [, ...] )
 // #pragma extref ( "symbolname" [, ...] )
 //
-static void PragExtRef( void )
+static void pragExtRef( void )
 /****************************/
 {
     if( CurToken == T_LEFT_PAREN ) {
@@ -1274,7 +1274,7 @@ static void PragExtRef( void )
 // to id2/name2. Both the alias and the substituted symbol may be defined
 // either as a string name or an id of existing symbol.
 //
-static void PragAlias( void )
+static void pragAlias( void )
 /***************************/
 {
     SYM_HANDLE      alias_sym;
@@ -1346,7 +1346,7 @@ void CPragma( void )
     CompFlags.in_pragma = true;
     NextToken();
     if( IS_ID_OR_KEYWORD( CurToken ) && pragmaNameRecog( "include_alias" ) ) {
-        PragIncludeAlias();
+        pragIncludeAlias();
     } else if( CompFlags.cpp_output ) {
         PPCTL_ENABLE_MACROS();
         CppPrtf( "#pragma " );
@@ -1357,49 +1357,49 @@ void CPragma( void )
         PPCTL_DISABLE_MACROS();
     } else if( IS_ID_OR_KEYWORD( CurToken ) ) {
         if( pragmaNameRecog( "on" ) ) {
-            PragFlag( 1 );
+            pragFlag( 1 );
         } else if( pragmaNameRecog( "off" ) ) {
-            PragFlag( 0 );
+            pragFlag( 0 );
         } else if( pragmaNameRecog( "aux" ) || pragmaNameRecog( "linkage" ) ) {
             PragAux();
         } else if( pragmaNameRecog( "library" ) ) {
-            PragLibs();
+            pragLibs();
         } else if( pragmaNameRecog( "comment" ) ) {
-            PragComment();
+            pragComment();
         } else if( pragmaNameRecog( "pack" ) ) {
-            PragPack();
+            pragPack();
         } else if( pragmaNameRecog( "alloc_text" ) ) {
-            PragAllocText();
+            pragAllocText();
         } else if( pragmaNameRecog( "code_seg" ) ) {
-            PragCodeSeg();
+            pragCodeSeg();
         } else if( pragmaNameRecog( "data_seg" ) ) {
-            PragDataSeg();
+            pragDataSeg();
         } else if( pragmaNameRecog( "disable_message" ) ) {
-            PragEnableDisableMessage( 0 );
+            pragEnableDisableMessage( 0 );
         } else if( pragmaNameRecog( "enable_message" ) ) {
-            PragEnableDisableMessage( 1 );
+            pragEnableDisableMessage( 1 );
         } else if( pragmaNameRecog( "message" ) ) {
-            PragMessage();
+            pragMessage();
         } else if( pragmaNameRecog( "intrinsic" ) ) {
-            PragIntrinsic( 1 );
+            pragIntrinsic( 1 );
         } else if( pragmaNameRecog( "function" ) ) {
-            PragIntrinsic( 0 );
+            pragIntrinsic( 0 );
         } else if( pragmaNameRecog( "enum" ) ) {
-            PragEnum();
+            pragEnum();
         } else if( pragmaNameRecog( "read_only_file" ) ) {
-            PragReadOnlyFile();
+            pragReadOnlyFile();
         } else if( pragmaNameRecog( "read_only_directory" ) ) {
-            PragReadOnlyDir();
+            pragReadOnlyDir();
         } else if( pragmaNameRecog( "once" ) ) {
-            PragOnce();
+            pragOnce();
         } else if( pragmaNameRecog( "unroll" ) ) {
-            PragUnroll();
+            pragUnroll();
         } else if( pragmaNameRecog( "STDC" ) ) {
-            PragSTDC();
+            pragSTDC();
         } else if( pragmaNameRecog( "extref" ) ) {
-            PragExtRef();
+            pragExtRef();
         } else if( pragmaNameRecog( "alias" ) ) {
-            PragAlias();
+            pragAlias();
         } else {
             check_end = false;
         }
