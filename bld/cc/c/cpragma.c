@@ -1180,7 +1180,8 @@ static void pragSTDCOption( void )
     }
 }
 
-// form:
+// forms:
+//
 // #pragma STDC (FP_CONTRACT|FENV_ACCESS|CX_LIMITED_RANGE) (ON|OFF|DEFAULT)
 //
 static void PragSTDC( void )

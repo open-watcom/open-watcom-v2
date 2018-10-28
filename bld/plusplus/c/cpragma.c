@@ -478,7 +478,7 @@ const char *SkipUnderscorePrefix( const char *str, size_t *len )
 }
 
 static bool PragIdRecog(        // RECOGNIZE PRAGMA ID
-    char *what )                // - id
+    const char *what )          // - id
 {
     bool ok;
 
@@ -501,7 +501,7 @@ static bool pragmaNameRecog( const char *what )
 }
 
 bool PragRecog(                 // RECOGNIZE PRAGMA ID
-    char *what )                // - id
+    const char *what )          // - id
 {
     if( IS_ID_OR_KEYWORD( CurToken ) ) {
         return( PragIdRecog( what ) );
@@ -1174,7 +1174,8 @@ void CPragma( void )                  // PROCESS A PRAGMA
         } else if( pragmaNameRecog( "warning" ) ) {
             if( pragWarning() ) {
                 /* ignore #pragma warning */
-                check_end = false;  /* skip rest of line */
+                /* skip rest of line */
+                check_end = false;
             }
         } else if( pragmaNameRecog( "enable_message" ) ) {
             pragEnableMessage();

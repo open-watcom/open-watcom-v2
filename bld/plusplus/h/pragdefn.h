@@ -147,32 +147,32 @@ bool PragmaChangeConsistent( // TEST IF PRAGMA CHANGE IS CONSISTENT
     AUX_INFO *oldp,             // - pragma, old
     AUX_INFO *newp )            // - pragma, new
 ;
-bool PragmasTypeEquivalent(  // TEST IF TWO PRAGMAS ARE TYPE-EQUIVALENT
+bool PragmasTypeEquivalent(     // TEST IF TWO PRAGMAS ARE TYPE-EQUIVALENT
     AUX_INFO *inf1,             // - pragma [1]
     AUX_INFO *inf2 )            // - pragma [2]
 ;
-bool PragmaOKForVariables(   // TEST IF PRAGMA IS SUITABLE FOR A VARIABLE
+bool PragmaOKForVariables(      // TEST IF PRAGMA IS SUITABLE FOR A VARIABLE
     AUX_INFO *datap )           // - pragma
 ;
-bool PragmaOKForInlines(     // TEST IF PRAGMA IS SUITABLE FOR INLINED FN
+bool PragmaOKForInlines(        // TEST IF PRAGMA IS SUITABLE FOR INLINED FN
     AUX_INFO *fnp )             // - pragma
 ;
 void PragmaSetToggle(           // SET TOGGLE
-    bool set_flag )          // - true ==> set flag
+    bool set_flag )             // - true ==> set flag
 ;
 void PragObjNameInfo(           // RECOGNIZE OBJECT NAME INFORMATION
     void )
 ;
-bool PragRecog(              // RECOGNIZE PRAGMA ID
-    char *what )                // - id
+bool PragRecog(                 // RECOGNIZE PRAGMA ID
+    const char *what )          // - id
 ;
-int PragRegIndex(            // GET PRAGMA REGISTER INDEX
+int PragRegIndex(               // GET PRAGMA REGISTER INDEX
     const char *registers,
     const char *name,
     size_t len,
     bool ignorecase )
 ;
-int PragRegNumIndex(         // GET PRAGMA REGISTER NUMBER INDEX (RISC CPU)
+int PragRegNumIndex(            // GET PRAGMA REGISTER NUMBER INDEX (RISC CPU)
     const char *str,
     int max_reg )
 ;
