@@ -34,7 +34,7 @@
 #define _COMMON_H_INCLUDED
 
 #ifdef __WATCOMC__
-#pragma WARNING 389 9;
+#pragma warning 389 9;
 #endif
 
 #include "watcom.h"
