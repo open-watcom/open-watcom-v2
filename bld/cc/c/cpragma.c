@@ -131,21 +131,30 @@ static void EndOfPragma( void )
     }
 }
 
+const char *SkipUnderscorePrefix( const char *str, size_t *len )
+/**************************************************************/
+{
+    const char  *start;
+
+    start = str;
+    if( *str == '_' ) {
+        str++;
+        if( *str == '_' ) {
+            str++;
+        }
+    }
+    if( len != NULL ) {
+        *len -= str - start;
+    }
+    return( str );
+}
 
 static bool PragIdRecog( const char *what )
 /****************************************/
 {
-    size_t  len;
     bool    rc;
 
-    len = 0;
-    if( *(Buffer + len) == '_' ) {
-        ++len;
-        if( *(Buffer + len) == '_' ) {
-            ++len;
-        }
-    }
-    rc = ( stricmp( what, Buffer + len ) == 0 );
+    rc = ( stricmp( what, SkipUnderscorePrefix( Buffer, NULL ) ) == 0 );
     if( rc ) {
         NextToken();
     }
@@ -251,17 +260,10 @@ struct magic_words {
 static aux_info *MagicKeyword( const char *name )
 {
     int         i;
-    size_t      len;
 
-    if( *name == '_' ) {
-        ++name;
-        if( *name == '_' ) {
-            ++name;
-        }
-    }
-    len = strlen( name ) + 1;
+    name = SkipUnderscorePrefix( name, NULL );
     for( i = 0; MagicWords[i].name != NULL; ++i ) {
-        if( memcmp( name, MagicWords[i].name + 2, len ) == 0 ) {
+        if( strcmp( name, MagicWords[i].name + 2 ) == 0 ) {
             break;
         }
     }

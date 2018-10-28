@@ -459,19 +459,30 @@ void PragmaSetToggle(           // SET TOGGLE
     #undef toggle_pick
 }
 
+const char *SkipUnderscorePrefix( const char *str, size_t *len )
+/**************************************************************/
+{
+    const char  *start;
+
+    start = str;
+    if( *str == '_' ) {
+        str++;
+        if( *str == '_' ) {
+            str++;
+        }
+    }
+    if( len != NULL ) {
+        *len -= str - start;
+    }
+    return( str );
+}
+
 static bool PragIdRecog(        // RECOGNIZE PRAGMA ID
     char *what )                // - id
 {
-    char *p = Buffer;
     bool ok;
 
-    if( *p == '_' ) {
-        ++p;
-        if( *p == '_' ) {
-            ++p;
-        }
-    }
-    ok = ( stricmp( p, what ) == 0 );
+    ok = ( stricmp( SkipUnderscorePrefix( Buffer, NULL ), what ) == 0 );
     if( ok ) {
         NextToken();
     }
@@ -1224,12 +1235,7 @@ static magic_word_idx lookupMagicKeyword(   // LOOKUP A MAGIC KEYWORD
 {
     magic_word_idx  i;
 
-    if( *name == '_' ) {
-        ++name;
-        if( *name == '_' ) {
-            ++name;
-        }
-    }
+    name = SkipUnderscorePrefix( name, NULL );
     for( i = 0; i < M_UNKNOWN; i++ ) {
         if( strcmp( magicWords[i].name + 2, name ) == 0 ) {
             break;

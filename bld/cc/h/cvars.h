@@ -735,6 +735,7 @@ extern void         SetPackAmount( unsigned amount );
 extern bool         GetPragAuxAliasInfo( void );
 extern aux_info     *SearchPragAuxAlias( const char *name );
 extern bool         GetPragAuxAlias( void );
+extern const char   *SkipUnderscorePrefix( const char *str, size_t *len );
 
 /* cprag??? */
 extern void         AsmStmt(void);

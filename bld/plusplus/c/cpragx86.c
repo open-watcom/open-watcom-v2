@@ -1245,14 +1245,7 @@ hw_reg_set PragRegName(         // GET REGISTER NAME
     hw_reg_set      name;
 
     if( *str != '\0' ) {
-        if( *str == '_' ) {
-            ++str;
-            --len;
-            if( *str == '_' ) {
-                ++str;
-                --len;
-            }
-        }
+        str = SkipUnderscorePrefix( str, &len );
         index = PragRegIndex( Registers, str, len, true );
         if( index != -1 ) {
             return( RegBits[RegMap[index]] );

@@ -704,14 +704,7 @@ hw_reg_set PragRegName( const char *str, size_t len )
     hw_reg_set      name;
 
     if( len != 0 ) {
-        if( *str == '_' ) {
-            ++str;
-            --len;
-            if( *str == '_' ) {
-                ++str;
-                --len;
-            }
-        }
+        str = SkipUnderscorePrefix( str, &len );
         // search register or alias name
         index = PragRegIndex( Registers, str, len, true );
         if( index != -1 ) {
