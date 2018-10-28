@@ -489,17 +489,16 @@ static bool PragIdRecog(        // RECOGNIZE PRAGMA ID
     return( ok );
 }
 
-
-static bool startPragRecog( char *id )
+static bool pragmaNameRecog( const char *what )
 {
     bool ok;
 
-    PPCTL_ENABLE_MACROS();
-    ok = PragIdRecog( id );
-    PPCTL_DISABLE_MACROS();
+    ok = ( strcmp( Buffer, what ) == 0 );
+    if( ok ) {
+        NextToken();
+    }
     return( ok );
 }
-
 
 bool PragRecog(                 // RECOGNIZE PRAGMA ID
     char *what )                // - id
@@ -1075,9 +1074,9 @@ static void pragPack(           // #PRAGMA PACK
         PPCTL_DISABLE_MACROS();
         switch( CurToken ) {
         case T_ID:
-            if( PragIdRecog( "pop" ) ) {
+            if( PragRecog( "pop" ) ) {
                 popPrag( &HeadPacks, &PackAmount );
-            } else if( PragIdRecog( "push" ) ) {
+            } else if( PragRecog( "push" ) ) {
                 if( CurToken == T_RIGHT_PAREN ) {
                     pushPrag( &HeadPacks, PackAmount );
                 } else {
@@ -1112,6 +1111,32 @@ static void pragPack(           // #PRAGMA PACK
     }
 }
 
+static void pragSTDCOption( void )
+/*******************************/
+{
+    if( pragmaNameRecog( "ON" ) ) {
+    } else if( pragmaNameRecog( "OFF" ) ) {
+    } else if( pragmaNameRecog( "DEFAULT" ) ) {
+    }
+}
+
+// forms:
+//
+// #pragma STDC (FP_CONTRACT|FENV_ACCESS|CX_LIMITED_RANGE) (ON|OFF|DEFAULT)
+//
+static void pragSTDC( void )
+/**************************/
+{
+    if( pragmaNameRecog( "FP_CONTRACT" ) ) {
+        pragSTDCOption();
+    } else if( pragmaNameRecog( "FENV_ACCESS" ) ) {
+        pragSTDCOption();
+    } else if( pragmaNameRecog( "CX_LIMITED_RANGE" ) ) {
+        pragSTDCOption();
+    }
+}
+
+
 void CPragma( void )                  // PROCESS A PRAGMA
 {
     bool check_end = true;
@@ -1119,7 +1144,7 @@ void CPragma( void )                  // PROCESS A PRAGMA
     SrcFileGuardStateSig();
     CompFlags.in_pragma = true;
     NextToken();
-    if( IS_ID_OR_KEYWORD( CurToken ) && PragIdRecog( "include_alias" ) ) {
+    if( IS_ID_OR_KEYWORD( CurToken ) && pragmaNameRecog( "include_alias" ) ) {
         pragIncludeAlias();
     } else if( CompFlags.cpp_output ) {
         PPCTL_ENABLE_MACROS();
@@ -1130,65 +1155,67 @@ void CPragma( void )                  // PROCESS A PRAGMA
         }
         PPCTL_DISABLE_MACROS();
     } else if( IS_ID_OR_KEYWORD( CurToken ) ) {
-        if( PragIdRecog( "on" ) ) {
+        if( pragmaNameRecog( "on" ) ) {
             pragFlag( true );
-        } else if( PragIdRecog( "off" ) ) {
+        } else if( pragmaNameRecog( "off" ) ) {
             pragFlag( false );
-        } else if( PragIdRecog( "aux" ) || PragIdRecog( "linkage" ) ) {
+        } else if( pragmaNameRecog( "aux" ) || pragmaNameRecog( "linkage" ) ) {
             PragAux();
-        } else if( PragIdRecog( "library" ) ) {
+        } else if( pragmaNameRecog( "library" ) ) {
             pragLibs();
-        } else if( PragIdRecog( "once" ) ) {
+        } else if( pragmaNameRecog( "once" ) ) {
             pragOnce();
-        } else if( PragIdRecog( "extref" ) ) {
+        } else if( pragmaNameRecog( "extref" ) ) {
             pragExtRef();
-        } else if( PragIdRecog( "comment" ) ) {
+        } else if( pragmaNameRecog( "comment" ) ) {
             pragComment();
-        } else if( PragIdRecog( "pack" ) ) {
+        } else if( pragmaNameRecog( "pack" ) ) {
             pragPack();
-        } else if( PragIdRecog( "warning" ) ) {
+        } else if( pragmaNameRecog( "warning" ) ) {
             if( pragWarning() ) {
                 /* ignore #pragma warning */
                 check_end = false;  /* skip rest of line */
             }
-        } else if( PragIdRecog( "enable_message" ) ) {
+        } else if( pragmaNameRecog( "enable_message" ) ) {
             pragEnableMessage();
-        } else if( PragIdRecog( "disable_message" ) ) {
+        } else if( pragmaNameRecog( "disable_message" ) ) {
             pragDisableMessage();
-        } else if( PragIdRecog( "code_seg" ) ) {
+        } else if( pragmaNameRecog( "code_seg" ) ) {
             pragCodeSeg();
-        } else if( PragIdRecog( "data_seg" ) ) {
+        } else if( pragmaNameRecog( "data_seg" ) ) {
             pragDataSeg();
-        } else if( PragIdRecog( "initialize" ) ) {
+        } else if( pragmaNameRecog( "initialize" ) ) {
             pragInitialize();
-        } else if( PragIdRecog( "init_seg" ) ) {
+        } else if( pragmaNameRecog( "init_seg" ) ) {
             pragInitSeg();
-        } else if( PragIdRecog( "inline_depth" ) ) {
+        } else if( pragmaNameRecog( "inline_depth" ) ) {
             pragInlineDepth();
-        } else if( PragIdRecog( "template_depth" ) ) {
+        } else if( pragmaNameRecog( "template_depth" ) ) {
             pragTemplateDepth();
-        } else if( PragIdRecog( "inline_recursion" ) ) {
+        } else if( pragmaNameRecog( "inline_recursion" ) ) {
             pragInlineRecursion();
-        } else if( PragIdRecog( "intrinsic" ) ) {
+        } else if( pragmaNameRecog( "intrinsic" ) ) {
             pragIntrinsic( true );
-        } else if( PragIdRecog( "function" ) ) {
+        } else if( pragmaNameRecog( "function" ) ) {
             pragIntrinsic( false );
-        } else if( PragIdRecog( "destruct" ) ) {
+        } else if( pragmaNameRecog( "destruct" ) ) {
             pragDestruct();
-        } else if( PragIdRecog( "enum" ) ) {
+        } else if( pragmaNameRecog( "enum" ) ) {
             pragEnum();
-        } else if( PragIdRecog( "dump_object_model" ) ) {
+        } else if( pragmaNameRecog( "dump_object_model" ) ) {
             pragDumpObjectModel();
-        } else if( startPragRecog( "read_only_file" ) ) {
+        } else if( pragmaNameRecog( "read_only_file" ) ) {
             pragReadOnlyFile();
-        } else if( startPragRecog( "read_only_directory" ) ) {
+        } else if( pragmaNameRecog( "read_only_directory" ) ) {
             pragReadOnlyDir();
-        } else if( PragIdRecog( "message" ) ) {
+        } else if( pragmaNameRecog( "message" ) ) {
             pragMessage();
-        } else if( PragIdRecog( "error" ) ) {
+        } else if( pragmaNameRecog( "error" ) ) {
             pragError();
+        } else if( pragmaNameRecog( "STDC" ) ) {
+            pragSTDC();
 #ifndef NDEBUG
-        } else if( PragIdRecog( "break" ) ) {
+        } else if( pragmaNameRecog( "break" ) ) {
             pragBreak();
 #endif
         } else {                /* unknown pragma */

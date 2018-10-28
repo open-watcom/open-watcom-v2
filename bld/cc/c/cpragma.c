@@ -150,7 +150,7 @@ const char *SkipUnderscorePrefix( const char *str, size_t *len )
 }
 
 static bool PragIdRecog( const char *what )
-/****************************************/
+/*****************************************/
 {
     bool    rc;
 
@@ -162,17 +162,17 @@ static bool PragIdRecog( const char *what )
 }
 
 
-static bool startPragRecog( const char *what )
-/*******************************************/
+static bool pragmaNameRecog( const char *what )
+/*********************************************/
 {
-    bool rc;
+    bool ok;
 
-    PPCTL_ENABLE_MACROS();
-    rc = PragIdRecog( what );
-    PPCTL_DISABLE_MACROS();
-    return( rc );
+    ok = ( strcmp( Buffer, what ) == 0 );
+    if( ok ) {
+        NextToken();
+    }
+    return( ok );
 }
-
 
 bool PragRecog( const char *what )
 /********************************/
@@ -712,7 +712,7 @@ static void getPackArgs( void )
     struct pack_info    *pi;
 
     /* check to make sure it is a numeric token */
-    if( PragIdRecog( "push" ) ) {
+    if( PragRecog( "push" ) ) {
         pi = (struct pack_info *)CMemAlloc( sizeof( struct pack_info ) );
         pi->next = PackInfo;
         pi->pack_amount = PackAmount;
@@ -726,7 +726,7 @@ static void getPackArgs( void )
             }
             NextToken();
         }
-    } else if( PragIdRecog( "pop" ) ) {
+    } else if( PragRecog( "pop" ) ) {
         pi = PackInfo;
         if( pi != NULL ) {
             PackAmount = pi->pack_amount;
@@ -1171,12 +1171,12 @@ static void PragOnce( void )
     SetSrcFNameOnce();
 }
 
-static void PragSTDCOption( void )
-/*******************************/
+static void pragSTDCOption( void )
+/********************************/
 {
-    if( PragRecog( "ON" ) ) {
-    } else if( PragRecog( "OFF" ) ) {
-    } else if( PragRecog( "DEFAULT" ) ) {
+    if( pragmaNameRecog( "ON" ) ) {
+    } else if( pragmaNameRecog( "OFF" ) ) {
+    } else if( pragmaNameRecog( "DEFAULT" ) ) {
     }
 }
 
@@ -1186,12 +1186,12 @@ static void PragSTDCOption( void )
 static void PragSTDC( void )
 /**************************/
 {
-    if( PragRecog( "FP_CONTRACT" ) ) {
-        PragSTDCOption();
-    } else if( PragRecog( "FENV_ACCESS" ) ) {
-        PragSTDCOption();
-    } else if( PragRecog( "CX_LIMITED_RANGE" ) ) {
-        PragSTDCOption();
+    if( pragmaNameRecog( "FP_CONTRACT" ) ) {
+        pragSTDCOption();
+    } else if( pragmaNameRecog( "FENV_ACCESS" ) ) {
+        pragSTDCOption();
+    } else if( pragmaNameRecog( "CX_LIMITED_RANGE" ) ) {
+        pragSTDCOption();
     }
 }
 
@@ -1344,7 +1344,7 @@ void CPragma( void )
      */
     CompFlags.in_pragma = true;
     NextToken();
-    if( IS_ID_OR_KEYWORD( CurToken ) && PragIdRecog( "include_alias" ) ) {
+    if( IS_ID_OR_KEYWORD( CurToken ) && pragmaNameRecog( "include_alias" ) ) {
         PragIncludeAlias();
     } else if( CompFlags.cpp_output ) {
         PPCTL_ENABLE_MACROS();
@@ -1355,49 +1355,49 @@ void CPragma( void )
         }
         PPCTL_DISABLE_MACROS();
     } else if( IS_ID_OR_KEYWORD( CurToken ) ) {
-        if( PragIdRecog( "on" ) ) {
+        if( pragmaNameRecog( "on" ) ) {
             PragFlag( 1 );
-        } else if( PragIdRecog( "off" ) ) {
+        } else if( pragmaNameRecog( "off" ) ) {
             PragFlag( 0 );
-        } else if( PragIdRecog( "aux" ) || PragIdRecog( "linkage" ) ) {
+        } else if( pragmaNameRecog( "aux" ) || pragmaNameRecog( "linkage" ) ) {
             PragAux();
-        } else if( PragIdRecog( "library" ) ) {
+        } else if( pragmaNameRecog( "library" ) ) {
             PragLibs();
-        } else if( PragIdRecog( "comment" ) ) {
+        } else if( pragmaNameRecog( "comment" ) ) {
             PragComment();
-        } else if( PragIdRecog( "pack" ) ) {
+        } else if( pragmaNameRecog( "pack" ) ) {
             PragPack();
-        } else if( PragIdRecog( "alloc_text" ) ) {
+        } else if( pragmaNameRecog( "alloc_text" ) ) {
             PragAllocText();
-        } else if( PragIdRecog( "code_seg" ) ) {
+        } else if( pragmaNameRecog( "code_seg" ) ) {
             PragCodeSeg();
-        } else if( PragIdRecog( "data_seg" ) ) {
+        } else if( pragmaNameRecog( "data_seg" ) ) {
             PragDataSeg();
-        } else if( PragIdRecog( "disable_message" ) ) {
+        } else if( pragmaNameRecog( "disable_message" ) ) {
             PragEnableDisableMessage( 0 );
-        } else if( PragIdRecog( "enable_message" ) ) {
+        } else if( pragmaNameRecog( "enable_message" ) ) {
             PragEnableDisableMessage( 1 );
-        } else if( PragIdRecog( "message" ) ) {
+        } else if( pragmaNameRecog( "message" ) ) {
             PragMessage();
-        } else if( PragIdRecog( "intrinsic" ) ) {
+        } else if( pragmaNameRecog( "intrinsic" ) ) {
             PragIntrinsic( 1 );
-        } else if( PragIdRecog( "function" ) ) {
+        } else if( pragmaNameRecog( "function" ) ) {
             PragIntrinsic( 0 );
-        } else if( PragIdRecog( "enum" ) ) {
+        } else if( pragmaNameRecog( "enum" ) ) {
             PragEnum();
-        } else if( startPragRecog( "read_only_file" ) ) {
+        } else if( pragmaNameRecog( "read_only_file" ) ) {
             PragReadOnlyFile();
-        } else if( startPragRecog( "read_only_directory" ) ) {
+        } else if( pragmaNameRecog( "read_only_directory" ) ) {
             PragReadOnlyDir();
-        } else if( PragIdRecog( "once" ) ) {
+        } else if( pragmaNameRecog( "once" ) ) {
             PragOnce();
-        } else if( PragIdRecog( "unroll" ) ) {
+        } else if( pragmaNameRecog( "unroll" ) ) {
             PragUnroll();
-        } else if( PragIdRecog( "STDC" ) ) {
+        } else if( pragmaNameRecog( "STDC" ) ) {
             PragSTDC();
-        } else if( PragIdRecog( "extref" ) ) {
+        } else if( pragmaNameRecog( "extref" ) ) {
             PragExtRef();
-        } else if( PragIdRecog( "alias" ) ) {
+        } else if( pragmaNameRecog( "alias" ) ) {
             PragAlias();
         } else {
             check_end = false;
