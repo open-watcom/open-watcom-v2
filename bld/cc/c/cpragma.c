@@ -132,30 +132,6 @@ static void EndOfPragma( void )
 }
 
 
-bool SetToggleFlag( char const *name, int const value )
-/*****************************************************/
-{
-    int     i;
-    char    *pnt;
-    bool    ret;
-    size_t  len;
-
-    len = strlen( name ) + 1;
-    ret = false;
-    for( i = 0; (pnt = ToggleNames[i].name) != NULL; ++i ) {
-        if( memcmp( pnt, name, len ) == 0 ) {
-            if( value == 0 ) {
-                Toggles &= ~ToggleNames[i].flag;
-            } else {
-                Toggles |= ToggleNames[i].flag;
-            }
-            ret = true;
-            break;
-        }
-    }
-    return( ret );
-}
-
 static bool PragIdRecog( const char *what )
 /****************************************/
 {
@@ -196,20 +172,6 @@ bool PragRecog( const char *what )
         return( PragIdRecog( what ) );
     }
     return( false );
-}
-
-static void PragFlag( int value )
-/******************************/
-{
-
-    if( ExpectingToken( T_LEFT_PAREN ) ) {
-        NextToken();
-        while( IS_ID_OR_KEYWORD( CurToken ) ) {
-            SetToggleFlag( Buffer, value );
-            NextToken();
-        }
-        MustRecog( T_RIGHT_PAREN );
-    }
 }
 
 static void advanceToken( void )
@@ -275,142 +237,6 @@ enum sym_state AsmQueryState( void *handle )
         return( SYM_STACK );
     }
     return( SYM_EXTERNAL );
-}
-
-void AddLibraryName( const char *name, const char priority )
-/**********************************************************/
-{
-    library_list    **new_owner;
-    library_list    **owner;
-    library_list    *lib;
-    size_t          len;
-
-    for( owner = &HeadLibs; (lib = *owner) != NULL; owner = &lib->next ) {
-        if( lib->libname[0] < priority ) {
-            break;
-        }
-        if( FNAMECMPSTR( lib->libname + 1, name ) == 0 ) {
-            return;
-        }
-    }
-    new_owner = owner;
-    for( ; (lib = *owner) != NULL; owner = &lib->next ) {
-        if( FNAMECMPSTR( lib->libname + 1, name ) == 0 ) {
-            *owner = lib->next;
-            break;
-        }
-    }
-    if( lib == NULL ) {
-        len = strlen( name ) + 1;
-        lib = CMemAlloc( offsetof( library_list, libname ) + len + 1 );
-        memcpy( lib->libname + 1, name, len );
-    }
-    lib->libname[0] = priority;
-    lib->next = *new_owner;
-    *new_owner = lib;
-}
-
-static void GetLibraryNames( void )
-/********************************/
-{
-    while( IS_ID_OR_KEYWORD( CurToken ) || CurToken == T_STRING ) {
-        AddLibraryName( Buffer, USER_LIB_PRIO );
-        NextToken();
-    }
-}
-
-static void PragLibs( void )
-/*************************/
-{
-    if( CurToken == T_LEFT_PAREN ) {
-        NextToken();
-        GetLibraryNames();
-        MustRecog( T_RIGHT_PAREN );
-    } else {
-        CompFlags.pragma_library = true;
-    }
-}
-
-static void PragComment( void )
-/****************************/
-{
-    if( ExpectingToken( T_LEFT_PAREN ) ) {
-        NextToken();
-        if( PragRecog( "lib" ) ) {
-            if( ExpectingToken( T_COMMA ) ) {
-                NextToken();
-            }
-            GetLibraryNames();
-        }
-        MustRecog( T_RIGHT_PAREN );
-    }
-}
-
-void SetPackAmount( unsigned amount )
-/***********************************/
-{
-    if( amount <= 1 ) {
-        PackAmount = 1;
-    } else if( amount <= 2 ) {
-        PackAmount = 2;
-    } else if( amount <= 4 ) {
-        PackAmount = 4;
-    } else if( amount <= 8 ) {
-        PackAmount = 8;
-    } else {
-        PackAmount = 16;
-    }
-}
-
-static void getPackArgs( void )
-/****************************/
-{
-    struct pack_info    *pi;
-
-    /* check to make sure it is a numeric token */
-    if( PragIdRecog( "push" ) ) {
-        pi = (struct pack_info *)CMemAlloc( sizeof( struct pack_info ) );
-        pi->next = PackInfo;
-        pi->pack_amount = PackAmount;
-        PackInfo = pi;
-        if( CurToken == T_COMMA ) {
-            PPCTL_ENABLE_MACROS();
-            NextToken();
-            PPCTL_DISABLE_MACROS();
-            if( ExpectingConstant() ) {
-                SetPackAmount( Constant );
-            }
-            NextToken();
-        }
-    } else if( PragIdRecog( "pop" ) ) {
-        pi = PackInfo;
-        if( pi != NULL ) {
-            PackAmount = pi->pack_amount;
-            PackInfo = pi->next;
-            CMemFree( pi );
-        }
-    } else {
-        CErr1( ERR_NOT_A_CONSTANT_EXPR );
-    }
-}
-
-static void PragPack( void )
-/*************************/
-{
-    if( ExpectingToken( T_LEFT_PAREN ) ) {
-        PPCTL_ENABLE_MACROS();
-        NextToken();
-        PPCTL_DISABLE_MACROS();
-        if( CurToken == T_CONSTANT ) {
-            SetPackAmount( Constant );
-            NextToken();
-        } else if( IS_ID_OR_KEYWORD( CurToken ) ) {
-            getPackArgs();
-        } else if( CurToken == T_RIGHT_PAREN ) {
-            PackAmount = GblPackAmount;
-        }
-        MustRecog( T_RIGHT_PAREN );
-    }
 }
 
 struct magic_words {
@@ -753,6 +579,180 @@ hw_reg_set *PragManyRegSets( void )
     sets = (hw_reg_set *)CMemAlloc( i );
     memcpy( sets, buff, i );
     return( sets );
+}
+
+bool SetToggleFlag( char const *name, int const value )
+/*****************************************************/
+{
+    int     i;
+    char    *pnt;
+    bool    ret;
+    size_t  len;
+
+    len = strlen( name ) + 1;
+    ret = false;
+    for( i = 0; (pnt = ToggleNames[i].name) != NULL; ++i ) {
+        if( memcmp( pnt, name, len ) == 0 ) {
+            if( value == 0 ) {
+                Toggles &= ~ToggleNames[i].flag;
+            } else {
+                Toggles |= ToggleNames[i].flag;
+            }
+            ret = true;
+            break;
+        }
+    }
+    return( ret );
+}
+
+static void PragFlag( int value )
+/******************************/
+{
+
+    if( ExpectingToken( T_LEFT_PAREN ) ) {
+        NextToken();
+        while( IS_ID_OR_KEYWORD( CurToken ) ) {
+            SetToggleFlag( Buffer, value );
+            NextToken();
+        }
+        MustRecog( T_RIGHT_PAREN );
+    }
+}
+
+void AddLibraryName( const char *name, const char priority )
+/**********************************************************/
+{
+    library_list    **new_owner;
+    library_list    **owner;
+    library_list    *lib;
+    size_t          len;
+
+    for( owner = &HeadLibs; (lib = *owner) != NULL; owner = &lib->next ) {
+        if( lib->libname[0] < priority ) {
+            break;
+        }
+        if( FNAMECMPSTR( lib->libname + 1, name ) == 0 ) {
+            return;
+        }
+    }
+    new_owner = owner;
+    for( ; (lib = *owner) != NULL; owner = &lib->next ) {
+        if( FNAMECMPSTR( lib->libname + 1, name ) == 0 ) {
+            *owner = lib->next;
+            break;
+        }
+    }
+    if( lib == NULL ) {
+        len = strlen( name ) + 1;
+        lib = CMemAlloc( offsetof( library_list, libname ) + len + 1 );
+        memcpy( lib->libname + 1, name, len );
+    }
+    lib->libname[0] = priority;
+    lib->next = *new_owner;
+    *new_owner = lib;
+}
+
+static void GetLibraryNames( void )
+/********************************/
+{
+    while( IS_ID_OR_KEYWORD( CurToken ) || CurToken == T_STRING ) {
+        AddLibraryName( Buffer, USER_LIB_PRIO );
+        NextToken();
+    }
+}
+
+static void PragLibs( void )
+/*************************/
+{
+    if( CurToken == T_LEFT_PAREN ) {
+        NextToken();
+        GetLibraryNames();
+        MustRecog( T_RIGHT_PAREN );
+    } else {
+        CompFlags.pragma_library = true;
+    }
+}
+
+static void PragComment( void )
+/****************************/
+{
+    if( ExpectingToken( T_LEFT_PAREN ) ) {
+        NextToken();
+        if( PragRecog( "lib" ) ) {
+            if( ExpectingToken( T_COMMA ) ) {
+                NextToken();
+            }
+            GetLibraryNames();
+        }
+        MustRecog( T_RIGHT_PAREN );
+    }
+}
+
+void SetPackAmount( unsigned amount )
+/***********************************/
+{
+    if( amount <= 1 ) {
+        PackAmount = 1;
+    } else if( amount <= 2 ) {
+        PackAmount = 2;
+    } else if( amount <= 4 ) {
+        PackAmount = 4;
+    } else if( amount <= 8 ) {
+        PackAmount = 8;
+    } else {
+        PackAmount = 16;
+    }
+}
+
+static void getPackArgs( void )
+/****************************/
+{
+    struct pack_info    *pi;
+
+    /* check to make sure it is a numeric token */
+    if( PragIdRecog( "push" ) ) {
+        pi = (struct pack_info *)CMemAlloc( sizeof( struct pack_info ) );
+        pi->next = PackInfo;
+        pi->pack_amount = PackAmount;
+        PackInfo = pi;
+        if( CurToken == T_COMMA ) {
+            PPCTL_ENABLE_MACROS();
+            NextToken();
+            PPCTL_DISABLE_MACROS();
+            if( ExpectingConstant() ) {
+                SetPackAmount( Constant );
+            }
+            NextToken();
+        }
+    } else if( PragIdRecog( "pop" ) ) {
+        pi = PackInfo;
+        if( pi != NULL ) {
+            PackAmount = pi->pack_amount;
+            PackInfo = pi->next;
+            CMemFree( pi );
+        }
+    } else {
+        CErr1( ERR_NOT_A_CONSTANT_EXPR );
+    }
+}
+
+static void PragPack( void )
+/*************************/
+{
+    if( ExpectingToken( T_LEFT_PAREN ) ) {
+        PPCTL_ENABLE_MACROS();
+        NextToken();
+        PPCTL_DISABLE_MACROS();
+        if( CurToken == T_CONSTANT ) {
+            SetPackAmount( Constant );
+            NextToken();
+        } else if( IS_ID_OR_KEYWORD( CurToken ) ) {
+            getPackArgs();
+        } else if( CurToken == T_RIGHT_PAREN ) {
+            PackAmount = GblPackAmount;
+        }
+        MustRecog( T_RIGHT_PAREN );
+    }
 }
 
 textsegment *NewTextSeg( const char *name, const char *suffix, const char *classname )
@@ -1342,7 +1342,7 @@ void CPragma( void )
      */
     CompFlags.in_pragma = true;
     NextToken();
-    if( PragRecog( "include_alias" ) ) {
+    if( IS_ID_OR_KEYWORD( CurToken ) && PragIdRecog( "include_alias" ) ) {
         PragIncludeAlias();
     } else if( CompFlags.cpp_output ) {
         PPCTL_ENABLE_MACROS();
@@ -1375,8 +1375,6 @@ void CPragma( void )
             PragEnableDisableMessage( 0 );
         } else if( PragIdRecog( "enable_message" ) ) {
             PragEnableDisableMessage( 1 );
-        } else if( PragIdRecog( "include_alias" ) ) {
-            PragIncludeAlias();
         } else if( PragIdRecog( "message" ) ) {
             PragMessage();
         } else if( PragIdRecog( "intrinsic" ) ) {

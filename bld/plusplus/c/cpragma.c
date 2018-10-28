@@ -1108,7 +1108,7 @@ void CPragma( void )                  // PROCESS A PRAGMA
     SrcFileGuardStateSig();
     CompFlags.in_pragma = true;
     NextToken();
-    if( PragRecog( "include_alias" ) ) {
+    if( IS_ID_OR_KEYWORD( CurToken ) && PragIdRecog( "include_alias" ) ) {
         pragIncludeAlias();
     } else if( CompFlags.cpp_output ) {
         PPCTL_ENABLE_MACROS();
@@ -1172,8 +1172,6 @@ void CPragma( void )                  // PROCESS A PRAGMA
             pragReadOnlyFile();
         } else if( startPragRecog( "read_only_directory" ) ) {
             pragReadOnlyDir();
-        } else if( PragIdRecog( "include_alias" ) ) {
-            pragIncludeAlias();
         } else if( PragIdRecog( "message" ) ) {
             pragMessage();
         } else if( PragIdRecog( "error" ) ) {
