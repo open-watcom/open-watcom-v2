@@ -256,18 +256,6 @@ static bool scanHex( bool expanding )
     return( true );                 /* indicate characters were matched */
 }
 
-static TOKEN idLookup( size_t len, MEPTR *pmeptr )
-{
-    MEPTR fmentry;
-
-    fmentry = MacroLookup( Buffer, len );
-    if( fmentry != NULL ) {
-        *pmeptr = fmentry;
-        return( T_MACRO );
-    }
-    return( KwLookup( len ) );
-}
-
 static void prt_comment_char( int c )
 {
     switch( c ) {
@@ -796,32 +784,34 @@ static TOKEN doScanName( int c, bool expanding )
     if( expanding || (PPControl & PPCTL_NO_EXPAND) ) {
         return( T_ID );
     }
-    CurToken = idLookup( TokenLen, &fmentry );
-    if( CurToken == T_MACRO ) {
-        prt_char( ' ' );
-        if( fmentry->macro_defn == 0 ) {
-            return( SpecialMacro( fmentry ) );
-        }
-        fmentry->macro_flags |= MFLAG_REFERENCED;
-        /* if macro requires parameters and next char is not a '('
-        then this is not a macro */
-        if( fmentry->parm_count != 0 ) {
-            SkipAhead();
-            if( CurrChar != '(' ) {
-                if( CompFlags.cpp_output ) {
-                    Buffer[TokenLen++] = ' ';
-                    Buffer[TokenLen] = '\0';
-                    return( T_ID );
-                }
-                return( KwLookup( TokenLen ) );
+
+    fmentry = MacroLookup( Buffer, TokenLen );
+    if( fmentry == NULL )
+        return( KwLookup( TokenLen ) );
+
+    prt_char( ' ' );
+    if( fmentry->macro_defn == 0 ) {
+        return( SpecialMacro( fmentry ) );
+    }
+    fmentry->macro_flags |= MFLAG_REFERENCED;
+    /* if macro requires parameters and next char is not a '('
+    then this is not a macro */
+    if( fmentry->parm_count != 0 ) {
+        SkipAhead();
+        if( CurrChar != '(' ) {
+            if( CompFlags.cpp_output ) {
+                Buffer[TokenLen++] = ' ';
+                Buffer[TokenLen] = '\0';
+                return( T_ID );
             }
+            return( KwLookup( TokenLen ) );
         }
-        DoMacroExpansion( fmentry );
-        DbgAssert( _BufferOverrun == BUFFER_OVERRUN_CHECK );
-        GetMacroToken( false );
-        if( CurToken == T_NULL ) {
-            CurToken = T_WHITE_SPACE;
-        }
+    }
+    DoMacroExpansion( fmentry );
+    DbgAssert( _BufferOverrun == BUFFER_OVERRUN_CHECK );
+    GetMacroToken( false );
+    if( CurToken == T_NULL ) {
+        CurToken = T_WHITE_SPACE;
     }
     return( CurToken );
 }
