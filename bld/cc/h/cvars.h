@@ -180,7 +180,6 @@ global segment_id   FunctionProfileSegment; /* segment for profiling data block 
 
 global int          MacroDepth;
 global char         *MacroPtr;
-global MEPTR        NextMacro;
 global MEPTR        UndefMacroList;
 global MEPTR        *MacHash;           /* [MACRO_HASH_SIZE] */
 global ENUMPTR      EnumTable[ID_HASH_SIZE];
@@ -634,7 +633,7 @@ extern void         MacroFini(void);
 extern void         MacroPurge(void);
 extern void         GetMacroToken(void);
 extern TOKEN        SpecialMacro( special_macros spc_macro );
-extern void         DoMacroExpansion(void);
+extern void         DoMacroExpansion( MEPTR );
 
 /* cmac2.c */
 extern TOKEN        ChkControl(void);
@@ -760,7 +759,6 @@ extern void         ReScanInit( const char * );
 extern bool         ReScanToken( void );
 extern char         *ReScanPos( void );
 extern TOKEN        KwLookup( const char *, size_t );
-extern TOKEN        IdLookup( const char *, size_t );
 extern TOKEN        NextToken( void );
 extern TOKEN        PPNextToken( void );
 

@@ -438,9 +438,8 @@ static void SaveParm( MEPTR mentry, size_t size, mac_parm_count parmno,
     }
 }
 
-static MACRO_ARG *CollectParms( void )
+static MACRO_ARG *CollectParms( MEPTR mentry )
 {
-    MEPTR           mentry;
     size_t          len;
     int             bracket;
     TOKEN           tok;
@@ -451,7 +450,6 @@ static MACRO_ARG *CollectParms( void )
     tokens          *token_head;
 
     macro_parms = NULL;
-    mentry = NextMacro;
     if( mentry->parm_count != 0 ) {     /* if() expected */
         ppscan_mode = InitPPScan();     // enable T_PPNUMBER tokens
         if( mentry->parm_count > 1 ) {
@@ -697,16 +695,16 @@ static bool MacroBeingExpanded( MEPTR mentry )
     return( false );
 }
 
-static int Expandable( MACRO_TOKEN *mtok, bool macro_parm )
+static int Expandable( MACRO_TOKEN *mtok, bool macro_parm, MEPTR mentry )
 {
     int         lparen;
 
-    if( NextMacro->macro_defn == 0 ) {  /* if special macro */
+    if( mentry->macro_defn == 0 ) {  /* if special macro */
         return( 1 );
     }
-    if( NextMacro->parm_count == 0 ) {  /* if() not expected */
+    if( mentry->parm_count == 0 ) {  /* if() not expected */
         if( macro_parm ) {
-            if( MacroBeingExpanded( NextMacro ) ) {
+            if( MacroBeingExpanded( mentry ) ) {
                 return( 0 );
             }
         }
@@ -1125,9 +1123,8 @@ static MACRO_TOKEN *BuildMTokenList( const char *p, MACRO_ARG *macro_parms )
     return( head );
 }
 
-static MACRO_TOKEN *MacroExpansion( bool rescanning )
+static MACRO_TOKEN *MacroExpansion( bool rescanning, MEPTR mentry )
 {
-    MEPTR           mentry;
     MACRO_ARG       *macro_parms;
     MACRO_TOKEN     *head;
     MACRO_TOKEN     *mtok;
@@ -1135,7 +1132,6 @@ static MACRO_TOKEN *MacroExpansion( bool rescanning )
     size_t          len;
     TOKEN           tok;
 
-    mentry = NextMacro;
     nested = (NESTED_MACRO *)CMemAlloc( sizeof( NESTED_MACRO ) );
     nested->mentry = mentry;
     nested->rescanning = rescanning;
@@ -1147,7 +1143,7 @@ static MACRO_TOKEN *MacroExpansion( bool rescanning )
         nested->next = NestedMacros;
         NestedMacros = nested;
     } else {
-        macro_parms = CollectParms();
+        macro_parms = CollectParms( mentry );
         nested->next = NestedMacros;
         NestedMacros = nested;
         nested->macro_parms = macro_parms;
@@ -1181,6 +1177,7 @@ static MACRO_TOKEN *ExpandNestedMacros( MACRO_TOKEN *head, bool rescanning )
     int         i;
     size_t      len;
     char        *buf;
+    MEPTR       mentry;
 
     mtok = head;
     ++MacroDepth;
@@ -1195,9 +1192,11 @@ static MACRO_TOKEN *ExpandNestedMacros( MACRO_TOKEN *head, bool rescanning )
             while( (buf[len] = mtok->data[len]) != '\0' )
                 len++;
             CalcHash( buf, len );
-            if( IdLookup( buf, len ) == T_MACRO ) {
+            mentry = MacroLookup( buf );
+            if( mentry != NULL ) {
+                /* this is a macro */
                 if( rescanning ) {
-                    if( MacroBeingExpanded( NextMacro ) ) {
+                    if( MacroBeingExpanded( mentry ) ) {
                         mtok->token = T_UNEXPANDABLE_ID;
                     } else {
                         toklist = mtok;
@@ -1205,7 +1204,7 @@ static MACRO_TOKEN *ExpandNestedMacros( MACRO_TOKEN *head, bool rescanning )
                             toklist = toklist->next;
                         }
                         toklist->next = TokenList;
-                        i = Expandable( mtok->next, false );
+                        i = Expandable( mtok->next, false, mentry );
                         switch( i ) {
                         case 0:                 // macro is currently not expandable
                             mtok->token = T_MACRO;
@@ -1219,7 +1218,7 @@ static MACRO_TOKEN *ExpandNestedMacros( MACRO_TOKEN *head, bool rescanning )
                                 prev_tok = NULL;
                             }
                             CMemFree( mtok );
-                            toklist = MacroExpansion( rescanning );
+                            toklist = MacroExpansion( rescanning, mentry );
                             mtok = TokenList;
                             TokenList = NULL;
                             break;
@@ -1234,7 +1233,7 @@ static MACRO_TOKEN *ExpandNestedMacros( MACRO_TOKEN *head, bool rescanning )
                         }
                     }
                 } else {                        // expanding a macro parm
-                    if( Expandable( mtok->next, true ) ) {
+                    if( Expandable( mtok->next, true, mentry ) ) {
                         old_tokenlist = TokenList;
                         TokenList = mtok->next;
                         if( head == mtok ) {
@@ -1242,7 +1241,7 @@ static MACRO_TOKEN *ExpandNestedMacros( MACRO_TOKEN *head, bool rescanning )
                             prev_tok = NULL;
                         }
                         CMemFree( mtok );
-                        toklist = ExpandNestedMacros( MacroExpansion( false ), rescanning );
+                        toklist = ExpandNestedMacros( MacroExpansion( false, mentry ), rescanning );
                         mtok = TokenList;
                         TokenList = old_tokenlist;
                     } else {
@@ -1310,10 +1309,10 @@ static MACRO_TOKEN *ExpandNestedMacros( MACRO_TOKEN *head, bool rescanning )
     return( head );
 }
 
-void DoMacroExpansion( void )               // called from cscan
+void DoMacroExpansion( MEPTR mentry )               // called from cscan
 {
     MacroDepth = 0;
-    TokenList = ExpandNestedMacros( MacroExpansion( false ), true );
+    TokenList = ExpandNestedMacros( MacroExpansion( false, mentry ), true );
     // GetMacroToken will feed back tokens from the TokenList
     // when the TokenList is exhausted, then revert back to normal scanning
     if( TokenList == NULL ) {

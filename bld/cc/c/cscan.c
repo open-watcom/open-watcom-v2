@@ -223,22 +223,11 @@ TOKEN KwLookup( const char *buf, size_t len )
     return( T_ID );
 }
 
-TOKEN IdLookup( const char *buf, size_t len )
-{
-    MEPTR       mentry;
-
-    mentry = MacroLookup( buf );
-    if( mentry != NULL ) {      /* if this is a macro */
-        NextMacro = mentry;     /* save pointer to it */
-        return( T_MACRO );
-    }
-    return( KwLookup( buf, len ) );
-}
-
 static TOKEN doScanName( void )
 {
     TOKEN       token;
     int         c;
+    MEPTR       mentry;
 
     c = CurrChar;
 //      we know that NextChar will be pointing to GetNextChar()
@@ -267,39 +256,40 @@ static TOKEN doScanName( void )
         return( T_ID );
     if( Pre_processing & PPCTL_NO_EXPAND )
         return( T_ID );
-    token = IdLookup( Buffer, TokenLen );
-    if( token == T_MACRO ) {
-        if( NextMacro->macro_defn == 0 ) {
-            token = SpecialMacro( (special_macros)NextMacro->parm_count );
-            TokenLen = strlen( Buffer );
-            return( token );
-        }
-        NextMacro->macro_flags |= MFLAG_REFERENCED;
-        /* if macro requires parameters and next char is not a '('
-        then this is not a macro */
-        if( NextMacro->parm_count != 0 ) {
-            SkipAhead();
-            if( CurrChar != '(' ) {
-                if( CompFlags.cpp_output ) {
-                    Buffer[TokenLen++] = ' ';
-                    Buffer[TokenLen] = '\0';
-                    return( T_ID );
-                }
-                return( KwLookup( Buffer, TokenLen ) );
+    mentry = MacroLookup( Buffer );
+    if( mentry == NULL )
+        return( KwLookup( Buffer, TokenLen ) );
+    /* this is a macro */
+    if( mentry->macro_defn == 0 ) {
+        token = SpecialMacro( (special_macros)mentry->parm_count );
+        TokenLen = strlen( Buffer );
+        return( token );
+    }
+    mentry->macro_flags |= MFLAG_REFERENCED;
+    /* if macro requires parameters and next char is not a '('
+    then this is not a macro */
+    if( mentry->parm_count != 0 ) {
+        SkipAhead();
+        if( CurrChar != '(' ) {
+            if( CompFlags.cpp_output ) {
+                Buffer[TokenLen++] = ' ';
+                Buffer[TokenLen] = '\0';
+                return( T_ID );
             }
+            return( KwLookup( Buffer, TokenLen ) );
         }
-        DoMacroExpansion();             /* start macro expansion */
-        GetMacroToken();
-        token = CurToken;
+    }
+    DoMacroExpansion( mentry );             /* start macro expansion */
+    GetMacroToken();
+    token = CurToken;
 #if 0
-        if( MacroPtr != NULL ) {
-            SavedCurrChar = CurrChar;
-            CurrChar = MACRO_CHAR;
-        }
+    if( MacroPtr != NULL ) {
+        SavedCurrChar = CurrChar;
+        CurrChar = MACRO_CHAR;
+    }
 #endif
-        if( token == T_NULL ) {
-            token = T_WHITE_SPACE;
-        }
+    if( token == T_NULL ) {
+        token = T_WHITE_SPACE;
     }
     return( token );
 }
