@@ -327,6 +327,7 @@
 :target. any
 :enumerate. debug_info
 :timestamp.
+:internal.
 :usage. full symbolic information
 :jusage.
 
