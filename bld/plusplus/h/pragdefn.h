@@ -199,4 +199,11 @@ void AsmSysPCHReadCode(         // read code sequence from PCH
 const char *SkipUnderscorePrefix(
     const char *str, size_t *len )
 ;
+
+bool GetPragAuxAliasInfo(
+    void )
+;
+void GetPragAuxAlias(
+    void )
+;
 #endif

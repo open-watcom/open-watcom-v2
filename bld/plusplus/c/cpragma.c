@@ -56,6 +56,9 @@
 #include "clibext.h"
 
 
+#define PCH_LIST_TERM       ((unsigned)-1)
+#define PCH_GLOBAL_PACK     ((unsigned)-1)
+
 typedef struct {                // PRAG_EXT_REF -- extref's pragma'd
     void    *next;              // - next in ring
     SYMBOL  symbol;             // - extref symbol
@@ -63,8 +66,6 @@ typedef struct {                // PRAG_EXT_REF -- extref's pragma'd
 } PRAG_EXT_REF;
 
 static PRAG_EXT_REF *pragmaExtrefs; // ring of pragma'd extref symbols
-
-extern  void    PragAux();
 
 static void init                // MODULE INITIALIZATION
     ( INITFINI* defn )
@@ -336,10 +337,9 @@ static bool pragWarning(        // PROCESS #PRAGMA WARNING
     unsigned msgnum;            // - message number
     int level;                  // - new level
     bool change_all;            // - true ==> change all levels
-    bool error_occurred;        // - true ==> error has occurred
 
-    error_occurred = false;
     if( CurToken == T_TIMES ) {
+        msgnum = 0;
         change_all = true;
     } else if( CurToken == T_CONSTANT ) {
         msgnum = U32Fetch( Constant64 );
@@ -351,17 +351,15 @@ static bool pragWarning(        // PROCESS #PRAGMA WARNING
     NextToken();
     if( CurToken == T_CONSTANT ) {
         level = U32Fetch( Constant64 );
-    } else {
-        CErr1( ERR_PRAG_WARNING_BAD_LEVEL );
-        error_occurred = true;
-    }
-    NextToken();
-    if( ! error_occurred ) {
+        NextToken();
         if( change_all ) {
             WarnChangeLevels( level );
         } else {
             WarnChangeLevel( level, msgnum );
         }
+    } else {
+        CErr1( ERR_PRAG_WARNING_BAD_LEVEL );
+        NextToken();
     }
     return( false );
 }
@@ -394,7 +392,6 @@ static void pragEnableMessage(  // ENABLE WARNING MESSAGE
         NextToken();
     }
     MustRecog( T_RIGHT_PAREN );
-
 }
 
 
@@ -577,7 +574,7 @@ static void pragInitialize(     // #pragma initialize ...
         CErr1( ERR_PRAG_INITIALIZE_PRIORITY );
         priority = INIT_PRIORITY_PROGRAM;
     }
-    CompInfo.init_priority = priority;
+    CompInfo.init_priority = (unsigned char)priority;
 }
 
 static void pushPrag( PRAG_STACK **h, unsigned value )
@@ -638,7 +635,7 @@ static void pragEnum            // #pragma enum PARSING
         CompFlags.make_enums_an_int = CompFlags.original_enum_setting;
     } else if( PragRecog( "pop" ) ) {
         if( popPrag( &HeadEnums, &make_enums_an_int ) ) {
-            CompFlags.make_enums_an_int = make_enums_an_int;
+            CompFlags.make_enums_an_int = ( make_enums_an_int != 0 );
         }
     }
 }
@@ -653,7 +650,7 @@ static void pragEnum            // #pragma enum PARSING
 static void pragInitSeg(     // #pragma init_seg ...
     void )
 {
-    int priority;
+    unsigned priority;
 
     if( ExpectingToken( T_LEFT_PAREN ) ) {
         NextToken();
@@ -665,7 +662,7 @@ static void pragInitSeg(     // #pragma init_seg ...
             priority = INIT_PRIORITY_PROGRAM;
             MustRecog( T_ID );
         }
-        CompInfo.init_priority = priority;
+        CompInfo.init_priority = (unsigned char)priority;
         MustRecog( T_RIGHT_PAREN );
     }
 }
@@ -1284,13 +1281,13 @@ static magic_word_idx MagicKeyword( // LOOKUP A MAGIC KEYWORD FROM BUFFER
 {
     return( lookupMagicKeyword( Buffer ) );
 }
+#endif
 
 static AUX_INFO *MagicKeywordInfo(  // LOOKUP A MAGIC KEYWORD FROM BUFFER
     void )
 {
     return( magicWords[lookupMagicKeyword( Buffer )].info );
 }
-#endif
 
 
 void CreateAux(                 // CREATE AUX ID
@@ -1365,7 +1362,6 @@ void SetCurrInfo(               // SET CURRENT INFO. STRUCTURE
 #endif
 
 
-#if _INTEL_CPU
 void PragCurrAlias(             // LOCATE ALIAS FOR PRAGMA
     void )
 {
@@ -1382,7 +1378,6 @@ void PragCurrAlias(             // LOCATE ALIAS FOR PRAGMA
         }
     }
 }
-#endif
 
 
 static void copyParms(           // COPY PARMS PORTION
@@ -1632,6 +1627,36 @@ bool ReverseParms( AUX_INFO *pragma )
     return( false );
 }
 
+bool GetPragAuxAliasInfo( void )
+/******************************/
+{
+    char buff[256];
+
+    CurrAlias = &DefaultInfo;
+    NextToken();
+    if( CurToken != T_LEFT_PAREN )              // #pragma aux symbol ....
+        return( IS_ID_OR_KEYWORD( CurToken ) );
+    NextToken();
+    if( !IS_ID_OR_KEYWORD( CurToken ) )         // error
+        return( false );
+    PragCurrAlias();
+    strcpy( buff, Buffer );
+    NextToken();
+    if( CurToken == T_RIGHT_PAREN ) {           // #pragma aux (alias) symbol ....
+        NextToken();
+        return( IS_ID_OR_KEYWORD( CurToken ) );
+    }
+    if( CurToken == T_COMMA ) {                 // #pragma aux (alias, symbol)
+        NextToken();
+        if( IS_ID_OR_KEYWORD( CurToken ) ) {
+            CreateAux( buff );
+            GetPragAuxAlias();
+            PragEnding( true );
+        }
+    }
+    return( false );
+}
+
 static void writePacks( void )
 {
     PRAG_STACK *pack_entry;
@@ -1653,7 +1678,7 @@ static void writePacks( void )
         PCHWriteUInt( pack_amount );
         StackPush( &HeadPacks, pack_entry );
     }
-    pack_amount = -1;
+    pack_amount = PCH_GLOBAL_PACK;
     PCHWriteUInt( pack_amount );
     if( HeadPacks != NULL ) {
         pack_amount = PackAmount;
@@ -1670,11 +1695,11 @@ static void readPacks( void )
     while( HeadPacks != NULL ) {
         popPrag( &HeadPacks, &PackAmount );
     }
-    for( ; (pack_amount = PCHReadUInt()) != -1; ) {
+    for( ; (pack_amount = PCHReadUInt()) != PCH_LIST_TERM; ) {
         pushPrag( &HeadPacks, pack_amount );
     }
     pack_amount = PCHReadUInt();
-    if( pack_amount == -1 ) {
+    if( pack_amount == PCH_GLOBAL_PACK ) {
         pack_amount = GblPackAmount;
     }
     PackAmount = pack_amount;
@@ -1701,7 +1726,7 @@ static void writeEnums( void )
         PCHWriteUInt( enum_int );
         StackPush( &HeadPacks, enum_entry );
     }
-    enum_int = -1;
+    enum_int = PCH_LIST_TERM;
     PCHWriteUInt( enum_int );
     PCHWriteUInt( CompFlags.make_enums_an_int );
 }
@@ -1713,10 +1738,10 @@ static void readEnums( void )
     while( HeadEnums != NULL ) {
         popPrag( &HeadEnums, NULL );
     }
-    for( ; (enum_int = PCHReadUInt()) != -1; ) {
+    for( ; (enum_int = PCHReadUInt()) != PCH_LIST_TERM; ) {
         pushPrag( &HeadEnums, enum_int );
     }
-    CompFlags.make_enums_an_int = PCHReadUInt();
+    CompFlags.make_enums_an_int = ( PCHReadUInt() != 0 );
 }
 
 static void writeExtrefs( void )
@@ -1732,7 +1757,7 @@ static void writeExtrefs( void )
     PCHWriteCVIndexTerm();
     RingIterBeg( pragmaExtrefs, e ) {
         if( e->symbol == NULL ) {
-            len = strlen( e->name );
+            len = (unsigned)strlen( e->name );
             PCHWriteUInt( len );
             PCHWrite( e->name, len + 1 );
         }
@@ -1774,7 +1799,7 @@ pch_status PCHReadPragmaData( void )
     depth = PCHReadUInt();
     CgBackSetInlineDepth( depth );
     value = PCHReadUInt();
-    CgBackSetInlineRecursion( value );
+    CgBackSetInlineRecursion( value != 0 );
     return( PCHCB_OK );
 }
 

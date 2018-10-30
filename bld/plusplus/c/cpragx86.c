@@ -215,43 +215,20 @@ static void AuxCopy(           // COPY AUX STRUCTURE
     to->code = AuxCodeDup( from->code );
 }
 
-static bool GetAliasInfo(
-    void )
+void GetPragAuxAlias( void )
 {
-    char buff[256];
-    bool isfar16;
+    bool    isfar16;
 
-    CurrAlias = &DefaultInfo;
-    if( CurToken != T_LEFT_PAREN )              // #pragma aux symbol ....
-        return( IS_ID_OR_KEYWORD( CurToken ) );
-    NextToken();
-    if( !IS_ID_OR_KEYWORD( CurToken ) )         // error
-        return( false );
+    isfar16 = PragRecog( "far16" );
     PragCurrAlias();
-    strcpy( buff, Buffer );
     NextToken();
-    if( CurToken == T_RIGHT_PAREN ) {           // #pragma aux (alias) symbol ....
+    if( CurToken == T_RIGHT_PAREN ) {
+        AuxCopy( CurrInfo, CurrAlias );
         NextToken();
-        return( IS_ID_OR_KEYWORD( CurToken ) );
     }
-    if( CurToken == T_COMMA ) {                 // #pragma aux (alias, symbol)
-        NextToken();
-        if( IS_ID_OR_KEYWORD( CurToken ) ) {
-            isfar16 = PragRecog( "far16" );
-            CreateAux( buff );
-            PragCurrAlias();
-            NextToken();
-            if( CurToken == T_RIGHT_PAREN ) {
-                AuxCopy( CurrInfo, CurrAlias );
-                NextToken();
-            }
-            if( isfar16 ) {
-                CurrInfo->flags |= AUX_FLAG_FAR16;
-            }
-            PragEnding( true );
-        }
+    if( isfar16 ) {
+        CurrInfo->flags |= AUX_FLAG_FAR16;
     }
-    return( false );
 }
 
 static void GetParmInfo(
@@ -422,7 +399,7 @@ void PragAux(                   // #PRAGMA AUX ...
         unsigned uses_auto: 1;
     } have;
 
-    if( !GetAliasInfo() )
+    if( !GetPragAuxAliasInfo() )
         return;
     CurrEntry = NULL;
     if( !IS_ID_OR_KEYWORD( CurToken ) )

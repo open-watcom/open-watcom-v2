@@ -31,6 +31,7 @@
 
 
 #include "plusplus.h"
+#include "preproc.h"
 #include "memmgr.h"
 #include "pragdefn.h"
 #include "initdefs.h"
@@ -87,11 +88,6 @@ static void assemblerFini(      // FINISH ASSEMBLER
 
 
 INITDEFN( assembler, assemblerInit, assemblerFini )
-
-void PragAux(                   // #PRAGMA AUX ...
-    void )
-{
-}
 
 
 bool PragmaChangeConsistent(    // TEST IF PRAGMA CHANGE IS CONSISTENT
@@ -166,6 +162,34 @@ bool PragmasTypeEquivalent(     // TEST IF TWO PRAGMAS ARE TYPE-EQUIVALENT
         && ( inf1->flags == inf2->flags );
 }
 
+static void AuxCopy(           // COPY AUX STRUCTURE
+    AUX_INFO *to,               // - destination
+    AUX_INFO *from )            // - source
+{
+    freeAuxInfo( to );
+    *to = *from;
+    to->parms = AuxParmDup( from->parms );
+    to->objname = AuxObjnameDup( from->objname );
+    to->code = AuxCodeDup( from->code );
+}
+
+void GetPragAuxAlias( void )
+/*************************/
+{
+    PragCurrAlias();
+    NextToken();
+    if( CurToken == T_RIGHT_PAREN ) {
+        AuxCopy( CurrInfo, CurrAlias );
+        NextToken();
+    }
+}
+
+void PragAux(                   // #PRAGMA AUX ...
+    void )
+/***********/
+{
+}
+
 bool AsmSysInsertFixups( VBUF *code )
 /***********************************/
 {
@@ -200,17 +224,6 @@ bool AsmSysInsertFixups( VBUF *code )
     CurrInfo->code = seq;
     AsmFiniRelocs();
     return( uses_auto );
-}
-
-static void AuxCopy(           // COPY AUX STRUCTURE
-    AUX_INFO *to,               // - destination
-    AUX_INFO *from )            // - source
-{
-    freeAuxInfo( to );
-    *to = *from;
-    to->parms = AuxParmDup( from->parms );
-    to->objname = AuxObjnameDup( from->objname );
-    to->code = AuxCodeDup( from->code );
 }
 
 AUX_INFO *AsmSysCreateAux( const char *name )
