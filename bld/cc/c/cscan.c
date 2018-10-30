@@ -261,9 +261,7 @@ static TOKEN doScanName( void )
         return( KwLookup( Buffer, TokenLen ) );
     /* this is a macro */
     if( mentry->macro_defn == 0 ) {
-        token = SpecialMacro( (special_macros)mentry->parm_count );
-        TokenLen = strlen( Buffer );
-        return( token );
+        return( SpecialMacro( mentry ) );
     }
     mentry->macro_flags |= MFLAG_REFERENCED;
     /* if macro requires parameters and next char is not a '('

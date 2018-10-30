@@ -322,13 +322,14 @@ static char *ExpandMacroToken( void )
 }
 
 
-TOKEN SpecialMacro( special_macros spc_macro )
+TOKEN SpecialMacro( MEPTR mentry )
 {
     char            *p;
     char            *bufp;
+    TOKEN           token;
 
     CompFlags.wide_char_string = false;
-    switch( spc_macro ) {
+    switch( (special_macros)mentry->parm_count ) {
     case MACRO_LINE:
         sprintf( Buffer, "%u", TokenLoc.line );
         Constant = TokenLoc.line;
@@ -341,13 +342,13 @@ TOKEN SpecialMacro( special_macros spc_macro )
                 *bufp++ = '\\';
             }
         }
-        return( T_STRING );
+        break;
     case MACRO_DATE:
-        memcpy( Buffer, __Date, 12 );
-        return( T_STRING );
+        strcpy( Buffer, __Date );
+        break;
     case MACRO_TIME:
-        memcpy( Buffer, __Time, 9 );
-        return( T_STRING );
+        strcpy( Buffer, __Time );
+        break;
     case MACRO_STDC:
         Buffer[0] = '1';
         Buffer[1] = '\0';
@@ -371,18 +372,19 @@ TOKEN SpecialMacro( special_macros spc_macro )
         ConstType = TYPE_LONG;
         return( T_CONSTANT );
     case MACRO_FUNC:
-        p = "";
+        Buffer[0] = '\0';
         if( CurFunc != NULL ) {
             if( CurFunc->name != NULL ) {
-                p = CurFunc->name;
+                strcpy( Buffer, CurFunc->name );
             }
         }
-        strcpy( Buffer, p );
-        return( T_STRING );
+        break;
     default:
         Buffer[0] = '\0';
-        return( T_NULL ); // shut up the compiler
+        return( T_NULL );   // shut up the compiler
     }
+    TokenLen = strlen( Buffer );
+    return( T_STRING );
 }
 
 
@@ -559,7 +561,7 @@ static MACRO_ARG *CollectParms( MEPTR mentry )
             ++parmno;                   // will cause "too many parms" error
         }
         if( (mentry->macro_flags & MFLAG_VAR_ARGS) && parmno < ( mentry->parm_count - 2 )
-           || (mentry->macro_flags & MFLAG_VAR_ARGS) == 0 && parmno < ( mentry->parm_count - 1 ) ) {
+          || (mentry->macro_flags & MFLAG_VAR_ARGS) == 0 && parmno < ( mentry->parm_count - 1 ) ) {
             CErr2p( ERR_TOO_FEW_MACRO_PARMS, mentry->macro_name );
         } else if( (mentry->macro_flags & MFLAG_VAR_ARGS) == 0 && parmno > ( mentry->parm_count - 1 ) ) {
             if( mentry->parm_count - 1 != 0 ) {
@@ -1138,7 +1140,7 @@ static MACRO_TOKEN *MacroExpansion( bool rescanning, MEPTR mentry )
     nested->substituting_parms = false;
     nested->macro_parms = NULL;
     if( mentry->macro_defn == 0 ) {     /* if special macro */
-        tok = SpecialMacro( (special_macros)mentry->parm_count );
+        tok = SpecialMacro( mentry );
         head = BuildAToken( tok, Buffer );
         nested->next = NestedMacros;
         NestedMacros = nested;

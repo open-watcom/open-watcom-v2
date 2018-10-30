@@ -632,7 +632,7 @@ extern void         MacroAddComp(void);
 extern void         MacroFini(void);
 extern void         MacroPurge(void);
 extern void         GetMacroToken(void);
-extern TOKEN        SpecialMacro( special_macros spc_macro );
+extern TOKEN        SpecialMacro( MEPTR );
 extern void         DoMacroExpansion( MEPTR );
 
 /* cmac2.c */
