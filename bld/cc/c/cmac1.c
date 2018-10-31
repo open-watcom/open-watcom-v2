@@ -326,7 +326,6 @@ TOKEN SpecialMacro( MEPTR mentry )
 {
     char            *p;
     char            *bufp;
-    TOKEN           token;
 
     CompFlags.wide_char_string = false;
     switch( (special_macros)mentry->parm_count ) {
