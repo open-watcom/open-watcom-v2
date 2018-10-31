@@ -206,7 +206,6 @@ __m64 _m_pcmpgtd(__m64 *__m1, __m64 *__m2);
         "punpckhwd mm0,mm1" \
         "movq   [esi],mm0"
 
-
 #pragma aux (__m_binary) _m_punpckhdq = \
         ".586" \
         "movq   mm0,[eax]" \
