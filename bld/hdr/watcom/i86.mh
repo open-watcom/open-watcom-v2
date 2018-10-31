@@ -281,7 +281,10 @@ _WCRTLINK extern void    sound( unsigned __frequency );
 #else
 :endsegment
  unsigned short _FP_SEG( const volatile void __far * );
- #pragma aux    _FP_SEG = __parm __caller [eax dx] __value [dx]
+ #pragma aux    _FP_SEG = \
+    __parm __caller [__eax __dx] \
+    __value [__dx] \
+    __modify __exact []
 :segment DOS | QNX
 #endif
 :endsegment

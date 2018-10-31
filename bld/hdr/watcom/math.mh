@@ -162,8 +162,8 @@ extern int signgam;
 _WMRTLINK extern double ceil( double __x );
 _WMRTLINK extern double floor( double __x );
 #if defined(_M_IX86) && 0
-#pragma aux ceil  parm nomemory modify nomemory
-#pragma aux floor parm nomemory modify nomemory
+#pragma aux ceil  __parm __nomemory __modify __nomemory
+#pragma aux floor __parm __nomemory __modify __nomemory
 #endif
 
 _WMRTLINK extern double frexp( double __value, int *__exp );

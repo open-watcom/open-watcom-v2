@@ -130,7 +130,7 @@ typedef struct  {
 
 _WCIRTLINK extern int    abs( int __j );
 #if defined(_M_IX86) && 0
-#pragma aux abs     parm nomemory modify nomemory
+#pragma aux abs __parm __nomemory __modify __nomemory
 #endif
 _WRTLFCONV extern int    atexit( void (_WCCALLBACK *__func)( void ) );
 _WMRTLINK extern double  atof( const char *__nptr );
@@ -147,7 +147,7 @@ _WCRTLINK extern void    free( void *__ptr );
 
 _WCIRTLINK extern long int labs( long int __j );
 #if defined(_M_IX86) && 0
-#pragma aux labs    parm nomemory modify nomemory
+#pragma aux labs __parm __nomemory __modify __nomemory
 #endif
 
 :segment DOS | QNX | RDOS

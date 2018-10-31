@@ -150,7 +150,7 @@ _WCRTLINK extern pid_t  fork( void );
 :segment LINUX
 #ifdef __386__
 _WCRTLINK extern pid_t  vfork( void );
-#pragma aux vfork modify [edx]
+#pragma aux vfork __parm [] __value [__eax] __modify __exact [__eax __edx]
 #endif
 :endsegment
 _WCRTLINK extern long   fpathconf( int __fildes, int __name );
