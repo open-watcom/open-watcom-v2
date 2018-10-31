@@ -161,6 +161,14 @@ static bool PragIdRecog( const char *what )
     return( rc );
 }
 
+bool PragRecog( const char *what )
+/********************************/
+{
+    if( IS_ID_OR_KEYWORD( CurToken ) ) {
+        return( PragIdRecog( what ) );
+    }
+    return( false );
+}
 
 static bool pragmaNameRecog( const char *what )
 /*********************************************/
@@ -172,15 +180,6 @@ static bool pragmaNameRecog( const char *what )
         NextToken();
     }
     return( ok );
-}
-
-bool PragRecog( const char *what )
-/********************************/
-{
-    if( IS_ID_OR_KEYWORD( CurToken ) ) {
-        return( PragIdRecog( what ) );
-    }
-    return( false );
 }
 
 static void advanceToken( void )
@@ -1174,9 +1173,9 @@ static void pragOnce( void )
 static void pragSTDCOption( void )
 /********************************/
 {
-    if( pragmaNameRecog( "ON" ) ) {
-    } else if( pragmaNameRecog( "OFF" ) ) {
-    } else if( pragmaNameRecog( "DEFAULT" ) ) {
+    if( PragRecog( "ON" ) ) {
+    } else if( PragRecog( "OFF" ) ) {
+    } else if( PragRecog( "DEFAULT" ) ) {
     }
 }
 
@@ -1187,11 +1186,11 @@ static void pragSTDCOption( void )
 static void pragSTDC( void )
 /**************************/
 {
-    if( pragmaNameRecog( "FP_CONTRACT" ) ) {
+    if( PragRecog( "FP_CONTRACT" ) ) {
         pragSTDCOption();
-    } else if( pragmaNameRecog( "FENV_ACCESS" ) ) {
+    } else if( PragRecog( "FENV_ACCESS" ) ) {
         pragSTDCOption();
-    } else if( pragmaNameRecog( "CX_LIMITED_RANGE" ) ) {
+    } else if( PragRecog( "CX_LIMITED_RANGE" ) ) {
         pragSTDCOption();
     }
 }
