@@ -29,12 +29,16 @@
   #ifdef _M_I86
     #pragma aux __doalloca = \
             "sub sp,ax"     \
-            __parm __nomemory [__ax] __value [__sp] __modify __exact __nomemory [__sp]
+        __parm __nomemory [__ax] \
+        __value [__sp] \
+        __modify __exact __nomemory [__sp]
   #else
 :endsegment
      #pragma aux __doalloca = \
             "sub esp,eax"   \
-            __parm __nomemory [__eax] __value [__esp] __modify __exact __nomemory [__esp]
+        __parm __nomemory [__eax] \
+        __value [__esp] \
+        __modify __exact __nomemory [__esp]
 :segment DOS | QNX | RDOS
   #endif
 :endsegment
