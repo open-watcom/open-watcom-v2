@@ -1633,7 +1633,6 @@ bool GetPragAuxAliasInfo( void )
     char buff[256];
 
     CurrAlias = &DefaultInfo;
-    NextToken();
     if( CurToken != T_LEFT_PAREN )              // #pragma aux symbol ....
         return( IS_ID_OR_KEYWORD( CurToken ) );
     NextToken();
