@@ -89,7 +89,7 @@ global  NAME        SavedId;            // saved id when doing look ahead
 global  TOKEN       LAToken;            // look ahead token
 global  macro_flags InitialMacroFlag;   // current value to init macro flags to
 global  char        *MacroOffset;       // first free byte in MacroSegment
-global  char        __Time[10];         // "HH:MM:SS" for __TIME__ macro
+global  char        __Time[9];          // "HH:MM:SS" for __TIME__ macro
 global  char        __Date[12];         // "MMM DD YYYY" for __DATE__ macro
 global  FILE        *CppFile;           /* output for preprocessor */
 global  char        *ForceInclude;
@@ -102,7 +102,7 @@ global  int         SwitchChar;         // DOS switch character
 // token buffer
 // extra 16 is for unrolled scanning loops
 // extra uint_32 is for buffer overrun checking in debugging compiler
-global  char        Buffer[BUF_SIZE+16+sizeof(uint_32)];
+global  char        Buffer[BUF_SIZE + 16 + sizeof( uint_32 )];
 
 extern  int         (*NextChar)( void );    // next-character routine (initialized in SRCFILE)
 
