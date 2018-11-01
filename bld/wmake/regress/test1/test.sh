@@ -1,23 +1,25 @@
 #!/bin/sh
 
-function usage() {
+ERRORS=0
+
+usage() {
     echo usage: $0 prgname errorfile
     exit
 }
 
-function print_header() {
+print_header() {
     echo \# -----------------------------
     echo \#   Test $TEST
     echo \# -----------------------------
 }
 
-function do_check() {
+do_check() {
     if [ "$?" == "0" ]; then
         echo \# Test $TEST successful
     else
         echo \#\# INLINE \#\# >> $LOGFILE
         echo Error: Test $TEST unsuccessful!!! | tee -a $LOGFILE
-	exit
+        ERRORS=1
     fi
 }
 
@@ -33,15 +35,16 @@ echo \# ===========================
 
 TEST=1
 $1 -h -f create
-rm -f err1.out
-echo >err1.out
-$1 -h -f maketst1 -l err1.out > tst1.out
-diff -b tst1.out tst1.chk
-diff -b err1.out err1.chk
+echo >err1.lst
+$1 -h -f maketst1 -l err1.lst > test1.lst
+diff -b tst1.chk test1.lst
+diff -b err1.chk err1.lst
 do_check
 
-rm *.obj
-rm *.out
-rm main.*
-rm foo*.c
-rm maketst1
+if [ "$ERRORS" == "0" ]; then
+    rm -f *.obj
+    rm -f *.lst
+    rm -f main.*
+    rm -f foo*.c
+    rm -f maketst1
+fi

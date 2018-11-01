@@ -1,23 +1,25 @@
 #!/bin/sh
 
-function usage() {
+ERRORS=0
+
+usage() {
     echo usage: $0 prgname errorfile
     exit
 }
 
-function print_header() {
+print_header() {
     echo \# -----------------------------
     echo \#   Test $TEST
     echo \# -----------------------------
 }
 
-function do_check() {
+do_check() {
     if [ "$?" == "0" ]; then
         echo \# Test $TEST successful
     else
         echo \#\# PRETEST \#\# >> $LOGFILE
         echo Error: Test $TEST unsuccessful!!! | tee -a $LOGFILE
-        exit
+        ERRORS=1
     fi
 }
 
@@ -38,9 +40,8 @@ do_check
 
 TEST=2
 print_header
-rm -f tmp.out
-$1 -h -f pre03 pre03 > tmp.out 2>&1
-diff pre03.chk tmp.out
+$1 -h -f pre03 pre03 > test2.lst 2>&1
+diff pre03.chk test2.lst
 do_check
 
 TEST=3
@@ -60,16 +61,16 @@ do_check
 
 TEST=6
 print_header
-rm -f tmp.out
-$1 -h -f pre07 > tmp.out 2>&1
-diff pre07.chk tmp.out
+$1 -h -f pre07 > test6.lst 2>&1
+diff pre07.chk test6.lst
 do_check
 
 TEST=7
 print_header
-rm -f tmp.out
-$1 -h -f pre08 > tmp.out 2>&1
-diff pre08.chk tmp.out
+$1 -h -f pre08 > test7.lst 2>&1
+diff pre08.chk test7.lst
 do_check
 
-rm -f tmp.out
+if [ "$ERRORS" == "0" ]; then
+    rm -f *.lst
+fi

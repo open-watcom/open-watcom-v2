@@ -1,6 +1,6 @@
 #!/bin/sh
 
-function usage() {
+usage() {
     echo "usage: $0 <progname>"
     exit
 }

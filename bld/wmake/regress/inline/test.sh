@@ -1,31 +1,33 @@
 #!/bin/sh
 
-function usage() {
+ERRORS=0
+
+usage() {
     echo usage: $0 prgname errorfile
     exit
 }
 
-function print_header() {
+print_header() {
     echo \# -----------------------------
     echo \#   Test $TEST
     echo \# -----------------------------
 }
 
-function do_check() {
+do_check() {
     if [ "$?" == "0" ]; then
         echo \# Test $TEST successful
     else
         echo \#\# INLINE \#\# >> $LOGFILE
         echo Error: Test $TEST unsuccessful!!! | tee -a $LOGFILE
-	exit
+        ERRORS=1
     fi
 }
 
-function do_err_check() {
+do_err_check() {
     if [ "$?" != "0" ]; then
         echo \#\# INLINE \#\# >> $LOGFILE
         echo Error: Test $TEST unsuccessful!!! | tee -a $LOGFILE
-	exit
+        ERRORS=1
     fi
 }
 
@@ -41,49 +43,51 @@ echo \# ===========================
 
 TEST=1
 print_header
-$1 -h -f inline01 > tmp.out 2>&1
-diff inline01.chk tmp.out
+$1 -h -f inline01 > test1.lst 2>&1
+diff inline01.chk test1.lst
 do_err_check
 [ -a test.1 -a -a test.2 -a -a test.3 ]
 do_check
 
 TEST=2
 print_header
-$1 -h -f inline02 > tmp.out 2>&1
-diff inline02.chk tmp.out
+$1 -h -f inline02 > test2.lst 2>&1
+diff inline02.chk test2.lst
 do_err_check
 [ ! -a test.1 -a ! -a test.2 -a ! -a test.3 ]
 do_check
 
 TEST=3
 print_header
-$1 -h -f inline03 > tmp.out 2>&1
-diff inline03.chk tmp.out
+$1 -h -f inline03 > test3.lst 2>&1
+diff inline03.chk test3.lst
 do_check
 
 TEST=4
 print_header
-$1 -h -f inline04 > tmp.out 2>&1
-diff inline04.chk tmp.out
+$1 -h -f inline04 > test4.lst 2>&1
+diff inline04.chk test4.lst
 do_check
 
 # UNIX seems to behave too differently to make this test very meaningful
 #TEST=5
 #print_header
-#$1 -h -f inline05 > tmp.out 2>&1
-#diff -i inline05.chk tmp.out
+#$1 -h -f inline05 > test5.lst 2>&1
+#diff -i inline05.chk test5.lst
 #do_check
 
 TEST=6
 print_header
-$1 -h -f inline06 > tmp.out 2>&1
-diff -i inline06.chk tmp.out
+$1 -h -f inline06 > test6.lst 2>&1
+diff -i inline06.chk test6.lst
 do_check
 
 TEST=7
 print_header
-$1 -h -f inline07 > tmp.out 2>&1
-diff inline07.chk tmp.out
+$1 -h -f inline07 > test7.lst 2>&1
+diff inline07.chk test7.lst
 do_check
 
-rm -f tmp.out
+if [ "$ERRORS" == "0" ]; then
+    rm -f *.lst
+fi
