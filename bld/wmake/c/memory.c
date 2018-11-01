@@ -33,16 +33,13 @@
 #include "mmemory.h"
 #include "mrcmsg.h"
 #include "msg.h"
-#if defined( __WATCOMC__ ) || !defined( __UNIX__ )
+#if defined( __WATCOMC__ )
     #include <malloc.h>
 #endif
 #ifdef TRMEM
 #include <sys/types.h>
-#include "wio.h"
 #include "trmem.h"
 #endif
-
-#include "clibext.h"
 
 
 #ifdef USE_FAR

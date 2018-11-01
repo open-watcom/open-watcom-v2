@@ -38,6 +38,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include "make.h"
+#include "wio.h"
 #include "mstream.h"
 #include "mlex.h"
 #include "mhash.h"

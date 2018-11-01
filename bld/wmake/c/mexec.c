@@ -52,6 +52,7 @@
     #include "idedrv.h"
 #endif
 #include "make.h"
+#include "wio.h"
 #include "mtarget.h"
 #include "macros.h"
 #include "mcache.h"

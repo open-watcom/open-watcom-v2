@@ -40,6 +40,7 @@
     #include "rdos.h"
 #endif
 #include "make.h"
+#include "wio.h"
 #include "mhash.h"
 #include "mmemory.h"
 #include "mmisc.h"
@@ -48,8 +49,6 @@
 #include "msg.h"
 #include "pathgrp.h"
 #include "mcache.h"
-
-#include "clibext.h"
 
 
 #if defined( __WATCOMC__ ) && !defined( __UNIX__ )
