@@ -40,8 +40,6 @@
 #include "msg.h"
 #include "mvecstr.h"
 
-#include "clibext.h"
-
 
 char    *targ_path;
 char    *dep_path;

@@ -35,8 +35,6 @@
 #include "msg.h"
 #include "mhash.h"
 
-#include "clibext.h"
-
 
 HASH_T Hash( const char *s, HASH_T prime )
 /************************************************
@@ -185,7 +183,7 @@ HASHNODE *FindHashNode( HASHTAB *tab, const char *name,
 
     cmp = ( caseSensitive ) ? strcmp : stricmp;
     h = Hash( name, tab->prime );
-    
+
     for( cur = tab->nodes[h]; cur != NULL; cur = cur->next ) {
         if( cmp( cur->name, name ) == 0 ) {
             return( cur );

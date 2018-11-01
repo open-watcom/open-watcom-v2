@@ -38,8 +38,6 @@
 #include "msg.h"
 #include "mstream.h"
 
-#include "clibext.h"
-
 
 STATIC const char   *logName;
 STATIC FILE         *logFP;
@@ -547,7 +545,7 @@ bool GetYes( enum MsgClass querymsg )
 
     PrtMsg( INF | NEOL | STRING_YES_NO, querymsg );
 
-    if( posix_read( STDIN_FILENO, buf, LINE_BUFF ) == 0 ) {
+    if( fread( buf, 1, LINE_BUFF, stdin ) == 0 ) {
         return( false );
     }
 

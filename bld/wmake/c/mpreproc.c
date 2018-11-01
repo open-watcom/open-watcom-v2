@@ -30,6 +30,7 @@
 
 
 #include "make.h"
+#include "wio.h"
 #include "mstream.h"
 #include "mlex.h"
 #include "macros.h"
@@ -40,8 +41,6 @@
 #include "mpreproc.h"
 #include "mrcmsg.h"
 #include "msg.h"
-
-#include "clibext.h"
 
 
 /*

@@ -34,11 +34,9 @@
 
 #include <stdlib.h>
 #include <signal.h>
-#include "wio.h"
 
 #ifdef DLLS_IMPLEMENTED
     #include "idedrv.h"
-    #include <malloc.h>
 #endif
 
 // For debug versions, always use scarce memory manager - memory

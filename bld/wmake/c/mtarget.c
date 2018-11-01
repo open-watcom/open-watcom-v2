@@ -38,8 +38,6 @@
 #include "msg.h"
 #include "mtarget.h"
 
-#include "clibext.h"
-
 
 #define BEFORE_S        "BEFORE"
 #define AFTER_S         "AFTER"

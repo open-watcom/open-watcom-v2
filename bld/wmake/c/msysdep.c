@@ -30,6 +30,7 @@
 
 
 #include "make.h"
+#include "wio.h"
 #include "mcache.h"
 #include "mmemory.h"
 #include "mrcmsg.h"

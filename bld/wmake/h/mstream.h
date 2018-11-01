@@ -59,7 +59,7 @@ typedef enum {
  * prototypes
  */
 extern RET_T    InsFile( const char *namem, bool envsearch );
-extern void     InsOpenFile( int fh );
+extern void     InsOpenFile( FILE *fp );
 extern void     InsString( const char *str, bool weFree );
 extern void     UnGetCHR( STRM_T s );
 extern STRM_T   GetCHR( void );

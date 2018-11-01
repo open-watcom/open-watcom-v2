@@ -36,6 +36,7 @@
 #include <sys/utime.h>
 #endif
 #include "make.h"
+#include "wio.h"
 #include "macros.h"
 #include "mcache.h"
 #include "mmemory.h"
