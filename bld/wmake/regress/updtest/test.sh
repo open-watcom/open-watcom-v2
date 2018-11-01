@@ -1,5 +1,7 @@
 #!/bin/sh
 
+ERRORS=0
+
 usage() {
     echo usage: $0 prgname errorfile
     exit
@@ -12,16 +14,16 @@ print_header() {
 }
 
 do_check() {
-    if [ "$?" == "0" ]; then
+    if [ "$?" -eq "0" ]; then
         echo \# Test $TEST successful
     else
         echo \#\# UPDTEST \#\# >> $LOGFILE
         echo Error: Test $TEST unsuccessful!!! | tee -a $LOGFILE
-        exit
+        ERRORS=1
     fi
 }
 
-if [ "$2" == "" ]; then 
+if [ -z "$2" ]; then 
     usage
 fi
 
@@ -97,6 +99,6 @@ $1 -h -ms -f upd11 > test11.lst 2>&1
 diff upd11.chk test11.lst
 do_check
 
-if [ "$ERRORS" == "0" ]; then
+if [ "$ERRORS" -eq "0" ]; then
     rm -f *.lst
 fi

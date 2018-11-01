@@ -14,7 +14,7 @@ print_header() {
 }
 
 do_check() {
-    if [ "$?" == "0" ]; then
+    if [ "$?" -eq "0" ]; then
         echo \# Test $TEST successful
     else
         echo \#\# INLINE \#\# >> $LOGFILE
@@ -23,7 +23,7 @@ do_check() {
     fi
 }
 
-if [ "$2" == "" ]; then 
+if [ -z "$2" ]; then 
     usage
 fi
 
@@ -41,7 +41,7 @@ diff -b tst1.chk test1.lst
 diff -b err1.chk err1.lst
 do_check
 
-if [ "$ERRORS" == "0" ]; then
+if [ "$ERRORS" -eq "0" ]; then
     rm -f *.obj
     rm -f *.lst
     rm -f main.*

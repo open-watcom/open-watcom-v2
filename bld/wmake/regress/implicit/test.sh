@@ -14,7 +14,7 @@ print_header() {
 }
 
 do_check() {
-    if [ "$?" == "0" ]; then
+    if [ "$?" -eq "0" ]; then
         echo \# Test $TEST successful
     else
         echo \#\# IMPLICIT \#\# >> $LOGFILE
@@ -23,7 +23,7 @@ do_check() {
     fi
 }
 
-if [ "$2" == "" ]; then 
+if [ -z "$2" ]; then 
     usage
 fi
 
@@ -75,7 +75,7 @@ $1 -f imp02d -h > test2d.lst
 sed "s:of .*[\\/]:of :" test2d.lst | diff imp02d.chk -
 do_check
 
-if [ "$ERRORS" == "0" ]; then
+if [ "$ERRORS" -eq "0" ]; then
 #    hello.* hello?.* uses OW and Linux rm compatible wildcards. hello* no go
     rm -f *.obj app.lnk app.exe hello.* hello?.*
     rm -f *.lst

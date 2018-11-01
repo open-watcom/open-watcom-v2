@@ -14,7 +14,7 @@ print_header() {
 }
 
 do_check() {
-    if [ "$?" == "0" ]; then
+    if [ "$?" -eq "0" ]; then
         echo \# Test $TEST successful
     else
         echo \#\# MACRO \#\# >> $LOGFILE
@@ -23,7 +23,7 @@ do_check() {
     fi
 }
 
-if [ "$2" == "" ]; then 
+if [ -z "$2" ]; then 
     usage
 fi
 
@@ -114,6 +114,6 @@ do_check
 
 rm -f hello.obj hello2.obj hello.boo hello.tmp hello.c hello2.c 
 
-if [ "$ERRORS" == "0" ]; then
+if [ "$ERRORS" -eq "0" ]; then
     rm -f *.lst
 fi

@@ -14,7 +14,7 @@ print_header() {
 }
 
 do_check() {
-    if [ "$?" == "0" ]; then
+    if [ "$?" -eq "0" ]; then
         echo \# Test $TEST successful
     else
         echo \#\# FORTEST \#\# >> $LOGFILE
@@ -23,7 +23,7 @@ do_check() {
     fi
 }
 
-if [ "$2" == "" ]; then 
+if [ -z "$2" ]; then 
     usage
 fi
 
@@ -87,7 +87,7 @@ $1 -h -f for08 > test08.lst 2>&1
 diff -b for08u.chk test08.lst
 do_check
 
-if [ "$ERRORS" == "0" ]; then
+if [ "$ERRORS" -eq "0" ]; then
     rm -f tmpfile.*
     rm -f *.lst
     rm -f *.o

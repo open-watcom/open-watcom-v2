@@ -14,7 +14,7 @@ print_header() {
 }
 
 do_check() {
-    if [ "$?" == "0" ]; then
+    if [ "$?" -eq "0" ]; then
         echo \# Test $TEST successful
     else
         echo \#\# PREPROCESS \#\# >> $LOGFILE
@@ -23,7 +23,7 @@ do_check() {
     fi
 }
 
-if [ "$2" == "" ]; then 
+if [ -z "$2" ]; then 
     usage
 fi
 
@@ -58,6 +58,6 @@ $1 -h -f prep04 > test4.lst 2>&1
 diff -b prep04.chk test4.lst
 do_check
 
-if [ "$ERRORS" == "0" ]; then
+if [ "$ERRORS" -eq "0" ]; then
     rm -f *.lst
 fi
