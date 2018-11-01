@@ -42,7 +42,7 @@
 
 
 STATIC const char   *logName;
-STATIC int          logFH;
+STATIC FILE         *logFP;
 
 typedef union msg_arg {
     UINT16      ui16;
@@ -395,8 +395,8 @@ static void writeOutput( unsigned class, int fh, const char *buff, size_t len )
 /*****************************************************************************/
 {
     if( class != INF ) {
-        if( logFH != -1 ) {
-            (void)posix_write( logFH, buff, len );
+        if( logFP != NULL ) {
+            fwrite( buff, 1, len, logFP );
         }
     }
     (void)posix_write( fh, buff, len );
@@ -563,9 +563,9 @@ void LogInit( const char *name )
  */
 {
     logName = name;
-    logFH = -1;
+    logFP = NULL;
     if( name != NULL ) {
-        logFH = open( logName, O_WRONLY | O_APPEND | O_CREAT | O_TEXT, PMODE_RW );
+        logFP = fopen( logName, "a" );
     }
 }
 
@@ -573,7 +573,7 @@ void LogInit( const char *name )
 void LogFini( void )
 /*************************/
 {
-    if( logFH != -1 ) {
-        close( logFH );
+    if( logFP != NULL ) {
+        fclose( logFP );
     }
 }
