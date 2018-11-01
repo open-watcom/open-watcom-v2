@@ -291,20 +291,19 @@ STATIC char *doStringSubstitute( const char *name, const char *oldString, const 
     size_t      old_len;
 
     output = StartVec();
-    WriteVec( output, "" );
 
     assert( name != NULL && oldString != NULL && newString != NULL );
 
     old_len = strlen( oldString );
     for( start = p = name; *p != NULLCHAR; p++ ) {
         if( strncmp( p, oldString, old_len ) == 0 ) {
-            CatNStrToVec( output, start, p - start );
-            CatStrToVec( output, newString );
+            WriteNVec( output, start, p - start );
+            WriteVec( output, newString );
             start   = p + old_len;
             p = start - 1;
         }
     }
-    CatStrToVec( output, start );
+    WriteVec( output, start );
 
     return( FinishVec( output ) );
 }
@@ -633,7 +632,7 @@ char *DeMacroSpecial( const char *InString )
 
     for( p = InString; *p != NULLCHAR; ++p ) {
         if( *p == SPECIAL_TMP_DOLLAR ) {
-            CatNStrToVec( outString, old, p - old );
+            WriteNVec( outString, old, p - old );
             pos = 0;
             UnGetCHR( STRM_MAGIC );
             buffer[pos++] = *(p++);
@@ -651,11 +650,11 @@ char *DeMacroSpecial( const char *InString )
             InsString( buffer, false );
             tempString = DeMacro( TOK_MAGIC );
             PreGetCHR();   // eat STRM_MAGIC
-            CatStrToVec( outString, tempString );
+            WriteVec( outString, tempString );
             FreeSafe( tempString);
         }
     }
-    CatNStrToVec( outString, old, p - old + 1 );
+    WriteNVec( outString, old, p - old + 1 );
     return( FinishVec( outString ) );
 }
 
@@ -873,7 +872,7 @@ STATIC char *deMacroToEnd( int depth, TOKEN_T end1, TOKEN_T end2 )
 
         p = ProcessToken( depth, end1, end2, t );
         if( p != NULL ) {
-            CatStrToVec( vec, p );
+            WriteVec( vec, p );
             FreeSafe( p );
         }
     }
@@ -1211,13 +1210,13 @@ STATIC char *DeMacroName( const char *text, const char *name )
                 while( p[lengthToClose] != ')' ) {
                     ++lengthToClose;
                 }
-                CatNStrToVec( outtext, oldptr, p - 2 - oldptr );
+                WriteNVec( outtext, oldptr, p - 2 - oldptr );
                 macroname = StartVec();
-                CatNStrToVec( macroname, p, lengthToClose );
+                WriteNVec( macroname, p, lengthToClose );
                 macronameStr = FinishVec( macroname );
                 temp = GetMacroValue( macronameStr );
                 if( temp != NULL ) {
-                    CatStrToVec( outtext, temp );
+                    WriteVec( outtext, temp );
                     FreeSafe( temp );
                 }
                 FreeSafe( macronameStr );
@@ -1226,10 +1225,10 @@ STATIC char *DeMacroName( const char *text, const char *name )
             break;
         default:    // Possible Microsoft name without parenthesis
             if( len == 1 && NMacroNameEq( p, name, 1 ) ) {
-                CatNStrToVec( outtext, oldptr, p - 1 - oldptr );
+                WriteNVec( outtext, oldptr, p - 1 - oldptr );
                 temp = GetMacroValue( name );
                 if( temp != NULL ) {
-                    CatStrToVec( outtext, temp );
+                    WriteVec( outtext, temp );
                     FreeSafe( temp );
                 }
                 p = oldptr = p + 1;
@@ -1237,7 +1236,7 @@ STATIC char *DeMacroName( const char *text, const char *name )
             break;
         }
     }
-    CatStrToVec( outtext, oldptr );
+    WriteVec( outtext, oldptr );
     return( FinishVec( outtext ) );
 }
 

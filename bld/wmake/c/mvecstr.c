@@ -312,23 +312,3 @@ void CatVec( VECSTR dest, VECSTR src )
     ((OURPTR)src)->next = freeVec;
     freeVec = (OURPTR)src;
 }
-
-// TODO: If these functions work the way I think they do, all calls to
-//       Cat(N)StrToVec should be just replaced with Write(N)Vec - MN
-
-void CatStrToVec( VECSTR dest, const char* str )
-/******************************************************
- *  Concatenate the whole string ended by nullchar to the end of dest
- */
-{
-    WriteVec( dest, str );
-}
-
-
-void CatNStrToVec( VECSTR dest, const char* str, size_t length )
-/**********************************************************************
- * Concatenate a string to the end of 'dest' with length 'length'
- */
-{
-    WriteNVec( dest, str, length );
-}

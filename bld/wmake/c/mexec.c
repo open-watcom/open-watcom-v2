@@ -442,7 +442,6 @@ STATIC RET_T writeInlineFiles( FLIST *head, char **commandIn )
     cmdText    = *commandIn;
     ret        = RET_SUCCESS;
     newCommand = StartVec();
-    WriteVec( newCommand, "" );
     index      = 0;
     start      = index;
 
@@ -469,12 +468,12 @@ STATIC RET_T writeInlineFiles( FLIST *head, char **commandIn )
             if( ret == RET_ERROR ) {
                 break;
             }
-            CatNStrToVec( newCommand, cmdText + start, index - start - 2 );
+            WriteNVec( newCommand, cmdText + start, index - start - 2 );
             start = index;
             FreeSafe( current->fileName );
             current->fileName = createTmpFileName();
 
-            CatStrToVec( newCommand, current->fileName );
+            WriteVec( newCommand, current->fileName );
         }
         if( !Glob.noexec ) {
             ret = createFile( current );
@@ -487,7 +486,7 @@ STATIC RET_T writeInlineFiles( FLIST *head, char **commandIn )
             }
         }
     }
-    CatNStrToVec( newCommand, cmdText+start, strlen( cmdText ) - start );
+    WriteNVec( newCommand, cmdText+start, strlen( cmdText ) - start );
     FreeSafe( cmdText );
     *commandIn = FinishVec( newCommand );
     return( ret );

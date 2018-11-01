@@ -768,7 +768,6 @@ STATIC void getBody( FLIST *head )
     /* Inlinelevel == the number of inline files we need to create */
     while( inlineLevel > 0 && current != NULL ) {
         buf = StartVec();
-        WriteVec( buf, "" );
         for( ;; ) {
             s = PreGetCHR();
             if( s == STRM_END ) {

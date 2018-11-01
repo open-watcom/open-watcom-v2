@@ -121,9 +121,8 @@ STATIC char *CatModifier( char *inString, bool destroy )
         buffer[0] = s;
         buffer[1] = NULLCHAR;
         output = StartVec();
-        WriteVec( output, "" );
-        CatStrToVec( output, inString );
-        CatStrToVec( output, buffer );
+        WriteVec( output, inString );
+        WriteVec( output, buffer );
         if( destroy ) {
             FreeSafe( inString );
         }
