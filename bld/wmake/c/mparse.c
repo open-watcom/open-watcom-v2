@@ -44,6 +44,8 @@
 #include "mmisc.h"
 #include "mparse.h"
 
+#include "clibext.h"
+
 
 UINT16          inlineLevel;
 

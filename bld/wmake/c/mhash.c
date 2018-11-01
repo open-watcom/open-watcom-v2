@@ -35,6 +35,8 @@
 #include "msg.h"
 #include "mhash.h"
 
+#include "clibext.h"
+
 
 HASH_T Hash( const char *s, HASH_T prime )
 /************************************************
