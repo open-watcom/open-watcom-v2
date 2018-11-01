@@ -254,9 +254,8 @@ STATIC char *createTmpFileName( void )
 }
 
 
-STATIC RET_T processInlineFile( int handle, const char *body,
-    const char *fileName, bool writeToFile )
-/***********************************************************/
+STATIC RET_T processInlineFile( FILE *fp, const char *body, const char *fileName )
+/********************************************************************************/
 {
     int         index;
     RET_T       ret;
@@ -279,13 +278,13 @@ STATIC RET_T processInlineFile( int handle, const char *body,
             InsString( body + currentSent, false );
             DeMacroBody = ignoreWSDeMacro( false, ForceDeMacro() );
             currentSent = index;
-            if( writeToFile ) {
+            if( fp != NULL ) {
                 size_t bytes = strlen( DeMacroBody );
 
-                if( bytes != (size_t)posix_write( handle, DeMacroBody, bytes ) ) {
+                if( bytes != fwrite( DeMacroBody, 1, bytes, fp ) ) {
                     ret = RET_ERROR;
                 }
-                if( 1 != posix_write( handle, "\n", 1 ) ) {
+                if( 1 != fwrite( "\n", 1, 1, fp ) ) {
                     ret = RET_ERROR;
                 }
             } else {
@@ -316,10 +315,10 @@ STATIC RET_T processInlineFile( int handle, const char *body,
     return( ret );
 }
 
-STATIC RET_T writeLineByLine( int handle, const char *body )
-/**********************************************************/
+STATIC RET_T writeLineByLine( FILE *fp, const char *body )
+/********************************************************/
 {
-    return( processInlineFile( handle, body, NULL, true ) );
+    return( processInlineFile( fp, body, NULL ) );
 }
 
 
@@ -360,7 +359,7 @@ STATIC RET_T VerbosePrintTempFile( const FLIST *head )
 
     for( current = head; current != NULL; current = current->next ) {
         assert( current->fileName != NULL );
-        ret = processInlineFile( 0, current->body, current->fileName, false );
+        ret = processInlineFile( NULL, current->body, current->fileName );
     }
     return( ret );
 }
@@ -371,7 +370,7 @@ STATIC RET_T createFile( const FLIST *head )
  */
 {
     NKLIST  *temp;
-    int     handle;
+    FILE    *fp;
     char    *fileName = NULL;
     char    *tmpFileName = NULL;
     RET_T   ret;
@@ -393,13 +392,13 @@ STATIC RET_T createFile( const FLIST *head )
 
     if( ret != RET_ERROR ) {
         tmpFileName = RemoveBackSlash( fileName );
-        handle = open( tmpFileName, O_TEXT | O_WRONLY | O_CREAT | O_TRUNC, PMODE_RW );
-        if( handle != -1 ) {
-            if( writeLineByLine( handle, head->body ) == RET_ERROR ) {
+        fp = fopen( tmpFileName, "w" );
+        if( fp != NULL ) {
+            if( writeLineByLine( fp, head->body ) == RET_ERROR ) {
                 PrtMsg( ERR | ERROR_WRITING_FILE, tmpFileName );
                 ret = RET_ERROR;
             }
-            if( close( handle ) != -1 ) {
+            if( fclose( fp ) == 0 ) {
                 if( !head->keep ) {
                     temp = NewNKList();
                     temp->fileName = StrDupSafe( tmpFileName );
