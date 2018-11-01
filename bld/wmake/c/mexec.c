@@ -108,7 +108,7 @@ typedef struct {
 STATIC  UINT8   lastErrorLevel;
 STATIC  UINT16  tmpFileNumber;          /* temp file number         */
 STATIC  char    tmpFileChar  ;          /* temp file number chari   */
-STATIC  int     currentFileHandle;      /* %write, %append, %create */
+STATIC  FILE    *currentFileHandle;     /* %write, %append, %create */
 STATIC  char    *currentFileName;
 
 static bool     RecursiveRM( const char *dir, const rm_flags *flags );
@@ -586,9 +586,9 @@ STATIC RET_T percentMake( char *arg )
 STATIC void closeCurrentFile( void )
 /**********************************/
 {
-    if( currentFileHandle != -1 ) {
-        close( currentFileHandle );
-        currentFileHandle = -1;
+    if( currentFileHandle != NULL ) {
+        fclose( currentFileHandle );
+        currentFileHandle = NULL;
     }
     if( currentFileName != NULL ) {
         FreeSafe( currentFileName );
@@ -605,7 +605,7 @@ STATIC RET_T percentWrite( char *arg, enum write_type type )
     char const  *text;
     char        *fn;
     char const  *cmd_name;
-    int         open_flags;
+    char const  *open_flags;
     size_t      len;
 
     assert( arg != NULL );
@@ -665,15 +665,14 @@ STATIC RET_T percentWrite( char *arg, enum write_type type )
     if( type == WR_CREATE || currentFileName == NULL || !FNameEq( currentFileName, fn ) ) {
         closeCurrentFile();
         currentFileName = StrDupSafe( fn );
-        open_flags = O_WRONLY | O_CREAT | O_TEXT;
         if( type == WR_APPEND ) {
-            open_flags |= O_APPEND;
+            open_flags = "a";
         } else {
-            open_flags |= O_TRUNC;
+            open_flags = "w";
         }
 
-        currentFileHandle = open( fn, open_flags, PMODE_RW );
-        if( currentFileHandle == -1 ) {
+        currentFileHandle = fopen( fn, open_flags );
+        if( currentFileHandle == NULL ) {
             PrtMsg( ERR | OPENING_FOR_WRITE, fn );
             closeCurrentFile();
             return( RET_ERROR );
@@ -683,7 +682,7 @@ STATIC RET_T percentWrite( char *arg, enum write_type type )
     if( type != WR_CREATE ) {
         *p = '\n';          /* replace null terminator with newline */
         len = ( p - text ) + 1;
-        if( (size_t)posix_write( currentFileHandle, text, len ) != len ) {
+        if( fwrite( text, 1, len, currentFileHandle ) != len ) {
             PrtMsg( ERR | DOING_THE_WRITE );
             closeCurrentFile();
             return( RET_ERROR );
@@ -2119,7 +2118,7 @@ void ExecInit( void )
 {
     lastErrorLevel = 0;
     currentFileName = NULL;
-    currentFileHandle = -1;
+    currentFileHandle = NULL;
     /* Take any number first */
     tmpFileNumber = (UINT16)( time( NULL ) % 100000 );
 }
