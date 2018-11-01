@@ -80,18 +80,18 @@ enum {
 
 STATIC _trmem_hdl   Handle;
 STATIC int          trmemCode;
-STATIC int          trkfile = -1;     /* file handle we'll posix_write() to */
+STATIC FILE         *trkfile = NULL;
 
 STATIC void printLine( void *h, const char *buf, size_t size )
 /************************************************************/
 {
     h = h;
-    if( trkfile == -1 ) {
-        trkfile = open( "mem.trk", O_WRONLY | O_CREAT | O_TRUNC, PMODE_RW );
+    if( trkfile == NULL ) {
+        trkfile = fopen( "mem.trk", "w" );
     }
-    if( trkfile != -1 ) {
-        posix_write( trkfile, buf, size );
-        posix_write( trkfile, "\n", 1 );
+    if( trkfile != NULL ) {
+        fwrite( buf, 1, size, trkfile );
+        fwrite( "\n", 1, 1, trkfile );
     }
     if( (trmemCode & TRMEM_DO_NOT_PRINT) == 0 ) {
         posix_write( STDOUT_FILENO, buf, size );
@@ -241,9 +241,9 @@ void MemFini( void )
         _trmem_close( Handle ); /* Report any memory errors. */
     }
     MemCheck();
-    if( trkfile != -1 ) {
-        close( trkfile );
-        trkfile = -1;
+    if( trkfile != NULL ) {
+        fclose( trkfile );
+        trkfile = NULL;
     }
 #endif
 #endif
