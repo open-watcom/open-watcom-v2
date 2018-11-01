@@ -94,8 +94,8 @@ STATIC void printLine( void *h, const char *buf, size_t size )
         fwrite( "\n", 1, 1, trkfile );
     }
     if( (trmemCode & TRMEM_DO_NOT_PRINT) == 0 ) {
-        posix_write( STDOUT_FILENO, buf, size );
-        posix_write( STDOUT_FILENO, "\n", 1 );
+        fwrite( buf, 1, size, stdout );
+        fwrite( "\n", 1, 1, stdout );
     }
 }
 
