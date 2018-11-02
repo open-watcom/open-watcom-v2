@@ -34,6 +34,7 @@
 
 #include <stdlib.h>
 #include <signal.h>
+#include <time.h>
 
 #ifdef DLLS_IMPLEMENTED
     #include "idedrv.h"
