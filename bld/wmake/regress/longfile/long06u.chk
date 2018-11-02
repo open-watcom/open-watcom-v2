@@ -4,68 +4,68 @@ Creating "Long Filename.out1"
 Creating "Long Filename.t1"
 Creating "Long Filename.tmp"
 Creating "Long Filename.tmp1"
-for %i in (L*e.*) do @echo %i
-Long Filename.o1
+for %i in (L*e.*) do @%append ../files.lst %i
 Long Filename.out
 Long Filename.out1
-Long Filename.t1
+Long Filename.o1
 Long Filename.tmp
 Long Filename.tmp1
-for %i in (l*e.*) do @echo %i
+Long Filename.t1
+for %i in (l*e.*) do @%append ../files.lst %i
 l*e.*
-for %i in (*F*e.*) do @echo %i
-Long Filename.o1
+for %i in (*F*e.*) do @%append ../files.lst %i
 Long Filename.out
 Long Filename.out1
-Long Filename.t1
+Long Filename.o1
 Long Filename.tmp
 Long Filename.tmp1
-for %i in (*f*e.*) do @echo %i
+Long Filename.t1
+for %i in (*f*e.*) do @%append ../files.lst %i
 *f*e.*
-for %i in (*e.*) do @echo %i
+for %i in (*e.*) do @%append ../files.lst %i
+Long Filename.out
+Long Filename.out1
 Long Filename.o1
-Long Filename.out
-Long Filename.out1
-Long Filename.t1
 Long Filename.tmp
 Long Filename.tmp1
-for %i in (*a??.*) do @echo %i
+Long Filename.t1
+for %i in (*a??.*) do @%append ../files.lst %i
+Long Filename.out
+Long Filename.out1
 Long Filename.o1
-Long Filename.out
-Long Filename.out1
-Long Filename.t1
 Long Filename.tmp
 Long Filename.tmp1
-for %i in (*a*.*) do @echo %i
+Long Filename.t1
+for %i in (*a*.*) do @%append ../files.lst %i
+Long Filename.out
+Long Filename.out1
 Long Filename.o1
-Long Filename.out
-Long Filename.out1
+Long Filename.tmp
+Long Filename.tmp1
 Long Filename.t1
-Long Filename.tmp
-Long Filename.tmp1
-for %i in (*.???) do @echo %i
+for %i in (*.???) do @%append ../files.lst %i
 Long Filename.out
 Long Filename.tmp
-for %i in (*.????) do @echo %i
+for %i in (*.????) do @%append ../files.lst %i
 Long Filename.out1
 Long Filename.tmp1
-for %i in (*.?????) do @echo %i
+for %i in (*.?????) do @%append ../files.lst %i
 *.?????
-for %i in (*.???1) do @echo %i
+for %i in (*.???1) do @%append ../files.lst %i
 Long Filename.out1
 Long Filename.tmp1
-for %i in (*.*1) do @echo %i
+for %i in (*.*1) do @%append ../files.lst %i
+Long Filename.out1
 Long Filename.o1
-Long Filename.out1
-Long Filename.t1
 Long Filename.tmp1
-for %i in (*1) do @echo %i
+Long Filename.t1
+for %i in (*1) do @%append ../files.lst %i
+Long Filename.out1
 Long Filename.o1
-Long Filename.out1
-Long Filename.t1
 Long Filename.tmp1
+Long Filename.t1
 rm *.?1
-for %i in (*) do @echo %i
+for %i in (*) do @%append ../files.lst %i
 .
 ..
 Long Filename.out
@@ -73,24 +73,24 @@ Long Filename.out1
 Long Filename.tmp
 Long Filename.tmp1
 rm *.tmp
-for %i in (*) do @echo %i
+for %i in (*) do @%append ../files.lst %i
 .
 ..
 Long Filename.out
 Long Filename.out1
 Long Filename.tmp1
 rm *.tmp1
-for %i in (*) do @echo %i
+for %i in (*) do @%append ../files.lst %i
 .
 ..
 Long Filename.out
 Long Filename.out1
 rm *.out
-for %i in (*) do @echo %i
+for %i in (*) do @%append ../files.lst %i
 .
 ..
 Long Filename.out1
 rm *.out1
-for %i in (*) do @echo %i
+for %i in (*) do @%append ../files.lst %i
 .
 ..

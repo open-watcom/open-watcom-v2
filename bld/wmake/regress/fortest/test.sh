@@ -29,6 +29,10 @@ fi
 
 LOGFILE=$2
 
+echo \# ===========================
+echo \# Start FORTEST
+echo \# ===========================
+
 # Need our 'rem' utility on the PATH
 PATH=../cmds:$PATH
 
@@ -88,7 +92,6 @@ diff -b for08u.chk test08.lst
 do_check
 
 if [ "$ERRORS" -eq "0" ]; then
-    rm -f tmpfile.*
     rm -f *.lst
     rm -f *.o
 fi
