@@ -9,16 +9,16 @@ usage() {
 
 print_header() {
     echo \# -----------------------------
-    echo \#   Test $TEST
+    echo \#   Update Test $TEST
     echo \# -----------------------------
 }
 
 do_check() {
     if [ "$?" -eq "0" ]; then
-        echo \# Test $TEST successful
+        echo \#      Test $1 successful
     else
-        echo \#\# UPDTEST \#\# >> $LOGFILE
-        echo Error: Test $TEST unsuccessful!!! | tee -a $LOGFILE
+        echo \#\# UPDTEST $TEST \#\# >> $LOGFILE
+        echo Error: Test $1 unsuccessful!!! | tee -a $LOGFILE
         ERRORS=1
     fi
 }
@@ -30,73 +30,77 @@ fi
 LOGFILE=$2
 
 echo \# ===========================
-echo \# Start UPDTEST
+echo \# Update Tests
 echo \# ===========================
 
 # Get our 'rem' version on PATH
 export PATH=../cmds:$PATH
 
-TEST=1
+TEST=01
 print_header
-$1 -h -f upd01
-do_check
-$1 -h -f upd01 -m -sn -y > test1.lst
-do_check
-diff upd01.chk test1.lst
+$1 -h -f upd$TEST
+do_check a
+$1 -h -f upd$TEST -m -sn -y > test$TEST.lst
+do_check b
+diff upd$TEST.chk test$TEST.lst
+do_check c
+
+TEST=02
+print_header
+$1 -h -f upd$TEST -c
 do_check
 
-TEST=2
+TEST=03
 print_header
-$1 -h -f upd02 -c
+$1 -h -f upd$TEST
 do_check
 
-TEST=3
+TEST=04
 print_header
-$1 -h -f upd03
+$1 -h -f upd$TEST > test$TEST.lst 2>&1
+diff -b upd$TEST.chk test$TEST.lst
 do_check
 
-TEST=4
+TEST=05
 print_header
-$1 -h -f upd04 > test4.lst 2>&1
-diff -b upd04.chk test4.lst
+$1 -h -s -f upd$TEST > test$TEST.lst 2>&1
+diff -b upd$TEST.chk test$TEST.lst
 do_check
 
-TEST=5
+TEST=06
 print_header
-$1 -h -s -f upd05 > test5.lst 2>&1
-diff -b upd05.chk test5.lst
+$1 -h -f upd$TEST > test$TEST.lst 2>&1
+diff upd$TEST.chk test$TEST.lst
 do_check
 
-TEST=6
+TEST=07
 print_header
-$1 -h -f upd06 > test6.lst 2>&1
-diff upd06.chk test6.lst
-do_check
-
-TEST=7
-print_header
-$1 -h -f upd07 > test7.lst 2>&1
-diff upd07.chk test7.lst
+$1 -h -f upd$TEST > test$TEST.lst 2>&1
+diff upd$TEST.chk test$TEST.lst
 do_check
 
 echo \# ---------------------------
 echo \#   Test 8  --- ONLY FOR DOS
 echo \# ---------------------------
+#TEST=08
+#print_header
+#$1 -h -f upd$TEST
+#do_check
 
-TEST=9
+TEST=09
 print_header
-$1 -h -f upd09
+$1 -h -f upd$TEST
 do_check
     
 TEST=10
 print_header
-$1 -h -f upd10
+$1 -h -f upd$TEST
 do_check
     
 TEST=11
 print_header
-$1 -h -ms -f upd11 > test11.lst 2>&1
-diff upd11.chk test11.lst
+$1 -h -ms -f upd$TEST > test$TEST.lst 2>&1
+diff upd$TEST.chk test$TEST.lst
 do_check
 
 if [ "$ERRORS" -eq "0" ]; then

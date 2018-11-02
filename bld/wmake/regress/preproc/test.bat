@@ -1,75 +1,61 @@
 @echo %verbose% off
+
+set ERRORS=0
+
 echo # ===========================
-echo # Start Preprocessor Test
+echo # Preprocessor Tests
 echo # ===========================
 
 if .%2 == . goto usage
+set PRG=%1
+set ERRLOG=%2
 
-echo # ---------------------------
-echo #   PreProcess Test 1
-echo # ---------------------------
+set TEST=01
+call :header
+%PRG% -h -f prep%TEST% > test%TEST%.lst 2>&1
+diff -b -i prep%TEST%.chk test%TEST%.lst
+call :result
 
-%1 -h -f prep01 > tmp.out 2>&1
-diff -b -i prep01.chk tmp.out
-if errorlevel 1 goto err1
-    @echo # prep01 successful
-    goto test2
-:err1
-    @echo ## PREPROCESS ## >> %2
-    @echo Error: PREPROCESS #1 unsuccessful!!! | tee -a %2
+set TEST=02
+call :header
+%PRG% -h -f prep%TEST% -m -ms > test%TEST%a.lst 2>&1
+diff prep%TEST%.chk test%TEST%a.lst
+call :result a
+%PRG% -h -f prep%TEST% -m > test%TEST%b.lst 2>&1
+diff prep%TEST%.chk test%TEST%b.lst
+call :result b
 
-:test2
+set TEST=03
+call :header
+%PRG% -h -f prep%TEST% > test%TEST%.lst 2>&1
+diff -b -i prep%TEST%.chk test%TEST%.lst
+call :result
 
-echo # ---------------------------
-echo #   PreProcess Test 2
-echo # ---------------------------
+set TEST=04
+call :header
+%PRG% -h -f prep%TEST% > test%TEST%.lst 2>&1
+diff -b prep%TEST%.chk test%TEST%.lst
+call :result
 
-%1 -h -f prep02 -m -ms > tmp.out 2>&1
-diff prep02.chk tmp.out
-if errorlevel 1 goto err2
-%1 -h -f prep02 -m     > tmp.out 2>&1
-diff prep02.chk tmp.out
-if errorlevel 1 goto err2
-    @echo # prep02 successful
-    goto test3
-:err2
-    @echo ## PREPROCESS ## >> %2
-    @echo Error: PREPROCESS #2 unsuccessful!!! | tee -a %2
+if %ERRORS% == 0 del *.lst
+goto end
 
-:test3
-
-echo # ---------------------------
-echo #   PreProcess Test 3
-echo # ---------------------------
-
-%1 -h -f prep03 > tmp.out 2>&1
-diff -b -i prep03.chk tmp.out
-if errorlevel 1 goto err3
-    @echo # prep03 successful
-    goto test4
-:err3
-    @echo ## PREPROCESS ## >> %2
-    @echo Error: PREPROCESS #3 unsuccessful!!! | tee -a %2
-
-:test4
-
-echo # ---------------------------
-echo #   PreProcess Test 4
-echo # ---------------------------
-
-%1 -h -f prep04 > tmp.out 2>&1
-diff -b prep04.chk tmp.out
-if errorlevel 1 goto err4
-    @echo # prep04 successful
-    goto test5
-:err4
-    @echo ## PREPROCESS ## >> %2
-    @echo Error: PREPROCESS #4 unsuccessful!!! | tee -a %2
-
-:test5
-
-goto done
 :usage
-echo usage: %0 prgname errorfile
-:done
-del tmp.out
+    echo usage: %0 prgname errorfile
+    goto end
+
+:header
+    echo # ---------------------------
+    echo #  Preprocessor Test %TEST%
+    echo # ---------------------------
+    goto end
+
+:result
+if errorlevel 1 goto resulterr
+    echo #        Test %1 successful
+    goto end
+:resulterr
+    echo ## PREPROCESS %TEST% ## >> %ERRLOG%
+    echo # Error: Test %1 unsuccessful!!! | tee -a %ERRLOG%
+    set ERRORS=1
+:end

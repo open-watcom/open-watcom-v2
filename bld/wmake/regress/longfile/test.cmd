@@ -1,117 +1,82 @@
 @echo off
+
+set ERRORS=0
+
 echo # ===========================
-echo # Start Long FileName Test
+echo # Long FileName Tests
 echo # ===========================
 
 if .%2 == . goto usage
+set PRG=%1
+set ERRLOG=%2
 
-echo # ---------------------------
-echo #   Long FileName Test 1
-echo # ---------------------------
+set TEST=01
+call :header
 echo LONGFILENAME OK > "HELLO TMP.TMP"
 echo. >hello.h
-if exist tmp.out del tmp.out
-%1 -h -a -f long01 > tmp.out 2>&1
-diff -b long01.chk tmp.out
-if errorlevel 1 goto err1
-    @echo # LONG01 successful
-    goto test2
-:err1
-    @echo ## Long FileName ## >> %2
-    @echo Error: Long FileName #1 unsuccessful!!! | tee -a %2
+%1 -h -a -f long%TEST% > test%TEST%.lst 2>&1
+diff -b long%TEST%.chk test%TEST%.lst
+call :result
 
-:test2
 del "HELLO TMP.TMP"
 del hello.h
 
-echo # ---------------------------
-echo #   Long FileName Test 2
-echo # ---------------------------
-del tmp.out
-%1 -h -ms -a -f long02 > tmp.out 2>&1
-diff -b long02.chk tmp.out
-if errorlevel 1 goto err2
-    @echo # LONG02 successful
-    goto test3
-:err2
-    @echo ## Long FileName ## >> %2
-    @echo Error: Long FileName #2 unsuccessful!!! | tee -a %2
+set TEST=02
+call :header
+%1 -h -ms -a -f long%TEST% > test%TEST%.lst 2>&1
+diff -b long%TEST%.chk test%TEST%.lst
+call :result
 
-:test3
-echo # ---------------------------
-echo #   Long FileName Test 3
-echo # ---------------------------
-del tmp.out
+set TEST=03
+call :header
 rem This one MUST NOT use -a switch!
-%1 -h -ms -f long03 > tmp.out 2>&1
-diff -b long03.chk tmp.out
-if errorlevel 1 goto err2
-    @echo # LONG03 successful
-    goto test4
-:err2
-    @echo ## Long FileName ## >> %2
-    @echo Error: Long FileName #3 unsuccessful!!! | tee -a %2
+%1 -h -ms -f long%TEST% > test%TEST%.lst 2>&1
+diff -b long%TEST%.chk test%TEST%.lst
+call :result
 
-:test4
-echo # ---------------------------
-echo #   Long FileName Test 4
-echo # ---------------------------
-del tmp.out
-%1 -h -m -f long04 > tmp.out 2>&1
-diff -b long04.chk tmp.out
-if errorlevel 1 goto err2
-    @echo # LONG04 successful
-    goto test5
-:err2
-    @echo ## Long FileName ## >> %2
-    @echo Error: Long FileName #4 unsuccessful!!! | tee -a %2
+set TEST=04
+call :header
+%1 -h -m -f long%TEST% > test%TEST%.lst 2>&1
+diff -b long%TEST%.chk test%TEST%.lst
+call :result
 
-:test5
-echo # ---------------------------
-echo #   Long FileName Test 5
-echo # ---------------------------
-del tmp.out
-%1 -h -m -f long05 > tmp.out 2>&1
-diff -b long05.chk tmp.out
-if errorlevel 1 goto err2
-    @echo # LONG05 successful
-    goto test6
-:err2
-    @echo ## Long FileName ## >> %2
-    @echo Error: Long FileName #5 unsuccessful!!! | tee -a %2
+set TEST=05
+call :header
+%1 -h -m -f long%TEST% > test%TEST%.lst 2>&1
+diff -b long%TEST%.chk test%TEST%.lst
+call :result
 
-:test6
-echo # ---------------------------
-echo #   Long FileName Test 6
-echo # ---------------------------
-del tmp.out
-%1 -h -m -f long06 > tmp.out 2>&1
-diff -b long06.chk tmp.out
-if errorlevel 1 goto err2
-    @echo # LONG06 successful
-    goto test7
-:err2
-    @echo ## Long FileName ## >> %2
-    @echo Error: Long FileName #6 unsuccessful!!! | tee -a %2
+set TEST=06
+call :header
+%1 -h -m -f long%TEST% > test%TEST%.lst 2>&1
+diff -b long%TEST%.chk test%TEST%.lst
+call :result
 
-:test7
-echo # ---------------------------
-echo #   Long FileName Test 7
-echo # ---------------------------
-del tmp.out
-%1 -h -m -f long07 > tmp.out 2>&1
-diff -b long07.chk tmp.out
-if errorlevel 1 goto err2
-    @echo # LONG07 successful
-    goto test8
-:err2
-    @echo ## Long FileName ## >> %2
-    @echo Error: Long FileName #7 unsuccessful!!! | tee -a %2
+set TEST=07
+call :header
+%1 -h -m -f long%TEST% > test%TEST%.lst 2>&1
+diff -b long%TEST%.chk test%TEST%.lst
+call :result
 
-:test8
+if %ERRORS% == 0 del *.lst
+goto end
 
-goto done
 :usage
-echo usage: %0 prgname errorfile
-:done
-del tmp.out
+    echo usage: %0 prgname errorfile
+goto end
+
+:header
+    echo # ---------------------------
+    echo #  For Loop Test %TEST%
+    echo # ---------------------------
+    goto end
+
+:result
+    if errorlevel 1 goto resulterr
+    @echo #        Test successful
+goto end
+:resulterr
+    @echo ## FORTEST %TEST% ## >> %ERRLOG%
+    @echo # Error: Test unsuccessful!!! | tee -a %ERRLOG%
+    set ERRORS=1
+:end

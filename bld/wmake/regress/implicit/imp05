@@ -16,21 +16,21 @@
 
 all: hello.exe .symbolic
         sleep 2
-        @$(MAKE) $(__MAKEOPTS__) -f imp02d -h -y hello.exe
+        @$(MAKE) $(__MAKEOPTS__) -f imp05 -h -y hello.exe
         sleep 2
         @%append hello0.h
         @echo change hello0.h
-        @$(MAKE) $(__MAKEOPTS__) -f imp02d -h -y hello.exe
+        @$(MAKE) $(__MAKEOPTS__) -f imp05 -h -y hello.exe
         sleep 2
         @%append hello1.h
         @echo change hello1.h
-        @$(MAKE) $(__MAKEOPTS__) -f imp02d -h -y hello.exe
+        @$(MAKE) $(__MAKEOPTS__) -f imp05 -h -y hello.exe
         sleep 2
         @%append hello0.h
         @echo change hello0.h
         @%append hello1.h
         @echo change hello1.h
-        @$(MAKE) $(__MAKEOPTS__) -f imp02d -h -y hello.exe
+        @$(MAKE) $(__MAKEOPTS__) -f imp05 -h -y hello.exe
 
 hello.exe : hello.obj
         @echo link $@ from $<

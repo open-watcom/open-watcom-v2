@@ -9,16 +9,16 @@ usage() {
 
 print_header() {
     echo \# -----------------------------
-    echo \#   Test $TEST
+    echo \#   For Loop Test $TEST
     echo \# -----------------------------
 }
 
 do_check() {
     if [ "$?" -eq "0" ]; then
-        echo \# Test $TEST successful
+        echo \#      Test successful
     else
-        echo \#\# FORTEST \#\# >> $LOGFILE
-        echo Error: Test $TEST unsuccessful!!! | tee -a $LOGFILE
+        echo \#\# FORTEST $TEST \#\# >> $LOGFILE
+        echo Error: Test unsuccessful!!! | tee -a $LOGFILE
         ERRORS=1
     fi
 }
@@ -30,7 +30,7 @@ fi
 LOGFILE=$2
 
 echo \# ===========================
-echo \# Start FORTEST
+echo \# For Loop Tests
 echo \# ===========================
 
 # Need our 'rem' utility on the PATH

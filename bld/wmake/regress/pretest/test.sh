@@ -9,16 +9,16 @@ usage() {
 
 print_header() {
     echo \# -----------------------------
-    echo \#   Test $TEST
+    echo \#   Preprocessor IF Test $TEST
     echo \# -----------------------------
 }
 
 do_check() {
     if [ "$?" -eq "0" ]; then
-        echo \# Test $TEST successful
+        echo \# Test successful
     else
-        echo \#\# PRETEST \#\# >> $LOGFILE
-        echo Error: Test $TEST unsuccessful!!! | tee -a $LOGFILE
+        echo \#\# PRETEST $TEST \#\# >> $LOGFILE
+        echo Error: Test unsuccessful!!! | tee -a $LOGFILE
         ERRORS=1
     fi
 }
@@ -30,45 +30,45 @@ fi
 LOGFILE=$2
 
 echo \# ===================================
-echo \# Start DOPRE
+echo \# Preprocessor IF Tests
 echo \# ===================================
 
-TEST=1
+TEST=01
 print_header
-$1 -h -f pre01 pre01 -f pre02 pre02
+$1 -h -f pre${TEST}a pre${TEST}a -f pre${TEST}b pre${TEST}b
 do_check
 
-TEST=2
+TEST=02
 print_header
-$1 -h -f pre03 pre03 > test2.lst 2>&1
-diff pre03.chk test2.lst
+$1 -h -f pre$TEST pre$TEST > test$TEST.lst 2>&1
+diff pre$TEST.chk test$TEST.lst
 do_check
 
-TEST=3
+TEST=03
 print_header
-$1 -h -f pre04 pre04
+$1 -h -f pre$TEST pre$TEST
 do_check
 
-TEST=4
+TEST=04
 print_header
-$1 -h -f pre05 pre05
+$1 -h -f pre$TEST pre$TEST
 do_check
 
-TEST=5
+TEST=05
 print_header
-$1 -h -f pre06 pre06
+$1 -h -f pre$TEST pre$TEST
 do_check
 
-TEST=6
+TEST=06
 print_header
-$1 -h -f pre07 > test6.lst 2>&1
-diff pre07.chk test6.lst
+$1 -h -f pre$TEST > test$TEST.lst 2>&1
+diff pre$TEST.chk test$TEST.lst
 do_check
 
-TEST=7
+TEST=07
 print_header
-$1 -h -f pre08 > test7.lst 2>&1
-diff pre08.chk test7.lst
+$1 -h -f pre$TEST > test$TEST.lst 2>&1
+diff pre$TEST.chk test$TEST.lst
 do_check
 
 if [ "$ERRORS" -eq "0" ]; then

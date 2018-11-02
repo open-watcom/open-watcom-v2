@@ -1,35 +1,53 @@
 @echo off
+
+set ERRORS=0
+
 echo # ===========================
 echo # Multiple Dependents Test
 echo # ===========================
+
 if .%1 == . goto usage
+set PRG=%1
+set ERRLOG=%2
 
 set OWVERBOSE=0
-echo # ---------------------------
-echo # TEST 1
-echo # ---------------------------
+set TEST=01
+call :header
 %1 -h -f create
-if exist err1.out del err1.out
 echo. >err1.out
-%1 -h -f maketst1 -l err1.out > tst1.out
-diff -b tst1.out tst1.chk
-if errorlevel 1 goto tst1err
-diff -b err1.out err1.chk
-if errorlevel 1 goto tst1err
-    echo # Multiple Dependents Test successful
-    goto done
-:tst1err
-    pause
-    echo ## TEST1 ##  >> %2
-    echo Error: Multiple Dependents Test Unsuccessful | tee -a %2
-:done
-    del *.obj
-    del *.exe
-    del *.out
-    del main.*
-    del foo*.c
+%1 -h -f maketst1 -l err%TEST%.lst > test%TEST%.lst
+diff -b err%TEST%.chk err%TEST%.lst
+call :result a
+diff -b test%TEST%.chk test%TEST%.lst
+call :result b
+
+del *.obj
+del *.exe
+del *.out
+del main.*
+del foo*.c
+
+if not %ERRORS% == 0 goto end
+    del *.lst
     del maketst1
 goto end
+
 :usage
-echo usage: %0 prgname errorfile
+    echo usage: %0 prgname errorfile
+goto end
+
+:header
+    echo # ---------------------------
+    echo #  For Loop Test %TEST%
+    echo # ---------------------------
+    goto end
+
+:result
+    if errorlevel 1 goto resulterr
+    @echo #        Test %1 successful
+goto end
+:resulterr
+    @echo ## FORTEST %TEST% ## >> %ERRLOG%
+    @echo # Error: Test %1 unsuccessful!!! | tee -a %ERRLOG%
+    set ERRORS=1
 :end

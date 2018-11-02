@@ -9,16 +9,16 @@ usage() {
 
 print_header() {
     echo \# -----------------------------
-    echo \#   Test $TEST
+    echo \#   Miscellaneous Test $TEST
     echo \# -----------------------------
 }
 
 do_check() {
     if [ "$?" -eq "0" ]; then
-        echo \# Test $TEST successful
+        echo \#      Test successful
     else
-        echo \#\# MISC \#\# >> $LOGFILE
-        echo Error: Test $TEST unsuccessful!!! | tee -a $LOGFILE
+        echo \#\# MISC $TEST \#\# >> $LOGFILE
+        echo Error: Test unsuccessful!!! | tee -a $LOGFILE
         ERRORS=1
     fi
 }
@@ -30,43 +30,43 @@ fi
 LOGFILE=$2
 
 echo \# ===========================
-echo \# Start Miscellaneous Test
+echo \# Miscellaneous Tests
 echo \# ===========================
 
-TEST=1
+TEST=01
 print_header
-$1 -c -h -f misc01 > test1.lst 2>&1
-diff -b misc01.chk test1.lst
+$1 -c -h -f misc$TEST > test$TEST.lst 2>&1
+diff -b misc$TEST.chk test$TEST.lst
 do_check
 
-TEST=2
+TEST=02
 print_header
-$1 -c -h -f misc02 > test2.lst 2>&1
-diff -b misc02.chk test2.lst
+$1 -c -h -f misc$TEST > test$TEST.lst 2>&1
+diff -b misc$TEST.chk test$TEST.lst
 do_check
 
-TEST=3
+TEST=03
 print_header
-$1 -a -c -h -f misc03 > test3.lst 2>&1
-diff -b misc03.chk test3.lst
+$1 -a -c -h -f misc$TEST > test$TEST.lst 2>&1
+diff -b misc$TEST.chk test$TEST.lst
 do_check
 
-TEST=4
+TEST=04
 print_header
-$1 -a -c -h -f misc04 > test4.lst 2>&1
-diff -b -i misc04.chk test4.lst
+$1 -a -c -h -f misc$TEST > test$TEST.lst 2>&1
+diff -b -i misc$TEST.chk test$TEST.lst
 do_check
 
-TEST=5
+TEST=05
 print_header
-$1 -a -c -h -f misc05 test1 test2 test3 > test5.lst 2>&1
-diff -b misc05.chk test5.lst
+$1 -a -c -h -f misc$TEST test1 test2 test3 > test$TEST.lst 2>&1
+diff -b misc$TEST.chk test$TEST.lst
 do_check
 
-TEST=6
+TEST=06
 print_header
-$1 -a -c -h -f misc06u > test6.lst 2>&1
-diff -b misc06u.chk test6.lst
+$1 -a -c -h -f misc${TEST}u > test$TEST.lst 2>&1
+diff -b misc${TEST}u.chk test$TEST.lst
 do_check
 
 if [ "$ERRORS" -eq "0" ]; then

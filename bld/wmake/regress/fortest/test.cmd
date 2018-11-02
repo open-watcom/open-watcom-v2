@@ -1,146 +1,97 @@
 echo off
+
+set ERRORS=0
+
 echo # ===========================
-echo # Start FORTEST
+echo # For Loop Tests
 echo # ===========================
+
 if .%1 == . goto usage
+set PRG=%1
+set ERRLOG=%2
 
-echo # ---------------------------
-echo # Test A
-echo # ---------------------------
-if exist tst2.out del tst2.out
-%1 -h -f for01 > tst2.out 2>&1
-diff tst2.out for01.chk
-if errorlevel 1 goto tst2aerr
-    echo # For Loop Test A successful
-    goto tst2b
-:tst2aerr
-    echo ## FORTEST ## >> %2
-    echo # Error: For Loop Test A did not work | tee -a %2
-    goto err
+set TEST=01
+call :header
+%PRG% -h -f for%TEST% > test%TEST%.lst 2>&1
+diff for%TEST%.chk test%TEST%.lst
+call :result
 
-:tst2b
-echo # ---------------------------
-echo # Test B
-echo # ---------------------------
-del tst2.out
-%1 -h -f for02 > tst2.out 2>&1
-diff tst2.out for02.chk
-if errorlevel 1 goto tst2berr
-    echo # For Loop Test B successful
-    goto tst2c
-:tst2berr
-    echo ## FORTEST ## >> %2
-    echo # Error: For Loop Test B did not work | tee -a %2
-    goto err
+set TEST=02
+call :header
+%PRG% -h -f for%TEST% > test%TEST%.lst 2>&1
+diff for%TEST%.chk test%TEST%.lst
+call :result
 
-:tst2c
-echo # ---------------------------
-echo # Test C
-echo # ---------------------------
-del tst2.out
-%1 -h -f for03 > tst2.out 2>&1
-diff tst2.out for03.chk
-if errorlevel 1 goto tst2cerr
-    echo # For Loop Test C successful
-    goto tst2d
-:tst2cerr
-    echo ## FORTEST ## >> %2
-    echo # Error: For Loop Test C did not work | tee -a %2
-    goto err
+set TEST=03
+call :header
+%PRG% -h -f for%TEST% > test%TEST%.lst 2>&1
+diff for%TEST%.chk test%TEST%.lst
+call :result
 
-:tst2d
-echo # ---------------------------
-echo # Test D
-echo # ---------------------------
-type for04a.chk > tmpfile.tmp
-dir /b >> tmpfile.tmp
-type for04b.chk >> tmpfile.tmp
-dir for?? /b >> tmpfile.tmp
-type for04c.chk >> tmpfile.tmp
-del tst2.out
-%1 -h -f for04 > tst2.out 2>&1
-diff tst2.out tmpfile.tmp
-if errorlevel 1 goto tst2derr
-    echo # For Loop Test D successful
-    goto tst2e
-:tst2derr
-    echo ## FORTEST ## >> %2
-    echo # Error: For Loop Test D did not work | tee -a %2
-    goto err
+set TEST=04
+call :header
+type for%TEST%a.chk > tmp%TEST%.lst
+dir /b >> tmp%TEST%.lst
+type for%TEST%b.chk >> tmp%TEST%.lst
+dir for?? /b >> tmp%TEST%.lst
+type for%TEST%c.chk >> tmp%TEST%.lst
+%PRG% -h -f for%TEST% > test%TEST%.lst 2>&1
+diff tmp%TEST%.lst test%TEST%.lst
+call :result
 
-:tst2e
-echo # ---------------------------
-echo # Test E
-echo # ---------------------------
-del tst2.out
-%1 -h -f for05 > tst2.out 2>&1
-diff tst2.out for05.chk
-if errorlevel 1 goto tst2eerr
-    echo # For Loop Test E successful
-    goto tst2f
-:tst2eerr
-    echo ## FORTEST ## >> %2
-    echo # Error: For Loop Test E did not work | tee -a %2
-    goto err
+set TEST=05
+call :header
+%PRG% -h -f for%TEST% > test%TEST%.lst 2>&1
+diff for%TEST%.chk test%TEST%.lst
+call :result
 
-:tst2f
-echo # ---------------------------
-echo # Test F
-echo # ---------------------------
-del tst2.out
-%1 -h -f for06 > tst2.out 2>&1
-diff tst2.out for06.chk
-if errorlevel 1 goto tst2ferr
-    echo # For Loop Test F successful
-    goto tst2g
-:tst2ferr
-    echo ## FORTEST ## >> %2
-    echo # Error: For Loop Test F did not work | tee -a %2
-    goto err
+set TEST=06
+call :header
+%PRG% -h -f for%TEST% > test%TEST%.lst 2>&1
+diff for%TEST%.chk test%TEST%.lst
+call :result
 
-:tst2g
-echo # ---------------------------
-echo # Test G
-echo # ---------------------------
-del tst2.out
-%1 -h -f for07 > tst2.out 2>&1
-diff tst2.out for07.chk
-if errorlevel 1 goto tst2gerr
-    echo # For Loop Test G successful
-    goto tst2h
-:tst2gerr
-    echo ## FORTEST ## >> %2
-    echo # Error: For Loop Test G did not work | tee -a %2
-    goto err
+set TEST=07
+call :header
+%PRG% -h -f for%TEST% > test%TEST%.lst 2>&1
+diff for%TEST%.chk test%TEST%.lst
+call :result
 
-:tst2h
-echo # ---------------------------
-echo # Test H
-echo # ---------------------------
+set TEST=08
+call :header
 rem Need to set prompt, otherwise the test fails...
 prompt $p$g
-type for08.chk > tmpfile.tmp
-..\cmds\prntdir "echo a" >> tmpfile.tmp
+type for%TEST%.chk > tmp%TEST%.lst
+..\cmds\prntdir "echo a" >> tmp%TEST%.lst
 echo a >> tmpfile.tmp
-..\cmds\prntdir "echo b" >> tmpfile.tmp
+..\cmds\prntdir "echo b" >> tmp%TEST%.lst
 echo b >> tmpfile.tmp
-..\cmds\prntdir "echo c" >> tmpfile.tmp
-echo c >> tmpfile.tmp
-del tst2.out
-%1 -h -f for08 > tst2.out 2>&1
-diff -b tst2.out tmpfile.tmp
-if errorlevel 1 goto tst2herr
-    echo # For Loop Test H successful
-    goto done
-:tst2herr
-    echo # Error: For Loop Test H did not work
-:err
-:done
-    del tmpfile.tmp
-    del tst2.out
-    if exist *.obj del *.obj
+..\cmds\prntdir "echo c" >> tmp%TEST%.lst
+echo c >> tmp%TEST%.lst
+%PRG% -h -f for%TEST% > test%TEST%.lst 2>&1
+diff -b tmp%TEST%.lst test%TEST%.lst
+call :result
 
+rem if exist *.obj del *.obj
+if %ERRORS% == 0 del *.lst
 goto end
+
 :usage
-echo usage: %0 prgname errorfile
+    echo usage: %0 prgname errorfile
+goto end
+
+:header
+    echo # ---------------------------
+    echo #  For Loop Test %TEST%
+    echo # ---------------------------
+    goto end
+
+:result
+    if errorlevel 1 goto resulterr
+    @echo #        Test successful
+goto end
+:resulterr
+    @echo ## FORTEST %TEST% ## >> %ERRLOG%
+    @echo # Error: Test unsuccessful!!! | tee -a %ERRLOG%
+    set ERRORS=1
 :end

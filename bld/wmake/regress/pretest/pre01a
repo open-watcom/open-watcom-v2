@@ -124,6 +124,6 @@ answer += 26
 # it would be nice to use the preprocessor to test if everything works,
 # but that what we're testing!
 #
-pre01: .symbolic
+pre01a: .symbolic
     @$(ifeq) "$(answer)" "$(guess)"
 

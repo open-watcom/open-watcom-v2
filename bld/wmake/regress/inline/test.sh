@@ -9,24 +9,24 @@ usage() {
 
 print_header() {
     echo \# -----------------------------
-    echo \#   Test $TEST
+    echo \#   Inline File Test $TEST
     echo \# -----------------------------
 }
 
 do_check() {
     if [ "$?" -eq "0" ]; then
-        echo \# Test $TEST successful
+        echo \#      Test successful
     else
-        echo \#\# INLINE \#\# >> $LOGFILE
-        echo Error: Test $TEST unsuccessful!!! | tee -a $LOGFILE
+        echo \#\# INLINE $TEST \#\# >> $LOGFILE
+        echo Error: Test unsuccessful!!! | tee -a $LOGFILE
         ERRORS=1
     fi
 }
 
 do_err_check() {
     if [ "$?" -ne "0" ]; then
-        echo \#\# INLINE \#\# >> $LOGFILE
-        echo Error: Test $TEST unsuccessful!!! | tee -a $LOGFILE
+        echo \#\# INLINE $TEST \#\# >> $LOGFILE
+        echo Error: Test unsuccessful!!! | tee -a $LOGFILE
         ERRORS=1
     fi
 }
@@ -38,54 +38,54 @@ fi
 LOGFILE=$2
 
 echo \# ===========================
-echo \# Start INLINE File Test
+echo \# Inline File Tests
 echo \# ===========================
 
-TEST=1
+TEST=01
 print_header
-$1 -h -f inline01 > test1.lst 2>&1
-diff inline01.chk test1.lst
+$1 -h -f inline$TEST > test$TEST.lst 2>&1
+diff inline$TEST.chk test$TEST.lst
 do_err_check
 [ -a test.1 -a -a test.2 -a -a test.3 ]
 do_check
 
-TEST=2
+TEST=02
 print_header
-$1 -h -f inline02 > test2.lst 2>&1
-diff inline02.chk test2.lst
+$1 -h -f inline$TEST > test$TEST.lst 2>&1
+diff inline$TEST.chk test$TEST.lst
 do_err_check
 [ ! -a test.1 -a ! -a test.2 -a ! -a test.3 ]
 do_check
 
-TEST=3
+TEST=03
 print_header
-$1 -h -f inline03 > test3.lst 2>&1
-diff inline03.chk test3.lst
+$1 -h -f inline$TEST > test$TEST.lst 2>&1
+diff inline$TEST.chk test$TEST.lst
 do_check
 
-TEST=4
+TEST=04
 print_header
-$1 -h -f inline04 > test4.lst 2>&1
-diff inline04.chk test4.lst
+$1 -h -f inline$TEST > test$TEST.lst 2>&1
+diff inline$TEST.chk test$TEST.lst
 do_check
 
 # UNIX seems to behave too differently to make this test very meaningful
-#TEST=5
+#TEST=05
 #print_header
-#$1 -h -f inline05 > test5.lst 2>&1
-#diff -i inline05.chk test5.lst
+#$1 -h -f inline$TEST > test$TEST.lst 2>&1
+#diff -i inline$TEST.chk test$TEST.lst
 #do_check
 
-TEST=6
+TEST=06
 print_header
-$1 -h -f inline06 > test6.lst 2>&1
-diff -i inline06.chk test6.lst
+$1 -h -f inline$TEST > test$TEST.lst 2>&1
+diff -i inline$TEST.chk test$TEST.lst
 do_check
 
-TEST=7
+TEST=07
 print_header
-$1 -h -f inline07 > test7.lst 2>&1
-diff inline07.chk test7.lst
+$1 -h -f inline$TEST > test$TEST.lst 2>&1
+diff inline$TEST.chk test$TEST.lst
 do_check
 
 if [ "$ERRORS" -eq "0" ]; then

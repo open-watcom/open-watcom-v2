@@ -1,0 +1,53 @@
+for %i in (*) do @echo %i
+.
+..
+for01
+for01.chk
+for01.lst
+for01.out
+for02
+for02.chk
+for02.lst
+for02.out
+for03
+for03.chk
+for03.lst
+for03.out
+for04
+for04.lst
+for04.out
+for04a.chk
+for04b.chk
+for04c.chk
+for05
+for05.chk
+for05.out
+for06
+for06.chk
+for06.out
+for07
+for07.chk
+for07.out
+for08
+for08.chk
+for08.out
+for08u.chk
+test.bat
+test.cmd
+test.sh
+tmp04.chk
+tmp08.chk
+trmem.out
+for %i in (for??) do @echo %i
+for01
+for02
+for03
+for04
+for05
+for06
+for07
+for08
+for %i in (hmm.*) do @echo %i
+hmm.*
+for %i in (for04) do @echo %i
+for04

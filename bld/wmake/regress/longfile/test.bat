@@ -3,7 +3,7 @@
 set ERRORS=0
 
 echo # ===========================
-echo # Start Long FileName Test
+echo # Long FileName Tests
 echo # ===========================
 
 if .%2 == . goto usage
@@ -67,7 +67,7 @@ goto end
 
 :header
     echo # ---------------------------
-    echo # Long FileName Test %TEST%
+    echo #  Long FileName Test %TEST%
     echo # ---------------------------
 goto end
 
@@ -76,7 +76,7 @@ if errorlevel 1 goto resulterr
     @echo #        Test successful
     goto end
 :resulterr
-    @echo ## Long FileName ## >> %ERRLOG%
+    @echo ## Long FileName %TEST% ## >> %ERRLOG%
     @echo # Error: Test unsuccessful!!! | tee -a %ERRLOG%
     set ERRORS=1
 :end

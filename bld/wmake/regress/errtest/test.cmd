@@ -15,8 +15,9 @@ rem *************************************************************
 set ERRORS=0
 
 echo # =============================
-echo # Start ERROR
+echo # Error Tests
 echo # =============================
+
 if .%2 == . goto usage
 set PRG=%1
 set ERRLOG=%2
@@ -102,7 +103,7 @@ goto end
     @echo #        Test %1 successful
 goto end
 :resulterr
-    @echo ## ERROR ## >> %ERRLOG%
+    @echo ## ERROR %TEST% ## >> %ERRLOG%
     @echo # Error: Test %1 unsuccessful!!! | tee -a %ERRLOG%
     set ERRORS=1
 goto end
