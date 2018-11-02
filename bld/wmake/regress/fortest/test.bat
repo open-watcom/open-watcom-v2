@@ -31,13 +31,13 @@ call :result
 set TEST=04
 call :header
 echo. > for%TEST%.lst
-type for%TEST%a.chk > tmp%TEST%.chk
-dir /b /-o       >> tmp%TEST%.chk
-type for%TEST%b.chk >> tmp%TEST%.chk
-dir /b /-o for?? >> tmp%TEST%.chk
-type for%TEST%c.chk >> tmp%TEST%.chk
+type for%TEST%a.chk > tmp%TEST%.lst
+dir /b /-o       >> tmp%TEST%.lst
+type for%TEST%b.chk >> tmp%TEST%.lst
+dir /b /-o for?? >> tmp%TEST%.lst
+type for%TEST%c.chk >> tmp%TEST%.lst
 %PRG% -h -f for%TEST% > for%TEST%.lst 2>&1
-diff tmp%TEST%.chk for%TEST%.lst
+diff tmp%TEST%.lst for%TEST%.lst
 call :result
 
 set TEST=05
@@ -63,15 +63,15 @@ call :header
 echo. > for%TEST%.lst
 rem Need to set prompt, otherwise the test fails...
 prompt $p$g
-type for%TEST%.chk > tmp%TEST%.chk
-..\cmds\prntdir "echo a" >> tmp%TEST%.chk
-echo a >> tmp%TEST%.chk
-..\cmds\prntdir "echo b" >> tmp%TEST%.chk
-echo b >> tmp%TEST%.chk
-..\cmds\prntdir "echo c" >> tmp%TEST%.chk
-echo c >> tmp%TEST%.chk
+type for%TEST%.chk > tmp%TEST%.lst
+..\cmds\prntdir "echo a" >> tmp%TEST%.lst
+echo a >> tmp%TEST%.lst
+..\cmds\prntdir "echo b" >> tmp%TEST%.lst
+echo b >> tmp%TEST%.lst
+..\cmds\prntdir "echo c" >> tmp%TEST%.lst
+echo c >> tmp%TEST%.lst
 %PRG% -h -f for%TEST% > for%TEST%.lst 2>&1
-diff -b tmp%TEST%.chk for%TEST%.lst
+diff -b tmp%TEST%.lst for%TEST%.lst
 call :result
 
 if exist *.obj del *.obj
