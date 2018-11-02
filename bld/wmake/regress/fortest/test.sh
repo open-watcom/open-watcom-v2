@@ -63,7 +63,7 @@ cat for${TEST}b.chk >> test${TEST}a.lst
 ls -1 for?? >> test${TEST}a.lst
 cat for${TEST}c.chk >> test${TEST}a.lst
 $1 -h -f for$TEST > test${TEST}b.lst 2>&1
-sort < tes${TEST}b.lst > test${TEST}bs.lst
+sort < test${TEST}b.lst > test${TEST}bs.lst
 sort < test${TEST}a.lst > test${TEST}as.lst
 diff test${TEST}bs.lst test${TEST}as.lst
 do_check
