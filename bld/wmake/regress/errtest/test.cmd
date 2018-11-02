@@ -12,144 +12,114 @@ rem output (stdout). If a test needs to capture both, it has to
 rem use redirection.
 rem *************************************************************
 
+set ERRORS=0
+
 echo # =============================
 echo # Start ERROR
 echo # =============================
 if .%2 == . goto usage
+set PRG=%1
+set ERRLOG=%2
 
 :test03
-echo # -----------------------------
-echo # ERROR 03:  Invalid Option
-echo # -----------------------------
+set TEST=03
+head err%TEST% -3
 del tmp.out
-%1 "-." > tmp.out 2>&1
-egrep Error tmp.out > tmpfile.out
-diff tmpfile.out err03a.chk
-if errorlevel 1 goto err03
-    echo # Test 03a successful
+%PRG% "-." > tmp%TEST%a.lst 2>&1
+egrep Error tmp%TEST%a.lst > test%TEST%a.lst
+diff err%TEST%a.chk test%TEST%a.lst
+call :result a
 
 del tmp.out
-%1 "- " > tmp.out 2>&1
-egrep Error tmp.out > tmpfile.out
-diff -b tmpfile.out err03b.chk
-if errorlevel 1 goto err03
-    echo # Test 03b successful
-    goto test04
+%PRG% "- " > tmp%TEST%b.lst 2>&1
+egrep Error tmp%TEST%b.lst > test%TEST%b.lst
+diff -b err%TEST%b.chk test%TEST%b.lst
+call :result b
 
-:err03
-    echo ## ERR ## >> %2
-    echo # !!! Test 03 unsuccessful !!! |tee -a %2
+set TEST=04
+head err%TEST% -3
+%PRG% -f > tmp%TEST%.lst 2>&1
+egrep Error tmp%TEST%.lst > test%TEST%.lst
+diff err%TEST%.chk test%TEST%.lst
+call :result
 
-:test04
-echo # -----------------------------------------
-echo # ERROR 04: -f must be followed by a filename
-echo # -----------------------------------------
-del tmp.out
-%1 -f > tmp.out 2>&1
-egrep Error tmp.out > tmpfile.out
-diff tmpfile.out err04.chk
-if errorlevel 1 goto err04
-    echo # Test 04 successful
-    goto test05
-:err04
-    echo ## ERR ##  >> %2
-    echo # !!! Test 04 unsuccessful !!! |tee -a %2
+set TEST=13
+head err%TEST% -3
+%PRG% -h "-" 2> test%TEST%.lst
+%PRG% -h - 2>> test%TEST%.lst
+%PRG% -h "-\" 2>> test%TEST%.lst
+diff err%TEST%.chk test%TEST%.lst
+call :result
 
-:test05
+set TEST=17
+head err%TEST% -3
+%PRG% -h -f err%TEST%a >  test%TEST%.lst 2>&1
+%PRG% -h -f err%TEST%b >> test%TEST%.lst 2>&1
+%PRG% -h -f err%TEST%c >> test%TEST%.lst 2>&1
+%PRG% -h -f err%TEST%d >> test%TEST%.lst 2>&1
+%PRG% -h -f err%TEST%e >> test%TEST%.lst 2>&1
+%PRG% -h -f err%TEST%f >> test%TEST%.lst 2>&1
+diff -i err%TEST%.chk test%TEST%.lst
+call :result
 
-echo # ------------------------------------------------
-echo # ERROR 13: No Control Characeters valid in Option
-echo # ------------------------------------------------
+set TEST=36
+head err%TEST% -3
+%PRG% -h -f err%TEST% .c.obj > test%TEST%.lst 2>&1
+diff err%TEST%.chk test%TEST%.lst
+call :result
 
-del tmp.out
-%1 -h "-" 2> tmp.out
-%1 -h - 2>> tmp.out
-%1 -h "-\" 2>> tmp.out
-diff tmp.out err13.chk
-if errorlevel 1 goto err13
-    echo # Test 13 successful
-    goto test15
-:err13
-    echo ## ERR ## >> %2
-    echo # !!! Test 13 unsuccessful !!!  | tee -a %2
-
-:test15
-
-:test17
-echo # ------------------------------
-echo # ERROR 17: Token Too Long
-echo # ------------------------------
-del tmp.out
-%1 -h -f err17a >  tmp.out 2>&1
-%1 -h -f err17b >> tmp.out 2>&1
-%1 -h -f err17c >> tmp.out 2>&1
-%1 -h -f err17d >> tmp.out 2>&1
-%1 -h -f err17e >> tmp.out 2>&1
-%1 -h -f err17f >> tmp.out 2>&1
-diff -i tmp.out err17.chk
-if errorlevel 1 goto err17
-    echo # Test 17 successful
-    goto test18
-:err17
-    echo ## ERR ## >> %2
-    echo # !!! Test 17 unsuccessful !!! | tee -a %2
-
-:test18
-echo # ------------------------------
-echo # ERROR 36: Illegal attempt to update special target
-echo # ------------------------------
-del tmp.out
-%1 -h -f err36 .c.obj > tmp.out 2>&1
-diff tmp.out err36.chk
-if errorlevel 1 goto err36
-    echo # Test 36 successful
-    goto test37
-:err36
-    echo ## ERR ## >> %2
-    echo # !!! Test 36 unsuccessful !!! | tee -a %2
-
-:test37
-echo # ------------------------------
-echo # ERROR 39: Target not mentioned in any makefile
-echo # ------------------------------
+set TEST=39
+head err%TEST% -3
 echo. >ditty.c
-del tmp.out
-%1 -h -f err39 ditty.obj > tmp.out 2>&1
-diff tmp.out err39.chk
-if errorlevel 1 goto err39
-    echo # Test 39 successful
-    goto test40
-:err39
-    echo ## ERR ## >> %2
-    echo # !!! Test 39 unsuccessful !!! |tee -a %2
+%PRG% -h -f err%TEST% ditty.obj > test%TEST%.lst 2>&1
+diff err%TEST%.chk test%TEST%.lst
+call :result
 
-:test40
 del ditty.*
-echo # ------------------------------
-echo # ERROR 40: Could not touch target
-echo # ------------------------------
-del tmp.out
-echo. >err40.tst
-chmod +r err40.tst >tmp.out
-%1 -h -a -t -f err40 >> tmp.out 2>&1
-chmod -r err40.tst
-del err40.tst
-diff tmp.out err40.chk
-if errorlevel 1 goto err40
-    echo # Test 40 successful
-    goto test41
-:err40
-    echo ## ERR ## >> %2
-    echo # !!! Test 40 unsuccessful !!! |tee -a %2
+set TEST=40
+head err%TEST% -3
+echo. >err%TEST%.tst
+chmod +r err%TEST%.tst >test%TEST%.lst
+%PRG% -h -a -t -f err%TEST% >> test%TEST%.lst 2>&1
+chmod -r err%TEST%.tst
+del err%TEST%.tst
+diff err%TEST%.chk test%TEST%.lst
+call :result
 
-:test41
+for %%i in (05 07 10 11 12 15 16 18 19 20 21 22 23 24 25 26 28 29a 29b 29c 30 31a 31b 31c 31d 31e 31f 32 33 34a 34b 37a 37b 38 41 42 43 44a 44b 44c) DO @call work %%i
+for %%j in (27 35) DO @call debug %%j
 
-for %%i in (05 07 10 11 12 15 16 18 19 20 21 22 23 24 25 26 28 29a 29b 29c 30 31a 31b 31c 31d 31e 31f 32 33 34a 34b 37a 37b 38 41 42 43 44a 44b 44c) DO @call work %1 %%i %2
-for %%j in (27 35) DO @call debug %1 %%j %2
+rem if exist *.obj del *.obj
+if %ERRORS% == 0 del *.lst
+goto end
 
-goto done
 :usage
-echo usage: %0 prgname errorfile
-:done
-del *.out
-del *.tmp
+    echo usage: %0 prgname errorfile
+goto end
+
+:result
+    if errorlevel 1 goto resulterr
+    @echo #        Test %1 successful
+goto end
+:resulterr
+    @echo ## ERROR ## >> %ERRLOG%
+    @echo # Error: Test %1 unsuccessful!!! | tee -a %ERRLOG%
+    set ERRORS=1
+goto end
+
+:work
+    set TEST=%1
+    head err%TEST% -3
+    %PRG% -f err%TEST% -h > test%TEST%.lst 2>&1
+    diff -i err%TEST%.chk test%TEST%.lst
+    call :result
+goto end
+
+:debug
+    set TEST=%1
+    head err%TEST% -3
+    %PRG% -f err%TEST% -h -d > tmp%TEST%.lst 2>&1
+    egrep W%TEST% tmp%TEST%.lst > test%TEST%.lst
+    diff -i err%TEST%.chk test%TEST%.lst
+    call :result
+:end

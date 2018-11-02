@@ -10,6 +10,8 @@
 nothing: .symbolic
 !endif
 
+fx = ../files.lst
+
 test: .symbolic create clean    
 
 create: .symbolic
@@ -37,28 +39,73 @@ OK
 
 clean: .symbolic
     @cd Path1
-    for %i in (L*e.*) do @echo %i
-    for %i in (l*e.*) do @echo %i
-    for %i in (*F*e.*) do @echo %i
-    for %i in (*f*e.*) do @echo %i
-    for %i in (*e.*) do @echo %i
-    for %i in (*a??.*) do @echo %i
-    for %i in (*a*.*) do @echo %i
-    for %i in (*.???) do @echo %i
-    for %i in (*.????) do @echo %i
-    for %i in (*.?????) do @echo %i
-    for %i in (*.???1) do @echo %i
-    for %i in (*.*1) do @echo %i
-    for %i in (*1) do @echo %i
+    @%create $fx
+    for %i in (L*e.*) do @%append $fx %i
+    @%make listfile
+    @%create $fx
+    for %i in (l*e.*) do @%append $fx %i
+    @%make listfile
+    @%create $fx
+    for %i in (*F*e.*) do @%append $fx %i
+    @%make listfile
+    @%create $fx
+    for %i in (*f*e.*) do @%append $fx %i
+    @%make listfile
+    @%create $fx
+    for %i in (*e.*) do @%append $fx %i
+    @%make listfile
+    @%create $fx
+    for %i in (*a??.*) do @%append $fx %i
+    @%make listfile
+    @%create $fx
+    for %i in (*a*.*) do @%append $fx %i
+    @%make listfile
+    @%create $fx
+    for %i in (*.???) do @%append $fx %i
+    @%make listfile
+    @%create $fx
+    for %i in (*.????) do @%append $fx %i
+    @%make listfile
+    @%create $fx
+    for %i in (*.?????) do @%append $fx %i
+    @%make listfile
+    @%create $fx
+    for %i in (*.???1) do @%append $fx %i
+    @%make listfile
+    @%create $fx
+    for %i in (*.*1) do @%append $fx %i
+    @%make listfile
+    @%create $fx
+    for %i in (*1) do @%append $fx %i
+    @%make listfile
     -rm *.?1
-    for %i in (*) do @echo %i
+    @%create $fx
+    for %i in (*) do @%append $fx %i
+    @%make listfile
     -rm *.tmp
-    for %i in (*) do @echo %i
+    @%create $fx
+    for %i in (*) do @%append $fx %i
+    @%make listfile
     -rm *.tmp1
-    for %i in (*) do @echo %i
+    @%create $fx
+    for %i in (*) do @%append $fx %i
+    @%make listfile
     -rm *.out
-    for %i in (*) do @echo %i
+    @%create $fx
+    for %i in (*) do @%append $fx %i
+    @%make listfile
     -rm *.out1
-    for %i in (*) do @echo %i
+    @%create $fx
+    for %i in (*) do @%append $fx %i
+    @%make listfile
+    -@rm $fx
     @cd ..
     -@rmdir Path1
+
+listfile: .procedure
+#!ifdef __UNIX__
+#      @cat $fx
+#!else
+#      @type $fx
+#!endif
+    @sort < $fx
