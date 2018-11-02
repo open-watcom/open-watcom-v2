@@ -38,57 +38,58 @@ PATH=../cmds:$PATH
 
 TEST=01
 print_header
-$1 -h -f for01 > test01.lst 2>&1
-diff for01.chk test01.lst
+$1 -h -f for$TEST > test$TEST.lst 2>&1
+diff for$TEST.chk test$TEST.lst
 do_check
 
 TEST=02
 print_header
-$1 -h -f for02 > test02.lst 2>&1
-diff for02.chk test02.lst
+$1 -h -f for$TEST > test$TEST.lst 2>&1
+diff for$TEST.chk test$TEST.lst
 do_check
 
 #TEST=03
 #print_header
-#$1 -h -f for03 > test03.lst 2>&1
-#diff for03.chk test03.lst
+#$1 -h -f for$TEST > test$TEST.lst 2>&1
+#diff for$TEST.chk test$TEST.lst
 #do_check
 
 TEST=04
 print_header
-cat for04a.chk > test04a.lst
-ls -1 >> test04a.lst
-cat for04b.chk >> test04a.lst
-ls -1 for?? >> test04a.lst
-cat for04c.chk >> test04a.lst
-$1 -h -f for04 > test04b.lst 2>&1
-sort < test04b.lst > test04bs.lst
-sort < test04a.lst > test04as.lst
-diff test04bs.lst test04as.lst
+echo  > test${TEST}b.lst
+cat for${TEST}a.chk > test${TEST}a.lst
+ls -1 >> test${TEST}a.lst
+cat for${TEST}b.chk >> test${TEST}a.lst
+ls -1 for?? >> test${TEST}a.lst
+cat for${TEST}c.chk >> test${TEST}a.lst
+$1 -h -f for$TEST > test${TEST}b.lst 2>&1
+sort < tes${TEST}b.lst > test${TEST}bs.lst
+sort < test${TEST}a.lst > test${TEST}as.lst
+diff test${TEST}bs.lst test${TEST}as.lst
 do_check
 
 TEST=05
 print_header
-$1 -h -f for05 > test05.lst 2>&1
-diff for05.chk test05.lst
+$1 -h -f for$TEST > test$TEST.lst 2>&1
+diff for$TEST.chk test$TEST.lst
 do_check
 
 TEST=06
 print_header
-$1 -h -f for06 > test06.lst 2>&1
-diff for06.chk test06.lst
+$1 -h -f for$TEST > test$TEST.lst 2>&1
+diff for$TEST.chk test$TEST.lst
 do_check
 
 TEST=07
 print_header
-$1 -h -f for07 > test07.lst 2>&1
-diff for07.chk test07.lst
+$1 -h -f for$TEST > test$TEST.lst 2>&1
+diff for$TEST.chk test$TEST.lst
 do_check
 
 TEST=08
 print_header
-$1 -h -f for08 > test08.lst 2>&1
-diff -b for08u.chk test08.lst
+$1 -h -f for$TEST > test$TEST.lst 2>&1
+diff -b for${TEST}u.chk test$TEST.lst
 do_check
 
 if [ "$ERRORS" -eq "0" ]; then
