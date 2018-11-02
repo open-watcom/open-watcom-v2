@@ -169,7 +169,7 @@ STATIC void popSENT( void )
 }
 
 
-STATIC void pushFH( SENT *sent, FILE *fp )
+STATIC void pushFP( SENT *sent, FILE *fp )
 /*****************************************
  * given an open file handle, this routine allocates a buffer, and pushes a
  * SENT onto the stack
@@ -253,7 +253,7 @@ RET_T InsFile( const char *name, bool envsearch )
         tmp->free = true;
         tmp->data.file.name = StrDupSafe( path );
 
-        pushFH( tmp, fp );
+        pushFP( tmp, fp );
 
         if( !Glob.overide ) {
             UnGetCHR( '\n' );
@@ -281,7 +281,7 @@ void InsOpenFile( FILE *fp )
     tmp->free = false;
     tmp->data.file.name = NULL;
 
-    pushFH( tmp, fp );
+    pushFP( tmp, fp );
 }
 
 
