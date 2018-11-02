@@ -46,7 +46,7 @@ print_header
 $1 -h -f inline$TEST > test$TEST.lst 2>&1
 diff inline$TEST.chk test$TEST.lst
 do_err_check
-[ -a test.1 -a -a test.2 -a -a test.3 ]
+[ -f test.1 -a -f test.2 -a -f test.3 ]
 do_check
 
 TEST=02
@@ -54,7 +54,7 @@ print_header
 $1 -h -f inline$TEST > test$TEST.lst 2>&1
 diff inline$TEST.chk test$TEST.lst
 do_err_check
-[ ! -a test.1 -a ! -a test.2 -a ! -a test.3 ]
+[ ! -f test.1 -a ! -f test.2 -a ! -f test.3 ]
 do_check
 
 TEST=03

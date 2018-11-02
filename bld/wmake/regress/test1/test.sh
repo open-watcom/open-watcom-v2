@@ -1,5 +1,6 @@
 #!/bin/sh
 
+OWVERBOSE=0
 ERRORS=0
 
 usage() {
@@ -34,6 +35,7 @@ echo \# Multiple Dependents Tests
 echo \# ===========================
 
 TEST=01
+print_header
 $1 -h -f create
 echo >err$TEST.lst
 $1 -h -f maketst1 -l err$TEST.lst > test$TEST.lst
