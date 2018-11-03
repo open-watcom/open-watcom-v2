@@ -64,7 +64,7 @@ bool GUIResetMenus( gui_window *wnd, int num_items, gui_menu_struct *menu )
     HWND        parent;
     HWND        frame;
 
-    GUIInitHint( wnd, 0, NULL, MENU_HINT );
+    GUIFiniHint( wnd, MENU_HINT );
     success = false;
     frame = GUIGetParentFrameHWND( wnd );
     parent = _wpi_getparent( frame );
