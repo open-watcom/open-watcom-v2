@@ -334,7 +334,7 @@ void GUIChangeMenu( UIMENUITEM *menuitem, gui_menu_styles style )
     }
 }
 
-static bool GUISetMenuItems( int num_items, UIMENUITEM *menuitems, gui_menu_struct *menu )
+static bool GUISetMenuItems( int num_items, gui_menu_struct *menu, UIMENUITEM *menuitems )
 {
     while( num_items-- > 0 ) {
         uiyield();
@@ -392,7 +392,7 @@ bool GUICreateMenuItems( int num_items, gui_menu_struct *menu, UIMENUITEM **pmen
     if( menuitems == NULL ) {
         return( false );
     }
-    if( !GUISetMenuItems( num_items, menuitems, menu ) ) {
+    if( !GUISetMenuItems( num_items, menu, menuitems ) ) {
         return( false );
     }
     while( num_items-- > 0 ) {
@@ -481,7 +481,7 @@ static bool InsertMenu( gui_window *wnd, gui_menu_struct *menu, int position,
         memset( &newmenuitems[position + 1], 0, sizeof( UIMENUITEM ) );
     }
     memset( &newmenuitems[position], 0, sizeof( UIMENUITEM ) );
-    if( !GUISetMenuItems( 1, &newmenuitems[position], menu ) ) {
+    if( !GUISetMenuItems( 1, menu, &newmenuitems[position] ) ) {
         GUIMemFree( newmenuitems );
         return( false );
     }
