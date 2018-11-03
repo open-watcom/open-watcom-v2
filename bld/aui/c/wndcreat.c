@@ -118,13 +118,13 @@ static a_window WndCreateWithStructBody( wnd_create_struct *info, gui_create_inf
     if( WndMain != NULL ) {
         init->style |= GUI_VISIBLE;
         init->parent = WndMain->gui;
-        init->num_items = 0;
-        init->menu = NULL;
+        init->menu.num_items = 0;
+        init->menu.menu = NULL;
     } else {
         init->style &= ~GUI_VISIBLE;
         init->scroll = GUI_NOSCROLL;
-        init->num_items = WndNumMenus;
-        init->menu = WndMainMenuPtr;
+        init->menu.num_items = WndNumMenus;
+        init->menu.menu = WndMainMenuPtr;
         init->parent = NULL;
     }
     if( init->style & GUI_POPUP ) {
