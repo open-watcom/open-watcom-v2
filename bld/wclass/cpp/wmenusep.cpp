@@ -51,8 +51,8 @@ void WMenuSeparator::attachMenu( WWindow *win, int position )
     menu_item.id = menuId();
     menu_item.style = (gui_menu_styles)(GUI_STYLE_MENU_ENABLED | GUI_STYLE_MENU_SEPARATOR);
     menu_item.hinttext = NULL;
-    menu_item.child_num_items = 0;
-    menu_item.child = NULL;
+    menu_item.child.num_items = 0;
+    menu_item.child.menu = NULL;
     if( parent()->isFloatingMain() ) {
         // appending separator to top level floating popup menu
         GUIInsertMenuByIdx( win->handle(), position, &menu_item, true );
