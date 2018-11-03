@@ -67,8 +67,8 @@ bool GUIXCreateFixedToolbar( gui_window *wnd )
 
     tbar = wnd->tbinfo;
     tbar->fixed = true;
-    menu.child_num_items = 0;
-    menu.child = NULL;
+    menu.child.num_items = 0;
+    menu.child.menu = NULL;
     menu.style = GUI_STYLE_MENU_ENABLED;
 
     toolinfo = tbar->toolinfo;
@@ -217,7 +217,7 @@ static gui_create_info FloatingToolbar = {
     GUI_NOSCROLL,
     GUI_SYSTEM_MENU | GUI_VISIBLE | GUI_RESIZEABLE | GUI_CLOSEABLE | GUI_INIT_INVISIBLE,
     NULL,
-    NUM_MENU_ITEMS, &Menu,              // Menu array
+    { NUM_MENU_ITEMS, &Menu },          // Menu array
     0, NULL,                            // Colour attribute array
     ToolbarGUIEventProc,                // GUI Event Callback function
     NULL,
@@ -248,8 +248,8 @@ static bool CreateFloatingToolbar( gui_window *wnd, gui_ord height )
     GUIGetClientRect( wnd, &size );
     FloatingToolbar.parent = wnd;
     FloatingToolbar.title = LIT( Floating_Toolbar );
-    FloatingToolbar.menu->label = LIT( XFix_Toolbar );
-    FloatingToolbar.menu->hinttext = LIT( Fix_Toolbar_Hint );
+    FloatingToolbar.menu.menu->label = LIT( XFix_Toolbar );
+    FloatingToolbar.menu.menu->hinttext = LIT( Fix_Toolbar_Hint );
     FloatingToolbar.rect.height = height;
     FloatingToolbar.rect.width = size.width;
     FloatingToolbar.num_attrs = GUIGetNumWindowColours( wnd );

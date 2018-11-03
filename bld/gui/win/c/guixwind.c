@@ -516,7 +516,7 @@ bool GUIXCreateWindow( gui_window *wnd, gui_create_info *dlg_info, gui_window *p
     }
 
     wnd->font = GUIGetSystemFont();
-    GUIInitHint( wnd, dlg_info->num_items, dlg_info->menu, MENU_HINT );
+    GUIInitHint( wnd, dlg_info->menu.num_items, dlg_info->menu.menu, MENU_HINT );
     GUISetGUIHint( wnd );
     wmcreateinfo.size = sizeof(wmcreate_info);
     wmcreateinfo.wnd  = wnd;
@@ -552,7 +552,7 @@ bool GUIXCreateWindow( gui_window *wnd, gui_create_info *dlg_info, gui_window *p
         flags |= FCF_SIZEBORDER;
     }
     if( parent_hwnd == HWND_DESKTOP ) {
-        if( dlg_info->num_items > 0 ) {
+        if( dlg_info->menu.num_items > 0 ) {
             //flags |= FCF_MENU;
         }
     }
@@ -940,7 +940,7 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
                 return( (WPI_MRESULT)WPI_ERROR_ON_CREATE );
             }
         } else {
-            if( !GUIAddToSystemMenu( wnd, win, dlg_info->num_items, dlg_info->menu, dlg_info->style ) ) {
+            if( !GUIAddToSystemMenu( wnd, win, dlg_info->menu.num_items, dlg_info->menu.menu, dlg_info->style ) ) {
                 return( (WPI_MRESULT)WPI_ERROR_ON_CREATE );
             }
         }

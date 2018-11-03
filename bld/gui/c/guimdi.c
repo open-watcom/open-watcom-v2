@@ -133,7 +133,7 @@ static bool AddMenu( gui_window *wnd, gui_window *parent, int num_items, gui_men
             if( menu[item].style & GUI_STYLE_MENU_MDIWINDOW ) {
                 GUIMDIMenuID = menu[item].id;
                 found_flag = true;
-                has_items = ( menu[item].child_num_items > 0 );
+                has_items = ( menu[item].child.num_items > 0 );
                 break;
             }
         }
@@ -181,8 +181,8 @@ static void InsertMenuForWindow( gui_window *root, int index, int position )
     if( index == CurrMDIWindow ) {
         menu.style |= GUI_STYLE_MENU_CHECKED;
     }
-    menu.child_num_items = 0;
-    menu.child = NULL;
+    menu.child.num_items = 0;
+    menu.child.menu = NULL;
     MakeHintText( index, name );
     menu.hinttext = MenuHint[index];
     if( GUIMDIMenuID != 0 ) {
@@ -248,7 +248,7 @@ void InitMDI( gui_window *wnd, gui_create_info *dlg_info )
     gui_window  *root;
 
     root = GUIGetRootWindow();
-    AddMenu( wnd, dlg_info->parent, dlg_info->num_items, dlg_info->menu );
+    AddMenu( wnd, dlg_info->parent, dlg_info->menu.num_items, dlg_info->menu.menu );
     if( GUIXInitMDI( wnd ) ) {
         if( dlg_info->parent && ( GUIGetParentWindow( dlg_info->parent ) != NULL ) ) {
             return;

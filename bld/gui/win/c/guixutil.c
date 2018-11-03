@@ -164,7 +164,7 @@ bool GUISetupStruct( gui_window *wnd, gui_create_info *dlg_info,
         if( dlg_info->resource_menu != NULL ) {
             *menu =  _wpi_loadmenu( GUIResHInst, dlg_info->resource_menu );
         } else {
-            return( GUICreateMenus( wnd, dlg_info->num_items, dlg_info->menu, menu ) );
+            return( GUICreateMenus( wnd, dlg_info->menu.num_items, dlg_info->menu.menu, menu ) );
         }
     }
 

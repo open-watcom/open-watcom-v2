@@ -55,7 +55,7 @@ static gui_create_info DlgControl = {
     GUI_SCROLL_BOTH,
     GUI_SCROLL_EVENTS | GUI_ALL,
     NULL,
-    0, NULL,                            // Menu array
+    { 0, NULL },                        // Menu array
 #if !defined( __NT__ ) || !defined( GUI_IS_GUI )
     GUI_NUM_ATTRS + 1, DlgWndColours,   // Colour attribute array
 #else

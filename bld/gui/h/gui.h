@@ -407,6 +407,8 @@ typedef struct gui_point {
 
 typedef struct gui_window   gui_window;
 
+typedef struct gui_menu_struct  gui_menu_struct;
+
 typedef void                *gui_help_instance;
 
 typedef long                gui_bitmap;
@@ -419,13 +421,17 @@ typedef struct gui_toolbar_struct {
     const char              *tip;
 } gui_toolbar_struct;
 
+typedef struct gui_menu_root {
+    int                     num_items;
+    gui_menu_struct         *menu;
+} gui_menu_root;
+
 typedef struct gui_menu_struct {
     const char              *label;
     gui_ctl_id              id;
     gui_menu_styles         style;
     const char              *hinttext;
-    int                     child_num_items;
-    struct gui_menu_struct  *child;
+    gui_menu_root           child;
 } gui_menu_struct;
 
 typedef struct gui_colour_set {
@@ -472,8 +478,7 @@ typedef struct gui_create_info {
     gui_scroll_styles   scroll;
     gui_create_styles   style;
     gui_window          *parent;
-    int                 num_items;
-    gui_menu_struct     *menu;
+    gui_menu_root       menu;
     int                 num_attrs;
     gui_colour_set      *colours;      /* array of num_attrs gui_attrs */
     GUICALLBACK         *gui_call_back;
