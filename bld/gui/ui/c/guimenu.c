@@ -355,7 +355,7 @@ static bool GUISetMenuItems( int num_items, gui_menu_struct *menu, UIMENUITEM *m
     return( true );
 }
 
-int GUIGetNumIgnore( gui_menu_struct *menu, int num_items )
+int GUIGetNumIgnore( int num_items, gui_menu_struct *menu )
 {
     int     num_ignore;
 
@@ -382,7 +382,7 @@ bool GUICreateMenuItems( int num_items, gui_menu_struct *menu, UIMENUITEM **pmen
         *pmenuitems = NULL;
         return( true );
     }
-    num_ignore = GUIGetNumIgnore( menu, num_items );
+    num_ignore = GUIGetNumIgnore( num_items, menu );
     if( num_ignore >= num_items ) {
         *pmenuitems = NULL;
         return( true );
@@ -523,7 +523,7 @@ static bool CreateMenus( gui_window *wnd, int num_items, gui_menu_struct *menu,
         }
         num_ignore = 0;
         if( num_items > 0 ) {
-            num_ignore = GUIGetNumIgnore( menu->child, menu->child_num_items );
+            num_ignore = GUIGetNumIgnore( menu->child_num_items, menu->child );
         }
         if( num_items > num_ignore ) {
             if( style & GUI_SYSTEM_MENU ) {
