@@ -46,12 +46,12 @@
 , dfnRKD( RKD_GENERIC )     \
 , dfnRKD( RKD_NULLPTR )
 
-#define dfnRKD(a) a
-typedef enum                    // RKD -- kind of ranking for a type
-{ dfnRKDs
-, RKD_MAX                       // # of elements
+typedef enum {                  // RKD -- kind of ranking for a type
+    #define dfnRKD(a) a
+    dfnRKDs
+    #undef dfnRKD
+    , RKD_MAX                   // # of elements
 } RKD;
-#undef dfnRKD
 
 RKD RkdForTypeId( type_id id );
 

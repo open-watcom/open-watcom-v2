@@ -1421,11 +1421,11 @@ CNV_RETN CastPtrToPtr           // IMPLICIT/EXPLICIT CAST PTR -> PTR
 
 #include "dbg.h"
 
-#define dfnRKD(a) # a
-static char const * const rkdstr[] =
-{ dfnRKDs
+static char const * const rkdstr[] = {
+    #define dfnRKD(a) # a
+    dfnRKDs
+    #undef dfnRKD
 };
-#undef dfnRKD
 
 void DbgConvType                // DUMP CONVTYPE INFORMATION
     ( CONVTYPE* type )          // - structure
