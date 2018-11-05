@@ -70,6 +70,14 @@
 #define ARGS_HASH               8       // max arg.s for fn.s hashing
 #define ARGS_MAX                16      // max arg.s for fn.s lists
 
+#define RPT_ARGS_OVERFLOW       ARGS_MAX
+#define RPT_ARGS_TOTAL          ARGS_MAX+1
+#define RPT_ARGS_MAX            ARGS_MAX+1+1
+
+#define RPT_TYP_NONE            TYP_MAX
+#define RPT_TYP_TOTAL           TYP_MAX+1
+#define RPT_TYP_MAX             TYP_MAX+1+1
+
 #define zero_table( table ) memset( table, 0, sizeof( table ) )
 
 enum {
@@ -88,7 +96,7 @@ static TYPE pointerHashTable[TYPE_HASH_MODULUS];
 static TYPE bitfieldHashTable[TYPE_HASH_MODULUS];
 static TYPE arrayHashTable[TYPE_HASH_MODULUS];
 static TYPE modifierHashTable[TYPE_HASH_MODULUS];
-static TYPE* typeHashTables[TYP_MAX];
+static TYPE *typeHashTables[TYP_MAX];
 static TYPE uniqueTypes;
 static AUX_INFO *cdeclPragma;
 static type_flag defaultFunctionMemFlag;
@@ -199,8 +207,8 @@ ExtraRptCtr( ctr_dup_fns_big );
 ExtraRptCtr( ctr_lookup );
 ExtraRptCtr( ctr_cg_dups );
 ExtraRptCtr( ctr_cg_dups_fail );
-ExtraRptTable( ctr_type_ids, TYP_MAX, 1 );
-ExtraRptTable( ctr_fn_args, ARGS_MAX+1+1, 1 );
+ExtraRptTable( ctr_type_ids, RPT_TYP_MAX, 1 );
+ExtraRptTable( ctr_fn_args, RPT_ARGS_MAX, 1 );
 
 
 static DECL_INFO *makeDeclInfo( PTREE id )
@@ -967,18 +975,19 @@ void TypedefReset( SYMBOL sym, TYPE type )
 void CheckUniqueType( TYPE newtype )
 /**********************************/
 {
-    #ifdef XTRA_RPT
-        ExtraRptTabIncr( ctr_type_ids, newtype->id, 0 );
-        ExtraRptTabIncr( ctr_type_ids, TYP_MAX-1, 0 );
-        if( newtype->id == TYP_FUNCTION ) {
-            unsigned num_args = newtype->u.f.args->num_args;
-            if( num_args > ARGS_MAX ) {
-                num_args = ARGS_MAX;
-            }
+#ifdef XTRA_RPT
+    ExtraRptTabIncr( ctr_type_ids, newtype->id, 0 );
+    ExtraRptTabIncr( ctr_type_ids, RPT_TYP_TOTAL, 0 );
+    if( newtype->id == TYP_FUNCTION ) {
+        unsigned num_args = newtype->u.f.args->num_args;
+        if( num_args < ARGS_MAX ) {
             ExtraRptTabIncr( ctr_fn_args, num_args, 0 );
-            ExtraRptTabIncr( ctr_fn_args, ARGS_MAX+1, 0 );
+        } else {
+            ExtraRptTabIncr( ctr_fn_args, RPT_ARGS_OVERFLOW, 0 );
         }
-    #endif
+        ExtraRptTabIncr( ctr_fn_args, RPT_ARGS_TOTAL, 0 );
+    }
+#endif
     RingPush( &uniqueTypes, newtype );
 }
 
@@ -1011,21 +1020,22 @@ static TYPE typeDuplicated(     // GET DUPLICATED TYPE
         }
         prev = check;
     } RingIterEnd( check )
-    #ifdef XTRA_RPT
-        if( CompFlags.codegen_active ) {
-            ExtraRptIncrementCtr( ctr_cg_dups_fail );
-        }
-        ExtraRptTabIncr( ctr_type_ids, newtype->id, 0 );
-        ExtraRptTabIncr( ctr_type_ids, TYP_MAX-1, 0 );
-        if( newtype->id == TYP_FUNCTION ) {
-            unsigned num_args = newtype->u.f.args->num_args;
-            if( num_args > ARGS_MAX ) {
-                num_args = ARGS_MAX;
-            }
+#ifdef XTRA_RPT
+    if( CompFlags.codegen_active ) {
+        ExtraRptIncrementCtr( ctr_cg_dups_fail );
+    }
+    ExtraRptTabIncr( ctr_type_ids, newtype->id, 0 );
+    ExtraRptTabIncr( ctr_type_ids, RPT_TYP_TOTAL, 0 );
+    if( newtype->id == TYP_FUNCTION ) {
+        unsigned num_args = newtype->u.f.args->num_args;
+        if( num_args < ARGS_MAX ) {
             ExtraRptTabIncr( ctr_fn_args, num_args, 0 );
-            ExtraRptTabIncr( ctr_fn_args, ARGS_MAX+1, 0 );
+        } else {
+            ExtraRptTabIncr( ctr_fn_args, RPT_ARGS_OVERFLOW, 0 );
         }
-    #endif
+        ExtraRptTabIncr( ctr_fn_args, RPT_ARGS_TOTAL, 0 );
+    }
+#endif
     ExtraRptAddtoCtr( ctr_dup_fail_probes, ctr_lookup );
     ExtraRptIncrementCtr( ctr_dup_fail );
     newtype = RingPush( head, newtype );
@@ -1044,11 +1054,11 @@ TYPE CheckDupType( TYPE newtype )
     DbgAssert( newtype->next == NULL );
     id = newtype->id;
     ExtraRptIncrementCtr( ctr_dups );
-    #ifdef XTRA_RPT
-        if( CompFlags.codegen_active ) {
-            ExtraRptIncrementCtr( ctr_cg_dups );
-        }
-    #endif
+#ifdef XTRA_RPT
+    if( CompFlags.codegen_active ) {
+        ExtraRptIncrementCtr( ctr_cg_dups );
+    }
+#endif
 #ifndef NDEBUG
     if( id == TYP_MODIFIER ) {
         if( newtype->flag == TF1_NULL ) {
@@ -1084,21 +1094,22 @@ TYPE CheckDupType( TYPE newtype )
             newtype = typeDuplicated( newtype, &typeTable[id] );
             break;
         default:
-            #ifdef XTRA_RPT
-                if( CompFlags.codegen_active ) {
-                    ExtraRptIncrementCtr( ctr_cg_dups_fail );
-                }
-                ExtraRptTabIncr( ctr_type_ids, id, 0 );
-                ExtraRptTabIncr( ctr_type_ids, TYP_MAX-1, 0 );
-                if( id == TYP_FUNCTION ) {
-                    unsigned num_args = newtype->u.f.args->num_args;
-                    if( num_args > ARGS_MAX ) {
-                        num_args = ARGS_MAX;
-                    }
+#ifdef XTRA_RPT
+            if( CompFlags.codegen_active ) {
+                ExtraRptIncrementCtr( ctr_cg_dups_fail );
+            }
+            ExtraRptTabIncr( ctr_type_ids, id, 0 );
+            ExtraRptTabIncr( ctr_type_ids, RPT_TYP_TOTAL, 0 );
+            if( id == TYP_FUNCTION ) {
+                unsigned num_args = newtype->u.f.args->num_args;
+                if( num_args < ARGS_MAX ) {
                     ExtraRptTabIncr( ctr_fn_args, num_args, 0 );
-                    ExtraRptTabIncr( ctr_fn_args, ARGS_MAX+1, 0 );
+                } else {
+                    ExtraRptTabIncr( ctr_fn_args, RPT_ARGS_OVERFLOW, 0 );
                 }
-            #endif
+                ExtraRptTabIncr( ctr_fn_args, RPT_ARGS_TOTAL, 0 );
+            }
+#endif
             newtype = RingPush( &typeTable[id], newtype );
         }
     } else {
@@ -1655,7 +1666,7 @@ void PTypeCheckInit( void )
     unsigned index;
 
     // code that must execute after the command line options have been parsed
-    for( index = TYP_MIN; index < TYP_MAX; index++ ) {
+    for( index = 0; index < TYP_MAX; index++ ) {
         basic_type = basicTypes[index];
         if( basic_type != NULL ) {
             basicTypes[index] = CheckDupType( basic_type );
@@ -8641,10 +8652,11 @@ static void typesInit(          // TYPES INITIALIZATION
 #define ENTRY_GENERIC "TYP_GENERIC",
         static char const * const typeIdNames[] = {
             #include "type_arr.h"
+            "TYPE_NONE",
             "Total"
         };
-        ExtraRptRegisterTab( "type id frequency table", typeIdNames, &ctr_type_ids[0][0], TYP_MAX, 1 );
-        ExtraRptRegisterTab( "number of fn arguments frequency table", NULL, &ctr_fn_args[0][0], ARGS_MAX + 1 + 1, 1 );
+        ExtraRptRegisterTab( "type id frequency table", typeIdNames, &ctr_type_ids[0][0], RPT_TYP_MAX, 1 );
+        ExtraRptRegisterTab( "number of fn arguments frequency table", NULL, &ctr_fn_args[0][0], RPT_ARGS_MAX, 1 );
     }
 #endif
 }

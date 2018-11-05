@@ -261,8 +261,10 @@ typedef enum {
     TYP_MAX,
 } type_id;
 
-#define TYP_MIN         TYP_ERROR
-#define TYP_FIRST_VALID TYP_BOOL
+#define TYP_NONE        TYP_MAX
+
+#define TYP_FIRST_FUNDAMENTAL   TYP_BOOL
+#define TYP_LAST_FUNDAMENTAL    TYP_LONG_DOUBLE
 
 typedef enum {
     TF1_FIRST           = 0x00000001,               // TYP_ERROR

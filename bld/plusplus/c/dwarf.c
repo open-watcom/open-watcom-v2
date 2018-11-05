@@ -1764,7 +1764,7 @@ static void dwarfEmitFundamentalType( void )
     type_id     id;
     dw_handle   data;
 
-    for( id = TYP_FIRST_VALID ; id < TYP_LONG_DOUBLE ; ++id ) {
+    for( id = TYP_FIRST_FUNDAMENTAL; id <= TYP_LAST_FUNDAMENTAL; ++id ) {
         data = 0;
         TypeTraverse( id, &doDwarfEmitFundamentalType, (void *)&data );
     }
