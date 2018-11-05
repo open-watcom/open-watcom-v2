@@ -42,4 +42,7 @@
 #include "ppopsdef.h"
 #undef ONLY_INTRINSIC
 
+#undef PPOPCG
+#undef PPOPCD
+
 #endif

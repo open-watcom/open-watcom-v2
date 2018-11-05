@@ -46,4 +46,9 @@ typedef enum {
     #include "ppopsdef.h"
 } CGOP;
 
+#undef PPOPEND
+#undef PPOPNMS
+#undef PPOPNM
+#undef PPOPCD
+
 #endif

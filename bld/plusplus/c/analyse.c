@@ -2633,8 +2633,9 @@ ExtraRptTable( ctrOps, CO_LOG, 1 );
 static void init( INITFINI* defn )  // initialization
 {
     static const char * const opNames[] = {
-#define PPOPCD( id ) #id ,
-#include "ppopsdef.h"
+        #define PPOPCD( id ) #id ,
+        #include "ppopsdef.h"
+        #undef PPOPCD
     };
     defn = defn;
     ExtraRptRegisterTab( "Frequency of operators", opNames, &ctrOps[0][0], CO_LOG, 1 );

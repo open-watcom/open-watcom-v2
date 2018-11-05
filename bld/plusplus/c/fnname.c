@@ -79,6 +79,7 @@ static const char *operatorNamesStr[] = {
 static CGOP const operatorSameAs[] = {
     #define PPOPOP( s, sa )     delim CO_##sa
     #include "ppopsdef.h"
+    #undef PPOPOP
 };
 
 static const char *specialNamesStr[] = {
