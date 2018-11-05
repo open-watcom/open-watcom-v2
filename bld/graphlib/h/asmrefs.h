@@ -236,7 +236,6 @@
 #pragma aux _Screen "_*";
 #pragma aux _IsDBCS "_*";
 #pragma aux _DBCSPairs "_*";
-#pragma aux _CurrState "_*";
 #pragma aux _ConfigBuffer "_*";
 
 #pragma aux _StackSeg "_*";

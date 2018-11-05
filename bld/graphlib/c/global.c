@@ -152,6 +152,8 @@ unsigned short          _VGABytesPerPixel;          // SuperVGA num bytes per pi
     #undef _CurrState
 #endif
 
+#pragma aux _CurrState "_*";
+
 struct videoinfo        _ConfigBuffer;              // video state
 struct videoinfo _FARD  *_CurrState = &_ConfigBuffer;
 
