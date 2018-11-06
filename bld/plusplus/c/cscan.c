@@ -778,25 +778,25 @@ static TOKEN doScanString( type_id string_type, bool expanding )
 
 static TOKEN doScanName( int c, bool expanding )
 {
-    MEPTR fmentry = NULL;
+    MEPTR mentry = NULL;
 
     SrcFileScanName( c );
     if( expanding || (PPControl & PPCTL_NO_EXPAND) ) {
         return( T_ID );
     }
 
-    fmentry = MacroLookup( Buffer, TokenLen );
-    if( fmentry == NULL )
+    mentry = MacroLookup( Buffer, TokenLen );
+    if( mentry == NULL )
         return( KwLookup( TokenLen ) );
 
     prt_char( ' ' );
-    if( fmentry->macro_defn == 0 ) {
-        return( SpecialMacro( fmentry ) );
+    if( mentry->macro_defn == 0 ) {
+        return( SpecialMacro( mentry ) );
     }
-    fmentry->macro_flags |= MFLAG_REFERENCED;
+    mentry->macro_flags |= MFLAG_REFERENCED;
     /* if macro requires parameters and next char is not a '('
     then this is not a macro */
-    if( fmentry->parm_count != 0 ) {
+    if( mentry->parm_count != 0 ) {
         SkipAhead();
         if( CurrChar != '(' ) {
             if( CompFlags.cpp_output ) {
@@ -807,7 +807,7 @@ static TOKEN doScanName( int c, bool expanding )
             return( KwLookup( TokenLen ) );
         }
     }
-    DoMacroExpansion( fmentry );
+    DoMacroExpansion( mentry );
     DbgAssert( _BufferOverrun == BUFFER_OVERRUN_CHECK );
     GetMacroToken( false );
     if( CurToken == T_NULL ) {

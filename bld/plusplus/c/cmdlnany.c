@@ -108,29 +108,29 @@ static void checkErrorLimit( unsigned *p )
 
 static bool scanDefine( OPT_STRING **p )
 {
-    MEPTR cmdln_mac;
+    MEPTR cmdln_mentry;
 
     /* unused parameters */ (void)p;
 
-    cmdln_mac = DefineCmdLineMacro( CompFlags.extended_defines );
-    if( cmdln_mac != NULL ) {
-        cmdln_mac->macro_flags |= MFLAG_USER_DEFINED;
+    cmdln_mentry = DefineCmdLineMacro( CompFlags.extended_defines );
+    if( cmdln_mentry != NULL ) {
+        cmdln_mentry->macro_flags |= MFLAG_USER_DEFINED;
     }
     return( true );
 }
 
 static bool scanDefinePlus( OPT_STRING **p )
 {
-    MEPTR cmdln_mac;
+    MEPTR cmdln_mentry;
 
     /* unused parameters */ (void)p;
 
     if( CmdScanSwEnd() ) {
         CompFlags.extended_defines = true;
     } else {
-        cmdln_mac = DefineCmdLineMacro( true );
-        if( cmdln_mac != NULL ) {
-            cmdln_mac->macro_flags |= MFLAG_USER_DEFINED;
+        cmdln_mentry = DefineCmdLineMacro( true );
+        if( cmdln_mentry != NULL ) {
+            cmdln_mentry->macro_flags |= MFLAG_USER_DEFINED;
         }
     }
     return( true );

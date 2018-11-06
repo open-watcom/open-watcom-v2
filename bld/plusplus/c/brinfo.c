@@ -938,46 +938,46 @@ void BrinfReferenceSymbol       // SYMBOL REFERENCE
 
 
 MEPTR BrinfDeclMacro            // DECLARE MACRO
-    ( MEPTR mac )               // - the macro
+    ( MEPTR mentry )            // - the macro
 {
-    if( NULL != mac
+    if( NULL != mentry
      && CompFlags.optbr_p ) {
         if( canWriteIc() ) {
-            MACVALUE* val = BrinfMacAddValue( mac );
+            MACVALUE* val = BrinfMacAddValue( mentry );
             ExtraRptIncrementCtr( ctr_defn_macro );
             BrinfSrcMacDecl( val );
         }
     }
-    return( mac );
+    return( mentry );
 }
 
 
 void BrinfDependsMacroValue     // DEPENDENCY: MACRO VALUE
-    ( MEPTR mac )               // - the macro
+    ( MEPTR mentry )            // - the macro
 {
     MACVALUE* val;              // - value for macro
 
     if( BrinfActive() ) {
         ExtraRptIncrementCtr( ctr_dep_macro_value );
-        val = BrinfMacAddValue( mac );
-        BrinfDepMacAdd( mac, val, MVT_VALUE );
+        val = BrinfMacAddValue( mentry );
+        BrinfDepMacAdd( mentry, val, MVT_VALUE );
     }
 }
 
 
 MEPTR BrinfReferenceMacro       // REFERENCE A MACRO VALUE
-    ( MEPTR mac )               // - the macro
+    ( MEPTR mentry )            // - the macro
 {
     if( enableMacRefs
      && CompFlags.optbr_p ) {
-        MACVALUE* val = BrinfMacAddValue( mac );
+        MACVALUE* val = BrinfMacAddValue( mentry );
         ExtraRptIncrementCtr( ctr_ref_macro );
         // the following is over-conservative, since a reference is also
         // generated for #ifdef, #ifndef
-        BrinfDependsMacroValue( mac );
+        BrinfDependsMacroValue( mentry );
         BrinfSrcMacReference( val );
     }
-    return( mac );
+    return( mentry );
 }
 
 
@@ -988,32 +988,32 @@ bool BrinfDependsMacroDefined   // DEPENDENCY: MACRO DEFINED OR NOT
 {
     MACVALUE* val;              // - value for macro
     MAC_VTYPE type;             // - type of dependency
-    MEPTR mac;                  // - NULL or entry def'ed or undef'ed
+    MEPTR mentry;                  // - NULL or entry def'ed or undef'ed
 
     if( BrinfActive() ) {
         ExtraRptIncrementCtr( ctr_dep_macro_defined );
         if( defed ) {
             val = BrinfMacAddDefin( name, nlen );
             enableMacRefs = false;
-            mac = MacroLookup( name, nlen );
+            mentry = MacroLookup( name, nlen );
             enableMacRefs = true;
             type = MVT_DEFINED;
         } else {
             val = BrinfMacAddUndef( name, nlen );
-            mac = NULL;
+            mentry = NULL;
             type = MVT_UNDEFED;
         }
-        BrinfDepMacAdd( mac, val, type );
+        BrinfDepMacAdd( mentry, val, type );
     }
     return( defed );
 }
 
 
 void BrinfUndefMacro            // UNDEFINE A MACRO
-    ( MEPTR mac )               // - that macro
+    ( MEPTR mentry )            // - that macro
 {
     if( BrinfActive() ) {
-        BrinfMacUndef( mac, SrcFileCurrent() );
+        BrinfMacUndef( mentry, SrcFileCurrent() );
     }
 }
 

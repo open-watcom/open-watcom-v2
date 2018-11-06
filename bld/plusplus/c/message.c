@@ -899,11 +899,11 @@ void InfClassDecl(              // GENERATE CLASS-DECLARATION NOTE
 void InfMacroDecl(              // GENERATE MACRO-DECLARATION NOTE
     void* parm )                // - macro definition
 {
-    MEPTR mdef;                 // - macro definition
+    MEPTR mentry;               // - macro definition
 
-    mdef = parm;
-    if( mdef->macro_flags & MFLAG_USER_DEFINED ) {
-        CErr( INF_MACRO_DECLARATION, mdef->macro_name, &mdef->defn );
+    mentry = parm;
+    if( mentry->macro_flags & MFLAG_USER_DEFINED ) {
+        CErr( INF_MACRO_DECLARATION, mentry->macro_name, &mentry->defn );
     }
 }
 

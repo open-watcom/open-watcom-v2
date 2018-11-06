@@ -92,13 +92,13 @@ void CmdLnSwNotImplemented(     // ISSUE WARNING FOR UN-IMPLEMENTED SWITCH
 static MEPTR defineStringMacro( // DEFINE A MACRO NAME
     const char *name )          // - name of macro
 {
-    MEPTR mptr;
+    MEPTR mentry;
     char const *save = CmdScanAddr();
 
     CmdScanInit( name );
-    mptr = DefineCmdLineMacro( false );
+    mentry = DefineCmdLineMacro( false );
     CmdScanInit( save );
-    return( mptr );
+    return( mentry );
 }
 
 
@@ -106,7 +106,7 @@ MEPTR DefineCmdLineMacro(       // DEFINE A MACRO FROM THE COMMAND LINE
                                 // (assumes position is one char after "-D")
     bool many_tokes )           // - true ==> scan multiple tokens
 {
-    MEPTR mptr;
+    MEPTR mentry;
     int (*old_scanner)( void );
     ppctl_t old_ppctl;
 
@@ -118,14 +118,14 @@ MEPTR DefineCmdLineMacro(       // DEFINE A MACRO FROM THE COMMAND LINE
     SrcFileCmdLnDummyOpen();
     CurrChar = NextChar();
     if( many_tokes ) {
-        mptr = MacroScan( MSCAN_CMDLN_PLUS );
+        mentry = MacroScan( MSCAN_CMDLN_PLUS );
     } else {
-        mptr = MacroScan( MSCAN_CMDLN_NORMAL );
+        mentry = MacroScan( MSCAN_CMDLN_NORMAL );
     }
     SrcFileCmdLnDummyClose();
     NextChar = old_scanner;
     PPControl = old_ppctl;
-    return( mptr );
+    return( mentry );
 }
 
 
@@ -135,12 +135,12 @@ void PreDefineStringMacro(      // PREDEFINE A MACRO
     char buffer[32];            // - buffer for name
     char *bptr;                 // - points into buffer
     const char *sptr;           // - points into string
-    MEPTR mptr;                 // - macro entry
+    MEPTR mentry;               // - macro entry
 
     if( !CompFlags.undefine_all_macros ) {
-        mptr = NULL;
+        mentry = NULL;
         if( undef_names.ring == NULL ) {
-            mptr = defineStringMacro( str );
+            mentry = defineStringMacro( str );
         } else {
             for( bptr = buffer, sptr = str; ; ++ sptr, ++ bptr ) {
                 if( *sptr == '=' ) {
@@ -153,11 +153,11 @@ void PreDefineStringMacro(      // PREDEFINE A MACRO
                 }
             }
             if( NULL == RingNameLookup( &undef_names, buffer ) ) {
-                mptr = defineStringMacro( str );
+                mentry = defineStringMacro( str );
             }
         }
-        if( mptr != NULL ) {
-            MacroCanBeRedefined( mptr );
+        if( mentry != NULL ) {
+            MacroCanBeRedefined( mentry );
         }
     }
 }

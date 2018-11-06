@@ -203,11 +203,11 @@ static void CInclude( void )
 
 static void CDefine( void )
 {
-    MEPTR define_macro;
+    MEPTR mentry;
 
-    define_macro = MacroScan( MSCAN_DEFINE );
-    if( define_macro != NULL ) {
-        define_macro->macro_flags |= MFLAG_USER_DEFINED;
+    mentry = MacroScan( MSCAN_DEFINE );
+    if( mentry != NULL ) {
+        mentry->macro_flags |= MFLAG_USER_DEFINED;
     }
 }
 
@@ -284,7 +284,7 @@ static MEPTR grabTokens(            // SAVE TOKENS IN A MACRO DEFINITION
     size_t          mlen,           // - length of macro def'n (so far)
     TOKEN_LOCN      *locn )         // - definition point
 {
-    MEPTR mptr;
+    MEPTR new_mentry;
     MEPTR mentry;
     unsigned parm_index;
     TOKEN prev_token;
@@ -293,7 +293,7 @@ static MEPTR grabTokens(            // SAVE TOKENS IN A MACRO DEFINITION
 
     // MacroOverflow was called for the name of the macro + mentry already
     mentry = (MEPTR)MacroOffset;
-    DbgAssert( ( MacroOverflow( mlen, 0 ), MacroOffset == (void*) mentry ) );
+    DbgAssert( ( MacroOverflow( mlen, 0 ), MacroOffset == (void*)mentry ) );
     if( parm_cnt < 0 )
     {
         has_var_args = 1;
@@ -403,14 +403,14 @@ static MEPTR grabTokens(            // SAVE TOKENS IN A MACRO DEFINITION
     if( prev_non_ws_token == T_MACRO_SHARP_SHARP ) {
         CErr1( ERR_MISPLACED_SHARP_SHARP );
     }
-    mentry = (MEPTR) MacroOffset;       // MacroOffset could have changed
+    mentry = (MEPTR)MacroOffset;        // MacroOffset could have changed
     TokenLocnAssign( mentry->defn, *locn );
     mentry->macro_len = mlen;
     if( has_var_args )
         InitialMacroFlag |= MFLAG_HAS_VAR_ARGS;
-    mptr = MacroDefine( mentry, mlen, name_len );
+    new_mentry = MacroDefine( mentry, mlen, name_len );
     InitialMacroFlag &= ~MFLAG_HAS_VAR_ARGS;
-    BrinfDeclMacro( mptr );
+    BrinfDeclMacro( new_mentry );
     if( (defn & MSCAN_MANY) == 0 ) {
         while( CurToken == T_WHITE_SPACE ) {
             CurToken = ScanToken( false );
@@ -419,7 +419,7 @@ static MEPTR grabTokens(            // SAVE TOKENS IN A MACRO DEFINITION
             BadCmdLine( ERR_INVALID_OPTION );
         }
     }
-    return( mptr );
+    return( new_mentry );
 }
 
 
@@ -429,7 +429,7 @@ MEPTR MacroScan(                // SCAN AND DEFINE A MACRO (#define, -d)
     int         parm_cnt;       // - parameter count, end found
     int         parm_end;       // - parameter count, end found
     size_t      name_len;       // - length of macro name
-    MEPTR       mptr;           // - final macro defn
+    MEPTR       mentry;         // - final macro defn
     MAC_PARM    *parm_names;    // - macro parm names
     bool        ppscan_mode;    // - previous ppnumber scan mode
     size_t      mlen;           // - current length of macro def'n
@@ -485,7 +485,7 @@ MEPTR MacroScan(                // SCAN AND DEFINE A MACRO (#define, -d)
     }
     /* grab replacement tokens */
     ppscan_mode = InitPPScan();         // enable T_PPNUMBER tokens
-    mptr = grabTokens( &parm_names
+    mentry = grabTokens( &parm_names
                      , parm_end ? -(parm_cnt + 1) : (parm_cnt + 1)
                      , defn
                      , name_len
@@ -494,7 +494,7 @@ MEPTR MacroScan(                // SCAN AND DEFINE A MACRO (#define, -d)
     FiniPPScan( ppscan_mode );          // disable T_PPNUMBER tokens
 
     RingFree( &parm_names );
-    return( mptr );
+    return( mentry );
 }
 
 static void ChkEOL( void )

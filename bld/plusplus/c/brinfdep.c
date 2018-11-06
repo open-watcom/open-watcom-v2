@@ -46,7 +46,7 @@
 
 struct MACDEP                   // MACDEP -- macro dependency
 {   MACDEP* next;               // - next in ring
-    MEPTR macro;                // - macro
+    MEPTR mentry;               // - macro
     MACVALUE* value;            // - value
     MAC_VTYPE type;             // - type of dependency
     uint_8 written          :1; // - true ==> written out
@@ -161,7 +161,7 @@ static bool srcfilePrecedes     // SEE IF A SOURCE FILE PRECEDES ANOTHER
 
 
 void BrinfDepMacAdd             // ADD A MACRO DEPENDENCY
-    ( MEPTR macro               // - the macro
+    ( MEPTR mentry              // - the macro
     , MACVALUE* value           // - value
     , MAC_VTYPE type )          // - dependency type
 {
@@ -172,15 +172,15 @@ void BrinfDepMacAdd             // ADD A MACRO DEPENDENCY
     DbgVerify( NULL != sd, "No active srcfile" );
     switch( type ) {
     case MVT_VALUE :
-        defn = macro->defn.src_file;
+        defn = mentry->defn.src_file;
         break;
     case MVT_DEFINED :
-        defn = macro->defn.src_file;
-        macro = NULL;
+        defn = mentry->defn.src_file;
+        mentry = NULL;
         break;
     case MVT_UNDEFED :
         defn = BrinfMacUndefSource( BrinfMacValueName( value ) );
-        macro = NULL;
+        mentry = NULL;
         break;
     DbgDefault( "Impossible MAC_VTYPE" );
     }
@@ -190,7 +190,7 @@ void BrinfDepMacAdd             // ADD A MACRO DEPENDENCY
         MACDEP* cd;
         RingIterBeg( sd->deps, cd ) {
             if( cd->value == value
-             && cd->macro == macro
+             && cd->mentry == mentry
              && cd->type == type ) {
                 md = cd;
                 IfDbgToggle( browse ) {
@@ -199,7 +199,7 @@ void BrinfDepMacAdd             // ADD A MACRO DEPENDENCY
                                 " VALUE %x TYPE %d\n"
                               , sd
                               , sd->srcfile
-                              , macro
+                              , mentry
                               , value
                               , type )
                     );
@@ -209,7 +209,7 @@ void BrinfDepMacAdd             // ADD A MACRO DEPENDENCY
         } RingIterEnd( cd );
         if( NULL == md ) {
             md = RingCarveAlloc( carve_mac_dep, &sd->deps );
-            md->macro = macro;
+            md->mentry = mentry;
             md->value = value;
             md->type = type;
             md->written = false;
@@ -219,7 +219,7 @@ void BrinfDepMacAdd             // ADD A MACRO DEPENDENCY
                             " VALUE %x TYPE %d\n"
                           , sd
                           , sd->srcfile
-                          , macro
+                          , mentry
                           , value
                           , type )
                 );

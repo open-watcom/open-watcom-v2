@@ -155,7 +155,7 @@ bool PCHVerifyMacroCheck(       // READ AND VERIFY MACRO CHECK INFO FROM PCHDR
     void )
 ;
 void MacroCanBeRedefined(       // SET MACRO SO THAT USE CAN REDEFINE IN SOURCE
-    MEPTR mptr )                // - the macro entry
+    MEPTR mentry )              // - the macro entry
 ;
 MEPTR MacroScan(                // SCAN AND DEFINE A MACRO (#define, -d)
     macro_scanning defn )       // - scanning definition
@@ -192,7 +192,7 @@ void FiniPPScan(                // INIT SCANNER FOR PPNUMBER TOKENS
     bool ppscan_mode )          // - mode returned by InitPPScan()
 ;
 TOKEN SpecialMacro(             // EXECUTE A SPECIAL MACRO
-    MEPTR fmentry )             // - macro entry
+    MEPTR mentry )              // - macro entry
 ;
 void DefineAlternativeTokens(   // DEFINE ALTERNATIVE TOKENS
     void )
@@ -223,7 +223,7 @@ void DirectiveInit(             // INITIALIZE FOR DIRECTIVE PROCESSING
     void )
 ;
 void DoMacroExpansion(          // EXPAND A MACRO
-    MEPTR fmentry )             // - macro to expand
+    MEPTR mentry )              // - macro to expand
 ;
 void EmitLine(                  // EMIT #LINE DIRECTIVE, IF REQ'D
     LINE_NO line_num,           // - line number

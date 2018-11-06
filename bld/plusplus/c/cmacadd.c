@@ -167,12 +167,12 @@ void MacroWriteBrinf            // WRITE MACROS TO BRINF
     ( void )
 {
     unsigned i;
-    MEPTR curr;
+    MEPTR mentry;
 
     for( i = 0; i < MACRO_HASH_SIZE; ++i ) {
-        RingIterBeg( macroHashTable[i], curr ) {
-            BrinfDeclMacro( curr );
-        } RingIterEnd( curr )
+        RingIterBeg( macroHashTable[i], mentry ) {
+            BrinfDeclMacro( mentry );
+        } RingIterEnd( mentry )
     }
 }
 #endif
@@ -181,23 +181,23 @@ pch_status PCHWriteMacros( void )
 {
     unsigned hashval;
     unsigned wlen;
-    MEPTR curr;
-    MEPTR next;
+    MEPTR mentry;
+    MEPTR next_mentry;
     SRCFILE save_defn_src_file;
 
     for( hashval = 0; hashval < MACRO_HASH_SIZE; ++hashval ) {
-        RingIterBeg( macroHashTable[hashval], curr ) {
-            next = curr->next_macro;
-            save_defn_src_file = curr->defn.src_file;
-            curr->macro_flags &= ~MFLAG_PCH_TEMPORARY_FLAGS;
-            curr->next_macro = PCHSetUInt( hashval );
-            curr->defn.src_file = SrcFileGetIndex( save_defn_src_file );
-            wlen = curr->macro_len;
+        RingIterBeg( macroHashTable[hashval], mentry ) {
+            next_mentry = mentry->next_macro;
+            save_defn_src_file = mentry->defn.src_file;
+            mentry->macro_flags &= ~MFLAG_PCH_TEMPORARY_FLAGS;
+            mentry->next_macro = PCHSetUInt( hashval );
+            mentry->defn.src_file = SrcFileGetIndex( save_defn_src_file );
+            wlen = mentry->macro_len;
             PCHWriteUInt( wlen );
-            PCHWrite( curr, wlen );
-            curr->defn.src_file = save_defn_src_file;
-            curr->next_macro = next;
-        } RingIterEnd( curr )
+            PCHWrite( mentry, wlen );
+            mentry->defn.src_file = save_defn_src_file;
+            mentry->next_macro = next_mentry;
+        } RingIterEnd( mentry )
     }
     PCHWriteUInt( 0 );
     return( PCHCB_OK );
@@ -217,29 +217,29 @@ pch_status PCHFiniMacros( bool writing )
     return( PCHCB_OK );
 }
 
-static void findMaxLength( MEPTR curr, void *data )
+static void findMaxLength( MEPTR mentry, void *data )
 {
     unsigned *pmax = data;
     unsigned wlen;
 
-    wlen = curr->macro_len;
+    wlen = mentry->macro_len;
     if( wlen > *pmax ) {
         *pmax = wlen;
     }
 }
 
-static void writeMacroCheck( MEPTR curr, void *data )
+static void writeMacroCheck( MEPTR mentry, void *data )
 {
     unsigned *phash = data;
     unsigned wlen;
-    MEPTR next;
+    MEPTR next_mentry;
 
-    next = curr->next_macro;
-    curr->next_macro = PCHSetUInt( *phash );
-    wlen = curr->macro_len;
+    next_mentry = mentry->next_macro;
+    mentry->next_macro = PCHSetUInt( *phash );
+    wlen = mentry->macro_len;
     PCHWriteUInt( wlen );
-    PCHWrite( curr, wlen );
-    curr->next_macro = next;
+    PCHWrite( mentry, wlen );
+    mentry->next_macro = next_mentry;
 }
 
 static void forAllMacrosDefinedBeforeFirstInclude( void (*rtn)( MEPTR, void * ), void *data )
@@ -247,29 +247,29 @@ static void forAllMacrosDefinedBeforeFirstInclude( void (*rtn)( MEPTR, void * ),
     size_t len;
     unsigned i;
     unsigned hash;
-    MEPTR curr;
+    MEPTR mentry;
 
     for( i = 0; i < MACRO_HASH_SIZE; ++i ) {
         hash = i;
-        RingIterBeg( macroHashTable[i], curr ) {
-            if( curr->macro_flags & MFLAG_DEFINED_BEFORE_FIRST_INCLUDE ) {
+        RingIterBeg( macroHashTable[i], mentry ) {
+            if( mentry->macro_flags & MFLAG_DEFINED_BEFORE_FIRST_INCLUDE ) {
                 if( data == NULL ) {
-                    (*rtn)( curr, &hash );
+                    (*rtn)( mentry, &hash );
                 } else {
-                    (*rtn)( curr, data );
+                    (*rtn)( mentry, data );
                 }
             }
-        } RingIterEnd( curr )
+        } RingIterEnd( mentry )
     }
-    RingIterBeg( beforeIncludeChecks, curr ) {
+    RingIterBeg( beforeIncludeChecks, mentry ) {
         if( data == NULL ) {
-            len = strlen( curr->macro_name );
-            hash = NameCalcHashLen( curr->macro_name, len );
-            (*rtn)( curr, &hash );
+            len = strlen( mentry->macro_name );
+            hash = NameCalcHashLen( mentry->macro_name, len );
+            (*rtn)( mentry, &hash );
         } else {
-            (*rtn)( curr, data );
+            (*rtn)( mentry, data );
         }
-    } RingIterEnd( curr )
+    } RingIterEnd( mentry )
 }
 
 void PCHDumpMacroCheck(         // DUMP MACRO CHECK INFO INTO PCHDR
@@ -468,7 +468,7 @@ static MEPTR macroFind(         // LOOK UP A HASHED MACRO
     unsigned *phash )           // - returned hash value
 {
     char *id;                   // - current macro name
-    MEPTR curr;                 // - current macro name being checked
+    MEPTR mentry;               // - current macro name being checked
     unsigned hash;              // - hash value for current macro name
     unsigned mask;              // - mask for quick comparison
 
@@ -480,16 +480,16 @@ static MEPTR macroFind(         // LOOK UP A HASHED MACRO
     } else {
         mask = NameCmpMask[len];
     }
-    RingIterBeg( macroHashTable[hash], curr ) {
-        id = curr->macro_name;
+    RingIterBeg( macroHashTable[hash], mentry ) {
+        id = mentry->macro_name;
         if(( *((unsigned *)id) ^ *((unsigned *)name) ) & mask ) {
             continue;
         }
         if( NameMemCmp( id, name, len ) == 0 ) {
-            curr = BrinfReferenceMacro( curr );
-            return( curr );
+            mentry = BrinfReferenceMacro( mentry );
+            return( mentry );
         }
-    } RingIterEnd( curr )
+    } RingIterEnd( mentry )
     return( NULL );
 }
 
@@ -512,16 +512,16 @@ void MacroOverflow(             // OVERFLOW SEGMENT IF REQUIRED
     }
 }
 
-static void unlinkMacroFromTable( MEPTR fmentry, unsigned hash )
+static void unlinkMacroFromTable( MEPTR mentry, unsigned hash )
 {
     ++undefCount;
-    RingPrune( &macroHashTable[hash], fmentry );
+    RingPrune( &macroHashTable[hash], mentry );
     if(( InitialMacroFlag & MFLAG_DEFINED_BEFORE_FIRST_INCLUDE ) == 0 ) {
         // make sure we only do this *after* the first include has started
         // processing otherwise the PCH is created in such a way that
         // the #undef'd macro must be defined before the #include 98/07/13
-        if( fmentry->macro_flags & MFLAG_DEFINED_BEFORE_FIRST_INCLUDE ) {
-            RingAppend( &beforeIncludeChecks, fmentry );
+        if( mentry->macro_flags & MFLAG_DEFINED_BEFORE_FIRST_INCLUDE ) {
+            RingAppend( &beforeIncludeChecks, mentry );
         }
     }
 }
@@ -531,14 +531,14 @@ MEPTR MacroDefine(              // DEFINE A NEW MACRO
     unsigned len,               // - length of entry
     size_t name_len )           // - name of macro name
 {
-    MEPTR mptr;                 // - new entry for macro
+    MEPTR new_mentry;           // - new entry for macro
     MEPTR old_mentry;           // - old entry for macro
     char *mac_name;             // - name for macro
     unsigned hash;              // - hash bucket for macro
     msg_status_t msg_st;        // - error message status
 
     DbgAssert( mentry == (MEPTR)MacroOffset );
-    mptr = NULL;
+    new_mentry = NULL;
     mac_name = mentry->macro_name;
     if( magicPredefined( mac_name ) ) {
         CErr2p( ERR_DEFINE_IMPOSSIBLE, mac_name );
@@ -569,9 +569,9 @@ MEPTR MacroDefine(              // DEFINE A NEW MACRO
         }
         if( old_mentry == NULL ) {
             mentry->macro_flags = InitialMacroFlag;
-            mptr = macroAllocateInSeg( len );
-            DbgAssert( mptr == mentry );
-            RingAppend( &macroHashTable[hash], mptr );
+            new_mentry = macroAllocateInSeg( len );
+            DbgAssert( new_mentry == mentry );
+            RingAppend( &macroHashTable[hash], new_mentry );
             ExtraRptIncrementCtr( macros_defined );
 #ifdef XTRA_RPT
             if( mentry->parm_count != 0 ) {
@@ -580,7 +580,7 @@ MEPTR MacroDefine(              // DEFINE A NEW MACRO
 #endif
         }
     }
-    return( mptr );
+    return( new_mentry );
 }
 
 
@@ -655,7 +655,7 @@ bool MacroDependsDefined    // MACRO DEPENDENCY: DEFINED OR NOT
 
 static void doMacroUndef( char *name, size_t len, bool quiet )
 {
-    MEPTR fmentry;          // - current macro entry
+    MEPTR mentry;          // - current macro entry
     unsigned hash;          // - current macro hash
 
     if( magicPredefined( name ) ) {
@@ -663,15 +663,15 @@ static void doMacroUndef( char *name, size_t len, bool quiet )
             CErr2p( ERR_UNDEF_IMPOSSIBLE, name );
         }
     } else {
-        fmentry = macroFind( name, len, &hash );
-        if( fmentry != NULL ) {
-            if( fmentry->macro_defn == 0 ) {
+        mentry = macroFind( name, len, &hash );
+        if( mentry != NULL ) {
+            if( mentry->macro_defn == 0 ) {
                 if( !quiet ) {
                     CErr2p( ERR_UNDEF_IMPOSSIBLE, name );
                 }
             } else {
-                BrinfUndefMacro( fmentry );
-                unlinkMacroFromTable( fmentry, hash );
+                BrinfUndefMacro( mentry );
+                unlinkMacroFromTable( mentry, hash );
             }
         }
     }
@@ -691,10 +691,10 @@ void MacroCmdLnUndef(           // -U<macro-name>
 }
 
 void MacroCanBeRedefined(       // SET MACRO SO THAT USE CAN REDEFINE IN SOURCE
-    MEPTR mptr )                // - the macro entry
+    MEPTR mentry )              // - the macro entry
 {
-    if( mptr != NULL ) {
-        mptr->macro_flags |= MFLAG_CAN_BE_REDEFINED;
+    if( mentry != NULL ) {
+        mentry->macro_flags |= MFLAG_CAN_BE_REDEFINED;
     }
 }
 
