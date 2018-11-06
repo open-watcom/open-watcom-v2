@@ -424,6 +424,7 @@ static bool get_watcom_argument_string( char *buffer, int size, int *parm_number
 }
 
 #ifdef DEBUG_OUT
+void heap( char *func ) ;
 void heap( char *func ) // for debugging only
 /*********************/
 {
