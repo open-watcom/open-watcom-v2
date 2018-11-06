@@ -81,7 +81,7 @@ static OP_MASK opfun_mask[] =
 ;
 
 static type_id op_basic_arg[][2] =
-    #define OPBASIC( arg1, arg2, mask ) { __PASTE( TYP_, arg1 ) , __PASTE( TYP_, arg2 ) }
+    #define OPBASIC( arg1, arg2, mask ) { __PASTE( TYP_, arg1 ), __PASTE( TYP_, arg2 ) }
     #include "ppopscnv.h"
     #undef OPBASIC
 ;
@@ -126,8 +126,10 @@ static type_id op_basic_arg_extra[][2] =
 static GETOP_CONTROL extra_ctl[] =
     #define OPBASIC_EXTRA( arg1, arg2, mask, ctl ) ctl
     #include "ppopscnv.h"
-    #define OPM_REF_MASK (OPM_RA|OPM_RI|OPM_RP)
+    #undef OPBASIC_EXTRA
 ;
+
+#define OPM_REF_MASK (OPM_RA|OPM_RI|OPM_RP)
 
 typedef struct {                    // OVOP -- operand types
     PTREE operand;                  // - operand
@@ -1101,7 +1103,7 @@ static void overloadOperatorInit( // INITIALIZATION
                 retn_type = MakeReferenceTo( retn_type );
             }
             arg2 = op_basic_arg[arg][1];
-            if( arg2 == TYP_MAX ) {
+            if( arg2 == TYP_NONE ) {
                 fn_type = MakeSimpleFunction( retn_type
                                             , arg1_type
                                             , NULL );
