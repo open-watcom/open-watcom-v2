@@ -70,30 +70,28 @@ static bool linkerConstantFlag;
 
 // enumerate OP_CNV_NO_... as 0, 1, 2, ...
 //
-#define OPCNV( code, contents ) __PASTE( OP_CNV_NO_, code )
 enum
-#include "ppopscnv.h"
+    #define OPCNV( code, contents ) __PASTE( OP_CNV_NO_, code )
+    #include "ppopscnv.h"
+    #undef OPCNV
 ;
-#undef OPCNV
 
 // enumerate OPCNV_... as 0x01, 0x02, 0x03, ...
 //
-#define OPCNV( code, contents ) \
-    __PASTE( OPCNV_, code ) = ( 1 + __PASTE( OP_CNV_NO_, code ) ) \
-                              << PTO_CNV_SHIFT
 enum
-#include "ppopscnv.h"
+    #define OPCNV( code, contents ) __PASTE( OPCNV_, code ) = ( 1 + __PASTE( OP_CNV_NO_, code ) ) << PTO_CNV_SHIFT
+    #include "ppopscnv.h"
+    #undef OPCNV
 ;
-#undef OPCNV
 
 static PTS_FLAG ptreePTSFlags[] =       // one for each PTREE node type
-#define PTOP( code, bits ) bits
-#include "ptreeop.h"
-#undef PTOP
+    #define PTOP( code, bits ) bits
+    #include "ptreeop.h"
+    #undef PTOP
 ;
 
 static PTO_FLAG oper_flags[] ={ // definitions for unary, binary oper.s
-#include "ppopsflg.h"
+    #include "ppopsflg.h"
 };
 
 static void ptreeInit(          // INITIALIZATION

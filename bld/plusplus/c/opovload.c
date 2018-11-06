@@ -53,45 +53,44 @@ typedef enum                    // Used to control scalar operand types
 #define OPM_NOAMB        ( OPM_QUEST  | OPM_FUN )
 
 
-#define OPPRO( code ) __PASTE( OPPRO_NO_, code )
 typedef enum
-#include "ppopscnv.h"
+    #define OPPRO( code ) __PASTE( OPPRO_NO_, code )
+    #include "ppopscnv.h"
+    #undef OPPRO
 OP_PROTO_NO;
-#undef OPPRO
 
-#define OPPRO( code ) __PASTE( OPM_, code ) = 1 << __PASTE( OPPRO_NO_, code )
 typedef enum
-#include "ppopscnv.h"
+    #define OPPRO( code ) __PASTE( OPM_, code ) = 1 << __PASTE( OPPRO_NO_, code )
+    #include "ppopscnv.h"
+    #undef OPPRO
 OP_MASK;
-#undef OPPRO
 
-#define OPBASIC( arg1, arg2, mask ) NULL
 static SYMBOL ovfuns[] =
-#include "ppopscnv.h"
+    #define OPBASIC( arg1, arg2, mask ) NULL
+    #include "ppopscnv.h"
+    #undef OPBASIC
 ;
-#undef OPBASIC
 
 #define MAX_FUN_PROTOS ( sizeof(ovfuns) / sizeof(ovfuns[0]) )
 
 
-#define OPBASIC( arg1, arg2, mask ) mask
 static OP_MASK opfun_mask[] =
-#include "ppopscnv.h"
+    #define OPBASIC( arg1, arg2, mask ) mask
+    #include "ppopscnv.h"
+    #undef OPBASIC
 ;
-#undef OPBASIC
 
-#define OPBASIC( arg1, arg2, mask ) { __PASTE( TYP_, arg1 ) , \
-                                      __PASTE( TYP_, arg2 ) }
 static type_id op_basic_arg[][2] =
-#include "ppopscnv.h"
+    #define OPBASIC( arg1, arg2, mask ) { __PASTE( TYP_, arg1 ) , __PASTE( TYP_, arg2 ) }
+    #include "ppopscnv.h"
+    #undef OPBASIC
 ;
-#undef OPBASIC
 
-#define OPCNV( code, protos ) protos
 static OP_MASK opr_masks[] =
-#include "ppopscnv.h"
+    #define OPCNV( code, protos ) protos
+    #include "ppopscnv.h"
+    #undef OPCNV
 ;
-#undef OPCNV
 
 #define MAX_OPR_TYPES ( sizeof( fun_protos ) / sizeof( fun_protos[0] ) )
 
@@ -104,32 +103,31 @@ static OP_MASK opr_masks[] =
 //      (const volatile void *, const volatile void*)
 // but this time check for cv-qualification matches, and rank accordinly
 // this appears to be what Microsoft does -- LMW
-#define OPBASIC_EXTRA( arg1, arg2, mask, ctl ) NULL
 static SYMBOL ovfuns_extra[] =
-#include "ppopscnv.h"
+    #define OPBASIC_EXTRA( arg1, arg2, mask, ctl ) NULL
+    #include "ppopscnv.h"
+    #undef OPBASIC_EXTRA
 ;
-#undef OPBASIC_EXTRA
 
 #define MAX_FUN_PROTOS_EXTRA ( sizeof(ovfuns_extra) / sizeof(ovfuns_extra[0]) )
 
-#define OPBASIC_EXTRA( arg1, arg2, mask, ctl ) mask
 static OP_MASK opfun_mask_extra[] =
-#include "ppopscnv.h"
+    #define OPBASIC_EXTRA( arg1, arg2, mask, ctl ) mask
+    #include "ppopscnv.h"
+    #undef OPBASIC_EXTRA
 ;
-#undef OPBASIC_EXTRA
 
-#define OPBASIC_EXTRA( arg1, arg2, mask, ctl ) { __PASTE( TYP_, arg1 ) , \
-                                                 __PASTE( TYP_, arg2 ) }
 static type_id op_basic_arg_extra[][2] =
-#include "ppopscnv.h"
+    #define OPBASIC_EXTRA( arg1, arg2, mask, ctl ) { __PASTE( TYP_, arg1 ), __PASTE( TYP_, arg2 ) }
+    #include "ppopscnv.h"
+    #undef OPBASIC_EXTRA
 ;
-#undef OPBASIC_EXTRA
 
-#define OPBASIC_EXTRA( arg1, arg2, mask, ctl ) ctl
 static GETOP_CONTROL extra_ctl[] =
-#include "ppopscnv.h"
+    #define OPBASIC_EXTRA( arg1, arg2, mask, ctl ) ctl
+    #include "ppopscnv.h"
+    #define OPM_REF_MASK (OPM_RA|OPM_RI|OPM_RP)
 ;
-#define OPM_REF_MASK (OPM_RA|OPM_RI|OPM_RP)
 
 typedef struct {                    // OVOP -- operand types
     PTREE operand;                  // - operand
