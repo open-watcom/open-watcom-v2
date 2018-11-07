@@ -79,7 +79,7 @@ static void printUsage( int msg )
         BufferConcatNL();
         BufferPrint();
     }
-    for( text = banner; *text != '\0'; ++text ) {
+    for( text = banner; *text != NULL; ++text ) {
         Print( *text );
         Print( "\n" );
     }
