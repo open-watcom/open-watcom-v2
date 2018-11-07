@@ -74,6 +74,7 @@ jobs:
       script: travis/build.sh boot
     #################################
     - stage: Build
+      # OW tools build
       os: linux
       install:
         - export OWTOOLS=GCC
@@ -84,6 +85,7 @@ jobs:
         - sudo apt-get install -y dosemu
       script: travis/build.sh build
     - # ...
+      # OW Documentation build
       os: linux
       install:
         - export OWTOOLS=GCC
@@ -107,7 +109,8 @@ jobs:
         - export OWDOSBOX=dosbox
       script: travis/build.sh build
     #################################
-    - stage: Test1
+    - stage: test1 
+      name: "Test wasm assembler"
       os: linux
       install:
         - export OWTOOLS=WATCOM
@@ -118,8 +121,35 @@ jobs:
         - export OWTRAVISJOB=TEST
         - export OWDOCBUILD=0
         - export OWVERBOSE=0
-      script: travis/test.sh
-    - stage: Test2
+      script: travis/test.sh wasm
+    - stage: test2
+      name: "Test C compiler"
+      os: linux
+      install:
+        - export OWTOOLS=WATCOM
+        - export WATCOM=$OWROOT/test
+        - export PATH=$WATCOM/binl:$PATH
+        - export INCLUDE=$WATCOM/lh
+        - unset LIB
+        - export OWTRAVISJOB=TEST
+        - export OWDOCBUILD=0
+        - export OWVERBOSE=0
+      script: travis/test.sh c
+    - stage: test3
+      name: "Test FORTRAN 77 compiler"
+      os: linux
+      install:
+        - export OWTOOLS=WATCOM
+        - export WATCOM=$OWROOT/test
+        - export PATH=$WATCOM/binl:$PATH
+        - export INCLUDE=$WATCOM/lh
+        - unset LIB
+        - export OWTRAVISJOB=TEST
+        - export OWDOCBUILD=0
+        - export OWVERBOSE=0
+      script: travis/test.sh f77
+    - stage: test4
+      name: "Test C++ compiler"
       os: linux
       install:
         - export OWTOOLS=WATCOM
@@ -131,7 +161,8 @@ jobs:
         - export OWDOCBUILD=0
         - export OWVERBOSE=0
       script: travis/test.sh cpp
-    - stage: Test3
+    - stage: test5
+      name: "Test C run-time library"
       os: linux
       install:
         - export OWTOOLS=WATCOM
