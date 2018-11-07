@@ -78,7 +78,6 @@ typedef struct file_list {
     bool                hidden;
 } file_list;
 
-extern void             heap( char * );
 extern void             FreeForceInclude( void );
 
 extern bool             write_to_file;
