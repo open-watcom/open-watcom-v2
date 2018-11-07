@@ -65,10 +65,11 @@ jobs:
         - export OWVERBOSE=1
       script: travis/build.sh boot
     - # ...
+      name: "Build minimal set of build tools"
       if: env(OWOSXBUILD) = 1
       os: osx
       install:
-        - export OWTOOLS=GCC
+        - export OWTOOLS=CLANG
         - export OWTRAVISJOB=BOOTSTRAP
         - export OWDOCBUILD=0
         - export OWVERBOSE=1
@@ -102,7 +103,7 @@ jobs:
       if: env(OWOSXBUILD) = 1
       os: osx
       install:
-        - export OWTOOLS=GCC
+        - export OWTOOLS=CLANG
         - export OWTRAVISJOB=BUILD
         - export OWDOCBUILD=0
         - export OWVERBOSE=0
