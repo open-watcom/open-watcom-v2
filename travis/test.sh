@@ -36,7 +36,6 @@ build_proc()
                 builder -q -i testclean
                 builder -i test
                 cat result.log
-            else
             fi
         elif [ "$TRAVIS_EVENT_TYPE" = "pull_request" ] && [ "$TRAVIS_OS_NAME" = "linux" ]; then
             if [ "$1" = "wasm" ]; then
@@ -64,7 +63,6 @@ build_proc()
                 builder -q -i testclean
                 builder -i test
                 cat result.log
-            else
             fi
         fi
     elif [ "$TRAVIS_BRANCH" = "$OWBRANCH_COVERITY" ]; then
