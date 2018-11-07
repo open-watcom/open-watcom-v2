@@ -591,7 +591,6 @@ static bool GetByteSeq( byte_seq **code )
 #endif
 
     AsmSysInit( buff );
-    PPCTL_ENABLE_MACROS();
     NextToken();
     too_many_bytes = false;
     uses_auto = false;
@@ -685,7 +684,6 @@ static bool GetByteSeq( byte_seq **code )
             AsmCodeAddress = 0;          // reset index to we don't overrun buffer
         }
     }
-    PPCTL_DISABLE_MACROS();
     if( too_many_bytes ) {
         uses_auto = false;
     } else {
@@ -884,6 +882,8 @@ void PragAux( void )
     } have;
 
     InitAuxInfo();
+    PPCTL_ENABLE_MACROS();
+    NextToken();
     if( GetPragAuxAliasInfo() ) {
         SetCurrInfo( Buffer );
         NextToken();
@@ -947,6 +947,7 @@ void PragAux( void )
         CopyAuxInfo();
         PragEnding();
     }
+    PPCTL_DISABLE_MACROS();
 }
 
 void AsmSysInit( unsigned char *buf )
