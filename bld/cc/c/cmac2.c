@@ -698,7 +698,7 @@ bool MacroDel( const char *name )
 /*******************************/
 {
     MEPTR       mentry;
-    MEPTR       prev_entry;
+    MEPTR       prev_mentry;
     size_t      len;
     bool        ret;
 
@@ -707,19 +707,19 @@ bool MacroDel( const char *name )
         CErr2p( ERR_CANT_UNDEF_THESE_NAMES, name  );
         return( ret );
     }
-    prev_entry = NULL;
+    prev_mentry = NULL;
     len = strlen( name ) + 1;
     for( mentry = MacHash[MacHashValue]; mentry != NULL; mentry = mentry->next_macro ) {
         if( memcmp( mentry->macro_name, name, len ) == 0 )
             break;
-        prev_entry = mentry;
+        prev_mentry = mentry;
     }
     if( mentry != NULL ) {
         if( mentry->macro_defn == 0 ) {
             CErr2p( ERR_CANT_UNDEF_THESE_NAMES, name );
         } else {
-            if( prev_entry != NULL ) {
-                prev_entry->next_macro = mentry->next_macro;
+            if( prev_mentry != NULL ) {
+                prev_mentry->next_macro = mentry->next_macro;
             } else {
                 MacHash[MacHashValue] = mentry->next_macro;
             }
