@@ -49,6 +49,7 @@ jobs:
   include:
     #################################
     - stage: Initialize
+      name: "Initialize stages shared environment"
       os: linux
       before_script:
         - travis/envinfo.sh
@@ -56,6 +57,7 @@ jobs:
       script: travis/tinit.sh
     #################################
     - stage: Bootstrap
+      name: "Build minimal set of build tools"
       os: linux
       install:
         - export OWTOOLS=GCC
@@ -74,7 +76,7 @@ jobs:
       script: travis/build.sh boot
     #################################
     - stage: Build
-      # OW tools build
+      name: "OW tools build"
       os: linux
       install:
         - export OWTOOLS=GCC
@@ -85,7 +87,7 @@ jobs:
         - sudo apt-get install -y dosemu
       script: travis/build.sh build
     - # ...
-      # OW Documentation build
+      name: "OW Documentation build"
       os: linux
       install:
         - export OWTOOLS=GCC
@@ -176,6 +178,7 @@ jobs:
       script: travis/test.sh crtl
     #################################
     - stage: Finalize
+      name: "Clean stages shared environment"
       os: linux
       before_script:
         - travis/envinfo.sh
