@@ -54,10 +54,10 @@ jobs:
       before_script:
         - travis/envinfo.sh
         - travis/cacheinf.sh
-        echo "OWOSXBUILD"
-        echo env(OWOSXBUILD)
-        echo "OWOSX"
-        echo env(OWOSX)
+        - echo "OWOSXBUILD"
+        - echo env(OWOSXBUILD)
+        - echo "OWOSX"
+        - echo env(OWOSX)
       script: travis/tinit.sh
     #################################
     - stage: Bootstrap
