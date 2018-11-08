@@ -140,7 +140,10 @@ typedef unsigned int uint32_t;
 #if _MSC_VER < 1600
 typedef uint16_t char16_t;
 #endif
-#elif !defined( __cplusplus ) || __cplusplus < 201100L
+#elif !defined( __cplusplus )
+typedef uint16_t char16_t;
+#elif defined( __APPLE__ )
+#elif __cplusplus < 201100L
 typedef uint16_t char16_t;
 #endif
 #endif
