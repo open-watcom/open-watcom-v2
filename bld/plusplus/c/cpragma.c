@@ -531,17 +531,6 @@ bool PragRecog(                 // RECOGNIZE PRAGMA ID
     return( false );
 }
 
-static bool pragmaNameRecog( const char *what )
-{
-    bool ok;
-
-    ok = ( strcmp( Buffer, what ) == 0 );
-    if( ok ) {
-        NextToken();
-    }
-    return( ok );
-}
-
 // forms:
 //
 // #pragma on (toggle)
@@ -1240,6 +1229,8 @@ void CPragma( void )                  // PROCESS A PRAGMA
 {
     bool check_end = true;
 
+#define pragmaNameRecog(what)   (strcmp(Buffer, what) == 0)
+
     SrcFileGuardStateSig();
     CompFlags.in_pragma = true;
     NextToken();
@@ -1332,6 +1323,8 @@ void CPragma( void )                  // PROCESS A PRAGMA
         endOfPragma();
     }
     CompFlags.in_pragma = false;
+
+#undef pragmaNameRecog
 }
 
 
