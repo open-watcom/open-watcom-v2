@@ -855,6 +855,7 @@ void EnableDisableMessage( int enable, unsigned msg_num )
 }
 
 // forms:
+//
 //    #pragma enable_message( messageNo )
 //    #pragma disable_message( messageNo )
 //
@@ -880,11 +881,14 @@ static void pragEnableDisableMessage( int enable )
 }
 
 
-// form:
+// forms:
+//
 // #pragma message ("one or more " "long message " "strings")
+//
 // output these strings to stdout
 // this output is _not_ dependent on setting
 // of #pragma enable_message or disable_message.
+//
 static void pragMessage( void )
 /*****************************/
 {
@@ -1109,7 +1113,9 @@ static void pragReadOnlyFile( void )
 }
 
 
-// form: #pragma read_only_directory "directory"*
+// forms:
+//
+//  #pragma read_only_directory "directory"*
 //
 // (1) causes all files within directory to be marked read-only
 //
@@ -1182,7 +1188,7 @@ static void pragIncludeAlias( void )
     PPCTL_DISABLE_MACROS();
 }
 
-// form: #pragma once
+// forms: #pragma once
 //
 // (1) include file once
 //
@@ -1272,6 +1278,8 @@ static void parseExtRef ( void )
     }
 }
 
+// forms:
+//
 // #pragma extref ( symbolid [, ...] )
 // #pragma extref ( "symbolname" [, ...] )
 //
@@ -1296,6 +1304,8 @@ static void pragExtRef( void )
     PPCTL_DISABLE_MACROS();
 }
 
+// forms:
+//
 // #pragma alias(id1/"name1", id2/"name2")
 //
 // Causes linker to replace references to id1/name1 with references
