@@ -1984,14 +1984,14 @@ static TYPEPTR MergedType( TYPEPTR typ1, TYPEPTR typ2 )
     type_modifiers  flags, new_flags;
     TYPEPTR         typ;
 /*
-(type huge *) : (type *)                        -> (type huge *)
-(type *) : (type huge *)                        -> (type huge *)
-(type far *) : (type *)                 -> (type far *)
-(type *) : (type far *)                 -> (type far *)
-(type const *) : (type *)                       -> (type const *)
-(type *) : (type const *)                       -> (type const *)
-(type volatile *) : (type *)                    -> (type volatile *)
-(type *) : (type volatile *)                    -> (type volatile *)
+(type huge *) : (type *)            -> (type huge *)
+(type *) : (type huge *)            -> (type huge *)
+(type far *) : (type *)             -> (type far *)
+(type *) : (type far *)             -> (type far *)
+(type const *) : (type *)           -> (type const *)
+(type *) : (type const *)           -> (type const *)
+(type volatile *) : (type *)        -> (type volatile *)
+(type *) : (type volatile *)        -> (type volatile *)
             etc.
 */
     typ = typ1;

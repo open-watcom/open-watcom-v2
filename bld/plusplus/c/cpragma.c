@@ -364,7 +364,11 @@ static bool pragWarning(        // PROCESS #PRAGMA WARNING
     unsigned msgnum;            // - message number
     int level;                  // - new level
     bool change_all;            // - true ==> change all levels
+    bool ignore;
 
+    ignore = false;
+    PPCTL_ENABLE_MACROS();
+    NextToken();
     if( CurToken == T_TIMES ) {
         msgnum = 0;
         change_all = true;
@@ -373,22 +377,25 @@ static bool pragWarning(        // PROCESS #PRAGMA WARNING
         change_all = false;
     } else {
         // ignore; MS or other vendor's #pragma
-        return( true );
+        ignore = true;
     }
-    NextToken();
-    if( CurToken == T_CONSTANT ) {
-        level = U32Fetch( Constant64 );
+    if( !ignore ) {
         NextToken();
-        if( change_all ) {
-            WarnChangeLevels( level );
+        if( CurToken == T_CONSTANT ) {
+            level = U32Fetch( Constant64 );
+            NextToken();
+            if( change_all ) {
+                WarnChangeLevels( level );
+            } else {
+                WarnChangeLevel( level, msgnum );
+            }
         } else {
-            WarnChangeLevel( level, msgnum );
+            CErr1( ERR_PRAG_WARNING_BAD_LEVEL );
+            NextToken();
         }
-    } else {
-        CErr1( ERR_PRAG_WARNING_BAD_LEVEL );
-        NextToken();
     }
-    return( false );
+    PPCTL_DISABLE_MACROS();
+    return( ignore );
 }
 
 
@@ -529,17 +536,6 @@ bool PragRecog(                 // RECOGNIZE PRAGMA ID
         return( PragIdRecog( what ) );
     }
     return( false );
-}
-
-static bool pragmaNameRecog( const char *what )
-{
-    bool ok;
-
-    ok = ( strcmp( Buffer, what ) == 0 );
-    if( ok ) {
-        NextToken();
-    }
-    return( ok );
 }
 
 // forms:
@@ -1240,6 +1236,8 @@ void CPragma( void )                  // PROCESS A PRAGMA
 {
     bool check_end = true;
 
+#define pragmaNameRecog(what)   (strcmp(Buffer, what) == 0)
+
     SrcFileGuardStateSig();
     CompFlags.in_pragma = true;
     NextToken();
@@ -1332,6 +1330,8 @@ void CPragma( void )                  // PROCESS A PRAGMA
         endOfPragma();
     }
     CompFlags.in_pragma = false;
+
+#undef pragmaNameRecog
 }
 
 

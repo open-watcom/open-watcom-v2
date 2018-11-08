@@ -466,7 +466,7 @@ static return_val openFiles( void )
     FILE *objfp;
 
     objfp = fopen( ObjFileName, "rb" );
-    if( objfp = NULL ) {
+    if( objfp == NULL ) {
         perror( ObjFileName );
         return( RC_ERROR );
     }
