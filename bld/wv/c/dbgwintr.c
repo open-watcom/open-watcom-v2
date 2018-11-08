@@ -31,6 +31,10 @@
 
 
 #ifndef NDEBUG
+
+#if defined( NEVERdEFINED )
+//20181107@1523-WOI: COMMENTED OUT TO GET CLEAN COMPILE WHEN DEBUG=1.  NONE OF THIS STUFF WILL COMPILE, AND IT IS CLEARLY NOT NEEDED FOR PRODUCTION SINCE IT IS ONLY DEFINED WHEN DEBUG=1
+
 #include <ctype.h>
 #include "dbgdefn.h"
 #include "dbgdata.h"
@@ -178,5 +182,7 @@ void ProcInternal( void )
         InternalJmpTab[cmd]();
     }
 }
+
+#endif
 
 #endif

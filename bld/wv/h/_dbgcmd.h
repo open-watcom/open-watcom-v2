@@ -68,6 +68,10 @@ pick(   CMD_SKIP,       ProcSkip,        "SKip\0" )
 pick(   CMD_RECORD,     ProcRecord,      "RECord\0" )
 pick(   CMD_ASSIGN,     ProcAssign,      "ASsign\0" )
 pick(   CMD_MODIFY,     ProcModify,      "MOdify\0" )
+
+#if defined( NEVERdEFINED )
+//20181107@1547-WOI: COMMENTED THIS OUT TO GET CLEAN BUILD OF wv WHEN DEBUG=1
 #ifndef NDEBUG
 pick(   CMD_INTERNAL,   ProcInternal,    "XX\0" )
+#endif
 #endif
