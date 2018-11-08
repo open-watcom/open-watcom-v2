@@ -399,66 +399,69 @@ void PragAux(                   // #PRAGMA AUX ...
         unsigned uses_auto: 1;
     } have;
 
-    if( !GetPragAuxAliasInfo() )
-        return;
-    CurrEntry = NULL;
-    if( !IS_ID_OR_KEYWORD( CurToken ) )
-        return;
-    SetCurrInfo();
+    PPCTL_ENABLE_MACROS();
     NextToken();
-    AuxCopy( CurrInfo, CurrAlias );
-    PragObjNameInfo();
-    have.f_call   = 0;
-    have.f_loadds = 0;
-    have.f_rdosdev = 0;
-    have.f_export = 0;
-    have.f_parm   = 0;
-    have.f_value  = 0;
-    have.f_modify = 0;
-    have.f_frame = 0;
-    have.uses_auto = 0;
-    for( ;; ) {
-        if( !have.f_call && CurToken == T_EQUAL ) {
-            have.uses_auto = GetByteSeq();
-            have.f_call = 1;
-        } else if( !have.f_call && PragRecog( "far" ) ) {
-            CurrInfo->cclass |= FAR_CALL;
-            have.f_call = 1;
-        } else if( !have.f_call && PragRecog( "near" ) ) {
-            CurrInfo->cclass &= ~FAR_CALL;
-            have.f_call = 1;
-        } else if( !have.f_loadds && PragRecog( "loadds" ) ) {
-            CurrInfo->cclass |= LOAD_DS_ON_ENTRY;
-            have.f_loadds = 1;
-        } else if( !have.f_rdosdev && PragRecog( "rdosdev" ) ) {
-            CurrInfo->cclass |= LOAD_RDOSDEV_ON_ENTRY;
-            have.f_rdosdev = 1;
-        } else if( !have.f_export && PragRecog( "export" ) ) {
-            CurrInfo->cclass |= DLL_EXPORT;
-            have.f_export = 1;
-        } else if( !have.f_parm && PragRecog( "parm" ) ) {
-            GetParmInfo();
-            have.f_parm = 1;
-        } else if( !have.f_value && PragRecog( "value" ) ) {
-            GetRetInfo();
-            have.f_value = 1;
-        } else if( !have.f_value && PragRecog( "aborts" ) ) {
-            CurrInfo->cclass |= SUICIDAL;
-            have.f_value = 1;
-        } else if( !have.f_modify && PragRecog( "modify" ) ) {
-            GetSaveInfo();
-            have.f_modify = 1;
-        } else if( !have.f_frame && PragRecog( "frame" ) ) {
-            CurrInfo->cclass |= GENERATE_STACK_FRAME;
-            have.f_frame = 1;
-        } else {
-            break;
+    if( GetPragAuxAliasInfo() ) {
+        CurrEntry = NULL;
+        if( IS_ID_OR_KEYWORD( CurToken ) ) {
+            SetCurrInfo();
+            NextToken();
+            AuxCopy( CurrInfo, CurrAlias );
+            PragObjNameInfo();
+            have.f_call   = 0;
+            have.f_loadds = 0;
+            have.f_rdosdev = 0;
+            have.f_export = 0;
+            have.f_parm   = 0;
+            have.f_value  = 0;
+            have.f_modify = 0;
+            have.f_frame = 0;
+            have.uses_auto = 0;
+            for( ;; ) {
+                if( !have.f_call && CurToken == T_EQUAL ) {
+                    have.uses_auto = GetByteSeq();
+                    have.f_call = 1;
+                } else if( !have.f_call && PragRecog( "far" ) ) {
+                    CurrInfo->cclass |= FAR_CALL;
+                    have.f_call = 1;
+                } else if( !have.f_call && PragRecog( "near" ) ) {
+                    CurrInfo->cclass &= ~FAR_CALL;
+                    have.f_call = 1;
+                } else if( !have.f_loadds && PragRecog( "loadds" ) ) {
+                    CurrInfo->cclass |= LOAD_DS_ON_ENTRY;
+                    have.f_loadds = 1;
+                } else if( !have.f_rdosdev && PragRecog( "rdosdev" ) ) {
+                    CurrInfo->cclass |= LOAD_RDOSDEV_ON_ENTRY;
+                    have.f_rdosdev = 1;
+                } else if( !have.f_export && PragRecog( "export" ) ) {
+                    CurrInfo->cclass |= DLL_EXPORT;
+                    have.f_export = 1;
+                } else if( !have.f_parm && PragRecog( "parm" ) ) {
+                    GetParmInfo();
+                    have.f_parm = 1;
+                } else if( !have.f_value && PragRecog( "value" ) ) {
+                    GetRetInfo();
+                    have.f_value = 1;
+                } else if( !have.f_value && PragRecog( "aborts" ) ) {
+                    CurrInfo->cclass |= SUICIDAL;
+                    have.f_value = 1;
+                } else if( !have.f_modify && PragRecog( "modify" ) ) {
+                    GetSaveInfo();
+                    have.f_modify = 1;
+                } else if( !have.f_frame && PragRecog( "frame" ) ) {
+                    CurrInfo->cclass |= GENERATE_STACK_FRAME;
+                    have.f_frame = 1;
+                } else {
+                    break;
+                }
+            }
+            if( have.uses_auto ) {
+                AsmSysUsesAuto();
+            }
+            PragEnding( true );
         }
     }
-    if( have.uses_auto ) {
-        AsmSysUsesAuto();
-    }
-    PragEnding( true );
+    PPCTL_DISABLE_MACROS();
 }
 
 typedef enum
@@ -1112,7 +1115,6 @@ static int GetByteSeq( void )
 
     VbufInit( &code_buffer );
     AsmSysInit();
-    PPCTL_ENABLE_MACROS();
     NextToken();
     len = 0;
     offset = 0;
@@ -1206,7 +1208,6 @@ static int GetByteSeq( void )
         }
         VbufSetLen( &code_buffer, len );
     }
-    PPCTL_DISABLE_MACROS();
     uses_auto = AsmSysInsertFixups( &code_buffer );
     AsmSysFini();
     VbufFree( &code_buffer );

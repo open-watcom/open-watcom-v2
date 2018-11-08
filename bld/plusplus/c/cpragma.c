@@ -105,6 +105,8 @@ static bool grabNum( unsigned *val )
     return( false );
 }
 
+// forms:
+//
 // #pragma template_depth n
 // #pragma template_depth( n )
 //
@@ -114,13 +116,18 @@ static void pragTemplateDepth(    // PROCESS #pragma template_depth
 {
     unsigned num;
 
+    PPCTL_ENABLE_MACROS();
+    NextToken();
     if( grabNum( &num ) ) {
         TemplateSetDepth( num );
     } else {
         CErr1( ERR_PRAG_TEMPLATE_DEPTH );
     }
+    PPCTL_DISABLE_MACROS();
 }
 
+// forms:
+//
 // #pragma inline_depth n
 // #pragma inline_depth( n )    -- MS compatible
 //
@@ -132,22 +139,28 @@ static void pragInlineDepth(    // PROCESS #pragma inline_depth
 {
     unsigned num;
 
+    PPCTL_ENABLE_MACROS();
+    NextToken();
     if( grabNum( &num ) && num <= MAX_INLINE_DEPTH ) {
         CgBackSetInlineDepth( num );
     } else {
         CErr1( ERR_PRAG_INLINE_DEPTH );
     }
+    PPCTL_DISABLE_MACROS();
 }
 
+// forms:
+//
 // #pragma comment( lib, "libname.lib" )
-
+//
 static void pragComment(        // #PRAGMA COMMENT
     void )
 {
+    PPCTL_ENABLE_MACROS();
+    NextToken();
     if( ExpectingToken( T_LEFT_PAREN ) ) {
         NextToken();
         if( PragRecog( "lib" ) ) {
-            PPCTL_ENABLE_MACROS();
             if( ExpectingToken( T_COMMA ) ) {
                 NextToken();
             }
@@ -155,10 +168,10 @@ static void pragComment(        // #PRAGMA COMMENT
                 CgInfoAddUserLib( Buffer );
                 NextToken();
             }
-            PPCTL_DISABLE_MACROS();
         }
         MustRecog( T_RIGHT_PAREN );
     }
+    PPCTL_DISABLE_MACROS();
 }
 
 static void collectStrings( VBUF *vinfo )
@@ -170,43 +183,50 @@ static void collectStrings( VBUF *vinfo )
     }
 }
 
+// forms:
+//
 // #pragma message( "one or more" "message string" );
-
+//
 static void pragMessage(        // #PRAGMA MESSAGE
     void )
 {
     VBUF str;
 
+    PPCTL_ENABLE_MACROS();
+    NextToken();
     if( ExpectingToken( T_LEFT_PAREN ) ) {
-        PPCTL_ENABLE_MACROS();
         NextToken();
         if( CurToken == T_STRING ) {
             collectStrings( &str );
             CErr2p( WARN_USER_WARNING_MSG, VbufString( &str ) );
             VbufFree( &str );
         }
-        PPCTL_DISABLE_MACROS();
         MustRecog( T_RIGHT_PAREN );
     }
+    PPCTL_DISABLE_MACROS();
 }
 
+// forms:
+//
 // #pragma error "one or more" "message string" ;
-
+//
 static void pragError(          // #PRAGMA ERROR
     void )
 {
     VBUF str;
 
+    PPCTL_ENABLE_MACROS();
+    NextToken();
     if( CurToken == T_STRING ) {
-        PPCTL_ENABLE_MACROS();
         collectStrings( &str );
         CErr2p( ERR_USER_ERROR_MSG, VbufString( &str ) );
         VbufFree( &str );
-        PPCTL_DISABLE_MACROS();
     }
+    PPCTL_DISABLE_MACROS();
 }
 
-
+// forms:
+//
 // #pragma inline_recursion on
 // #pragma inline_recursion off
 // #pragma inline_recursion(on)         -- MS compatible
@@ -217,6 +237,8 @@ static void pragError(          // #PRAGMA ERROR
 static void pragInlineRecursion( // PROCESS #pragma inline_recusrion
     void )
 {
+    PPCTL_ENABLE_MACROS();
+    NextToken();
     if( PragRecog( "on" ) ) {
         CgBackSetInlineRecursion( true );
     } else if( PragRecog( "off" ) ) {
@@ -234,9 +256,11 @@ static void pragInlineRecursion( // PROCESS #pragma inline_recusrion
             MustRecog( T_RIGHT_PAREN );
         }
     }
+    PPCTL_DISABLE_MACROS();
 }
 
-
+// forms:
+//
 // #pragma code_seg ( segment [, class] )
 // #pragma code_seg segment
 //
@@ -249,8 +273,9 @@ static void pragCodeSeg(        // SET NEW CODE SEGMENT
     char *seg_name;
     char *seg_class;
 
+    PPCTL_ENABLE_MACROS();
+    NextToken();
     if( CurToken == T_LEFT_PAREN ) {
-        PPCTL_ENABLE_MACROS();
         NextToken();
         if( ( CurToken == T_STRING ) || ( CurToken == T_ID ) ) {
             seg_name = strsave( Buffer );
@@ -272,15 +297,16 @@ static void pragCodeSeg(        // SET NEW CODE SEGMENT
             // restore back to default behaviour
             SegmentCode( NULL, NULL );
         }
-        PPCTL_DISABLE_MACROS();
         MustRecog( T_RIGHT_PAREN );
     } else if( CurToken == T_STRING ) {
         SegmentCode( Buffer, NULL );
         NextToken();
     }
+    PPCTL_DISABLE_MACROS();
 }
 
-
+// forms:
+//
 // #pragma data_seg ( segment [, class] )
 // #pragma data_seg segment
 //
@@ -293,8 +319,9 @@ static void pragDataSeg(        // SET NEW DATA SEGMENT
     char *seg_name;
     char *seg_class;
 
+    PPCTL_ENABLE_MACROS();
+    NextToken();
     if( CurToken == T_LEFT_PAREN ) {
-        PPCTL_ENABLE_MACROS();
         NextToken();
         if( ( CurToken == T_STRING ) || ( CurToken == T_ID ) ) {
             seg_name = strsave( Buffer );
@@ -316,12 +343,12 @@ static void pragDataSeg(        // SET NEW DATA SEGMENT
             // restore back to default behaviour
             SegmentData( NULL, NULL );
         }
-        PPCTL_DISABLE_MACROS();
         MustRecog( T_RIGHT_PAREN );
     } else if( CurToken == T_STRING ) {
         SegmentData( Buffer, NULL );
         NextToken();
     }
+    PPCTL_DISABLE_MACROS();
 }
 
 
@@ -365,8 +392,10 @@ static bool pragWarning(        // PROCESS #PRAGMA WARNING
 }
 
 
+// forms:
+//
 // #pragma enable_message( # )
-
+//
 static void pragEnableMessage(  // ENABLE WARNING MESSAGE
     void )
 {
@@ -374,6 +403,8 @@ static void pragEnableMessage(  // ENABLE WARNING MESSAGE
     bool error_occurred;
 
     error_occurred = false;
+    PPCTL_ENABLE_MACROS();
+    NextToken();
     MustRecog( T_LEFT_PAREN );
     for( ;; ) {
         if( !grabNum( &msgnum ) ) {
@@ -392,11 +423,14 @@ static void pragEnableMessage(  // ENABLE WARNING MESSAGE
         NextToken();
     }
     MustRecog( T_RIGHT_PAREN );
+    PPCTL_DISABLE_MACROS();
 }
 
 
+// forms:
+//
 // #pragma disable_message( # )
-
+//
 static void pragDisableMessage( // DISABLE WARNING MESSAGE
     void )
 {
@@ -404,6 +438,8 @@ static void pragDisableMessage( // DISABLE WARNING MESSAGE
     bool error_occurred;
 
     error_occurred = false;
+    PPCTL_ENABLE_MACROS();
+    NextToken();
     MustRecog( T_LEFT_PAREN );
     for( ;; ) {
         if( !grabNum( &msgnum ) ) {
@@ -422,7 +458,7 @@ static void pragDisableMessage( // DISABLE WARNING MESSAGE
         NextToken();
     }
     MustRecog( T_RIGHT_PAREN );
-
+    PPCTL_DISABLE_MACROS();
 }
 
 static void endOfPragma(
@@ -506,9 +542,16 @@ static bool pragmaNameRecog( const char *what )
     return( ok );
 }
 
+// forms:
+//
+// #pragma on (toggle)
+// #pragma off (toggle)
+//
 static void pragFlag(           // SET TOGGLES
     bool set_flag )             // - true ==> set flag
 {
+    PPCTL_ENABLE_MACROS();
+    NextToken();
     if( ExpectingToken( T_LEFT_PAREN ) ) {
         NextToken();
         while( IS_ID_OR_KEYWORD( CurToken ) ) {
@@ -517,6 +560,7 @@ static void pragFlag(           // SET TOGGLES
         }
         MustRecog( T_RIGHT_PAREN );
     }
+    PPCTL_DISABLE_MACROS();
 }
 
 
@@ -542,7 +586,9 @@ static void pragInitialize(     // #pragma initialize ...
     unsigned test;
 
     adjust = 0;
-    for( ; ; ) {
+    PPCTL_ENABLE_MACROS();
+    NextToken();
+    for( ;; ) {
         /* allow "before before library" */
         if( PragRecog( "after" ) ) {
             ++adjust;
@@ -568,6 +614,7 @@ static void pragInitialize(     // #pragma initialize ...
         CErr1( ERR_PRAG_INITIALIZE_PRIORITY );
     }
     NextToken();
+    PPCTL_DISABLE_MACROS();
     priority += adjust;
     if( priority > 255 ) {
         CErr1( ERR_PRAG_INITIALIZE_PRIORITY );
@@ -623,6 +670,8 @@ static void pragEnum            // #pragma enum PARSING
 {
     unsigned make_enums_an_int;
 
+    PPCTL_ENABLE_MACROS();
+    NextToken();
     if( PragRecog( "int" ) ) {
         pushPrag( &HeadEnums, CompFlags.make_enums_an_int );
         CompFlags.make_enums_an_int = true;
@@ -637,6 +686,7 @@ static void pragEnum            // #pragma enum PARSING
             CompFlags.make_enums_an_int = ( make_enums_an_int != 0 );
         }
     }
+    PPCTL_DISABLE_MACROS();
 }
 
 
@@ -651,6 +701,8 @@ static void pragInitSeg(     // #pragma init_seg ...
 {
     unsigned priority;
 
+    PPCTL_ENABLE_MACROS();
+    NextToken();
     if( ExpectingToken( T_LEFT_PAREN ) ) {
         NextToken();
         if( PragRecog( "compiler" ) ) {
@@ -664,14 +716,10 @@ static void pragInitSeg(     // #pragma init_seg ...
         CompInfo.init_priority = (unsigned char)priority;
         MustRecog( T_RIGHT_PAREN );
     }
+    PPCTL_DISABLE_MACROS();
 }
 
 
-// forms: #pragma extref( symbol [, ...] )
-//        #pragma extref( "name" [, ...] )
-//
-// causes a external reference to be emitted for the symbol or "name"
-//
 static void parseExtRef(     // PARSE SYMBOL NAME
     void )
 {
@@ -715,14 +763,19 @@ static void parseExtRef(     // PARSE SYMBOL NAME
 }
 
 
-static void pragExtRef(     // #pragma extref ...
+// forms: #pragma extref( symbol [, ...] )
+//        #pragma extref( "name" [, ...] )
+//
+// causes a external reference to be emitted for the symbol or "name"
+//
+static void pragExtRef(
     void )
 {
+    PPCTL_ENABLE_MACROS();
+    NextToken();
     if( CurToken == T_LEFT_PAREN ) {
         do {
-            PPCTL_ENABLE_MACROS();
             NextToken();
-            PPCTL_DISABLE_MACROS();
             if( !IS_ID_OR_KEYWORD( CurToken ) && CurToken != T_STRING )
                 break;
             parseExtRef();
@@ -733,6 +786,7 @@ static void pragExtRef(     // #pragma extref ...
         parseExtRef();
         NextToken();
     }
+    PPCTL_DISABLE_MACROS();
 }
 
 
@@ -773,9 +827,15 @@ void PragmaExtrefsInject        // INJECT EXTREFS FOR PRAGMAS
 }
 
 
+// forms:
+//
+// #pragma intrinsic (...)
+//
 static void pragIntrinsic(      // SET FUNCTIONS TO BE (NOT TO BE) INTRINSIC
     bool intrinsic )            // - true ==> function to be intrinsic
 {
+    PPCTL_ENABLE_MACROS();
+    NextToken();
     if( ExpectingToken( T_LEFT_PAREN ) ) {
         NextToken();
         while( IS_ID_OR_KEYWORD( CurToken ) ) {
@@ -787,12 +847,19 @@ static void pragIntrinsic(      // SET FUNCTIONS TO BE (NOT TO BE) INTRINSIC
         }
         MustRecog( T_RIGHT_PAREN );
     }
+    PPCTL_DISABLE_MACROS();
 }
 
 
+// forms:
+//
+// #pragma dump_object_model (...)
+//
 static void pragDumpObjectModel( // DUMP OBJECT MODEL
     void )
 {
+    PPCTL_ENABLE_MACROS();
+    NextToken();
     if( IS_ID_OR_KEYWORD( CurToken ) ) {
         NAME name = NameCreateLen( Buffer, TokenLen );
         SEARCH_RESULT* result = ScopeFindNaked( GetCurrScope(), name );
@@ -825,6 +892,7 @@ static void pragDumpObjectModel( // DUMP OBJECT MODEL
         }
         NextToken();
     }
+    PPCTL_DISABLE_MACROS();
 }
 
 
@@ -846,16 +914,22 @@ static DT_METHOD parseDtorMethod( // PARSE A DESTRUCTOR METHOD
 }
 
 
+// forms:
+//
+// #pragma destruct (...)
+//
 static void pragDestruct(       // SPECIFY DESTRUCTION MECHANISM
     void )
 {
     DT_METHOD method;           // - method
     DT_METHOD next;             // - next method spec
 
+    PPCTL_ENABLE_MACROS();
+    NextToken();
     if( CurToken == T_LEFT_PAREN ) {
         NextToken();
         method = DTM_COUNT;
-        for( ; ; ) {
+        for( ;; ) {
             if( CurToken == T_RIGHT_PAREN ) {
                 NextToken();
                 break;
@@ -915,14 +989,22 @@ static void pragDestruct(       // SPECIFY DESTRUCTION MECHANISM
         CompInfo.dt_method_speced = method;
         CompFlags.dt_method_pragma = true;
     }
+    PPCTL_DISABLE_MACROS();
 }
 
 #ifndef NDEBUG
+// forms:
+//
+// #pragma break
+//
 static void pragBreak()
 {
+    PPCTL_ENABLE_MACROS();
+    NextToken();
   #if defined( __WATCOMC__ )
     __trap();
   #endif
+    PPCTL_DISABLE_MACROS();
 }
 #endif
 
@@ -937,6 +1019,8 @@ static void pragBreak()
 static void pragReadOnlyFile
     ( void )
 {
+    PPCTL_ENABLE_MACROS();
+    NextToken();
     if( CurToken == T_STRING ) {
         do {
             SrcFileReadOnlyFile( Buffer );
@@ -948,6 +1032,7 @@ static void pragReadOnlyFile
     } else {
         SrcFileReadOnlyFile( NULL );
     }
+    PPCTL_DISABLE_MACROS();
 }
 
 
@@ -958,6 +1043,8 @@ static void pragReadOnlyFile
 static void pragReadOnlyDir
     ( void )
 {
+    PPCTL_ENABLE_MACROS();
+    NextToken();
     while( CurToken == T_STRING ) {
         SrcFileReadOnlyDir( Buffer );
         NextToken();
@@ -965,6 +1052,7 @@ static void pragReadOnlyDir
             NextToken();
         }
     }
+    PPCTL_DISABLE_MACROS();
 }
 
 // form: #pragma include_alias( "alias_name", "real_name" )
@@ -975,8 +1063,9 @@ static void pragReadOnlyDir
 //
 static void pragIncludeAlias( void )
 {
+    PPCTL_ENABLE_MACROS();
+    NextToken();
     if( ExpectingToken( T_LEFT_PAREN ) ) {
-        PPCTL_ENABLE_MACROS();
         NextToken();
         if( CurToken == T_STRING ) {
             char    *alias_name;
@@ -1027,9 +1116,9 @@ static void pragIncludeAlias( void )
                 IAliasAdd( a_buf, r_buf, true );
             }
         }
-        PPCTL_DISABLE_MACROS();
         MustRecog( T_RIGHT_PAREN );
     }
+    PPCTL_DISABLE_MACROS();
 }
 
 // form: #pragma once
@@ -1037,12 +1126,21 @@ static void pragIncludeAlias( void )
 // (1) current source file will never be #include'd again
 static void pragOnce( void )
 {
+    PPCTL_ENABLE_MACROS();
+    NextToken();
     SrcFileOnceOnly();
+    PPCTL_DISABLE_MACROS();
 }
 
+// forms:
+//
+// #pragma library ( lib ... lib )
+//
 static void pragLibs(           // #PRAGMA library ( lib ... lib )
     void )
 {
+    PPCTL_ENABLE_MACROS();
+    NextToken();
     if( CurToken == T_LEFT_PAREN ) {
         NextToken();
         while( IS_ID_OR_KEYWORD( CurToken ) || CurToken == T_STRING ) {
@@ -1053,21 +1151,24 @@ static void pragLibs(           // #PRAGMA library ( lib ... lib )
     } else {
         CompFlags.pragma_library = true;
     }
+    PPCTL_DISABLE_MACROS();
 }
 
+// forms:
+//
 // #pragma pack()
 // #pragma pack( <number> )
 // #pragma pack( pop )
 // #pragma pack( push )
 // #pragma pack( push, <number> )
-
+//
 static void pragPack(           // #PRAGMA PACK
     void )
 {
+    PPCTL_ENABLE_MACROS();
+    NextToken();
     if( ExpectingToken( T_LEFT_PAREN ) ) {
-        PPCTL_ENABLE_MACROS();
         NextToken();
-        PPCTL_DISABLE_MACROS();
         switch( CurToken ) {
         case T_ID:
             if( PragRecog( "pop" ) ) {
@@ -1077,9 +1178,7 @@ static void pragPack(           // #PRAGMA PACK
                     pushPrag( &HeadPacks, PackAmount );
                 } else {
                     if( ExpectingToken( T_COMMA ) ) {
-                        PPCTL_ENABLE_MACROS();
                         NextToken();
-                        PPCTL_DISABLE_MACROS();
                     }
                     if( CurToken == T_CONSTANT ) {
                         pushPrag( &HeadPacks, PackAmount );
@@ -1105,10 +1204,11 @@ static void pragPack(           // #PRAGMA PACK
         }
         MustRecog( T_RIGHT_PAREN );
     }
+    PPCTL_DISABLE_MACROS();
 }
 
-static void pragSTDCOption( void )
-/*******************************/
+static void optionPragSTDC( void )
+/********************************/
 {
     if( PragRecog( "ON" ) ) {
     } else if( PragRecog( "OFF" ) ) {
@@ -1123,13 +1223,16 @@ static void pragSTDCOption( void )
 static void pragSTDC( void )
 /**************************/
 {
+    PPCTL_ENABLE_MACROS();
+    NextToken();
     if( PragRecog( "FP_CONTRACT" ) ) {
-        pragSTDCOption();
+        optionPragSTDC();
     } else if( PragRecog( "FENV_ACCESS" ) ) {
-        pragSTDCOption();
+        optionPragSTDC();
     } else if( PragRecog( "CX_LIMITED_RANGE" ) ) {
-        pragSTDCOption();
+        optionPragSTDC();
     }
+    PPCTL_DISABLE_MACROS();
 }
 
 
@@ -1143,13 +1246,17 @@ void CPragma( void )                  // PROCESS A PRAGMA
     if( IS_ID_OR_KEYWORD( CurToken ) && pragmaNameRecog( "include_alias" ) ) {
         pragIncludeAlias();
     } else if( CompFlags.cpp_output ) {
-        PPCTL_ENABLE_MACROS();
         fprintf( CppFile, "#pragma " );
-        for( ; CurToken != T_NULL; ) {
+        if( CurToken != T_NULL ) {
             PrtToken();
+            PPCTL_ENABLE_MACROS();
             GetNextToken();
+            for( ; CurToken != T_NULL; ) {
+                PrtToken();
+                GetNextToken();
+            }
+            PPCTL_DISABLE_MACROS();
         }
-        PPCTL_DISABLE_MACROS();
     } else if( IS_ID_OR_KEYWORD( CurToken ) ) {
         if( pragmaNameRecog( "on" ) ) {
             pragFlag( true );
@@ -1554,14 +1661,12 @@ hw_reg_set PragRegList(         // GET PRAGMA REGISTER SET
     } else {
         return( res );
     }
-    PPCTL_ENABLE_MACROS();
     NextToken();
     for( ; CurToken != close_token; ) {
         reg = PragRegName( Buffer, strlen( Buffer ) );
         HW_TurnOn( res, reg );
         NextToken();
     }
-    PPCTL_DISABLE_MACROS();
     MustRecog( close_token );
     return( res );
 }
@@ -1662,13 +1767,13 @@ static void writePacks( void )
     unsigned pack_amount;
 
     reversed_packs = NULL;
-    for( ; ; ) {
+    for( ;; ) {
         pack_entry = StackPop( &HeadPacks );
         if( pack_entry == NULL )
             break;
         StackPush( &reversed_packs, pack_entry );
     }
-    for( ; ; ) {
+    for( ;; ) {
         pack_entry = StackPop( &reversed_packs );
         if( pack_entry == NULL )
             break;
@@ -1710,13 +1815,13 @@ static void writeEnums( void )
     unsigned enum_int;
 
     reversed_enums = NULL;
-    for( ; ; ) {
+    for( ;; ) {
         enum_entry = StackPop( &HeadPacks );
         if( enum_entry == NULL )
             break;
         StackPush( &reversed_enums, enum_entry );
     }
-    for( ; ; ) {
+    for( ;; ) {
         enum_entry = StackPop( &reversed_enums );
         if( enum_entry == NULL )
             break;
