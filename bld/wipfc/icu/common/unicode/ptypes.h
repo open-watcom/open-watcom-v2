@@ -135,12 +135,14 @@ typedef unsigned int uint32_t;
 #endif /* U_HAVE_STDINT_H / U_HAVE_INTTYPES_H */
 
 
+#if ! U_HAVE_CHAR16_T
 #if defined( _MSC_VER )
 #if _MSC_VER < 1600
 typedef uint16_t char16_t;
 #endif
 #elif !defined( __cplusplus ) || __cplusplus < 201100L
 typedef uint16_t char16_t;
+#endif
 #endif
 
 #endif /* _PTYPES_H */
