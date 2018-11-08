@@ -59,7 +59,7 @@ wd_options      Options;
 char            LabelChar = 0;
 char            QuoteChar = '\\';
 
-int             OutputDest;
+FILE            *OutputDest;
 
 char *          ObjFileName = NULL;
 char *          ListFileName = NULL;

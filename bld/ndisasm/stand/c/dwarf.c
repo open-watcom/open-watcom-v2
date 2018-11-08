@@ -294,7 +294,7 @@ static int ConvertLines( const uint_8 * input, uint length, uint limit )
             p = DecodeULEB128( p, &directory );
             p = DecodeULEB128( p, &mod_time );
             p = DecodeULEB128( p, &file_length );
-            if( !SourceFileInDwarf ) {
+            if( SourceFileInDwarf == NULL ) {
                 SourceFileInDwarf = MemAlloc( strlen( name ) + 1 );
                 strcpy( SourceFileInDwarf, name );
             }
@@ -350,7 +350,7 @@ static int ConvertLines( const uint_8 * input, uint length, uint limit )
                     p = DecodeULEB128( p, &directory );
                     p = DecodeULEB128( p, &mod_time );
                     p = DecodeULEB128( p, &file_length );
-                    if( SourceFileInDwarf ) {
+                    if( SourceFileInDwarf != NULL ) {
                         MemFree( SourceFileInDwarf );
                     }
                     SourceFileInDwarf = MemAlloc( strlen( name) + 1 );

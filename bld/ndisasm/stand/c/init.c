@@ -74,7 +74,7 @@ typedef struct recognized_struct recognized_struct;
 extern wd_options       Options;
 extern char             LabelChar;
 extern char             QuoteChar;
-extern int              OutputDest;
+extern FILE             *OutputDest;
 extern char             *ListFileName;
 
 extern orl_handle       ORLHnd;
@@ -461,37 +461,39 @@ static orl_return sectionInit( orl_sec_handle shnd )
 }
 
 
-static void openError( char *file_name )
+static return_val openFiles( void )
 {
-    perror( file_name );
-    exit( 1 );
-}
+    FILE *objfp;
 
-static void openFiles( void )
-{
-    int objhdl;
-
-    objhdl = open( ObjFileName, O_RDONLY | O_BINARY );
-    if( objhdl != -1 ) {
-        if( ListFileName != NULL ) {
-            OutputDest = open( ListFileName, O_WRONLY | O_CREAT | O_TRUNC, PMODE_RW );
-            if( OutputDest == -1 )
-                openError( ListFileName );
-            ChangePrintDest( OutputDest );
-        }
-        objFileLen = filelength( objhdl );
-        if( objFileLen == 0 ) {
-            LeaveProgram( RC_OKAY, WHERE_OBJ_ZERO_LEN );
-        }
-        objFileBuf = MemAlloc( objFileLen );
-        objFilePos = 0;
-        if( posix_read( objhdl, objFileBuf, objFileLen ) == -1 ) {
-            openError( ObjFileName );
-        }
-        close( objhdl );
-    } else {
-        openError( ObjFileName );
+    objfp = fopen( ObjFileName, "rb" );
+    if( objfp = NULL ) {
+        perror( ObjFileName );
+        return( RC_ERROR );
     }
+    fseek( objfp, 0, SEEK_END );
+    objFileLen = ftell( objfp );
+    if( objFileLen == 0 ) {
+        fclose( objfp );
+        PrintErrorMsg( RC_OKAY, WHERE_OBJ_ZERO_LEN );
+        exit( RC_OKAY );
+    }
+    objFileBuf = MemAlloc( objFileLen );
+    objFilePos = 0;
+    if( fread( objFileBuf, 1, objFileLen, objfp ) != objFileLen ) {
+        fclose( objfp );
+        PrintErrorMsg( RC_ERROR, WHERE_OPENING_ORL );
+        return( RC_ERROR );
+    }
+    fclose( objfp );
+    if( ListFileName != NULL ) {
+        OutputDest = fopen( ListFileName, "w" );
+        if( OutputDest == NULL ) {
+            perror( ListFileName );
+            return( RC_ERROR );
+        }
+        ChangePrintDest( OutputDest );
+    }
+    return( RC_OKAY );
 }
 
 static void *objRead( FILE *fp, size_t len )
@@ -523,8 +525,8 @@ static int objSeek( FILE *fp, long pos, int where )
     return( 0 );
 }
 
-extern void CloseObjFile( void )
-/******************************/
+void CloseObjFile( void )
+/***********************/
 {
     if( ObjFileName != NULL )
         MemFree( ObjFileName );
@@ -803,7 +805,7 @@ static return_val initSectionTables( void )
 
 void PrintErrorMsg( return_val exit_code, int where )
 {
-    ChangePrintDest( STDERR_FILENO );
+    ChangePrintDest( stderr );
     if( exit_code == RC_OUT_OF_MEMORY ) {
         BufferMsg( OUT_OF_MEMORY );
     } else if( exit_code == RC_ERROR ) {
@@ -815,12 +817,6 @@ void PrintErrorMsg( return_val exit_code, int where )
     ChangePrintDest( OutputDest );
 }
 
-void LeaveProgram( return_val exit_code, int message )
-{
-    PrintErrorMsg( exit_code, message );
-    exit( exit_code );
-}
-
 return_val Init( void )
 {
     return_val          error;
@@ -830,7 +826,7 @@ return_val Init( void )
 
     error = RC_OKAY;
 
-    OutputDest = STDOUT_FILENO;
+    OutputDest = stdout;
     ChangePrintDest( OutputDest );
 
     relocSections.first = NULL;
@@ -846,7 +842,10 @@ return_val Init( void )
         return( error );
     }
 
-    openFiles();
+    error = openFiles();
+    if( error != RC_OKAY ) {
+        return( error );
+    }
     initGlobals();
     error = initHashTables();
     if( error != RC_OKAY ) {

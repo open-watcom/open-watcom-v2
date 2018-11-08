@@ -72,7 +72,7 @@ static void printUsage( int msg )
     const char * const  *text;
     char                buff[MAX_RESOURCE_SIZE];
 
-    ChangePrintDest( STDERR_FILENO );
+    ChangePrintDest( stderr );
     if( msg != 0 ) {
         BufferMsg( msg );
         BufferConcatNL();

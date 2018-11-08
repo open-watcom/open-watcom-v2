@@ -34,7 +34,7 @@
 #define WDIS_PRINT_INCLUDED
 
 extern void Print( const char * );
-extern void ChangePrintDest( int );
+extern void ChangePrintDest( FILE * );
 
 
 #endif

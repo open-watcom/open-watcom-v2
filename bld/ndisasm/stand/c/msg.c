@@ -62,7 +62,7 @@ bool MsgInit( void )
         }
     }
     CloseResFile( &hInstance );
-    posix_write( STDOUT_FILENO, NO_RES_MESSAGE, NO_RES_SIZE );
+    fwrite( NO_RES_MESSAGE, 1, NO_RES_SIZE, stdout );
     return( false );
 }
 

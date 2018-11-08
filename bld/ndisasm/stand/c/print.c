@@ -32,20 +32,17 @@
 
 #include <stdio.h>
 #include <string.h>
-#include "wio.h"
 #include "print.h"
 
-#include "clibext.h"
 
+static FILE *CurrentDest;
 
-static int CurrentDest;
-
-void ChangePrintDest( int dest )
+void ChangePrintDest( FILE *dest )
 {
     CurrentDest = dest;
 }
 
 void Print( const char *string )
 {
-    posix_write( CurrentDest, string, strlen( string ) );
+    fwrite( string, 1, strlen( string ), CurrentDest );
 }

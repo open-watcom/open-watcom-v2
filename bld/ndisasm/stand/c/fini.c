@@ -51,7 +51,7 @@ extern char             *ListFileName;
 extern char             *SourceFileName;
 extern char             *SourceFileInDwarf;
 
-extern int              OutputDest;
+extern FILE             *OutputDest;
 extern orl_file_handle  ObjFileHnd;
 
 extern hash_table       HandleToSectionTable;
@@ -183,14 +183,14 @@ void FreeServicesUsed( void )
 void CloseFiles( void )
 {
     CloseObjFile();
-    if( ListFileName ) {
-        close( OutputDest );
+    if( ListFileName != NULL ) {
+        fclose( OutputDest );
         MemFree( ListFileName );
     }
-    if( SourceFileInDwarf ) {
+    if( SourceFileInDwarf != NULL ) {
         MemFree( SourceFileInDwarf );
     }
-    if( SourceFileName ) {
+    if( SourceFileName != NULL ) {
         MemFree( SourceFileName );
     }
 }
