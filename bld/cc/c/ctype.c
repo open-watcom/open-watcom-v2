@@ -189,10 +189,10 @@ void CTypeInit( void )
         } else {
 #endif
             if( CTypeSizes[base_type] != 0 || base_type == TYPE_VOID || base_type == TYPE_DOT_DOT_DOT ) {
-            BaseTypes[base_type] = TypeNode( base_type, NULL );
-        } else {
-            BaseTypes[base_type] = NULL;
-        }
+                BaseTypes[base_type] = TypeNode( base_type, NULL );
+            } else {
+                BaseTypes[base_type] = NULL;
+            }
 #if 0
         }
 #endif
