@@ -828,9 +828,9 @@ fe_seg_id SegmentAddComdatData( // ADD SEGMENT FOR A COMDAT DATA SYMBOL
         attrs = SGAT_DATA_COMMON_ZERO;
         name = TS_SEG_BSS;
     } else {
-        type_flag flags;
-        TypeModFlags( sym->sym_type, &flags );
-        if( flags & TF1_CONST ) {
+        type_flag modflags;
+        TypeModFlags( sym->sym_type, &modflags );
+        if( modflags & TF1_CONST ) {
             attrs = SGAT_DATA_COMMON_INIT_ROM;
             name = TS_SEG_DATA;
         } else {

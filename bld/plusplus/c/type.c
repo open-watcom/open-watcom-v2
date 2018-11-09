@@ -67,6 +67,7 @@
 
 #define TYPE_HASH_MODULUS       (1<<5)  // modulus when type hashed
 #define TYPE_HASH_MASK          (TYPE_HASH_MODULUS-1)// mask for above modulus
+
 #define ARGS_HASH               8       // max arg.s for fn.s hashing
 #define ARGS_MAX                16      // max arg.s for fn.s lists
 

@@ -353,6 +353,7 @@ static void GetSaveInfo(
         unsigned f_list         : 1;
     } have;
 
+    HW_CAsgn( modlist, HW_EMPTY );
     have.f_exact    = 0;
     have.f_nomemory = 0;
     have.f_list     = 0;
@@ -605,6 +606,7 @@ static enum sym_type AsmType(
         return( AsmDataType[type->id] );
     }
 }
+
 #endif
 
 
