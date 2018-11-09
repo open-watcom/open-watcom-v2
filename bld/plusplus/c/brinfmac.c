@@ -42,24 +42,23 @@ typedef struct _mac_undef MACUNDEF;
 
 struct _mac_undef               // MACUNDEF -- source file for an #undef
 {
-    MEPTR mentry;               // - macro that was undef'd
+    MEPTR   mentry;             // - macro that was undef'd
     SRCFILE srcfile;            // - source file from which #undef occurred
 };
 
 struct _mac_value               // MACVALUE -- macro value
 {
-    MACVALUE* next;             // - next in values chain
+    MACVALUE    *next;          // - next in values chain
     union {
-        char* undef;            // - MVT_UNDEFED: name
-        char* defin;            // - MVT_DEFINED: name
-        MEPTR mentry;           // - MVT_VALUE: defining value
-    };
-    MAC_VTYPE type;             // - type of entry
-    unsigned :0;                // - force alignment
+        char    *name;          // - MVT_UNDEFED, MVT_DEFINED: name
+        MEPTR   mentry;         // - MVT_VALUE: defining value
+    } u;
+    MAC_VTYPE   type;           // - type of entry
+    unsigned    :0;             // - force alignment
 };
 
-static carve_t carveMacVals;    // carving for macro values
-static MACVALUE* values;        // ring of values
+static carve_t  carveMacVals;   // carving for macro values
+static MACVALUE *values;        // ring of values
 static VSTK_CTL undefs;         // undef's so far
 
 
@@ -83,8 +82,9 @@ static void brinfMacFini        // COMPLETION
             switch( curr->type ) {
             case MVT_DEFINED :
             case MVT_UNDEFED :
-              { void* temp = curr->defin;
-                curr->defin = NULL;
+              {
+                void *temp = curr->u.name;
+                curr->u.name = NULL;
                 CMemFree( temp );   // same format for undef'ed
               } break;
             }
@@ -133,7 +133,7 @@ static MACVALUE* findValue      // LOOKUP VALUE IN SAVED VALUES
     src_dsize = src_len - src_defn;
     RingIterBeg( values, srch ) {
         if( srch->type == MVT_VALUE ) {
-            MEPTR curr_mentry = srch->value;
+            MEPTR curr_mentry = srch->u.mentry;
             if( curr_mentry == mentry ) {
                 retn = srch;
                 break;
@@ -166,7 +166,7 @@ MACVALUE* BrinfMacAddValue      // ADD A VALUE
     if( NULL == retn ) {
         retn = RingCarveAlloc( carveMacVals, &values );
         retn->type = MVT_VALUE;
-        retn->mentry = mentry;
+        retn->u.mentry = mentry;
     }
     return( retn );
 }
@@ -183,8 +183,8 @@ static MACVALUE* findDefUndef   // LOOKUP (UN)DEFINED VALUE IN SAVED VALUES
     retn = NULL;
     RingIterBeg( values, curr ) {
         if( curr->type == type
-         && curr->defin[0] == name[0]           // undef'ed has same format
-         && 0 == memcmp( curr->defin, name, nlen )
+         && ( curr->u.name[0] == name[0] )      // undef'ed has same format
+         && 0 == memcmp( curr->u.name, name, nlen )
          ) {
             retn = curr;
             break;
@@ -196,7 +196,7 @@ static MACVALUE* findDefUndef   // LOOKUP (UN)DEFINED VALUE IN SAVED VALUES
         save[nlen] = '\0';
         retn = RingCarveAlloc( carveMacVals, &values );
         retn->type = type;
-        retn->defin = save;   // note: undefed is same format
+        retn->u.name = save;   // note: undefed is same format
     }
     return( retn );
 }
@@ -246,13 +246,11 @@ char const *BrinfMacValueName   // GET NAME FROM MACVALUE
 
     switch( mv->type ) {
     case MVT_VALUE :
-        name = mv->value->macro_name;
+        name = mv->u.mentry->macro_name;
         break;
     case MVT_DEFINED :
-        name = mv->defin;
-        break;
     case MVT_UNDEFED :
-        name = mv->undef;
+        name = mv->u.name;
         break;
     DbgDefault( "Bad MACVALUE type" );
     }
@@ -264,7 +262,7 @@ TOKEN_LOCN const* BrinfMacValueLocn // GET LOCATION FOR MACVALUE DECLARATION
     ( MACVALUE const *mv )      // - the MACVALUE
 {
     DbgVerify( mv->type == MVT_VALUE, "Cannot get location for non-value" );
-    return( &mv->value->defn );
+    return( &mv->u.mentry->defn );
 }
 
 
@@ -273,7 +271,7 @@ unsigned BrinfMacValueParmCount // GET # PARAMETERS FOR MACVALUE DECLARATION
 {
     // note: the parm count is 1 + # parameters
     DbgVerify( mv->type == MVT_VALUE, "Cannot get # parms for non-value" );
-    return( mv->value->parm_count );
+    return( mv->u.mentry->parm_count );
 }
 
 
@@ -286,7 +284,7 @@ uint_8 const *BrinfMacValueDefn // GET LOCATION FOR MACVALUE DECLARATION
     const uint_8    *defn;      // - definition
 
     DbgVerify( mv->type == MVT_VALUE, "Cannot get definition for non-value" );
-    mentry = mv->mentry;
+    mentry = mv->u.mentry;
     if( 0 == mentry->macro_defn ) {
         // special macro
         length = 0;
@@ -305,7 +303,7 @@ void BrinfMacUndef              // RECORD UNDEFINE OF MACRO
     , SRCFILE src )             // - source file in which it occurred
 {
     MACUNDEF* undef = VstkPush( &undefs );
-    undef->mentry = mentry;
+    undef->u.mentry = mentry;
     undef->srcfile = src;
 }
 
@@ -320,7 +318,7 @@ SRCFILE BrinfMacUndefSource     // GET SOURCE OF AN UNDEF
     nlen = strlen( name );
     retn = NULL;
     VstkIterBeg( &undefs, curr ) {
-        if( NameMemCmp( curr->mentry->macro_name, name, nlen ) == 0 ) {
+        if( NameMemCmp( curr->u.mentry->macro_name, name, nlen ) == 0 ) {
             retn = curr->srcfile;
             break;
         }

@@ -135,19 +135,19 @@ void DumpMacPush(               // DUMP PUSH OF MACRO
     const void *p_mac,          // - macro being pushed
     const void **p_args )       // - arguments
 {
-    MEDEFN const *mac = p_mac;  // - macro being pushed
+    const MEPTR mentry = (const MEPTR)p_mac; // - macro being pushed
     const char**args = (const char **)p_args;  // - arguments
     unsigned count;
     if( PragDbgToggle.dump_mtokens ) {
-        printf( "Macro Push: %s", mac->macro_name );
-        if( ( mac->macro_defn > 0 ) && ( args != NULL ) ) {
-            count = mac->parm_count;
+        printf( "Macro Push: %s", mentry->macro_name );
+        if( ( mentry->macro_defn > 0 ) && ( args != NULL ) ) {
+            count = mentry->parm_count;
             if( count == 1 ) {
                 printf( " = %s", *args );
             } else if( count > 0 ) {
                 printf( "( " );
                 for( ; --count; ) {
-                    printf( "%s%s", *args++, (count>1) ? ", " : " " );
+                    printf( "%s%s", *args++, ( count > 1 ) ? ", " : " " );
                 }
                 printf( ")" );
             }
@@ -219,7 +219,7 @@ const char *DbgOperator(        // GET CGOP NAME
     const char  *name;          // - name
 
     static const char *opnames[] = {    // - opcode names (binary,unary)
-    #include "ppopsnam.h"
+        #include "ppopsnam.h"
     };
 
     if( number < CO_MAX_OPCODES ) {
