@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -24,8 +25,11 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Mainline for applications NOT using GUI library.
+*               (Process entry point for some OS/2 and Windows NT windowed
+*               processes.)
+*
+*               Example: \watcom\binnt\wdw.exe (wv built for Windows NT)
 *
 ****************************************************************************/
 
