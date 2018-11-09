@@ -1760,7 +1760,7 @@ static type_id findTypeId( scalar_t scalar )
     case STM_SEGMENT:
         return( TYP_USHORT );
     default:
-        return( TYP_MAX );
+        return( TYP_NONE );
     }
 }
 
@@ -2210,10 +2210,10 @@ static void checkScalar( DECL_SPEC *d1, DECL_SPEC *d2 )
         /* warn about deprecated use of 'long char' */
         CErr1( WARN_LONG_CHAR_DEPRECATED );
     }
-    if( findTypeId( combo ) != TYP_MAX )
-        return;
-    d1->scalar = STM_NULL;
-    CErr1( ERR_ILLEGAL_TYPE_COMBO );
+    if( findTypeId( combo ) == TYP_NONE ) {
+        d1->scalar = STM_NULL;
+        CErr1( ERR_ILLEGAL_TYPE_COMBO );
+    }
 }
 
 static void checkSpecifier( DECL_SPEC *d1, DECL_SPEC *d2 )
@@ -8400,33 +8400,19 @@ bool BindGenericTypes( SCOPE parm_scope, PTREE parms, PTREE args,
 
 static void initBasicTypes( void )
 {
-    type_id *p;
+    int     i;
+    type_id typ;
     static type_id basics_init_list[] = {
-        TYP_ERROR,
-        TYP_BOOL,
-        TYP_CHAR,
-        TYP_SCHAR,
-        TYP_UCHAR,
-        TYP_WCHAR,
-        TYP_SSHORT,
-        TYP_USHORT,
-        TYP_SINT,
-        TYP_UINT,
-        TYP_SLONG,
-        TYP_ULONG,
-        TYP_SLONG64,
-        TYP_ULONG64,
-        TYP_FLOAT,
-        TYP_DOUBLE,
-        TYP_LONG_DOUBLE,
-        TYP_VOID,
-        TYP_DOT_DOT_DOT,
-        TYP_NULLPTR,
-        TYP_MAX
+        #define BASETYPES
+        #define pick(id,promo,promo_asm,type_text)  __PASTE( TYP_, id ),
+        #include "_typdefs.h"
+        #undef pick
+        #undef BASETYPES
     };
 
-    for( p = basics_init_list; *p != TYP_MAX; ++p ) {
-        basicTypes[*p] = MakeType( *p );
+    for( i = 0; i < ARRAY_SIZE( basics_init_list ); i++ ) {
+        typ = basics_init_list[i];
+        basicTypes[typ] = MakeType( typ );
     }
     /*
       'char' must be distinct from 'signed char' and 'unsigned char'
@@ -8607,52 +8593,19 @@ static void typesInit(          // TYPES INITIALIZATION
     ExtraRptRegisterCtr( &ctr_dup_fail_probes, NULL );
     ExtraRptRegisterCtr( &ctr_dup_succ, "dup. checks found" );
     ExtraRptRegisterCtr( &ctr_dup_fail, "dup. checks failed" );
-    ExtraRptRegisterAvg( &ctr_dup_succ_probes
-                       , &ctr_dup_succ
-                       , "average probes per check (found)" );
-    ExtraRptRegisterAvg( &ctr_dup_fail_probes
-                       , &ctr_dup_fail
-                       , "average probes per check (failure)" );
-    ExtraRptRegisterCtr( &ctr_dup_fns
-                       , "type duplication checks -- in fn table" );
-    ExtraRptRegisterCtr( &ctr_dup_fns_big
-                       , "type duplication checks -- not in fn table" );
+    ExtraRptRegisterAvg( &ctr_dup_succ_probes, &ctr_dup_succ, "average probes per check (found)" );
+    ExtraRptRegisterAvg( &ctr_dup_fail_probes, &ctr_dup_fail, "average probes per check (failure)" );
+    ExtraRptRegisterCtr( &ctr_dup_fns, "type duplication checks -- in fn table" );
+    ExtraRptRegisterCtr( &ctr_dup_fns_big, "type duplication checks -- not in fn table" );
     ExtraRptRegisterCtr( &ctr_cg_dups, "type duplication checks (back-end)" );
     ExtraRptRegisterCtr( &ctr_cg_dups_fail, "dup. checks failed (back-end)" );
 #ifdef XTRA_RPT
     {
-#define ENTRY_ERROR "TYP_ERROR",
-#define ENTRY_BOOL "TYP_BOOL",
-#define ENTRY_CHAR "TYP_CHAR",
-#define ENTRY_SCHAR "TYP_SCHAR",
-#define ENTRY_UCHAR "TYP_UCHAR",
-#define ENTRY_WCHAR "TYP_WCHAR",
-#define ENTRY_SSHORT "TYP_SSHORT",
-#define ENTRY_USHORT "TYP_USHORT",
-#define ENTRY_SINT "TYP_SINT",
-#define ENTRY_UINT "TYP_UINT",
-#define ENTRY_SLONG "TYP_SLONG",
-#define ENTRY_ULONG "TYP_ULONG",
-#define ENTRY_SLONG64 "TYP_SLONG64",
-#define ENTRY_ULONG64 "TYP_ULONG64",
-#define ENTRY_FLOAT "TYP_FLOAT",
-#define ENTRY_DOUBLE "TYP_DOUBLE",
-#define ENTRY_LONG_DOUBLE "TYP_LONG_DOUBLE",
-#define ENTRY_ENUM "TYP_ENUM",
-#define ENTRY_POINTER "TYP_POINTER",
-#define ENTRY_TYPEDEF "TYP_TYPEDEF",
-#define ENTRY_CLASS "TYP_CLASS",
-#define ENTRY_BITFIELD "TYP_BITFIELD",
-#define ENTRY_FUNCTION "TYP_FUNCTION",
-#define ENTRY_ARRAY "TYP_ARRAY",
-#define ENTRY_DOT_DOT_DOT "TYP_DOT_DOT_DOT",
-#define ENTRY_VOID "TYP_VOID",
-#define ENTRY_MODIFIER "TYP_MODIFIER",
-#define ENTRY_MEMBER_POINTER "TYP_MEMBER_POINTER",
-#define ENTRY_GENERIC "TYP_GENERIC",
         static char const * const typeIdNames[] = {
-            #include "type_arr.h"
-            "TYPE_NONE",
+            #define pick(id,promo,promo_asm,type_text)  __STR( __PASTE( TYP_, id ) ),
+            #include "_typdefs.h"
+            #undef pick
+            "TYP_NONE",
             "Total"
         };
         ExtraRptRegisterTab( "type id frequency table", typeIdNames, &ctr_type_ids[0][0], RPT_TYP_MAX, 1 );
@@ -8665,7 +8618,7 @@ static void markFreeType( void *p )
 {
     TYPE s = p;
 
-    s->id = TYP_FREE;
+    s->id = TYP_NONE;
 }
 
 #ifndef NDEBUG
@@ -8675,7 +8628,7 @@ static void initXrefType( void *e, carve_walk_base *d )
 {
     TYPE s = e;
 
-    if( s->id == TYP_FREE ) {
+    if( s->id == TYP_NONE ) {
         return;
     }
     d = d;
@@ -8687,7 +8640,7 @@ static void xrefType( void *e, carve_walk_base *d )
     TYPE s = e;
     TYPE of;
 
-    if( s->id == TYP_FREE ) {
+    if( s->id == TYP_NONE ) {
         return;
     }
     d = d;
@@ -8707,7 +8660,7 @@ static void dumpXrefType( void *e, carve_walk_base *d )
     FILE *fp = d->extra;
     TYPE s = e;
 
-    if( s->id == TYP_FREE ) {
+    if( s->id == TYP_NONE ) {
         return;
     }
     fprintf( fp, "%u %u %u\n", s->id, s->u.b.field_start, s->u.b.field_width );
@@ -9007,7 +8960,7 @@ static void saveType( void *e, carve_walk_base *d )
     arg_list *save_args;
     char *save_string;
 
-    if( s->id == TYP_FREE ) {
+    if( s->id == TYP_NONE ) {
         return;
     }
     save_string = NULL;
@@ -9538,7 +9491,7 @@ static void relocType( void *e, carve_walk_base *d )
 #define __type_reloc_size \
         ( _pch_align_size( sizeof( pch_type_index ) ) + \
           _pch_align_size( sizeof( *pch_type ) ) )
-    if( s->id == TYP_FREE ) {
+    if( s->id == TYP_NONE ) {
         return;
     }
     if( (s->dbgflag & TF2_DBG_IN_PCH) == 0 ) {

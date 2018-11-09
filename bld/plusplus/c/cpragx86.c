@@ -572,42 +572,11 @@ static enum sym_type PtrType( type_flag flags )
 
 #ifdef WCPP_ASM
 
-#define ENTRY_ERROR             0,
-#define ENTRY_BOOL              SYM_INT1,
-#define ENTRY_CHAR              SYM_INT1,
-#define ENTRY_SCHAR             SYM_INT1,
-#define ENTRY_UCHAR             SYM_INT1,
-#define ENTRY_WCHAR             SYM_INT2,
-#define ENTRY_SSHORT            SYM_INT2,
-#define ENTRY_USHORT            SYM_INT2,
-#define ENTRY_SINT              SYM_INT,
-#define ENTRY_UINT              SYM_INT,
-#define ENTRY_SLONG             SYM_INT4,
-#define ENTRY_ULONG             SYM_INT4,
-#define ENTRY_SLONG64           SYM_INT8,
-#define ENTRY_ULONG64           SYM_INT8,
-#define ENTRY_FLOAT             SYM_FLOAT4,
-#define ENTRY_DOUBLE            SYM_FLOAT8,
-#define ENTRY_LONG_DOUBLE       SYM_FLOAT8,
-#define ENTRY_ENUM              0,
-#define ENTRY_POINTER           0,
-#define ENTRY_TYPEDEF           0,
-#define ENTRY_CLASS             0,
-#define ENTRY_BITFIELD          0,
-#define ENTRY_FUNCTION          0,
-#define ENTRY_ARRAY             0,
-#define ENTRY_DOT_DOT_DOT       0,
-#define ENTRY_VOID              SYM_INT1,
-#define ENTRY_MODIFIER          0,
-#define ENTRY_MEMBER_POINTER    0,
-#define ENTRY_GENERIC           0,
-
 static enum sym_type AsmDataType[] = {
-    #include "type_arr.h"
+    #define pick(id,promo,promo_asm,type_text)  promo_asm,
+    #include "_typdefs.h"
+    #undef pick
 };
-#endif
-
-#ifdef WCPP_ASM
 
 static enum sym_type AsmType(
     TYPE type )
