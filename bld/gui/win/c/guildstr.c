@@ -27,7 +27,9 @@
 *
 * Description:  Utility functions: string loading from resource file.
 *
-*               Example: \watcom\binnt\wdw.exe (wv built for Windows NT)
+*               This module is known to be linked into the following
+*               executable files:  \watcom\binnt\wdw.exe (wv built for
+*               Windows NT)
 *
 ****************************************************************************/
 

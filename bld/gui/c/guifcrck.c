@@ -28,7 +28,9 @@
 * Description:  Not meaningful.  Called early by some process executives,
 *               perhaps to force module inclusion by linker.
 *
-*               Example: \watcom\binnt\wdw.exe (wv built for Windows NT)
+*               This module is known to be linked into the following
+*               executable files:  \watcom\binnt\wdw.exe (wv built for
+*               Windows NT)
 *
 ****************************************************************************/
 
