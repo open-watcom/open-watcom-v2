@@ -104,7 +104,7 @@ jobs:
       os: osx
       install:
         - export OWTOOLS=CLANG
-        - export OWTRAVISJOB=BUILD
+        - export OWTRAVISJOB=BUILD1
         - export OWDOCBUILD=0
         - export OWVERBOSE=0
           # install DOS Emulator
@@ -118,7 +118,7 @@ jobs:
       os: osx
       install:
         - export OWTOOLS=CLANG
-        - export OWTRAVISJOB=BUILD
+        - export OWTRAVISJOB=BUILD2
         - export OWDOCBUILD=0
         - export OWVERBOSE=0
           # install DOS Emulator
