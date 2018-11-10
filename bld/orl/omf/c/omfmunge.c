@@ -1631,26 +1631,15 @@ orl_return  OmfAddGrpDef( omf_file_handle ofh, omf_idx name, omf_idx *segs, unsi
 orl_return      OmfModEnd( omf_file_handle ofh )
 {
     orl_return          return_val;
-    omf_bytes           buffer;
-    omf_rec_size        len;
 
     assert( ofh );
-
-    len = ofh->parselen;
-    if( len < 2 )
-        return( ORL_ERROR );
-    buffer = ofh->parsebuf;
-
-    return_val = OmfAddComment( ofh, CMT_MODULE_ENTRY_POINT, 0, buffer, len );
-    if( return_val != ORL_OKAY )
-        return( return_val );
 
     return_val = finishPrevWork( ofh );
     return( return_val );
 }
 
 
-orl_return  OmfAddComment( omf_file_handle ofh, omf_comment_class class, unsigned_8 flags, omf_bytes buff, omf_rec_size len )
+orl_return  OmfAddComment( omf_file_handle ofh, unsigned_8 class, unsigned_8 flags, omf_bytes buff, omf_rec_size len )
 {
     omf_sec_handle      sh;
     omf_comment         comment;

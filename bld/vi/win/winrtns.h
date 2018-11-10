@@ -35,7 +35,6 @@
 #ifndef WINRTNS_INCLUDED
 #define WINRTNS_INCLUDED
 
-#include "wresid.h"
 #include "winhdr.h"
 
 void        DDEFini( void );
@@ -48,7 +47,7 @@ window_id   NewRepeatCountWindow( void );
 window_id   NewMsgWindow( void );
 window_id   NewStatWindow( void );
 bool        WindowsKeyPush( WORD, WORD );
-vi_rc       MenuCommand( ctl_id );
+vi_rc       MenuCommand( int );
 void        StatusLine( int, char *, int );
 int         GetStatusHeight( void );
 

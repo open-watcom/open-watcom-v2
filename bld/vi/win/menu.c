@@ -44,7 +44,7 @@
 
 typedef struct item {
     struct item     *next, *prev;
-    ctl_id          menuid;
+    int             menuid;
     char            *name;
     char            *help;
     bool            in_menu     : 1;
@@ -132,7 +132,7 @@ unsigned NextMenuId( void )
  *                     command associated with the menu item if there is an
  *                     item with that id.
  */
-static vi_rc handleMenuCommand( menu *m, ctl_id menuid )
+static vi_rc handleMenuCommand( menu *m, int menuid )
 {
     item        *citem;
     vi_rc       rc;
@@ -199,13 +199,15 @@ static bool isSpecialMenuPtr( menu *cmenu )
 static menu *specialMenu( const char *name )
 {
     menu            *m;
+    special_menu    *s;
     int             i;
 
     /* this is a little gross... */
     m = NULL;
-    for( i = 0; i < sizeof( specialMenus ) / sizeof( special_menu ); i++ ) {
-        if( compareName( name, specialMenus[i].name ) ) {
-            m = specialMenus[i].m;
+    s = &specialMenus[0];
+    for( i = 0; i < sizeof( specialMenus ) / sizeof( special_menu ); i++, s++ ) {
+        if( compareName( name, s->name ) ) {
+            m = s->m;
             break;
         }
     }
@@ -216,13 +218,15 @@ static menu *specialMenu( const char *name )
 /*
  * specialMenuCommand - run a command from a specific menu
  */
-static vi_rc specialMenuCommand( ctl_id menuid )
+static vi_rc specialMenuCommand( int menuid )
 {
     int             i;
     vi_rc           rc;
+    special_menu    *s;
 
-    for( i = 0; i < sizeof( specialMenus ) / sizeof( special_menu ); i++ ) {
-        rc = handleMenuCommand( specialMenus[i].m, menuid );
+    s = &specialMenus[0];
+    for( i = 0; i < sizeof( specialMenus ) / sizeof( special_menu ); i++, s++ ) {
+        rc = handleMenuCommand( s->m, menuid );
         if( rc != MENU_COMMAND_NOT_HANDLED ) {
             return( rc );
         }
@@ -247,7 +251,7 @@ static menu *addMenuToMenu( menu *m, const char *name, const char *help )
     name_len = strlen( name );
     new = MemAlloc( sizeof( menu ) + name_len + strlen( help ) + 1 );
     new->num_items = 0;
-    strcpy( new->name, name );
+    strcpy( &new->name[0], name );
     new->help = &new->name[name_len + 1];
     strcpy( new->help, help );
     // new->menu_handle = CreatePopupMenu();
@@ -473,7 +477,8 @@ static void makeMenu( menu *parent, menu *m )
 
     assert( parent->menu_handle != NULL && m->menu_handle == NULL );
     m->menu_handle = CreatePopupMenu();
-    AppendMenu( parent->menu_handle, MF_ENABLED | MF_POPUP, (UINT)m->menu_handle, &m->name[0] );
+    AppendMenu( parent->menu_handle, MF_ENABLED | MF_POPUP,
+                (UINT) m->menu_handle, &m->name[0] );
     for( i = m->item_head; i != NULL; i = i->next ) {
         i->in_menu = false;
         makeItem( m, i );
@@ -796,12 +801,12 @@ vi_rc ActivateFloatMenu( const char *data )
  * FALSE otherwise. Looks for a menu item with id identical to
  * the one passed in.
  */
-vi_rc MenuCommand( ctl_id menuid )
+vi_rc MenuCommand( int menuid )
 {
     menu    *m;
     vi_rc   rc;
 
-    if( menuid == NO_ID || EditFlags.HoldEverything ) {
+    if( menuid == 0 || EditFlags.HoldEverything ) {
         return( ERR_NO_ERR );
     }
     rc = HandleToolCommand( menuid );
@@ -1139,7 +1144,7 @@ static const char *currMenuHelpString;
 void HandleMenuSelect( WPARAM wparam, LPARAM lparam )
 {
     int         flags;
-    ctl_id      menuid;
+    int         menuid;
     menu        *cmenu;
     item        *citem;
     bool        found;
@@ -1222,13 +1227,13 @@ vi_rc DoWindowGadgetMenu( void )
 /*
  * Stubs
  */
-ctl_id GetMenuIdFromCoord( int x )
+int GetMenuIdFromCoord( int x )
 {
     x = x;
-    return( NO_ID );
+    return( -1 );
 }
 
-ctl_id GetCurrentMenuId( void )
+int GetCurrentMenuId( void )
 {
-    return( NO_ID );
+    return( -1 );
 }

@@ -233,8 +233,8 @@ WHPCVT_GBL bool         Real_ipf_font;
 WHPCVT_GBL bool         Keep_link_topics;
 WHPCVT_GBL bool         Exclude_special;
 
-WHPCVT_GBL unsigned     Right_Margin;
-WHPCVT_GBL unsigned     Text_Indent;
+WHPCVT_GBL int          Right_Margin;
+WHPCVT_GBL int          Text_Indent;
 WHPCVT_GBL int          Hyper_Brace_L;
 WHPCVT_GBL int          Hyper_Brace_R;
 WHPCVT_GBL bool         Do_browse;

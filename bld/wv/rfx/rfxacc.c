@@ -42,19 +42,14 @@
 #include "rfx.h"
 #include "rfxacc.h"
 
+extern char *TxtBuff;
+
+trap_shandle    SuppRFXId;
 
 #define SUPP_RFX_SERVICE( in, request )         \
         in.supp.core_req        = REQ_PERFORM_SUPPLEMENTARY_SERVICE;    \
         in.supp.id              = SuppRFXId;    \
         in.req                  = request;
-
-extern char *TxtBuff;
-
-trap_shandle    SuppRFXId;
-
-static int      remote_find_len = 0;
-static int      remote_path_len = 0;
-static int      remote_os = 0;
 
 bool InitRFXSupp( void )
 {
@@ -64,25 +59,6 @@ bool InitRFXSupp( void )
     return( true );
 }
 
-
-error_handle RemoteConfig( void )
-{
-    in_mx_entry         in[3];
-    mx_entry            out[1];
-    rfx_config_req      acc;
-    rfx_config_ret      ret;
-
-    SUPP_RFX_SERVICE( acc, REQ_RFX_CONFIG );
-    in[0].ptr = &acc;
-    in[0].len = sizeof( acc );
-    out[0].ptr = &ret;
-    out[0].len = sizeof( ret );
-    TrapAccess( 0, NULL, 1, out );
-    remote_find_len = ret.find_len;
-    remote_path_len = ret.path_len;
-    remote_os = ret.os;
-    return( StashErrCode( ret.err, OP_REMOTE ) );
-}
 
 error_handle RemoteRename( const char * from, const char *to )
 {
@@ -336,6 +312,9 @@ error_handle RemoteDateTime( sys_handle sh, int *time, int *date, int set )
     return( 0 );
 }
 
+//NYI: Assume max cwd lenght is 80
+#define MAX_STRING_LEN  80
+
 error_handle RemoteGetCwd( int drv, char *where )
 {
     in_mx_entry         in[1];
@@ -350,125 +329,60 @@ error_handle RemoteGetCwd( int drv, char *where )
     out[0].ptr = &ret;
     out[0].len = sizeof( ret );
     out[1].ptr = where;
-    out[1].len = remote_path_len;
+    out[1].len = MAX_STRING_LEN;
     TrapAccess( 1, in, 2, out );
     return( StashErrCode( ret.err, OP_REMOTE ) );
 }
 
-error_handle RemoteFindFirst( const char *pattern, trap_dta *dta, int attrib, handle_info *hdlinf )
+error_handle RemoteFindFirst( const char *pattern, void *info, trap_elen info_len, int attrib )
 {
-    in_mx_entry         in[2];
-    mx_entry            out[3];
+    in_mx_entry          in[2];
+    mx_entry             out[2];
     rfx_findfirst_req   acc;
     rfx_findfirst_ret   ret;
-    int                 cnt;
 
     SUPP_RFX_SERVICE( acc, REQ_RFX_FINDFIRST );
     acc.attrib = attrib;
-    in[0].len = sizeof( acc );
     in[0].ptr = &acc;
+    in[0].len = sizeof( acc );
     in[1].ptr = pattern;
     in[1].len = (trap_elen)( strlen( pattern ) + 1 );
     out[0].ptr = &ret;
     out[0].len = sizeof( ret );
-    cnt = 1;
-    switch( remote_os ) {
-    case DIG_OS_OS2:
-        out[1].ptr = hdlinf;
-        out[1].len = sizeof( handle_info_os2 );
-        out[2].ptr = dta;
-        out[2].len = sizeof( trap_dta_os2 );
-        cnt = 3;
-        break;
-    case DIG_OS_NT:
-        out[1].ptr = hdlinf;
-        out[1].len = sizeof( handle_info_nt );
-        out[2].ptr = dta;
-        out[2].len = sizeof( trap_dta_nt );
-        cnt = 3;
-        break;
-    default:
-        out[1].ptr = dta;
-        out[1].len = sizeof( trap_dta_dos );
-        cnt = 2;
-        break;
-    }
-    TrapAccess( 2, in, cnt, out );
+    out[1].ptr = info;
+    out[1].len = info_len;
+    TrapAccess( 2, in, 2, out );
     return( StashErrCode( ret.err, OP_REMOTE ) );
 }
 
 
-int RemoteFindNext( trap_dta *dta, handle_info *hdlinf )
+int RemoteFindNext( void *info, trap_elen info_len )
 {
-    in_mx_entry         in[2];
-    mx_entry            out[2];
+    in_mx_entry          in[2];
+    mx_entry             out[2];
     rfx_findnext_req    acc;
     rfx_findnext_ret    ret;
 
     SUPP_RFX_SERVICE( acc, REQ_RFX_FINDNEXT );
     in[0].ptr = &acc;
     in[0].len = sizeof( acc );
-    switch( remote_os ) {
-    case DIG_OS_OS2:
-        in[1].ptr = hdlinf;
-        in[1].len = sizeof( handle_info_os2 );
-        break;
-    case DIG_OS_NT:
-        in[1].ptr = hdlinf;
-        in[1].len = sizeof( handle_info_nt );
-        break;
-    default:
-        in[1].ptr = dta;
-        in[1].len = sizeof( trap_dta_dos );
-        break;
-    }
+    in[1].ptr = info;
+    in[1].len = info_len;
     out[0].ptr = &ret;
     out[0].len = sizeof( ret );
-    out[1].ptr = dta;
-    switch( remote_os ) {
-    case DIG_OS_OS2:
-        out[1].len = sizeof( trap_dta_os2 );
-        break;
-    case DIG_OS_NT:
-        out[1].len = sizeof( trap_dta_nt );
-        break;
-    default:
-        out[1].len = sizeof( trap_dta_dos );
-        break;
-    }
+    out[1].ptr = info;
+    out[1].len = info_len;
     TrapAccess( 2, in, 2, out );
     return( ret.err );
 }
 
-error_handle RemoteFindClose( handle_info *hdlinf )
+error_handle RemoteFindClose( void )
 {
-    in_mx_entry         in[2];
-    mx_entry            out[1];
     rfx_findclose_req   acc;
     rfx_findclose_ret   ret;
-    int                 cnt;
 
     SUPP_RFX_SERVICE( acc, REQ_RFX_FINDCLOSE );
-    in[0].ptr = &acc;
-    in[0].len = sizeof( acc );
-    switch( remote_os ) {
-    case DIG_OS_OS2:
-        in[1].ptr = hdlinf;
-        in[1].len = sizeof( handle_info_os2 );
-        cnt = 2;
-        break;
-    case DIG_OS_NT:
-        in[1].ptr = hdlinf;
-        in[1].len = sizeof( handle_info_nt );
-        cnt = 2;
-        break;
-    default:
-        cnt = 1;
-        break;
-    }
-    out[0].ptr = &ret;
-    out[0].len = sizeof( ret );
-    TrapAccess( cnt, in, 1, out );
+    TrapSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
     return( StashErrCode( ret.err, OP_REMOTE ) );
 }
 
@@ -494,64 +408,4 @@ size_t RenameNameToCannonical( char *name, char *fullname, trap_elen fullname_le
         *fullname = NULLCHAR;
     }
     return( strlen( fullname ) );
-}
-
-char    *RemoteGetFindName( trap_dta *dta )
-{
-    switch( remote_os ) {
-    case DIG_OS_OS2:
-        return( dta->os2.name );
-    case DIG_OS_NT:
-        return( dta->nt.name );
-    default:
-        return( dta->dos.name );
-    }
-}
-
-long    RemoteGetFindAttr( trap_dta *dta )
-{
-    switch( remote_os ) {
-    case DIG_OS_OS2:
-        return( dta->os2.attr );
-    case DIG_OS_NT:
-        return( dta->nt.attr );
-    default:
-        return( dta->dos.attr );
-    }
-}
-
-long    RemoteGetFindSize( trap_dta *dta )
-{
-    switch( remote_os ) {
-    case DIG_OS_OS2:
-        return( dta->os2.size );
-    case DIG_OS_NT:
-        return( dta->nt.size );
-    default:
-        return( dta->dos.size );
-    }
-}
-
-long    RemoteGetFindDate( trap_dta *dta )
-{
-    switch( remote_os ) {
-    case DIG_OS_OS2:
-        return( dta->os2.date );
-    case DIG_OS_NT:
-        return( dta->nt.date );
-    default:
-        return( dta->dos.date );
-    }
-}
-
-long    RemoteGetFindTime( trap_dta *dta )
-{
-    switch( remote_os ) {
-    case DIG_OS_OS2:
-        return( dta->os2.time );
-    case DIG_OS_NT:
-        return( dta->nt.time );
-    default:
-        return( dta->dos.time );
-    }
 }

@@ -74,7 +74,7 @@ _WCRTLINK int intdos( union REGS *inregs, union REGS *outregs )
     int status;
 
     status = DoDosCall( inregs, outregs );
-    outregs->x.cflag = status & 1;
+    outregs->x.cflag = status;
     _dosretax( outregs->x.eax, status );
     return( outregs->x.eax );
 #else

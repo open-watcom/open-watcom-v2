@@ -66,10 +66,6 @@ enum{
     OMF_SEC_DATA_CODE_START
 };
 
-/* ORL internal OMF Comment class used for module entry point data
- */
-#define CMT_MODULE_ENTRY_POINT          0x00000100
-
 /* Debug info styles we recognize */
 enum {
     OMF_DBG_STYLE_UNKNOWN = -1,
@@ -117,10 +113,6 @@ typedef signed_32                       omf_quantity;
 typedef unsigned_8                      *omf_bytes;
 typedef unsigned_8                      omf_rectyp;
 typedef signed_8                        omf_dbg_style;
-
-//typedef unsigned_8                      omf_comment_class;
-typedef unsigned_16                     omf_comment_class;
-
 
 ORL_STRUCT( omf_tmp_lidata ) {
     omf_rec_size        size;
@@ -272,7 +264,7 @@ struct omf_string_assoc_struct {
 TYPEDEF_LOCAL_TYPE( omf_comment );
 
 ORL_STRUCT( omf_comment ) {
-    omf_comment_class   class;
+    unsigned_8          class;
     unsigned_8          flags;
     omf_rec_size        len;
     unsigned char       data[1];

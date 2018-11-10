@@ -361,7 +361,7 @@ static orl_return       doTHEADR( omf_file_handle ofh )
 static orl_return       doCOMENT( omf_file_handle ofh )
 {
     orl_return          return_val;
-    omf_comment_class   class;
+    unsigned_8          class;
     unsigned_8          flags;
     omf_bytes           buffer;
     omf_rec_size        len;
@@ -740,8 +740,6 @@ static orl_return       doLNAMES( omf_file_handle ofh, omf_rectyp typ )
     omf_bytes           buffer;
     omf_rec_size        len;
     omf_string_len      slen;
-
-    /* unused parameters */ (void)typ;
 
     assert( ofh );
 

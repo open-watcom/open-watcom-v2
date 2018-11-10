@@ -61,18 +61,6 @@ typedef struct {
 #define BUFF_SIZE       256
 
 
-trap_retval ReqRfx_config( void )
-{
-    rfx_config_ret  *ret;
-
-    ret = GetOutPtr( 0 );
-    ret->find_len = CCHMAXPATHCOMP;
-    ret->path_len = 256;
-    ret->os = DIG_OS_OS2;
-    ret->err = 0;
-    return( sizeof( *ret ) );
-}
-
 trap_retval ReqRfx_rename( void )
 {
     char           *old_name;
@@ -309,36 +297,37 @@ trap_retval ReqRfx_getcwd( void )
     return( sizeof( *ret ) + len );
 }
 
-static void MoveDirInfo( FILEFINDBUF *info, trap_dta_os2 FAR *dta )
+static void MoveDirInfo( FILEFINDBUF *os2, trap_dta FAR *dos )
 {
-    dta->attr = info->attrFile;
-    dta->time = *(USHORT __far *)&info->ftimeLastWrite;
-    dta->date = *(USHORT __far *)&info->fdateLastWrite;
-    dta->size = info->cbFile;
-    strcpy( dta->name, info->achName );
+    dos->dos.dir_entry_num = *(USHORT *)&os2->fdateLastWrite;
+    dos->dos.cluster = *(USHORT __far *)&os2->ftimeLastWrite;
+    dos->attr = os2->attrFile;
+    dos->time = *(USHORT __far *)&os2->ftimeLastWrite;
+    dos->date = *(USHORT __far *)&os2->fdateLastWrite;
+    dos->size = os2->cbFile;
+    strncpy( dos->name, os2->achName, TRAP_DTA_NAME_MAX - 1 );
+    dos->name[TRAP_DTA_NAME_MAX - 1] = '\0';
 }
 
 trap_retval ReqRfx_findfirst( void )
 {
-    FILEFINDBUF         info;
-    USHORT              rc;
-    HDIR                hdl = 0;
-    USHORT              count = 1;
+    FILEFINDBUF          info;
+    USHORT               rc;
+    HDIR                 hdl = 1;
+    USHORT               count = 1;
     rfx_findfirst_req   *acc;
     rfx_findfirst_ret   *ret;
-    char                *filename;
-    handle_info_os2     *hdlinf;
+    char                 *filename;
 
     acc = GetInPtr( 0 );
     filename = GetInPtr( sizeof( *acc ) );
     ret = GetOutPtr( 0 );
-    rc = DosFindFirst( filename, &hdl, acc->attrib, &info, sizeof( info ), &count, 0 );
+    rc = DosFindFirst( filename, &hdl, acc->attrib, &info,
+                       sizeof( info ), &count, 0 );
     if( rc == 0 ) {
-        hdlinf = (handle_info_os2 *)GetOutPtr( sizeof( *ret ) );
-        hdlinf->handle.h16 = hdl;
-        MoveDirInfo( &info, (trap_dta_os2 *)GetOutPtr( sizeof( *ret ) + sizeof( handle_info_os2 ) ) );
+        MoveDirInfo( &info, (trap_dta *)GetOutPtr( sizeof(*ret) ) );
         ret->err = 0;
-        return( sizeof( *ret ) + sizeof( handle_info_os2 ) + sizeof( trap_dta_os2 ) );
+        return( sizeof( *ret ) + sizeof( trap_dta ) );
     } else {
         ret->err = rc;
         return( sizeof( *ret ) );
@@ -351,17 +340,13 @@ trap_retval ReqRfx_findnext( void )
     USHORT              rc;
     USHORT              count = 1;
     rfx_findnext_ret    *ret;
-    handle_info_os2     *hdlinf;
-    trap_dta_os2        *dta;
 
-    hdlinf = (handle_info_os2 *)GetInPtr( sizeof( rfx_findnext_req ) );
     ret = GetOutPtr( 0 );
-    rc = DosFindNext( hdlinf->handle.h16, &info, sizeof( info ), &count );
+    rc = DosFindNext( 1, &info, sizeof( info ), &count );
     if( rc == 0 ) {
-        dta = (trap_dta_os2 *)GetOutPtr( sizeof( *ret ) );
-        MoveDirInfo( &info, dta );
+        MoveDirInfo( &info, (trap_dta *)GetOutPtr( sizeof(*ret) ) );
         ret->err = 0;
-        return( sizeof( *ret ) + sizeof( trap_dta_os2 ) );
+        return( sizeof( *ret ) + sizeof( trap_dta ) );
     } else {
         ret->err = rc;
         return( sizeof( *ret ) );
@@ -370,13 +355,10 @@ trap_retval ReqRfx_findnext( void )
 
 trap_retval ReqRfx_findclose( void )
 {
-    rfx_findclose_ret   *ret;
-    handle_info_os2     *hdlinf;
+    rfx_findclose_ret    *ret;
 
-    hdlinf = (handle_info_os2 *)GetInPtr( sizeof( rfx_findclose_req ) );
     ret = GetOutPtr( 0 );
-    rc = DosFindClose( hdlinf->handle.h16 );
-    ret->err = rc;
+    ret->err = 0;
     return( sizeof( *ret ) );
 }
 

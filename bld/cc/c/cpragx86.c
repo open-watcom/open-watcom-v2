@@ -188,9 +188,9 @@ static void CopyAuxInfo( void )
         CurrInfo->parms = AuxInfo.parms;
 
     if( !HW_CEqual( AuxInfo.save, HW_EMPTY ) ) {
-        HW_Asgn( default_flt_n_seg, DefaultInfo.save );
         HW_CTurnOn( CurrInfo->save, HW_FULL );
         if( (AuxInfo.cclass & MODIFY_EXACT) == 0 && !CompFlags.save_restore_segregs ) {
+            HW_Asgn( default_flt_n_seg, WatcallInfo.save );
             HW_CAsgn( flt_n_seg, HW_FLTS );
             HW_CTurnOn( flt_n_seg, HW_SEGS );
             HW_TurnOff( CurrInfo->save, flt_n_seg );
@@ -826,10 +826,8 @@ static void GetRetInfo( void )
             AuxInfo.cclass |= NO_8087_RETURNS;
         } else if( !have.f_list && PragRegSet() != T_NULL ) {
             have.f_list = true;
+            AuxInfo.cclass |= SPECIAL_RETURN;
             AuxInfo.returns = PragRegList();
-            if( !HW_CEqual( AuxInfo.returns, HW_EMPTY ) ) {
-                AuxInfo.cclass |= SPECIAL_RETURN;
-            }
         } else if( !have.f_struct && PragRecog( "struct" ) ) {
             have.f_struct = true;
             GetSTRetInfo();

@@ -53,8 +53,7 @@ enum {
     REQ_RFX_NAMETOCANNONICAL,   /* 12 */
     REQ_RFX_FINDFIRST,          /* 13 */
     REQ_RFX_FINDNEXT,           /* 14 */
-    REQ_RFX_FINDCLOSE,          /* 15 */
-    REQ_RFX_CONFIG              /* 16 */
+    REQ_RFX_FINDCLOSE           /* 15 */
 };
 
 typedef struct {
@@ -182,54 +181,20 @@ typedef struct {
 } rfx_nametocannonical_ret;
 
 /*============================ RFX_FIND_FIRST ===============*/
+#define TRAP_DTA_NAME_MAX   13
 typedef struct {
-    unsigned_8  dos_dta[21];
+    struct {
+        unsigned_8      spare1[13];
+        unsigned_16     dir_entry_num;
+        unsigned_16     cluster;
+        unsigned_8      spare2[4];
+    }           dos;
     unsigned_8  attr;
     unsigned_16 time;
     unsigned_16 date;
     unsigned_32 size;
-    char        name[14];
-} _WCUNALIGNED trap_dta_dos;
-
-typedef struct {
-    unsigned_32         attr;
-    unsigned_16         date;
-    unsigned_16         time;
-    unsigned_32         size;
-    char                name_short[14];
-    char                name[260];
-} _WCUNALIGNED trap_dta_nt;
-
-typedef struct {
-    unsigned_32         attr;
-    unsigned_16         date;
-    unsigned_16         time;
-    unsigned_32         size;
-    char                name[256];
-} _WCUNALIGNED trap_dta_os2;
-
-typedef union {
-    trap_dta_dos        dos;
-    trap_dta_nt         nt;
-    trap_dta_os2        os2;
-} trap_dta;
-
-typedef struct {
-    unsigned_64         handle;
-    signed_32           attrib;
-}                   handle_info_nt;
-
-typedef struct {
-    union {
-        unsigned_16     h16;
-        unsigned_32     h32;
-    }               handle;
-}               handle_info_os2;
-
-typedef union {
-    handle_info_nt      nt;
-    handle_info_os2     os2;
-}                   handle_info;
+    char        name[TRAP_DTA_NAME_MAX + 1];
+} _WCUNALIGNED trap_dta;
 
 typedef struct {
     supp_prefix         supp;
@@ -240,13 +205,13 @@ typedef struct {
 
 typedef struct {
     trap_error          err;
-    /* followed by a handle info and trap_dta */
+    /* followed by a trap_dta */
 } rfx_findfirst_ret;
 
 typedef struct {
     supp_prefix         supp;
     access_req          req;
-    /* followed by a handle info and trap_dta */
+    /* followed by a trap_dta */
 } rfx_findnext_req;
 
 typedef struct {
@@ -257,25 +222,12 @@ typedef struct {
 typedef struct {
     supp_prefix         supp;
     access_req          req;
-    /* followed by a handle info */
 } rfx_findclose_req;
 
 typedef struct {
     trap_error          err;
     /* followed by a trap_dta */
 } rfx_findclose_ret;
-
-typedef struct {
-    supp_prefix         supp;
-    access_req          req;
-} rfx_config_req;
-
-typedef struct {
-    trap_error          err;
-    unsigned_16         find_len;
-    unsigned_16         path_len;
-    unsigned_8          os;
-} rfx_config_ret;
 
 #include "poppck.h"
 

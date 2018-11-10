@@ -119,7 +119,6 @@ static service_func * const RFXRequests[] = {
     ReqRfx_findfirst,
     ReqRfx_findnext,
     ReqRfx_findclose,
-    ReqRfx_config,
 };
 #endif
 

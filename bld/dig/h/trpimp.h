@@ -148,7 +148,6 @@ extern trap_retval ReqRfx_nametocannonical(void);
 extern trap_retval ReqRfx_findfirst(void);
 extern trap_retval ReqRfx_findnext(void);
 extern trap_retval ReqRfx_findclose(void);
-extern trap_retval ReqRfx_config(void);
 #endif
 
 #ifdef WANT_CAPABILITIES

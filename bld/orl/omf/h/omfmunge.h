@@ -76,7 +76,7 @@ extern orl_return       OmfAddGrpDef( omf_file_handle ofh, omf_idx name, omf_idx
 
 extern orl_return       OmfModEnd( omf_file_handle ofh );
 
-extern orl_return       OmfAddComment( omf_file_handle ofh, omf_comment_class class, unsigned_8 flags, omf_bytes buff, omf_rec_size len );
+extern orl_return       OmfAddComment( omf_file_handle ofh, unsigned_8 class, unsigned_8 flags, omf_bytes buff, omf_rec_size len );
 
 extern orl_return       OmfAddLineNum( omf_sec_handle sh, unsigned_16 line, unsigned_32 offset );
 

@@ -38,11 +38,7 @@
 _WCRTLINK void _dos_getdrive( unsigned *drive )
 {
     char        buff[MAX_PATH];
-    DWORD       rc;
 
-    *drive = 0;
-    rc = GetCurrentDirectory( sizeof( buff ), buff );
-    if( rc && rc < sizeof( buff ) ) {
-        *drive = tolower( (unsigned char)buff[0] ) - 'a' + 1;
-    }
+    GetCurrentDirectory( sizeof( buff ), buff );
+    *drive = tolower( (unsigned char)buff[0] ) - 'a' + 1;
 }

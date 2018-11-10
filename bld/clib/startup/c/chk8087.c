@@ -2,7 +2,6 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -70,25 +69,19 @@ extern void __init_80x87( void );
 #if defined( __DOS_086__ )
 #pragma aux __init_80x87 "*" =      \
         "cmp    __dos87real,0"      \
-        "jz short L1"               \
+        "jz     l1"                 \
         "finit"                     \
         "fldcw  __8087cw"           \
-    "L1: cmp    __dos87emucall,0"   \
-        "jz short L2"               \
+"l1:     cmp    __dos87emucall,0"   \
+        "jz     l2"                 \
         "mov    ax,1"               \
-        "call __dos87emucall"       \
-    "L2:"                           \
-    parm caller     [] \
-    value           [] \
-    modify exact    [ax]
+        "call   __dos87emucall"     \
+"l2:" ;
 #else
 #pragma aux __init_80x87 "*" =      \
         "fninit"                    \
         "fwait"                     \
-        "fldcw  __8087cw"           \
-    parm caller     [] \
-    value           [] \
-    modify exact    []
+        "fldcw  __8087cw" ;
 #endif
 
 /* 0 => no x87; 1 => 8087; 2 => 80287; 3 => 80387 */
@@ -104,55 +97,55 @@ extern void __frstor( _87state * );
 
   #if defined( __BIG_DATA__ )
     #pragma aux __fsave =   \
-            "push    ds"            \
-            "mov     ds,dx"         \
-            "fsave   [bx]"          \
-            "fwait"                 \
-            "pop     ds"            \
-        parm routine    [dx bx] \
-        value           [] \
-        modify exact    []
+    "push    bx"            \
+    "push    ds"            \
+    "mov     ds,dx"         \
+    "mov     bx,ax"         \
+    "fsave   [bx]"          \
+    "fwait"                 \
+    "pop     ds"            \
+    "pop     bx"            \
+    parm routine [dx ax];
   #else
     #pragma aux __fsave =   \
-            "fsave   [bx]"          \
-            "fwait"                 \
-        parm routine    [bx] \
-        value           [] \
-        modify exact    []
+    "push    bx"            \
+    "mov     bx,ax"         \
+    "fsave   [bx]"          \
+    "fwait"                 \
+    "pop     bx"            \
+    parm routine [ax];
   #endif
 
   #if defined( __BIG_DATA__ )
     #pragma aux __frstor =  \
-            "push    ds"            \
-            "mov     ds,dx"         \
-            "frstor  [bx]"          \
-            "fwait"                 \
-            "pop     ds"            \
-        parm routine    [dx bx] \
-        value           [] \
-        modify exact    []
+    "push    bx"            \
+    "push    ds"            \
+    "mov     ds,dx"         \
+    "mov     bx,ax"         \
+    "frstor  [bx]"          \
+    "fwait"                 \
+    "pop     ds"            \
+    "pop     bx"            \
+    parm routine [dx ax];
   #else
     #pragma aux __frstor =  \
-            "frstor  [bx]"          \
-            "fwait"                 \
-        parm routine    [bx] \
-        value           [] \
-        modify exact    []
+    "push    bx"            \
+    "mov     bx,ax"         \
+    "frstor  [bx]"          \
+    "fwait"                 \
+    "pop     bx"            \
+    parm routine [ax];
   #endif
 
 #else   /* !_M_I86 */
 
 #pragma aux __fsave =   \
-        "fsave [eax]"   \
-    parm routine    [eax] \
-    value           [] \
-    modify exact    []
+    "fsave [eax]"       \
+    parm routine [eax];
 
 #pragma aux __frstor =  \
-        "frstor [eax]"  \
-    parm routine    [eax] \
-    value           [] \
-    modify exact    []
+    "frstor [eax]"      \
+    parm routine [eax];
 
 #endif
 
@@ -190,14 +183,12 @@ void __init_8087( void )
 
 extern unsigned char _bin_to_ascii_offs( unsigned char c );
 #pragma aux _bin_to_ascii_offs = \
-        "and    al,0Fh"     \
-        "cmp    al,9"       \
-        "jbe short L1"      \
-        "add    al,7"       \
-    "L1:"                   \
-    parm routine    [al] \
-    value           [al] \
-    modify exact    [al]
+    "and  al,0Fh" \
+    "cmp  al,9" \
+    "jbe short L1" \
+    "add  al,7" \
+    "L1:" \
+    parm routine [al] value [al];
 
 static void _WCI86FAR __default_sigfpe_handler( int fpe_sig )
 {
@@ -271,16 +262,14 @@ void __chk8087( void )
 #elif defined( __NETWARE__ )
 
 extern short __87present( void );
-#pragma aux __87present =   \
-        "smsw   ax"         \
-        "test   ax,4"       \
-        "jne short no_emu"  \
-        "xor    ax,ax"      \
-    "no_emu:"               \
-        "mov    ax,1"       \
-    parm caller     [] \
-    value           [ax] \
-    modify exact    [ax]
+#pragma aux __87present =       \
+    "smsw  ax           ",      \
+    "test  ax, 4        ",      \
+    "jne   no_emu       ",      \
+    "xor   ax, ax       ",      \
+    "no_emu:            ",      \
+    "mov   ax, 1        "       \
+value [ ax ];
 
 extern void __chk8087( void )
 /*****************************/

@@ -75,25 +75,23 @@ typedef struct {
 #ifdef _M_I86
 extern unsigned short __far *_dos_get_dbcs_lead_table( void );
 #pragma aux _dos_get_dbcs_lead_table = \
-        "push   bp"         \
-        "push   ds"         \
-        "xor    ax,ax"      \
-        "mov    ds,ax"      \
-        "mov    ah,63h"     \
-        "int 21h"           \
-        "mov    di,ds"      \
-        "jc short L1"       \
-        "test   al,al"      \
-        "jnz short L1"      \
-        "test   di,di"      \
-        "jnz short L2"      \
-    "L1: xor    di,di"      \
-        "xor    si,si"      \
-    "L2: pop    ds"         \
-        "pop    bp"         \
-    parm caller \
-    value       [di si] \
-    modify      [ax bx cx dx]
+        "push bp"       \
+        "push ds"       \
+        "xor ax,ax"     \
+        "mov ds,ax"     \
+        "mov ah,63h"    \
+        "int 21h"       \
+        "mov di,ds"     \
+        "jc L1"         \
+        "test al,al"    \
+        "jnz L1"        \
+        "test di,di"    \
+        "jnz L2"        \
+    "L1: xor di,di"     \
+        "xor si,si"     \
+    "L2: pop ds"        \
+        "pop bp"        \
+    value [di si] modify [ax bx cx dx];
 #endif
 
 unsigned short __far *dos_get_dbcs_lead_table( void )

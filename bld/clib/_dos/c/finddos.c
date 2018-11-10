@@ -2,7 +2,6 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,12 +50,12 @@ extern unsigned __dos_find_close_dta( struct find_t *fdta );
   #ifdef __BIG_DATA__
     #pragma aux __dos_find_first_dta = \
             _SET_DSDX           \
-            "push   es"         \
-            "push   bx"         \
+            "push es"           \
+            "push bx"           \
             _MOV_AH DOS_SET_DTA \
             _INT_21             \
-            "pop    dx"         \
-            "pop    ds"         \
+            "pop  dx"           \
+            "pop  ds"           \
             _MOV_AH DOS_FIND_FIRST \
             _INT_21             \
             _RST_DS             \
@@ -87,13 +86,13 @@ extern unsigned __dos_find_close_dta( struct find_t *fdta );
     #pragma aux __dos_find_first_dta = \
             _MOV_AH DOS_SET_DTA \
             _INT_21             \
-            "mov    dx,bx"      \
+            "mov  dx,bx"        \
             _MOV_AH DOS_FIND_FIRST \
             _INT_21             \
             "call __doserror_"  \
         parm caller     [bx] [cx] [dx] \
         value           [ax] \
-        modify exact    [ax dx]
+        modify exact    [ax]
 
     #pragma aux __dos_find_next_dta = \
             _MOV_AH DOS_SET_DTA \
@@ -133,7 +132,7 @@ extern unsigned __dos_find_close_dta( struct find_t *fdta );
             _MOV_AX_W 1 DOS_FIND_NEXT \
             _INT_21             \
             "call __doserror_"  \
-            "xor    eax,eax"    \
+            "xor  eax,eax"      \
         parm caller     [edx] \
         value           [eax] \
         modify exact    [eax]

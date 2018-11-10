@@ -30,7 +30,9 @@
 
 
 #include "plusplus.h"
+
 #include <assert.h>
+
 #include "preproc.h"
 #include "stats.h"
 #include "scan.h"
@@ -40,7 +42,6 @@
 #include "name.h"
 #include "context.h"
 #include "unicode.h"
-
 
 #if defined(__DOS__) || defined(__OS2__) || defined(__NT__)
     #define SYS_EOF_CHAR    0x1A
@@ -54,9 +55,6 @@
 #define _BufferOverrun (*((uint_32*)(&Buffer[sizeof(Buffer)-sizeof(uint_32)])))
 #define BUFFER_OVERRUN_CHECK    (0x35791113)
 #endif
-
-#define char2bin(c)     (((char)(c)) - '0')
-#define int2char(c)     ((char)(c))
 
 static void             nextMacroToken( void );
 static token_source_fn  *tokenSource;
@@ -215,7 +213,7 @@ static int saveNextChar( void )
 
     c = NextChar();
     if( TokenLen < BUF_SIZE - 2 ) {
-        Buffer[TokenLen++] = int2char( c );
+        Buffer[TokenLen++] = c;
     } else if( TokenLen == BUF_SIZE - 2 ) {
         if( NestLevel == SkipLevel ) {
             CErr1( ERR_TOKEN_TRUNCATED );
@@ -242,7 +240,7 @@ static bool scanHex( bool expanding )
         if( CharSet[c] & C_HX ) {
             c = (( c | HEX_MASK ) - HEX_BASE ) + 10 + '0';
         }
-        if( U64Cnv16( &Constant64, char2bin( c ) ) ) {
+        if( U64Cnv16( &Constant64, c - '0' ) ) {
             flag.too_big = true;
         }
         flag.at_least_one = true;
@@ -449,7 +447,7 @@ static TOKEN charConst( type_id char_type, bool expanding )
     value = 0;
     for( ;; ) {
         if( c == '\r' || c == '\n' ) {
-            DbgAssert( Buffer[TokenLen - 1] == int2char( c ) );
+            DbgAssert( Buffer[TokenLen - 1] == c );
             --TokenLen;
             token = T_BAD_TOKEN;
             break;
@@ -718,7 +716,7 @@ static TOKEN doScanString( type_id string_type, bool expanding )
     SrcFileSetSwEnd( true );
     ok = 0;
     c = NextChar();
-    Buffer[0] = int2char( c );
+    Buffer[0] = c;
     TokenLen = 1;
     for(;;) {
         if( c == '\n' )
@@ -738,7 +736,7 @@ static TOKEN doScanString( type_id string_type, bool expanding )
                 break;
             }
             c = NextChar();
-            Buffer[TokenLen++] = int2char( c );
+            Buffer[TokenLen++] = c;
             if(( CharSet[c] & C_WS ) == 0 ) {
                 doESCChar( c, expanding, string_type );
             }
@@ -747,7 +745,7 @@ static TOKEN doScanString( type_id string_type, bool expanding )
             if( CharSet[c] & C_DB ) {
                 // if first char of a double-byte char, grab next one
                 c = NextChar();
-                Buffer[TokenLen++] = int2char( c );
+                Buffer[TokenLen++] = c;
             }
             if( TokenLen > BUF_SIZE - 32 ) {
                 // break long strings apart (parser will join them)
@@ -756,7 +754,7 @@ static TOKEN doScanString( type_id string_type, bool expanding )
                 break;
             }
             c = NextChar();
-            Buffer[TokenLen++] = int2char( c );
+            Buffer[TokenLen++] = c;
         }
     }
     SrcFileSetSwEnd( false );
@@ -822,9 +820,9 @@ static TOKEN scanName( bool expanding )
     int c;
 
     SrcFileCurrentLocation();
-    Buffer[0] = int2char( CurrChar );
+    Buffer[0] = CurrChar;
     c = NextChar();
-    Buffer[1] = int2char( c );
+    Buffer[1] = c;
     TokenLen = 2;
     return( doScanName( c, expanding ) );
 }
@@ -833,7 +831,7 @@ static TOKEN doScanAsmToken( void )
 {
     TokenLen = 0;
     do {
-        Buffer[TokenLen++] = int2char( CurrChar );
+        Buffer[TokenLen++] = CurrChar;
         if( CurrChar == '.' ) {
             CurrChar = saveNextChar();
         }
@@ -849,9 +847,9 @@ static TOKEN scanWide( bool expanding )  // scan something that starts with L
     TOKEN token;
 
     SrcFileCurrentLocation();
-    Buffer[0] = int2char( CurrChar );
+    Buffer[0] = CurrChar;
     c = NextChar();
-    Buffer[1] = int2char( c );
+    Buffer[1] = c;
     TokenLen = 2;
     if( c == '"' ) {                    // L"abc"
         token = doScanString( TYP_WCHAR, expanding );
@@ -914,7 +912,7 @@ static TOKEN scanNum( bool expanding )
     too_big = 0;
     TokenLen = 1;
     c = CurrChar;
-    Buffer[0] = int2char( c );
+    Buffer[0] = c;
     if( c == '0' ) {
         c = saveNextChar();
         if( ONE_CASE( c ) == ONE_CASE( 'X' ) ) {
@@ -937,7 +935,7 @@ static TOKEN scanNum( bool expanding )
                 max_digit = '9';
             }
             while( c >= '0' && c <= max_digit ) {
-                if( U64Cnv8( &Constant64, char2bin( c ) ) ) {
+                if( U64Cnv8( &Constant64, c - '0' ) ) {
                     too_big = 1;
                 }
                 c = saveNextChar();
@@ -966,12 +964,12 @@ static TOKEN scanNum( bool expanding )
         max_value = &uintMax;
     } else {                /* scan decimal number */
         // we know 'c' is a digit
-        U32ToU64( char2bin( c ), &Constant64 );
+        U32ToU64( c - '0', &Constant64 );
         c = saveNextChar();
         for(;;) {
             if(( CharSet[c] & C_DI ) == 0 )
                 break;
-            if( U64Cnv10( &Constant64, char2bin( c ) ) ) {
+            if( U64Cnv10( &Constant64, c - '0' ) ) {
                 too_big = 1;
             }
             c = saveNextChar();
@@ -1183,7 +1181,7 @@ static TOKEN scanDelim1( bool expanding )
 
     SrcFileCurrentLocation();
     token = TokValue[CurrChar];
-    Buffer[0] = int2char( CurrChar );
+    Buffer[0] = CurrChar;
     Buffer[1] = '\0';
     TokenLen = 1;
     NextChar();
@@ -1201,11 +1199,11 @@ static TOKEN scanDelim12( bool expanding )       // @ or @@ token
 
     SrcFileCurrentLocation();
     c = CurrChar;
-    Buffer[0] = int2char( c );
+    Buffer[0] = c;
     tok = TokValue[c];
     token_len = 1;
     chr2 = NextChar();
-    Buffer[1] = int2char( chr2 );
+    Buffer[1] = chr2;
     if( chr2 == c ) {
         tok += 2;
         ++token_len;
@@ -1227,11 +1225,11 @@ static TOKEN scanDelim12EQ( bool expanding )     // @, @@, or @= token
 
     SrcFileCurrentLocation();
     c = CurrChar;
-    Buffer[0] = int2char( c );
+    Buffer[0] = c;
     tok = TokValue[c];
     token_len = 1;
     chr2 = NextChar();
-    Buffer[1] = int2char( chr2 );
+    Buffer[1] = chr2;
     if( chr2 == '=' ) {
         ++tok;
         ++token_len;
@@ -1257,11 +1255,11 @@ static TOKEN scanDelim12EQ2EQ( bool expanding )  // @, @@, @=, or @@= token
 
     SrcFileCurrentLocation();
     c = CurrChar;
-    Buffer[0] = int2char( c );
+    Buffer[0] = c;
     tok = TokValue[c];
     token_len = 1;
     chr2 = NextChar();
-    Buffer[1] = int2char( chr2 );
+    Buffer[1] = chr2;
     if( chr2 == '=' ) {
         ++tok;
         ++token_len;
@@ -1292,11 +1290,11 @@ static TOKEN scanDelim1EQ( bool expanding )      // @ or @= token
 
     SrcFileCurrentLocation();
     c = CurrChar;
-    Buffer[0] = int2char( c );
+    Buffer[0] = c;
     tok = TokValue[c];
     token_len = 1;
     chr2 = NextChar();
-    Buffer[1] = int2char( chr2 );
+    Buffer[1] = chr2;
     if( chr2 == '=' ) {
         ++tok;
         ++token_len;
@@ -1316,7 +1314,7 @@ static TOKEN scanSlash( bool expanding ) // /, /=, // comment, or /*comment*/
     SrcFileCurrentLocation();
     Buffer[0] = '/';
     nc = NextChar();
-    Buffer[1] = int2char( nc );
+    Buffer[1] = nc;
     tok = T_DIV;
     token_len = 1;
     if( nc == '=' ) {
@@ -1354,7 +1352,7 @@ static TOKEN scanLT( bool expanding )    // <, <=, <<, <<=, <%, <:
     tok = T_LT;
     token_len = 1;
     nc = NextChar();
-    Buffer[1] = int2char( nc );
+    Buffer[1] = nc;
     if( nc == '=' ) {
         ++tok;
         ++token_len;
@@ -1395,7 +1393,7 @@ static TOKEN scanPercent( bool expanding )   // %, %=, %>, %:, %:%:
     tok = T_PERCENT;
     token_len = 1;
     nc = NextChar();
-    Buffer[1] = int2char( nc );
+    Buffer[1] = nc;
     if( nc == '=' ) {
         ++tok;
         ++token_len;
@@ -1437,7 +1435,7 @@ static TOKEN scanColon( bool expanding ) // :, ::, or :>
     SrcFileCurrentLocation();
     Buffer[0] = ':';
     nc = NextChar();
-    Buffer[1] = int2char( nc );
+    Buffer[1] = nc;
     tok = T_COLON;
     token_len = 1;
     if( nc == ':' ) {
@@ -1468,7 +1466,7 @@ static TOKEN scanMinus( bool expanding ) // -, -=, --, ->, or ->*
     SrcFileCurrentLocation();
     Buffer[0] = '-';
     nc = NextChar();
-    Buffer[1] = int2char( nc );
+    Buffer[1] = nc;
     tok = T_MINUS;
     token_len = 1;
     if( nc == '=' ) {
@@ -1483,7 +1481,7 @@ static TOKEN scanMinus( bool expanding ) // -, -=, --, ->, or ->*
         ++token_len;
         nnc = NextChar();
         if( nnc == '*' ) {
-            Buffer[2] = int2char( nnc );
+            Buffer[2] = nnc;
             tok = T_ARROW_STAR;
             NextChar();
             ++token_len;
@@ -1504,7 +1502,7 @@ static TOKEN scanFloat( bool expanding )
     if( PPControl & PPCTL_ASM )
         return( doScanAsmToken() );
 
-    Buffer[0] = int2char( CurrChar );
+    Buffer[0] = CurrChar;
     TokenLen = 1;
     return( doScanFloat() );
 }
@@ -1566,7 +1564,7 @@ static TOKEN scanPPDigit( bool expanding )
     /* unused parameters */ (void)expanding;
 
     SrcFileCurrentLocation();
-    Buffer[0] = int2char( CurrChar );
+    Buffer[0] = CurrChar;
     TokenLen = 1;
     return( scanPPNumber() );
 }
@@ -1609,7 +1607,7 @@ static TOKEN scanLStringContinue( bool expanding )
 static TOKEN scanCharConst( bool expanding )
 {
     SrcFileCurrentLocation();
-    Buffer[0] = int2char( CurrChar );
+    Buffer[0] = CurrChar;
     TokenLen = 1;
     return( charConst( TYP_CHAR, expanding ) );
 }
@@ -1640,7 +1638,7 @@ static TOKEN scanCarriageReturn( bool expanding )
 static TOKEN scanInvalid( bool expanding )
 {
     SrcFileCurrentLocation();
-    Buffer[0] = int2char( CurrChar );
+    Buffer[0] = CurrChar;
     Buffer[1] = '\0';
     TokenLen = 1;
 #if defined( SYS_EOF_CHAR )

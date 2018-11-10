@@ -38,7 +38,6 @@
 #include "rfxdata.h"
 #include "dbgio.h"
 #include "tinyio.h"
-#include "trprfx.h"
 #include "local.h"
 #include "rfx.h"
 
@@ -206,65 +205,24 @@ error_handle LocalGetCwd( int drv, char *where )
     return( DOSErrCode( TinyGetCWDir( where, drv )) );
 }
 
-error_handle LocalFindFirst( const char *pattern, trap_dta *dta, int attrib, handle_info *hdlinf )
-/************************************************************************************************/
+error_handle LocalFindFirst( const char *pattern, void *info, unsigned info_len, int attrib )
+/*******************************************************************************************/
 {
-    error_handle    errh;
-
-    (void)hdlinf;
-
-    TinySetDTA( dta );
-    errh = DOSErrCode( TinyFindFirst( pattern, attrib ) );
-    return( errh );
+    info_len = info_len;
+    TinySetDTA( info );
+    return( DOSErrCode( TinyFindFirst( pattern, attrib )) );
 }
 
-int LocalFindNext( trap_dta *dta, handle_info *hdlinf )
-/*****************************************************/
+int LocalFindNext( void *info, unsigned info_len )
+/************************************************/
 {
-    int     rc;
-
-    (void)hdlinf;
-
-    TinySetDTA( dta );
-    rc = TinyFindNext();
-    return( rc );
-}
-
-int LocalFindClose( handle_info *hdlinf )
-/***************************************/
-{
-    (void)hdlinf;
-
-    return( 0 );
+    info_len = info_len;
+    TinySetDTA( info );
+    return( TinyFindNext() );
 }
 
 error_handle LocalSetFileAttr( const char *name, long attr )
 /**********************************************************/
 {
     return( DOSErrCode( TinySetFileAttr( name, attr )) );
-}
-
-char    *LocalGetFindName( trap_dta *dta )
-{
-    return( dta->dos.name );
-}
-
-long    LocalGetFindAttr( trap_dta *dta )
-{
-    return( dta->dos.attr );
-}
-
-long    LocalGetFindSize( trap_dta *dta )
-{
-    return( dta->dos.size );
-}
-
-long    LocalGetFindDate( trap_dta *dta )
-{
-    return( dta->dos.date );
-}
-
-long    LocalGetFindTime( trap_dta *dta )
-{
-    return( dta->dos.time );
 }

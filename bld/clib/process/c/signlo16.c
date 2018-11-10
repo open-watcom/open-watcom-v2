@@ -63,22 +63,6 @@ static struct sigtab _SignalTable[] = {
     { SIG_DFL, NULL, 0, 0 }                 /* SIGIOVFL */
 };
 
-#if defined(_M_IX86)
-#pragma aux (__outside_CLIB) __sigfpe_wrapper
-#endif
-static void _WCNEAR __sigfpe_wrapper( __sig_func func, int fpe_type )
-{
-    (*(__sigfpe_func)func)( SIGFPE, fpe_type );
-}
-
-#if defined(_M_IX86)
-#pragma aux (__outside_CLIB) __sig_wrapper
-#endif
-static void _WCNEAR __sig_wrapper( __sig_func func, int sig )
-{
-    (*func)( sig );
-}
-
 static void __sigabort( void )
 {
     raise( SIGABRT );
@@ -92,7 +76,7 @@ _WCRTLINK void _WCI86FAR __sigfpe_handler( int fpe_type )
     func = _RWD_sigtab[SIGFPE].func;
     if( func != SIG_IGN  &&  func != SIG_DFL  &&  func != SIG_ERR ) {
         _RWD_sigtab[SIGFPE].func = SIG_DFL;
-        __sigfpe_wrapper( func, fpe_type );        /* so we can pass 2'nd parm */
+        (*(__sigfpe_func)func)( SIGFPE, fpe_type );        /* so we can pass 2'nd parm */
     }
 }
 
@@ -186,7 +170,7 @@ _WCRTLINK int raise( int sig )
     case SIGIOVFL:
         if( func != SIG_IGN  &&  func != SIG_DFL  &&  func != SIG_ERR ) {
             _RWD_sigtab[sig].func = SIG_DFL;
-            __sig_wrapper( func, sig );
+            (*func)( sig );
         }
         break;
     default:

@@ -291,8 +291,7 @@ evil_goto:  if( ptr != NULL ) {
  */
 static bool SelectLineMouseHandler( window_id wid, int win_x, int win_y )
 {
-    int x, y;
-    ctl_id menu_id;
+    int x, y, i;
 
     if( LastMouseEvent != VI_MOUSE_DRAG && LastMouseEvent != VI_MOUSE_PRESS &&
         LastMouseEvent != VI_MOUSE_DCLICK && LastMouseEvent != VI_MOUSE_RELEASE &&
@@ -340,9 +339,9 @@ static bool SelectLineMouseHandler( window_id wid, int win_x, int win_y )
     }
     if( isMenu && EditFlags.Menus && wid == menu_window_id &&
         LastMouseEvent != VI_MOUSE_PRESS_R ) {
-        menu_id = GetMenuIdFromCoord( win_x );
-        if( menu_id != NO_ID ) {
-            rlMenuNum = menu_id - GetCurrentMenuId();
+        i = GetMenuIdFromCoord( win_x );
+        if( i >= 0 ) {
+            rlMenuNum = i - GetCurrentMenuId();
             if( rlMenuNum != 0 ) {
                 rlMenu = true;
             }
@@ -484,8 +483,8 @@ vi_rc SelectLineInFile( selflinedata *sfd )
     if( sfd->title != NULL ) {
         WindowTitle( fs_select_window_id, sfd->title );
     }
-    pagetop = text_lines * ( cln / text_lines );
-    if( ( cln % text_lines ) != 0 ) {
+    pagetop = text_lines * (cln / text_lines);
+    if( cln % text_lines != 0 ) {
         pagetop++;
     }
     key = 0;
@@ -497,10 +496,12 @@ vi_rc SelectLineInFile( selflinedata *sfd )
      * now, allow free scrolling and selection
      */
     while( !done ) {
+
         if( redraw ) {
             if( sfd->show_lineno ) {
                 MySprintf(tmp, "%l/%l", cln, endline );
-                WindowBorderData( fs_select_window_id, tmp, sfd->wi->area.x2 - sfd->wi->area.x1 - strlen( tmp ) );
+                i = sfd->wi->area.x2 - sfd->wi->area.x1;
+                WindowBorderData( fs_select_window_id, tmp, i - strlen( tmp ) );
                 drawbord = true;
             }
             if( hiflag ) {
@@ -531,6 +532,7 @@ vi_rc SelectLineInFile( selflinedata *sfd )
         if( hiflag && ((key >= VI_KEY( ALT_A ) && key <= VI_KEY( ALT_Z )) ||
                        (key >= VI_KEY( a ) && key <= VI_KEY( z )) || (key >= VI_KEY( A ) && key <= VI_KEY( Z )) ||
                        (key >= VI_KEY( 1 ) && key <= VI_KEY( 9 ))) ) {
+            i = 0;
             if( key >= VI_KEY( ALT_A ) && key <= VI_KEY( ALT_Z ) ) {
                 key2 = key - VI_KEY( ALT_A ) + 'A';
             } else if( key >= VI_KEY( a ) && key <= VI_KEY( z ) ) {
@@ -538,14 +540,15 @@ vi_rc SelectLineInFile( selflinedata *sfd )
             } else {
                 key2 = key;
             }
-            i = 0;
-            for( ptr = sfd->hilite; ptr->_char != '\0'; ptr++ ) {
+            ptr = sfd->hilite;
+            while( ptr->_char != '\0' ) {
                 if( toupper( ptr->_char ) == key2 ) {
                     cln = i + 1;
                     key = VI_KEY( ENTER );
                     break;
                 }
                 ++i;
+                ++ptr;
             }
         }
 
@@ -553,6 +556,7 @@ vi_rc SelectLineInFile( selflinedata *sfd )
          * check if a return-event has been selected
          */
         if( sfd->retevents != NULL ) {
+            i = 0;
             if( key == VI_KEY( MOUSEEVENT ) ) {
                 if( fs_mouse_window_id == fs_event_window_id && LastMouseEvent == VI_MOUSE_PRESS ) {
                     DisplayMouse( false );
@@ -560,12 +564,13 @@ vi_rc SelectLineInFile( selflinedata *sfd )
                     key = VI_KEY( ENTER );
                 }
             } else {
-                for( i = 0; sfd->retevents[i] != VI_KEY( DUMMY ); i++ ) {
+                while( sfd->retevents[i] != 0 ) {
                     if( key == sfd->retevents[i] ) {
                         sfd->event = key;
                         key = VI_KEY( ENTER );
                         break;
                     }
+                    i++;
                 }
             }
         }
@@ -653,9 +658,11 @@ vi_rc SelectLineInFile( selflinedata *sfd )
                 break;
             }
             break;
+
         case VI_KEY( ESC ):
             done = true;
             break;
+
         evil_enter:
         case VI_KEY( ENTER ):
         case VI_KEY( SPACE ):
@@ -665,13 +672,13 @@ vi_rc SelectLineInFile( selflinedata *sfd )
             if( sfd->checkres != NULL ) {
                 line    *cline;
                 fcb     *cfcb;
-                char    *p;
+                char    *ptr;
 
                 i = cln - 1;
                 GimmeLinePtr( cln, sfd->f, &cfcb, &cline );
-                p = SkipLeadingSpaces( cline->data );
+                ptr = SkipLeadingSpaces( cline->data );
                 strcpy( tmp, sfd->vals[i] );
-                rc = sfd->checkres( p, tmp, &winflag );
+                rc = sfd->checkres( ptr, tmp, &winflag );
                 if( winflag == 2 ) {
                     MoveWindowToFront( fs_select_window_id );
                 }
@@ -692,6 +699,7 @@ vi_rc SelectLineInFile( selflinedata *sfd )
                 done = true;
             }
             break;
+
         case VI_KEY( LEFT ):
         case VI_KEY( h ):
             if( sfd->allowrl != NULL ) {
@@ -699,6 +707,7 @@ vi_rc SelectLineInFile( selflinedata *sfd )
                 done = true;
             }
             break;
+
         case VI_KEY( RIGHT ):
         case VI_KEY( l ):
             if( sfd->allowrl != NULL ) {
@@ -706,37 +715,45 @@ vi_rc SelectLineInFile( selflinedata *sfd )
                 done = true;
             }
             break;
+
         evil_up:
         case VI_KEY( UP ):
         case VI_KEY( k ):
             drawbord = adjustCLN( &cln, &pagetop, -1, endline, text_lines );
             break;
+
         evil_down:
         case VI_KEY( DOWN ):
         case VI_KEY( j ):
             drawbord = adjustCLN( &cln, &pagetop, 1, endline, text_lines );
             break;
+
         case VI_KEY( CTRL_PAGEUP ):
             drawbord = adjustCLN( &cln, &pagetop, -cln + 1, endline, text_lines );
             break;
+
         case VI_KEY( CTRL_PAGEDOWN ):
             drawbord = adjustCLN( &cln, &pagetop, endline - cln, endline, text_lines );
             break;
+
         evil_pageup:
         case VI_KEY( PAGEUP ):
         case VI_KEY( CTRL_B ):
             drawbord = adjustCLN( &cln, &pagetop, -text_lines, endline, text_lines );
             break;
+
         evil_pagedown:
         case VI_KEY( PAGEDOWN ):
         case VI_KEY( CTRL_F ):
             drawbord = adjustCLN( &cln, &pagetop, text_lines, endline, text_lines );
             break;
+
         case VI_KEY( HOME ):
             drawbord = true;
             cln = 1;
             pagetop = 1;
             break;
+
         case VI_KEY( END ):
             drawbord = true;
             cln = endline;
@@ -745,11 +762,13 @@ vi_rc SelectLineInFile( selflinedata *sfd )
                 pagetop = 1;
             }
             break;
+
         default:
             redraw = false;
             break;
 
         }
+
     }
     PopMouseEventHandler();
     CloseAWindow( fs_select_window_id );

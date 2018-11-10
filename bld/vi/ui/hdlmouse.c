@@ -47,7 +47,7 @@ vi_rc HandleMouseEvent( void )
     window_id   wid;
     info        *cinfo;
     window      *w;
-    ctl_id      menu_id;
+    int         i;
     bool        diff_word;
     vi_rc       rc;
 
@@ -171,9 +171,9 @@ vi_rc HandleMouseEvent( void )
             }
         }
         if( EditFlags.Menus && wid == menu_window_id ) {
-            menu_id = GetMenuIdFromCoord( win_x - 1 );
-            if( menu_id != NO_ID ) {
-                return( SetToMenuId( menu_id ) );
+            i = GetMenuIdFromCoord( win_x - 1 );
+            if( i >= 0 ) {
+                return( SetToMenuId( i ) );
             }
         }
     }

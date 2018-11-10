@@ -45,14 +45,12 @@
 #ifdef _M_I86
 extern unsigned short _dos_get_code_page( void );
 #pragma aux _dos_get_code_page = \
-        "mov    ax,6601h"   \
-        "int 21h"           \
-        "jnc short L1"      \
-        "xor    bx,bx"      \
-    "L1:"                   \
-    parm caller \
-    value       [bx] \
-    modify      [ax dx]
+        "mov ax,6601h"  \
+        "int 21h"       \
+        "jnc L1"        \
+        "xor bx,bx"     \
+    "L1:"               \
+    value [bx] modify [ax dx];
 #endif
 
 unsigned short dos_get_code_page( void )
@@ -113,30 +111,29 @@ unsigned short dos_get_code_page( void )
 #else
 extern unsigned short _dos_get_code_page( void );
 #pragma aux _dos_get_code_page = \
-        "push   ds"         \
-        "push   bp"         \
-        "mov    bp,sp"      \
-        "sub    sp,8"       \
-        "xor    ax,ax"      \
-        "mov    ds,ax"      \
-        "mov    ax,6501h"   /* get international info */ \
-        "mov    bx,0ffffh"  /* global code page */ \
-        "mov    cx,0007h"   /* buffer size */ \
-        "mov    dx,0ffffh"  /* current country */ \
-        "lea    di,[bp-8]"  /* buffer offset */ \
-        "push   ss"         \
-        "pop    es"         /* buffer segment */ \
-        "int 21h"           /* call DOS */ \
-        "mov    ax,[bp-8+5]" /* code page */ \
-        "jnc short NoError" \
-        "xor    ax,ax"      \
-    "NoError:"              \
-        "mov    sp,bp"      \
-        "pop    bp"         \
-        "pop    ds"         \
-    parm caller \
-    value       [ax] \
-    modify      [ax bx cx dx di es]
+        "push ds"       \
+        "push bp"       \
+        "mov bp,sp"     \
+        "sub sp,8"      \
+        "xor ax,ax"     \
+        "mov ds,ax"     \
+        "mov ax,6501h"  /* get international info */ \
+        "mov bx,0ffffh" /* global code page */ \
+        "mov cx,0007h"  /* buffer size */ \
+        "mov dx,0ffffh" /* current country */ \
+        "lea di,[bp-8]" /* buffer offset */ \
+        "push ss"       \
+        "pop es"        /* buffer segment */ \
+        "int 21h"       /* call DOS */ \
+        "mov ax,[bp-8+5]" /* code page */ \
+        "jnc NoError"   \
+        "xor ax,ax"     \
+        "NoError:"      \
+        "mov sp,bp"     \
+        "pop bp"        \
+        "pop ds"        \
+        value           [ax] \
+        modify          [ax bx cx dx di es];
 #endif
 unsigned short dos_get_code_page( void )
 {

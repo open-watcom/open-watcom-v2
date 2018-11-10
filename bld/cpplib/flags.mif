@@ -1,7 +1,7 @@
 ##########################
 # C/C++ COMPILERS SETINGS
 ######
-sw_c_common =-we-w8-zl-x-xx-zam-j -wpx
+sw_c_common =-we-w8-zl-x-xx-zam-j
 # -xr has to be on in case the user uses -xr
 sw_c_common += -xr
 !ifeq release 0

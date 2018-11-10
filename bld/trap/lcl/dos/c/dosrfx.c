@@ -32,7 +32,6 @@
 
 #include <string.h>
 #include <ctype.h>
-#include <dos.h>
 #include "tinyio.h"
 #include "dosver.h"
 #include "trpimp.h"
@@ -40,18 +39,6 @@
 
 
 #define TRPH2LH(th)     (tiny_handle_t)((th)->handle.u._32[0])
-
-trap_retval ReqRfx_config( void )
-{
-    rfx_config_ret  *ret;
-
-    ret = GetOutPtr( 0 );
-    ret->find_len = sizeof( struct find_t );
-    ret->path_len = 64;
-    ret->os = DIG_OS_DOS;
-    ret->err = 0;
-    return( sizeof( *ret ) );
-}
 
 trap_retval ReqRfx_rename( void )
 {
