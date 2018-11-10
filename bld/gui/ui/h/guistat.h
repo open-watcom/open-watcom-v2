@@ -31,5 +31,3 @@
 
 
 extern void GUIDrawStatus( gui_window *wnd );
-extern void GUIFreeStatus( gui_window *wnd );
-extern void GUIResizeStatus( gui_window *wnd );

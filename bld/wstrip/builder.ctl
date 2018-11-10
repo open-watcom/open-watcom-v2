@@ -11,8 +11,8 @@ set PROJDIR=<CWD>
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
-[ BLOCK <1> rel ]
-#================
+[ BLOCK <BLDRULE> rel ]
+#======================
     cdsay <PROJDIR>
 
 [ BLOCK <BINTOOL> build ]
@@ -25,8 +25,8 @@ set PROJDIR=<CWD>
     echo rm -f <OWBINDIR>/bwstrip<CMDEXT>
     rm -f <OWBINDIR>/bwstrip<CMDEXT>
 
-[ BLOCK <1> rel cprel ]
-#======================
+[ BLOCK <BLDRULE> rel cprel ]
+#============================
     <CCCMD> dosi86/wstripx.exe    <OWRELROOT>/binw/wstrip.exe
     <CCCMD> os2386/wstripx.exe    <OWRELROOT>/binp/wstrip.exe
     <CCCMD> nt386/wstripx.exe     <OWRELROOT>/binnt/wstrip.exe

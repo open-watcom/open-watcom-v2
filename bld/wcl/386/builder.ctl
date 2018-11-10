@@ -11,8 +11,8 @@ set PROJDIR=<CWD>
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
-[ BLOCK <1> rel ]
-#================
+[ BLOCK <BLDRULE> rel ]
+#======================
     cdsay <PROJDIR>
 
 [ BLOCK <BINTOOL> build ]
@@ -25,8 +25,8 @@ set PROJDIR=<CWD>
     echo rm -f <OWBINDIR>/bwcl386<CMDEXT>
     rm -f <OWBINDIR>/bwcl386<CMDEXT>
 
-[ BLOCK <1> rel cprel ]
-#======================
+[ BLOCK <BLDRULE> rel cprel ]
+#============================
     <CCCMD> dosi86/wcl386.exe     <OWRELROOT>/binw/
     <CCCMD> dosi86/wcl386.sym     <OWRELROOT>/binw/
     <CCCMD> nt386/wcl386.exe      <OWRELROOT>/binnt/

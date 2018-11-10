@@ -11,8 +11,8 @@ set PROJDIR=<CWD>
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
-[ BLOCK <1> rel ]
-#================
+[ BLOCK <BLDRULE> rel ]
+#======================
     cdsay <PROJDIR>
 
 [ BLOCK <BINTOOL> build ]
@@ -25,8 +25,8 @@ set PROJDIR=<CWD>
     echo rm -f <OWBINDIR>/w32bind<CMDEXT>
     rm -f <OWBINDIR>/w32bind<CMDEXT>
 
-[ BLOCK <1> rel cprel ]
-#======================
+[ BLOCK <BLDRULE> rel cprel ]
+#============================
    <CCCMD> dos386/cwsrun.exe   <OWRELROOT>/binw/w32run.exe
 #   <CCCMD> dos386/x32run.exe   <OWRELROOT>/binw/x32run.exe
 #   <CCCMD> dos386/x32run.exe   <OWRELROOT>/binw/x32run.exe

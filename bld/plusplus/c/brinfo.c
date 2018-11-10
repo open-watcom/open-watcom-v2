@@ -988,7 +988,7 @@ bool BrinfDependsMacroDefined   // DEPENDENCY: MACRO DEFINED OR NOT
 {
     MACVALUE* val;              // - value for macro
     MAC_VTYPE type;             // - type of dependency
-    MEPTR mentry;                  // - NULL or entry def'ed or undef'ed
+    MEPTR mentry;               // - NULL or entry def'ed or undef'ed
 
     if( BrinfActive() ) {
         ExtraRptIncrementCtr( ctr_dep_macro_defined );

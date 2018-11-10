@@ -9,12 +9,12 @@ set PROJDIR=<CWD>
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
-[ BLOCK <1> rel ]
-#================
+[ BLOCK <BLDRULE> rel ]
+#======================
     cdsay <PROJDIR>
 
-[ BLOCK <1> rel cprel ]
-#======================
+[ BLOCK <BLDRULE> rel cprel ]
+#============================
     <CCCMD> wini86/drwatcom.exe  <OWRELROOT>/binw/
     <CCCMD> wini86/drwatcom.sym  <OWRELROOT>/binw/
     <CCCMD> nt386/drwatcom.exe   <OWRELROOT>/binnt/

@@ -53,12 +53,12 @@ build_proc()
                     builder boot
                     RC=$?
                 fi
-            elif [ "$1" = "build" ]; then
+            elif [ "$1" = "build" ] || [ "$1" = "build1" ] || [ "$1" = "build2" ]; then
                 if [ "$TRAVIS_OS_NAME" = "osx" ] && [ "$OWOSXBUILD" != "1" ]; then
                     return 0
                 fi
                 cd $OWSRCDIR
-                builder build
+                builder $1
                 RC=$?
             else
                 RC=0
@@ -71,16 +71,22 @@ build_proc()
                     builder -q boot
                     RC=$?
                 fi
-            elif [ "$1" = "build" ]; then
+            elif [ "$1" = "build" ] || [ "$1" = "build1" ] || [ "$1" = "build2" ]; then
                 if [ "$TRAVIS_OS_NAME" = "osx" ] && [ "$OWOSXBUILD" != "1" ]; then
                     return 0
                 fi
                 cd $OWSRCDIR
-                builder -q build
+                builder -q $1
                 RC=$?
                 if [ $RC -eq 0 ]; then
                     export OWRELROOT=$OWROOT/test
-                    builder -q cprel
+                    if [ "$1" = "boot" ]; then
+                        builder -q cprel
+                    elif [ "$1" = "build1" ]; then
+                        builder -q cprel1
+                    elif [ "$1" = "build2" ]; then
+                        builder -q cprel2
+                    fi
                 fi
             elif [ "$1" = "docpdf" ]; then
                 cd $OWSRCDIR

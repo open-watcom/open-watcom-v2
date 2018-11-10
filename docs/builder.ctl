@@ -17,26 +17,26 @@ set PMAKEKEY=txt
 [ BLOCK .<OWGUINOBUILD> .1 ]
     set PROJPMAKE=guitool .not .and
 
-[ BLOCK <1> docs build rel ]
-#===========================
+[ BLOCK <BLDRULE> docs build rel ]
+#=================================
     pmake -d <PMAKEKEY> <PROJPMAKE> <2> <3> <4> <5> <6> <7> <8> <9> -h
 
-[ BLOCK <1> docpdf ]
-#===================
+[ BLOCK <BLDRULE> docpdf ]
+#=========================
     cd pdf
     pmake -d <PMAKEKEY> <PROJPMAKE> <2> <3> <4> <5> <6> <7> <8> <9> -h docset=docpdf
     cd ..
 
-[ BLOCK <1> docsclean clean ]
-#============================
+[ BLOCK <BLDRULE> docsclean clean ]
+#==================================
     pmake -d <PMAKEKEY> <PROJPMAKE> <2> <3> <4> <5> <6> <7> <8> <9> -h clean
 
-[ BLOCK <1> docs rel docpdf ]
-#============================
+[ BLOCK <BLDRULE> docs rel docpdf ]
+#==================================
     cdsay <PROJDIR>
 
-[ BLOCK <1> docs rel cprel ]
-#===========================
+[ BLOCK <BLDRULE> docs rel cprel ]
+#=================================
     [ IFDEF <PMAKEKEY> build ]
         <CPCMD> dos/*.ihp       <OWRELROOT>/binw/
         <CPCMD> win/*.hlp       <OWRELROOT>/binw/
@@ -50,8 +50,8 @@ set PMAKEKEY=txt
     <CCCMD> txt/*.txt       <OWRELROOT>/
     <CPCMD> areadme.txt     <OWRELROOT>/areadme.txt
 
-[ BLOCK <1> cpdocpdf ]
-#=====================
+[ BLOCK <BLDRULE> cpdocpdf ]
+#===========================
     [ IFDEF <PMAKEKEY> build ]
         <CCCMD> pdf/*.pdf       <OWRELROOT>/docs/
     [ ENDIF ]

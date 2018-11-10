@@ -12,19 +12,19 @@ set PROJDIR=<CWD>
     set PROJNAME=hllcv<OWBLDVER>
 
 [ BLOCK .<WATCOMBOOT>. .1. ]
-#===========================
+#============================
     [ INCLUDE <OWROOT>/build/deflib.ctl ]
 
 [ BLOCK .<WATCOMBOOT>. .. ]
 #==========================
     [ INCLUDE <OWROOT>/build/defdylib.ctl ]
 
-[ BLOCK <1> rel ]
-#================
+[ BLOCK <BLDRULE> rel ]
+#======================
     cdsay <PROJDIR>
 
-[ BLOCK <1> rel cprel ]
-#======================
+[ BLOCK <BLDRULE> rel cprel ]
+#============================
     <CCCMD> dos386/<PROJNAME>.dip      <OWRELROOT>/binw/
 #    <CCCMD> dos386/<PROJNAME>.sym      <OWRELROOT>/binw/<PROJNAME>.dsy
 

@@ -973,9 +973,14 @@ extern bool GUIIsFirstInstance( void );
 
 extern void GUIHookFileDlg( bool hook );
 
-/* include from the app */
-extern void GUITimer( void );
+/* Application related functions */
+/* must be implemented by application */
 extern void GUImain( void );
+#if defined( __RDOS__ ) || defined( __NT__ )
+extern void GUITimer( void );
+#endif
+
+/* may be implemented by application, stub functions */
 extern bool GUIDead( void );
 extern bool GUIDeath( void );
 extern bool GUIFirstCrack( void );

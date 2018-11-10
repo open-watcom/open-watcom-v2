@@ -31,6 +31,8 @@
 
 
 #include "guiwind.h"
+#include <stdio.h>
+#include <string.h>
 #include "guiwhole.h"
 #include "guiscale.h"
 #include "guicontr.h"
@@ -40,8 +42,8 @@
 #include "guigadgt.h"
 #include "guistat.h"
 #include "guixdlg.h"
-#include <stdio.h>
-#include <string.h>
+#include "guixhook.h"
+
 
 static void UnMinimize( gui_window *wnd )
 {
@@ -678,6 +680,16 @@ void GUIMaximizeWindow( gui_window * wnd )
     if( !GUI_WND_MAXIMIZED( wnd ) ) {
         GUIZoomWnd( wnd, GUI_MAXIMIZE );
     }
+}
+
+void GUIHideWindow( gui_window *wnd )
+{
+    uivhide( &wnd->screen );
+}
+
+bool GUIIsWindowVisible( gui_window *wnd )
+{
+    return( ( wnd->screen.flags & V_HIDDEN ) == 0 );
 }
 
 void GUIRestoreWindow( gui_window * wnd )

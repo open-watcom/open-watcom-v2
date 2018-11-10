@@ -135,19 +135,19 @@ void DumpMacPush(               // DUMP PUSH OF MACRO
     const void *p_mac,          // - macro being pushed
     const void **p_args )       // - arguments
 {
-    MEDEFN const *mac = p_mac;  // - macro being pushed
+    const MEPTR mentry = (const MEPTR)p_mac; // - macro being pushed
     const char**args = (const char **)p_args;  // - arguments
     unsigned count;
     if( PragDbgToggle.dump_mtokens ) {
-        printf( "Macro Push: %s", mac->macro_name );
-        if( ( mac->macro_defn > 0 ) && ( args != NULL ) ) {
-            count = mac->parm_count;
+        printf( "Macro Push: %s", mentry->macro_name );
+        if( ( mentry->macro_defn > 0 ) && ( args != NULL ) ) {
+            count = mentry->parm_count;
             if( count == 1 ) {
                 printf( " = %s", *args );
             } else if( count > 0 ) {
                 printf( "( " );
                 for( ; --count; ) {
-                    printf( "%s%s", *args++, (count>1) ? ", " : " " );
+                    printf( "%s%s", *args++, ( count > 1 ) ? ", " : " " );
                 }
                 printf( ")" );
             }
@@ -219,7 +219,7 @@ const char *DbgOperator(        // GET CGOP NAME
     const char  *name;          // - name
 
     static const char *opnames[] = {    // - opcode names (binary,unary)
-    #include "ppopsnam.h"
+        #include "ppopsnam.h"
     };
 
     if( number < CO_MAX_OPCODES ) {
@@ -495,38 +495,10 @@ void DumpSymbol(                // DUMP SYMBOL ENTRY
     }
 }
 
-#define ENTRY_ERROR             "TYP_ERROR",
-#define ENTRY_BOOL              "TYP_BOOL",
-#define ENTRY_CHAR              "TYP_CHAR",
-#define ENTRY_SCHAR             "TYP_SCHAR",
-#define ENTRY_UCHAR             "TYP_UCHAR",
-#define ENTRY_WCHAR             "TYP_WCHAR",
-#define ENTRY_SSHORT            "TYP_SSHORT",
-#define ENTRY_USHORT            "TYP_USHORT",
-#define ENTRY_SINT              "TYP_SINT",
-#define ENTRY_UINT              "TYP_UINT",
-#define ENTRY_SLONG             "TYP_SLONG",
-#define ENTRY_ULONG             "TYP_ULONG",
-#define ENTRY_SLONG64           "TYP_SLONG64",
-#define ENTRY_ULONG64           "TYP_ULONG64",
-#define ENTRY_FLOAT             "TYP_FLOAT",
-#define ENTRY_DOUBLE            "TYP_DOUBLE",
-#define ENTRY_LONG_DOUBLE       "TYP_LONG_DOUBLE",
-#define ENTRY_ENUM              "TYP_ENUM",
-#define ENTRY_POINTER           "TYP_POINTER",
-#define ENTRY_TYPEDEF           "TYP_TYPEDEF",
-#define ENTRY_CLASS             "TYP_CLASS",
-#define ENTRY_BITFIELD          "TYP_BITFIELD",
-#define ENTRY_FUNCTION          "TYP_FUNCTION",
-#define ENTRY_ARRAY             "TYP_ARRAY",
-#define ENTRY_DOT_DOT_DOT       "TYP_DOT_DOT_DOT",
-#define ENTRY_VOID              "TYP_VOID",
-#define ENTRY_MODIFIER          "TYP_MODIFIER",
-#define ENTRY_MEMBER_POINTER    "TYP_MEMBER_POINTER",
-#define ENTRY_GENERIC           "TYP_GENERIC",
-
 static const char *id_names[] = {
-    #include "type_arr.h"
+    #define pick(id,promo,promo_asm,type_text)  __STR( __PASTE( TYP_, id ) ),
+    #include "_typdefs.h"
+    #undef pick
 };
 
 static const char unknown_type[] = "***UNKNOWN**=xx";

@@ -7,8 +7,8 @@ set PROJDIR=<CWD>
 
 [ INCLUDE <OWROOT>/build/master.ctl ]
 
-[ BLOCK <1> test ]
-#=================
+[ BLOCK <BLDRULE> test ]
+#=======================
     cdsay .
     wmake -h test0=1
     cdsay .
@@ -60,8 +60,8 @@ set PROJDIR=<CWD>
     wmake -h test11=1 arch=<EXTRA_ARCH>
 [ ENDIF ]
 
-[ BLOCK <1> testclean ]
-#======================
+[ BLOCK <BLDRULE> testclean ]
+#============================
     cdsay .
     wmake -h clean
 

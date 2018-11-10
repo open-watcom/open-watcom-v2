@@ -24,8 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  GUI get Windows Class Name application stub function
+*               Called to get application main Window class (default version)
 *
 ****************************************************************************/
 

@@ -9,12 +9,12 @@ set PROJDIR=<CWD>
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
-[ BLOCK <1> rel ]
-#================
+[ BLOCK <BLDRULE> rel ]
+#======================
     cdsay <PROJDIR>
 
-[ BLOCK <1> rel cprel ]
-#======================
+[ BLOCK <BLDRULE> rel cprel ]
+#============================
     <CCCMD> fix/dosi86/graph.lib    <OWRELROOT>/lib286/dos/graph.lib
     <CCCMD> fix/dosi86/graph2.lib   <OWRELROOT>/lib286/dos/graph2.lib
     <CCCMD> fix/dos386/graph.lib    <OWRELROOT>/lib386/dos/graph.lib

@@ -9,12 +9,12 @@ set PROJDIR=<CWD>
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
-[ BLOCK <1> rel ]
-#================
+[ BLOCK <BLDRULE> rel ]
+#======================
     cdsay <PROJDIR>
 
-[ BLOCK <1> rel cprel ]
-#======================
+[ BLOCK <BLDRULE> rel cprel ]
+#============================
     <CCCMD> library/msdos.086/mc/clibc.lib                  <OWRELROOT>/lib286/dos/clibc.lib
     <CCCMD> library/msdos.086/mh/clibh.lib                  <OWRELROOT>/lib286/dos/clibh.lib
     <CCCMD> library/msdos.086/ml/clibl.lib                  <OWRELROOT>/lib286/dos/clibl.lib

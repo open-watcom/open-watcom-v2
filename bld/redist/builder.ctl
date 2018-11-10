@@ -9,27 +9,27 @@ set PROJDIR=<CWD>
 
 cdsay .
 
-[ BLOCK <1> boot ]
+[ BLOCK <BLDRULE> boot ]
 #=================
     <CPCMD> dos4gw/dos4gw.exe <OWBINDIR>/dos4gw.exe
 
-[ BLOCK <1> bootclean ]
-#======================
+[ BLOCK <BLDRULE> bootclean ]
+#============================
     echo rm -f <OWBINDIR>/dos4gw.exe
     rm -f <OWBINDIR>/dos4gw.exe
 
-[ BLOCK <1> build rel ]
-#======================
+[ BLOCK <BLDRULE> build rel ]
+#============================
 
-[ BLOCK <1> rel cprel ]
-#======================
+[ BLOCK <BLDRULE> rel cprel ]
+#============================
     <CPCMD> dos4gw/*.exe            <OWRELROOT>/binw/
     <CPCMD> dos4gw/*.doc            <OWRELROOT>/binw/
     <CPCMD> dos32a/*                <OWRELROOT>/binw/
     <CPCMD> pmodew/*                <OWRELROOT>/binw/
 
-[ BLOCK <1> clean ]
-#==================
+[ BLOCK <BLDRULE> clean ]
+#========================
 
 [ BLOCK . . ]
 

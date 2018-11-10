@@ -9,12 +9,12 @@ set PROJDIR=<CWD>
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
-[ BLOCK <1> rel ]
-#================
+[ BLOCK <BLDRULE> rel ]
+#======================
     cdsay <PROJDIR>
 
-[ BLOCK <1> rel cprel ]
-#======================
+[ BLOCK <BLDRULE> rel cprel ]
+#============================
 
     <CPCMD> watcom.ico              <OWRELROOT>/
     <CPCMD> <OWROOT>/license.txt    <OWRELROOT>/

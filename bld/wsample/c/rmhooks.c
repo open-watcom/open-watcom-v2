@@ -51,24 +51,15 @@
   of getvec() and setvec() following some law of programming inertia.
   **********************************************************************
 */
-    /*  FAR_PTR pointer stored at n-th interrupt vector location */
 
-#define INT_LOCATE( nr )    ( *((void __interrupt (* FAR_PTR *)())  \
-                               ((unsigned long)(unsigned)nr*4)) )
+/*  far pointer stored at n-th interrupt vector location */
+
+#define INT_LOCATE( nr )    ( *((intrptr __far *)((unsigned long)nr * 4)) )
+
+#define MX_INTNN        4
 #define MX_INTXX        8
 
-static void __interrupt         (*old_int03)();
-
-static void __interrupt (* intxx_handlers[MX_INTXX])() =
-{ intx0_handler, intx1_handler, intx2_handler, intx3_handler,
-  intx4_handler, intx5_handler, intx6_handler, intx7_handler };
-
-static void __interrupt (* FAR_PTR * old_intxx_handlers[MX_INTXX])() =
-{ &old_intx0, &old_intx1, &old_intx2, &old_intx3,
-  &old_intx4, &old_intx5, &old_intx6, &old_intx7 };
-
-static unsigned char intr_list[MX_INTXX];
-static unsigned next_intr;
+static unsigned next_intr = MX_INTNN;
 
 intrptr HookTimer( intrptr new_int08 )
 {
@@ -90,29 +81,13 @@ void InstallDOSIntercepts( void )
 {
     int i;
 
-    for( i = 0; i < next_intr; ++i ) {
+    for( i = next_intr; i-- > 0; ) {
         _disable();
-        *old_intxx_handlers[i] = INT_LOCATE( intr_list[i] );
+        old_intxx_handlers[i] = INT_LOCATE( intr_list[i] );
         INT_LOCATE( intr_list[i] ) = intxx_handlers[i];
         _enable();
     }
-    _disable();
-
-    old_int28 = INT_LOCATE( 0x28 );
-    INT_LOCATE( 0x28 ) = &int28_handler;
-
-    old_int21 = INT_LOCATE( 0x21 );
-    INT_LOCATE( 0x21 ) = &int21_handler;
-
-    old_int13 = INT_LOCATE( 0x13 );
-    INT_LOCATE( 0x13 ) = &int13_handler;
-
-    old_int03 = INT_LOCATE( 0x03 );
-    INT_LOCATE( 0x03 ) = &int03_handler;
-
-    _enable();
 }
-
 
 void RemoveDOSIntercepts( void )    /* will undo the above */
 {
@@ -120,20 +95,14 @@ void RemoveDOSIntercepts( void )    /* will undo the above */
 
     for( i = 0; i < next_intr; ++i ) {
         _disable();
-        INT_LOCATE( intr_list[i] ) = *old_intxx_handlers[i];
+        INT_LOCATE( intr_list[i] ) = old_intxx_handlers[i];
         _enable();
     }
-    _disable();
-    INT_LOCATE( 0x21 ) = old_int21;
-    INT_LOCATE( 0x28 ) = old_int28;
-    INT_LOCATE( 0x13 ) = old_int13;
-    INT_LOCATE( 0x03 ) = old_int03;
-    _enable();
 }
 
 int AddInterrupt( unsigned num )
 {
-    if( next_intr >= MX_INTXX ) {
+    if( next_intr >= MX_INTNN + MX_INTXX ) {
         return( -1 );
     }
     intr_list[next_intr++] = num;

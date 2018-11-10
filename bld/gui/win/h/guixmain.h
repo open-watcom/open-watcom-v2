@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2018-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,6 +33,8 @@
 
 #ifndef _GUIXMAIN_H_
 #define _GUIXMAIN_H_
+
+extern bool     GUIMainTouched;
 
 #if defined( __OS2_PM__ )
 

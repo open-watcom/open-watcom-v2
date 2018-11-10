@@ -11,8 +11,8 @@ set PROJDIR=<CWD>
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
-[ BLOCK <1> rel ]
-#================
+[ BLOCK <BLDRULE> rel ]
+#======================
     cdsay <PROJDIR>
 
 [ BLOCK <BINTOOL> build ]
@@ -25,8 +25,8 @@ set PROJDIR=<CWD>
     echo rm -f <OWBINDIR>/bwclmps<CMDEXT>
     rm -f <OWBINDIR>/bwclmps<CMDEXT>
 
-[ BLOCK <1> rel cprel ]
-#======================
+[ BLOCK <BLDRULE> rel cprel ]
+#============================
     <CCCMD> nt386/wclmps.exe      <OWRELROOT>/binnt/
     <CCCMD> nt386/wclmps.sym      <OWRELROOT>/binnt/
     <CCCMD> os2386/wclmps.exe     <OWRELROOT>/binp/

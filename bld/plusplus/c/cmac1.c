@@ -367,7 +367,7 @@ static TOKEN genFUNCTION(
 }
 
 TOKEN SpecialMacro(             // EXECUTE A SPECIAL MACRO
-    MEPTR mentry )             // - macro entry
+    MEPTR mentry )              // - macro entry
 {
     switch( mentry->parm_count ) {
     case MACRO_LINE:
@@ -732,7 +732,7 @@ static int isExpandable( MEPTR mentry, MACRO_TOKEN *mtok, int macro_parm )
     }
     if( mtok != NULL ) {
         if( mtok->token == T_LEFT_PAREN ) {
-            if( macroDepth == 1 && !macro_parm )
+            if( macroDepth == 1 && macro_parm == 0 )
                 return( 1 );
             lparen = 0;
             for( ; (mtok = mtok->next) != NULL; ) {
@@ -745,7 +745,7 @@ static int isExpandable( MEPTR mentry, MACRO_TOKEN *mtok, int macro_parm )
                 }
             }
         }
-    } else if( ! macro_parm ) {
+    } else if( macro_parm == 0 ) {
         SkipAhead();
         if( CurrChar == '(' ) {
             return( 1 );

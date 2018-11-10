@@ -367,47 +367,12 @@ TYPE TypeConvertFromPcPtr(      // TRANSFORM TYPE AFTER CONVERSION FROM PC PTR
     return( ptype );
 }
 
-#if _CPU == 8086
-    #define CNV( opI86, op386 ) opI86
-#else
-    #define CNV( opI86, op386 ) op386
-#endif
-
-#define ENTRY_ERROR         TYP_ERROR,
-#define ENTRY_BOOL          TYP_SINT,
-#define ENTRY_CHAR          TYP_SINT,
-#define ENTRY_SCHAR         TYP_SINT,
-#define ENTRY_UCHAR         TYP_SINT,
-#define ENTRY_WCHAR         CNV( TYP_UINT, TYP_SINT ),
-#define ENTRY_SSHORT        TYP_SINT,
-#define ENTRY_USHORT        CNV( TYP_UINT, TYP_SINT ),
-#define ENTRY_SINT          TYP_SINT,
-#define ENTRY_UINT          TYP_UINT,
-#define ENTRY_SLONG         TYP_SLONG,
-#define ENTRY_ULONG         TYP_ULONG,
-#define ENTRY_SLONG64       TYP_SLONG64,
-#define ENTRY_ULONG64       TYP_ULONG64,
-#define ENTRY_FLOAT         TYP_FLOAT,
-#define ENTRY_DOUBLE        TYP_DOUBLE,
-#define ENTRY_LONG_DOUBLE   TYP_LONG_DOUBLE,
-#define ENTRY_ENUM          TYP_ERROR,
-#define ENTRY_POINTER       TYP_ERROR,
-#define ENTRY_TYPEDEF       TYP_ERROR,
-#define ENTRY_CLASS         TYP_ERROR,
-#define ENTRY_BITFIELD      TYP_ERROR,
-#define ENTRY_FUNCTION      TYP_ERROR,
-#define ENTRY_ARRAY         TYP_ERROR,
-#define ENTRY_DOT_DOT_DOT   TYP_ERROR,
-#define ENTRY_VOID          TYP_ERROR,
-#define ENTRY_MODIFIER      TYP_ERROR,
-#define ENTRY_MEMBER_POINTER TYP_ERROR,
-#define ENTRY_GENERIC       TYP_ERROR,
 
 static type_id intPromo[] = {   // Table of integral promotions
-    #include "type_arr.h"
+    #define pick(id,promo,promo_asm,type_text)  __PASTE( TYP_, promo ),
+    #include "_typdefs.h"
+    #undef pick
 };
-
-#undef CNV
 
 
 static type_id integralPromote( // GET type_id AFTER INTEGRAL PROMOTION

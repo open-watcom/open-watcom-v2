@@ -24,8 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  GUI Death application stub function, see gui.h
+*               Called before GUI Cleanup (default version)
 *
 ****************************************************************************/
 

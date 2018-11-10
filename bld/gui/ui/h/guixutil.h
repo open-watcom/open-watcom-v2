@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2018-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,5 +52,9 @@ extern bool GUISetCursor( gui_window *wnd );
 extern void GUIAdjustDialogArea( SAREA *area, int mult );
 extern void GUIGetSAREA( gui_window *wnd, SAREA *area );
 extern void GUIGetClientSAREA( gui_window *wnd, SAREA *sarea );
+extern bool GUISetupStruct( gui_window *, gui_create_info *, bool dialog );
+
+extern void GUIDestroyDialog( gui_window *wnd );
+extern bool GUICloseWnd( gui_window *wnd );
 
 #endif // _GUIXUTIL_H_

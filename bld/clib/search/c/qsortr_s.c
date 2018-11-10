@@ -56,89 +56,102 @@ typedef int WORD;
 
 #if defined( __386__ )
     /* this is intended for 386 only... */
+    #define AUX_INFO \
+        parm caller     [esi] [edi] [ecx] \
+        value           \
+        modify exact    [eax ecx edx edi esi]
+
     void inline_swap( char *p, char *q, size_t size );
-    #pragma aux inline_swap = \
-        0x06                            /*      push es             */ \
-        0x1e                            /*      push ds             */ \
-        0x07                            /*      pop  es             */ \
-        0x0f 0xb6 0xd1                  /*      movzx   edx,cl      */ \
-        0xc1 0xe9 0x02                  /*      shr     ecx,02H     */ \
-        0x74 0x0b                       /*      je      L1          */ \
-        0x8b 0x07                       /*L2    mov     eax,[edi]   */ \
-        0x87 0x06                       /*      xchg    eax,[esi]   */ \
-        0xab                            /*      stosd               */ \
-        0x83 0xc6 0x04                  /*      add     esi,0004H   */ \
-        0x49                            /*      dec     ecx         */ \
-        0x75 0xf5                       /*      jne     L2          */ \
-        0x80 0xe2 0x03                  /*L1    and     dl,03H      */ \
-        0x74 0x09                       /*      je      L3          */ \
-        0x8a 0x07                       /*L4    mov     al,[edi]    */ \
-        0x86 0x06                       /*      xchg    al,[esi]    */ \
-        0xaa                            /*      stosb               */ \
-        0x46                            /*      inc     esi         */ \
-        0x4a                            /*      dec     edx         */ \
-        0x75 0xf7                       /*      jne     L4          */ \
-                                        /*L3                        */ \
-        0x07                            /*      pop  es             */ \
-        parm caller [esi] [edi] [ecx] \
-        value \
-        modify exact [esi edi ecx eax edx];
-    #pragma aux byteswap parm [esi] [edi] [ecx] \
-        modify exact [esi edi ecx eax edx];
-    static void _WCNEAR byteswap( char *p, char *q, size_t size ) {
+    #pragma aux inline_swap =   \
+            "push es"           \
+            "push ds"           \
+            "pop  es"           \
+            "movzx   edx,cl"    \
+            "shr     ecx,2"     \
+            "je short L1"       \
+        "L2: mov     eax,[edi]" \
+            "xchg    eax,[esi]" \
+            "stosd"             \
+            "add     esi,4"     \
+            "dec     ecx"       \
+            "jne short L2"      \
+        "L1: and     dl,3"      \
+            "je short L3"       \
+        "L4: mov     al,[edi]"  \
+            "xchg    al,[esi]"  \
+            "stosb"             \
+            "inc     esi"       \
+            "dec     edx"       \
+            "jne short L4"      \
+        "L3: pop  es"           \
+        AUX_INFO
+
+    #pragma aux byteswap AUX_INFO
+    static void _WCNEAR byteswap( char *p, char *q, size_t size )
+    {
         inline_swap( p, q, size );
     }
 
 #elif defined( _M_I86 ) && defined( __BIG_DATA__ )
+    #define AUX_INFO \
+        parm caller     [dx si] [es di] [cx] \
+        value           \
+        modify exact    [ax cx di si]
+
     void inline_swap( char _WCFAR *p, char _WCFAR *q, size_t size );
-    #pragma aux inline_swap = \
-        0x1e                            /*      push ds             */ \
-        0x8e 0xda                       /*      mov ds,dx           */ \
-        0xd1 0xe9                       /*      shr cx,1            */ \
-        0x74 0x0b                       /*      je L1               */ \
-        0x26 0x8b 0x05                  /*L2    mov ax,es:[di]      */ \
-        0x87 0x04                       /*      xchg ax,[si]        */ \
-        0xab                            /*      stosw               */ \
-        0x46                            /*      inc si              */ \
-        0x46                            /*      inc si              */ \
-        0x49                            /*      dec cx              */ \
-        0x75 0xf5                       /*      jne L2              */ \
-        0x73 0x07                       /*L1    jnc L3              */ \
-        0x8a 0x04                       /*      mov al,[si]         */ \
-        0x26 0x86 0x05                  /*      xchg al,es:[di]     */ \
-        0x88 0x04                       /*      mov [si],al         */ \
-        0x1f                            /*L3    pop ds              */ \
-        parm caller [dx si] [es di] [cx] \
-        value \
-        modify exact [si di cx ax];
-    #pragma aux byteswap parm [dx si] [es di] [cx] modify exact [si di cx ax];
-    static void _WCNEAR byteswap( char _WCFAR *p, char _WCFAR *q, size_t size ) {
+    #pragma aux inline_swap =   \
+            "push ds"           \
+            "mov ds,dx"         \
+            "shr cx,1"          \
+            "je short L1"       \
+        "L2: mov ax,es:[di]"    \
+            "xchg ax,[si]"      \
+            "stosw"             \
+            "inc si"            \
+            "inc si"            \
+            "dec cx"            \
+            "jne short L2"      \
+        "L1: jnc short L3"      \
+            "mov al,[si]"       \
+            "xchg al,es:[di]"   \
+            "mov [si],al"       \
+        "L3: pop ds"            \
+        AUX_INFO
+
+    #pragma aux byteswap AUX_INFO
+    static void _WCNEAR byteswap( char _WCFAR *p, char _WCFAR *q, size_t size )
+    {
         inline_swap( p, q, size );
     }
 
 #elif defined( _M_I86 ) && defined( __SMALL_DATA__ )
     /* we'll ask for char __far *q to save us writing code to load es */
+    #define AUX_INFO \
+        parm caller     [si] [es di] [cx] \
+        value           \
+        modify exact    [ax cx di si]
+
     void inline_swap( char *p, char _WCFAR *q, size_t size );
-    #pragma aux inline_swap = \
-        0xd1 0xe9                       /*      shr cx,1            */ \
-        0x74 0x0b                       /*      je L1               */ \
-        0x26 0x8b 0x05                  /*L2    mov ax,es:[di]      */ \
-        0x87 0x04                       /*      xchg ax,[si]        */ \
-        0xab                            /*      stosw               */ \
-        0x46                            /*      inc si              */ \
-        0x46                            /*      inc si              */ \
-        0x49                            /*      dec cx              */ \
-        0x75 0xf5                       /*      jne L2              */ \
-        0x73 0x07                       /*L1    jnc L3              */ \
-        0x8a 0x04                       /*      mov al,[si]         */ \
-        0x26 0x86 0x05                  /*      xchg al,es:[di]     */ \
-        0x88 0x04                       /*      mov [si],al         */ \
-                                        /*L3                        */ \
-        parm caller [si] [es di] [cx] \
-        value \
-        modify exact [si di cx ax];
-    #pragma aux byteswap parm [si] [es di] [cx] modify exact [si di cx ax];
-    static void _WCNEAR byteswap( char *p, char _WCFAR *q, size_t size ) {
+    #pragma aux inline_swap =   \
+            "shr cx,1"          \
+            "je short L1"       \
+        "L2: mov ax,es:[di]"    \
+            "xchg ax,[si]"      \
+            "stosw"             \
+            "inc si"            \
+            "inc si"            \
+            "dec cx"            \
+            "jne short L2"      \
+        "L1: jnc short L3"      \
+            "mov al,[si]"       \
+            "xchg al,es:[di]"   \
+            "mov [si],al"       \
+        "L3:"                   \
+        AUX_INFO
+
+    #pragma aux byteswap AUX_INFO
+    static void _WCNEAR byteswap( char *p, char _WCFAR *q, size_t size )
+    {
         inline_swap( p, q, size );
     }
 
@@ -150,33 +163,33 @@ typedef int WORD;
         short   word;
         char    byte;
 
-        #if 1       /* this is for 32 bit machines */
-            while( size > 3 ) {
-                dword = *(PTRATTR long *)p;
-                *(PTRATTR long *)p = *(PTRATTR long *)q;
-                *(PTRATTR long *)q = dword;
-                p += 4;
-                q += 4;
-                size -= 4;
-            }
-            if( size > 1 ) {
-                word = *(PTRATTR short *)p;
-                *(PTRATTR short *)p = *(PTRATTR short *)q;
-                *(PTRATTR short *)q = word;
-                p += 2;
-                q += 2;
-                size -= 2;
-            }
-        #else       /* this is for 16 bit machines */
-            while( size > 1 ) {
-                word = *(PTRATTR short *)p;
-                *(PTRATTR short *)p = *(PTRATTR short *)q;
-                *(PTRATTR short *)q = word;
-                p += 2;
-                q += 2;
-                size -= 2;
-            }
-        #endif
+    #if 1       /* this is for 32 bit machines */
+        while( size > 3 ) {
+            dword = *(PTRATTR long *)p;
+            *(PTRATTR long *)p = *(PTRATTR long *)q;
+            *(PTRATTR long *)q = dword;
+            p += 4;
+            q += 4;
+            size -= 4;
+        }
+        if( size > 1 ) {
+            word = *(PTRATTR short *)p;
+            *(PTRATTR short *)p = *(PTRATTR short *)q;
+            *(PTRATTR short *)q = word;
+            p += 2;
+            q += 2;
+            size -= 2;
+        }
+    #else       /* this is for 16 bit machines */
+        while( size > 1 ) {
+            word = *(PTRATTR short *)p;
+            *(PTRATTR short *)p = *(PTRATTR short *)q;
+            *(PTRATTR short *)q = word;
+            p += 2;
+            q += 2;
+            size -= 2;
+        }
+    #endif
         if( size ) {
             byte = *p;
             *p = *q;
@@ -186,10 +199,13 @@ typedef int WORD;
 #endif
 
 
-FUNCTION_LINKAGE errno_t FUNCTION_NAME( PTRATTR void *in_base,
-                                        rsize_t n, rsize_t size,
-               int (*compar)( const void *, const void *, void * ),
-                                        void *context )
+FUNCTION_LINKAGE errno_t FUNCTION_NAME(
+    PTRATTR void *in_base,
+    rsize_t n,
+    rsize_t size,
+    int (*compar)( const void *, const void *, void * ),
+    void *context
+)
 /*****************************************************************/
 {
     PTRATTR char        *base = (PTRATTR char*) in_base;

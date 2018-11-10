@@ -8,8 +8,8 @@ set PROJNAME=wcpp
 
 [ INCLUDE <OWROOT>/build/deftool.ctl ]
 
-[ BLOCK <1> rel cprel ]
-#======================
+[ BLOCK <BLDRULE> rel cprel ]
+#============================
     # Currently not built by default
 
 [ BLOCK . . ]

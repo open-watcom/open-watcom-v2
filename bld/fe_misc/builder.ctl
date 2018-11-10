@@ -27,8 +27,8 @@ set PROJDIR=<CWD>
     echo rm -f <OWBINDIR>/findhash<CMDEXT>
     rm -f <OWBINDIR>/findhash<CMDEXT>
 
-[ BLOCK <1> rel cprel ]
-#======================
+[ BLOCK <BLDRULE> rel cprel ]
+#============================
     # Currently not built by default
 
 [ BLOCK . . ]

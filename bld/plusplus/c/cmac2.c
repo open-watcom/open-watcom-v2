@@ -293,7 +293,7 @@ static MEPTR grabTokens(            // SAVE TOKENS IN A MACRO DEFINITION
 
     // MacroOverflow was called for the name of the macro + mentry already
     mentry = (MEPTR)MacroOffset;
-    DbgAssert( ( MacroOverflow( mlen, 0 ), MacroOffset == (void*)mentry ) );
+    DbgAssert( ( MacroOverflow( mlen, 0 ), MacroOffset == (void *)mentry ) );
     if( parm_cnt < 0 )
     {
         has_var_args = 1;

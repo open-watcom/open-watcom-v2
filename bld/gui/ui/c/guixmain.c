@@ -30,27 +30,12 @@
 
 
 #include "guiwind.h"
-#include "guix.h"
-#include "guiscale.h"
-#include "guixloop.h"
-#include "guixutil.h"
-#include "guicolor.h"
 #include "guixmain.h"
-#include "guisysfi.h"
-#include "guimenu.h"
-#include "guiwhole.h"
-#include "guiwnclr.h"
-#include "guihook.h"
-#include "guiutil.h"
-#include "guigadgt.h"
-#include "guizlist.h"
+#include <stdlib.h>
 #ifdef __UNIX__
     #include <termios.h>
-#endif
-#ifdef __WINDOWS__
-    #include "swap.h"
-    #include <wwindows.h>
-    #include <dos.h>
+#elif defined( __WINDOWS__ )
+    #include <windows.h>
 #endif
 
 #if defined(__WATCOMC__)

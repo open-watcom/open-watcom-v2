@@ -9,12 +9,12 @@ set PROJDIR=<CWD>
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
-[ BLOCK <1> rel ]
-#================
+[ BLOCK <BLDRULE> rel ]
+#======================
     cdsay <PROJDIR>
 
-[ BLOCK <1> rel cprel ]
-#======================
+[ BLOCK <BLDRULE> rel cprel ]
+#============================
     <CCCMD> dosi86/wmk.exe    <OWRELROOT>/binw/wmaker.exe
     <CCCMD> dos386/wmk.exe    <OWRELROOT>/binw/wmake.exe
     <CCCMD> os2386/wmk.exe    <OWRELROOT>/binp/wmake.exe

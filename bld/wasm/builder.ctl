@@ -11,8 +11,8 @@ set PROJDIR=<CWD>
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
-[ BLOCK <1> rel ]
-#================
+[ BLOCK <BLDRULE> rel ]
+#======================
     cdsay <PROJDIR>
 
 [ BLOCK <BINTOOL> build ]
@@ -25,8 +25,8 @@ set PROJDIR=<CWD>
     echo rm -f <OWBINDIR>/bwasm<CMDEXT>
     rm -f <OWBINDIR>/bwasm<CMDEXT>
 
-[ BLOCK <1> rel cprel ]
-#======================
+[ BLOCK <BLDRULE> rel cprel ]
+#============================
     <CCCMD> dos386/wasm.exe     <OWRELROOT>/binw/
     <CCCMD> dos386/wasm.sym     <OWRELROOT>/binw/
     <CCCMD> dosi86/wasm.exe     <OWRELROOT>/binw/wasmr.exe

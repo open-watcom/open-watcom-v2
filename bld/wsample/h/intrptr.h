@@ -30,4 +30,4 @@
 ****************************************************************************/
 
 
-typedef void __interrupt __far  (*intrptr)( void );
+typedef void __interrupt (* intrptr)( void );

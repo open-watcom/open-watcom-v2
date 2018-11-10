@@ -9,12 +9,12 @@ set PROJDIR=<CWD>
 
 [ INCLUDE <OWROOT>/build/deftool.ctl ]
 
-[ BLOCK <1> rel ]
-#================
+[ BLOCK <BLDRULE> rel ]
+#======================
     cdsay <PROJDIR>
 
-[ BLOCK <1> rel cprel ]
-#======================
+[ BLOCK <BLDRULE> rel cprel ]
+#============================
 
     <CCCMD> i86/dosi86/wfl.exe          <OWRELROOT>/binw/
     <CCCMD> i86/dosi86/wfl.sym          <OWRELROOT>/binw/

@@ -57,8 +57,8 @@ set PROJDIR=<CWD>
     echo rm -f <OWBINDIR>/which<CMDEXT>
     rm -f <OWBINDIR>/which<CMDEXT>
 
-[ BLOCK <1> rel cprel ]
-#======================
+[ BLOCK <BLDRULE> rel cprel ]
+#============================
     # Currently not built by default
 
 [ BLOCK . . ]

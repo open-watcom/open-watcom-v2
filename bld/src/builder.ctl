@@ -9,12 +9,12 @@ set PROJDIR=<CWD>
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
-[ BLOCK <1> rel ]
-#================
+[ BLOCK <BLDRULE> rel ]
+#======================
     cdsay <PROJDIR>
 
-[ BLOCK <1> rel cprel ]
-#======================
+[ BLOCK <BLDRULE> rel cprel ]
+#============================
     <CPCMD> <OWSRCDIR>/clib/startup/a/cstrtwnt.asm      <OWRELROOT>/src/startup/386/cstrtwnt.asm
 #    <CPCMD> <OWSRCDIR>/clib/startup/a/cstrtwwt.asm      <OWRELROOT>/src/startup/386/cstrtwwt.asm
     <CPCMD> <OWSRCDIR>/clib/startup/c/cmain386.c        <OWRELROOT>/src/startup/386/cmain386.c

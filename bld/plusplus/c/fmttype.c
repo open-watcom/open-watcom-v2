@@ -61,38 +61,10 @@ typedef struct {
     type_flag   mask;
 } FMT_FLAG_INFO;
 
-#define ENTRY_ERROR             "<error> ",
-#define ENTRY_BOOL              "bool ",
-#define ENTRY_CHAR              "char ",
-#define ENTRY_SCHAR             "signed char ",
-#define ENTRY_UCHAR             "unsigned char ",
-#define ENTRY_WCHAR             "wchar_t ",
-#define ENTRY_SSHORT            "short ",
-#define ENTRY_USHORT            "unsigned short ",
-#define ENTRY_SINT              "int ",
-#define ENTRY_UINT              "unsigned ",
-#define ENTRY_SLONG             "long ",
-#define ENTRY_ULONG             "unsigned long ",
-#define ENTRY_SLONG64           "__int64 ",
-#define ENTRY_ULONG64           "unsigned __int64 ",
-#define ENTRY_FLOAT             "float ",
-#define ENTRY_DOUBLE            "double ",
-#define ENTRY_LONG_DOUBLE       "long double ",
-#define ENTRY_ENUM              "<enum> ",
-#define ENTRY_POINTER           "* ",
-#define ENTRY_TYPEDEF           "<typedef> ",
-#define ENTRY_CLASS             "<class> ",
-#define ENTRY_BITFIELD          "<bitfield> ",
-#define ENTRY_FUNCTION          "<function> ",
-#define ENTRY_ARRAY             "<array> ",
-#define ENTRY_DOT_DOT_DOT       "... ",
-#define ENTRY_VOID              "void ",
-#define ENTRY_MODIFIER          "<modifier> ",
-#define ENTRY_MEMBER_POINTER    "::* ",
-#define ENTRY_GENERIC           "? ",
-
 static const char *typeName[] = {
-    #include "type_arr.h"
+    #define pick(id,promo,promo_asm,type_text)  type_text,
+    #include "_typdefs.h"
+    #undef pick
 };
 
 static const char *errFormats[] = {

@@ -478,6 +478,7 @@ static return_val openFiles( void )
         exit( RC_OKAY );
     }
     objFileBuf = MemAlloc( objFileLen );
+    fseek( objfp, 0, SEEK_SET );
     objFilePos = 0;
     if( fread( objFileBuf, 1, objFileLen, objfp ) != objFileLen ) {
         fclose( objfp );

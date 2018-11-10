@@ -226,42 +226,13 @@ PCH_struct decl_info {
 // types dealing with representing types
 
 typedef enum {
-    TYP_ERROR,
-    TYP_BOOL,
-    TYP_CHAR,
-    TYP_SCHAR,
-    TYP_UCHAR,
-    TYP_WCHAR,
-    TYP_SSHORT,
-    TYP_USHORT,
-    TYP_SINT,
-    TYP_UINT,
-    TYP_SLONG,
-    TYP_ULONG,
-    TYP_SLONG64,
-    TYP_ULONG64,
-    TYP_FLOAT,
-    TYP_DOUBLE,
-    TYP_LONG_DOUBLE,
-    TYP_ENUM,
-    TYP_POINTER,
-    TYP_TYPEDEF,
-    TYP_CLASS,
-    TYP_BITFIELD,
-    TYP_FUNCTION,
-    TYP_ARRAY,
-    TYP_DOT_DOT_DOT,
-    TYP_VOID,
-    TYP_MODIFIER,
-    TYP_MEMBER_POINTER,
-    TYP_GENERIC,
-    TYP_TYPENAME,
-    TYP_FREE,
-    TYP_NULLPTR,
+    #define pick(id,promo,promo_asm,type_text)  __PASTE( TYP_, id ),
+    #include "_typdefs.h"
+    #undef pick
     TYP_MAX,
 } type_id;
 
-#define TYP_NONE        TYP_MAX
+#define TYP_NONE                TYP_MAX
 
 #define TYP_FIRST_FUNDAMENTAL   TYP_BOOL
 #define TYP_LAST_FUNDAMENTAL    TYP_LONG_DOUBLE
@@ -693,7 +664,7 @@ PCH_struct type {
             unsigned    index;          // keeps template args distinct
         } g;
         struct {                        // TYP_TYPENAME
-            char       *name;           // typename string
+            char        *name;          // typename string
         } n;
     } u;
     dbg_info            dbg;            // FOR D2 AND DWARF

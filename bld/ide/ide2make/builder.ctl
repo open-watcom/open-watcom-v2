@@ -11,8 +11,8 @@ set PROJDIR=<CWD>
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
-[ BLOCK <1> rel ]
-#================
+[ BLOCK <BLDRULE> rel ]
+#======================
     cdsay <PROJDIR>
 
 [ BLOCK <BINTOOL> build ]
@@ -25,8 +25,8 @@ set PROJDIR=<CWD>
     echo rm -f <OWBINDIR>/bide2mak<CMDEXT>
     rm -f <OWBINDIR>/bide2mak<CMDEXT>
 
-[ BLOCK <1> rel cprel ]
-#======================
+[ BLOCK <BLDRULE> rel cprel ]
+#============================
     <CCCMD> dos386/ide2make.exe   <OWRELROOT>/binw/
     <CCCMD> os2386/ide2make.exe   <OWRELROOT>/binp/
     <CCCMD> nt386/ide2make.exe    <OWRELROOT>/binnt/

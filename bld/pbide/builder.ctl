@@ -12,12 +12,12 @@ set PROJDIR=<CWD>
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
-[ BLOCK <1> rel ]
-#================
+[ BLOCK <BLDRULE> rel ]
+#======================
     cdsay <PROJDIR>
 
-[ BLOCK <1> rel cprel ]
-#======================
+[ BLOCK <BLDRULE> rel cprel ]
+#============================
     <CCCMD> fscopy/wfscopy.exe                  <OWRELROOT>/binw/wfscopy.exe
     <CCCMD> run/wini86/run.exe                  <OWRELROOT>/binw/watrun.exe
     <CCCMD> dlldbg/wini86/dlldbg.exe            <OWRELROOT>/binw/dlldbg.exe

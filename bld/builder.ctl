@@ -124,9 +124,10 @@ cdsay .
 #[ INCLUDE <OWSRCDIR>/wprof/builder.ctl ]
 #[ ENDIF ]
 
-[ BLOCK <1> build rel clean cprel ]
-#==================================
+[ BLOCK <1> build rel clean cprel build1 clean1 cprel1 ]
+#=======================================================
 # Build all of Open Watcom using freshly built tools.
+# part 1
 #
 # NB: Again, the order is significant.
 # At the beginning, assume to have compilers/assemblers/librarian/linker
@@ -142,6 +143,12 @@ cdsay .
 [ INCLUDE <OWSRCDIR>/cpplib/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/f77/f77lib/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/rtdll/builder.ctl ]
+
+[ BLOCK <1> build rel clean cprel build2 clean2 cprel2 ]
+#=======================================================
+# Build all of Open Watcom using freshly built tools.
+# part 2
+#
 [ INCLUDE <OWSRCDIR>/fpuemu/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/omftools/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/graphlib/builder.ctl ]

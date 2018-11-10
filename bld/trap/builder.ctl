@@ -9,12 +9,12 @@ set PROJDIR=<CWD>
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
-[ BLOCK <1> rel ]
-#================
+[ BLOCK <BLDRULE> rel ]
+#======================
     cdsay <PROJDIR>
 
-[ BLOCK <1> rel cprel ]
-#======================
+[ BLOCK <BLDRULE> rel cprel ]
+#============================
     <CCCMD> lcl/dos/dosr/dos.std/std*.trp           <OWRELROOT>/binw/
     <CCCMD> lcl/dos/dosx/rsi/dos.trp/rsi*.trp       <OWRELROOT>/binw/
     <CCCMD> lcl/dos/dosx/rsi/dos.srv/rsihelp.exp    <OWRELROOT>/binw/

@@ -11,8 +11,8 @@ set PROJDIR=<CWD>
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
-[ BLOCK <1> rel ]
-#================
+[ BLOCK <BLDRULE> rel ]
+#======================
     cdsay <PROJDIR>
 
 [ BLOCK <BINTOOL> build ]
@@ -25,8 +25,8 @@ set PROJDIR=<CWD>
     echo rm -f <OWBINDIR>/bdmpobj<CMDEXT>
     rm -f <OWBINDIR>/bdmpobj<CMDEXT>
 
-[ BLOCK <1> rel cprel ]
-#======================
+[ BLOCK <BLDRULE> rel cprel ]
+#============================
     <CCCMD> dosi86/dmpobj.exe    <OWRELROOT>/binw/
     <CCCMD> os2386/dmpobj.exe    <OWRELROOT>/binp/
     <CCCMD> nt386/dmpobj.exe     <OWRELROOT>/binnt/
