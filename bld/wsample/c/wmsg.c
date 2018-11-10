@@ -88,7 +88,11 @@ static bool MsgReadErrArray( void )
         MsgArray[i - ERR_FIRST_MESSAGE] = my_alloc( strlen( buffer ) + 1 );
         if( MsgArray[i - ERR_FIRST_MESSAGE] == NULL )
             return( false );
+#ifdef FARDATA
         _fstrcpy( MsgArray[i - ERR_FIRST_MESSAGE], buffer );
+#else
+        strcpy( MsgArray[i - ERR_FIRST_MESSAGE], buffer );
+#endif
     }
     return( true );
 }

@@ -65,6 +65,12 @@ notes:
 #define SAMP_MINOR_VER          2
 #define SAMP_LARGEST_BLOCK      (0xfe00)
 
+#ifdef FARDATA
+#define FAR_PTR		__far
+#else
+#define FAR_PTR
+#endif
+
 #include "pushpck1.h"
 
 typedef struct samp_address {
