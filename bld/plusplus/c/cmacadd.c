@@ -655,7 +655,7 @@ bool MacroDependsDefined    // MACRO DEPENDENCY: DEFINED OR NOT
 
 static void doMacroUndef( char *name, size_t len, bool quiet )
 {
-    MEPTR mentry;          // - current macro entry
+    MEPTR mentry;           // - current macro entry
     unsigned hash;          // - current macro hash
 
     if( magicPredefined( name ) ) {
