@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2018-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,7 +36,6 @@
 
 extern gui_window   *GUICurrWnd;
 
-extern void GUIDestroyDialog( gui_window *wnd );
-extern bool GUICloseWnd( gui_window *wnd );
+extern ui_event     GUIWndGetEvent( VSCREEN * );
 
-#endif // _GUIXWIND_H_
+#endif

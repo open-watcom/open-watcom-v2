@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2018-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -24,209 +25,57 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Mainline for applications using GUI library.
 *
 ****************************************************************************/
 
 
 #include "guiwind.h"
-#include "guix.h"
-#include "guixutil.h"
-#include "guicontr.h"
-#include "guiwhole.h"
-#include "guiscale.h"
-#include "guimenu.h"
-#include "guiwnclr.h"
-#include "guistat.h"
-#include "guihook.h"
-#include "guizlist.h"
-#include "guixwind.h"
+#include "guixmain.h"
+#include <stdlib.h>
+#ifdef __UNIX__
+    #include <termios.h>
+#elif defined( __WINDOWS__ )
+    #include <windows.h>
+#endif
+
+#if defined(__WATCOMC__)
+    #include "clibint.h"
+#else
+    #include "clibext.h"
+#endif
 
 
-gui_window      *GUICurrWnd = NULL;
+// This makes sure that the main routine is actually linked in
+bool GUIMainTouched = false;
 
-static void DeleteChild( gui_window *parent, gui_window *child )
+#ifdef __WINDOWS__
+
+int PASCAL WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance,
+                    LPSTR lpCmdLine, int nShowCmd )
 {
-    gui_window  *curr;
-    gui_window  *prev;
+    hInstance = hInstance;
+    hPrevInstance = hPrevInstance;
+    lpCmdLine = lpCmdLine;
+    nShowCmd = nShowCmd;
 
-    prev = NULL;
-    for( curr = parent->child; curr != NULL; curr=curr->sibling ) {
-        if( curr == child ) {
-            break;
-        }
-        prev = curr;
-    }
-    if( curr != NULL ) {
-        if( prev != NULL ) {
-            prev->sibling = curr->sibling;
-        } else {
-            parent->child = curr->sibling;
-        }
-    }
+    return( GUIXMain( _argc, _argv ) );
 }
 
-void GUIWantPartialRows( gui_window *wnd, bool want )
+#else
+
+#ifdef __UNIX__
+    bool                In_raw_mode = false;
+    struct termios      Saved_terminal_configuration;
+#endif
+
+int main( int argc, char *argv[] )
 {
-    /* unused parameters */ (void)wnd; (void)want;
+#if !defined(__WATCOMC__)
+    _argv = argv;
+    _argc = argc;
+#endif
+    return( GUIXMain( argc, argv ) );
 }
 
-void GUIFreeWindowMemory( gui_window *wnd, bool from_parent, bool dialog )
-{
-    gui_window  *curr_child;
-    gui_window  *next_child;
-    gui_window  *front;
-
-    GUIDeleteFromList( wnd );
-    if( GUIHasToolBar( wnd ) ) {
-        GUICloseToolBar( wnd );
-    }
-    if( GUIHasStatus( wnd ) ) {
-        GUIFreeStatus( wnd );
-    }
-    if( ( wnd->parent != NULL ) && ( !from_parent ) ) {
-        DeleteChild( wnd->parent, wnd );
-    }
-    if( !dialog ) {
-        GUIMDIDelete( wnd );
-    }
-    front = GUIGetFront();
-    if( !dialog && !from_parent && ( front != NULL ) ) {
-        GUIBringToFront( front );
-    }
-    GUIFreeAllControls( wnd );
-    for( curr_child = wnd->child; curr_child != NULL; curr_child = next_child ) {
-        next_child = curr_child->sibling;
-        if( curr_child != NULL ) {
-            GUIEVENT( curr_child, GUI_DESTROY, NULL );
-            GUIFreeWindowMemory( curr_child, true, dialog );
-        }
-    }
-    if( wnd->hgadget != NULL ) {
-        uifinigadget( wnd->hgadget );
-        GUIMemFree( wnd->hgadget );
-    }
-    if( wnd->vgadget != NULL ) {
-        uifinigadget( wnd->vgadget );
-        GUIMemFree( wnd->vgadget );
-    }
-    GUIFreeMenus( wnd );
-    GUIFreeHint( wnd );
-    GUIMemFree( wnd->icon_name );
-    if( !dialog ) {
-        uivshow( &wnd->screen );
-        wnd->screen.open = true;
-        uivclose( &wnd->screen );
-    }
-    if( GUICurrWnd == wnd ) {
-        GUICurrWnd = NULL;
-    }
-    if( wnd->screen.dynamic_title ) {
-        GUIMemFree( (void *)wnd->screen.title );
-        wnd->screen.title = NULL;
-        wnd->screen.dynamic_title = false;
-    }
-    GUIFreeColours( wnd );
-    GUIMemFree( wnd );
-}
-
-static void DoDestroy( gui_window * wnd, bool dialog )
-{
-    if( wnd != NULL ) {
-        GUIEVENT( wnd, GUI_DESTROY, NULL );
-        GUIFreeWindowMemory( wnd, false, dialog );
-    } else {
-        while( (wnd = GUIGetFront()) != NULL ) {
-            DoDestroy( wnd, GUI_IS_DIALOG( wnd ) );
-        }
-    }
-}
-
-void GUIDestroyDialog( gui_window * wnd )
-{
-    DoDestroy( wnd, true );
-}
-
-bool GUICloseWnd( gui_window *wnd )
-{
-    if( wnd != NULL ) {
-        if( GUIEVENT( wnd, GUI_CLOSE, NULL ) ) {
-            GUIDestroyWnd( wnd );
-            return( true );
-        }
-    }
-    return( false );
-}
-
-/*
- * GUIDestroyWnd
- */
-
-void GUIDestroyWnd( gui_window * wnd )
-{
-    DoDestroy( wnd, false );
-}
-
-/*
- * GUIGetRow - get the row that the mouse is on
- */
-
-gui_ord GUIGetRow( gui_window * wnd, gui_point * in_pt )
-{
-    gui_point pt;
-
-    /* unused parameters */ (void)wnd;
-
-    pt = *in_pt;
-    GUIScaleToScreenRPt( &pt );
-    if( pt.y >=0 ) {
-        return( (gui_ord) pt.y );
-    } else {
-        return( GUI_NO_ROW );
-    }
-}
-
-/*
- * GUIGetCol - get the column that the mouse is on
- */
-
-gui_ord GUIGetCol( gui_window *wnd, const char *text, gui_point *in_pt )
-{
-    gui_point pt;
-
-    /* unused parameters */ (void)wnd; (void)text;
-
-    pt = *in_pt;
-    GUIScaleToScreenRPt( &pt );
-    if( pt.x >=0 ) {
-        return( (gui_ord) pt.x );
-    } else {
-        return( GUI_NO_COLUMN );
-    }
-}
-
-void GUIShowWindow( gui_window *wnd )
-{
-    uivshow( &wnd->screen );
-}
-
-void GUIShowWindowNA( gui_window *wnd )
-{
-    GUIShowWindow( wnd );
-}
-
-void GUIHideWindow( gui_window *wnd )
-{
-    uivhide( &wnd->screen );
-}
-
-bool GUIIsWindowVisible( gui_window *wnd )
-{
-    return( ( wnd->screen.flags & V_HIDDEN ) == 0 );
-}
-
-bool GUIIsFirstInstance( void )
-{
-    return( true );
-}
+#endif

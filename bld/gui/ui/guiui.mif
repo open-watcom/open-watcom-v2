@@ -35,7 +35,6 @@ wv_sysobjs = &
           guistrin.obj &
           guitextm.obj &
           guixmain.obj &
-          guixsys.obj  &
           guixloop.obj &
           guidirty.obj &
           guisstyl.obj &

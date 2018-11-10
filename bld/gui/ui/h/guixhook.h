@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2018-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,6 +33,10 @@
 
 #ifndef _GUIXHOOK_H_
 #define _GUIXHOOK_H_
+
 extern void GUISetMDIProcessEvent( bool (*func)( ui_event ) );
 extern bool GUIMDIProcessEvent( ui_event ui_ev );
+extern void GUIFreeStatus( gui_window *wnd );
+extern void GUIResizeStatus( gui_window *wnd );
+
 #endif // _GUIXHOOK_H_

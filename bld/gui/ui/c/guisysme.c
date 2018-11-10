@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2018-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,6 +38,7 @@
 #include "guixwind.h"
 #include "guixloop.h"
 #include "guismove.h"
+#include "guixutil.h"
 #include "guiutil.h"
 #include "guistr.h"
 

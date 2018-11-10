@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2018-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,8 +34,8 @@
 #ifndef _GUIXMAIN_H_
 #define _GUIXMAIN_H_
 
-extern bool     GUISetupStruct( gui_window *, gui_create_info *, bool dialog );
-extern ui_event GUIWndGetEvent( VSCREEN * );
+extern bool     GUIMainTouched;
+
 extern int      GUIXMain( int argc, char * argv[] );
 
 #endif // _GUIXMAIN_H_
