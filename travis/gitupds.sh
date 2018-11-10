@@ -20,10 +20,9 @@ gitupds_proc()
     if [ "$TRAVIS_BRANCH" = "$OWBRANCH" ]; then
         if [ "$TRAVIS_EVENT_TYPE" = "push" ] && [ "$TRAVIS_OS_NAME" = "linux" ]; then
             case "$OWTRAVISJOB" in
-                "BUILD")
-                "BUILD1")
-                "BUILD2")
-                "DOCPDF")
+                "BOOTSTRAP")
+                    ;;
+                "BUILD" | "BUILD1" | "BUILD2" | "DOCPDF")
                     #
                     # setup client info
                     #
@@ -40,9 +39,6 @@ gitupds_proc()
                     export OWRELROOT=$OWTRAVIS_BUILD_DIR
                     cd $OWSRCDIR
                     case "$OWTRAVISJOB" in
-                        "DOCPDF")
-                            builder cpdocpdf
-                            ;;
                         "BUILD")
                             builder cprel
                             ;;
@@ -52,7 +48,9 @@ gitupds_proc()
                         "BUILD2")
                             builder cprel2
                             ;;
-                        "BOOTSTRAP")
+                        "DOCPDF")
+                            builder cpdocpdf
+                            ;;
                         *)
                             ;;
                     esac
@@ -62,15 +60,18 @@ gitupds_proc()
                     cd $OWTRAVIS_BUILD_DIR
                     git add -f .
                     case "$OWTRAVISJOB" in
+                        "BUILD")
+                            git commit $GITQUIET -m "Travis CI build $TRAVIS_JOB_NUMBER - OW distribution"
+                            ;;
+                        "BUILD1")
+                            git commit $GITQUIET -m "Travis CI build $TRAVIS_JOB_NUMBER - OW distribution 1"
+                            ;;
+                        "BUILD2")
+                            git commit $GITQUIET -m "Travis CI build $TRAVIS_JOB_NUMBER - OW distribution 2"
+                            ;;
                         "DOCPDF")
                             git commit $GITQUIET -m "Travis CI build $TRAVIS_JOB_NUMBER - Documentation"
                             ;;
-                        "BUILD")
-                        "BUILD1")
-                        "BUILD2")
-                            git commit $GITQUIET -m "Travis CI build $TRAVIS_JOB_NUMBER - OW distribution"
-                            ;;
-                        "BOOTSTRAP")
                         *)
                             ;;
                     esac
@@ -78,7 +79,6 @@ gitupds_proc()
                     cd $TRAVIS_BUILD_DIR
                     echo_msg="gitupds.sh - done"
                     ;;
-                "BOOTSTRAP")
                 *)
                     ;;
             esac
