@@ -51,18 +51,18 @@ rm *.sav
 [ INCLUDE winnt/builder.ctl ]
 [ INCLUDE yacl/builder.ctl ]
 
-[ BLOCK <1> test ]
-#=================
+[ BLOCK <BLDRULE> test ]
+#=======================
     cdsay .
     wmake -h
 
-[ BLOCK <1> testclean ]
-#======================
+[ BLOCK <BLDRULE> testclean ]
+#============================
     cdsay .
     wmake -h clean
 
-[ BLOCK <1> cleanlog ]
-#=====================
+[ BLOCK <BLDRULE> cleanlog ]
+#===========================
     cdsay .
     echo rm -f *.log *.sav
     rm -f *.log *.sav

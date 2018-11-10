@@ -9,12 +9,12 @@ set PROJDIR=<CWD>
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
-[ BLOCK <1> rel ]
-#================
+[ BLOCK <BLDRULE> rel ]
+#======================
     cdsay <PROJDIR>
 
-[ BLOCK <1> rel cprel acprel ]
-#==============================
+[ BLOCK <BLDRULE> rel cprel acprel ]
+#===================================
 #    <CCCMD> asaxp/generic/nt386/asaxp.exe   <OWRELROOT>/binnt/
     <CCCMD> cl/generic/nt386/clx.exe        <OWRELROOT>/binnt/cl.exe
     <CCCMD> cl/386/nt386/cl386.exe          <OWRELROOT>/binnt/

@@ -11,8 +11,8 @@ set PROJDIR=<CWD>
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
-[ BLOCK <1> rel ]
-#================
+[ BLOCK <BLDRULE> rel ]
+#======================
     cdsay <PROJDIR>
 
 [ BLOCK <BINTOOL> build ]
@@ -27,8 +27,8 @@ set PROJDIR=<CWD>
     rm -f <OWBINDIR>/bwccppc<CMDEXT>
     rm -f <OWBINDIR>/bwccdppc<DYEXT>
 
-[ BLOCK <1> rel cprel ]
-#======================
+[ BLOCK <BLDRULE> rel cprel ]
+#============================
     <CCCMD> dos386/<OWOBJDIR>/wccppc.exe        <OWRELROOT>/binw/
     <CCCMD> dos386/<OWOBJDIR>/wccppc.sym        <OWRELROOT>/binw/
     <CCCMD> dos386/wccppc01.int                 <OWRELROOT>/binw/

@@ -11,8 +11,8 @@ set PROJDIR=<CWD>
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
-[ BLOCK <1> rel ]
-#================
+[ BLOCK <BLDRULE> rel ]
+#======================
     cdsay <PROJDIR>
 
 [ BLOCK <BINTOOL> build ]
@@ -27,8 +27,8 @@ set PROJDIR=<CWD>
     rm -f <OWBINDIR>/bwlink<CMDEXT>
     rm -f <OWBINDIR>/bwlinkd<DYEXT>
 
-[ BLOCK <1> rel cprel ]
-#======================
+[ BLOCK <BLDRULE> rel cprel ]
+#============================
     <CCCMD> dos386/wlink.exe                <OWRELROOT>/binw/
     <CCCMD> dos386/wlink.sym                <OWRELROOT>/binw/
     <CCCMD> ms2wlink/dosi86/ms2wlink.exe    <OWRELROOT>/binw/

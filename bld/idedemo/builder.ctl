@@ -9,12 +9,12 @@ set PROJDIR=<CWD>
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
-[ BLOCK <1> rel ]
-#================
+[ BLOCK <BLDRULE> rel ]
+#======================
     cdsay <PROJDIR>
 
-[ BLOCK <1> rel cprel ]
-#======================
+[ BLOCK <BLDRULE> rel cprel ]
+#============================
     <CCCMD> threed/os2/os2_3d.dll   <OWRELROOT>/samples/ide/
     <CCCMD> threed/os2/os2_3d.dll   <OWRELROOT>/samples/ide/os2/
     <CCCMD> threed/os2/os2_3d.dll   <OWRELROOT>/samples/ide/fortran/

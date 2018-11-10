@@ -9,12 +9,12 @@ set PROJDIR=<CWD>
 
 [ INCLUDE <OWROOT>/build/deftool.ctl ]
 
-[ BLOCK <1> rel ]
-#================
+[ BLOCK <BLDRULE> rel ]
+#======================
     cdsay <PROJDIR>
 
-[ BLOCK <1> rel cprel ]
-#======================
+[ BLOCK <BLDRULE> rel cprel ]
+#============================
     <CCCMD> dosi86/wdump.exe    <OWRELROOT>/binw/
     <CCCMD> os2386/wdump.exe    <OWRELROOT>/binp/
     <CCCMD> nt386/wdump.exe     <OWRELROOT>/binnt/

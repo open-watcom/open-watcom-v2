@@ -9,15 +9,15 @@ set PROJDIR=<CWD>
 
 cdsay <PROJDIR>
 
-[ BLOCK <1> boot ]
+[ BLOCK <BLDRULE> boot ]
 #=================
     mkdir <OWOBJDIR>
     cdsay <OWOBJDIR>
     wmake -h -f ../binmake bootstrap=1
     cdsay <PROJDIR>
 
-[ BLOCK <1> bootclean ]
-#======================
+[ BLOCK <BLDRULE> bootclean ]
+#============================
     echo rm -rf <OWOBJDIR>
     rm -rf <OWOBJDIR>
 

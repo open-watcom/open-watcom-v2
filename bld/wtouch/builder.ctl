@@ -9,12 +9,12 @@ set PROJDIR=<CWD>
 
 [ INCLUDE <OWROOT>/build/deftool.ctl ]
 
-[ BLOCK <1> rel ]
-#================
+[ BLOCK <BLDRULE> rel ]
+#======================
     cdsay <PROJDIR>
 
-[ BLOCK <1> rel cprel ]
-#======================
+[ BLOCK <BLDRULE> rel cprel ]
+#============================
     <CCCMD> dosi86/wtouch.exe    <OWRELROOT>/binw/
     <CCCMD> os2386/wtouch.exe    <OWRELROOT>/binp/
     <CCCMD> nt386/wtouch.exe     <OWRELROOT>/binnt/

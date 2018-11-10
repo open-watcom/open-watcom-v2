@@ -9,12 +9,12 @@ set PROJDIR=<CWD>
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
-[ BLOCK <1> rel ]
-#================
+[ BLOCK <BLDRULE> rel ]
+#======================
 #    cdsay <PROJDIR>
 
-[ BLOCK <1> rel cprel ]
-#======================
+[ BLOCK <BLDRULE> rel cprel ]
+#============================
     <CCCMD> wrtlib/os2.386/mf_r/wr*.lib         <OWRELROOT>/lib386/os2/
     <CCCMD> wrtlib/os2.386/mf_r/wr*.dll         <OWRELROOT>/binp/dll/
     <CCCMD> wrtlib/os2.386/mf_r/wr*.sym         <OWRELROOT>/binp/dll/

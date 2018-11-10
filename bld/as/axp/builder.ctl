@@ -11,8 +11,8 @@ set PROJDIR=<CWD>
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
-[ BLOCK <1> rel ]
-#================
+[ BLOCK <BLDRULE> rel ]
+#======================
     cdsay <PROJDIR>
 
 [ BLOCK <BINTOOL> build ]
@@ -25,8 +25,8 @@ set PROJDIR=<CWD>
     echo rm -f <OWBINDIR>/bwasaxp<CMDEXT>
     rm -f <OWBINDIR>/bwasaxp<CMDEXT>
 
-[ BLOCK <1> rel cprel ]
-#======================
+[ BLOCK <BLDRULE> rel cprel ]
+#============================
     <CCCMD> dos386/wasaxp.exe     <OWRELROOT>/binw/
     <CCCMD> dos386/wasaxp.sym     <OWRELROOT>/binw/
     <CCCMD> os2386/wasaxp.exe     <OWRELROOT>/binp/
