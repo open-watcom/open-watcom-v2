@@ -66,7 +66,7 @@ notes:
 #define SAMP_LARGEST_BLOCK      (0xfe00)
 
 #ifdef FARDATA
-#define FAR_PTR		__far
+#define FAR_PTR     __far
 #else
 #define FAR_PTR
 #endif
