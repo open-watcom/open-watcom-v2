@@ -224,19 +224,18 @@ bool GUISetBackgroundChar( gui_window *wnd, char background )
  * GUISetupStruct - sets up the gui_window structure
  */
 
-static bool GUISetupStruct1( gui_window *wnd, gui_create_info *dlg_info, bool dialog )
+bool GUISetupStruct( gui_window *wnd, gui_create_info *dlg_info, bool dialog )
 {
     wnd->style = dlg_info->style;
     if( !dialog ) {
         if( !GUICreateMenus( wnd, dlg_info ) ) {
             return( false );
         }
+        if( wnd->vbarmenu != NULL ) {
+            uimenubar( wnd->vbarmenu );
+            GUISetScreen( XMIN, YMIN, XMAX - XMIN, YMAX - YMIN );
+        }
     }
-    return( true );
-}
-
-static bool GUISetupStruct2( gui_window *wnd, gui_create_info *dlg_info, bool dialog )
-{
     if( !GUIJustSetWindowText( wnd, dlg_info->title ) ) {
         return( false );
     }
@@ -260,18 +259,7 @@ static bool GUISetupStruct2( gui_window *wnd, gui_create_info *dlg_info, bool di
         wnd->screen.cursor = C_NORMAL;
         GUISetCursor( wnd );
     }
-    if( !GUISetColours( wnd, dlg_info->num_attrs, dlg_info->colours ) ) {
-        return( false );
-    }
-    return( true );
-}
-
-bool GUISetupStruct( gui_window *wnd, gui_create_info *dlg_info, bool dialog )
-{
-    if( GUISetupStruct1( wnd, dlg_info, dialog ) ) {
-        return( GUISetupStruct2( wnd, dlg_info, dialog ) );
-    }
-    return( false );
+    return( GUISetColours( wnd, dlg_info->num_attrs, dlg_info->colours ) );
 }
 
 /*
@@ -290,14 +278,7 @@ bool GUIXCreateWindow( gui_window *wnd, gui_create_info *dlg_info,
             wnd->flags |= IS_ROOT;
         }
     }
-    if( !GUISetupStruct1( wnd, dlg_info, false ) ) {
-        return( false );
-    }
-    if( wnd->vbarmenu != NULL ) {
-        uimenubar( wnd->vbarmenu );
-        GUISetScreen( XMIN, YMIN, XMAX-XMIN, YMAX-YMIN );
-    }
-    if( !GUISetupStruct2( wnd, dlg_info, false ) ) {
+    if( !GUISetupStruct( wnd, dlg_info, false ) ) {
         return( false );
     }
     GUIFrontOfList( wnd );

@@ -442,19 +442,18 @@ static bool CreateVBarMenu( gui_window *wnd, int num_items, gui_menu_struct *men
     VBARMENU    *vbarmenu;
 
     *pvbarmenu = NULL;
-    if( num_items == 0 ) {
-        return( true );
+    if( num_items > 0 ) {
+        vbarmenu = GUIAllocVBarMenu();
+        if( vbarmenu == NULL ) {
+            return( false );
+        }
+        if( !GUICreateMenuItems( num_items, menu, &vbarmenu->titles ) ) {
+            GUIFreeVBarMenu( vbarmenu );
+            return( false );
+        }
+        GUIInitHint( wnd, num_items, menu, MENU_HINT );
+        *pvbarmenu = vbarmenu;
     }
-    vbarmenu = GUIAllocVBarMenu();
-    if( vbarmenu == NULL ) {
-        return( false );
-    }
-    if( !GUICreateMenuItems( num_items, menu, &vbarmenu->titles ) ) {
-        GUIFreeVBarMenu( vbarmenu );
-        return( false );
-    }
-    *pvbarmenu = vbarmenu;
-    GUIInitHint( wnd, num_items, menu, MENU_HINT );
     return( true );
 }
 
