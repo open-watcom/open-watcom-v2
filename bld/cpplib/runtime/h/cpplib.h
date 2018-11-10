@@ -85,8 +85,6 @@
 #define PointOffset( base, offset ) \
     PointUsingOffset( void, base, offset )
 
-#define TSIG_INDIRECT(p)    (((p)->base.flags & TSIG_FLAGS_INDIRECT) != 0)
-
 struct  ACTIVE_EXC;
 struct  DISPATCH_EXC;
 union   RW_DTREG;
@@ -130,6 +128,8 @@ typedef void (*pFUNcopyV)                       // copy ctor
                 , void * );                     // - source
 
 extern "C" {
+
+#define TSIG_INDIRECT(p)    (((p)->base.flags & TSIG_FLAGS_INDIRECT) != 0)
 
 //************************************************************************
 // Type Signatures

@@ -53,7 +53,7 @@
 
 extern  unsigned short SS_Reg( void );
 #pragma aux SS_Reg =    \
-        "mov ax,ss"     \
+        "mov    ax,ss"  \
     parm caller     \
     value           [ax] \
     modify exact    [ax]
@@ -74,7 +74,7 @@ extern  int SegInfo( unsigned short selector );
         "shl    eax,31"     \
         "mov    ax,di"      \
     parm caller     [ebx] \
-    value           [edi] \
+    value           [eax] \
     modify exact    [eax ecx edx esi ebx edi]
 
 extern  int SegmentLimit( void );

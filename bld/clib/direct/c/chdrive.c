@@ -62,17 +62,22 @@ _WCRTLINK int _chdrive( int drive )
     if( (int)dnum == drive )
         return( 0 );
 #elif defined( __NT__ )
-    char        dir[MAX_PATH];  // [4]
+    char        dir[MAX_PATH];
+    DWORD       rc;
 
     dir[0] = drive + 'a' - 1;
     dir[1] = DRV_SEP;
     dir[2] = '.';
     dir[3] = '\0';
 
-    SetCurrentDirectory( dir );
-    GetCurrentDirectory( sizeof( dir ), dir );
-    if( tolower( (unsigned char)dir[0] ) - 'a' + 1 == drive )
-        return( 0 );
+    if( SetCurrentDirectory( dir ) ) {
+        rc = GetCurrentDirectory( sizeof( dir ), dir );
+        if( rc && rc < sizeof( dir ) ) {
+            if( tolower( (unsigned char)dir[0] ) - 'a' + 1 == drive ) {
+                return( 0 );
+            }
+        }
+    }
 #elif defined( __RDOS__ ) || defined( __RDOSDEV__ )
     RdosSetCurDrive( drive - 1 );
     if( RdosGetCurDrive() + 1 == drive )

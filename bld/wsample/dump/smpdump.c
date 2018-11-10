@@ -34,7 +34,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
+//#include <unistd.h>
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <malloc.h>
@@ -231,13 +231,10 @@ int main( int argc, char **argv )
             COND_SWAP_16( data->d.code.ovl_tab.segment );
             COND_SWAP_32( data->d.code.ovl_tab.offset );
             printf( "  name = \"%s\"\n", data->d.code.name );
-            printf( "  overlay table = %.4x:%.8lx\n",
-                    data->d.code.ovl_tab.segment, data->d.code.ovl_tab.offset );
-            printf( "  time stamp %lx -> %s", stamp,
-                    ctime( &stamp ) );
+            printf( "  overlay table = %.4x:%.8lx\n", data->d.code.ovl_tab.segment, data->d.code.ovl_tab.offset );
+            printf( "  time stamp %lx -> %s", (unsigned long)stamp, ctime( &stamp ) );
             if( stat( data->d.code.name, &file_stat ) == 0 ) {
-                printf( "  actual time stamp %lx -> %s", file_stat.st_mtime,
-                        ctime( &(file_stat.st_mtime) ) );
+                printf( "  actual time stamp %lx -> %s", (unsigned long)file_stat.st_mtime, ctime( &(file_stat.st_mtime) ) );
             }
             break;
         case SAMP_ADDR_MAP:
@@ -284,7 +281,7 @@ int main( int argc, char **argv )
                         if( length < 0 ) {
                             printf( "\n** Error: stack exhausted!\n\n" );
                         } else {
-                            for( k = 0; k < length; k++ ) {
+                            for( k = 0; k < (unsigned)length; k++ ) {
                                 printf( " -  " );
                             }
                         }

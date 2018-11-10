@@ -774,13 +774,13 @@ void WriteListing( void )
 static void DumpSymbol( struct asm_sym *sym )
 /*******************************************/
 {
-    dir_node    *dir;
+//    dir_node    *dir;
     char        *type;
     char        value[512];
     const char  *langtype;
     char        *public;
 
-    dir = (dir_node *)sym;
+//    dir = (dir_node *)sym;
     *value = 0;
     switch( sym->state ) {
     case SYM_SEG:

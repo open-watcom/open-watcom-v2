@@ -137,7 +137,7 @@ _WCRTLINK int __F_NAME(spawnve,_wspawnve)( int mode, const CHAR_TYPE * path,
     CHAR_TYPE SPVE_NEAR     *end_of_p;
     int                     retval;
 #if defined( __DOS_086__ )
-    int                     num_of_paras;   /* for environment */
+    unsigned                envsize_paras;  /* for environment */
 #endif
     size_t                  cmdline_len;
     CHAR_TYPE SPVE_NEAR     *cmdline_mem;
@@ -238,7 +238,7 @@ _WCRTLINK int __F_NAME(spawnve,_wspawnve)( int mode, const CHAR_TYPE * path,
         return( -1 );
     }
 #if defined( __DOS_086__ )
-    num_of_paras = retval;
+    envsize_paras = retval;
 #endif
     len = __F_NAME(strlen,wcslen)( path ) + 7 + _MAX_PATH2;
     np = LIB_ALLOC( len * sizeof( CHAR_TYPE ) );
@@ -261,14 +261,14 @@ _WCRTLINK int __F_NAME(spawnve,_wspawnve)( int mode, const CHAR_TYPE * path,
     if( _RWD_osmode != DOS_MODE ) {     /* if protect-mode e.g. DOS/16M */
         unsigned    segment;
 
-        if( _dos_allocmem( num_of_paras, &segment ) != 0 ) {
+        if( _dos_allocmem( envsize_paras, &segment ) != 0 ) {
             lib_nfree( np );
             lib_free( _envptr );
             _POSIX_HANDLE_CLEANUP;
             return( -1 );
         }
         envseg = segment;
-        _fmemcpy( MK_FP( segment, 0 ), envptr, num_of_paras * 16 );
+        _fmemcpy( MK_FP( segment, 0 ), envptr, envsize_paras << 4 );
     }
 #endif
     /* allocate the cmdline buffer */

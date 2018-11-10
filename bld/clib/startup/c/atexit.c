@@ -39,17 +39,22 @@
 #include "rtinit.h"
 
 
-#define EXIT_LIMIT      32
+#define EXIT_LIMIT  32
 
-typedef void    __exit_fn( void );
-#if defined(_M_IX86)
-    #pragma aux (__outside_CLIB) __exit_fn;
-#endif
+typedef void        __exit_fn( void );
 
 static __exit_fn    * _HUGEDATA _ExitList[EXIT_LIMIT];
 static int          _ExitCount;
 
-_WRTLFCONV int atexit( void (* func)( void ) )
+#if defined(_M_IX86)
+#pragma aux (__outside_CLIB) __atexit_wrapper;
+#endif
+static void _WCNEAR __atexit_wrapper( __exit_fn *func )
+{
+    (*func)();
+}
+
+_WRTLFCONV int atexit( __exit_fn *func )
 {
     if( _ExitCount < EXIT_LIMIT ) {
         _ExitList[_ExitCount++] = (__exit_fn *)func;
@@ -69,7 +74,7 @@ static void _Full_at_exit_rtn( void )
     _ExitCount = EXIT_LIMIT + 1;    /* prevent others being registered */
     /* call functions in reverse order of their registration */
     while( count-- > 0 ) {
-        (*_ExitList[count])();      /* invoke user exit routine */
+        __atexit_wrapper( _ExitList[count] );      /* invoke user exit routine */
     }
 }
 

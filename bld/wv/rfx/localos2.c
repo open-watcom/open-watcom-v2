@@ -257,56 +257,79 @@ error_handle LocalGetCwd( int drive, char *where )
 #endif
 }
 
-static void makeDOSDTA( FINDBUF *findbuf, trap_dta *dta )
-/*******************************************************/
+static void make_info( FINDBUF *fb, trap_dta *dta )
+/*************************************************/
 {
-    dta->dos.dir_entry_num = *(USHORT *)&findbuf->fdateLastWrite;
-    dta->dos.cluster = *(USHORT *)&findbuf->ftimeLastWrite;
-    dta->attr = findbuf->attrFile;
-    dta->time = *(USHORT *)&findbuf->ftimeLastWrite;
-    dta->date = *(USHORT *)&findbuf->fdateLastWrite;
-    dta->size = findbuf->cbFile;
-    strncpy( dta->name, findbuf->achName, TRAP_DTA_NAME_MAX - 1 );
-    dta->name[TRAP_DTA_NAME_MAX - 1] = '\0';
+    dta->os2.attr = fb->attrFile;
+    dta->os2.time = *(USHORT *)&fb->ftimeLastWrite;
+    dta->os2.date = *(USHORT *)&fb->fdateLastWrite;
+    dta->os2.size = fb->cbFile;
+    strcpy( dta->os2.name, fb->achName );
 }
 
-error_handle LocalFindFirst( const char *pattern, void *info, unsigned info_len, int attrib )
-/*******************************************************************************************/
+error_handle LocalFindFirst( const char *pattern, trap_dta *dta, int attrib, handle_info *hdlinf )
+/************************************************************************************************/
 {
-    FINDBUF     findbuf;
-    HDIR        handle = 1;
-    APIRET      count = 1;
-    APIRET      err;
-
-    (void)info_len;
+    HDIR            handle = 0;
+    APIRET          count = 1;
+    APIRET          rc;
+    FINDBUF         fb;
 
 #ifdef _M_I86
-    err = DosFindFirst( (char *)pattern, &handle, attrib, &findbuf, sizeof( findbuf ), &count, 0 );
+    rc = DosFindFirst( (char *)pattern, &handle, attrib, &fb, sizeof( fb ), &count, 0 );
+    if( rc == 0 ) {
+        hdlinf->os2.handle.h16 = handle;
+        make_info( &fb, dta );
+    }
 #else
-    err = DosFindFirst( pattern, &handle, attrib, &findbuf, sizeof( findbuf ), &count, FIL_STANDARD );
+    rc = DosFindFirst( pattern, &handle, attrib, &fb, sizeof( fb ), &count, FIL_STANDARD );
+    if( rc == 0 ) {
+        hdlinf->os2.handle.h32 = handle;
+        make_info( &fb, dta );
+    }
 #endif
-    if( err == 0 )
-        makeDOSDTA( &findbuf, info );
-    return( StashErrCode( err, OP_LOCAL ) );
+    return( StashErrCode( rc, OP_LOCAL ) );
 }
 
-int LocalFindNext( void *info, unsigned info_len )
-/************************************************/
+int LocalFindNext( trap_dta *dta, handle_info *hdlinf )
+/*****************************************************/
 {
-    FINDBUF     findbuf;
-    APIRET      count = 1;
-    APIRET      rc;
+    APIRET          count = 1;
+    FINDBUF         fb;
 
-    info_len = info_len;
-    rc = DosFindNext( 1, &findbuf, sizeof( findbuf ), &count );
-    if( rc != 0 )
-        return( -1 );
-    if( count == 0 ) {
-        DosFindClose( 1 );
-        return( -1 );
+#ifdef _M_I86
+    if( DosFindNext( hdlinf->os2.handle.h16, &fb, sizeof( fb ), &count ) == 0 ) {
+        if( count == 1 ) {
+            make_info( &fb, dta );
+            return( 0 );
+        }
+        DosFindClose( hdlinf->os2.handle.h16 );
     }
-    makeDOSDTA( &findbuf, info );
-    return( 0 );
+#else
+    if( DosFindNext( hdlinf->os2.handle.h32, &fb, sizeof( fb ), &count ) == 0 ) {
+        if( count == 1 ) {
+            make_info( &fb, dta );
+            return( 0 );
+        }
+        DosFindClose( hdlinf->os2.handle.h32 );
+    }
+#endif
+    return( -1 );
+}
+
+int LocalFindClose( handle_info *hdlinf )
+/***************************************/
+{
+    HDIR        handle;
+    int         rc;
+
+#ifdef _M_I86
+    handle = hdlinf->os2.handle.h16;
+#else
+    handle = hdlinf->os2.handle.h32;
+#endif
+    rc = DosFindClose( handle );
+    return( rc );
 }
 
 /*
@@ -366,7 +389,6 @@ bool CtrlCHit( void )
 #ifdef _M_I86
     DosHoldSignal( HLDSIG_ENABLE );
 #endif
-
     return( hit );
 }
 
@@ -387,4 +409,29 @@ error_handle LocalSetFileAttr( const char *name, long attr )
     }
     return( StashErrCode( rc, OP_LOCAL ) );
 #endif
+}
+
+char    *LocalGetFindName( trap_dta *dta )
+{
+    return( dta->os2.name );
+}
+
+long    LocalGetFindAttr( trap_dta *dta )
+{
+    return( dta->os2.attr );
+}
+
+long    LocalGetFindSize( trap_dta *dta )
+{
+    return( dta->os2.size );
+}
+
+long    LocalGetFindDate( trap_dta *dta )
+{
+    return( dta->os2.date );
+}
+
+long    LocalGetFindTime( trap_dta *dta )
+{
+    return( dta->os2.time );
 }

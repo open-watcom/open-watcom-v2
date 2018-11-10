@@ -28,20 +28,26 @@
 *
 ****************************************************************************/
 
-extern error_handle  LocalMkDir( const char * );
-extern error_handle  LocalRmDir( const char * );
-extern error_handle  LocalGetCwd( int, char * );
-extern error_handle  LocalSetCWD( const char * );
-extern int           LocalGetDrv( void );
-extern error_handle  LocalSetDrv( int );
-extern error_handle  LocalFindFirst( const char *, void *, unsigned, int );
-extern int           LocalFindNext( void *, unsigned );
-extern long          LocalGetFileAttr( const char * );
-extern error_handle  LocalSetFileAttr( const char *, long );
-extern long          LocalGetFreeSpace( int );
-extern error_handle  LocalRename( const char *, const char * );
-extern void          LocalTime( int *hour, int *min, int *sec, int *hundredths );
-extern void          LocalDate( int *year, int *month, int *day, int *weekday );
-extern error_handle  LocalDateTime( sys_handle, int *, int *, int );
-extern bool          LocalInteractive( sys_handle );
-extern void          LocalGetBuff( char *, unsigned );
+extern error_handle LocalMkDir( const char * );
+extern error_handle LocalRmDir( const char * );
+extern error_handle LocalGetCwd( int, char * );
+extern error_handle LocalSetCWD( const char * );
+extern int          LocalGetDrv( void );
+extern error_handle LocalSetDrv( int );
+extern error_handle LocalFindFirst( const char *, trap_dta *, int, handle_info * );
+extern int          LocalFindNext( trap_dta *, handle_info * );
+extern int          LocalFindClose( handle_info * );
+extern long         LocalGetFileAttr( const char * );
+extern error_handle LocalSetFileAttr( const char *, long );
+extern long         LocalGetFreeSpace( int );
+extern error_handle LocalRename( const char *, const char * );
+extern void         LocalTime( int *hour, int *min, int *sec, int *hundredths );
+extern void         LocalDate( int *year, int *month, int *day, int *weekday );
+extern error_handle LocalDateTime( sys_handle, int *, int *, int );
+extern bool         LocalInteractive( sys_handle );
+extern void         LocalGetBuff( char *, unsigned );
+extern char         *LocalGetFindName( trap_dta * );
+extern long         LocalGetFindAttr( trap_dta * );
+extern long         LocalGetFindSize( trap_dta * );
+extern long         LocalGetFindDate( trap_dta * );
+extern long         LocalGetFindTime( trap_dta * );

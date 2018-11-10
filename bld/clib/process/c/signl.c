@@ -73,6 +73,23 @@ static __sig_func _HUGEDATA _SignalTable[] = {
     SIG_DFL         /* SIGIOVFL */
 };
 
+#if defined(_M_IX86)
+#pragma aux (__outside_CLIB) __sigfpe_wrapper
+#endif
+static void _WCNEAR __sigfpe_wrapper( __sig_func func, int fpe_type )
+{
+    (*(__sigfpe_func)func)( SIGFPE, fpe_type );
+}
+
+#if defined(_M_IX86)
+#pragma aux (__outside_CLIB) __sig_wrapper
+#endif
+static void _WCNEAR __sig_wrapper( __sig_func func, int sig )
+{
+    (*func)( sig );
+}
+
+
 static void __sigabort( void )
 {
     raise( SIGABRT );
@@ -104,7 +121,7 @@ _WCRTLINK void _WCI86FAR __sigfpe_handler( int fpe_type )
     func = _SignalTable[SIGFPE];
     if( func != SIG_IGN && func != SIG_DFL && func != SIG_ERR ) {
         _SignalTable[SIGFPE] = SIG_DFL;
-        (*(__sigfpe_func)func)( SIGFPE, fpe_type );    /* so we can pass 2nd parm */
+        __sigfpe_wrapper( func, fpe_type );    /* so we can pass 2nd parm */
     }
 }
 
@@ -165,14 +182,14 @@ _WCRTLINK int raise( int sig )
         if( func != SIG_IGN  &&  func != SIG_DFL  &&  func != SIG_ERR ) {
             _RWD_sigtab[sig] = SIG_DFL;
             __restore_int23();
-            (*func)( sig );
+            __sig_wrapper( func, sig );
         }
         break;
     case SIGBREAK:
         if( func != SIG_IGN  &&  func != SIG_DFL  &&  func != SIG_ERR ) {
             _RWD_sigtab[sig] = SIG_DFL;
             __restore_int_ctrl_break();
-            (*func)( sig );
+            __sig_wrapper( func, sig );
         }
         break;
 #else
@@ -191,7 +208,7 @@ _WCRTLINK int raise( int sig )
     case SIGIOVFL:
         if( func != SIG_IGN  &&  func != SIG_DFL  &&  func != SIG_ERR ) {
             _RWD_sigtab[sig] = SIG_DFL;
-            (*func)( sig );
+            __sig_wrapper( func, sig );
         }
         break;
     default:

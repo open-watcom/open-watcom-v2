@@ -112,6 +112,22 @@ static void __sigabort( void )
     raise( SIGABRT );
 }
 
+#if defined(_M_IX86)
+#pragma aux (__outside_CLIB) __sigfpe_wrapper
+#endif
+static void _WCNEAR __sigfpe_wrapper( __sig_func func, int fpe_type )
+{
+    (*(__sigfpe_func)func)( SIGFPE, fpe_type );
+}
+
+#if defined(_M_IX86)
+#pragma aux (__outside_CLIB) __sig_wrapper
+#endif
+static void _WCNEAR __sig_wrapper( __sig_func func, int sig )
+{
+    (*func)( sig );
+}
+
 _WCRTLINK int __sigfpe_handler( int fpe )
 {
     __sig_func  func;
@@ -119,7 +135,7 @@ _WCRTLINK int __sigfpe_handler( int fpe )
     func = __GetSignalFunc( SIGFPE );
     if(( func != SIG_IGN ) && ( func != SIG_DFL ) && ( func != SIG_ERR )) {
         __SetSignalFunc( SIGFPE, SIG_DFL );
-        (*(__sigfpe_func)func)( SIGFPE, fpe );
+        __sigfpe_wrapper( func, fpe );
         return( 0 );
     } else if( func == SIG_IGN ) {
         return( 0 );
@@ -172,7 +188,7 @@ _WCRTLINK int raise( int sig )
     case SIGIOVFL:
         if(( func != SIG_IGN ) && ( func != SIG_DFL ) && ( func != SIG_ERR )) {
             __SetSignalFunc( sig, SIG_DFL );
-            (*func)( sig );
+            __sig_wrapper( func, sig );
         }
         /*
          * If the CtrlSignalHandler was needed before we processed the

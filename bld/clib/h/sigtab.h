@@ -29,9 +29,9 @@
 ****************************************************************************/
 
 
-#if !defined( __OS2_286__ ) && defined( __SW_BM )
-    #define __SIGNALTABLE   (__THREADDATAPTR->signal_table)
-#else
+#if defined( __OS2_286__ ) || !defined( __SW_BM )
     #include "sigdefn.h"
     #define __SIGNALTABLE   _SignalTable
+#else
+    #define __SIGNALTABLE   (__THREADDATAPTR->signal_table)
 #endif

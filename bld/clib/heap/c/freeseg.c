@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -75,37 +76,41 @@ static int DoFreeSeg( __segment seg )
 
 extern int tricky_free_seg( int, int );
 #if defined(__OS2__) && defined(__BIG_DATA__)
-#pragma aux tricky_free_seg = \
+#pragma aux tricky_free_seg =   \
         "mov    cx,es"          \
         "cmp    cx,ax"          \
-        "jl     L1"             \
+        "jl short L1"           \
         "cmp    cx,bx"          \
-        "jg     L1"             \
+        "jg short L1"           \
         "xor    cx,cx"          \
-        "L1:"                   \
+    "L1:"                       \
         "mov    dx,ds"          \
         "cmp    dx,ax"          \
-        "jl     L2"             \
+        "jl short L2"           \
         "cmp    dx,bx"          \
-        "jg     L2"             \
+        "jg short L2"           \
         "xor    dx,dx"          \
-        "L2:"                   \
+    "L2:"                       \
         "call   DoFreeSeg"      \
         "mov    es,cx"          \
         "mov    ds,dx"          \
-        parm [ax] [bx] value [ax] modify [cx dx ds es]
+    parm    [ax] [bx] \
+    value   [ax] \
+    modify  [cx dx ds es]
 #else
-#pragma aux tricky_free_seg = \
+#pragma aux tricky_free_seg =   \
         "mov    cx,es"          \
         "cmp    cx,ax"          \
-        "jl     L1"             \
+        "jl short L1"           \
         "cmp    cx,bx"          \
-        "jg     L1"             \
+        "jg short L1"           \
         "xor    cx,cx"          \
-        "L1:"                   \
+    "L1:"                       \
         "call   DoFreeSeg"      \
         "mov    es,cx"          \
-        parm [ax] [bx] value [ax] modify [cx es]
+    parm    [ax] [bx] \
+    value   [ax] \
+    modify  [cx es]
 #endif
 
 static int __DoFreeSeg( __segment first )

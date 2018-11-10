@@ -37,6 +37,7 @@
 #include "guimenu.h"
 #include "guixwind.h"
 #include "guixloop.h"
+#include "guixutil.h"
 #include "guismove.h"
 #include "guixutil.h"
 #include "guiutil.h"

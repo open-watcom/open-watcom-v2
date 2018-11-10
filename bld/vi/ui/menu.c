@@ -66,7 +66,7 @@ typedef struct menu {
 
 int CurrentMenuNumber;
 
-static int      menuCnt;
+static ctl_id   menuCnt;
 
 static menu     *menuHead, *menuTail, *currMenu;
 static menu     *windowGadgetMenu;
@@ -389,7 +389,9 @@ vi_rc DoItemDelete( const char *data )
     char        mname[MAX_STR];
     char        str[MAX_STR];
     menu_item   *cmi, *dmi;
-    int         i, id;
+    int         i;
+    ctl_id      id;
+    ctl_id      menu_id;
     windim      maxwidth;
 
     if( currMenu != NULL ) {
@@ -401,25 +403,26 @@ vi_rc DoItemDelete( const char *data )
         return( ERR_INVALID_MENU );
     }
     data = GetNextWord1( data, str );
-    id = atoi( str );
-    if( id < 0 ) {
+    i = atoi( str );
+    if( i < 0 ) {
         id = cmenu->itemcnt - 1;
-    }
-    if( id >= cmenu->itemcnt ) {
+    } else if( i < cmenu->itemcnt ) {
+        id = i;
+    } else {
         return( ERR_INVALID_MENU );
     }
-    i = 0;
     maxwidth = 0;
     dmi = NULL;
+    menu_id = 0;
     for( cmi = cmenu->itemhead; cmi != NULL; cmi = cmi->next ) {
-        if( i == id ) {
+        if( menu_id == id ) {
             dmi = cmi;
         } else {
             if( maxwidth < cmi->slen ) {
                 maxwidth = cmi->slen;
             }
         }
-        i++;
+        menu_id++;
     }
     if( dmi == NULL ) {
         return( ERR_INVALID_MENU );
@@ -618,10 +621,11 @@ void FiniMenu( void )
 /*
  * lightMenu - light up control name
  */
-static void lightMenu( int sel, int ws, bool on )
+static void lightMenu( ctl_id sel, int ws, bool on )
 {
     char        ch;
     int         i;
+    ctl_id      r;
     menu        *cmenu;
     type_style  style;
 
@@ -632,7 +636,7 @@ static void lightMenu( int sel, int ws, bool on )
     ws++;
 
     cmenu = menuHead;
-    for( i = 0; i < sel; i++ ) {
+    for( r = 0; r < sel; r++ ) {
         cmenu = cmenu->next;
     }
 
@@ -655,26 +659,28 @@ static void lightMenu( int sel, int ws, bool on )
 /*
  * getMenuPtrFromId - given an id, find the menu in the list
  */
-static menu *getMenuPtrFromId( int id )
+static menu *getMenuPtrFromId( ctl_id id )
 {
-    int         i = 0;
+    ctl_id      menu_id;
     menu        *cmenu;
+
+    menu_id = 0;
     for( cmenu = menuHead; cmenu != NULL; cmenu = cmenu->next ) {
-        if( id == i ) {
+        if( id == menu_id ) {
             break;
         }
-        i++;
+        menu_id++;
     }
     return( cmenu );
 
 } /* getMenuPtrFromId */
 
-static int currentID;
+static ctl_id   currentID = 0;
 
 /*
  * processMenu - process selected menu
  */
-static vi_rc processMenu( int sel, menu *cmenu, windim xpos, windim ypos, windim rmaxwidth )
+static vi_rc processMenu( ctl_id sel, menu *cmenu, windim xpos, windim ypos, windim rmaxwidth )
 {
     int         i;
     windim      ws;
@@ -687,6 +693,7 @@ static vi_rc processMenu( int sel, menu *cmenu, windim xpos, windim ypos, windim
     windim      diff;
     windim      maxwidth;
     vi_rc       rc;
+    ctl_id      shift;
 
     maxwidth = rmaxwidth;
     if( maxwidth < 0 ) {
@@ -784,13 +791,17 @@ static vi_rc processMenu( int sel, menu *cmenu, windim xpos, windim ypos, windim
             }
             return( rc );
         }
-        if( allowrl == 0 ) {
+        if( allowrl == 0 )
             break;
-        }
-
-        sel += allowrl;
-        if( sel < 0 ) {
-            sel = menuCnt - 1;
+        if( allowrl < 0 ) {
+            shift = -allowrl;
+            if( sel < shift ) {
+                sel = menuCnt - 1;
+            } else {
+                sel -= shift;
+            }
+        } else {
+            sel += allowrl;
         }
         if( sel >= menuCnt ) {
             sel = 0;
@@ -827,8 +838,8 @@ static vi_rc processMenu( int sel, menu *cmenu, windim xpos, windim ypos, windim
  */
 vi_rc DoMenu( void )
 {
-    int         i;
-    int         sel = -1;
+    ctl_id      menu_id;
+    ctl_id      sel;
     char        ch;
     menu        *cmenu;
 
@@ -839,15 +850,16 @@ vi_rc DoMenu( void )
         return( ERR_NO_ERR );
     }
     ch = LastEvent - VI_KEY( ALT_A ) + 'A';
-    i = 0;
+    menu_id = 0;
+    sel = NO_ID;
     for( cmenu = menuHead; cmenu != NULL; cmenu = cmenu->next ) {
         if( ch == cmenu->hi._char ) {
-            sel = i;
+            sel = menu_id;
             break;
         }
-        i++;
+        menu_id++;
     }
-    if( sel < 0 ) {
+    if( sel == NO_ID ) {
         return( ERR_NO_ERR );
     }
     return( processMenu( sel, cmenu, -1, 1, 0 ) );
@@ -864,7 +876,7 @@ vi_rc DoWindowGadgetMenu( void )
     if( windowGadgetMenu == NULL ) {
         return( ERR_NO_ERR );
     }
-    rc = processMenu( -1, windowGadgetMenu,
+    rc = processMenu( NO_ID, windowGadgetMenu,
                       WindowAuxInfo( current_window_id, WIND_INFO_X1 ),
                       WindowAuxInfo( current_window_id, WIND_INFO_Y1 ) + 1, -1 );
     return( rc );
@@ -884,7 +896,7 @@ vi_rc DoFloatMenu( int flt_id, int slen, windim x1, windim y1 )
     if( floatMenus[flt_id] == NULL ) {
         return( ERR_INVALID_MENU );
     }
-    rc = processMenu( -1, floatMenus[flt_id], x1, y1, slen );
+    rc = processMenu( NO_ID, floatMenus[flt_id], x1, y1, slen );
     return( rc );
 
 } /* DoFloatMenu */
@@ -928,7 +940,7 @@ vi_rc ActivateFloatMenu( const char *data )
 /*
  * GetCurrentMenuId - get id of currently displayed menu
  */
-int GetCurrentMenuId( void )
+ctl_id GetCurrentMenuId( void )
 {
     return( currentID );
 
@@ -937,7 +949,7 @@ int GetCurrentMenuId( void )
 /*
  * SetToMenuId - set to specified menu id (mouse did it)
  */
-vi_rc SetToMenuId( int id )
+vi_rc SetToMenuId( ctl_id id )
 {
     menu        *cmenu;
 
@@ -952,22 +964,22 @@ vi_rc SetToMenuId( int id )
 /*
  * GetMenuIdFromCoord - given x coordinate, determine menu item
  */
-int GetMenuIdFromCoord( int x )
+ctl_id GetMenuIdFromCoord( int x )
 {
-    int         i;
+    ctl_id      menu_id;
     int         ws;
     menu        *cmenu;
 
     ws = START_OFFSET;
-    i = 0;
+    menu_id = 0;
     for( cmenu = menuHead; cmenu != NULL; cmenu = cmenu->next ) {
         if( x >= ws && x < ws + cmenu->slen ) {
-            return( i );
+            return( menu_id );
         }
         ws += cmenu->slen + 2;
-        i++;
+        menu_id++;
     }
-    return( -1 );
+    return( NO_ID );
 
 } /* GetMenuIdFromCoord */
 

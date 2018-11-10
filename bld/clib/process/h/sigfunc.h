@@ -32,11 +32,8 @@
 
 #include "extfunc.h"
 
+
 typedef void (*__sigfpe_func)( int, int );
-#ifdef _M_IX86
-    #pragma aux (__outside_CLIB) __sig_func;
-    #pragma aux (__outside_CLIB) __sigfpe_func;
-#endif
 
 #if defined( __NT__ ) || defined( __OS2_386__ ) || defined( __RDOS__ )
 _WCRTLINK extern int __sigfpe_handler( int );

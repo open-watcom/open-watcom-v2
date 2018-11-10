@@ -81,38 +81,47 @@ all: .SYMBOLIC
 
 !else
 
+debug_inf = 1
+
 all : $(bin_dir)/$(installer_c) $(bin_dir)/$(installer_f77) .SYMBOLIC
 
 $(bin_dir)/$(installer_c) : ../files.dat $(bin_dir) $(setup_c) .ALWAYS
+    @%make clean_inf
     langdat -l filelist $(langdat_keys) -r $(bld_ver) -c $[@ c
     @cp $]@ setup.exe >$(nulldevice)
     mkinf -i.. -i../../include -dDstDir=$(dstdir) c filelist $(%OWRELROOT)
-    @rm filelist
     @cp setup.inf $(%OWRELROOT)/setup.inf >$(nulldevice)
     uzip setup.zip instarch.lst $(%OWRELROOT)
-    @rm instarch.lst
     @rm $(%OWRELROOT)/setup.inf
     @rm setup.exe
-    @rm setup.inf
+!ifndef debug_inf
+    @%make clean_inf
+!endif
     mkexezip $@ setup.zip $]@
     @rm setup.zip
 
 $(bin_dir)/$(installer_f77) : ../files.dat $(bin_dir) $(setup_f77) .ALWAYS
+    @%make clean_inf
     langdat -l filelist $(langdat_keys) -r $(bld_ver) -c $[@ f77
     @cp $]@ setup.exe >$(nulldevice)
     mkinf -i.. -i../../include -dDstDir=$(dstdir) f77 filelist $(%OWRELROOT)
-    @rm filelist
     @cp setup.inf $(%OWRELROOT)/setup.inf >$(nulldevice)
     uzip setup.zip instarch.lst $(%OWRELROOT)
-    @rm instarch.lst
     @rm $(%OWRELROOT)/setup.inf
     @rm setup.exe
-    @rm setup.inf
+!ifndef debug_inf
+    @%make clean_inf
+!endif
     mkexezip $@ setup.zip $]@
     @rm setup.zip
 
 $(bin_dir) :
     mkdir $@
+
+clean_inf : .PROCEDURE .EXPLICIT
+    @if exist filelist @rm filelist
+    @if exist instarch.lst @rm instarch.lst
+    @if exist setup.inf @rm setup.inf
 
 clean : .symbolic
     @if exist $(bin_dir)/$(installer_c) rm $(bin_dir)/$(installer_c)

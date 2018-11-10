@@ -183,18 +183,19 @@
 .*
 .dm code begin
 .if '&*' eq 'begin' .do begin
-:XMP.:SF font=5.~b
+:CMT. :XMP.:SF font=5.~b
 .do end
 .el .if '&*' eq 'end' .do begin
-:eSF.:eXMP.
+:CMT. :eSF.:eXMP.
 .do end
 .el .if '&*' eq 'break' .do begin
-:eSF.:eXMP.:XMP.:SF font=5.
+:CMT. :eSF.:eXMP.:XMP.:SF font=5.
 .do end
 .el .do begin
-:XMP.:SF font=5.~b
+:CMT. :XMP.:SF font=5.~b
 &*
-:eSF.:eXMP.:P.
+:CMT. :eSF.:eXMP.:P.
+:P.
 .do end
 .dm code end
 .*

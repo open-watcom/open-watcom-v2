@@ -40,3 +40,4 @@ typedef trap_fhandle    sys_handle;
 
 typedef unsigned long   sys_error;
 #define SYS_ERR_OK      ((sys_error)0)
+#define SYS_ERR_ERR     ((sys_error)-1)

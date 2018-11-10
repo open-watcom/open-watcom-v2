@@ -63,11 +63,9 @@ __segment __AllocSeg( unsigned int amount )
     unsigned    num_of_paras;       /* number of paragraphs desired   */
     unsigned    heaplen;
     __segment   seg;
-#if defined(__OS2__)
-#elif defined(__QNX__)
-    unsigned    rc;
-#elif defined(__WINDOWS__)
-#else   /* __DOS__ */
+#if defined(__QNX__)
+    int         rc;
+#elif defined(__DOS__)
     tiny_ret_t  rc;
 #endif
 
@@ -85,12 +83,11 @@ __segment __AllocSeg( unsigned int amount )
     if( num_of_paras == 0 )
         num_of_paras = PARAS_IN_64K;
 #if defined(__OS2__)
-    seg = _NULLSEG;
     if( DosAllocSeg( num_of_paras << 4, (PSEL)&seg, 0 ) )
         return( _NULLSEG );
 #elif defined(__QNX__)
     rc = qnx_segment_alloc_flags( ((long)num_of_paras) << 4, __qnx_alloc_flags );
-    if( rc == (unsigned)-1 )
+    if( rc == -1 )
         return( _NULLSEG );
     seg = (__segment)rc;
 #elif defined(__WINDOWS__)

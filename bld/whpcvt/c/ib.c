@@ -251,7 +251,7 @@ size_t trans_add_char_wrap( int ch, section_def *section, allocsize *alloc_size 
 
     // the "1" is because a character is allowed to appear on the right margin
     // the minus part is so that we leave enough room for the box chars
-    #define MY_MARGIN ( Right_Margin + 1 - ( Box_Mode ? 2 : 0 ) )
+    #define MY_MARGIN ( Right_Margin + ( Box_Mode ? -1 : +1 ) )
 
     // find out the real indentation
     indent = ( Curr_indent < 0 ) ? 0 : Curr_indent;
@@ -293,8 +293,8 @@ size_t trans_add_char_wrap( int ch, section_def *section, allocsize *alloc_size 
 
     // adjust the nearest safe break point if the char we got was a space and
     // is not preceded by a space
-    if( ch == ' ' && section->section_size > 2 &&
-                section->section_text[section->section_size - 2] != ' ' ) {
+    if( ch == ' ' && section->section_size > 2
+      && section->section_text[section->section_size - 2] != ' ' ) {
         Wrap_Safe = section->section_size;
         R_Chars = 0;
     }
@@ -480,7 +480,7 @@ allocsize ib_trans_line( section_def *section, allocsize alloc_size )
     char                *ctx_name;
     char                *ctx_text;
     char                buf[100];
-    int                 indent = 0;
+    unsigned            indent = 0;
     int                 ctr;
     char                *file_name;
 
@@ -695,7 +695,7 @@ allocsize ib_trans_line( section_def *section, allocsize alloc_size )
                 buf[0] = '\0';
                 if( Curr_list->type == LIST_TYPE_UNORDERED ) {
                     // generate a bullet, correctly spaced for tab size
-                    for( ctr = 1; ctr <= Text_Indent; ctr++ ) {
+                    for( ctr = 0; ctr < Text_Indent; ctr++ ) {
                         strcat( buf, " " );
                     }
                     buf[Text_Indent / 2 - 1] = CHR_BULLET;
@@ -764,7 +764,7 @@ allocsize ib_trans_line( section_def *section, allocsize alloc_size )
             if( !Eat_blanks || ch != ' ' ) {
                 Curr_ctx->empty = false;
                 if( Tab_xmp && ch == Tab_xmp_char ) {
-                    size_t      ch_len;
+                    size_t  ch_len;
 
                     indent = ( Curr_indent < 0 ) ? 0 : Curr_indent;
                     // find out how close we are to "col 0" for the current indent
@@ -837,8 +837,8 @@ static void find_browse_pair( ctx_def *ctx, ctx_def **prev, ctx_def **next )
 static void ib_append_line( FILE *outfile, char *infnam )
 /*******************************************************/
 {
-    FILE                        *infile;
-    int                         inchar;
+    FILE            *infile;
+    int             inchar;
 
     if( infnam[0] != '\0' ) {
         infile = fopen( infnam, "rt" );
@@ -873,9 +873,9 @@ static void fake_hlink( FILE *file, char *label )
 static void output_ctx_hdr( ctx_def *ctx )
 /****************************************/
 {
-    ctx_def                     *temp_ctx;
-    ctx_def                     *prev;      // for << button
-    ctx_def                     *next;      // for >> button
+    ctx_def             *temp_ctx;
+    ctx_def             *prev;      // for << button
+    ctx_def             *next;      // for >> button
 
     // output topic name
     whp_fprintf( Out_file, "::::\"" );
@@ -1105,7 +1105,7 @@ static void output_section_ib( section_def *section )
 static void output_ctx_sections( ctx_def *ctx )
 /*********************************************/
 {
-    section_def                 *section;
+    section_def         *section;
 
     for( section = ctx->section_list; section != NULL; section = section->next ) {
         if( section->section_size > 0 ) {
@@ -1135,4 +1135,3 @@ void ib_output_file( void )
     }
     output_end();
 }
-

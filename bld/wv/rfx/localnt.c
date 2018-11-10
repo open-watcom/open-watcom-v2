@@ -142,7 +142,7 @@ error_handle LocalSetDrv( int drv )
             }
         }
     }
-    return( StashErrCode( -1, OP_LOCAL ) );
+    return( StashErrCode( SYS_ERR_ERR, OP_LOCAL ) );
 }
 
 int LocalGetDrv( void )
@@ -162,7 +162,7 @@ error_handle LocalGetCwd( int drive, char *where )
 {
     (void)drive;
 
-    return( StashErrCode( getcwd( where, 256 ) == NULL, OP_LOCAL ) );
+    return( StashErrCode( getcwd( where, _MAX_DIR ) == NULL, OP_LOCAL ) );
 }
 
 error_handle LocalSetCWD( const char *name )
@@ -192,7 +192,7 @@ error_handle LocalSetFileAttr( const char *name, long attr )
         attr = FILE_ATTRIBUTE_NORMAL;
 
     if( !SetFileAttributes( (LPTSTR)name, attr ) ) {
-        return( StashErrCode( -1, OP_LOCAL ) );
+        return( StashErrCode( SYS_ERR_ERR, OP_LOCAL ) );
     }
     return( 0 );
 }
@@ -272,62 +272,90 @@ static bool __NTFindNextFileWithAttr( HANDLE h, unsigned attr, LPWIN32_FIND_DATA
     }
 }
 
-static void makeDOSDTA( LPWIN32_FIND_DATA ffb, trap_dta *trp )
-/************************************************************/
+static void make_info( LPWIN32_FIND_DATA ffb, trap_dta *dta )
+/***********************************************************/
 {
-    trp->attr = ffb->dwFileAttributes;
-    __MakeDOSDT( &ffb->ftLastWriteTime, &trp->date, &trp->time );
-    trp->size = ffb->nFileSizeLow;
-    strncpy( trp->name, ffb->cFileName, TRAP_DTA_NAME_MAX - 1 );
-    trp->name[TRAP_DTA_NAME_MAX - 1] = 0;
+    dta->nt.attr = ffb->dwFileAttributes;
+    __MakeDOSDT( &ffb->ftLastWriteTime, &dta->nt.date, &dta->nt.time );
+    dta->nt.size = ffb->nFileSizeLow;
+    memcpy( dta->nt.name, ffb->cFileName, MAX_PATH );
+    memcpy( dta->nt.name_short, ffb->cAlternateFileName, 14 );
 }
 
-error_handle LocalFindFirst( const char *pattern, void *info, unsigned info_len, int attrib )
-/*******************************************************************************************/
+error_handle LocalFindFirst( const char *pattern, trap_dta *dta, int attrib, handle_info *hdlinf )
+/************************************************************************************************/
 {
     HANDLE              h;
     int                 error;
     WIN32_FIND_DATA     ffb;
 
-    (void)info_len;
-
     h = FindFirstFile( (LPTSTR)pattern, &ffb );
-    if( h == INVALID_HANDLE_VALUE ) {
-        DTAXXX_HANDLE_OF( info ) = BAD_HANDLE;
-        return( StashErrCode( -1, OP_LOCAL ) );
-    }
-    if( !__NTFindNextFileWithAttr( h, attrib, &ffb ) ) {
+    if( h != INVALID_HANDLE_VALUE ) {
+        if( __NTFindNextFileWithAttr( h, attrib, &ffb ) ) {
+            hdlinf->nt.attrib = attrib;
+            make_info( &ffb, dta );
+#ifdef _WIN64
+            hdlinf->nt.handle.u._64[0] = (pointer_int)h;
+#else
+            hdlinf->nt.handle.u._32[0] = (unsigned_32)h;
+#endif
+            return( 0 );
+        }
         error = GetLastError();
-        DTAXXX_HANDLE_OF( info ) = BAD_HANDLE;
         FindClose( h );
-        return( StashErrCode( -1, OP_LOCAL ) );
     }
-    DTAXXX_HANDLE_OF( info ) = h;
-    DTAXXX_ATTR_OF( info ) = attrib;
-    makeDOSDTA( &ffb, info );
-    return( 0 );
+#ifdef _WIN64
+    hdlinf->nt.handle.u._64[0] = (pointer_int)INVALID_HANDLE_VALUE;
+#else
+    hdlinf->nt.handle.u._32[0] = (unsigned_32)INVALID_HANDLE_VALUE;
+#endif
+    return( StashErrCode( SYS_ERR_ERR, OP_LOCAL ) );
 }
 
-int LocalFindNext( void *info, unsigned info_len )
-/************************************************/
+int LocalFindNext( trap_dta *dta, handle_info *hdlinf )
+/*****************************************************/
 {
     WIN32_FIND_DATA     ffb;
+    HANDLE              h;
 
-    (void)info_len;
+#ifdef _WIN64
+    h = (HANDLE)hdlinf->nt.handle.u._64[0];
+#else
+    h = (HANDLE)hdlinf->nt.handle.u._32[0];
+#endif
+    if( h != INVALID_HANDLE_VALUE ) {
+        if( FindNextFile( h, &ffb ) || !__NTFindNextFileWithAttr( h, hdlinf->nt.attrib, &ffb ) ) {
+            make_info( &ffb, dta );
+            return( 0 );
+        }
+        FindClose( h );
+#ifdef _WIN64
+        hdlinf->nt.handle.u._64[0] = (pointer_int)INVALID_HANDLE_VALUE;
+#else
+        hdlinf->nt.handle.u._32[0] = (unsigned_32)INVALID_HANDLE_VALUE;
+#endif
+    }
+    return( -1 );
+}
 
-    if( !FindNextFile( DTAXXX_HANDLE_OF( info ), &ffb ) ) {
-        if( DTAXXX_HANDLE_OF( info ) != BAD_HANDLE ) {
-            FindClose( DTAXXX_HANDLE_OF( info ) );
-        }
-        return( -1 );
+int LocalFindClose( handle_info *hdlinf )
+/***************************************/
+{
+    HANDLE              h;
+
+#ifdef _WIN64
+    h = (HANDLE)hdlinf->nt.handle.u._64[0];
+#else
+    h = (HANDLE)hdlinf->nt.handle.u._32[0];
+#endif
+    if( h != INVALID_HANDLE_VALUE ) {
+        FindClose( h );
+#ifdef _WIN64
+        hdlinf->nt.handle.u._64[0] = (pointer_int)INVALID_HANDLE_VALUE;
+#else
+        hdlinf->nt.handle.u._32[0] = (unsigned_32)INVALID_HANDLE_VALUE;
+#endif
     }
-    if( !__NTFindNextFileWithAttr( DTAXXX_HANDLE_OF( info ), DTAXXX_ATTR_OF( info ), &ffb ) ) {
-        if( DTAXXX_HANDLE_OF( info ) != BAD_HANDLE ) {
-            FindClose( DTAXXX_HANDLE_OF( info ) );
-        }
-        return( -1 );
-    }
-    makeDOSDTA( &ffb, info );
     return( 0 );
 }
 
@@ -385,4 +413,29 @@ bool CtrlCHit( void )
 //    DosHoldSignal( HLDSIG_ENABLE );
 
     return( hit );
+}
+
+char    *LocalGetFindName( trap_dta *dta )
+{
+    return( dta->nt.name );
+}
+
+long    LocalGetFindAttr( trap_dta *dta )
+{
+    return( dta->nt.attr );
+}
+
+long    LocalGetFindSize( trap_dta *dta )
+{
+    return( dta->nt.size );
+}
+
+long    LocalGetFindDate( trap_dta *dta )
+{
+    return( dta->nt.date );
+}
+
+long    LocalGetFindTime( trap_dta *dta )
+{
+    return( dta->nt.time );
 }

@@ -79,6 +79,14 @@ orl_return      OmfParseComments( omf_sec_handle sh, orl_note_callbacks *cbs, vo
                 }
             }
             break;
+        case CMT_MODULE_ENTRY_POINT:
+            if( cbs->entry_fn != NULL ) {
+                return_val = cbs->entry_fn( (char const *)comment->data, cookie );
+                if( return_val != ORL_OKAY ) {
+                    return( return_val );
+                }
+            }
+            break;
         }
     }
 

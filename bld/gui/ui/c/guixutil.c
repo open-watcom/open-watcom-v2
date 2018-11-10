@@ -601,28 +601,3 @@ gui_ord GUIGetCol( gui_window *wnd, const char *text, gui_point *in_pt )
         return( GUI_NO_COLUMN );
     }
 }
-
-void GUIShowWindow( gui_window *wnd )
-{
-    uivshow( &wnd->screen );
-}
-
-void GUIShowWindowNA( gui_window *wnd )
-{
-    GUIShowWindow( wnd );
-}
-
-void GUIHideWindow( gui_window *wnd )
-{
-    uivhide( &wnd->screen );
-}
-
-bool GUIIsWindowVisible( gui_window *wnd )
-{
-    return( ( wnd->screen.flags & V_HIDDEN ) == 0 );
-}
-
-bool GUIIsFirstInstance( void )
-{
-    return( true );
-}
