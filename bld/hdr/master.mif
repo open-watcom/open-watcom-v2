@@ -22,7 +22,7 @@ wsplice_opts_mips = -i.. -kARCHMIPS $($(system)_options) ../common.sp $[@ $^@
 dos_dirs   = sys
 linux_dirs = sys netinet arpa arch arch/i386 arch/i386/sys arch/mips arch/mips/sys
 qnx_dirs   = sys
-rdos_dirs  = sys
+rdos_dirs  = sys netinet arpa
 
 dos_path   = ../watcom
 linux_path = ../watcom
@@ -62,15 +62,19 @@ all : $($(system)_dirs) $($(system)_files) .symbolic
     @%make echo_wsplice
     $(wsplice) $(wsplice_opts)
 
+{arpa}.mh{arpa}.h:
+    @%make echo_wsplice
+    $(wsplice) $(wsplice_opts)
+
+{netinet}.mh{netinet}.h:
+    @%make echo_wsplice
+    $(wsplice) $(wsplice_opts)
+
 {dos/sys}.mh{sys}.h:
     @%make echo_wsplice
     $(wsplice) $(wsplice_opts)
 
 {linux/sys}.mh{sys}.h:
-    @%make echo_wsplice
-    $(wsplice) $(wsplice_opts)
-
-{linux/arpa}.mh{arpa}.h:
     @%make echo_wsplice
     $(wsplice) $(wsplice_opts)
 

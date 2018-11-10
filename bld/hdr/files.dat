@@ -405,6 +405,12 @@ usr="exceptio.h"
 usr="stdexcep.h"
 usr="typeinfo.h"
 
+[ DEFAULT type="s" dir="rh/arpa" where="c jc f77 jf77 ac" cond="rdostarg" ]
+usr="inet.h"
+
+[ DEFAULT type="s" dir="rh/netinet" where="c jc f77 jf77 ac" cond="rdostarg" ]
+usr="in.h"
+
 
 #
 # Headers for Linux

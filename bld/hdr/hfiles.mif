@@ -11,7 +11,7 @@
 !inject _strdef.h              hcpp
 !inject algorith         noext hcpp
 !inject alloca.h                    hdos hlnx hqnx hrdos
-!inject arpa/inet.h                      hlnx
+!inject arpa/inet.h                      hlnx      hrdos
 !inject array            noext hcpp
 !inject assert.h                    hdos hlnx hqnx hrdos
 !inject atomic           noext hcpp
@@ -116,7 +116,7 @@
 !inject mqueue.h                              hqnx
 !inject mutex            noext hcpp
 !inject netdb.h                          hlnx
-!inject netinet/in.h                     hlnx
+!inject netinet/in.h                     hlnx      hrdos
 !inject netinet/tcp.h                    hlnx
 !inject new              noext hcpp
 !inject new.h                  hcpp

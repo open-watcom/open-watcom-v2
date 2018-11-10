@@ -12,16 +12,22 @@
 
 :include systypes.sp
 
+:segment LINUX
 :include syssock.sp
+:endsegment
 
 :include cpluspro.sp
 
+:segment LINUX
 :include lnxkpack.sp
+:endsegment
 
 /* Internet address. */
 struct in_addr {
     uint32_t       s_addr;     /* address in network byte order */
 };
+
+:segment LINUX
 
 struct sockaddr_in {
     sa_family_t    sin_family; /* address family: AF_INET */
@@ -29,6 +35,8 @@ struct sockaddr_in {
     struct in_addr sin_addr;   /* internet address */
     char           __pad[ 16 - sizeof( sa_family_t ) - sizeof( uint16_t ) - sizeof( struct in_addr ) ];
 };
+
+:endsegment
 
 typedef uint32_t in_addr_t;
 typedef uint16_t in_port_t;
@@ -97,7 +105,9 @@ _WCRTLINK extern unsigned short int htons(unsigned short int hostshort);
 _WCRTLINK extern unsigned long int ntohl(unsigned long int netlong);
 _WCRTLINK extern unsigned short int ntohs(unsigned short int netshort);
 
+:segment LINUX
 :include poppack.sp
+:endsegment
 
 :include cplusepi.sp
 
