@@ -68,27 +68,27 @@ typedef int WORD;
 
     void inline_swap( char *p, char *q, size_t size );
     #pragma aux inline_swap =   \
-            "push  es"          \
-            "push  ds"          \
-            "pop   es"          \
-            "movzx edx,cl"      \
-            "shr   ecx,2"       \
+            "push   es"         \
+            "push   ds"         \
+            "pop    es"         \
+            "movzx  edx,cl"     \
+            "shr    ecx,2"      \
             "je short L1"       \
-        "L2: mov   eax,[edi]"   \
-            "xchg  eax,[esi]"   \
+        "L2: mov    eax,[edi]"  \
+            "xchg   eax,[esi]"  \
             "stosd"             \
-            "add   esi,4"       \
-            "dec   ecx"         \
+            "add    esi,4"      \
+            "dec    ecx"        \
             "jne short L2"      \
-        "L1: and   dl,3"        \
+        "L1: and    dl,3"       \
             "je short L3"       \
-        "L4: mov   al,[edi]"    \
-            "xchg  al,[esi]"    \
+        "L4: mov    al,[edi]"   \
+            "xchg   al,[esi]"   \
             "stosb"             \
-            "inc   esi"         \
-            "dec   edx"         \
+            "inc    esi"        \
+            "dec    edx"        \
             "jne short L4"      \
-        "L3: pop   es"          \
+        "L3: pop    es"         \
         AUX_INFO
 
     #pragma aux byteswap AUX_INFO
@@ -104,23 +104,23 @@ typedef int WORD;
         modify exact    [ax cx di si]
 
     void inline_swap( char _WCFAR *p, char _WCFAR *q, size_t size );
-    #pragma aux inline_swap = \
-            "push ds" \
-            "mov  ds,dx" \
-            "shr  cx,1" \
-            "je short L1" \
-        "L2: mov  ax,es:[di]" \
-            "xchg ax,[si]" \
-            "stosw" \
-            "inc  si" \
-            "inc  si" \
-            "dec  cx" \
-            "jne short L2" \
-        "L1: jnc short L3" \
-            "mov  al,[si]" \
-            "xchg al,es:[di]" \
-            "mov  [si],al" \
-        "L3: pop  ds" \
+    #pragma aux inline_swap =   \
+            "push   ds"         \
+            "mov    ds,dx"      \
+            "shr    cx,1"       \
+            "je short L1"       \
+        "L2: mov    ax,es:[di]" \
+            "xchg   ax,[si]"    \
+            "stosw"             \
+            "inc    si"         \
+            "inc    si"         \
+            "dec    cx"         \
+            "jne short L2"      \
+        "L1: jnc short L3"      \
+            "mov    al,[si]"    \
+            "xchg   al,es:[di]" \
+            "mov    [si],al"    \
+        "L3: pop    ds"         \
         AUX_INFO
 
     #pragma aux byteswap AUX_INFO
@@ -138,19 +138,19 @@ typedef int WORD;
 
     void inline_swap( char *p, char _WCFAR *q, size_t size );
     #pragma aux inline_swap =   \
-            "shr cx,1"          \
+            "shr    cx,1"       \
             "je short L1"       \
-        "L2: mov ax,es:[di]"    \
-            "xchg ax,[si]"      \
+        "L2: mov    ax,es:[di]" \
+            "xchg   ax,[si]"    \
             "stosw"             \
-            "inc si"            \
-            "inc si"            \
-            "dec cx"            \
+            "inc    si"         \
+            "inc    si"         \
+            "dec    cx"         \
             "jne short L2"      \
         "L1: jnc short L3"      \
-            "mov al,[si]"       \
-            "xchg al,es:[di]"   \
-            "mov [si],al"       \
+            "mov    al,[si]"    \
+            "xchg   al,es:[di]" \
+            "mov    [si],al"    \
         "L3:"                   \
         AUX_INFO
 
@@ -319,11 +319,13 @@ FUNCTION_LINKAGE void FUNCTION_NAME(
                         pc -= size;
                         count--;
                     }
-                    if( !count ) break;
+                    if( count == 0 )
+                        break;
                     swap( pb, pc );
                     pb += size;
                     count--;
-                    if( !count ) break;
+                    if( count == 0 )
+                        break;
                     pc -= size;
                     count--;
                 }
@@ -347,7 +349,8 @@ FUNCTION_LINKAGE void FUNCTION_NAME(
                     n = r / size;               /* Set up n for next 'call'*/
                                             /* next base is still base */
                 } else {
-                    if( r <= size ) break;
+                    if( r <= size )
+                        break;
                     base_stack[sp] = base;      /* Stack up base           */
                     n_stack[sp] = r / size;     /* Stack up n              */
                     base = pn - s;              /* Set up base and n for   */
@@ -356,7 +359,8 @@ FUNCTION_LINKAGE void FUNCTION_NAME(
                 ++sp;
             }
         }
-        if( sp == 0 ) break;
+        if( sp == 0 )
+            break;
         --sp;
         base = base_stack[sp];
         n    = n_stack[sp];
