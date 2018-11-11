@@ -54,7 +54,7 @@ static bool determine_file_specs( coff_file_handle coff_file_hnd, coff_file_head
     unsigned_16 flags;
     bool        flag_import_library;
 
-    if( ( f_hdr->cpu_type == IMAGE_FILE_MACHINE_UNKNOWN ) && ( f_hdr->num_sections == IMPORT_OBJECT_HDR_SIG2 ) ) {
+    if( ( f_hdr->cpu_type == COFF_IMAGE_FILE_MACHINE_UNKNOWN ) && ( f_hdr->num_sections == COFF_IMPORT_OBJECT_HDR_SIG2 ) ) {
         // COFF import library
         cpu_type = ((coff_import_object_header *)f_hdr)->machine;
         flags = 0;
@@ -66,29 +66,29 @@ static bool determine_file_specs( coff_file_handle coff_file_hnd, coff_file_head
         flag_import_library = false;
     }
     switch( cpu_type ) {
-    case IMAGE_FILE_MACHINE_I860:
+    case COFF_IMAGE_FILE_MACHINE_I860:
         coff_file_hnd->machine_type = ORL_MACHINE_TYPE_I860;
         break;
-    case IMAGE_FILE_MACHINE_I386:
-    case IMAGE_FILE_MACHINE_I386A:
+    case COFF_IMAGE_FILE_MACHINE_I386:
+    case COFF_IMAGE_FILE_MACHINE_I386A:
         coff_file_hnd->machine_type = ORL_MACHINE_TYPE_I386;
         break;
-    case IMAGE_FILE_MACHINE_R3000:
+    case COFF_IMAGE_FILE_MACHINE_R3000:
         coff_file_hnd->machine_type = ORL_MACHINE_TYPE_R3000;
         break;
-    case IMAGE_FILE_MACHINE_R4000:
+    case COFF_IMAGE_FILE_MACHINE_R4000:
         coff_file_hnd->machine_type = ORL_MACHINE_TYPE_R4000;
         break;
-    case IMAGE_FILE_MACHINE_ALPHA:
+    case COFF_IMAGE_FILE_MACHINE_ALPHA:
         coff_file_hnd->machine_type = ORL_MACHINE_TYPE_ALPHA;
         break;
-    case IMAGE_FILE_MACHINE_POWERPC:
+    case COFF_IMAGE_FILE_MACHINE_POWERPC:
         coff_file_hnd->machine_type = ORL_MACHINE_TYPE_PPC601;
         break;
-    case IMAGE_FILE_MACHINE_AMD64:
+    case COFF_IMAGE_FILE_MACHINE_AMD64:
         coff_file_hnd->machine_type = ORL_MACHINE_TYPE_AMD64;
         break;
-    case IMAGE_FILE_MACHINE_UNKNOWN:
+    case COFF_IMAGE_FILE_MACHINE_UNKNOWN:
         coff_file_hnd->machine_type = ORL_MACHINE_TYPE_NONE;
         break;
     default:
@@ -96,38 +96,38 @@ static bool determine_file_specs( coff_file_handle coff_file_hnd, coff_file_head
         break;
     }
 
-    if( flags & IMAGE_FILE_DLL ) {
+    if( flags & COFF_IMAGE_FILE_DLL ) {
         coff_file_hnd->type = ORL_FILE_TYPE_DLL;
-    } else if( flags & IMAGE_FILE_EXECUTABLE_IMAGE ) {
+    } else if( flags & COFF_IMAGE_FILE_EXECUTABLE_IMAGE ) {
         coff_file_hnd->type = ORL_FILE_TYPE_EXECUTABLE;
     } else {
         coff_file_hnd->type = ORL_FILE_TYPE_OBJECT;
     }
 
     coff_file_hnd->flags = ORL_FILE_FLAG_NONE;
-    if( flags & IMAGE_FILE_RELOCS_STRIPPED ) {
+    if( flags & COFF_IMAGE_FILE_RELOCS_STRIPPED ) {
         coff_file_hnd->flags |= ORL_FILE_FLAG_RELOCS_STRIPPED;
     }
-    if( flags & IMAGE_FILE_LINE_NUMS_STRIPPED ) {
+    if( flags & COFF_IMAGE_FILE_LINE_NUMS_STRIPPED ) {
         coff_file_hnd->flags |= ORL_FILE_FLAG_LINE_NUMS_STRIPPED;
     }
-    if( flags & IMAGE_FILE_LOCAL_SYMS_STRIPPED ) {
+    if( flags & COFF_IMAGE_FILE_LOCAL_SYMS_STRIPPED ) {
         coff_file_hnd->flags |= ORL_FILE_FLAG_LOCAL_SYMS_STRIPPED;
     }
-    if( flags & IMAGE_FILE_DEBUG_STRIPPED ) {
+    if( flags & COFF_IMAGE_FILE_DEBUG_STRIPPED ) {
         coff_file_hnd->flags |= ORL_FILE_FLAG_DEBUG_STRIPPED;
     }
-    if( cpu_type == IMAGE_FILE_MACHINE_AMD64 ) {
+    if( cpu_type == COFF_IMAGE_FILE_MACHINE_AMD64 ) {
         coff_file_hnd->flags |= ORL_FILE_FLAG_64BIT_MACHINE;
     } else {
-        if( flags & IMAGE_FILE_16BIT_MACHINE ) {
+        if( flags & COFF_IMAGE_FILE_16BIT_MACHINE ) {
             coff_file_hnd->flags |= ORL_FILE_FLAG_16BIT_MACHINE;
         }
-        if( flags & IMAGE_FILE_32BIT_MACHINE ) {
+        if( flags & COFF_IMAGE_FILE_32BIT_MACHINE ) {
             coff_file_hnd->flags |= ORL_FILE_FLAG_32BIT_MACHINE;
         }
     }
-    if( flags & IMAGE_FILE_SYSTEM ) {
+    if( flags & COFF_IMAGE_FILE_SYSTEM ) {
         coff_file_hnd->flags |= ORL_FILE_FLAG_SYSTEM;
     }
     if( coff_file_hnd->type != ORL_FILE_TYPE_OBJECT ) {
@@ -137,14 +137,14 @@ static bool determine_file_specs( coff_file_handle coff_file_hnd, coff_file_head
         coff_file_hnd->flags |= ORL_FILE_FLAG_LITTLE_ENDIAN;
     } else {
         /*
-        if( flags & IMAGE_FILE_BYTES_REVERSED_LO ) {
+        if( flags & COFF_IMAGE_FILE_BYTES_REVERSED_LO ) {
             coff_file_hnd->flags |= ORL_FILE_FLAG_LITTLE_ENDIAN;
         }
         */
-        if( flags & IMAGE_FILE_BYTES_REVERSED_HI ) {
+        if( flags & COFF_IMAGE_FILE_BYTES_REVERSED_HI ) {
             coff_file_hnd->flags |= ORL_FILE_FLAG_BIG_ENDIAN;
         } else {
-            /* Inserting a default here - note that the BYTES_REVERSED_LO/HI 
+            /* Inserting a default here - note that the BYTES_REVERSED_LO/HI
              * flags are now deprecated and neither is supposed to be present.
              */
             coff_file_hnd->flags |= ORL_FILE_FLAG_LITTLE_ENDIAN;
@@ -168,57 +168,57 @@ static void determine_section_specs( coff_sec_handle coff_sec_hnd,
 /****************************************************************/
 {
     coff_sec_hnd->flags = ORL_SEC_FLAG_NONE;
-    if( s_hdr->flags & IMAGE_SCN_LNK_INFO ) {
+    if( s_hdr->flags & COFF_IMAGE_SCN_LNK_INFO ) {
         coff_sec_hnd->type = ORL_SEC_TYPE_NOTE;
-    } else if( s_hdr->flags & IMAGE_SCN_CNT_CODE ) {
+    } else if( s_hdr->flags & COFF_IMAGE_SCN_CNT_CODE ) {
         coff_sec_hnd->type = ORL_SEC_TYPE_PROG_BITS;
         coff_sec_hnd->flags |= ORL_SEC_FLAG_EXEC;
-    } else if( s_hdr->flags & IMAGE_SCN_CNT_INITIALIZED_DATA ) {
+    } else if( s_hdr->flags & COFF_IMAGE_SCN_CNT_INITIALIZED_DATA ) {
         coff_sec_hnd->type = ORL_SEC_TYPE_PROG_BITS;
         coff_sec_hnd->flags |= ORL_SEC_FLAG_INITIALIZED_DATA;
-    } else if( s_hdr->flags & IMAGE_SCN_CNT_UNINITIALIZED_DATA ) {
+    } else if( s_hdr->flags & COFF_IMAGE_SCN_CNT_UNINITIALIZED_DATA ) {
         coff_sec_hnd->type = ORL_SEC_TYPE_PROG_BITS;
         coff_sec_hnd->flags |= ORL_SEC_FLAG_UNINITIALIZED_DATA;
     } else {
         coff_sec_hnd->type = ORL_SEC_TYPE_NONE;
     }
-//  if( s_hdr->flags & IMAGE_SCN_TYPE_GROUP ) {         // no MS support
+//  if( s_hdr->flags & COFF_IMAGE_SCN_TYPE_GROUP ) {         // no MS support
 //      coff_sec_hnd->flags |= ORL_SEC_FLAG_GROUPED;
 //  }
-    if( s_hdr->flags & IMAGE_SCN_TYPE_NO_PAD ) {
+    if( s_hdr->flags & COFF_IMAGE_SCN_TYPE_NO_PAD ) {
         coff_sec_hnd->flags |= ORL_SEC_FLAG_NO_PADDING;
     }
-//  if( s_hdr->flags & IMAGE_SCN_LNK_OVER ) {           // no MS support
+//  if( s_hdr->flags & COFF_IMAGE_SCN_LNK_OVER ) {           // no MS support
 //      coff_sec_hnd->flags |= ORL_SEC_FLAG_OVERLAY;
 //  }
-    if( s_hdr->flags & IMAGE_SCN_LNK_REMOVE ) {
+    if( s_hdr->flags & COFF_IMAGE_SCN_LNK_REMOVE ) {
         coff_sec_hnd->flags |= ORL_SEC_FLAG_REMOVE;
     }
-    if( s_hdr->flags & IMAGE_SCN_LNK_COMDAT ) {
+    if( s_hdr->flags & COFF_IMAGE_SCN_LNK_COMDAT ) {
         coff_sec_hnd->flags |= ORL_SEC_FLAG_COMDAT;
     }
-    if( s_hdr->flags & IMAGE_SCN_MEM_DISCARDABLE ) {
+    if( s_hdr->flags & COFF_IMAGE_SCN_MEM_DISCARDABLE ) {
         coff_sec_hnd->flags |= ORL_SEC_FLAG_DISCARDABLE;
     }
-    if( s_hdr->flags & IMAGE_SCN_MEM_NOT_CACHED ) {
+    if( s_hdr->flags & COFF_IMAGE_SCN_MEM_NOT_CACHED ) {
         coff_sec_hnd->flags |= ORL_SEC_FLAG_NOT_CACHED;
     }
-    if( s_hdr->flags & IMAGE_SCN_MEM_NOT_PAGED ) {
+    if( s_hdr->flags & COFF_IMAGE_SCN_MEM_NOT_PAGED ) {
         coff_sec_hnd->flags |= ORL_SEC_FLAG_NOT_PAGEABLE;
     }
-    if( s_hdr->flags & IMAGE_SCN_MEM_SHARED ) {
+    if( s_hdr->flags & COFF_IMAGE_SCN_MEM_SHARED ) {
         coff_sec_hnd->flags |= ORL_SEC_FLAG_SHARED;
     }
-    if( s_hdr->flags & IMAGE_SCN_MEM_EXECUTE ) {
+    if( s_hdr->flags & COFF_IMAGE_SCN_MEM_EXECUTE ) {
         coff_sec_hnd->flags |= ORL_SEC_FLAG_EXECUTE_PERMISSION;
     }
-    if( s_hdr->flags & IMAGE_SCN_MEM_READ ) {
+    if( s_hdr->flags & COFF_IMAGE_SCN_MEM_READ ) {
         coff_sec_hnd->flags |= ORL_SEC_FLAG_READ_PERMISSION;
     }
-    if( s_hdr->flags & IMAGE_SCN_MEM_WRITE ) {
+    if( s_hdr->flags & COFF_IMAGE_SCN_MEM_WRITE ) {
         coff_sec_hnd->flags |= ORL_SEC_FLAG_WRITE_PERMISSION;
     }
-    coff_sec_hnd->align = (s_hdr->flags & IMAGE_SCN_ALIGN_MASK) >> COFF_SEC_FLAG_ALIGN_SHIFT;
+    coff_sec_hnd->align = (s_hdr->flags & COFF_IMAGE_SCN_ALIGN_MASK) >> COFF_IMAGE_SCN_ALIGN_SHIFT;
     if( coff_sec_hnd->align == 0 ) {
         coff_sec_hnd->align = 4;
     } else {

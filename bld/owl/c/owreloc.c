@@ -34,71 +34,71 @@
 
 // These correspond to owl_reloc_type
 static uint_32 coffRelocTypesPPC[] = {
-    IMAGE_REL_PPC_ABSOLUTE,     /* OWL_RELOC_ABSOLUTE */
-    IMAGE_REL_PPC_ADDR32,       /* OWL_RELOC_WORD */
-    IMAGE_REL_PPC_ADDR16,       /* OWL_RELOC_HALF_HI */            // Hi: correct?
-    IMAGE_REL_PPC_ADDR16,       /* OWL_RELOC_HALF_HA */
-    IMAGE_REL_PPC_ADDR16,       /* OWL_RELOC_PAIR */               // Pair: needed?
-    IMAGE_REL_PPC_ADDR16,       /* OWL_RELOC_HALF_LO */            // Lo: correct?
-    IMAGE_REL_PPC_REL14,        /* OWL_RELOC_BRANCH_REL */
-    IMAGE_REL_PPC_ADDR14,       /* OWL_RELOC_BRANCH_ABS, unused */
-    IMAGE_REL_PPC_REL24,        /* OWL_RELOC_JUMP_REL */
-    IMAGE_REL_PPC_ADDR24,       /* OWL_RELOC_JUMP_ABS, unused */
-    IMAGE_REL_PPC_SECTION,      /* OWL_RELOC_SECTION_INDEX */
-    IMAGE_REL_PPC_SECREL,       /* OWL_RELOC_SECTION_OFFSET */
-    IMAGE_REL_PPC_TOCREL16,     /* OWL_RELOC_TOC_OFFSET */
-    IMAGE_REL_PPC_IFGLUE,       /* OWL_RELOC_GLUE */
+    COFF_IMAGE_REL_PPC_ABSOLUTE,     /* OWL_RELOC_ABSOLUTE */
+    COFF_IMAGE_REL_PPC_ADDR32,       /* OWL_RELOC_WORD */
+    COFF_IMAGE_REL_PPC_ADDR16,       /* OWL_RELOC_HALF_HI */            // Hi: correct?
+    COFF_IMAGE_REL_PPC_ADDR16,       /* OWL_RELOC_HALF_HA */
+    COFF_IMAGE_REL_PPC_ADDR16,       /* OWL_RELOC_PAIR */               // Pair: needed?
+    COFF_IMAGE_REL_PPC_ADDR16,       /* OWL_RELOC_HALF_LO */            // Lo: correct?
+    COFF_IMAGE_REL_PPC_REL14,        /* OWL_RELOC_BRANCH_REL */
+    COFF_IMAGE_REL_PPC_ADDR14,       /* OWL_RELOC_BRANCH_ABS, unused */
+    COFF_IMAGE_REL_PPC_REL24,        /* OWL_RELOC_JUMP_REL */
+    COFF_IMAGE_REL_PPC_ADDR24,       /* OWL_RELOC_JUMP_ABS, unused */
+    COFF_IMAGE_REL_PPC_SECTION,      /* OWL_RELOC_SECTION_INDEX */
+    COFF_IMAGE_REL_PPC_SECREL,       /* OWL_RELOC_SECTION_OFFSET */
+    COFF_IMAGE_REL_PPC_TOCREL16,     /* OWL_RELOC_TOC_OFFSET */
+    COFF_IMAGE_REL_PPC_IFGLUE,       /* OWL_RELOC_GLUE */
 };
 
 static uint_32 coffRelocTypesMIPS[] = {
-    IMAGE_REL_MIPS_ABSOLUTE,    /* OWL_RELOC_ABSOLUTE */
-    IMAGE_REL_MIPS_REFWORD,     /* OWL_RELOC_WORD */
-    IMAGE_REL_MIPS_REFHI,       /* OWL_RELOC_HALF_HI */
-    0,                          /* OWL_RELOC_HALF_HA, unused */
-    IMAGE_REL_MIPS_PAIR,        /* OWL_RELOC_PAIR */
-    IMAGE_REL_MIPS_REFLO,       /* OWL_RELOC_HALF_LO */
-    IMAGE_REL_MIPS_REFLO,       /* OWL_RELOC_BRANCH_REL */  // Is this right??
-    0,                          /* OWL_RELOC_BRANCH_ABS, unused */
-    0,                          /* OWL_RELOC_JUMP_REL, unused */
-    IMAGE_REL_MIPS_JMPADDR,     /* OWL_RELOC_JUMP_ABS */
-    IMAGE_REL_MIPS_SECTION,     /* OWL_RELOC_SECTION_INDEX */
-    IMAGE_REL_MIPS_SECREL,      /* OWL_RELOC_SECTION_OFFSET */
-    IMAGE_REL_MIPS_GPREL,       /* OWL_RELOC_TOC_OFFSET */
-    0,                          /* OWL_RELOC_GLUE, unused */
+    COFF_IMAGE_REL_MIPS_ABSOLUTE,    /* OWL_RELOC_ABSOLUTE */
+    COFF_IMAGE_REL_MIPS_REFWORD,     /* OWL_RELOC_WORD */
+    COFF_IMAGE_REL_MIPS_REFHI,       /* OWL_RELOC_HALF_HI */
+    0,                               /* OWL_RELOC_HALF_HA, unused */
+    COFF_IMAGE_REL_MIPS_PAIR,        /* OWL_RELOC_PAIR */
+    COFF_IMAGE_REL_MIPS_REFLO,       /* OWL_RELOC_HALF_LO */
+    COFF_IMAGE_REL_MIPS_REFLO,       /* OWL_RELOC_BRANCH_REL */  // Is this right??
+    0,                               /* OWL_RELOC_BRANCH_ABS, unused */
+    0,                               /* OWL_RELOC_JUMP_REL, unused */
+    COFF_IMAGE_REL_MIPS_JMPADDR,     /* OWL_RELOC_JUMP_ABS */
+    COFF_IMAGE_REL_MIPS_SECTION,     /* OWL_RELOC_SECTION_INDEX */
+    COFF_IMAGE_REL_MIPS_SECREL,      /* OWL_RELOC_SECTION_OFFSET */
+    COFF_IMAGE_REL_MIPS_GPREL,       /* OWL_RELOC_TOC_OFFSET */
+    0,                               /* OWL_RELOC_GLUE, unused */
 };
 
 static uint_32 coffRelocTypesAlpha[] = {
-    IMAGE_REL_ALPHA_ABSOLUTE,   /* OWL_RELOC_ABSOLUTE */
-    IMAGE_REL_ALPHA_REFLONG,    /* OWL_RELOC_WORD */
-    IMAGE_REL_ALPHA_REFHI,      /* OWL_RELOC_HALF_HI */
-    0,                          /* OWL_RELOC_HALF_HA */
-    IMAGE_REL_ALPHA_PAIR,       /* OWL_RELOC_PAIR */
-    IMAGE_REL_ALPHA_REFLO,      /* OWL_RELOC_HALF_LO */
-    IMAGE_REL_ALPHA_BRADDR,     /* OWL_RELOC_BRANCH_REL */
-    0,                          /* OWL_RELOC_BRANCH_ABS */
-    IMAGE_REL_ALPHA_HINT,       /* OWL_RELOC_JUMP_REL */
-    0,                          /* OWL_RELOC_JUMP_ABS */
-    IMAGE_REL_ALPHA_SECTION,    /* OWL_RELOC_SECTION_INDEX */
-    IMAGE_REL_ALPHA_SECREL,     /* OWL_RELOC_SECTION_OFFSET */
-    0,                          /* OWL_RELOC_TOC_OFFSET */
-    0,                          /* OWL_RELOC_GLUE */
+    COFF_IMAGE_REL_ALPHA_ABSOLUTE,   /* OWL_RELOC_ABSOLUTE */
+    COFF_IMAGE_REL_ALPHA_REFLONG,    /* OWL_RELOC_WORD */
+    COFF_IMAGE_REL_ALPHA_REFHI,      /* OWL_RELOC_HALF_HI */
+    0,                               /* OWL_RELOC_HALF_HA */
+    COFF_IMAGE_REL_ALPHA_PAIR,       /* OWL_RELOC_PAIR */
+    COFF_IMAGE_REL_ALPHA_REFLO,      /* OWL_RELOC_HALF_LO */
+    COFF_IMAGE_REL_ALPHA_BRADDR,     /* OWL_RELOC_BRANCH_REL */
+    0,                               /* OWL_RELOC_BRANCH_ABS */
+    COFF_IMAGE_REL_ALPHA_HINT,       /* OWL_RELOC_JUMP_REL */
+    0,                               /* OWL_RELOC_JUMP_ABS */
+    COFF_IMAGE_REL_ALPHA_SECTION,    /* OWL_RELOC_SECTION_INDEX */
+    COFF_IMAGE_REL_ALPHA_SECREL,     /* OWL_RELOC_SECTION_OFFSET */
+    0,                               /* OWL_RELOC_TOC_OFFSET */
+    0,                               /* OWL_RELOC_GLUE */
 };
 
 static uint_32 coffRelocTypes386[] = {
-    IMAGE_REL_I386_ABSOLUTE,    /* OWL_RELOC_ABSOLUTE */
-    IMAGE_REL_I386_DIR32,       /* OWL_RELOC_WORD */
-    0,                          /* OWL_RELOC_HALF_HI */
-    0,                          /* OWL_RELOC_HALF_HA */
-    0,                          /* OWL_RELOC_PAIR */
-    0,                          /* OWL_RELOC_HALF_LO */
-    IMAGE_REL_I386_REL32,       /* OWL_RELOC_BRANCH_REL */
-    0,                          /* OWL_RELOC_BRANCH_ABS */
-    0,                          /* OWL_RELOC_JUMP_REL */
-    0,                          /* OWL_RELOC_JUMP_ABS */
-    IMAGE_REL_I386_SECTION,     /* OWL_RELOC_SECTION_INDEX */
-    IMAGE_REL_I386_SECREL,      /* OWL_RELOC_SECTION_OFFSET */
-    0,                          /* OWL_RELOC_TOC_OFFSET */
-    0                           /* OWL_RELOC_GLUE */
+    COFF_IMAGE_REL_I386_ABSOLUTE,    /* OWL_RELOC_ABSOLUTE */
+    COFF_IMAGE_REL_I386_DIR32,       /* OWL_RELOC_WORD */
+    0,                               /* OWL_RELOC_HALF_HI */
+    0,                               /* OWL_RELOC_HALF_HA */
+    0,                               /* OWL_RELOC_PAIR */
+    0,                               /* OWL_RELOC_HALF_LO */
+    COFF_IMAGE_REL_I386_REL32,       /* OWL_RELOC_BRANCH_REL */
+    0,                               /* OWL_RELOC_BRANCH_ABS */
+    0,                               /* OWL_RELOC_JUMP_REL */
+    0,                               /* OWL_RELOC_JUMP_ABS */
+    COFF_IMAGE_REL_I386_SECTION,     /* OWL_RELOC_SECTION_INDEX */
+    COFF_IMAGE_REL_I386_SECREL,      /* OWL_RELOC_SECTION_OFFSET */
+    0,                               /* OWL_RELOC_TOC_OFFSET */
+    0                                /* OWL_RELOC_GLUE */
 };
 
 static Elf32_Word elfRelocTypesPPC[] = {
