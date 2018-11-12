@@ -300,6 +300,7 @@ sys/utime.h     : sys/utime.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus
 
 arpa/inet.h     : arpa/inet.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) $(packlnxk)
 netinet/in.h    : netinet/in.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../systypes.sp ../syssock.sp $(cplus) $(packlnxk)
+sys/socket.h    : sys/socket.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packlnxk) ../incdir.sp ../unistd.sp
 
 # The follow describe the system specific dependencies
 
@@ -326,7 +327,6 @@ sys/mman.h      : linux/sys/mman.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ..
 sys/mount.h     : linux/sys/mount.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packlnxk)
 sys/ptrace.h    : linux/sys/ptrace.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packlnxk)
 sys/resource.h  : linux/sys/resource.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packlnxk)
-sys/socket.h    : linux/sys/socket.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packlnxk) ../incdir.sp ../unistd.sp
 sys/stat.h      : sys/stat.mh $(sys_stat_deps)
 sys/sysinfo.h   : linux/sys/sysinfo.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packlnxk)
 sys/sysmips.h   : linux/sys/sysmips.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus)

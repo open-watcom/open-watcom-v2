@@ -12,11 +12,15 @@
 
 :include cpluspro.sp
 
+:segment LINUX
 :include lnxkpack.sp
+:endsegment
 
 :include unistd.sp
 
+:segment LINUX
 :include incdir.sp
+:endsegment
 
 typedef unsigned short sa_family_t;
 
@@ -93,7 +97,9 @@ struct linger {
 /* Maximum backlog for the listen( ) function - system-configurable */
 #define SOMAXCONN sysconf(_SC_SOMAXCONN)
 
+:segment LINUX
 #include _ARCH_INCLUDE(sys/socket.h)
+:endsegment
 
 typedef unsigned int socklen_t;
 
@@ -114,7 +120,9 @@ _WCRTLINK extern int getsockname( int __s , struct sockaddr *__name, socklen_t *
 _WCRTLINK extern int connect( int __sockfd, const struct sockaddr *__serv_addr, socklen_t __addrlen );
 _WCRTLINK extern int shutdown( int __s, int __how );
 
+:segment LINUX
 :include poppack.sp
+:endsegment
 
 :include cplusepi.sp
 

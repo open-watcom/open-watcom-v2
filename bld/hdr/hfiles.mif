@@ -217,7 +217,7 @@
 !inject sys/sidinfo.h                         hqnx
 !inject sys/sigconte.h                        hqnx
 !inject sys/slib16.h                          hqnx
-!inject sys/socket.h                     hlnx
+!inject sys/socket.h                     hlnx      hrdos
 !inject sys/stat.h                  hdos hlnx hqnx hrdos
 !inject sys/statfs.h                          hqnx
 !inject sys/sys_msg.h                         hqnx

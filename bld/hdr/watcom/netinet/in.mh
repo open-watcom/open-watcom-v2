@@ -12,9 +12,7 @@
 
 :include systypes.sp
 
-:segment LINUX
 :include syssock.sp
-:endsegment
 
 :include cpluspro.sp
 
