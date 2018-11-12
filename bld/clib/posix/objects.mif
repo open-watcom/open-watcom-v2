@@ -1,10 +1,10 @@
 #                    d16 d32 dpm g16 g32 nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
 #==========================================================================================================
-!inject accept.obj                                                                      l32 lpc lmp
-!inject bind.obj                                                                        l32 lpc lmp
+!inject accept.obj                                                                      l32 lpc lmp rdu
+!inject bind.obj                                                                        l32 lpc lmp rdu
 !inject cfgtospd.obj                                                                    l32 lpc lmp
 !inject closedir.obj                                                                    l32 lpc lmp
-!inject connect.obj                                                                     l32 lpc lmp
+!inject connect.obj                                                                     l32 lpc lmp rdu
 !inject fnmatch.obj  d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
 !inject getline.obj  d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
 !inject gthstadr.obj                                                                    l32 lpc lmp
@@ -16,8 +16,8 @@
 !inject gtproent.obj                                                                    l32 lpc lmp
 !inject gtpronam.obj                                                                    l32 lpc lmp
 !inject gtpronum.obj                                                                    l32 lpc lmp
-!inject gtscknam.obj                                                                    l32 lpc lmp
-!inject gtsckopt.obj                                                                    l32 lpc lmp
+!inject gtscknam.obj                                                                    l32 lpc lmp rdu
+!inject gtsckopt.obj                                                                    l32 lpc lmp rdu
 !inject gtsrvent.obj                                                                    l32 lpc lmp
 !inject gtsrvnam.obj                                                                    l32 lpc lmp
 !inject gtsrvprt.obj                                                                    l32 lpc lmp
@@ -32,7 +32,7 @@
 !inject inetneto.obj                                                                                rdu
 !inject inetntoa.obj                                                                    l32 lpc lmp rdu
 !inject langinfo.obj                                                                    l32 lpc lmp
-!inject listen.obj                                                                      l32 lpc lmp
+!inject listen.obj                                                                      l32 lpc lmp rdu
 !inject ntohl.obj                                                                       l32 lpc lmp rdu
 !inject ntohs.obj                                                                       l32 lpc lmp rdu
 !inject opendir.obj                                                                     l32 lpc lmp
@@ -61,20 +61,20 @@
 !inject ptsched.obj                                                                     l32 lpc lmp
 !inject ptself.obj                                                                      l32 lpc lmp
 !inject readdir.obj                                                                     l32 lpc lmp
-!inject recv.obj                                                                        l32 lpc lmp
-!inject recvfrom.obj                                                                    l32 lpc lmp
+!inject recv.obj                                                                        l32 lpc lmp rdu
+!inject recvfrom.obj                                                                    l32 lpc lmp rdu
 !inject _resolve.obj                                                                    l32 lpc lmp
 !inject rewindir.obj                                                                    l32 lpc lmp
-!inject send.obj                                                                        l32 lpc lmp
-!inject sendto.obj                                                                      l32 lpc lmp
-!inject shutdown.obj                                                                    l32 lpc lmp
+!inject send.obj                                                                        l32 lpc lmp rdu
+!inject sendto.obj                                                                      l32 lpc lmp rdu
+!inject shutdown.obj                                                                    l32 lpc lmp rdu
 !inject sigadset.obj                                                                    l32 lpc lmp
 !inject sigdlset.obj                                                                    l32 lpc lmp
 !inject sigemset.obj                                                                    l32 lpc lmp
 !inject sigflset.obj                                                                    l32 lpc lmp
 !inject sigismem.obj                                                                    l32 lpc lmp
-!inject socket.obj                                                                      l32 lpc lmp
-!inject stsckopt.obj                                                                    l32 lpc lmp
+!inject socket.obj                                                                      l32 lpc lmp rdu
+!inject stsckopt.obj                                                                    l32 lpc lmp rdu
 !inject tcflush.obj                                                                     l32 lpc lmp
 !inject tcgattr.obj                                                                     l32 lpc lmp
 !inject tcgtpgrp.obj                                                                    l32 lpc lmp

@@ -24,7 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation of recvfrom() for Linux.
+* Description:  Implementation of recvfrom() for Linux and RDOS.
 *
 ****************************************************************************/
 
@@ -32,10 +32,16 @@
 #include "variety.h"
 #include <sys/types.h>
 #include <sys/socket.h>
+
+#if defined( __LINUX__ )
 #include "linuxsys.h"
+#elif defined( __RDOS__ )
+#include "rdos.h"
+#endif
 
 _WCRTLINK int recvfrom(int s, void *buf, size_t len, int flags, struct sockaddr *from, socklen_t *fromlen)
 {
+#if defined( __LINUX__ )
     unsigned long args[6];
     args[0] = (unsigned long)s;
     args[1] = (unsigned long)buf;
@@ -44,5 +50,10 @@ _WCRTLINK int recvfrom(int s, void *buf, size_t len, int flags, struct sockaddr 
     args[4] = (unsigned long)from;
     args[5] = (unsigned long)fromlen;
     return( __socketcall( SYS_RECVFROM, args ) );
+#elif defined( __RDOS__ )
+    return( -1 );
+#else
+    return( -1 );
+#endif
 }
 

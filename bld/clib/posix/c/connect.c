@@ -25,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation of connect() for Linux.
+* Description:  Implementation of connect() for Linux and RDOS.
 *
 ****************************************************************************/
 
@@ -33,13 +33,24 @@
 #include "variety.h"
 #include <sys/types.h>
 #include <sys/socket.h>
+
+#if defined( __LINUX__ )
 #include "linuxsys.h"
+#elif defined( __RDOS__ )
+#include "rdos.h"
+#endif
 
 _WCRTLINK int connect(int sockfd, const struct sockaddr *serv_addr, socklen_t addrlen)
 {
+#if defined( __LINUX__ )
     unsigned long args[3];
     args[0] = (unsigned long)sockfd;
     args[1] = (unsigned long)serv_addr;
     args[2] = (unsigned long)addrlen;
     return( __socketcall( SYS_CONNECT, args ) );
+#elif defined( __RDOS__ )
+    return( -1 );
+#else
+    return( -1 );
+#endif
 }

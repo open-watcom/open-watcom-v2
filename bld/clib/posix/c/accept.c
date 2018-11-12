@@ -25,20 +25,31 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation of accept() for Linux.
+* Description:  Implementation of accept() for Linux and RDOS.
 *
 ****************************************************************************/
 
 #include "variety.h"
 #include <sys/types.h>
 #include <sys/socket.h>
+
+#if defined( __LINUX__ )
 #include "linuxsys.h"
+#elif defined( __RDOS__ )
+#include "rdos.h"
+#endif
 
 _WCRTLINK int accept(int s, struct sockaddr *addr, socklen_t *addrlen)
 {
+#if defined( __LINUX__ )
     unsigned long args[3];
     args[0] = (unsigned long)s;
     args[1] = (unsigned long)addr;
     args[2] = (unsigned long)addrlen;
     return( __socketcall( SYS_ACCEPT, args ) );
+#elif defined( __RDOS__ )
+    return( -1 );
+#else
+    return( -1 );
+#endif
 }

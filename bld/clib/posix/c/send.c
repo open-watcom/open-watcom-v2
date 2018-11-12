@@ -25,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation of send() for Linux.
+* Description:  Implementation of send() for Linux and RDOS.
 *
 ****************************************************************************/
 
@@ -33,14 +33,25 @@
 #include "variety.h"
 #include <sys/types.h>
 #include <sys/socket.h>
+
+#if defined( __LINUX__ )
 #include "linuxsys.h"
+#elif defined( __RDOS__ )
+#include "rdos.h"
+#endif
 
 _WCRTLINK int send(int s, const void *msg, size_t len, int flags)
 {
+#if defined( __LINUX__ )
     unsigned long args[4];
     args[0] = (unsigned long)s;
     args[1] = (unsigned long)msg;
     args[2] = (unsigned long)len;
     args[3] = (unsigned long)flags;
     return( __socketcall( SYS_SEND, args ) );
+#elif defined( __RDOS__ )
+    return( RdosWriteHandle( s, msg, len ) );
+#else
+    return( -1 );
+#endif
 }
