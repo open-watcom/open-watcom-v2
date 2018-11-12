@@ -101,6 +101,15 @@ struct linger {
 #include _ARCH_INCLUDE(sys/socket.h)
 :endsegment
 
+:segment RDOS
+
+#define SOCK_STREAM     1
+#define SOCK_DGRAM      2
+#define SOCK_MAX        (SOCK_DGRAM+1)
+
+:endsegment
+
+
 typedef unsigned int socklen_t;
 
 _WCRTLINK extern int socket( int __domain, int __type, int __protocol );
