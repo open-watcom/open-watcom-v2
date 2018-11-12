@@ -25,37 +25,30 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation of inet_addr() for little-endian cpus.
+* Description:  Implementation of inet_makeaddr() for RDOS.
 *
 ****************************************************************************/
-
 
 #include "variety.h"
 #include <sys/types.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
 
-_WCRTLINK uint32_t inet_addr(const char *cp)
+_WCRTLINK struct in_addr inet_makeaddr( int net, int __host )
 {
-    uint32_t ret, val;
-    int shift = 0;
+    unsigned long addr;
 
-    ret = val = 0;
-    if ( *cp ) do {
-        if ( *cp >= '0' && *cp <= '9' ) {
-            val = val*10 + (*cp - '0');
-        } else if ( *cp == '.' || *cp == '\0' ) {
-            if ( val > 255 )
-                return( INADDR_NONE );
-            ret |= ( val << shift );
-            shift += 8;
-            val = 0;
-        } else {
-            return( INADDR_NONE );
-        }
-        cp++;
-    } while ( cp[-1] );
-    if ( shift != 32 )
-        return( INADDR_NONE );
-    return( ret );
+    if (net < 128)
+        addr = (net << IN_CLASSA_NSHIFT) | (__host & IN_CLASSA_HOST);
+
+    else if (net < 65536)
+        addr = (net << IN_CLASSB_NSHIFT) | (__host & IN_CLASSB_HOST);
+
+    else if (net < 16777216L)
+        addr = (net << IN_CLASSC_NSHIFT) | (__host & IN_CLASSC_HOST);
+
+    else addr = (net | __host);
+
+    addr = htonl( addr );
+    return( *(struct in_addr*) &addr );
 }

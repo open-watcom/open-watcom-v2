@@ -22,14 +22,19 @@
 !inject gtsrvnam.obj                                                                    l32 lpc lmp
 !inject gtsrvprt.obj                                                                    l32 lpc lmp
 !inject _h_errno.obj                                                                    l32 lpc lmp
-!inject htonl.obj                                                                       l32 lpc lmp
-!inject htons.obj                                                                       l32 lpc lmp
-!inject inetaddr.obj                                                                    l32 lpc lmp
-!inject inetntoa.obj                                                                    l32 lpc lmp
+!inject htonl.obj                                                                       l32 lpc lmp rdu
+!inject htons.obj                                                                       l32 lpc lmp rdu
+!inject inetaddr.obj                                                                    l32 lpc lmp rdu
+!inject inetaton.obj                                                                                rdu
+!inject inetlnof.obj                                                                                rdu
+!inject inetmkad.obj                                                                                rdu
+!inject inetnet.obj                                                                                 rdu
+!inject inetneto.obj                                                                                rdu
+!inject inetntoa.obj                                                                    l32 lpc lmp rdu
 !inject langinfo.obj                                                                    l32 lpc lmp
 !inject listen.obj                                                                      l32 lpc lmp
-!inject ntohl.obj                                                                       l32 lpc lmp
-!inject ntohs.obj                                                                       l32 lpc lmp
+!inject ntohl.obj                                                                       l32 lpc lmp rdu
+!inject ntohs.obj                                                                       l32 lpc lmp rdu
 !inject opendir.obj                                                                     l32 lpc lmp
 !inject _prscfg.obj                                                                     l32 lpc lmp
 !inject ptattr.obj                                                                      l32 lpc lmp

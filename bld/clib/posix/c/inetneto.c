@@ -2,7 +2,6 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -25,37 +24,26 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation of inet_addr() for little-endian cpus.
+* Description:  Implementation of inet_netof() for RDOS.
 *
 ****************************************************************************/
 
 
 #include "variety.h"
+#include <stdio.h>
 #include <sys/types.h>
-#include <arpa/inet.h>
 #include <netinet/in.h>
+#include <arpa/inet.h>
 
-_WCRTLINK uint32_t inet_addr(const char *cp)
+_WCRTLINK in_addr_t inet_netof( struct in_addr __in )
 {
-    uint32_t ret, val;
-    int shift = 0;
+    unsigned long a = ntohl( __in.s_addr );
 
-    ret = val = 0;
-    if ( *cp ) do {
-        if ( *cp >= '0' && *cp <= '9' ) {
-            val = val*10 + (*cp - '0');
-        } else if ( *cp == '.' || *cp == '\0' ) {
-            if ( val > 255 )
-                return( INADDR_NONE );
-            ret |= ( val << shift );
-            shift += 8;
-            val = 0;
-        } else {
-            return( INADDR_NONE );
-        }
-        cp++;
-    } while ( cp[-1] );
-    if ( shift != 32 )
-        return( INADDR_NONE );
-    return( ret );
+    if( IN_CLASSA( a ) )
+        return( ( a & IN_CLASSA_NET ) >> IN_CLASSA_NSHIFT );
+
+    if( IN_CLASSB( a ) )
+        return( ( a & IN_CLASSB_NET ) >> IN_CLASSB_NSHIFT );
+
+    return( ( a & IN_CLASSC_NET ) >> IN_CLASSC_NSHIFT );
 }

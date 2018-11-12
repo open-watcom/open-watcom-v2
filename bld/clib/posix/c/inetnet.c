@@ -25,37 +25,82 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation of inet_addr() for little-endian cpus.
+* Description:  Implementation of inet_network() for RDOS.
 *
 ****************************************************************************/
 
-
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
 #include "variety.h"
 #include <sys/types.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
 
-_WCRTLINK uint32_t inet_addr(const char *cp)
+_WCRTLINK in_addr_t inet_network( const char *__cp )
 {
-    uint32_t ret, val;
-    int shift = 0;
+    unsigned long val, base, n;
+    unsigned long parts[4], *pp = parts;
+    int i;
+    char c;
 
-    ret = val = 0;
-    if ( *cp ) do {
-        if ( *cp >= '0' && *cp <= '9' ) {
-            val = val*10 + (*cp - '0');
-        } else if ( *cp == '.' || *cp == '\0' ) {
-            if ( val > 255 )
-                return( INADDR_NONE );
-            ret |= ( val << shift );
-            shift += 8;
-            val = 0;
-        } else {
-            return( INADDR_NONE );
+again:
+    /*
+     * Collect number up to ``.''.
+     * Values are specified as for C:
+     * 0x=hex, 0=octal, other=decimal.
+     */
+    val  = 0;
+    base = 10;
+    /*
+     * The 4.4BSD version of this file also accepts 'x__' as a hexa
+     * number.  I don't think this is correct.  -- Uli
+     */
+    if( *__cp == '0' )
+    {
+        if( *++__cp == 'x' || *__cp == 'X' )
+            base = 16, __cp++;
+        else 
+            base = 8;
+    }
+    while( ( c = *__cp ) != 0 )
+    {
+        if( isdigit( c ) )
+        {
+            val = (val * base) + (c - '0');
+            __cp++;
+            continue;
         }
-        cp++;
-    } while ( cp[-1] );
-    if ( shift != 32 )
+        if( base == 16 && isxdigit( c ) )
+        {
+            val = (val << 4) + (c + 10 - (islower(c) ? 'a' : 'A'));
+            __cp++;
+            continue;
+        }
+        break;
+    }
+    if( *__cp == '.' )
+    {
+        if( pp >= parts + 4 )
+            return( INADDR_NONE );
+
+        *pp++ = val;
+        __cp++;
+        goto again;
+    }
+    if( *__cp && !isspace( *__cp ) )
         return( INADDR_NONE );
-    return( ret );
+
+    *pp++ = val;
+    n = pp - parts;
+    if (n > 4)
+        return( INADDR_NONE );
+
+    for( val = 0, i = 0; i < n; i++ )
+    {
+        val <<= 8;
+        val |= parts[i] & 0xff;
+    }
+    return( val );
 }
