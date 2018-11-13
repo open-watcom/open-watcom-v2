@@ -115,9 +115,9 @@
 !inject mmintrin.h                  hdos hlnx hqnx hrdos
 !inject mqueue.h                              hqnx
 !inject mutex            noext hcpp
-!inject netdb.h                          hlnx
+!inject netdb.h                          hlnx      hrdos
 !inject netinet/in.h                     hlnx      hrdos
-!inject netinet/tcp.h                    hlnx
+!inject netinet/tcp.h                    hlnx      hrdos
 !inject new              noext hcpp
 !inject new.h                  hcpp
 !inject numeric          noext hcpp

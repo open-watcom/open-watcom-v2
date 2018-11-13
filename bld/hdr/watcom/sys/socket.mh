@@ -34,9 +34,8 @@ struct linger {
     int l_linger;
 };
 
-:segment LINUX
-
 /* Supported address families. */
+:segment LINUX
 #define AF_UNSPEC       0
 #define AF_UNIX         1       /* Unix domain sockets          */
 #define AF_LOCAL        1       /* POSIX name for AF_UNIX       */
@@ -67,7 +66,6 @@ struct linger {
 #define AF_MAX          32      /* For now.. */
 
 :elsesegment RDOS
-
 #define AF_UNSPEC       0
 #define AF_INET         2       /* Internet IP Protocol         */
 #define AF_MAX          32      /* For now.. */
@@ -75,6 +73,7 @@ struct linger {
 :endsegment
 
 /* Protocol families, same as address families. */
+:segment LINUX
 #define PF_UNSPEC       AF_UNSPEC
 #define PF_UNIX         AF_UNIX
 #define PF_LOCAL        AF_LOCAL
@@ -104,18 +103,26 @@ struct linger {
 #define PF_WANPIPE      AF_WANPIPE
 #define PF_MAX          AF_MAX
 
+:elsesegment RDOS
+#define PF_UNSPEC       AF_UNSPEC
+#define PF_INET         AF_INET
+#define PF_MAX          AF_MAX
+
+:endsegment
+
+:segment LINUX
 /* Maximum backlog for the listen( ) function - system-configurable */
 #define SOMAXCONN sysconf(_SC_SOMAXCONN)
 
-:segment LINUX
 #include _ARCH_INCLUDE(sys/socket.h)
 :endsegment
 
 :segment RDOS
-
 #define SOCK_STREAM     1
 #define SOCK_DGRAM      2
 #define SOCK_MAX        (SOCK_DGRAM+1)
+
+#define SOMAXCONN 1024
 
 :endsegment
 

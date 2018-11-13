@@ -10,7 +10,9 @@
 
 :include cpluspro.sp
 
+:segment LINUX
 :include lnxkpack.sp
+:endsegment
 
 /* TCP socket options */
 #define TCP_NODELAY             1
@@ -26,7 +28,9 @@
 #define TCP_INFO                11
 #define TCP_QUICKACK            12
 
+:segment LINUX
 :include poppack.sp
+:endsegment
 
 :include cplusepi.sp
 
