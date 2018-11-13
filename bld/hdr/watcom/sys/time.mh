@@ -16,8 +16,13 @@
 :endsegment
 :include cpluspro.sp
 
+:segment LINUX | RDOS
+
 :segment LINUX
 :include lnxkpack.sp
+:elsesegment
+:include pshpackl.sp
+:endsegment
 
 /* I am not sure where this should go, so I am putting it here for now.
  * It should probably exist in a separate header file like sys/select.h
@@ -93,7 +98,7 @@ struct itimerval {
 
 _WCRTLINK extern int gettimeofday( struct timeval *__tv, struct timezone *__tz );
 _WCRTLINK extern int settimeofday( const struct timeval *__tv, const struct timezone *__tz );
-:segment LINUX
+:segment LINUX | RDOS
 _WCRTLINK extern int select( int __width, fd_set *__readfds, fd_set *__writefds, fd_set *__exceptfds, struct timeval *__timeout );
 :endsegment
 _WCRTLINK extern int getitimer( int __which, struct itimerval *__value );
