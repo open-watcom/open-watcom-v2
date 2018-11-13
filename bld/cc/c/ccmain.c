@@ -161,7 +161,7 @@ char *ForceSlash( char *name, char slash )
     char    *save;
 
     save = name;
-    if( slash != '\0' || name != NULL ) {
+    if( slash != '\0' && name != NULL ) {
         while( name[0] != '\0' ) {
             if( name[0] == '\\' || name[0] == '/' )
                 name[0] = slash;
