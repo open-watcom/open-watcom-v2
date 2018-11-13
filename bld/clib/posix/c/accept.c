@@ -36,6 +36,10 @@
 #if defined( __LINUX__ )
 #include "linuxsys.h"
 #elif defined( __RDOS__ )
+#include <netinet/in.h>
+#include "rtdata.h"
+#include "rterrno.h"
+#include "thread.h"
 #include "rdos.h"
 #endif
 
@@ -48,6 +52,24 @@ _WCRTLINK int accept(int s, struct sockaddr *addr, socklen_t *addrlen)
     args[2] = (unsigned long)addrlen;
     return( __socketcall( SYS_ACCEPT, args ) );
 #elif defined( __RDOS__ )
+    struct sockaddr_in *in = (struct sockaddr_in *)addr;
+    long ip;
+    short int port;
+    if( RdosIsIpv4Socket( s ) )
+    {
+        if( RdosAcceptIpv4Socket( s, &ip, &port) )
+        {
+            if( addr )
+            {
+                in->sin_family = AF_INET;
+                in->sin_addr.s_addr = ip;
+                in->sin_port = ntohs( port );
+                *addrlen = sizeof( struct sockaddr_in );
+                return( 0 );
+            }
+        }
+    }
+    _RWD_errno = ENOTSOCK;
     return( -1 );
 #else
     return( -1 );

@@ -216,6 +216,7 @@
 #define ENOTEMPTY 39    /* Directory not empty */
 /* additional Standard C error */
 #define EILSEQ  40      /* Illegal multibyte sequence */
+#define ENOTSOCK 41     /* Socket operation on non-socket */
 :endsegment
 
 ::::::::: Safer C :::::::::

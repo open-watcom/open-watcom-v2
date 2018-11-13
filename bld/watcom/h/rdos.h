@@ -382,6 +382,7 @@ int RDOSAPI RdosGetReceiveBufferSpace(int Handle);
 int RDOSAPI RdosGetSendBufferSpace(int Handle);
 void RDOSAPI RdosWaitForSendCompletedCom(int Handle);
 void RDOSAPI RdosResetCom(int Handle);
+int RDOSAPI RdosGetComRecCount(int Handle);
 
 int RDOSAPI RdosGetMaxPrinters();
 int RDOSAPI RdosOpenPrinter(char ID);
@@ -652,6 +653,14 @@ int RDOSAPI RdosClearUdpListen(int Handle);
 void RDOSAPI RdosCloseUdpListen(int Handle);
 void RDOSAPI RdosAddWaitForUdpListen(int Handle, int ConHandle, int ID);
 
+int RDOSAPI RdosCreateTcpSocket();
+int RDOSAPI RdosCreateUdpSocket();
+int RDOSAPI RdosIsIpv4Socket();
+int RDOSAPI RdosConnectIpv4Socket(int handle, long ip, short int port);
+int RDOSAPI RdosBindIpv4Socket(int handle, short int port);
+int RDOSAPI RdosListenSocket(int handle, int maxconn);
+int RDOSAPI RdosAcceptIpv4Socket(int handle, long *ip, short int *port);
+
 int RDOSAPI RdosOpenTcpConnection(int RemoteIp, int LocalPort, int RemotePort, int Timeout, int BufferSize);
 int RDOSAPI RdosWaitForTcpConnection(int Handle, long Timeout);
 void RDOSAPI RdosAddWaitForTcpConnection(int Handle, int ConHandle, int ID);
@@ -717,10 +726,14 @@ int RDOSAPI RdosPing(long Node, long Timeout);
 
 int RDOSAPI RdosGetIdeDisc(int UnitNr);
 int RDOSAPI RdosGetFloppyDisc(int UnitNr);
+void RDOSAPI RdosOpenDisc(int UnitNr);
+void RDOSAPI RdosCloseDisc(int UnitNr);
 
+int RDOSAPI RdosGetFileCacheSize();
 int RDOSAPI RdosSetDiscInfo(int DiscNr, int SectorSize, long Sectors, int BiosSectorsPerCyl, int BiosHeads);
 int RDOSAPI RdosGetDiscInfo(int DiscNr, int *SectorSize, long long *Sectors, int *BiosSectorsPerCyl, int *BiosHeads);
 void RDOSAPI RdosGetDiscVendorInfo(int DiscNr, char *Buf, int Size);
+int RDOSAPI RdosGetDiscCacheSize(int DiscNr);
 int RDOSAPI RdosReadDisc(int DiscNr, long long Sector, char *Buf, int Size);
 int RDOSAPI RdosWriteDisc(int DiscNr, long long Sector, const char *Buf, int Size);
 int RDOSAPI RdosIsDiscIdle(int DiscNr);
@@ -820,6 +833,10 @@ void RDOSAPI RdosStartWatchdog(int timeout);
 void RDOSAPI RdosKickWatchdog();
 void RDOSAPI RdosStopWatchdog();
 
+void RDOSAPI RdosStartDebugger(int timeout);
+void RDOSAPI RdosKickDebugger();
+void RDOSAPI RdosStopDebugger();
+
 void RDOSAPI RdosStartNetCapture(int FileHandle);
 void RDOSAPI RdosStopNetCapture();
 
@@ -893,6 +910,10 @@ void RDOSAPI RdosSetFmRelease(int Handle, int VolumeHalf, int BetaHalf);
 void RDOSAPI RdosPlayFmNote(int Handle, long double Freq, int PeakLeftVolume, int PeakRightVolume, int SustainSamples);
 
 int RDOSAPI RdosHasTouch();
+void RDOSAPI RdosResetTouchCalibrate();
+void RDOSAPI RdosSetTouchCalibrateDividend(int div);
+void RDOSAPI RdosSetTouchCalibrateX(int xx, int xy, int xoffset);
+void RDOSAPI RdosSetTouchCalibrateY(int yx, int yy, int yoffset);
 
 int RDOSAPI RdosCreateBigNum();
 void RDOSAPI RdosDeleteBigNum(int handle);

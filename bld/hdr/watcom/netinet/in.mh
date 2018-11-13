@@ -25,16 +25,12 @@ struct in_addr {
     uint32_t       s_addr;     /* address in network byte order */
 };
 
-:segment LINUX
-
 struct sockaddr_in {
     sa_family_t    sin_family; /* address family: AF_INET */
     uint16_t       sin_port;   /* port in network byte order */
     struct in_addr sin_addr;   /* internet address */
     char           __pad[ 16 - sizeof( sa_family_t ) - sizeof( uint16_t ) - sizeof( struct in_addr ) ];
 };
-
-:endsegment
 
 typedef uint32_t in_addr_t;
 typedef uint16_t in_port_t;

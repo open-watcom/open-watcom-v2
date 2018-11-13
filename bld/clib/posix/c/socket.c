@@ -49,7 +49,22 @@ _WCRTLINK int socket( int domain, int type, int protocol )
     args[2] = (unsigned long)protocol;
     return( __socketcall( SYS_SOCKET, args ) );
 #elif defined( __RDOS__ )
-    return( -1 );
+    if( domain == AF_INET )
+    {
+        switch( type )
+        {
+            case SOCK_STREAM:
+                return( RdosCreateTcpSocket() );
+
+            case SOCK_DGRAM:
+                return( RdosCreateUdpSocket() );
+
+            default:
+                return( -1 );
+        }
+    }
+    else
+        return( -1 );
 #else
     return( -1 );
 #endif

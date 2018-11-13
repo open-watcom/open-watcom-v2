@@ -37,6 +37,10 @@
 #if defined( __LINUX__ )
 #include "linuxsys.h"
 #elif defined( __RDOS__ )
+#include <netinet/in.h>
+#include "rtdata.h"
+#include "rterrno.h"
+#include "thread.h"
 #include "rdos.h"
 #endif
 
@@ -49,6 +53,11 @@ _WCRTLINK int connect(int sockfd, const struct sockaddr *serv_addr, socklen_t ad
     args[2] = (unsigned long)addrlen;
     return( __socketcall( SYS_CONNECT, args ) );
 #elif defined( __RDOS__ )
+    struct sockaddr_in *in = (struct sockaddr_in *)serv_addr;
+    if( RdosIsIpv4Socket( sockfd ) )
+        if( RdosConnectIpv4Socket( sockfd, in->sin_addr.s_addr, htons( in->sin_port ) ) )
+            return( 0 );
+    _RWD_errno = ENOTSOCK;
     return( -1 );
 #else
     return( -1 );
