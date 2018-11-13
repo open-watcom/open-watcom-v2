@@ -655,7 +655,7 @@ void RDOSAPI RdosAddWaitForUdpListen(int Handle, int ConHandle, int ID);
 
 int RDOSAPI RdosCreateTcpSocket();
 int RDOSAPI RdosCreateUdpSocket();
-int RDOSAPI RdosIsIpv4Socket();
+int RDOSAPI RdosIsIpv4Socket(int handle);
 int RDOSAPI RdosConnectIpv4Socket(int handle, long ip, short int port);
 int RDOSAPI RdosBindIpv4Socket(int handle, short int port);
 int RDOSAPI RdosListenSocket(int handle, int maxconn);
