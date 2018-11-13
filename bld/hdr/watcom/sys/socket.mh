@@ -34,6 +34,8 @@ struct linger {
     int l_linger;
 };
 
+:segment LINUX
+
 /* Supported address families. */
 #define AF_UNSPEC       0
 #define AF_UNIX         1       /* Unix domain sockets          */
@@ -63,6 +65,14 @@ struct linger {
 #define AF_PPPOX        24      /* PPPoX sockets                */
 #define AF_WANPIPE      25      /* Wanpipe API Sockets */
 #define AF_MAX          32      /* For now.. */
+
+:elsesegment RDOS
+
+#define AF_UNSPEC       0
+#define AF_INET         2       /* Internet IP Protocol         */
+#define AF_MAX          32      /* For now.. */
+
+:endsegment
 
 /* Protocol families, same as address families. */
 #define PF_UNSPEC       AF_UNSPEC
