@@ -65,8 +65,8 @@ _WCRTLINK int accept(int s, struct sockaddr *addr, socklen_t *addrlen)
                 in->sin_addr.s_addr = ip;
                 in->sin_port = ntohs( port );
                 *addrlen = sizeof( struct sockaddr_in );
-                return( 0 );
             }
+            return( 0 );
         }
     }
     _RWD_errno = ENOTSOCK;
