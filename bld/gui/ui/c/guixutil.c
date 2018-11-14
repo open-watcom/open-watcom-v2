@@ -95,7 +95,7 @@ bool GUISetupStruct( gui_window *wnd, gui_create_info *dlg_info, bool dialog )
         wnd->screen.cursor = C_NORMAL;
         GUISetCursor( wnd );
     }
-    return( GUISetColours( wnd, dlg_info->num_attrs, dlg_info->colours ) );
+    return( GUISetColours( wnd, dlg_info->colours.num_items, dlg_info->colours.colours ) );
 }
 
 /*

@@ -45,7 +45,7 @@ static gui_create_info DialogControl = {
     GUI_VISIBLE | GUI_CLOSEABLE,        // Window Styles
     NULL,                               // Parent
     { 0, NULL },                        // Menu array
-    0, NULL,                            // Colour attribute array
+    { 0, NULL },                        // Colour attribute array
     &DynamicDialogWndGUIEventProc,      // GUI Event Callback function
     NULL,                               // Extra
     NULL,                               // Icon

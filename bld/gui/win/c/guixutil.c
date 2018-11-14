@@ -155,7 +155,7 @@ bool GUISetupStruct( gui_window *wnd, gui_create_info *dlg_info,
             wnd->style = dlg_info->style;
             wnd->scroll = dlg_info->scroll;
         }
-        if( !GUISetColours( wnd, dlg_info->num_attrs, dlg_info->colours ) ) {
+        if( !GUISetColours( wnd, dlg_info->colours.num_items, dlg_info->colours.colours ) ) {
             return( false );
         }
     }

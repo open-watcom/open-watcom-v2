@@ -440,6 +440,11 @@ typedef struct gui_colour_set {
     gui_colour              back;
 } gui_colour_set;
 
+typedef struct gui_colour_root {
+    int                     num_items;
+    gui_colour_set          *colours;
+} gui_colour_root;
+
 typedef unsigned long       gui_rgb;
 
 typedef struct gui_rect {
@@ -480,8 +485,7 @@ typedef struct gui_create_info {
     gui_create_styles   style;
     gui_window          *parent;
     gui_menu_root       menu;
-    int                 num_attrs;
-    gui_colour_set      *colours;      /* array of num_attrs gui_attrs */
+    gui_colour_root     colours;
     GUICALLBACK         *gui_call_back;
     void                *extra;
     gui_resource        *icon;

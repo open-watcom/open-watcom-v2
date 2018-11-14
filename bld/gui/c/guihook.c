@@ -71,7 +71,7 @@ void GUIXChangeTitle( gui_window *wnd )
     }
 }
 
-void GUISetXInitMDI( bool (*func)(gui_window*) )
+void GUISetXInitMDI( bool (*func)(gui_window *) )
 {
     fXInitMDI = func;
 }
@@ -84,7 +84,7 @@ bool GUIXInitMDI( gui_window *wnd )
     return( false );
 }
 
-void GUISetInitMDI( void (*func)(gui_window*, gui_create_info *) )
+void GUISetInitMDI( void (*func)(gui_window *, gui_create_info *) )
 {
     fInitMDI = func;
 }

@@ -219,7 +219,7 @@ static gui_create_info FloatingToolbar = {
     GUI_SYSTEM_MENU | GUI_VISIBLE | GUI_RESIZEABLE | GUI_CLOSEABLE | GUI_INIT_INVISIBLE,
     NULL,
     { NUM_MENU_ITEMS, &Menu },          // Menu array
-    0, NULL,                            // Colour attribute array
+    { 0, NULL },                        // Colour attribute array
     ToolbarGUIEventProc,                // GUI Event Callback function
     NULL,
     NULL,
@@ -253,12 +253,12 @@ static bool CreateFloatingToolbar( gui_window *wnd, gui_ord height )
     FloatingToolbar.menu.menu->hinttext = LIT( Fix_Toolbar_Hint );
     FloatingToolbar.rect.height = height;
     FloatingToolbar.rect.width = size.width;
-    FloatingToolbar.num_attrs = GUIGetNumWindowColours( wnd );
-    FloatingToolbar.colours = GUIGetWindowColours( wnd );
-    FloatingToolbar.colours[GUI_FRAME_INACTIVE] = FloatingToolbar.colours[GUI_FRAME_ACTIVE];
+    FloatingToolbar.colours.num_items = GUIGetNumWindowColours( wnd );
+    FloatingToolbar.colours.colours = GUIGetWindowColours( wnd );
+    FloatingToolbar.colours.colours[GUI_FRAME_INACTIVE] = FloatingToolbar.colours.colours[GUI_FRAME_ACTIVE];
     tbar->floattoolbar = GUICreateWindow( &FloatingToolbar );
-    GUIMemFree( FloatingToolbar.colours );
-    FloatingToolbar.colours = NULL;
+    GUIMemFree( FloatingToolbar.colours.colours );
+    FloatingToolbar.colours.colours = NULL;
     Button.parent = tbar->floattoolbar;
     loc = 0;
     if( tbar->has_colours ) {
