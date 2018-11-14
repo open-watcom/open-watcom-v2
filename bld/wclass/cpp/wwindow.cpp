@@ -374,8 +374,8 @@ void WWindow::makeWindow( const char *title, WStyle style, WExStyle exstyle )
     create_info.parent = hparent;
     create_info.menu.num_items = 0;
     create_info.menu.menu = NULL;
-    create_info.num_attrs = 0;
-    create_info.colours = NULL;
+    create_info.colours.num_items = 0;
+    create_info.colours.colours = NULL;
     create_info.gui_call_back = WinGUIEventProc;
     create_info.extra = this;
     create_info.icon = NULL;
