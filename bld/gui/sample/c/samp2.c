@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2018-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -225,8 +226,6 @@ static bool StatusGUIEventProc( gui_window * gui, gui_event gui_ev, void * param
 
 void GUImain( void )
 {
-
-    GUIMemOpen();
     GUIWndInit( 250, GUI_GMOUSE );
     GUISetScale( &Scale );
     GUISetColour( &Colours );

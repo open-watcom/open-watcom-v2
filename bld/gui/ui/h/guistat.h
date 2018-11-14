@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2018-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -24,10 +25,11 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Status Window handling
 *
 ****************************************************************************/
 
 
 extern void GUIDrawStatus( gui_window *wnd );
+extern void GUIFreeStatus( gui_window *wnd );
+extern void GUIResizeStatus( gui_window *wnd );

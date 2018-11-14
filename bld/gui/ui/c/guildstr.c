@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2018-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -24,8 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Read resources data from file
 *
 ****************************************************************************/
 
@@ -76,9 +76,9 @@ bool GUILoadStrInit( const char *fname )
         return( true );
     }
     CloseResFile( &hInstance );
-    posix_write( fileno( stdout ), NO_RES_MESSAGE_PREFIX, sizeof( NO_RES_MESSAGE_PREFIX ) - 1 );
-    posix_write( fileno( stdout ), fname,                 strlen( fname ) );
-    posix_write( fileno( stdout ), NO_RES_MESSAGE_SUFFIX, sizeof( NO_RES_MESSAGE_SUFFIX ) - 1 );
+    fwrite( NO_RES_MESSAGE_PREFIX, 1, sizeof( NO_RES_MESSAGE_PREFIX ) - 1, stdout );
+    fwrite( fname, 1, strlen( fname ), stdout );
+    fwrite( NO_RES_MESSAGE_SUFFIX, 1, sizeof( NO_RES_MESSAGE_SUFFIX ) - 1, stdout );
     return( false );
 }
 

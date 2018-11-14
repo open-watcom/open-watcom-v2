@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2018-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,25 +42,27 @@
 
 #ifdef TRMEM
 _trmem_hdl  GUIMemHandle;
-static int  GUIMemFileHandle;   /* stream to put output on */
+static FILE *GUIMemFP;          /* stream to put output on */
 
 static int  GUIMemOpened = 0;
 
 static void GUIMemPrintLine( void *handle, const char *buff, size_t len )
 /***********************************************************************/
 {
-    posix_write( *(int *)handle, buff, len );
+    /* unused parameters */ (void)handle;
+
+    fwrite( buff, 1, len, GUIMemFP );
 }
 
 #endif
 
-void GUIMemRedirect( int handle )
-/*******************************/
+void GUIMemRedirect( FILE *fp )
+/*****************************/
 {
 #ifdef TRMEM
-    GUIMemFileHandle = handle;
+    GUIMemFP = fp;
 #else
-    /* unused parameters */ (void)handle;
+    /* unused parameters */ (void)fp;
 #endif
 }
 
@@ -70,19 +73,15 @@ void GUIMemOpen( void )
     char * tmpdir;
 
     if( !GUIMemOpened ) {
-#ifdef NLM
-        GUIMemFileHandle = STDERR_HANDLE;
-#else
-        GUIMemFileHandle = STDERR_FILENO;
-#endif
+        GUIMemFP = stderr;
         GUIMemHandle = _trmem_open( malloc, free, realloc, NULL,
-            &GUIMemFileHandle, GUIMemPrintLine,
+            NULL, GUIMemPrintLine,
             _TRMEM_ALLOC_SIZE_0 | _TRMEM_REALLOC_SIZE_0 |
             _TRMEM_OUT_OF_MEMORY | _TRMEM_CLOSE_CHECK_FREE );
 
         tmpdir = getenv( "TRMEMFILE" );
         if( tmpdir != NULL ) {
-            GUIMemFileHandle = open( tmpdir, O_RDWR | O_CREAT | O_TRUNC | O_BINARY, PMODE_RW );
+            GUIMemFP = fopen( tmpdir, "w" );
         }
         GUIMemOpened = 1;
     }
@@ -95,12 +94,8 @@ void GUIMemClose( void )
 #ifdef TRMEM
     _trmem_prt_list( GUIMemHandle );
     _trmem_close( GUIMemHandle );
-#ifdef NLM
-    if( GUIMemFileHandle != STDERR_HANDLE ) {
-#else
-    if( GUIMemFileHandle != STDERR_FILENO ) {
-#endif
-        close( GUIMemFileHandle );
+    if( GUIMemFP != stderr ) {
+        close( GUIMemFP );
     }
 #endif
 }

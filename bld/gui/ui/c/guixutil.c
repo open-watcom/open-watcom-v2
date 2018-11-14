@@ -48,6 +48,7 @@
 #include "guizlist.h"
 #include "guigadgt.h"
 #include "guixhook.h"
+#include "guistat.h"
 
 
 #define VALIDWINDOW( area, check_min )          \
@@ -433,15 +434,6 @@ bool GUISetCursor( gui_window *wnd )
     return( false );
 }
 
-/* Hooking the F1 key */
-void GUIHookF1( void )
-{
-}
-
-void GUIUnHookF1( void )
-{
-}
-
 static void DeleteChild( gui_window *parent, gui_window *child )
 {
     gui_window  *curr;
@@ -562,42 +554,4 @@ bool GUICloseWnd( gui_window *wnd )
 void GUIDestroyWnd( gui_window * wnd )
 {
     DoDestroy( wnd, false );
-}
-
-/*
- * GUIGetRow - get the row that the mouse is on
- */
-
-gui_ord GUIGetRow( gui_window * wnd, gui_point * in_pt )
-{
-    gui_point pt;
-
-    /* unused parameters */ (void)wnd;
-
-    pt = *in_pt;
-    GUIScaleToScreenRPt( &pt );
-    if( pt.y >=0 ) {
-        return( (gui_ord) pt.y );
-    } else {
-        return( GUI_NO_ROW );
-    }
-}
-
-/*
- * GUIGetCol - get the column that the mouse is on
- */
-
-gui_ord GUIGetCol( gui_window *wnd, const char *text, gui_point *in_pt )
-{
-    gui_point pt;
-
-    /* unused parameters */ (void)wnd; (void)text;
-
-    pt = *in_pt;
-    GUIScaleToScreenRPt( &pt );
-    if( pt.x >=0 ) {
-        return( (gui_ord) pt.x );
-    } else {
-        return( GUI_NO_COLUMN );
-    }
 }

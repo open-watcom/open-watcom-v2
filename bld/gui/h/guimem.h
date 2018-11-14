@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2018-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,10 +33,11 @@
 #define _GUIMEM_H_INCLUDED
 
 #include <stddef.h>
+#include <stdio.h>
 
 extern void     GUIMemOpen( void );
 extern void     GUIMemClose( void );
-extern void     GUIMemRedirect( int );
+extern void     GUIMemRedirect( FILE *fp );
 extern void     GUIMemPrtUsage( void );
 extern void     *GUIMemAlloc( size_t size );
 extern void     GUIMemFree( void * ptr );

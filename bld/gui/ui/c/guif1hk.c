@@ -25,16 +25,19 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Handling of F1 key (help)
 *
 ****************************************************************************/
 
 
-#ifndef _GUIXHOOK_H_
-#define _GUIXHOOK_H_
+#include "guiwind.h"
 
-extern void GUISetMDIProcessEvent( bool (*func)( ui_event ) );
-extern bool GUIMDIProcessEvent( ui_event ui_ev );
 
-#endif // _GUIXHOOK_H_
+/* Hooking the F1 key */
+void GUIHookF1( void )
+{
+}
+
+void GUIUnHookF1( void )
+{
+}

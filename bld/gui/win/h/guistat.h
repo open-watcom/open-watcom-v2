@@ -25,16 +25,10 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Status Window handling
 *
 ****************************************************************************/
 
 
-#ifndef _GUIXHOOK_H_
-#define _GUIXHOOK_H_
-
-extern void GUISetMDIProcessEvent( bool (*func)( ui_event ) );
-extern bool GUIMDIProcessEvent( ui_event ui_ev );
-
-#endif // _GUIXHOOK_H_
+extern void GUIResizeStatus( gui_window *wnd );
+extern void GUIFreeStatus( void );

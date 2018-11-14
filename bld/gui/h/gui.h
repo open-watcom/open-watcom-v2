@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2018-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -981,7 +982,7 @@ extern void GUITimer( void );
 #endif
 
 /* may be implemented by application, stub functions */
+extern bool GUIFirstCrack( void );
 extern bool GUIDead( void );
 extern bool GUIDeath( void );
-extern bool GUIFirstCrack( void );
 extern char *GUIGetWindowClassName( void );

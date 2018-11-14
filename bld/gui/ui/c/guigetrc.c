@@ -31,10 +31,44 @@
 ****************************************************************************/
 
 
-#ifndef _GUIXHOOK_H_
-#define _GUIXHOOK_H_
+#include "guiwind.h"
+#include "guiscale.h"
 
-extern void GUISetMDIProcessEvent( bool (*func)( ui_event ) );
-extern bool GUIMDIProcessEvent( ui_event ui_ev );
 
-#endif // _GUIXHOOK_H_
+/*
+ * GUIGetRow - get the row that the mouse is on
+ */
+
+gui_ord GUIGetRow( gui_window * wnd, gui_point * in_pt )
+{
+    gui_point pt;
+
+    /* unused parameters */ (void)wnd;
+
+    pt = *in_pt;
+    GUIScaleToScreenRPt( &pt );
+    if( pt.y >=0 ) {
+        return( (gui_ord) pt.y );
+    } else {
+        return( GUI_NO_ROW );
+    }
+}
+
+/*
+ * GUIGetCol - get the column that the mouse is on
+ */
+
+gui_ord GUIGetCol( gui_window *wnd, const char *text, gui_point *in_pt )
+{
+    gui_point pt;
+
+    /* unused parameters */ (void)wnd; (void)text;
+
+    pt = *in_pt;
+    GUIScaleToScreenRPt( &pt );
+    if( pt.x >=0 ) {
+        return( (gui_ord) pt.x );
+    } else {
+        return( GUI_NO_COLUMN );
+    }
+}

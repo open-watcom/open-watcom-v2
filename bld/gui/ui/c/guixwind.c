@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2018-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -24,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  GUI library message loop.
+* Description:  GUI library main window procedure and other assorted guts
 *
 ****************************************************************************/
 
@@ -114,17 +115,6 @@ static void MessageLoop( void )
     uipoplist( /* GUIAllEvents */ );
 }
 
-static void GUICleanupInit( bool intstringtable_cleanup,
-                            bool loadstrings_cleanup )
-{
-    if( intstringtable_cleanup ) {
-        GUIFiniInternalStringTable();
-    }
-    if( loadstrings_cleanup ) {
-        GUILoadStrFini();
-    }
-}
-
 void GUICleanup( void )
 {
     GUIDeath();                 /* user replaceable stub function */
@@ -132,7 +122,6 @@ void GUICleanup( void )
     uiswap();
     uirestorebackground();      /* must be after uiswap */
     GUICleanupHotSpots();
-    GUICleanupInit( true, true );
     GUISysFini();
 }
 
@@ -154,34 +143,30 @@ static bool LoadStrings( void )
 
 static void MainLoop( void )
 {
-    bool        loadstrings_ok;
-    bool        intstringtable_ok;
 #ifdef __WINDOWS__
     SAREA       area;
 #endif
 
-    loadstrings_ok    = LoadStrings();
-    intstringtable_ok = GUIInitInternalStringTable();
-    if( loadstrings_ok  &&  intstringtable_ok ) {
-        GUImain();
-        if( GUIIsInit() ) {
-#ifdef __WINDOWS__
-            area.row = 0;
-            area.col = 0;
-            area.width = UIData->width;
-            area.height = UIData->height;
-            uidirty( area );
-            uirefresh();
-#endif
-
-            MessageLoop();
-            GUICleanup();
-            loadstrings_ok    = false;
-            intstringtable_ok = false;
+    if( LoadStrings() ) {
+        if( GUIInitInternalStringTable() ) {
+            GUImain();
+            if( GUIIsInit() ) {
+    #ifdef __WINDOWS__
+                area.row = 0;
+                area.col = 0;
+                area.width = UIData->width;
+                area.height = UIData->height;
+                uidirty( area );
+                uirefresh();
+    #endif
+    
+                MessageLoop();
+                GUICleanup();
+            }
+            GUIFiniInternalStringTable();
         }
+        GUILoadStrFini();
     }
-    GUICleanupInit( intstringtable_ok, loadstrings_ok );
-    GUIDead();                 /* user replaceable stub function */
 }
 
 /*
@@ -192,9 +177,10 @@ int GUIXMain( int argc, char * argv[] )
 {
     GUIMainTouched = true;
     GUIMemOpen();
-    if( GUIFirstCrack() ) {
-        GUIStoreArgs( argv, argc );
+    GUIStoreArgs( argv, argc );
+    if( GUIFirstCrack() ) {         /* user replaceable stub function */
         MainLoop();
+        GUIDead();                  /* user replaceable stub function */
     }
     GUIMemClose();
     return( 0 );

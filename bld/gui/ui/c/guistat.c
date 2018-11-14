@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2018-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -24,8 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Status Window handling
 *
 ****************************************************************************/
 
@@ -36,7 +36,6 @@
 #include "guiutil.h"
 #include "guixutil.h"
 #include "guiscale.h"
-#include "guixhook.h"
 #include <string.h>
 
 static bool SetStatusArea( gui_window *wnd, gui_ord x, gui_ord height,
@@ -143,6 +142,25 @@ bool GUIDrawStatusText( gui_window *wnd, const char *text )
 bool GUIHasStatus( gui_window *wnd )
 {
     return( wnd->status != NULL );
+}
+
+void GUIFreeStatus( gui_window *wnd )
+{
+    if( GUIHasStatus( wnd ) ) {
+        if( wnd->status->text != NULL ) {
+            GUIMemFree( wnd->status->text );
+        }
+        GUIMemFree( wnd->status );
+        wnd->status = NULL;
+    }
+}
+
+void GUIResizeStatus( gui_window *wnd )
+{
+    if( GUIHasStatus( wnd ) ) {
+        wnd->status->area.width = wnd->use.width;
+        wnd->status->area.row = wnd->use.height + 1;
+    }
 }
 
 bool GUICloseStatusWindow( gui_window *wnd )
