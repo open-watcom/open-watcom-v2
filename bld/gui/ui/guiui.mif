@@ -82,12 +82,6 @@ ui_sysobjs = &
     guif1hk.obj	 &
     guigetrc.obj
 
-help_objext=obj
-
-!include $(hlpview_dir)/help.mif
-
-ui_sysobjs += $(help_objs)
-
 !ifeq release 0
 ui_sysobjs += uibarf.obj
 !endif
@@ -97,7 +91,9 @@ sys_hooks = &
     guisysfi.obj &
     uidchfld.obj &
 
-sysobjs = $(ui_sysobjs) $(sys_hooks) $(sys_dep_objs)
+!include $(hlpview_dir)/client.mif
+
+sysobjs = $(ui_sysobjs) $(sys_hooks) $(help_objs)
 
 !ifndef bootstrap
 # memory tracker cover routines

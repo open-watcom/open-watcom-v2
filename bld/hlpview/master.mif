@@ -9,7 +9,7 @@ whelp_trmem = 1
 !include deftarg.mif
 
 !include $(ui_dir)/client.mif
-!include ../help.mif
+!include $(hlpview_dir)/client.mif
 
 !include trmem.mif
 

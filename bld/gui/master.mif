@@ -65,7 +65,7 @@ mem_objs = &
     $(trmem_objs)
 
 
-objs = $(common_objs) $(mem_objs)
+objs = $(common_objs) $(mem_objs) $(extra_objs) $(sysobjs)
 
 libs = $(wpi_lib) $(commonui_lib)
 
@@ -96,12 +96,12 @@ inc_dirs = -I. -I"../h" -I"../../h" -I"$(hlpview_dir)/h" $(commonui_inc_dirs) $(
 .h:     ../h;../../h
 .msg:   ../../h
 
-$(name).lib : guimsgs.gh $(objs) $(extra_objs) $(sysobjs) $(libs) $(__MAKEFILES__)
+$(name).lib : guimsgs.gh $(objs) $(libs) $(__MAKEFILES__)
     @%make echo_lib
 !ifndef __WATCOM_TOOLS__
-    $(blib) $(bld_libflags) $(objs) $(extra_objs) $(sysobjs) $(libs)
+    $(blib) $(bld_libflags) $(objs) $(libs)
 !else
-    $(librarian) $(libflags) $(objs) $(extra_objs) $(sysobjs) $(libs)
+    $(librarian) $(libflags) $(objs) $(libs)
 !endif
 
 guimsgs.gh : ../../h/gui.msg

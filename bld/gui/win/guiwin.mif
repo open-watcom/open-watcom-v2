@@ -2,9 +2,9 @@ type=win
 
 sys_windowed = 1
 
-extra_objs = wpimem.obj
+wpi_sysobjs = wpimem.obj
 
-gui_sysobjs = &
+win_sysobjs = &
     guixscal.obj &
     guidrect.obj &
     guimvctr.obj &
@@ -89,12 +89,14 @@ gui_sysobjs = &
     guigetrc.obj
 
 !ifeq host_os os2
-gui_sysobjs +=	&
+win_sysobjs +=	&
     os2mem.obj
 !else ifeq host_os nt
-gui_sysobjs +=	&
+win_sysobjs +=	&
     guisystr.obj
 !endif
+
+sysobjs = $(win_sysobjs) $(wpi_sysobjs)
 
 # memory tracker cover routines
 extra_c_flags_mem    = $(trmem_cover_cflags)
