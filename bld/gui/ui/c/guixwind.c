@@ -83,11 +83,17 @@ ui_event GUIWndGetEvent( VSCREEN * screen )
     return( ui_ev );
 }
 
+/*
+ * UI application stub
+ */
 void uistartevent( void )
 {
     GUIStartEventProcessing();
 }
 
+/*
+ * UI application stub
+ */
 void uidoneevent( void )
 {
     GUIDoneEventProcessing();
