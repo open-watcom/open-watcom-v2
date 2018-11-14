@@ -122,6 +122,16 @@ struct linger {
 #define SOCK_DGRAM      2
 #define SOCK_MAX        (SOCK_DGRAM+1)
 
+#define SOL_SOCKET      1
+
+#define SO_ERROR        1
+#define SO_REUSEADDR    2
+#define SO_TYPE         3
+#define SO_KEEPALIVE    9
+
+/* Flags for send(2) and recv(2) */
+#define MSG_PEEK        0x2
+
 #define SOMAXCONN 1024
 
 :endsegment
