@@ -93,14 +93,14 @@ static char errFileName[_MAX_PATH];
 static bool errHasOccurred;
 static char errBuffer[512];
 
-void Usage( void )
+static void Usage( void )
 {
     fprintf( stderr, "%s", UsageText );
     exit( -1 );
 }
 
 
-void InitError( char *target )
+static void InitError( char *target )
 {
     char    drive[_MAX_DRIVE];
     char    dir[_MAX_DIR];
@@ -112,7 +112,7 @@ void InitError( char *target )
 }
 
 
-void FiniError( void )
+static void FiniError( void )
 {
     if( errFile != NULL ) {
         fclose( errFile );
@@ -122,7 +122,7 @@ void FiniError( void )
     }
 }
 
-void PrintError( char *fmt, ... )
+static void PrintError( char *fmt, ... )
 {
     va_list     al;
 
@@ -503,7 +503,7 @@ static bool pass1( FILE *fin, char **helpstr )
     return( true );
 }
 
-void lookup_name( a_helpnode *h, char *name )
+static void lookup_name( a_helpnode *h, char *name )
 {
     a_helpnode      *hptr;
     int             cmp;
@@ -582,7 +582,7 @@ static void checkBufCB( TokenType type, Info *info, void *_node )
     }
 }
 
-void check_buffer( a_helpnode *h, char *buffer )
+static void check_buffer( a_helpnode *h, char *buffer )
 {
     ScanLine( buffer, checkBufCB, h );
     HelpMemFree( nameBuf );
