@@ -21,8 +21,8 @@ env:
 cache:
   directories:
     - build/$OWOBJDIR
-#    - bld/watcom/$OWOBJDIR
-    - bld
+    - bld/watcom/$OWOBJDIR
+#    - bld
     - test
 
 before_script:
