@@ -64,7 +64,7 @@ jobs:
         - export OWTRAVISJOB=BOOTSTRAP
         - export OWDOCBUILD=0
         - export OWVERBOSE=1
-      script: travis/build.sh boot
+      script: travis/build.sh
     - # ...
       name: "Build minimal set of build tools"
       if: env(OWOSXBUILD) = 1
@@ -74,7 +74,7 @@ jobs:
         - export OWTRAVISJOB=BOOTSTRAP
         - export OWDOCBUILD=0
         - export OWVERBOSE=1
-      script: travis/build.sh boot
+      script: travis/build.sh
     #################################
     - stage: Build1
       name: "OW tools build"
@@ -86,7 +86,7 @@ jobs:
         - export OWVERBOSE=0
           # install DOS Emulator
         - sudo apt-get install -y dosemu
-      script: travis/build.sh build
+      script: travis/build.sh
     - # ...
       name: "OW Documentation build"
       os: linux
@@ -98,7 +98,7 @@ jobs:
         - export OWGHOSTSCRIPTPATH=$PATH
           # install DOS Emulator + Ghostscript
         - sudo apt-get install -y dosemu ghostscript
-      script: travis/build.sh docpdf
+      script: travis/build.sh
     - # ...
       name: "OW tools OSX build 1"
       if: env(OWOSXBUILD) = 1
@@ -111,7 +111,7 @@ jobs:
           # install DOS Emulator
         - brew install dosbox
         - export OWDOSBOX=dosbox
-      script: travis/build.sh build1
+      script: travis/build.sh
     #################################
     - stage: Build2
       name: "OW tools OSX build 2"
@@ -125,7 +125,7 @@ jobs:
           # install DOS Emulator
         - brew install dosbox
         - export OWDOSBOX=dosbox
-      script: travis/build.sh build2
+      script: travis/build.sh
     #################################
     - stage: Tests
       name: "Test wasm assembler"
