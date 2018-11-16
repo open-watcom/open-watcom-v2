@@ -584,61 +584,65 @@ STATIC void loadImageInfo( image_info * curr_image )
     sym_fp = NULL;
     obj_fp = NULL;
     curr_image->dip_handle = NO_MOD;
-    if( curr_image->sym_deleted ) {
-    } else if( curr_image->sym_name != NULL ) {
-        sym_fp = DIGCli( Open )( curr_image->sym_name, DIG_READ );
-        if( sym_fp != NULL ) {
-            curr_image->dip_handle = WPDipLoadInfo( sym_fp, curr_image->sym_name, curr_image,
-                                       sizeof( image_info ), DIP_PRIOR_MIN, DIP_PRIOR_MAX );
-            DIGCli( Close )( sym_fp );
-        }
+    if( curr_image->gather_image ) {
+        curr_image->exe_not_found = true;
     } else {
-        name_len = strlen( curr_image->name ) + 1;
-        memcpy( FNameBuff, curr_image->name, name_len );
-        ReplaceExt( FNameBuff, ".sym" );
-        name_len = strlen( FNameBuff ) + 1;
-        curr_image->sym_name = ProfAlloc( name_len );
-        memcpy( curr_image->sym_name, FNameBuff, name_len );
-        sym_fp = DIGCli( Open )( curr_image->sym_name, DIG_READ );
-        if( sym_fp != NULL ) {
-            curr_image->dip_handle = WPDipLoadInfo( sym_fp, curr_image->sym_name, curr_image,
-                                      sizeof( image_info ), DIP_PRIOR_MIN, DIP_PRIOR_MAX );
-            DIGCli( Close )( sym_fp );
+        if( curr_image->sym_deleted ) {
+        } else if( curr_image->sym_name != NULL ) {
+            sym_fp = DIGCli( Open )( curr_image->sym_name, DIG_READ );
+            if( sym_fp != NULL ) {
+                curr_image->dip_handle = WPDipLoadInfo( sym_fp, curr_image->sym_name, curr_image,
+                                           sizeof( image_info ), DIP_PRIOR_MIN, DIP_PRIOR_MAX );
+                DIGCli( Close )( sym_fp );
+            }
+        } else {
+            name_len = strlen( curr_image->name ) + 1;
+            memcpy( FNameBuff, curr_image->name, name_len );
+            ReplaceExt( FNameBuff, ".sym" );
+            name_len = strlen( FNameBuff ) + 1;
+            curr_image->sym_name = ProfAlloc( name_len );
+            memcpy( curr_image->sym_name, FNameBuff, name_len );
+            sym_fp = DIGCli( Open )( curr_image->sym_name, DIG_READ );
+            if( sym_fp != NULL ) {
+                curr_image->dip_handle = WPDipLoadInfo( sym_fp, curr_image->sym_name, curr_image,
+                                          sizeof( image_info ), DIP_PRIOR_MIN, DIP_PRIOR_MAX );
+                DIGCli( Close )( sym_fp );
+            }
+            if( curr_image->dip_handle == NO_MOD ) {
+                ProfFree( curr_image->sym_name );
+                curr_image->sym_name = NULL;
+            }
         }
-        if( curr_image->dip_handle == NO_MOD ) {
-            ProfFree( curr_image->sym_name );
-            curr_image->sym_name = NULL;
-        }
-    }
-    if( curr_image->time_stamp == 0 ) {
-        /*
-           If sample timestamp is 0, the sampler couldn't figure out
-           the right value. Assume it's OK.
-        */
-    } else {
-        if( stat( curr_image->name, &file_status ) == 0 ) {
-            /* QNX creation dates and time stamps tend to be 1 */
-            /* unit different, so do not test for equality */
-            if( file_status.st_mtime - curr_image->time_stamp > 1 ) {
-                curr_image->exe_changed = true;
-                if( curr_image->main_load ) {
-                    ErrorMsg( LIT( Exe_Has_Changed ), curr_image->name );
+        if( curr_image->time_stamp == 0 ) {
+            /*
+               If sample timestamp is 0, the sampler couldn't figure out
+               the right value. Assume it's OK.
+            */
+        } else {
+            if( stat( curr_image->name, &file_status ) == 0 ) {
+                /* QNX creation dates and time stamps tend to be 1 */
+                /* unit different, so do not test for equality */
+                if( file_status.st_mtime - curr_image->time_stamp > 1 ) {
+                    curr_image->exe_changed = true;
+                    if( curr_image->main_load ) {
+                        ErrorMsg( LIT( Exe_Has_Changed ), curr_image->name );
+                    }
                 }
             }
         }
-    }
-    obj_fp = DIGCli( Open )( curr_image->name, DIG_READ );
-    if( obj_fp != NULL ) {
-        if( !curr_image->sym_deleted ) {
-        } else if( curr_image->dip_handle == NO_MOD ) {
-            curr_image->dip_handle = WPDipLoadInfo( obj_fp, curr_image->name, curr_image,
-                                           sizeof( image_info ), DIP_PRIOR_MIN, DIP_PRIOR_MAX );
-        }
-        DIGCli( Close )( obj_fp );
-    } else {
-        curr_image->exe_not_found = true;
-        if( curr_image->main_load ) {
-            ErrorMsg( LIT( Exe_Not_Found ), curr_image->name );
+        obj_fp = DIGCli( Open )( curr_image->name, DIG_READ );
+        if( obj_fp != NULL ) {
+            if( curr_image->sym_deleted ) {
+            } else if( curr_image->dip_handle == NO_MOD ) {
+                curr_image->dip_handle = WPDipLoadInfo( obj_fp, curr_image->name, curr_image,
+                                               sizeof( image_info ), DIP_PRIOR_MIN, DIP_PRIOR_MAX );
+            }
+            DIGCli( Close )( obj_fp );
+        } else {
+            curr_image->exe_not_found = true;
+            if( curr_image->main_load ) {
+                ErrorMsg( LIT( Exe_Not_Found ), curr_image->name );
+            }
         }
     }
     if( curr_image->dip_handle != NO_MOD ) {
