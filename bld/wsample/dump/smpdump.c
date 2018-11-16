@@ -52,7 +52,7 @@
 #define COND_SWAP_16( a )   if( byte_swap ) SWAP_16( a );
 #define COND_SWAP_32( a )   if( byte_swap ) SWAP_32( a );
 
-char *Types[] = {
+static const char * const Types[] = {
     #define pick(k) # k ":",
     SAMPLEKINDS()
     #undef pick
@@ -72,7 +72,7 @@ int main( int argc, char **argv )
     size_t              wanted;
     unsigned            i, j, k, l;
     int                 length = 0;
-    char *              record_type;
+    const char *        record_type;
     samp_block *        data;
     auto samp_header    head;
     cgraph_sample *     sptr;
@@ -155,7 +155,7 @@ int main( int argc, char **argv )
                 l -= offsetof( samp_block, d.old_info.count );
             } else {
                 COND_SWAP_16( data->d.info.config.arch );
-                printf( "  cpu=%d, fpu=%d, os_maj=%d, os_min=%d, os=%d, mad=%d\n",
+                printf( "  cpu=%d, fpu=%d, os_maj=%d, os_min=%d, os=%d, arch=%d\n",
                         data->d.info.config.cpu, data->d.info.config.fpu,
                         data->d.info.config.osmajor, data->d.info.config.osminor,
                         data->d.info.config.os, data->d.info.config.arch );
