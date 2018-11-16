@@ -777,6 +777,10 @@ extern void             UIMemClose( void );
 
 extern int              uimousealign( void );
 
+/*
+ * Application related functions
+ * may be implemented by application, stub functions
+ */
 extern void             uistartevent( void );
 extern void             uidoneevent( void );
 

@@ -38,10 +38,11 @@
 
 // must correspond to owl_cpu enums in owl.h - first entry is for PowerPC
 static uint_16 cpuTypes[] = {
-    IMAGE_FILE_MACHINE_POWERPC,
-    IMAGE_FILE_MACHINE_ALPHA,
-    IMAGE_FILE_MACHINE_R4000,
-    IMAGE_FILE_MACHINE_I386};
+    COFF_IMAGE_FILE_MACHINE_POWERPC,
+    COFF_IMAGE_FILE_MACHINE_ALPHA,
+    COFF_IMAGE_FILE_MACHINE_R4000,
+    COFF_IMAGE_FILE_MACHINE_I386
+};
 
 #define _OWLIndexToCOFFIndex( x )       ( (x) + FIRST_USER_SECTION )
 #define _OWLStringIndexToCOFFStringIndex( x )   ( (x) + 4 )
@@ -208,10 +209,10 @@ static void emitFileHeader( owl_file_handle file ) {
     header.sym_table = file->x.coff.symbol_table_offset;
     header.num_symbols = numSymbols( file );
     header.opt_hdr_size = 0;
-//  header.flags = IMAGE_FILE_BYTES_REVERSED_LO | IMAGE_FILE_32BIT_MACHINE;
+//  header.flags = COFF_IMAGE_FILE_BYTES_REVERSED_LO | COFF_IMAGE_FILE_32BIT_MACHINE;
     header.flags = 0;
     if( file->type == OWL_FILE_EXE || file->type == OWL_FILE_DLL ) {
-        header.flags |= IMAGE_FILE_EXECUTABLE_IMAGE;
+        header.flags |= COFF_IMAGE_FILE_EXECUTABLE_IMAGE;
     }
     _ClientWrite( file, (const char *)&header, sizeof( header ) );
 }
@@ -251,17 +252,17 @@ static uint_32 sectionFlags( owl_section_type type ) {
 
     uint_32 flags = 0;
 
-    if( type & OWL_SEC_ATTR_CODE ) flags |= IMAGE_SCN_CNT_CODE;
-    if( type & OWL_SEC_ATTR_DATA ) flags |= IMAGE_SCN_CNT_INITIALIZED_DATA;
-    if( type & OWL_SEC_ATTR_BSS ) flags |= IMAGE_SCN_CNT_UNINITIALIZED_DATA;
-    if( type & OWL_SEC_ATTR_INFO ) flags |= IMAGE_SCN_LNK_INFO;
-    if( type & OWL_SEC_ATTR_DISCARDABLE ) flags |= IMAGE_SCN_MEM_DISCARDABLE;
-    if( type & OWL_SEC_ATTR_REMOVE ) flags |= IMAGE_SCN_LNK_REMOVE;
-    if( type & OWL_SEC_ATTR_COMDAT ) flags |= IMAGE_SCN_LNK_COMDAT;
-    if( type & OWL_SEC_ATTR_PERM_READ ) flags |= IMAGE_SCN_MEM_READ;
-    if( type & OWL_SEC_ATTR_PERM_WRITE ) flags |= IMAGE_SCN_MEM_WRITE;
-    if( type & OWL_SEC_ATTR_PERM_EXEC ) flags |= IMAGE_SCN_MEM_EXECUTE;
-    if( type & OWL_SEC_ATTR_PERM_SHARE ) flags |= IMAGE_SCN_MEM_SHARED;
+    if( type & OWL_SEC_ATTR_CODE ) flags |= COFF_IMAGE_SCN_CNT_CODE;
+    if( type & OWL_SEC_ATTR_DATA ) flags |= COFF_IMAGE_SCN_CNT_INITIALIZED_DATA;
+    if( type & OWL_SEC_ATTR_BSS ) flags |= COFF_IMAGE_SCN_CNT_UNINITIALIZED_DATA;
+    if( type & OWL_SEC_ATTR_INFO ) flags |= COFF_IMAGE_SCN_LNK_INFO;
+    if( type & OWL_SEC_ATTR_DISCARDABLE ) flags |= COFF_IMAGE_SCN_MEM_DISCARDABLE;
+    if( type & OWL_SEC_ATTR_REMOVE ) flags |= COFF_IMAGE_SCN_LNK_REMOVE;
+    if( type & OWL_SEC_ATTR_COMDAT ) flags |= COFF_IMAGE_SCN_LNK_COMDAT;
+    if( type & OWL_SEC_ATTR_PERM_READ ) flags |= COFF_IMAGE_SCN_MEM_READ;
+    if( type & OWL_SEC_ATTR_PERM_WRITE ) flags |= COFF_IMAGE_SCN_MEM_WRITE;
+    if( type & OWL_SEC_ATTR_PERM_EXEC ) flags |= COFF_IMAGE_SCN_MEM_EXECUTE;
+    if( type & OWL_SEC_ATTR_PERM_SHARE ) flags |= COFF_IMAGE_SCN_MEM_SHARED;
     return( flags );
 }
 
@@ -272,25 +273,25 @@ static uint_32 sectionAlignmentFlags( owl_section_info *section ) {
 
     switch( section->align ) {
     case  1:
-        flags = IMAGE_SCN_ALIGN_1BYTES;
+        flags = COFF_IMAGE_SCN_ALIGN_1BYTES;
         break;
     case  2:
-        flags = IMAGE_SCN_ALIGN_2BYTES;
+        flags = COFF_IMAGE_SCN_ALIGN_2BYTES;
         break;
     case  4:
-        flags = IMAGE_SCN_ALIGN_4BYTES;
+        flags = COFF_IMAGE_SCN_ALIGN_4BYTES;
         break;
     case  8:
-        flags = IMAGE_SCN_ALIGN_8BYTES;
+        flags = COFF_IMAGE_SCN_ALIGN_8BYTES;
         break;
     case 16:
-        flags = IMAGE_SCN_ALIGN_16BYTES;
+        flags = COFF_IMAGE_SCN_ALIGN_16BYTES;
         break;
     case 32:
-        flags = IMAGE_SCN_ALIGN_32BYTES;
+        flags = COFF_IMAGE_SCN_ALIGN_32BYTES;
         break;
     case 64:
-        flags = IMAGE_SCN_ALIGN_64BYTES;
+        flags = COFF_IMAGE_SCN_ALIGN_64BYTES;
         break;
     default:
         flags = 0;
@@ -404,8 +405,8 @@ static void calcSectionOffsets( owl_file_handle file ) {
 
 // WARNING: Must correspond to stuff in owl_sym_type and owl_sym_linkage enums
 static uint_8 complexType[] = {
-        IMAGE_SYM_DTYPE_FUNCTION,
-        IMAGE_SYM_DTYPE_NULL
+        COFF_IMAGE_SYM_DTYPE_FUNCTION,
+        COFF_IMAGE_SYM_DTYPE_NULL
 };
 
 static image_sym_class storageClass( owl_sym_linkage kind ) {
@@ -414,23 +415,23 @@ static image_sym_class storageClass( owl_sym_linkage kind ) {
     image_sym_class ret;
     switch( kind ){
     case OWL_SYM_UNDEFINED:
-        ret = IMAGE_SYM_CLASS_EXTERNAL;
+        ret = COFF_IMAGE_SYM_CLASS_EXTERNAL;
         break;
     case OWL_SYM_FUNCTION:
-        ret = IMAGE_SYM_CLASS_FUNCTION;
+        ret = COFF_IMAGE_SYM_CLASS_FUNCTION;
         break;
     case OWL_SYM_STATIC:
-        ret = IMAGE_SYM_CLASS_STATIC;
+        ret = COFF_IMAGE_SYM_CLASS_STATIC;
         break;
     case OWL_SYM_GLOBAL:
-        ret = IMAGE_SYM_CLASS_EXTERNAL;
+        ret = COFF_IMAGE_SYM_CLASS_EXTERNAL;
         break;
     case OWL_SYM_WEAK:
-        ret = IMAGE_SYM_CLASS_WEAK_EXTERNAL;
+        ret = COFF_IMAGE_SYM_CLASS_WEAK_EXTERNAL;
         break;
     default:
         assert( 0 );
-        ret = IMAGE_SYM_CLASS_EXTERNAL;
+        ret = COFF_IMAGE_SYM_CLASS_EXTERNAL;
     }
     return( ret );
 }
@@ -449,8 +450,8 @@ static void formatSectionSymbol( owl_symbol_info *symbol,
     buffer->name.non_name.offset = _OWLStringIndexToCOFFStringIndex( OWLStringOffset( symbol->name ) );
     buffer->value = 0;
     buffer->sec_num = _CoffSectionIndex( section->index );
-    buffer->type = IMAGE_SYM_DTYPE_NULL;
-    buffer->storage_class = IMAGE_SYM_CLASS_STATIC;
+    buffer->type = COFF_IMAGE_SYM_DTYPE_NULL;
+    buffer->storage_class = COFF_IMAGE_SYM_CLASS_STATIC;
     buffer->num_aux = 1;
     aux = (_WCUNALIGNED coff_sym_section *)( buffer + 1 );
     aux->length = sectionVirtSize( section );
@@ -458,13 +459,13 @@ static void formatSectionSymbol( owl_symbol_info *symbol,
     aux->num_line_numbers = numLineNums( section );
     aux->checksum = 0;
     aux->number = 0;
-    aux->selection = IMAGE_COMDAT_SELECT_UNKNOWN;
+    aux->selection = COFF_IMAGE_COMDAT_SELECT_UNKNOWN;
     if( _OwlSectionComdat( section ) ){
         if( section->comdat_dep != NULL ){
-            aux->selection = IMAGE_COMDAT_SELECT_ASSOCIATIVE;
+            aux->selection = COFF_IMAGE_COMDAT_SELECT_ASSOCIATIVE;
             aux->number = _CoffSectionIndex( section->comdat_dep->index );
         }else{
-            aux->selection = IMAGE_COMDAT_SELECT_ANY;
+            aux->selection = COFF_IMAGE_COMDAT_SELECT_ANY;
         }
     }
 }
@@ -485,9 +486,9 @@ static unsigned doFileRecord( _WCUNALIGNED coff_symbol *buffer,
     }
     lastFile = &buffer->value;
     buffer->value = 0;
-    buffer->sec_num = IMAGE_SYM_DEBUG;
-    buffer->type = IMAGE_SYM_DTYPE_NULL;
-    buffer->storage_class = IMAGE_SYM_CLASS_FILE;
+    buffer->sec_num = COFF_IMAGE_SYM_DEBUG;
+    buffer->type = COFF_IMAGE_SYM_DTYPE_NULL;
+    buffer->storage_class = COFF_IMAGE_SYM_CLASS_FILE;
     num_aux = strlen( name ) + sizeof( coff_symbol ) - 1;
     num_aux /= sizeof( coff_symbol );
     buffer->num_aux = num_aux;
@@ -519,8 +520,8 @@ static void doBfRecord( _WCUNALIGNED coff_symbol *buffer,
 
     strcpy( buffer->name.name_string, ".bf" );
     buffer->sec_num = _CoffSectionIndex( symbol->section->index );
-    buffer->type = IMAGE_SYM_DTYPE_NULL;
-    buffer->storage_class = IMAGE_SYM_CLASS_FUNCTION;
+    buffer->type = COFF_IMAGE_SYM_DTYPE_NULL;
+    buffer->storage_class = COFF_IMAGE_SYM_CLASS_FUNCTION;
     buffer->num_aux = 1;
     aux = (_WCUNALIGNED coff_sym_bfef *)( buffer + 1 );
     aux->linenum = info->first_line;
@@ -539,8 +540,8 @@ static void doLfRecord( _WCUNALIGNED coff_symbol *buffer,
     strcpy( buffer->name.name_string, ".lf" );
     buffer->value = num_lines;
     buffer->sec_num = _CoffSectionIndex( index );
-    buffer->type = IMAGE_SYM_DTYPE_NULL;
-    buffer->storage_class = IMAGE_SYM_CLASS_FUNCTION;
+    buffer->type = COFF_IMAGE_SYM_DTYPE_NULL;
+    buffer->storage_class = COFF_IMAGE_SYM_CLASS_FUNCTION;
     buffer->num_aux = 0;
 }
 
@@ -553,8 +554,8 @@ static void doEfRecord( _WCUNALIGNED coff_symbol *buffer,
     strcpy( buffer->name.name_string, ".ef" );
     buffer->value = info->end - info->start;
     buffer->sec_num = _CoffSectionIndex( index );
-    buffer->type = IMAGE_SYM_DTYPE_NULL;
-    buffer->storage_class = IMAGE_SYM_CLASS_FUNCTION;
+    buffer->type = COFF_IMAGE_SYM_DTYPE_NULL;
+    buffer->storage_class = COFF_IMAGE_SYM_CLASS_FUNCTION;
     buffer->num_aux = 1;
     aux = (_WCUNALIGNED coff_sym_bfef *)( buffer + 1 );
     aux->linenum = info->last_line;
@@ -573,7 +574,7 @@ static void formatFunctionSymbol( owl_symbol_info *symbol,
     buffer->name.non_name.offset = _OWLStringIndexToCOFFStringIndex( OWLStringOffset( symbol->name ) );
     buffer->value = symbol->offset;
     buffer->sec_num = _CoffSectionIndex( symbol->section->index );
-    buffer->type = _CoffSymType( IMAGE_SYM_DTYPE_FUNCTION, IMAGE_SYM_TYPE_NULL );
+    buffer->type = _CoffSymType( COFF_IMAGE_SYM_DTYPE_FUNCTION, COFF_IMAGE_SYM_TYPE_NULL );
     buffer->storage_class = storageClass( symbol->linkage );
     buffer->num_aux = 0;
     info = symbol->x.func;
@@ -632,8 +633,8 @@ static void formatOneSymbol( owl_symbol_info *symbol,
         buffer->name.non_name.zeros = 0;
         buffer->name.non_name.offset = _OWLStringIndexToCOFFStringIndex( OWLStringOffset( symbol->name ) );
         buffer->value = symbol->offset;
-        buffer->sec_num = ( ( symbol->section != NULL ) ? _CoffSectionIndex(symbol->section->index) : IMAGE_SYM_UNDEFINED );
-        buffer->type = _CoffSymType( complexType[ symbol->type ], IMAGE_SYM_DTYPE_NULL );
+        buffer->sec_num = ( ( symbol->section != NULL ) ? _CoffSectionIndex(symbol->section->index) : COFF_IMAGE_SYM_UNDEFINED );
+        buffer->type = _CoffSymType( complexType[ symbol->type ], COFF_IMAGE_SYM_DTYPE_NULL );
         buffer->storage_class = storageClass( symbol->linkage );
         buffer->num_aux = 0;
         if( symbol->linkage == OWL_SYM_WEAK ){
@@ -643,11 +644,11 @@ static void formatOneSymbol( owl_symbol_info *symbol,
             aux = (coff_sym_weak *)( buffer + 1 );
             aux->tag_index = symbol->x.alt_sym->index;
             if( symbol->flags & OWL_SYM_ALIAS ) {
-                aux->characteristics = IMAGE_WEAK_EXTERN_SEARCH_ALIAS;
+                aux->characteristics = COFF_IMAGE_WEAK_EXTERN_SEARCH_ALIAS;
             } else if( symbol->flags & OWL_SYM_LAZY ) {
-                aux->characteristics = IMAGE_WEAK_EXTERN_SEARCH_LIBRARY;
+                aux->characteristics = COFF_IMAGE_WEAK_EXTERN_SEARCH_LIBRARY;
             } else {
-                aux->characteristics = IMAGE_WEAK_EXTERN_SEARCH_NOLIBRARY;
+                aux->characteristics = COFF_IMAGE_WEAK_EXTERN_SEARCH_NOLIBRARY;
             }
         }
         break;
@@ -663,8 +664,8 @@ static void formatComdatSymbol( owl_symbol_handle symbol,
     buffer->name.non_name.zeros = 0;
     buffer->name.non_name.offset = _OWLStringIndexToCOFFStringIndex( OWLStringOffset( symbol->name ) );
     buffer->value = 0;
-    buffer->sec_num = IMAGE_SYM_UNDEFINED;
-    buffer->type = IMAGE_SYM_DTYPE_NULL;
+    buffer->sec_num = COFF_IMAGE_SYM_UNDEFINED;
+    buffer->type = COFF_IMAGE_SYM_DTYPE_NULL;
     buffer->storage_class = storageClass( symbol->linkage );
     buffer->num_aux = 0;
 }

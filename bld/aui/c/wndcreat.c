@@ -130,8 +130,8 @@ static a_window WndCreateWithStructBody( wnd_create_struct *info, gui_create_inf
     if( init->style & GUI_POPUP ) {
         init->parent = NULL;
     }
-    init->num_attrs = WndNumColours;
-    init->colours = info->colour;
+    init->colours.num_items = WndNumColours;
+    init->colours.colours = info->colour;
     init->gui_call_back = WndMainGUIEventProc;
     init->extra = wnd;
 

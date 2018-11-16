@@ -36,7 +36,5 @@
 
 extern void GUISetMDIProcessEvent( bool (*func)( ui_event ) );
 extern bool GUIMDIProcessEvent( ui_event ui_ev );
-extern void GUIFreeStatus( gui_window *wnd );
-extern void GUIResizeStatus( gui_window *wnd );
 
 #endif // _GUIXHOOK_H_

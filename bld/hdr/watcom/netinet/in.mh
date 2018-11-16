@@ -16,7 +16,9 @@
 
 :include cpluspro.sp
 
+:segment LINUX
 :include lnxkpack.sp
+:endsegment
 
 /* Internet address. */
 struct in_addr {
@@ -97,7 +99,9 @@ _WCRTLINK extern unsigned short int htons(unsigned short int hostshort);
 _WCRTLINK extern unsigned long int ntohl(unsigned long int netlong);
 _WCRTLINK extern unsigned short int ntohs(unsigned short int netshort);
 
+:segment LINUX
 :include poppack.sp
+:endsegment
 
 :include cplusepi.sp
 

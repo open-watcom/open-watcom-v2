@@ -48,22 +48,3 @@ bool GUIMDIProcessEvent( ui_event ui_ev )
     }
     return( false );
 }
-
-void GUIFreeStatus( gui_window *wnd )
-{
-    if( GUIHasStatus( wnd ) ) {
-        if( wnd->status->text != NULL ) {
-            GUIMemFree( wnd->status->text );
-        }
-        GUIMemFree( wnd->status );
-        wnd->status = NULL;
-    }
-}
-
-void GUIResizeStatus( gui_window *wnd )
-{
-    if( GUIHasStatus( wnd ) ) {
-        wnd->status->area.width = wnd->use.width;
-        wnd->status->area.row = wnd->use.height + 1;
-    }
-}

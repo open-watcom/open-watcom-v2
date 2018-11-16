@@ -24,19 +24,24 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation of ntohl() for Linux.
+* Description:  Implementation of ntohl() for Linux and RDOS.
 *
 ****************************************************************************/
 
 
 #include "variety.h"
 #include <sys/types.h>
-#include <sys/socket.h>
 #include <netinet/in.h>
+
+#ifdef __RDOS__
+#include <rdos.h>
+#endif
 
 _WCRTLINK unsigned long int ntohl( unsigned long int netlong )
 {
-#if defined( __BIG_ENDIAN__ )
+#if defined( __RDOS__ )
+    return( (unsigned long)RdosSwapLong( netlong ) );
+#elif defined( __BIG_ENDIAN__ )
     return( netlong );
 #else
     return( ((netlong >> 24) & 0xff) | ((netlong >> 16) & 0xff) << 8 |

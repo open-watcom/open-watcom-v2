@@ -293,8 +293,8 @@ static gui_create_info StatusInfo = {
     | GUI_MINIMIZE
     | GUI_DIALOG_LOOK */,
     NULL,                                   // Parent
-    0, NULL,                                // Menu array
-    WND_NUMBER_OF_COLORS, StatusColours,    // Colour attribute array
+    { 0, NULL },                            // Menu array
+    { WND_NUMBER_OF_COLORS, StatusColours },// Colour attribute array
     &StatusGUIEventProc,                    // GUI Event Callback function
     NULL,                                   // Extra
     NULL,                                   // Icon

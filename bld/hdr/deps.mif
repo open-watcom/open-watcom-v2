@@ -298,6 +298,12 @@ sys/timeb.h     : sys/timeb.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus
 sys/types.h     : sys/types.mh $(sys_types_deps)
 sys/utime.h     : sys/utime.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packll) ../time_t.sp ../wchar_t.sp ../utime.sp
 
+netdb.h         : netdb.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packlnxk)
+arpa/inet.h     : arpa/inet.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) $(packlnxk)
+netinet/in.h    : netinet/in.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../systypes.sp ../syssock.sp $(cplus) $(packlnxk)
+netinet/tcp.h   : netinet/tcp.mh ../crwat.sp ../readonly.sp $(cplus) $(packlnxk)
+sys/socket.h    : sys/socket.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packlnxk) ../incdir.sp ../unistd.sp
+
 # The follow describe the system specific dependencies
 
 !ifeq system dos
@@ -310,22 +316,17 @@ sys/time.h      : sys/time.mh $(sys_time_deps)
 
 dirent.h        : linux/dirent.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../ino_t.sp ../off_t.sp $(cplus) $(packll)
 grp.h           : grp.mh $(crwatqnx_sp) ../readonly.sp ../size_t.sp ../gid_t.sp $(cplus) $(packll)
-netdb.h         : linux/netdb.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packlnxk)
 pthread.h       : pthread.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../sem_t.sp $(cplus) $(packll) ../pthread1.sp ../pthread2.sp
 pwd.h           : pwd.mh $(crwatqnx_sp) ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) $(packll)
 sched.h         : sched.mh ../crwatcnt.sp ../readonly.sp ../owrtlink.sp $(cplus) ../pid_t.sp ../time_t.sp ../timespec.sp ../schedp.sp
 semaphor.h      : semaphor.mh ../crwatcnt.sp ../readonly.sp ../owrtlink.sp $(cplus) ../time_t.sp ../timespec.sp ../sem_t.sp
 termios.h       : linux/termios.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packlnxk) ../pid_t.sp
 
-arpa/inet.h     : linux/arpa/inet.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) $(packlnxk)
-netinet/in.h    : linux/netinet/in.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../systypes.sp ../syssock.sp $(cplus) $(packlnxk)
-netinet/tcp.h   : linux/netinet/tcp.mh ../crwat.sp ../readonly.sp $(cplus) $(packlnxk)
 sys/ioctl.h     : linux/sys/ioctl.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packlnxk) ../incdir.sp
 sys/mman.h      : linux/sys/mman.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) $(packlnxk)
 sys/mount.h     : linux/sys/mount.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packlnxk)
 sys/ptrace.h    : linux/sys/ptrace.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packlnxk)
 sys/resource.h  : linux/sys/resource.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packlnxk)
-sys/socket.h    : linux/sys/socket.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packlnxk) ../incdir.sp ../unistd.sp
 sys/stat.h      : sys/stat.mh $(sys_stat_deps)
 sys/sysinfo.h   : linux/sys/sysinfo.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packlnxk)
 sys/sysmips.h   : linux/sys/sysmips.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus)

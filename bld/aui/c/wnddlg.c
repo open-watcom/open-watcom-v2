@@ -92,7 +92,7 @@ static gui_create_info ResDialog = {
     GUI_VISIBLE | GUI_CLOSEABLE,        // Window Styles
     NULL,                               // Parent
     { 0, NULL },                        // Menu array
-    0, NULL,                            // Colour attribute array
+    { 0, NULL },                        // Colour attribute array
     dlgOpenGUIEventProc,                // GUI Event Callback function
     NULL,                               // Extra
     NULL,                               // Icon

@@ -14,7 +14,9 @@
 
 :include cpluspro.sp
 
+:segment LINUX
 :include lnxkpack.sp
+:endsegment
 
 #include <netinet/in.h>
 
@@ -26,7 +28,9 @@ _WCRTLINK extern struct in_addr inet_makeaddr( int net, int __host );
 _WCRTLINK extern in_addr_t      inet_lnaof( struct in_addr __in );
 _WCRTLINK extern in_addr_t      inet_netof( struct in_addr __in );
 
+:segment LINUX
 :include poppack.sp
+:endsegment
 
 :include cplusepi.sp
 

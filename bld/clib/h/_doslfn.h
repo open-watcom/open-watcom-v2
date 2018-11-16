@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,13 +46,13 @@
 #define _XCHG_AX_SI         0x96
 
 #ifdef _M_I86
-#ifdef __BIG_DATA__
+  #ifdef __BIG_DATA__
     #define _SET_DSDX       _PUSH_DS _XCHG_AX_DX _MOV_DS_AX
     #define _SET_DSSI       _PUSH_DS _XCHG_AX_SI _MOV_DS_AX
     #define _SET_ES
     #define _RST_DS         _POP_DS
     #define _RST_ES
-#else
+  #else
     #define _SET_DSDX
     #define _SET_DSSI
     #define _SET_ES         _PUSH_ES _PUSH_DS _POP_ES
@@ -509,13 +510,13 @@ extern tiny_ret_t __getfileinfo_lfn( int handle, lfninfo_t *lfninfo );
 extern long __cvt_stamp2dos_lfn( long long *timestamp );
   #ifdef __BIG_DATA__
     #pragma aux __cvt_stamp2dos_lfn = \
-            "push   ds"       \
-            "xchg   ax,si"    \
-            "mov    ds,ax"    \
-            "xor    bx,bx"    \
-            "mov    ax,71A7h" \
-            "stc"           \
-            "int 21h"      \
+            "push   ds"         \
+            "xchg   ax,si"      \
+            "mov    ds,ax"      \
+            "xor    bx,bx"      \
+            "mov    ax,71A7h"   \
+            "stc"               \
+            "int 21h"           \
             "pop    ds"         \
             "jnc short L1"      \
             "call __doserror_"  \
@@ -543,33 +544,33 @@ extern long __cvt_stamp2dos_lfn( long long *timestamp );
 
 #endif
 
-#define MOV_DTA         \
-        "mov  ecx,43"   \
+#define MOV_DTA             \
+        "mov    ecx,43"     \
         "rep movsb"
 
-#define MOV_DATA_TO_DTA \
-        "mov  esi,edx"  \
-        "mov  edi,ebx"  \
+#define MOV_DATA_TO_DTA     \
+        "mov    esi,edx"    \
+        "mov    edi,ebx"    \
         MOV_DTA
 
-#define MOV_DATA_FROM_DTA \
-        "mov  esi,ebx"  \
-        "mov  edi,edx"  \
-        "mov  ebx,ds"   \
-        "push es"       \
-        "pop  ds"       \
-        "mov  es,ebx"   \
-        MOV_DTA         \
-        "mov  ds,ebx"
+#define MOV_DATA_FROM_DTA   \
+        "mov    esi,ebx"    \
+        "mov    edi,edx"    \
+        "mov    ebx,ds"     \
+        "push   es"         \
+        "pop    ds"         \
+        "mov    es,ebx"     \
+        MOV_DTA             \
+        "mov    ds,ebx"
 
-#define RETURN_VALUE    \
-        "jc short LX"   \
-        SAVE_VALUE      \
+#define RETURN_VALUE        \
+        "jc short LX"       \
+        SAVE_VALUE          \
     "LX:"
 
 #define _LFN_SIGN           0x004e464cUL    // "LFN"
 
-#define IS_LFN_ERROR(x)     ((int_32)(x)<0&&(x)!= 0xFFFF7100)
+#define IS_LFN_ERROR(x)     ((int_32)(x) < 0 && (x)!= 0xFFFF7100)
 
 #define IS_LFN(x)           (_RWD_uselfn && DTALFN_SIGN_OF(x) == _LFN_SIGN && DTALFN_HANDLE_OF(x))
 

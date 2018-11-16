@@ -95,6 +95,8 @@ set PROJDIR=<CWD>
     <CCCMD> rdos/*.h*          <OWRELROOT>/rh/
     <CCCMD> rdos/*.cnv         <OWRELROOT>/rh/
     <CCCMD> rdos/sys/*         <OWRELROOT>/rh/sys/
+    <CCCMD> rdos/arpa/*        <OWRELROOT>/rh/arpa/
+    <CCCMD> rdos/netinet/*     <OWRELROOT>/rh/netinet/
     <CCCMD> rdos/algorith      <OWRELROOT>/rh/
     <CCCMD> rdos/array         <OWRELROOT>/rh/
     <CCCMD> rdos/atomic        <OWRELROOT>/rh/

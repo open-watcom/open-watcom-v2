@@ -14,7 +14,9 @@
 
 :include cpluspro.sp
 
+:segment LINUX
 :include lnxkpack.sp
+:endsegment
 
 struct netent {
     char     *n_name;       /* official network name */
@@ -82,7 +84,9 @@ _WCRTLINK extern void            endhostent( void );
 _WCRTLINK extern void            herror( const char *__s );
 _WCRTLINK extern const char      *hstrerror( int __err );
 
+:segment LINUX
 :include poppack.sp
+:endsegment
 
 :include cplusepi.sp
 

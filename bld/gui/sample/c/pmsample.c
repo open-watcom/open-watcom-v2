@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2018-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,7 +50,7 @@ static gui_create_info Parent = {
     GUI_GADGETS | GUI_VISIBLE,
     NULL,
     { 0, NULL },                        // Menu array
-    0, NULL,                            // Colour attribute array
+    { 0, NULL },                        // Colour attribute array
     &MainWndGUIEventProc,               // GUI Event Callback function
     NULL,
     NULL,
@@ -63,7 +64,7 @@ static gui_create_info Child = {
     GUI_VISIBLE+GUI_CLOSEABLE+GUI_MAXIMIZE+GUI_RESIZEABLE+GUI_MINIMIZE,
     NULL,
     { 0, NULL },                        // Menu array
-    0, NULL,                            // Colour attribute array
+    { 0, NULL },                        // Colour attribute array
     &MainWndGUIEventProc,               // GUI Event Callback function
     NULL,
     NULL,
@@ -72,7 +73,6 @@ static gui_create_info Child = {
 
 void GUImain( void )
 {
-    GUIMemOpen();
     GUIWndInit( 300, GUI_GMOUSE );
     GUISetScale( &Scale );
     Child.parent = GUICreateWindow( &Parent );

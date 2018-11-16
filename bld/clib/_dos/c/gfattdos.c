@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,7 +53,7 @@
         modify exact    [ax cx]
   #endif
 #else
-    #define INIT_VALUE  "xor  ecx,ecx"
+    #define INIT_VALUE  "xor ecx,ecx"
     #define SAVE_VALUE  "mov [ebx],ecx"
     #define AUX_INFO    \
         parm caller     [edx] [ebx] \
@@ -64,7 +65,7 @@ extern unsigned __dos_getfileattr_sfn( const char *path, unsigned *attrib );
 #pragma aux __dos_getfileattr_sfn = \
         _SET_DSDX           \
         INIT_VALUE          \
-        _MOV_AX_W _GET_ DOS_CHMOD \
+        _MOV_AX_W   _GET_ DOS_CHMOD \
         _INT_21             \
         _RST_DS             \
         RETURN_VALUE        \

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2018-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -439,6 +440,11 @@ typedef struct gui_colour_set {
     gui_colour              back;
 } gui_colour_set;
 
+typedef struct gui_colour_root {
+    int                     num_items;
+    gui_colour_set          *colours;
+} gui_colour_root;
+
 typedef unsigned long       gui_rgb;
 
 typedef struct gui_rect {
@@ -479,8 +485,7 @@ typedef struct gui_create_info {
     gui_create_styles   style;
     gui_window          *parent;
     gui_menu_root       menu;
-    int                 num_attrs;
-    gui_colour_set      *colours;      /* array of num_attrs gui_attrs */
+    gui_colour_root     colours;
     GUICALLBACK         *gui_call_back;
     void                *extra;
     gui_resource        *icon;
@@ -981,7 +986,7 @@ extern void GUITimer( void );
 #endif
 
 /* may be implemented by application, stub functions */
+extern bool GUIFirstCrack( void );
 extern bool GUIDead( void );
 extern bool GUIDeath( void );
-extern bool GUIFirstCrack( void );
 extern char *GUIGetWindowClassName( void );

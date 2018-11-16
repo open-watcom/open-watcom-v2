@@ -24,8 +24,7 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-;*               DESCRIBE IT HERE!
+;* Description:  Interrupt handling stuff (16-bit DOS code only)
 ;*
 ;*****************************************************************************
 
@@ -439,7 +438,7 @@ try_again LABEL near
         jne     try_test_op             ; if it's not CMP
 
         mov     bx,es:[di][(LF1-LF2)+2] ; found offset
-        jmp     VSuccess
+        jmp     Vsuccess
 
 try_test_op LABEL near
         mov     ax,word ptr cs:LF3+1    ; TEST opcode (+1 skips SS override)

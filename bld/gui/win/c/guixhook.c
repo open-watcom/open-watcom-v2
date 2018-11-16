@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2018-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,8 +38,6 @@
 static  bool    (*ProcessMsg)(gui_window *, HWND, WPI_MSG, WPI_PARAM1, WPI_PARAM2, WPI_MRESULT *) = NULL;
 static  bool    (*IsMaximized)( gui_window * )          = NULL;
 static  bool    (*UpdatedMenu)( void )                  = NULL;
-static  void    (*ResizeStatus)( gui_window * )         = NULL;
-static  void    (*FreeStatus)( void )                   = NULL;
 static  bool    (*NewWindow)( HWND )                    = NULL;
 static  void    (*MDIMaximize)(bool, gui_window *)      = NULL;
 static  bool    (*IsMDIChildWindow)(gui_window *)       = NULL;
@@ -96,30 +95,6 @@ bool GUIIsMDIChildWindow( gui_window *wnd )
         return( (*IsMDIChildWindow)(wnd) );
     }
     return( false );
-}
-
-void GUIResizeStatus( gui_window *wnd )
-{
-    if( ResizeStatus != NULL ) {
-        (*ResizeStatus)( wnd );
-    }
-}
-
-void GUISetResizeStatus( void (*func)( gui_window * ) )
-{
-    ResizeStatus = func;
-}
-
-void GUIFreeStatus( void )
-{
-    if( FreeStatus != NULL ) {
-        (*FreeStatus)();
-    }
-}
-
-void GUISetFreeStatus( void (*func)( void ) )
-{
-    FreeStatus = func;
 }
 
 void GUISetMDINewWindow( bool (*func)(HWND) )

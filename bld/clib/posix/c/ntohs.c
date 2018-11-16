@@ -25,19 +25,25 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation of ntohs() for Linux.
+* Description:  Implementation of ntohs() for Linux and RDOS.
 *
 ****************************************************************************/
 
 
 #include "variety.h"
 #include <sys/types.h>
-#include <sys/socket.h>
 #include <netinet/in.h>
+
+#ifdef __RDOS__
+#include <rdos.h>
+#endif
+
 
 _WCRTLINK unsigned short int ntohs( unsigned short int netshort )
 {
-#if defined( __BIG_ENDIAN__ )
+#if defined( __RDOS__ )
+    return( (unsigned short int)RdosSwapShort( netshort ) );
+#elif defined( __BIG_ENDIAN__ )
     return( netshort );
 #else
     return( ((netshort >> 8) & 0xff) | ((netshort & 0xff) << 8) );

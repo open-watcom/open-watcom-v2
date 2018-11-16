@@ -852,6 +852,31 @@
 #define usergate_is_process_running 0x000002A0
 #define usergate_get_process_handle 0x000002A1
 
+#define usergate_start_debugger 0x000002A2
+#define usergate_stop_debugger 0x000002A3
+#define usergate_kick_debugger 0x000002A4
+
+#define usergate_get_com_rec_count 0x000002A5
+
+#define usergate_reset_touch_cal 0x000002A6
+#define usergate_set_touch_cal_dividend 0x000002A7
+#define usergate_set_touch_cal_x 0x000002A8
+#define usergate_set_touch_cal_y 0x000002A9
+
+#define usergate_get_disc_cache_size 0x000002AA
+#define usergate_get_file_cache_size 0x000002AB
+
+#define usergate_open_disc 0x000002AC
+#define usergate_close_disc 0x000002AD
+
+#define usergate_create_tcp_socket 0x000002AE
+#define usergate_create_udp_socket 0x000002AF
+#define usergate_is_ipv4_socket 0x000002B0
+#define usergate_connect_ipv4_socket 0x000002B1
+#define usergate_bind_ipv4_socket 0x000002B2
+#define usergate_listen_socket 0x000002B3
+#define usergate_accept_ipv4_socket 0x000002B4
+
 
 
 #ifdef __FLAT__
@@ -1709,6 +1734,31 @@
 #define CallGate_is_process_running 0x55 0x67 0x9a 160 2 0 0 3 0 0x5d
 #define CallGate_get_process_handle 0x55 0x67 0x9a 161 2 0 0 3 0 0x5d
 
+#define CallGate_start_debugger 0x55 0x67 0x9a 162 2 0 0 3 0 0x5d
+#define CallGate_stop_debugger 0x55 0x67 0x9a 163 2 0 0 3 0 0x5d
+#define CallGate_kick_debugger 0x55 0x67 0x9a 164 2 0 0 3 0 0x5d
+
+#define CallGate_get_com_rec_count 0x55 0x67 0x9a 165 2 0 0 3 0 0x5d
+
+#define CallGate_reset_touch_cal 0x55 0x67 0x9a 166 2 0 0 3 0 0x5d
+#define CallGate_set_touch_cal_dividend 0x55 0x67 0x9a 167 2 0 0 3 0 0x5d
+#define CallGate_set_touch_cal_x 0x55 0x67 0x9a 168 2 0 0 3 0 0x5d
+#define CallGate_set_touch_cal_y 0x55 0x67 0x9a 169 2 0 0 3 0 0x5d
+
+#define CallGate_get_disc_cache_size 0x55 0x67 0x9a 170 2 0 0 3 0 0x5d
+#define CallGate_get_file_cache_size 0x55 0x67 0x9a 171 2 0 0 3 0 0x5d
+
+#define CallGate_open_disc 0x55 0x67 0x9a 172 2 0 0 3 0 0x5d
+#define CallGate_close_disc 0x55 0x67 0x9a 173 2 0 0 3 0 0x5d
+
+#define CallGate_create_tcp_socket 0x55 0x67 0x9a 174 2 0 0 3 0 0x5d
+#define CallGate_create_udp_socket 0x55 0x67 0x9a 175 2 0 0 3 0 0x5d
+#define CallGate_is_ipv4_socket 0x55 0x67 0x9a 176 2 0 0 3 0 0x5d
+#define CallGate_connect_ipv4_socket 0x55 0x67 0x9a 177 2 0 0 3 0 0x5d
+#define CallGate_bind_ipv4_socket 0x55 0x67 0x9a 178 2 0 0 3 0 0x5d
+#define CallGate_listen_socket 0x55 0x67 0x9a 179 2 0 0 3 0 0x5d
+#define CallGate_accept_ipv4_socket 0x55 0x67 0x9a 180 2 0 0 3 0 0x5d
+
 #else
 
 #define CallGate_allocate_dos_mem 0x3e 0x67 0x9a 0 0 0 0 3 0
@@ -2563,5 +2613,30 @@
 #define CallGate_get_free_ldt 0x3e 0x67 0x9a 159 2 0 0 3 0
 #define CallGate_is_process_running 0x3e 0x67 0x9a 160 2 0 0 3 0
 #define CallGate_get_process_handle 0x3e 0x67 0x9a 161 2 0 0 3 0
+
+#define CallGate_start_debugger 0x3e 0x67 0x9a 162 2 0 0 3 0
+#define CallGate_stop_debugger 0x3e 0x67 0x9a 163 2 0 0 3 0
+#define CallGate_kick_debugger 0x3e 0x67 0x9a 164 2 0 0 3 0
+
+#define CallGate_get_com_rec_count 0x3e 0x67 0x9a 165 2 0 0 3 0
+
+#define CallGate_reset_touch_cal 0x3e 0x67 0x9a 166 2 0 0 3 0
+#define CallGate_set_touch_cal_dividend 0x3e 0x67 0x9a 167 2 0 0 3 0
+#define CallGate_set_touch_cal_x 0x3e 0x67 0x9a 168 2 0 0 3 0
+#define CallGate_set_touch_cal_y 0x3e 0x67 0x9a 169 2 0 0 3 0
+
+#define CallGate_get_disc_cache_size 0x3e 0x67 0x9a 170 2 0 0 3 0
+#define CallGate_get_file_cache_size 0x3e 0x67 0x9a 171 2 0 0 3 0
+
+#define CallGate_open_disc 0x3e 0x67 0x9a 172 2 0 0 3 0
+#define CallGate_close_disc 0x3e 0x67 0x9a 173 2 0 0 3 0
+
+#define CallGate_create_tcp_socket 0x3e 0x67 0x9a 174 2 0 0 3 0
+#define CallGate_create_udp_socket 0x3e 0x67 0x9a 175 2 0 0 3 0
+#define CallGate_is_ipv4_socket 0x3e 0x67 0x9a 176 2 0 0 3 0
+#define CallGate_connect_ipv4_socket 0x3e 0x67 0x9a 177 2 0 0 3 0
+#define CallGate_bind_ipv4_socket 0x3e 0x67 0x9a 178 2 0 0 3 0
+#define CallGate_listen_socket 0x3e 0x67 0x9a 179 2 0 0 3 0
+#define CallGate_accept_ipv4_socket 0x3e 0x67 0x9a 180 2 0 0 3 0
 
 #endif

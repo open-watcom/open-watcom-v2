@@ -97,7 +97,7 @@ static unsigned calcIndexPages( unsigned pagecnt )
 }
 
 
-unsigned calcStringBlockSize( char **str )
+static unsigned calcStringBlockSize( char **str )
 {
     unsigned    blocksize;
     unsigned    i;

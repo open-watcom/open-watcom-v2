@@ -157,15 +157,15 @@ orl_file_format ORLFileIdentify( orl_handle orl_hnd, FILE *fp )
 
     machine_type = *(unsigned_16 *)magic;
     switch( machine_type ) {
-    case IMAGE_FILE_MACHINE_I860:
-    case IMAGE_FILE_MACHINE_I386A:
-    case IMAGE_FILE_MACHINE_I386:
-    case IMAGE_FILE_MACHINE_R3000:
-    case IMAGE_FILE_MACHINE_R4000:
-    case IMAGE_FILE_MACHINE_ALPHA:
-    case IMAGE_FILE_MACHINE_POWERPC:
-    case IMAGE_FILE_MACHINE_AMD64:
-    case IMAGE_FILE_MACHINE_UNKNOWN:
+    case COFF_IMAGE_FILE_MACHINE_I860:
+    case COFF_IMAGE_FILE_MACHINE_I386A:
+    case COFF_IMAGE_FILE_MACHINE_I386:
+    case COFF_IMAGE_FILE_MACHINE_R3000:
+    case COFF_IMAGE_FILE_MACHINE_R4000:
+    case COFF_IMAGE_FILE_MACHINE_ALPHA:
+    case COFF_IMAGE_FILE_MACHINE_POWERPC:
+    case COFF_IMAGE_FILE_MACHINE_AMD64:
+    case COFF_IMAGE_FILE_MACHINE_UNKNOWN:
         return( ORL_COFF );
     }
     // Is it PE?
@@ -195,13 +195,13 @@ orl_file_format ORLFileIdentify( orl_handle orl_hnd, FILE *fp )
             }
             machine_type = *(unsigned_16 *)magic;
             switch( machine_type ) {
-            case IMAGE_FILE_MACHINE_I860:
-            case IMAGE_FILE_MACHINE_I386:
-            case IMAGE_FILE_MACHINE_R3000:
-            case IMAGE_FILE_MACHINE_R4000:
-            case IMAGE_FILE_MACHINE_ALPHA:
-            case IMAGE_FILE_MACHINE_POWERPC:
-            case IMAGE_FILE_MACHINE_AMD64:
+            case COFF_IMAGE_FILE_MACHINE_I860:
+            case COFF_IMAGE_FILE_MACHINE_I386:
+            case COFF_IMAGE_FILE_MACHINE_R3000:
+            case COFF_IMAGE_FILE_MACHINE_R4000:
+            case COFF_IMAGE_FILE_MACHINE_ALPHA:
+            case COFF_IMAGE_FILE_MACHINE_POWERPC:
+            case COFF_IMAGE_FILE_MACHINE_AMD64:
                 return( ORL_COFF );
             }
         }

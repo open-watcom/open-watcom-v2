@@ -185,10 +185,10 @@ bool Dmp_coff_head( void )
 
     Wlseek( Coff_off );
     Wread( &header, sizeof( coff_file_header ) );
-    if( header.cpu_type != IMAGE_FILE_MACHINE_I386
-        && header.cpu_type != IMAGE_FILE_MACHINE_ALPHA
-        && header.cpu_type != IMAGE_FILE_MACHINE_UNKNOWN
-        && header.cpu_type != IMAGE_FILE_MACHINE_POWERPC ) {
+    if( header.cpu_type != COFF_IMAGE_FILE_MACHINE_I386
+        && header.cpu_type != COFF_IMAGE_FILE_MACHINE_ALPHA
+        && header.cpu_type != COFF_IMAGE_FILE_MACHINE_UNKNOWN
+        && header.cpu_type != COFF_IMAGE_FILE_MACHINE_POWERPC ) {
         return( false );
     }
     Banner( "COFF object file" );

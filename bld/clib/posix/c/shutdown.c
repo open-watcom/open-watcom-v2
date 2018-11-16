@@ -24,7 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation of shutdown() for Linux.
+* Description:  Implementation of shutdown() for Linux and RDOS.
 *
 ****************************************************************************/
 
@@ -32,14 +32,25 @@
 #include "variety.h"
 #include <sys/types.h>
 #include <sys/socket.h>
+
+#if defined( __LINUX__ )
 #include "linuxsys.h"
+#elif defined( __RDOS__ )
+#include "rdos.h"
+#endif
 
 _WCRTLINK int shutdown( int sockfd, int how )
 /*******************************************/
 {
+#if defined( __LINUX__ )
     unsigned long   args[2];
 
     args[0] = (unsigned long)sockfd;
     args[1] = (unsigned long)how;
     return( __socketcall( SYS_SHUTDOWN, args ) );
+#elif defined( __RDOS__ )
+    return( -1 );
+#else
+    return( -1 );
+#endif
 }

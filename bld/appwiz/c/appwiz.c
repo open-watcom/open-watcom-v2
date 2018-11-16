@@ -136,8 +136,8 @@ extern void GUImain( void )
         GUI_NOSCROLL,
         GUI_VISIBLE | GUI_CLOSEABLE,
         NULL,
-        0, NULL,                            // Menu array
-        0, NULL,                            // Colour attribute array
+        { 0, NULL },                        // Menu array
+        { 0, NULL },                        // Colour attribute array
         &NewProjGUIEventProc,               // GUI Event Callback Function
         NULL,
         NULL,

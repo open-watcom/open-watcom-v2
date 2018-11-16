@@ -34,7 +34,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <malloc.h>
@@ -53,17 +52,10 @@
 #define COND_SWAP_16( a )   if( byte_swap ) SWAP_16( a );
 #define COND_SWAP_32( a )   if( byte_swap ) SWAP_32( a );
 
-char *Types[] = {
-    "INFO:",
-    "SAMPLES:",
-    "MARK:",
-    "OVL_LOAD:",
-    "CODE_LOAD:",
-    "ADDR_MAP:",
-    "MAIN_LOAD:",
-    "LAST:",
-    "REMAP_SECTIONS:",
-    "CALLGRAPH:",
+static const char * const Types[] = {
+    #define pick(k) # k ":",
+    SAMPLEKINDS()
+    #undef pick
     ""
 };
 
@@ -80,7 +72,7 @@ int main( int argc, char **argv )
     size_t              wanted;
     unsigned            i, j, k, l;
     int                 length = 0;
-    char *              record_type;
+    const char *        record_type;
     samp_block *        data;
     auto samp_header    head;
     cgraph_sample *     sptr;
@@ -163,7 +155,7 @@ int main( int argc, char **argv )
                 l -= offsetof( samp_block, d.old_info.count );
             } else {
                 COND_SWAP_16( data->d.info.config.arch );
-                printf( "  cpu=%d, fpu=%d, os_maj=%d, os_min=%d, os=%d, mad=%d\n",
+                printf( "  cpu=%d, fpu=%d, os_maj=%d, os_min=%d, os=%d, arch=%d\n",
                         data->d.info.config.cpu, data->d.info.config.fpu,
                         data->d.info.config.osmajor, data->d.info.config.osminor,
                         data->d.info.config.os, data->d.info.config.arch );
@@ -231,13 +223,10 @@ int main( int argc, char **argv )
             COND_SWAP_16( data->d.code.ovl_tab.segment );
             COND_SWAP_32( data->d.code.ovl_tab.offset );
             printf( "  name = \"%s\"\n", data->d.code.name );
-            printf( "  overlay table = %.4x:%.8lx\n",
-                    data->d.code.ovl_tab.segment, data->d.code.ovl_tab.offset );
-            printf( "  time stamp %lx -> %s", stamp,
-                    ctime( &stamp ) );
+            printf( "  overlay table = %.4x:%.8lx\n", data->d.code.ovl_tab.segment, data->d.code.ovl_tab.offset );
+            printf( "  time stamp %lx -> %s", (unsigned long)stamp, ctime( &stamp ) );
             if( stat( data->d.code.name, &file_stat ) == 0 ) {
-                printf( "  actual time stamp %lx -> %s", file_stat.st_mtime,
-                        ctime( &(file_stat.st_mtime) ) );
+                printf( "  actual time stamp %lx -> %s", (unsigned long)file_stat.st_mtime, ctime( &(file_stat.st_mtime) ) );
             }
             break;
         case SAMP_ADDR_MAP:
@@ -284,7 +273,7 @@ int main( int argc, char **argv )
                         if( length < 0 ) {
                             printf( "\n** Error: stack exhausted!\n\n" );
                         } else {
-                            for( k = 0; k < length; k++ ) {
+                            for( k = 0; k < (unsigned)length; k++ ) {
                                 printf( " -  " );
                             }
                         }

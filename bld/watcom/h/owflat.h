@@ -963,6 +963,12 @@
     parm [ebx]  \
     value [eax];
 
+#pragma aux RdosGetComRecCount = \
+    CallGate_get_com_rec_count  \
+    ValidateEax \
+    parm [ebx]  \
+    value [eax];
+
 #pragma aux RdosGetSendBufferSpace = \
     CallGate_get_com_send_space  \
     ValidateEax \
@@ -2505,6 +2511,48 @@
     parm [ebx] \
     value [eax];
 
+#pragma aux RdosCreateTcpSocket = \
+    CallGate_create_tcp_socket  \
+    ValidateHandle \
+    value [ebx];
+
+#pragma aux RdosCreateUdpSocket = \
+    CallGate_create_udp_socket  \
+    ValidateHandle \
+    value [ebx];
+
+#pragma aux RdosIsIpv4Socket = \
+    CallGate_is_ipv4_socket  \
+    ValidateEax \
+    parm [ebx] \
+    value [eax];
+
+#pragma aux RdosConnectIpv4Socket = \
+    CallGate_connect_ipv4_socket  \
+    ValidateEax \
+    parm [ebx] [edx] [si] \
+    value [eax];
+
+#pragma aux RdosBindIpv4Socket = \
+    CallGate_bind_ipv4_socket  \
+    ValidateEax \
+    parm [ebx] [si] \
+    value [eax];
+
+#pragma aux RdosListenSocket = \
+    CallGate_listen_socket  \
+    ValidateEax \
+    parm [ebx] [ecx] \
+    value [eax];
+
+#pragma aux RdosAcceptIpv4Socket = \
+    CallGate_accept_ipv4_socket  \
+    "mov [esi],edx" \
+    "mov [edi],ax" \
+    ValidateEax \
+    parm [esi] [edi] \
+    value [eax];
+
 #pragma aux RdosGetLocalMailslot = \
     CallGate_get_local_mailslot  \
     ValidateHandle \
@@ -2801,6 +2849,14 @@
     value [eax] \
     modify [ebx ecx edx esi edi];
 
+#pragma aux RdosGetDiscCacheSize = \
+    CallGate_get_disc_cache_size  \
+    "jnc Ok"\
+    "xor eax,eax"\
+    "Ok:"\
+    parm [eax] \
+    value [eax];
+
 #pragma aux RdosGetDiscVendorInfo = \
     CallGate_get_disc_vendor_info  \
     "jnc Ok" \
@@ -2814,6 +2870,14 @@
     CarryToBool \
     parm [eax]  \
     value [eax];
+
+#pragma aux RdosOpenDisc = \
+    CallGate_open_disc  \
+    parm [eax];
+
+#pragma aux RdosCloseDisc = \
+    CallGate_close_disc  \
+    parm [eax];
 
 #pragma aux RdosReadDisc = \
     CallGate_read_long_disc  \
@@ -2835,6 +2899,13 @@
     "pop gs" \
     parm [esi] [edi] [ebx] \
     modify [ax];
+
+#pragma aux RdosGetFileCacheSize = \
+    CallGate_get_file_cache_size  \
+    "jnc Ok"\
+    "xor eax,eax"\
+    "Ok:"\
+    value [eax];
 
 #pragma aux RdosDemandLoadDrive = \
     CallGate_demand_load_drive  \
@@ -3257,6 +3328,16 @@
 #pragma aux RdosStopWatchdog = \
     CallGate_stop_watchdog;
 
+#pragma aux RdosStartDebugger = \
+    CallGate_start_debugger \
+    parm [eax];
+
+#pragma aux RdosKickDebugger = \
+    CallGate_kick_debugger;
+
+#pragma aux RdosStopDebugger = \
+    CallGate_stop_debugger;
+
 #pragma aux RdosStartNetCapture = \
     CallGate_start_net_capture \
     parm [ebx];
@@ -3629,6 +3710,21 @@
     CallGate_has_touch \
     CarryToBool \
     value [eax];
+
+#pragma aux RdosResetTouchCalibrate = \
+    CallGate_reset_touch_cal;
+
+#pragma aux RdosSetTouchCalibrateDividend = \
+    CallGate_set_touch_cal_dividend \
+    parm [edx];
+
+#pragma aux RdosSetTouchCalibrateX = \
+    CallGate_set_touch_cal_x \
+    parm [esi] [edi] [edx];
+
+#pragma aux RdosSetTouchCalibrateY = \
+    CallGate_set_touch_cal_y \
+    parm [esi] [edi] [edx];
 
 #pragma aux RdosCreateBigNum = \
     CallGate_create_bignum  \

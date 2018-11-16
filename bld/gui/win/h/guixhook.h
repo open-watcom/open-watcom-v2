@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2018-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,9 +49,5 @@ extern void GUISetSetMDIRestoredSize( void (*func)(HWND, WPI_RECT *) );
 extern void GUISetMDIRestoredSize( HWND hwnd, WPI_RECT *);
 extern void GUISetIsMDIChildWindow( bool (*func)( gui_window *) );
 extern bool GUIIsMDIChildWindow( gui_window *wnd );
-extern void GUIResizeStatus( gui_window *wnd );
-extern void GUISetResizeStatus( void (*func)( gui_window * ) );
-extern void GUIFreeStatus( void );
-extern void GUISetFreeStatus( void (*func)( void ) );
 
 #endif // _GUIXHOOK_H_

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2018-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -79,7 +80,7 @@ static gui_create_info DialogWnd = {
     GUI_VISIBLE,
     NULL,
     { 0, NULL },                        // Menu array
-    0, NULL,                            // Colour attribute array
+    { 0, NULL },                        // Colour attribute array
     &GetNewGUIEventProc,                // GUI Event Callback function
     NULL,
     NULL,
@@ -108,12 +109,12 @@ static gui_create_info StatusWnd = {
     GUI_NOSCROLL,
     GUI_VISIBLE | GUI_DIALOG_LOOK,
     NULL,
-    { 0, NULL },                        // Menu array
-    GUI_NUM_ATTRS + 1, &StatusColours,  // Colour attribute array
-    &StatusGUIEventProc,                // GUI Event Callback function
+    { 0, NULL },                            // Menu array
+    { GUI_NUM_ATTRS + 1, &StatusColours },  // Colour attribute array
+    &StatusGUIEventProc,                    // GUI Event Callback function
     NULL,
     NULL,
-    NULL                                // Menu Resource
+    NULL                                    // Menu Resource
 };
 
 static gui_colour_set Colours[GUI_NUM_INIT_COLOURS] = {
@@ -225,8 +226,6 @@ static bool StatusGUIEventProc( gui_window * gui, gui_event gui_ev, void * param
 
 void GUImain( void )
 {
-
-    GUIMemOpen();
     GUIWndInit( 250, GUI_GMOUSE );
     GUISetScale( &Scale );
     GUISetColour( &Colours );

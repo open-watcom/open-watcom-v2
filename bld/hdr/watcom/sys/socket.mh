@@ -12,11 +12,15 @@
 
 :include cpluspro.sp
 
+:segment LINUX
 :include lnxkpack.sp
+:endsegment
 
 :include unistd.sp
 
+:segment LINUX
 :include incdir.sp
+:endsegment
 
 typedef unsigned short sa_family_t;
 
@@ -31,6 +35,7 @@ struct linger {
 };
 
 /* Supported address families. */
+:segment LINUX
 #define AF_UNSPEC       0
 #define AF_UNIX         1       /* Unix domain sockets          */
 #define AF_LOCAL        1       /* POSIX name for AF_UNIX       */
@@ -60,7 +65,15 @@ struct linger {
 #define AF_WANPIPE      25      /* Wanpipe API Sockets */
 #define AF_MAX          32      /* For now.. */
 
+:elsesegment RDOS
+#define AF_UNSPEC       0
+#define AF_INET         2       /* Internet IP Protocol         */
+#define AF_MAX          32      /* For now.. */
+
+:endsegment
+
 /* Protocol families, same as address families. */
+:segment LINUX
 #define PF_UNSPEC       AF_UNSPEC
 #define PF_UNIX         AF_UNIX
 #define PF_LOCAL        AF_LOCAL
@@ -90,10 +103,39 @@ struct linger {
 #define PF_WANPIPE      AF_WANPIPE
 #define PF_MAX          AF_MAX
 
+:elsesegment RDOS
+#define PF_UNSPEC       AF_UNSPEC
+#define PF_INET         AF_INET
+#define PF_MAX          AF_MAX
+
+:endsegment
+
+:segment LINUX
 /* Maximum backlog for the listen( ) function - system-configurable */
 #define SOMAXCONN sysconf(_SC_SOMAXCONN)
 
 #include _ARCH_INCLUDE(sys/socket.h)
+:endsegment
+
+:segment RDOS
+#define SOCK_STREAM     1
+#define SOCK_DGRAM      2
+#define SOCK_MAX        (SOCK_DGRAM+1)
+
+#define SOL_SOCKET      1
+
+#define SO_ERROR        1
+#define SO_REUSEADDR    2
+#define SO_TYPE         3
+#define SO_KEEPALIVE    9
+
+/* Flags for send(2) and recv(2) */
+#define MSG_PEEK        0x2
+
+#define SOMAXCONN 1024
+
+:endsegment
+
 
 typedef unsigned int socklen_t;
 
@@ -114,7 +156,9 @@ _WCRTLINK extern int getsockname( int __s , struct sockaddr *__name, socklen_t *
 _WCRTLINK extern int connect( int __sockfd, const struct sockaddr *__serv_addr, socklen_t __addrlen );
 _WCRTLINK extern int shutdown( int __s, int __how );
 
+:segment LINUX
 :include poppack.sp
+:endsegment
 
 :include cplusepi.sp
 
