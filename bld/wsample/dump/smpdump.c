@@ -53,16 +53,9 @@
 #define COND_SWAP_32( a )   if( byte_swap ) SWAP_32( a );
 
 char *Types[] = {
-    "INFO:",
-    "SAMPLES:",
-    "MARK:",
-    "OVL_LOAD:",
-    "CODE_LOAD:",
-    "ADDR_MAP:",
-    "MAIN_LOAD:",
-    "LAST:",
-    "REMAP_SECTIONS:",
-    "CALLGRAPH:",
+    #define pick(k) # k ":",
+    SAMPLEKINDS()
+    #undef pick
     ""
 };
 
