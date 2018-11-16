@@ -31,4 +31,4 @@
 
 extern void InitMADInfo( void );
 extern void FiniMADInfo( void );
-extern void SetCurrentMAD( dig_arch mad );
+extern void SetCurrentMAD( dig_arch arch );

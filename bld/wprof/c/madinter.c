@@ -200,21 +200,21 @@ void FiniMADInfo( void )
 
 static void ReportMADFailure( mad_status ms )
 {
-    dig_arch    mad_old;
+    dig_arch    arch;
     char        buff[256];
 
     if( CurrSIOData->config.arch == DIG_ARCH_NIL ) {
         /* we're in deep do do */
         fatal( LIT( LMS_RECURSIVE_MAD_FAILURE ) );
     }
-    mad_old = CurrSIOData->config.arch;
-    MADNameFile( mad_old, buff, sizeof( buff ) );
+    arch = CurrSIOData->config.arch;
+    MADNameFile( arch, buff, sizeof( buff ) );
     CurrSIOData->config.arch = DIG_ARCH_NIL;
     /* this deregisters the MAD, and sets the active one to the dummy */
-    MADRegister( mad_old, NULL, NULL );
+    MADRegister( arch, NULL, NULL );
     switch( ms & ~MS_ERR ) {
     case MS_UNREGISTERED_MAD:
-        ErrorMsg( LIT( LMS_UNREGISTERED_MAD ), mad_old );
+        ErrorMsg( LIT( LMS_UNREGISTERED_MAD ), arch );
         break;
     case MS_INVALID_MAD:
         ErrorMsg( LIT( LMS_INVALID_MAD ), buff );
@@ -240,13 +240,13 @@ static void ReportMADFailure( mad_status ms )
     }
 }
 
-void SetCurrentMAD( dig_arch mad )
+void SetCurrentMAD( dig_arch arch )
 {
     mad_status          ms;
 
-    if( MADActiveSet( mad ) != mad ) {
-        if( MADLoaded( mad ) != MS_OK ) {
-            ms = MADLoad( mad );
+    if( MADActiveSet( arch ) != arch ) {
+        if( MADLoaded( arch ) != MS_OK ) {
+            ms = MADLoad( arch );
             if( ms != MS_OK ) {
                 ReportMADFailure( ms );
             }
