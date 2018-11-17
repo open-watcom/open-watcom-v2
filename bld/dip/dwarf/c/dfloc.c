@@ -496,7 +496,7 @@ static bool Ref( void *_d, uint_32 offset, uint_32 size, dr_loc_kind kind )
         int           areg;
         int           start;
 
-        arch =  DCCurrMAD();
+        arch =  DCCurrArch();
         switch( arch ) {
         case DIG_ARCH_X86:
             areg = CLRegX86[offset].ci;
@@ -612,8 +612,8 @@ static bool Frame( void *_d, uint_32 *where )
 //    dig_arch    arch;
 
 // Get frame location
-//    arch =  DCCurrMAD();
-    DCCurrMAD();
+//    arch =  DCCurrArch();
+    DCCurrArch();
     d->ds = SafeDCItemLocation( d->lc, CI_FRAME, &ll );
     if( d->ds != DS_OK ) {
         DCStatus( d->ds );
@@ -635,7 +635,7 @@ static bool Reg( void *_d, uint_32 *where, uint_16 reg )
     int         start;
     unsigned    size;
 
-    arch =  DCCurrMAD();
+    arch =  DCCurrArch();
     switch( arch ) {
     case DIG_ARCH_X86:
         areg = CLRegX86[reg].ci;

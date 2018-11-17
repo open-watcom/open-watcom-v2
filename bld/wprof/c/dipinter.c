@@ -139,8 +139,8 @@ void DIPCLIENTRY( Status )( dip_status ds )
     DIPStatus = ds;
 }
 
-dig_arch DIPCLIENTRY( CurrMAD )( void )
-/*************************************/
+dig_arch DIPCLIENTRY( CurrArch )( void )
+/**************************************/
 {
     return( CurrSIOData->config.arch );
 }
