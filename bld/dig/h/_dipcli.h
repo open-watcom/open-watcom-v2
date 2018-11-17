@@ -37,4 +37,4 @@ pick( dip_status,       AssignLocation, ( location_list *, location_list *, unsi
 pick( dip_status,       SameAddrSpace,  ( address, address ) )
 pick( void,             AddrSection,    ( address * ) )
 pick( void,             Status,         ( dip_status ) )
-pick( dig_arch,         CurrMAD,        ( void ) )
+pick( dig_arch,         CurrArch,       ( void ) )

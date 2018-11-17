@@ -146,10 +146,10 @@ void DIPCLIENTRY( Status )( dip_status ds )
 }
 
 /*
- * DIPCliCurrMAD
+ * DIPCliCurrArch
  */
-dig_arch DIPCLIENTRY( CurrMAD )( void )
+dig_arch DIPCLIENTRY( CurrArch )( void )
 {
-    //dprintf(( "DIPCliCurrMAD\n" ));
+    //dprintf(( "DIPCliCurrArch\n" ));
     return( DIG_ARCH_X86 ); ///@todo option!
 }

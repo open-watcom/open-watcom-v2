@@ -252,12 +252,12 @@ void DCStatus( dip_status ds )
     DIPClient->Status( ds );
 }
 
-dig_arch DCCurrMAD( void )
+dig_arch DCCurrArch( void )
 {
     /* check for old client */
-    if( DIPClient->sizeof_struct < offsetof(dip_client_routines,CurrMAD) )
+    if( DIPClient->sizeof_struct < offsetof(dip_client_routines,CurrArch) )
         return( DIG_ARCH_X86 );
-    return( DIPClient->CurrMAD() );
+    return( DIPClient->CurrArch() );
 }
 
 unsigned DCMachineData( address a, dig_info_type info_type,

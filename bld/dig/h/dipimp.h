@@ -178,7 +178,7 @@ typedef struct dip_client_routines {
     _DIGCli( Remove );
 
     _DIPCli( Status );
-    _DIPCli( CurrMAD );
+    _DIPCli( CurrArch );
 
     _DIGCli( MachineData );
 
