@@ -173,11 +173,11 @@ STATIC STRM_T eatWhite( void )
 }
 
 
-STATIC STRM_T eatToEOL( void )
+STATIC void eatToEOL( void )
 /*****************************
  * pre:
  * post:    atStartOfLine == EOL, 0 or more chars removed from input
- * returns: first ( EOL || STRM_END )
+ * returns: void
  */
 {
     STRM_T  s;
@@ -186,8 +186,6 @@ STATIC STRM_T eatToEOL( void )
     while( s != '\n' && s != STRM_END ) {
         s = PreGetCHR();
     }
-
-    return( s );
 }
 
 
@@ -267,7 +265,7 @@ STATIC bool ifDef( void )
     assert( !curNest.skip2endif );
 
     name = DeMacro( MAC_PUNC );
-    (void)eatToEOL();
+    eatToEOL();
 
     if( !IsMacroName( name ) ) {
         FreeSafe( name );
@@ -318,7 +316,7 @@ STATIC bool ifOp( void )
     assert( !curNest.skip2endif );
 
     test = DeMacro( TOK_EOL );
-    (void)eatToEOL();
+    eatToEOL();
 
     parseExpr( &temp, test );
 
@@ -346,7 +344,7 @@ STATIC void ifEqProcess( char const **v1, char **v2 )
 
     name = DeMacro( MAC_PUNC );
     test = DeMacro( TOK_EOL );
-    (void)eatToEOL();
+    eatToEOL();
 
     if( !IsMacroName( name ) ) {
         FreeSafe( name );
@@ -366,7 +364,7 @@ STATIC void ifEqProcess( char const **v1, char **v2 )
     UnGetCHR( '\n' );
     InsString( value, true );
     value = DeMacro( TOK_EOL );
-    (void)eatToEOL();
+    eatToEOL();
 
     beg = SkipWS( test );           /* find first non-ws */
     chopTrailWS( beg );             /* chop trailing ws */
@@ -465,7 +463,7 @@ STATIC void bangIf( bool (*logical)(void), directiveTok tok )
     } else {
         // this block is to be skipped, don't interpret args to if
         curNest.skip = true;
-        (void)eatToEOL();
+        eatToEOL();
     }
 
     if( curNest.skip ) {
@@ -492,7 +490,7 @@ STATIC void bangEndIf( void )
     }
     curNest = nest[--nestLevel];
 
-    (void)eatToEOL();
+    eatToEOL();
 }
 
 
@@ -565,7 +563,7 @@ STATIC void doElIf( bool (*logical)(void), directiveTok tok )
         // must set these because we may not have been skipping previous block
         curNest.skip2endif = true;
         curNest.skip = true;
-        (void)eatToEOL();
+        eatToEOL();
         return;
     }
 
@@ -575,13 +573,13 @@ STATIC void doElIf( bool (*logical)(void), directiveTok tok )
             // skip to the end - we've done a block in this nesting
             curNest.skip = true;
             curNest.skip2endif = true;
-            (void)eatToEOL();
+            eatToEOL();
         } else {
             // we still haven't done block in this nesting, try this logical.
             curNest.skip = !logical();
         }
     } else {
-        (void)eatToEOL();
+        eatToEOL();
     }
 
     if( curNest.skip ) {
@@ -607,7 +605,7 @@ STATIC void bangElse( void )
     tok = getPreTok();
     switch( tok ) {
     case D_BLANK:
-        (void)eatToEOL();
+        eatToEOL();
         doElse();
         break;
     case D_IFDEF:   doElIf( ifDef,  D_IFDEF );  break;
@@ -618,7 +616,7 @@ STATIC void bangElse( void )
     case D_IFNEQ:   doElIf( ifNEq,  D_IFNEQ );  break;
     case D_IFNEQI:  doElIf( ifNEqi, D_IFNEQI ); break;
     default:
-        (void)eatToEOL();
+        eatToEOL();
         PrtMsg( FTL | LOC | NOT_ALLOWED_AFTER_ELSE, directives[tok], directives[D_ELSE] );
         ExitFatal();
         // never return
@@ -639,7 +637,7 @@ STATIC void bangDefine( void )
     name = DeMacro( MAC_PUNC );    /* decode name */
 
     if( !IsMacroName( name ) ) {
-        (void)eatToEOL();
+        eatToEOL();
     } else {
         DefMacro( name );
     }
@@ -673,7 +671,7 @@ STATIC void bangInject( void )
 
     assert( !curNest.skip );
     text = DeMacro( TOK_EOL );
-    (void)eatToEOL();
+    eatToEOL();
     contents = SkipWS( text );
     if( *contents == NULLCHAR ) {
         FreeSafe( text );
@@ -728,7 +726,7 @@ STATIC void bangLoadDLL( void )
 
     assert( !curNest.skip );
     text = DeMacro( TOK_EOL );
-    (void)eatToEOL();
+    eatToEOL();
     cmd_name = SkipWS( text );
     if( *cmd_name == NULLCHAR ) {
         FreeSafe( text );
@@ -782,7 +780,7 @@ STATIC void bangUnDef( void )
     assert( !curNest.skip );
 
     name = DeMacro( MAC_PUNC );
-    (void)eatToEOL();
+    eatToEOL();
 
     if( !IsMacroName( name ) ) {
         FreeSafe( name );
@@ -854,7 +852,7 @@ STATIC void bangInclude( void )
     assert( !curNest.skip );
 
     text = DeMacro( TOK_EOL );
-    (void)eatToEOL();
+    eatToEOL();
 
     chopTrailWS( text );    /* get rid of trailing ws */
 
@@ -920,7 +918,7 @@ STATIC void bangMessage( void )
     assert( !curNest.skip );
 
     text = DeMacro( TOK_EOL );
-    (void)eatToEOL();
+    eatToEOL();
 
     chopTrailWS( text );
 
@@ -939,7 +937,7 @@ STATIC void bangError( void )
     assert( !curNest.skip );
 
     text = DeMacro( TOK_EOL );
-    (void)eatToEOL();
+    eatToEOL();
 
     chopTrailWS( text );
 
@@ -959,7 +957,7 @@ STATIC void handleBang( void )
     tok = getPreTok();
     /* these are executed regardless of skip */
     switch( tok ) {
-    case D_BLANK:   (void)eatToEOL();           break;
+    case D_BLANK:   eatToEOL();                 break;
     case D_ELSE:    bangElse();                 break;
     case D_ENDIF:   bangEndIf();                break;
     case D_IF:      bangIf( ifOp,   D_IF );     break;
@@ -984,7 +982,7 @@ STATIC void handleBang( void )
                 break;
             }
         } else {
-            (void)eatToEOL(); /* otherwise, we just eat it up */
+            eatToEOL(); /* otherwise, we just eat it up */
         }
     }
 }

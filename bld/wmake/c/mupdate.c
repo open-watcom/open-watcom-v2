@@ -159,7 +159,7 @@ STATIC bool targExists( TARGET *targ )
     }
 
     if( TrySufPath( buffer, targ->node.name, NULL, false ) == RET_SUCCESS ) {
-        RenameTarget( targ, buffer );
+        RenameTarget( targ->node.name, buffer );
         targ->executed = true;      /* force get date */
         getStats( targ );
         assert( targ->existing );
