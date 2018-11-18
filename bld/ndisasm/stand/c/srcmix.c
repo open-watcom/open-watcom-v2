@@ -62,6 +62,13 @@ static enum {
     DWARF_LINES,
 } line_type;
 
+static const char * const src_exts[] = {
+    ".c",
+    ".cpp",
+    ".for",
+    ".asm"
+};
+
 static void NoSource( char *file )
 {
     if( DFormat & DFF_ASM ) {
@@ -71,6 +78,31 @@ static void NoSource( char *file )
     BufferConcat( file );
     BufferConcatNL();
     BufferPrint();
+}
+
+static void OpenSourceFileExts( const char *fname )
+{
+    char        path[_MAX_PATH2];
+    char        *drive;
+    char        *dir;
+    char        *file_name;
+    char        *extension;
+    char        *src_filename;
+    int         i;
+
+    _splitpath2( fname, path, &drive, &dir, &file_name, &extension );
+    src_filename = MemAlloc( strlen( drive ) + strlen( dir ) + strlen( file_name ) + 5 );
+    for( i = 0; i < sizeof( src_exts ) / sizeof( src_exts[0] ); i++ ) {
+        _makepath( src_filename, drive, dir, file_name, src_exts[i] );
+        SourceFile = fopen( src_filename, "r" );
+        if( SourceFile != NULL ) {
+            MemFree( src_filename );
+            return;
+        }
+    }
+    _makepath( src_filename, drive, dir, file_name, ".*" );
+    NoSource( src_filename );
+    MemFree( src_filename );
 }
 
 static int compareLines( const void *l1, const void *l2 )
@@ -103,13 +135,8 @@ static orl_linnum SortLineNums( orl_linnum ilines, orl_table_index inumlines )
     return( newlines );
 }
 
-extern void GetSourceFile( section_ptr section )
+void GetSourceFile( section_ptr section )
 {
-    char        path[_MAX_PATH2];
-    char        *drive;
-    char        *dir;
-    char        *file_name;
-    char        *extension;
     orl_linnum  templines;
 
     numlines = ORLSecGetNumLines( section->shnd );
@@ -139,81 +166,24 @@ extern void GetSourceFile( section_ptr section )
 
     if( SourceFileName != NULL ) {
         SourceFile = fopen( SourceFileName, "r" );
-        if( SourceFile != NULL ) {
-            return;
+        if( SourceFile == NULL ) {
+            OpenSourceFileExts( SourceFileName );
         }
-        _splitpath2( SourceFileName, path, &drive, &dir, &file_name, &extension );
-        MemFree( SourceFileName );
-        SourceFileName = MemAlloc( strlen( drive ) + strlen( dir ) + strlen( file_name ) + 5 );
-
-        _makepath( SourceFileName, drive, dir, file_name, ".c" );
-        SourceFile = fopen( SourceFileName, "r" );
-        if( SourceFile != NULL ) {
-            return;
-        }
-        _makepath( SourceFileName, drive, dir, file_name, ".cpp" );
-        SourceFile = fopen( SourceFileName, "r" );
-        if( SourceFile != NULL ) {
-            return;
-        }
-        _makepath( SourceFileName, drive, dir, file_name, ".for" );
-        SourceFile = fopen( SourceFileName, "r" );
-        if( SourceFile != NULL ) {
-            return;
-        }
-        _makepath( SourceFileName, drive, dir, file_name, ".asm" );
-        SourceFile = fopen( SourceFileName, "r" );
-        if( SourceFile != NULL ) {
-            return;
-        }
-        _makepath( SourceFileName, drive, dir, file_name, ".*" );
-        NoSource( SourceFileName );
-        MemFree( SourceFileName );
-        SourceFileName = NULL;
         return;
     }
-
     if( SourceFileInObject != NULL ) {
         SourceFile = fopen( SourceFileInObject, "r" );
         if( SourceFile != NULL ) {
             return;
         }
     }
-
     if( SourceFileInDwarf != NULL ) {
         SourceFile = fopen( SourceFileInDwarf, "r" );
         if( SourceFile != NULL ) {
             return;
         }
     }
-
-    _splitpath2( ObjFileName, path, &drive, &dir, &file_name, &extension );
-    SourceFileName = MemAlloc( strlen( drive ) + strlen( dir ) + strlen( file_name ) + 5 );
-
-    _makepath( SourceFileName, drive, dir, file_name, ".c" );
-    SourceFile = fopen( SourceFileName, "r" );
-    if( SourceFile != NULL ) {
-        return;
-    }
-    _makepath( SourceFileName, drive, dir, file_name, ".cpp" );
-    SourceFile = fopen( SourceFileName, "r" );
-    if( SourceFile != NULL ) {
-        return;
-    }
-    _makepath( SourceFileName, drive, dir, file_name, ".for" );
-    SourceFile = fopen( SourceFileName, "r" );
-    if( SourceFile != NULL ) {
-        return;
-    }
-    _makepath( SourceFileName, drive, dir, file_name, ".asm" );
-    SourceFile = fopen( SourceFileName, "r" );
-    if( SourceFile != NULL ) {
-        return;
-    }
-    _makepath( SourceFileName, drive, dir, file_name, ".*" );
-    NoSource( SourceFileName );
-    MemFree( SourceFileName );
-    SourceFileName = NULL;
+    OpenSourceFileExts( ObjFileName );
 }
 
 static char *getNextLine( void )
@@ -277,7 +247,7 @@ void MixSource( dis_sec_offset offset, orl_table_index *currline, orl_table_inde
     }
 }
 
-extern void EndSourceMix( void )
+void EndSourceMix( void )
 {
     if( SourceFile != NULL ) {
         fclose( SourceFile );
