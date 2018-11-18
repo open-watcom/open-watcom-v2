@@ -36,25 +36,25 @@
 #if defined(_M_IX86)
     #if !defined(__WINDOWS__) && !(defined(__RDOSDEV__) && defined(__SW_ZDP))
         #if defined(__BIG_DATA__)
-            #define __DS        ds
+            #define __DS        __ds
         #endif
     #endif
 
     #if !defined(__FLAT__)
-        #define __ES    es
+        #define __ES            __es
     #endif
 
     #if defined(__386__)
         #if defined(__WINDOWS__) || !defined(__FLAT__)
-            #define __FS        fs
+            #define __FS        __fs
         #endif
 
-        #define __GS    gs
+        #define __GS            __gs
         #if defined(__SW_3S)
-            #define __AX        eax
-            #define __BX        ebx
-            #define __CX        ecx
-            #define __DX        edx
+            #define __AX        __eax
+            #define __BX        __ebx
+            #define __CX        __ecx
+            #define __DX        __edx
         #endif
     #endif
 
