@@ -9,7 +9,11 @@ target_os  = pls
 
 srv = pls
 !ifndef name
+!ifdef %OWUSE_FILENAME_VERSION
+name = plshel$(bld_ver)
+!else
 name = plshelp
+!endif
 !endif
 which = SERVER
 
@@ -18,6 +22,9 @@ trap_nodoslfn = 1
 pharlap_c_flags = -DWATCOM=7 -DCMPLR=7 -D__STKCALL=__cdecl -D_far=__far -D_near=__near -D_Far=__far -D_Near=__Near -I"$(plsdir)"
 
 extra_cpp_flags = -DPHARLAP
+!ifdef %OWUSE_FILENAME_VERSION
+extra_cpp_flags += -DUSE_FILENAME_VERSION=$(bld_ver)
+!endif
 extra_c_flags = $(compflags_$[&)
 
 extra_c_flags_dilglue = -3s -zl $(pharlap_c_flags)
