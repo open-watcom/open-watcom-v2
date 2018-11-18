@@ -36,11 +36,11 @@
 
 #define ORLENTRY
 
-#define ORL_NULL_HANDLE         NULL
+#define ORL_NULL_HANDLE             NULL
 
-#define ORL_STRUCT(s)           struct s ## _struct
-
-#define TYPEDEF_ORLENTRY_TYPE(t)    typedef const ORL_STRUCT( t ) * t
+#define ORL_STRUCT(s)               struct s ## _struct
+#define ORL_STRUCT_SIZEOF(s)        sizeof( struct s ## _struct )
+#define TYPEDEF_ORLENTRY_TYPE(t)    typedef const struct t ## _struct * t
 
 TYPEDEF_ORLENTRY_TYPE( orl_handle );
 TYPEDEF_ORLENTRY_TYPE( orl_file_handle );

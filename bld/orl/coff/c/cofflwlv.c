@@ -52,7 +52,7 @@ orl_return CoffCreateSymbolHandles( coff_file_handle file_hnd )
         file_hnd->symbol_handles = NULL;
         return( ORL_OKAY );
     }
-    file_hnd->symbol_handles = (coff_symbol_handle)_ClientAlloc( file_hnd, sizeof( ORL_STRUCT( coff_symbol_handle ) ) * file_hnd->num_symbols );
+    file_hnd->symbol_handles = (coff_symbol_handle)_ClientAlloc( file_hnd, ORL_STRUCT_SIZEOF( coff_symbol_handle ) * file_hnd->num_symbols );
     if( file_hnd->symbol_handles == NULL )
         return( ORL_OUT_OF_MEMORY );
     prev = 0;
@@ -379,7 +379,7 @@ orl_return CoffCreateRelocs( coff_sec_handle orig_sec, coff_sec_handle reloc_sec
     }
     num_relocs = reloc_sec->size / sizeof( coff_reloc );
     reloc_sec->assoc.reloc.num_relocs = num_relocs;
-    orel = _ClientSecAlloc( reloc_sec, sizeof( ORL_STRUCT( orl_reloc ) ) * num_relocs );
+    orel = _ClientSecAlloc( reloc_sec, ORL_STRUCT_SIZEOF( orl_reloc ) * num_relocs );
     reloc_sec->assoc.reloc.relocs = orel;
     if( orel == NULL )
         return( ORL_OUT_OF_MEMORY );

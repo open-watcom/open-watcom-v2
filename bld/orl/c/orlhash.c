@@ -103,7 +103,7 @@ orl_return ORLHashTableInsert( orl_hash_table hash_table, orl_hash_key key, orl_
     orl_hash_data_entry     last_data_entry;
     orl_hash_data_entry     new_data_entry;
 
-    new_data_entry = (orl_hash_data_entry)_HashAlloc( hash_table, sizeof( ORL_STRUCT( orl_hash_data_entry ) ) );
+    new_data_entry = (orl_hash_data_entry)_HashAlloc( hash_table, ORL_STRUCT_SIZEOF( orl_hash_data_entry ) );
     if( new_data_entry == NULL )
         return( ORL_OUT_OF_MEMORY );
     new_data_entry->data = data;
@@ -119,7 +119,7 @@ orl_return ORLHashTableInsert( orl_hash_table hash_table, orl_hash_key key, orl_
             return( ORL_OKAY );
         }
     }
-    new_hash_entry = (orl_hash_entry)_HashAlloc( hash_table, sizeof( ORL_STRUCT( orl_hash_entry ) ) );
+    new_hash_entry = (orl_hash_entry)_HashAlloc( hash_table, ORL_STRUCT_SIZEOF( orl_hash_entry ) );
     if( new_hash_entry == NULL )
         return( ORL_OUT_OF_MEMORY );
     new_hash_entry->key = key;
@@ -148,7 +148,7 @@ orl_hash_table ORLHashTableCreate( orl_funcs *funcs, orl_hash_value size, orl_ha
     orl_hash_table      hash_table;
     orl_hash_value      i;
 
-    hash_table = (orl_hash_table)ORL_CLI_ALLOC( funcs, sizeof( ORL_STRUCT( orl_hash_table ) ) );
+    hash_table = (orl_hash_table)ORL_CLI_ALLOC( funcs, ORL_STRUCT_SIZEOF( orl_hash_table ) );
     if( hash_table == NULL )
         return( NULL );
     hash_table->table = (orl_hash_entry *)ORL_CLI_ALLOC( funcs, size * sizeof( orl_hash_entry ) );
