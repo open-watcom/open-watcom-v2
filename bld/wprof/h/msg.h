@@ -32,7 +32,7 @@
 #ifdef DEFINE_STRINGS
 #define LITSTR( sym, val ) const char _Literal_##sym[] = val;
 #else
-#if defined( __I86__ )
+#if defined( _M_I86 )
     #define MAKEFAR __far
 #else
     #define MAKEFAR
