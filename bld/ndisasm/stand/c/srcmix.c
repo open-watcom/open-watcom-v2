@@ -128,9 +128,9 @@ static orl_linnum SortLineNums( orl_linnum ilines, orl_table_index inumlines )
 {
     void    *newlines;
 
-    newlines = MemAlloc( inumlines * sizeof( ORL_STRUCT( orl_linnum ) ) );
-    memcpy( newlines, ilines, inumlines * sizeof( ORL_STRUCT( orl_linnum ) ) );
-    qsort( newlines, inumlines, sizeof( ORL_STRUCT( orl_linnum ) ), compareLines );
+    newlines = MemAlloc( inumlines * ORL_STRUCT_SIZEOF( orl_linnum ) );
+    memcpy( newlines, ilines, inumlines * ORL_STRUCT_SIZEOF( orl_linnum ) );
+    qsort( newlines, inumlines, ORL_STRUCT_SIZEOF( orl_linnum ), compareLines );
 
     return( newlines );
 }

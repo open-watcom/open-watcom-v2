@@ -200,11 +200,7 @@ static void dump_state( state_info *state, int *numlines, uint limit )
     if( state->address < limit ) {
         if( *numlines >= currlinesize ) {
             currlinesize += LINES_ARRAY_SIZE_INC;
-            if( lines != NULL ) {
-                lines = MemRealloc( (void *)lines, currlinesize * sizeof( ORL_STRUCT( orl_linnum ) ) );
-            } else {
-                lines = MemAlloc( currlinesize * sizeof( ORL_STRUCT( orl_linnum ) ) );
-            }
+            lines = MemRealloc( (void *)lines, currlinesize * ORL_STRUCT_SIZEOF( orl_linnum ) );
         }
         ((ORL_STRUCT( orl_linnum ) *)lines)[*numlines].linnum = (uint_16)state->line;
         ((ORL_STRUCT( orl_linnum ) *)lines)[*numlines].off = state->address;
