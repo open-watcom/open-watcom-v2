@@ -135,6 +135,39 @@ static orl_linnum SortLineNums( orl_linnum ilines, orl_table_index inumlines )
     return( newlines );
 }
 
+static char *getNextLine( void )
+{
+    long int len, pos;
+    char *buff;
+    int c;
+
+    pos = ftell( SourceFile );
+    len = 0;
+    do {
+        c = fgetc( SourceFile );
+        len++;
+    } while( c != '\n' && c != EOF );
+
+    buff = MemAlloc( len + 1 );
+    if( c == EOF ) {
+        buff[0]='\0';
+    } else {
+        fseek( SourceFile, pos, SEEK_SET );
+        fgets( buff, len + 1, SourceFile );
+    }
+    return buff;
+}
+
+static void printLine( void )
+{
+    char *buff;
+
+    buff = getNextLine();
+    BufferConcat( buff );
+    BufferPrint();
+    MemFree( buff );
+}
+
 void GetSourceFile( section_ptr section )
 {
     orl_linnum  templines;
@@ -184,39 +217,6 @@ void GetSourceFile( section_ptr section )
         }
     }
     OpenSourceFileExts( ObjFileName );
-}
-
-static char *getNextLine( void )
-{
-    long int len, pos;
-    char *buff;
-    int c;
-
-    pos = ftell( SourceFile );
-    len = 0;
-    do {
-        c = fgetc( SourceFile );
-        len++;
-    } while( c != '\n' && c != EOF );
-
-    buff = MemAlloc( len + 1 );
-    if( c == EOF ) {
-        buff[0]='\0';
-    } else {
-        fseek( SourceFile, pos, SEEK_SET );
-        fgets( buff, len + 1, SourceFile );
-    }
-    return buff;
-}
-
-static void printLine( void )
-{
-    char *buff;
-
-    buff = getNextLine();
-    BufferConcat( buff );
-    BufferPrint();
-    MemFree( buff );
 }
 
 void MixSource( dis_sec_offset offset, orl_table_index *currline, orl_table_index *lineInFile )

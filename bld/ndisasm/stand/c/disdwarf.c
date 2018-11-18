@@ -40,16 +40,31 @@
 #include "memfuncs.h"
 #include "hashtabl.h"
 
+
 #define LINES_ARRAY_SIZE_INC    64
+
+typedef struct {
+    long        value;
+    char        *name;
+} readable_name;
+
+typedef struct {
+    uint_32                     address;
+    uint                        file;
+    uint_32                     line;
+    uint_32                     column;
+    uint_16                     segment;
+    uint_8                      is_stmt : 1;
+    uint_8                      basic_block : 1;
+    uint_8                      end_sequence : 1;
+} state_info;
 
 extern char                     *SourceFileInDwarf;
 extern orl_linnum               lines;
-static long                     currlinesize;
 extern hash_table               HandleToRefListTable;
-
 extern orl_sec_handle           debugHnd;
 
-static int ConvertLines( const uint_8 *input, uint length, uint limit );
+static long                     currlinesize;
 
 static void fixupLines( uint_8 *relocContents, orl_sec_handle shnd )
 {
@@ -89,42 +104,6 @@ static void fixupLines( uint_8 *relocContents, orl_sec_handle shnd )
         }
     }
 }
-
-extern orl_table_index GetDwarfLines( section_ptr section )
-{
-    uint                size;
-    uint                limit;
-    unsigned_8          *contents;
-    unsigned_8          *relocContents;
-    orl_table_index     numlines;
-
-    if( lines != NULL ) {
-        MemFree( (void *)lines );
-        lines = NULL;
-    }
-    currlinesize = 0;
-    if( debugHnd != ORL_NULL_HANDLE ) {
-        ORLSecGetContents( debugHnd, &contents );
-        size = ORLSecGetSize( debugHnd );
-        limit = ORLSecGetSize( section->shnd );
-        relocContents = MemAlloc( size );
-        memcpy( relocContents, contents, size );
-
-        fixupLines( relocContents, debugHnd );
-
-        numlines = ConvertLines( relocContents, size, limit );
-
-        MemFree( relocContents );
-        return numlines;
-    } else {
-        return 0;
-    }
-}
-
-typedef struct {
-    long        value;
-    char *      name;
-} readable_name;
 
 static uint_8 *DecodeULEB128( const uint_8 *input, uint_32 *value )
 /**********************************************************/
@@ -169,17 +148,6 @@ static uint_8 *DecodeLEB128( const uint_8 *input, int_32 *value )
     *value = result;
     return( (uint_8 *)input );
 }
-
-typedef struct {
-    uint_32                     address;
-    uint                        file;
-    uint_32                     line;
-    uint_32                     column;
-    uint_16                     segment;
-    uint_8                      is_stmt : 1;
-    uint_8                      basic_block : 1;
-    uint_8                      end_sequence : 1;
-} state_info;
 
 static void init_state( state_info *state, int default_is_stmt )
 /**************************************************************/
@@ -408,4 +376,35 @@ static int ConvertLines( const uint_8 * input, uint length, uint limit )
         MemFree( opcode_lengths  );
     }
     return numlines;
+}
+
+orl_table_index GetDwarfLines( section_ptr section )
+{
+    uint                size;
+    uint                limit;
+    unsigned_8          *contents;
+    unsigned_8          *relocContents;
+    orl_table_index     numlines;
+
+    if( lines != NULL ) {
+        MemFree( (void *)lines );
+        lines = NULL;
+    }
+    currlinesize = 0;
+    if( debugHnd != ORL_NULL_HANDLE ) {
+        ORLSecGetContents( debugHnd, &contents );
+        size = ORLSecGetSize( debugHnd );
+        limit = ORLSecGetSize( section->shnd );
+        relocContents = MemAlloc( size );
+        memcpy( relocContents, contents, size );
+
+        fixupLines( relocContents, debugHnd );
+
+        numlines = ConvertLines( relocContents, size, limit );
+
+        MemFree( relocContents );
+        return numlines;
+    } else {
+        return 0;
+    }
 }
