@@ -36,7 +36,7 @@
     #pragma aux __WinMain "*";
     #pragma aux __wWinMain "*";
   #endif
-  #if defined( __AXP__ ) && defined( __PPC__ )
+  #if defined( __AXP__ ) || defined( __PPC__ )
     void WinMainCRTStartup( void );
     void wWinMainCRTStartup( void );
   #endif
