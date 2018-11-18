@@ -38,7 +38,7 @@
 #include "orl.h"
 #include "srcmix.h"
 #include "buffer.h"
-#include "mydwarf.h"
+#include "disdwarf.h"
 #include "memfuncs.h"
 
 #include "clibext.h"

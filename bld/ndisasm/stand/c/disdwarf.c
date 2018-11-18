@@ -36,7 +36,7 @@
 #include "global.h"
 #include "dwarf.h"
 #include "orl.h"
-#include "mydwarf.h"
+#include "disdwarf.h"
 #include "memfuncs.h"
 #include "hashtabl.h"
 

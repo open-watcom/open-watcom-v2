@@ -45,7 +45,7 @@ inc_dirs += -I"$(comp_cfg_dir)/h"
 
 stand_objs      = args.obj &
                 buffer.obj &
-                dwarf.obj &
+                disdwarf.obj &
                 externs.obj &
                 formasm.obj &
                 fini.obj &
