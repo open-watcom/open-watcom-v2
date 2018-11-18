@@ -502,8 +502,7 @@ static orl_return DeclareSegment( orl_sec_handle sec )
     }
     numlines = ORLSecGetNumLines( sec );
     if( numlines > 0 ) {
-        numlines *= sizeof( orl_linnum );
-        DBIAddLines( sdata, (const void *)ORLSecGetLines( sec ), numlines, true );
+        DBIAddLines( sdata, (const void *)ORLSecGetLines( sec ), numlines * ORL_STRUCT_SIZEOF( orl_linnum ), true );
     }
     return( ORL_OKAY );
 }
