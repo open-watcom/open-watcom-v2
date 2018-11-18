@@ -35,7 +35,7 @@
 #include "dis.h"
 #include "global.h"
 #include "dwarf.h"
-#include "orl.h"
+#include "srcmix.h"
 #include "disdwarf.h"
 #include "memfuncs.h"
 #include "hashtabl.h"
@@ -49,30 +49,27 @@ typedef struct {
 } readable_name;
 
 typedef struct {
-    uint_32                     address;
-    uint                        file;
-    uint_32                     line;
-    uint_32                     column;
-    uint_16                     segment;
-    uint_8                      is_stmt : 1;
-    uint_8                      basic_block : 1;
-    uint_8                      end_sequence : 1;
+    uint_32             address;
+    uint                file;
+    uint_32             line;
+    uint_32             column;
+    uint_16             segment;
+    uint_8              is_stmt         :1;
+    uint_8              basic_block     :1;
+    uint_8              end_sequence    :1;
 } state_info;
 
 extern char                     *SourceFileInDwarf;
-extern orl_linnum               lines;
 extern hash_table               HandleToRefListTable;
 extern orl_sec_handle           debugHnd;
 
-static long                     currlinesize;
-
 static void fixupLines( uint_8 *relocContents, orl_sec_handle shnd )
 {
-    hash_data                   *h_data;
-    ref_list                    sec_ref_list;
-    ref_entry                   r_entry;
-    int                         i;
-    hash_key                    h_key;
+    hash_data           *h_data;
+    ref_list            sec_ref_list;
+    ref_entry           r_entry;
+    int                 i;
+    hash_key            h_key;
 
     h_key.u.sec_handle = shnd;
     h_data = HashTableQuery( HandleToRefListTable, h_key );
@@ -162,47 +159,45 @@ static void init_state( state_info *state, int default_is_stmt )
     state->end_sequence = 0;
 }
 
-static void dump_state( state_info *state, int *numlines, uint limit )
-/*****************************************/
+static void dump_state( state_info *state, state_lines *ls, uint limit )
+/**********************************************************************/
 {
     if( state->address < limit ) {
-        if( *numlines >= currlinesize ) {
-            currlinesize += LINES_ARRAY_SIZE_INC;
-            lines = MemRealloc( (void *)lines, currlinesize * ORL_STRUCT_SIZEOF( orl_linnum ) );
+        if( ls->numlines >= ls->currlinesize ) {
+            ls->currlinesize += LINES_ARRAY_SIZE_INC;
+            ls->lines = MemRealloc( (void *)ls->lines, ls->currlinesize * ORL_STRUCT_SIZEOF( orl_linnum ) );
         }
-        ((ORL_STRUCT( orl_linnum ) *)lines)[*numlines].linnum = (uint_16)state->line;
-        ((ORL_STRUCT( orl_linnum ) *)lines)[*numlines].off = state->address;
-        (*numlines)++;
+        ((ORL_STRUCT( orl_linnum )*)(ls->lines))[ls->numlines].linnum = (uint_16)state->line;
+        ((ORL_STRUCT( orl_linnum )*)(ls->lines))[ls->numlines].off = state->address;
+        ls->numlines++;
     }
 }
 
-static int ConvertLines( const uint_8 * input, uint length, uint limit )
-/********************************************************/
+static void ConvertLines( const uint_8 *input, uint length, uint limit, state_lines *ls )
+/***************************************************************************************/
 {
-    const uint_8 *              p;
-    const uint_8 *              stmt_start;
-    uint                        opcode_base;
-    uint *                      opcode_lengths;
-    uint                        u;
-    uint                        file_index;
-    const char *                name;
-    uint_32                     mod_time;
-    uint_32                     file_length;
-    uint_32                     directory;
-    uint_8                      op_code;
-    uint_32                     op_len;
-    uint_32                     tmp;
-    uint                        line_range;
-    int                         line_base;
-    int_32                      itmp;
-    int                         default_is_stmt;
-    state_info                  state;
-    uint                        min_instr;
-    uint_32                     unit_length;
-    const uint_8 *              unit_base;
-    int                         numlines;
+    const uint_8        *p;
+    const uint_8        *stmt_start;
+    uint                opcode_base;
+    uint                *opcode_lengths;
+    uint                u;
+    uint                file_index;
+    const char          *name;
+    uint_32             mod_time;
+    uint_32             file_length;
+    uint_32             directory;
+    uint_8              op_code;
+    uint_32             op_len;
+    uint_32             tmp;
+    uint                line_range;
+    int                 line_base;
+    int_32              itmp;
+    int                 default_is_stmt;
+    state_info          state;
+    uint                min_instr;
+    uint_32             unit_length;
+    const uint_8        *unit_base;
 
-    numlines = 0;
     p = input;
     while( p - input < length ) {
 
@@ -237,7 +232,8 @@ static int ConvertLines( const uint_8 * input, uint length, uint limit )
         }
 
         if( p - input >= length ) {
-            return 0;
+            FreeSourceLines( ls );
+            return;
         }
 
         file_index = 0;
@@ -246,7 +242,8 @@ static int ConvertLines( const uint_8 * input, uint length, uint limit )
             name = (char *)p;
             p += strlen( (char *)p ) + 1;
             if( p - input >= length ) {
-                return 0;
+                FreeSourceLines( ls );
+                return;
             }
         }
         p++;
@@ -263,7 +260,8 @@ static int ConvertLines( const uint_8 * input, uint length, uint limit )
                 strcpy( SourceFileInDwarf, name );
             }
             if( p - input >= length ) {
-                return 0;
+                FreeSourceLines( ls );
+                return;
             }
         }
         p++;
@@ -280,7 +278,7 @@ static int ConvertLines( const uint_8 * input, uint length, uint limit )
                 switch( op_code ) {
                 case DW_LNE_end_sequence:
                     state.end_sequence = 1;
-                    dump_state( &state, &numlines, limit );
+                    dump_state( &state, ls, limit );
                     init_state( &state, default_is_stmt );
                     p+= op_len;
                     break;
@@ -327,7 +325,7 @@ static int ConvertLines( const uint_8 * input, uint length, uint limit )
             } else if( op_code < opcode_base ) {
                 switch( op_code ) {
                 case DW_LNS_copy:
-                    dump_state( &state, &numlines, limit );
+                    dump_state( &state, ls, limit );
                     state.basic_block = 0;
                     break;
                 case DW_LNS_advance_pc:
@@ -369,28 +367,21 @@ static int ConvertLines( const uint_8 * input, uint length, uint limit )
                 op_code -= (uint_8)opcode_base;
                 state.line += line_base + op_code % line_range;
                 state.address += ( op_code / line_range ) * min_instr;
-                dump_state( &state, &numlines, limit );
+                dump_state( &state, ls, limit );
                 state.basic_block = 0;
             }
         }
         MemFree( opcode_lengths  );
     }
-    return numlines;
 }
 
-orl_table_index GetDwarfLines( section_ptr section )
+void GetDwarfLines( state_lines *ls, section_ptr section )
 {
     uint                size;
     uint                limit;
     unsigned_8          *contents;
     unsigned_8          *relocContents;
-    orl_table_index     numlines;
 
-    if( lines != NULL ) {
-        MemFree( (void *)lines );
-        lines = NULL;
-    }
-    currlinesize = 0;
     if( debugHnd != ORL_NULL_HANDLE ) {
         ORLSecGetContents( debugHnd, &contents );
         size = ORLSecGetSize( debugHnd );
@@ -400,11 +391,8 @@ orl_table_index GetDwarfLines( section_ptr section )
 
         fixupLines( relocContents, debugHnd );
 
-        numlines = ConvertLines( relocContents, size, limit );
+        ConvertLines( relocContents, size, limit, ls );
 
         MemFree( relocContents );
-        return numlines;
-    } else {
-        return 0;
     }
 }

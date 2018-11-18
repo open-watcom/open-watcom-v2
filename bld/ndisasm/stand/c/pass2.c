@@ -612,6 +612,7 @@ num_errors DoPass2( section_ptr section, unsigned_8 *contents, dis_sec_size size
     bool                is32bit;
     orl_table_index     currline;
     orl_table_index     lineInFile;
+    state_lines         ls;
 
     routineBase = 0;
     st = section->scan;
@@ -630,9 +631,11 @@ num_errors DoPass2( section_ptr section, unsigned_8 *contents, dis_sec_size size
     data.disassembly_errors = 0;
     currline = 0;
     lineInFile = 0;
-
+    ls.lines = NULL;
+    ls.numlines = 0;
+    ls.currlinesize = 0;
     if( source_mix ) {
-        GetSourceFile( section );
+        GetSourceFile( &ls, section );
     }
 
     PrintHeader( section );
@@ -680,7 +683,7 @@ num_errors DoPass2( section_ptr section, unsigned_8 *contents, dis_sec_size size
         }
 
         if( source_mix ) {
-            MixSource( data.loop, &currline, &lineInFile );
+            MixSource( &ls, data.loop, &currline, &lineInFile );
         }
         DisDecodeInit( &DHnd, &decoded );
         decoded.flags.u.all |= flags.u.all;
@@ -763,7 +766,7 @@ num_errors DoPass2( section_ptr section, unsigned_8 *contents, dis_sec_size size
         BufferPrint();
     }
     if( source_mix ) {
-        EndSourceMix();
+        EndSourceMix( &ls );
     }
     PrintTail( section );
     return( data.disassembly_errors );

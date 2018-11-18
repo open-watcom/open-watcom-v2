@@ -35,7 +35,6 @@
 #include <string.h>
 #include "dis.h"
 #include "global.h"
-#include "orl.h"
 #include "srcmix.h"
 #include "buffer.h"
 #include "disdwarf.h"
@@ -53,8 +52,6 @@ char                    *SourceFileInObject = NULL;
 char                    *SourceFileInDwarf = NULL;
 bool                    source_mix = false;
 FILE                    *SourceFile = NULL;
-orl_linnum              lines = NULL;
-orl_table_index         numlines;
 
 static enum {
     NO_LINES,
@@ -124,15 +121,16 @@ static int compareLines( const void *l1, const void *l2 )
     return( 0 );
 }
 
-static orl_linnum SortLineNums( orl_linnum ilines, orl_table_index inumlines )
+static orl_linnum SortLineNums( orl_linnum old_lines, orl_table_index inumlines )
 {
-    void    *newlines;
+    void    *new_lines;
+    size_t  size;
 
-    newlines = MemAlloc( inumlines * ORL_STRUCT_SIZEOF( orl_linnum ) );
-    memcpy( newlines, ilines, inumlines * ORL_STRUCT_SIZEOF( orl_linnum ) );
-    qsort( newlines, inumlines, ORL_STRUCT_SIZEOF( orl_linnum ), compareLines );
-
-    return( newlines );
+    size = inumlines * ORL_STRUCT_SIZEOF( orl_linnum );
+    new_lines = MemAlloc( size );
+    memcpy( new_lines, old_lines, size );
+    qsort( new_lines, inumlines, ORL_STRUCT_SIZEOF( orl_linnum ), compareLines );
+    return( new_lines );
 }
 
 static char *getNextLine( void )
@@ -168,14 +166,14 @@ static void printLine( void )
     MemFree( buff );
 }
 
-void GetSourceFile( section_ptr section )
+void GetSourceFile( state_lines *ls, section_ptr section )
 {
-    orl_linnum  templines;
+    orl_linnum  lines;
 
-    numlines = ORLSecGetNumLines( section->shnd );
-    if( numlines == 0 ) {
-        numlines = GetDwarfLines( section );
-        if( numlines == 0 ) {
+    ls->numlines = ORLSecGetNumLines( section->shnd );
+    if( ls->numlines == 0 ) {
+        GetDwarfLines( ls, section );
+        if( ls->numlines == 0 ) {
             if( DFormat & DFF_ASM ) {
                 BufferConcat( CommentString );
             }
@@ -184,19 +182,17 @@ void GetSourceFile( section_ptr section )
             BufferPrint();
             line_type = NO_LINES;
             return;
-        } else {
-            line_type = DWARF_LINES;
         }
+        lines = ls->lines;
+        line_type = DWARF_LINES;
     } else {
         lines = ORLSecGetLines( section->shnd );
         line_type = ORL_LINES;
     }
-    templines = SortLineNums( lines, numlines );
+    ls->lines = SortLineNums( lines, ls->numlines );
     if( line_type == DWARF_LINES ) {
         MemFree( (void *)lines );
     }
-    lines = templines;
-
     if( SourceFileName != NULL ) {
         SourceFile = fopen( SourceFileName, "r" );
         if( SourceFile == NULL ) {
@@ -219,17 +215,17 @@ void GetSourceFile( section_ptr section )
     OpenSourceFileExts( ObjFileName );
 }
 
-void MixSource( dis_sec_offset offset, orl_table_index *currline, orl_table_index *lineInFile )
+void MixSource( state_lines *ls, dis_sec_offset offset, orl_table_index *currline, orl_table_index *lineInFile )
 {
-    orl_linnum line_entry;
+    orl_linnum      line_entry;
     orl_table_index curr_line;
     orl_table_index line_in_file;
 
     if( SourceFile != NULL ){
         curr_line = *currline;
         line_in_file = *lineInFile;
-        line_entry = lines + curr_line;
-        for( ; curr_line < numlines; curr_line++ ) {
+        line_entry = ls->lines + curr_line;
+        for( ; curr_line < ls->numlines; curr_line++ ) {
             if( line_entry->off != offset || line_entry->linnum == 0 )
                 break;
             BufferConcatNL();
@@ -247,14 +243,21 @@ void MixSource( dis_sec_offset offset, orl_table_index *currline, orl_table_inde
     }
 }
 
-void EndSourceMix( void )
+void FreeSourceLines( state_lines *ls )
+{
+    MemFree( (void *)ls->lines );
+    ls->lines = NULL;
+    ls->numlines = 0;
+    ls->currlinesize = 0;
+}
+
+void EndSourceMix( state_lines *ls )
 {
     if( SourceFile != NULL ) {
         fclose( SourceFile );
         SourceFile = NULL;
     }
-    if( lines != NULL ) {
-        MemFree( (void *)lines );
-        lines = NULL;
+    if( ls->lines != NULL ) {
+        FreeSourceLines( ls );
     }
 }

@@ -38,18 +38,14 @@
 
 #ifdef TRMEM
 static _trmem_hdl   TRMemHandle = NULL;
-static FILE         *TRFileHandle;      /* stream to put output on */
+static FILE         *TRFileFP;              /* stream to put output on */
 static void         MemPrintLine( void *, const char * buff, size_t len );
 #endif
 
 void MemOpen( void )
 {
 #ifdef TRMEM
-  #ifdef NLM
-    TRFileHandle = stderr;
-  #else
-    TRFileHandle = stderr;
-  #endif
+    TRFileFP = stderr;
     TRMemHandle = _trmem_open( malloc, free, realloc, NULL,
             NULL, MemPrintLine,
             _TRMEM_ALLOC_SIZE_0 | _TRMEM_REALLOC_SIZE_0 |
@@ -103,10 +99,9 @@ void MemClose( void )
 }
 
 #ifdef TRMEM
-/* extern to avoid problems with taking address and overlays */
-extern void MemPrintLine( void *handle, const char * buff, size_t len )
-/*********************************************************************/
+void MemPrintLine( void *handle, const char *buff, size_t len )
+/*************************************************************/
 {
-    fwrite( buff, 1, len, TRFileHandle );
+    fwrite( buff, 1, len, TRFileFP );
 }
 #endif
