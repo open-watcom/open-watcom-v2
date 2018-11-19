@@ -285,7 +285,7 @@ static orl_return load_coff_sec_handles( coff_file_handle coff_file_hnd,
     coff_file_hnd->coff_sec_hnd = NULL;
     s_hdr = (coff_section_header *)coff_file_hnd->s_hdr_table_buffer;
     for( i = 0; i < coff_file_hnd->num_sections; ++i ) {
-        coff_sec_hnd = (coff_sec_handle)_ClientAlloc( coff_file_hnd, sizeof( ORL_STRUCT( coff_sec_handle ) ) );
+        coff_sec_hnd = (coff_sec_handle)_ClientAlloc( coff_file_hnd, ORL_STRUCT_SIZEOF( coff_sec_handle ) );
         if( coff_sec_hnd == NULL ) {
             free_coff_sec_handles( coff_file_hnd, i );
             _ClientFree( coff_file_hnd, reloc_sec_offset );
@@ -340,7 +340,7 @@ static orl_return load_coff_sec_handles( coff_file_handle coff_file_hnd,
         if( reloc_sec_size[i] > 0 ) {
             reloc_secs_created++;
             // create a reloc section
-            coff_file_hnd->coff_sec_hnd[coff_file_hnd->num_sections + reloc_secs_created] = (coff_sec_handle)_ClientAlloc( coff_file_hnd, sizeof( ORL_STRUCT( coff_sec_handle ) ) );
+            coff_file_hnd->coff_sec_hnd[coff_file_hnd->num_sections + reloc_secs_created] = (coff_sec_handle)_ClientAlloc( coff_file_hnd, ORL_STRUCT_SIZEOF( coff_sec_handle ) );
             coff_reloc_sec_hnd = coff_file_hnd->coff_sec_hnd[coff_file_hnd->num_sections + reloc_secs_created];
             if( coff_reloc_sec_hnd == NULL ) {
                 free_coff_sec_handles( coff_file_hnd, coff_file_hnd->num_sections + reloc_secs_created );
@@ -367,7 +367,7 @@ static orl_return load_coff_sec_handles( coff_file_handle coff_file_hnd,
         }
     }
     // create the symbol table section
-    coff_file_hnd->symbol_table = (coff_sec_handle)_ClientAlloc( coff_file_hnd, sizeof( ORL_STRUCT( coff_sec_handle ) ) );
+    coff_file_hnd->symbol_table = (coff_sec_handle)_ClientAlloc( coff_file_hnd, ORL_STRUCT_SIZEOF( coff_sec_handle ) );
     if( coff_file_hnd->symbol_table == NULL ) {
         free_coff_sec_handles( coff_file_hnd, i + coff_file_hnd->num_sections );
         _ClientFree( coff_file_hnd, reloc_sec_offset );
@@ -390,7 +390,7 @@ static orl_return load_coff_sec_handles( coff_file_handle coff_file_hnd,
     coff_file_hnd->coff_sec_hnd[coff_file_hnd->num_sections + reloc_secs_created] = coff_file_hnd->symbol_table;
     i++;
     // create the string table section
-    coff_file_hnd->string_table = (coff_sec_handle)_ClientAlloc( coff_file_hnd, sizeof( ORL_STRUCT( coff_sec_handle ) ) );
+    coff_file_hnd->string_table = (coff_sec_handle)_ClientAlloc( coff_file_hnd, ORL_STRUCT_SIZEOF( coff_sec_handle ) );
     if( coff_file_hnd->string_table == NULL ) {
         free_coff_sec_handles( coff_file_hnd, i + coff_file_hnd->num_sections );
         _ClientFree( coff_file_hnd, reloc_sec_offset );

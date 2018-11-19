@@ -102,7 +102,7 @@ typedef struct _idt16 {
 typedef struct tsf16_struct     TSF;
 
 /* Compatibility types for 16-bit DOS/16M code */
-#if defined( __I86__ ) || defined( _M_I86 )
+#if defined( _M_I86 )
 typedef FPTR16                  FPTR;
 typedef TSF NearPtr             TSFPREV;
 #else

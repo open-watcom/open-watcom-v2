@@ -131,9 +131,13 @@
   #define _WCINTERRUPT
   #define _WCUNALIGNED
  #endif
+:segment DOS | QNX | RDOS
  #if defined( _M_I86 ) && defined( __HUGE__ )
   #define _WCDATA _WCFAR
  #elif defined(__SW_ND) || defined(__FUNCTION_DATA_ACCESS)
+:elsesegment
+ #if defined(__SW_ND) || defined(__FUNCTION_DATA_ACCESS)
+:endsegment
   #define _WCDATA
  #else
   #define _WCDATA _WCNEAR

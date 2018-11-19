@@ -41,7 +41,7 @@ coff_handle COFFENTRY CoffInit( orl_funcs *funcs )
 {
     coff_handle         coff_hnd;
 
-    coff_hnd = (coff_handle)ORL_CLI_ALLOC( funcs, sizeof( ORL_STRUCT( coff_handle ) ) );
+    coff_hnd = (coff_handle)ORL_CLI_ALLOC( funcs, ORL_STRUCT_SIZEOF( coff_handle ) );
     if( coff_hnd != NULL ) {
         coff_hnd->funcs = funcs;
         coff_hnd->first_file_hnd = NULL;
@@ -68,10 +68,10 @@ orl_return COFFENTRY CoffFileInit( coff_handle coff_hnd, FILE *fp, coff_file_han
     coff_file_handle    coff_file_hnd;
     orl_return          return_val;
 
-    coff_file_hnd = (coff_file_handle)ORL_PTR_ALLOC( coff_hnd, sizeof( ORL_STRUCT( coff_file_handle ) ) );
+    coff_file_hnd = (coff_file_handle)ORL_PTR_ALLOC( coff_hnd, ORL_STRUCT_SIZEOF( coff_file_handle ) );
     if( coff_file_hnd == NULL )
         return( ORL_OUT_OF_MEMORY );
-    memset( coff_file_hnd, 0, sizeof( ORL_STRUCT( coff_file_handle ) ) );
+    memset( coff_file_hnd, 0, ORL_STRUCT_SIZEOF( coff_file_handle ) );
     coff_file_hnd->fp = fp;
     CoffAddFileLinks( coff_hnd, coff_file_hnd );
     return_val = CoffLoadFileStructure( coff_file_hnd );

@@ -1315,7 +1315,8 @@ static bool printMac( const void *node, const void *ptr )
     char        buff1[MAX_RESOURCE_SIZE];
     char        buff2[MAX_RESOURCE_SIZE];
 
-    (void)ptr; // Unused
+    /* unused parameters */ (void)ptr;
+
     /* mac->node.name is used as a parameter twice in this module because
      * it may substitute before or after the long string depending on the
      * way the message is translated */

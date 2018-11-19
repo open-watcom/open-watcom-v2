@@ -90,20 +90,43 @@
 
   #if defined(ACAD)
     #define EXTENDER_NAMES  "ACAD.EXE\0"
-    #define HELPNAME        ""
   #elif defined(PHARLAP)
     #define EXTENDER_NAMES  "TNT.EXE\0" "RUN386.EXE\0"
-    #define HELPNAME        "PLSHELP.EXP"
-    #define HELPNAME_DS     "PEDHELP.EXP"
-    #define HELPNAME_NS     "PENHELP.EXP"   /* not supported yet */
   #elif defined(DOS4G)
     #define EXTENDER_NAMES  "DOS4GW.EXE\0" "4GWPRO.EXE\0" "DOS4G.EXE\0" "DOS4GX.EXE\0"
-    #define HELPNAME        "RSIHELP.EXP"
   #elif defined(CAUSEWAY)
     #define EXTENDER_NAMES  "CWSTUB.EXE\0"
-    #define HELPNAME        "CWHELP.EXE"
   #else
     #error Extender and helper names not defined
+  #endif
+
+  #ifdef USE_FILENAME_VERSION
+    #define QUOTED(x)       # x
+    #define STRX(x)         QUOTED(x)
+
+    #if defined(ACAD)
+      #define HELPNAME      ""
+    #elif defined(PHARLAP)
+      #define HELPNAME      "PLSHEL" STRX( USE_FILENAME_VERSION ) ".EXP"
+      #define HELPNAME_DS   "PEDHEL" STRX( USE_FILENAME_VERSION ) ".EXP"
+      #define HELPNAME_NS   "PENHEL" STRX( USE_FILENAME_VERSION ) ".EXP"   /* not supported yet */
+    #elif defined(DOS4G)
+      #define HELPNAME      "RSIHEL" STRX( USE_FILENAME_VERSION ) ".EXP"
+    #elif defined(CAUSEWAY)
+      #define HELPNAME      "CWHELP" STRX( USE_FILENAME_VERSION ) ".EXE"
+    #endif
+  #else
+    #if defined(ACAD)
+      #define HELPNAME      ""
+    #elif defined(PHARLAP)
+      #define HELPNAME      "PLSHELP.EXP"
+      #define HELPNAME_DS   "PEDHELP.EXP"
+      #define HELPNAME_NS   "PENHELP.EXP"   /* not supported yet */
+    #elif defined(DOS4G)
+      #define HELPNAME      "RSIHELP.EXP"
+    #elif defined(CAUSEWAY)
+      #define HELPNAME      "CWHELP.EXE"
+    #endif
   #endif
 
     #define MK_LINEAR(p)    ( ( (long)FP_SEG( (void __far *)(p) ) << 4 ) + FP_OFF( (void __far *)(p) ) )

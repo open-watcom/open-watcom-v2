@@ -388,7 +388,7 @@ f_handle TempFileOpen( const char *name )
 bool QSysHelp( char **cmd_ptr )
 /*****************************/
 {
-#if defined( __I86__ ) && defined( __QNX__ )
+#if defined( _M_I86 ) && defined( __QNX__ )
 //    extern  struct _proc_spawn *__cmd;
     char    *p;
 

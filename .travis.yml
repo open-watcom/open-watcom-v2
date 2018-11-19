@@ -24,6 +24,7 @@ cache:
     - bld/watcom/$OWOBJDIR
 #    - bld
     - test
+    - build1
 
 before_script:
    # initialize OW build environment variables

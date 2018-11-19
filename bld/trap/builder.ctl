@@ -17,12 +17,12 @@ set PROJDIR=<CWD>
 #============================
     <CCCMD> lcl/dos/dosr/dos.std/std*.trp           <OWRELROOT>/binw/
     <CCCMD> lcl/dos/dosx/rsi/dos.trp/rsi*.trp       <OWRELROOT>/binw/
-    <CCCMD> lcl/dos/dosx/rsi/dos.srv/rsihelp.exp    <OWRELROOT>/binw/
+    <CCCMD> lcl/dos/dosx/rsi/dos.srv/rsihel*.exp    <OWRELROOT>/binw/
     <CCCMD> lcl/dos/dosx/pls/dos.trp/pls*.trp       <OWRELROOT>/binw/
-    <CCCMD> lcl/dos/dosx/pls/dos.srv/plshelp.exp    <OWRELROOT>/binw/
-    <CCCMD> lcl/dos/dosx/pls/dosped.srv/pedhelp.exp <OWRELROOT>/binw/
+    <CCCMD> lcl/dos/dosx/pls/dos.srv/plshel*.exp    <OWRELROOT>/binw/
+    <CCCMD> lcl/dos/dosx/pls/dosped.srv/pedhel*.exp <OWRELROOT>/binw/
     <CCCMD> lcl/dos/dosx/cw/dos.trp/cw*.trp         <OWRELROOT>/binw/
-    <CCCMD> lcl/dos/dosx/cw/dos.srv/cwhelp.exe      <OWRELROOT>/binw/
+    <CCCMD> lcl/dos/dosx/cw/dos.srv/cwhelp*.exe     <OWRELROOT>/binw/
     <CCCMD> lcl/dos/dosx/cw/dos.srv/cwhelp.cfg      <OWRELROOT>/binw/
     <CCCMD> net/dos.trp/net*.trp                    <OWRELROOT>/binw/
     <CCCMD> net/dos.srv/netserv.exe                 <OWRELROOT>/binw/

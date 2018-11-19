@@ -35,10 +35,9 @@
 #include <string.h>
 #include "dis.h"
 #include "global.h"
-#include "orl.h"
 #include "srcmix.h"
 #include "buffer.h"
-#include "mydwarf.h"
+#include "disdwarf.h"
 #include "memfuncs.h"
 
 #include "clibext.h"
@@ -53,14 +52,19 @@ char                    *SourceFileInObject = NULL;
 char                    *SourceFileInDwarf = NULL;
 bool                    source_mix = false;
 FILE                    *SourceFile = NULL;
-orl_linnum              lines = NULL;
-orl_table_index         numlines;
 
 static enum {
     NO_LINES,
     ORL_LINES,
     DWARF_LINES,
 } line_type;
+
+static const char * const src_exts[] = {
+    ".c",
+    ".cpp",
+    ".for",
+    ".asm"
+};
 
 static void NoSource( char *file )
 {
@@ -71,6 +75,31 @@ static void NoSource( char *file )
     BufferConcat( file );
     BufferConcatNL();
     BufferPrint();
+}
+
+static void OpenSourceFileExts( const char *fname )
+{
+    char        path[_MAX_PATH2];
+    char        *drive;
+    char        *dir;
+    char        *file_name;
+    char        *extension;
+    char        *src_filename;
+    int         i;
+
+    _splitpath2( fname, path, &drive, &dir, &file_name, &extension );
+    src_filename = MemAlloc( strlen( drive ) + strlen( dir ) + strlen( file_name ) + 5 );
+    for( i = 0; i < sizeof( src_exts ) / sizeof( src_exts[0] ); i++ ) {
+        _makepath( src_filename, drive, dir, file_name, src_exts[i] );
+        SourceFile = fopen( src_filename, "r" );
+        if( SourceFile != NULL ) {
+            MemFree( src_filename );
+            return;
+        }
+    }
+    _makepath( src_filename, drive, dir, file_name, ".*" );
+    NoSource( src_filename );
+    MemFree( src_filename );
 }
 
 static int compareLines( const void *l1, const void *l2 )
@@ -92,128 +121,16 @@ static int compareLines( const void *l1, const void *l2 )
     return( 0 );
 }
 
-static orl_linnum SortLineNums( orl_linnum ilines, orl_table_index inumlines )
+static orl_linnum SortLineNums( orl_linnum old_lines, orl_table_index inumlines )
 {
-    void    *newlines;
+    void    *new_lines;
+    size_t  size;
 
-    newlines = MemAlloc( inumlines * sizeof( ORL_STRUCT( orl_linnum ) ) );
-    memcpy( newlines, ilines, inumlines * sizeof( ORL_STRUCT( orl_linnum ) ) );
-    qsort( newlines, inumlines, sizeof( ORL_STRUCT( orl_linnum ) ), compareLines );
-
-    return( newlines );
-}
-
-extern void GetSourceFile( section_ptr section )
-{
-    char        path[_MAX_PATH2];
-    char        *drive;
-    char        *dir;
-    char        *file_name;
-    char        *extension;
-    orl_linnum  templines;
-
-    numlines = ORLSecGetNumLines( section->shnd );
-    if( numlines == 0 ) {
-        numlines = GetDwarfLines( section );
-        if( numlines == 0 ) {
-            if( DFormat & DFF_ASM ) {
-                BufferConcat( CommentString );
-            }
-            BufferMsg( NO_LINE_NUMS );
-            BufferConcatNL();
-            BufferPrint();
-            line_type = NO_LINES;
-            return;
-        } else {
-            line_type = DWARF_LINES;
-        }
-    } else {
-        lines = ORLSecGetLines( section->shnd );
-        line_type = ORL_LINES;
-    }
-    templines = SortLineNums( lines, numlines );
-    if( line_type == DWARF_LINES ) {
-        MemFree( (void *)lines );
-    }
-    lines = templines;
-
-    if( SourceFileName != NULL ) {
-        SourceFile = fopen( SourceFileName, "r" );
-        if( SourceFile != NULL ) {
-            return;
-        }
-        _splitpath2( SourceFileName, path, &drive, &dir, &file_name, &extension );
-        MemFree( SourceFileName );
-        SourceFileName = MemAlloc( strlen( drive ) + strlen( dir ) + strlen( file_name ) + 5 );
-
-        _makepath( SourceFileName, drive, dir, file_name, ".c" );
-        SourceFile = fopen( SourceFileName, "r" );
-        if( SourceFile != NULL ) {
-            return;
-        }
-        _makepath( SourceFileName, drive, dir, file_name, ".cpp" );
-        SourceFile = fopen( SourceFileName, "r" );
-        if( SourceFile != NULL ) {
-            return;
-        }
-        _makepath( SourceFileName, drive, dir, file_name, ".for" );
-        SourceFile = fopen( SourceFileName, "r" );
-        if( SourceFile != NULL ) {
-            return;
-        }
-        _makepath( SourceFileName, drive, dir, file_name, ".asm" );
-        SourceFile = fopen( SourceFileName, "r" );
-        if( SourceFile != NULL ) {
-            return;
-        }
-        _makepath( SourceFileName, drive, dir, file_name, ".*" );
-        NoSource( SourceFileName );
-        MemFree( SourceFileName );
-        SourceFileName = NULL;
-        return;
-    }
-
-    if( SourceFileInObject != NULL ) {
-        SourceFile = fopen( SourceFileInObject, "r" );
-        if( SourceFile != NULL ) {
-            return;
-        }
-    }
-
-    if( SourceFileInDwarf != NULL ) {
-        SourceFile = fopen( SourceFileInDwarf, "r" );
-        if( SourceFile != NULL ) {
-            return;
-        }
-    }
-
-    _splitpath2( ObjFileName, path, &drive, &dir, &file_name, &extension );
-    SourceFileName = MemAlloc( strlen( drive ) + strlen( dir ) + strlen( file_name ) + 5 );
-
-    _makepath( SourceFileName, drive, dir, file_name, ".c" );
-    SourceFile = fopen( SourceFileName, "r" );
-    if( SourceFile != NULL ) {
-        return;
-    }
-    _makepath( SourceFileName, drive, dir, file_name, ".cpp" );
-    SourceFile = fopen( SourceFileName, "r" );
-    if( SourceFile != NULL ) {
-        return;
-    }
-    _makepath( SourceFileName, drive, dir, file_name, ".for" );
-    SourceFile = fopen( SourceFileName, "r" );
-    if( SourceFile != NULL ) {
-        return;
-    }
-    _makepath( SourceFileName, drive, dir, file_name, ".asm" );
-    SourceFile = fopen( SourceFileName, "r" );
-    if( SourceFile != NULL ) {
-        return;
-    }
-    _makepath( SourceFileName, drive, dir, file_name, ".*" );
-    NoSource( SourceFileName );
-    MemFree( SourceFileName );
-    SourceFileName = NULL;
+    size = inumlines * ORL_STRUCT_SIZEOF( orl_linnum );
+    new_lines = MemAlloc( size );
+    memcpy( new_lines, old_lines, size );
+    qsort( new_lines, inumlines, ORL_STRUCT_SIZEOF( orl_linnum ), compareLines );
+    return( new_lines );
 }
 
 static char *getNextLine( void )
@@ -249,17 +166,66 @@ static void printLine( void )
     MemFree( buff );
 }
 
-void MixSource( dis_sec_offset offset, orl_table_index *currline, orl_table_index *lineInFile )
+void GetSourceFile( state_lines *ls, section_ptr section )
 {
-    orl_linnum line_entry;
+    orl_linnum  lines;
+
+    ls->numlines = ORLSecGetNumLines( section->shnd );
+    if( ls->numlines == 0 ) {
+        GetDwarfLines( ls, section );
+        if( ls->numlines == 0 ) {
+            if( DFormat & DFF_ASM ) {
+                BufferConcat( CommentString );
+            }
+            BufferMsg( NO_LINE_NUMS );
+            BufferConcatNL();
+            BufferPrint();
+            line_type = NO_LINES;
+            return;
+        }
+        lines = ls->lines;
+        line_type = DWARF_LINES;
+    } else {
+        lines = ORLSecGetLines( section->shnd );
+        line_type = ORL_LINES;
+    }
+    ls->lines = SortLineNums( lines, ls->numlines );
+    if( line_type == DWARF_LINES ) {
+        MemFree( (void *)lines );
+    }
+    if( SourceFileName != NULL ) {
+        SourceFile = fopen( SourceFileName, "r" );
+        if( SourceFile == NULL ) {
+            OpenSourceFileExts( SourceFileName );
+        }
+        return;
+    }
+    if( SourceFileInObject != NULL ) {
+        SourceFile = fopen( SourceFileInObject, "r" );
+        if( SourceFile != NULL ) {
+            return;
+        }
+    }
+    if( SourceFileInDwarf != NULL ) {
+        SourceFile = fopen( SourceFileInDwarf, "r" );
+        if( SourceFile != NULL ) {
+            return;
+        }
+    }
+    OpenSourceFileExts( ObjFileName );
+}
+
+void MixSource( state_lines *ls, dis_sec_offset offset, orl_table_index *currline, orl_table_index *lineInFile )
+{
+    orl_linnum      line_entry;
     orl_table_index curr_line;
     orl_table_index line_in_file;
 
     if( SourceFile != NULL ){
         curr_line = *currline;
         line_in_file = *lineInFile;
-        line_entry = lines + curr_line;
-        for( ; curr_line < numlines; curr_line++ ) {
+        line_entry = ls->lines + curr_line;
+        for( ; curr_line < ls->numlines; curr_line++ ) {
             if( line_entry->off != offset || line_entry->linnum == 0 )
                 break;
             BufferConcatNL();
@@ -277,14 +243,21 @@ void MixSource( dis_sec_offset offset, orl_table_index *currline, orl_table_inde
     }
 }
 
-extern void EndSourceMix( void )
+void FreeSourceLines( state_lines *ls )
+{
+    MemFree( (void *)ls->lines );
+    ls->lines = NULL;
+    ls->numlines = 0;
+    ls->currlinesize = 0;
+}
+
+void EndSourceMix( state_lines *ls )
 {
     if( SourceFile != NULL ) {
         fclose( SourceFile );
         SourceFile = NULL;
     }
-    if( lines != NULL ) {
-        MemFree( (void *)lines );
-        lines = NULL;
+    if( ls->lines != NULL ) {
+        FreeSourceLines( ls );
     }
 }

@@ -728,24 +728,6 @@ extern void         ReleaseProc16( CALLBACKPTR );
 extern CALLBACKPTR  GetCallbackRoutine( PROCPTR, ... );
 extern void         ReleaseCallbackRoutine( CALLBACKPTR );
 
-/* Functions implemented with inline assembly code */
-extern void __far *MK_LOCAL32( void * );
-extern void __far *MK_FP32( void * );
-extern DWORD    MK_FP16( void __far * );
-
-/* Inline assembly implementation of functions defined above */
-#pragma aux MK_LOCAL32 "*_" \
-        __parm [__eax] __value [__eax __dx]
-#pragma aux MK_FP32 = \
-        "mov edx, eax" \
-        "shr edx, 16" \
-        "and eax, 0ffffh" \
-        __parm [__eax] __value [__eax __dx]
-#pragma aux MK_FP16 = \
-        "shl edx, 16" \
-        "mov dx, ax" \
-        __parm [__eax __dx] __value [__edx]
-
 /*
  *  _Call16 performs the same function as "GetIndirectFunctionHandle,
  *  InvokeIndirectFunctionHandle, FreeIndirectFunctionHandle" but is
@@ -815,6 +797,35 @@ extern WORD LocalPtr;
 #pragma aux __E000 "_*"
 #pragma aux __F000 "_*"
 #pragma aux LocalPtr "_*"
+
+/* Functions implemented with inline assembly code */
+extern void __far *MK_LOCAL32( void * );
+extern void __far *MK_FP32( void * );
+extern DWORD      MK_FP16( void __far * );
+
+/* Inline assembly implementation of functions defined above */
+#pragma aux MK_LOCAL32 "*_" = \
+       0x0F 0xB7 0x15 offset LocalPtr /* movzx edx,_LocalPtr */ \
+       "and   eax,0FFFFh" \
+    __parm              [__eax] \
+    __value             [__dx __eax] \
+    __modify __exact    [__eax __edx]
+#pragma aux MK_FP32 = \
+        "mov edx,eax" \
+        "shr edx,16" \
+        "and eax,0ffffh" \
+    __parm              [__eax] \
+    __value             [__dx __eax] \
+    __modify __exact    [__eax __edx]
+#pragma aux MK_FP16 = \
+        "shl edx,16" \
+        "mov dx,ax" \
+    __parm              [__dx __eax] \
+    __value             [__edx] \
+    __modify __exact    [__edx]
+
+/* Functions implemented with inline assembly code */
+
 
 #pragma library( "win386" )
 

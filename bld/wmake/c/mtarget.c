@@ -128,15 +128,19 @@ TLIST *NewTList( void )
 }
 
 
-void RenameTarget( TARGET *targ, const char *newname )
-/****************************************************/
+void RenameTarget( const char *oldname, const char *newname )
+/***********************************************************/
 {
-    (void)RemHashNode( targTab, targ->node.name, CASESENSITIVE );
-    if( targ->node.name != NULL ) {
-        FreeSafe( targ->node.name );
+    TARGET *targ;
+
+    targ = (TARGET *)RemHashNode( targTab, oldname, CASESENSITIVE );
+    if( targ != NULL ) {
+        if( targ->node.name != NULL ) {
+            FreeSafe( targ->node.name );
+        }
+        targ->node.name = FixName( StrDupSafe( newname ) );
+        AddHashNode( targTab, (HASHNODE *)targ );
     }
-    targ->node.name = FixName( StrDupSafe( newname ) );
-    AddHashNode( targTab, (HASHNODE *)targ );
 }
 
 
@@ -600,7 +604,8 @@ STATIC bool printTarg( void *node, void *ptr )
     DEPEND const            *curdep;
     TLIST const             *curtlist;
 
-    (void)ptr; // Unused
+    /* unused parameters */ (void)ptr;
+
     if( targ->special ) {
         return( false );             /* don't print special targets */
     } else {
@@ -705,7 +710,8 @@ void TargAttrOrAttr( TATTR *tattr, TATTR attr )
 STATIC bool resetEx( void *targ, void *ptr )
 /******************************************/
 {
-    (void)ptr; // Unused
+    /* unused parameters */ (void)ptr;
+
     ((TARGET *)targ)->executed = true;
     return( false );
 }
@@ -723,7 +729,8 @@ STATIC bool noCmds( void *trg, void *ptr )
 {
     TARGET  *targ = trg;
 
-    (void)ptr; // Unused
+    /* unused parameters */ (void)ptr;
+
     if( targ->depend != NULL && targ->depend->clist == NULL ) {
         targ->allow_nocmd = true;
     }
@@ -823,7 +830,8 @@ void TargetInit( void )
 STATIC bool walkFree( void *targ, void *ptr )
 /*******************************************/
 {
-    (void)ptr; // Unused
+    /* unused parameters */ (void)ptr;
+
     freeTarget( (TARGET*)targ );
     return( false );
 }

@@ -41,7 +41,7 @@ elf_handle ELFENTRY ElfInit( orl_funcs *funcs )
 {
     elf_handle                                  elf_hnd;
 
-    elf_hnd = (elf_handle)ORL_CLI_ALLOC( funcs, sizeof( ORL_STRUCT( elf_handle ) ) );
+    elf_hnd = (elf_handle)ORL_CLI_ALLOC( funcs, ORL_STRUCT_SIZEOF( elf_handle ) );
     if( elf_hnd != NULL ) {
         elf_hnd->funcs = funcs;
         elf_hnd->first_file_hnd = NULL;
@@ -68,7 +68,7 @@ orl_return ELFENTRY ElfFileInit( elf_handle elf_hnd, FILE *fp, elf_file_handle *
     elf_file_handle     elf_file_hnd;
     orl_return          return_val;
 
-    elf_file_hnd = (elf_file_handle)ORL_PTR_ALLOC( elf_hnd, sizeof( ORL_STRUCT( elf_file_handle ) ) );
+    elf_file_hnd = (elf_file_handle)ORL_PTR_ALLOC( elf_hnd, ORL_STRUCT_SIZEOF( elf_file_handle ) );
     if( elf_file_hnd == NULL ) {
         return( ORL_OUT_OF_MEMORY );
     }

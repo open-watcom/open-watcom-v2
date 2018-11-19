@@ -33,8 +33,18 @@
 #ifndef WDIS_SRC_MIX_INCLUDED
 #define WDIS_SRC_MIX_INCLUDED
 
-extern void             GetSourceFile( section_ptr );
-extern void             MixSource( dis_sec_offset, orl_table_index *, orl_table_index * );
-extern void             EndSourceMix( void );
+#include "orl.h"
+
+
+typedef struct state_lines {
+    unsigned        numlines;
+    unsigned        currlinesize;
+    orl_linnum      lines;
+} state_lines;
+
+extern void     GetSourceFile( state_lines *, section_ptr );
+extern void     MixSource( state_lines *, dis_sec_offset, orl_table_index *, orl_table_index * );
+extern void     EndSourceMix( state_lines * );
+extern void     FreeSourceLines( state_lines * );
 
 #endif

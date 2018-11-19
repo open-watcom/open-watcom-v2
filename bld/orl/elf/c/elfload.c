@@ -370,7 +370,7 @@ static orl_return load_elf_sec_handles( elf_file_handle elf_file_hnd, elf_index 
     }
     s_hdr += elf_file_hnd->shentsize; // skip over index 0
     for( i = 0; i < elf_file_hnd->num_sections; ++i ) {
-        elf_sec_hnd = (elf_sec_handle)_ClientAlloc( elf_file_hnd, sizeof( ORL_STRUCT( elf_sec_handle ) ) );
+        elf_sec_hnd = (elf_sec_handle)_ClientAlloc( elf_file_hnd, ORL_STRUCT_SIZEOF( elf_sec_handle ) );
         if( elf_sec_hnd == NULL ) {
             free_elf_sec_handles( elf_file_hnd, i );
             _ClientFree( elf_file_hnd, associated_index );

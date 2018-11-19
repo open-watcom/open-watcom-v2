@@ -196,7 +196,7 @@ extern void     FreeCList( CLIST *rule );
 extern void     FreeDepend( DEPEND *dep );
 extern void     KillTarget( const char *name );
 
-extern void     RenameTarget( TARGET *targ, const char *newname );
+extern void     RenameTarget( const char *oldname, const char *newname );
 extern TARGET   *FindTarget( const char *name );
 extern void     PrintCList( const CLIST *list );
 extern void     PrintTargFlags( const TATTR *tattr );

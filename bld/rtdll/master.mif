@@ -92,10 +92,10 @@ $(dllname).lbc : $(dllname).dll $(rtdll_dir)/proclbc.awk $(static_objs)
 extra_libs = kernel32.lib user32.lib advapi32.lib
 !endif
 !ifeq component wlib
-!ifeq convention stack
-lnk_alias = alias _HugeValue_br=_HugeValue, _IsTable_br=_IsTable
-!else
+!ifeq convention register
 lnk_alias = alias __HugeValue_br=__HugeValue, __IsTable_br=__IsTable
+!else
+lnk_alias = alias _HugeValue_br=_HugeValue, _IsTable_br=_IsTable
 !endif
 !endif
 

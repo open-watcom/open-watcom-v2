@@ -145,7 +145,7 @@ orl_return ElfCreateSymbolHandles( elf_sec_handle elf_sec_hnd )
     unsigned_32         st_name;
 
     num_syms = elf_sec_hnd->size.u._32[I64LO32] / elf_sec_hnd->entsize.u._32[I64LO32];
-    elf_sec_hnd->assoc.sym.symbols = (elf_symbol_handle)_ClientSecAlloc( elf_sec_hnd, sizeof( ORL_STRUCT( elf_symbol_handle ) ) * num_syms );
+    elf_sec_hnd->assoc.sym.symbols = (elf_symbol_handle)_ClientSecAlloc( elf_sec_hnd, ORL_STRUCT_SIZEOF( elf_symbol_handle ) * num_syms );
     if( elf_sec_hnd->assoc.sym.symbols == NULL )
         return( ORL_OUT_OF_MEMORY );
     current = elf_sec_hnd->assoc.sym.symbols;
@@ -489,7 +489,7 @@ orl_return ElfCreateRelocs( elf_sec_handle orig_sec, elf_sec_handle reloc_sec )
     switch( reloc_sec->type ) {
     case ORL_SEC_TYPE_RELOCS:
         num_relocs = reloc_sec->size.u._32[I64LO32] / reloc_sec->entsize.u._32[I64LO32];
-        orel = _ClientSecAlloc( reloc_sec, sizeof( ORL_STRUCT( orl_reloc ) ) * num_relocs );
+        orel = _ClientSecAlloc( reloc_sec, ORL_STRUCT_SIZEOF( orl_reloc ) * num_relocs );
         reloc_sec->assoc.reloc.relocs = orel;
         if( orel == NULL )
             return( ORL_OUT_OF_MEMORY );
@@ -517,7 +517,7 @@ orl_return ElfCreateRelocs( elf_sec_handle orig_sec, elf_sec_handle reloc_sec )
         break;
     case ORL_SEC_TYPE_RELOCS_EXPADD:
         num_relocs = reloc_sec->size.u._32[I64LO32] / reloc_sec->entsize.u._32[I64LO32];
-        orel = _ClientSecAlloc( reloc_sec, sizeof( ORL_STRUCT( orl_reloc ) ) * num_relocs );
+        orel = _ClientSecAlloc( reloc_sec, ORL_STRUCT_SIZEOF( orl_reloc ) * num_relocs );
         reloc_sec->assoc.reloc.relocs = orel;
         if( orel == NULL )
             return( ORL_OUT_OF_MEMORY );

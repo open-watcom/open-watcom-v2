@@ -79,7 +79,8 @@ STATIC bool freeSuffix( void *node, void *ptr )
     CREATOR *creator;
     CREATOR *creator_next;
 
-    (void)ptr; // Unused
+    /* unused parameters */ (void)ptr;
+
     FreeSafe( suffix->node.name );
     freePathRing( suffix->pathring );
 
@@ -439,7 +440,8 @@ STATIC bool printSuf( void *node, void *ptr )
     SLIST       *slist;
     CLIST       *cmds;
 
-    (void)ptr; // Unused
+    /* unused parameters */ (void)ptr;
+
     PrtMsg( INF | PSUF_SUFFIX, suffix->node.name );
     if( suffix->currpath != NULL ) {
         currpath = suffix->currpath;

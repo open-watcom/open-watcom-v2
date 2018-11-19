@@ -9,8 +9,8 @@ echo Build host: <BLD_HOST>
 
 cdsay .
 
-[ BLOCK <1> boot bootclean ]
-#===========================
+[ BLOCK <BLDRULE> boot bootclean ]
+#=================================
 # Build Open Watcom tools using the host platform's native compiler.
 #
 # NB: The ordering of the following inclusions is significant!
@@ -254,20 +254,20 @@ set OWTXTDOCBUILD=1
 [ INCLUDE <OWDOCSDIR>/builder.ctl ]
 set OWTXTDOCBUILD=
 
-[ BLOCK <1> docs docsclean docpdf cpdocpdf ]
-#===========================================
+[ BLOCK <BLDRULE> docs docsclean docpdf cpdocpdf ]
+#=================================================
 [ INCLUDE <OWDOCSDIR>/builder.ctl ]
 
-[ BLOCK <1> test testclean cleanlog ]
-#====================================
+[ BLOCK <BLDRULE> test testclean cleanlog ]
+#==========================================
 [ INCLUDE <OWSRCDIR>/wasmtest/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/ctest/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/f77test/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/plustest/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/clibtest/builder.ctl ]
 
-[ BLOCK <1> test cleanrel ]
-#==========================
+[ BLOCK <BLDRULE> test cleanrel ]
+#================================
     echo rm -rf <OWRELROOT>
     rm -rf <OWRELROOT>
 
