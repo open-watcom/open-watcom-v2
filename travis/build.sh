@@ -91,11 +91,15 @@ build_proc()
                         builder -q cprel1
                     fi
                 fi
+                if [ $RC -eq 0 ]; then
+                    cp -R $OWSRCDIR/* $OWROOT/build1/
+                fi
                 ;;
             "BUILD2")
                 if [ "$TRAVIS_OS_NAME" = "osx" ] && [ "$OWOSXBUILD" != "1" ]; then
                     return 0
                 fi
+                cp -u -R $OWROOT/build1/* $OWSRCDIR/
                 cd $OWSRCDIR
                 if [ "$TRAVIS_EVENT_TYPE" = "pull_request" ]; then
                     builder build2
