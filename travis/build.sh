@@ -92,14 +92,16 @@ build_proc()
                     fi
                 fi
                 if [ $RC -eq 0 ]; then
-                    cp -R $OWSRCDIR $OWROOT/build1
+                    echo "copy build 1 to cache"
+                    cp -R -f $OWSRCDIR $OWROOT/build1
                 fi
                 ;;
             "BUILD2")
                 if [ "$TRAVIS_OS_NAME" = "osx" ] && [ "$OWOSXBUILD" != "1" ]; then
                     return 0
                 fi
-                cp -R $OWROOT/build1 $OWSRCDIR
+                echo "load build 1 from cache"
+                cp -R -n $OWROOT/build1 $OWSRCDIR
                 cd $OWSRCDIR
                 if [ "$TRAVIS_EVENT_TYPE" = "pull_request" ]; then
                     builder build2
