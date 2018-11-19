@@ -973,9 +973,9 @@ static YYTOKENTYPE yylex( PARSE_STACK *state )
     PTREE           tree;
     look_ahead_storage *saved_token;
     struct {
-        unsigned no_super_token : 1;
-        unsigned special_colon_colon : 1;
-        unsigned special_typename : 1;
+        unsigned no_super_token         : 1;
+        unsigned special_colon_colon    : 1;
+        unsigned special_typename       : 1;
     } flags;
 
     state->favour_reduce = false;

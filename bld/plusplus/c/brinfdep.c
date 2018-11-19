@@ -45,18 +45,18 @@
 #endif
 
 struct MACDEP                   // MACDEP -- macro dependency
-{   MACDEP* next;               // - next in ring
-    MEPTR mentry;               // - macro
-    MACVALUE* value;            // - value
-    MAC_VTYPE type;             // - type of dependency
-    uint_8 written          :1; // - true ==> written out
-    unsigned :0;                // - alignment
+{   MACDEP      *next;          // - next in ring
+    MEPTR       mentry;         // - macro
+    MACVALUE    *value;         // - value
+    MAC_VTYPE   type;           // - type of dependency
+    uint_8      written : 1;    // - true ==> written out
+    unsigned            : 0;    // - alignment
 };
 
 struct SRCDEP                   // SRCDEP -- macro dependency for source file
-{   SRCDEP* next;               // - next in ring
-    MACDEP* deps;               // - ring of dependencies
-    SRCFILE srcfile;            // - the source file
+{   SRCDEP      *next;          // - next in ring
+    MACDEP      *deps;          // - ring of dependencies
+    SRCFILE     srcfile;        // - the source file
 };
 
 static PSTK_CTL active_srcfiles;// active source files
@@ -95,7 +95,7 @@ void BrinfDepRestart            // MODULE RESTART DURING PCH READ
 SRCDEP* BrinfDepSrcBeg          // ALLOCATE A SRCDEP
     ( SRCFILE srcfile )         // - file name
 {
-    SRCDEP* sd = RingCarveAlloc( carve_src_dep, &ring_src_deps);
+    SRCDEP* sd = RingCarveAlloc( carve_src_dep, &ring_src_deps );
     sd->deps = NULL;
     sd->srcfile = srcfile;
     PstkPush( &active_srcfiles, sd );

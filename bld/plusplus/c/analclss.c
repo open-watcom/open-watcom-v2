@@ -111,24 +111,24 @@ typedef enum {
 
 typedef struct ctor_prologue ctor_prologue;
 struct ctor_prologue {
-    PTREE       member_init;    // - list of data member initializations
-    PTREE       base_init;      // - list of base class initializations
-    SCOPE       scope;          // - 'C' in C( C & x )
-    CDOPT_ITER* optiter;        // - next input ctor for CD optimization
-    PTREE       comp_expr;      // - initialization for component
-    TYPE        comp_type;      // - type for component
-    TYPE        this_type;      // - type of 'this' cache
-    CGFILE_INS  sect_locn;      // - location of IC_SECT_BEG
-    target_offset_t orig_offset;// - original offset of base/member
-    target_offset_t comp_offset;// - offset for component
-    ctor_init   comp_options;   // - options
-    unsigned    cdopt     :1;   // - CD optimization active
-    unsigned    dtor_reqd :1;   // - true ==> a DTOR was required (in section)
-    unsigned    gen_copy  :1;   // - a compiler generated copy ctor
-    unsigned    excepts   :1;   // - true ==> exceptions enabled
-    unsigned    obj_dtor  :1;   // - true ==> object requires DTOR
-    unsigned    have_cdopt:1;   // - true ==> have CDOPT component
-    unsigned    done_cdopt:1;   // - true ==> processed all CDOPT components
+    PTREE           member_init;        // - list of data member initializations
+    PTREE           base_init;          // - list of base class initializations
+    SCOPE           scope;              // - 'C' in C( C & x )
+    CDOPT_ITER      *optiter;           // - next input ctor for CD optimization
+    PTREE           comp_expr;          // - initialization for component
+    TYPE            comp_type;          // - type for component
+    TYPE            this_type;          // - type of 'this' cache
+    CGFILE_INS      sect_locn;          // - location of IC_SECT_BEG
+    target_offset_t orig_offset;        // - original offset of base/member
+    target_offset_t comp_offset;        // - offset for component
+    ctor_init       comp_options;       // - options
+    unsigned        cdopt       : 1;    // - CD optimization active
+    unsigned        dtor_reqd   : 1;    // - true ==> a DTOR was required (in section)
+    unsigned        gen_copy    : 1;    // - a compiler generated copy ctor
+    unsigned        excepts     : 1;    // - true ==> exceptions enabled
+    unsigned        obj_dtor    : 1;    // - true ==> object requires DTOR
+    unsigned        have_cdopt  : 1;    // - true ==> have CDOPT component
+    unsigned        done_cdopt  : 1;    // - true ==> processed all CDOPT components
 };
 
 typedef struct assign_prologue assign_prologue;

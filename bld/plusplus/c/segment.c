@@ -50,34 +50,34 @@
 
 
 typedef struct pc_segment PC_SEGMENT;
-PCH_struct pc_segment {                 // PC_SEGMENT -- segment on PC
-    PC_SEGMENT      *next;              // - next in ring
-    PC_SEGMENT      *sibling;           // - related segment
-    char            *class_name;        // - class name
-    SYMBOL          label;              // - symbol for label in segment
-    unsigned        attrs;              // - attributes
-    fe_seg_id       seg_id;             // - id for segment
-    target_offset_t align;              // - alignment
-    target_size_t   offset;             // - offset within segment
+PCH_struct pc_segment {                     // PC_SEGMENT -- segment on PC
+    PC_SEGMENT      *next;                  // - next in ring
+    PC_SEGMENT      *sibling;               // - related segment
+    char            *class_name;            // - class name
+    SYMBOL          label;                  // - symbol for label in segment
+    unsigned        attrs;                  // - attributes
+    fe_seg_id       seg_id;                 // - id for segment
+    target_offset_t align;                  // - alignment
+    target_size_t   offset;                 // - offset within segment
 #if _INTEL_CPU
-    hw_reg_set      binding;            // - register bound to the segment
+    hw_reg_set      binding;                // - register bound to the segment
 #endif
-                                        // - segment:
-    unsigned        dgroup : 1;         // - is part of DGROUP
-    unsigned        lab_gened : 1;      // - label has been generated
-    unsigned        used : 1;           // - has been used
-    unsigned        fixed_alignment : 1;// - has a fixed alignment (no changes)
-    unsigned        cg_defed : 1;       // - defined to code generator
-    unsigned        module_prefix : 1;  // - name has ModuleName as a prefix
-    unsigned        has_data : 1;       // - has data gened in segment
-    unsigned        only_strings : 1;   // - only strings go in segment
-    char            name[1];            // - name
+                                            // - segment:
+    unsigned        dgroup          : 1;    // - is part of DGROUP
+    unsigned        lab_gened       : 1;    // - label has been generated
+    unsigned        used            : 1;    // - has been used
+    unsigned        fixed_alignment : 1;    // - has a fixed alignment (no changes)
+    unsigned        cg_defed        : 1;    // - defined to code generator
+    unsigned        module_prefix   : 1;    // - name has ModuleName as a prefix
+    unsigned        has_data        : 1;    // - has data gened in segment
+    unsigned        only_strings    : 1;    // - only strings go in segment
+    char            name[1];                // - name
 };
 
-typedef struct {                        // DEF_SEG -- code/data default segments
-    PC_SEGMENT      *pcseg;             // - default pc segment
-    unsigned        ctr;                // - # of segments allocated
-    unsigned        ds_used : 1;        // - true ==> has been used
+typedef struct {                            // DEF_SEG -- code/data default segments
+    PC_SEGMENT      *pcseg;                 // - default pc segment
+    unsigned        ctr;                    // - # of segments allocated
+    unsigned        ds_used         : 1;    // - true ==> has been used
 } DEF_SEG;
 
 static fe_seg_id seg_max;           // last segment # used
@@ -92,8 +92,8 @@ static DEF_SEG code_def_seg;        // code segment -- default info.
 static DEF_SEG data_def_seg;        // data segment -- default info.
 
 static struct {
-    unsigned in_back_end : 1;       // true ==> now in CGBKMAIN
-    unsigned use_def_seg : 1;       // true ==> #pragma def_seg active
+    unsigned in_back_end    : 1;    // true ==> now in CGBKMAIN
+    unsigned use_def_seg    : 1;    // true ==> #pragma def_seg active
 } flags;
 
 enum                                // SEGMENT-ATTRIBUTE COMBINATIONS USED:
@@ -482,20 +482,20 @@ target_offset_t SegmentAdjust(  // SEGMENT: ADJUST OFFSET TO ALIGN
 }
 
 
-struct seg_look {                           // used to lookup segments
-    const char      *seg_name;              // - segment name
-    const char      *class_name;            // - segment class name
-    unsigned        attrs;                  // - attributes
-    fe_seg_id       seg_id;                 // - id for segment
-    target_offset_t align;                  // - segment alignment
-    target_size_t   sym_size;               // - space needed for symbol
-    target_size_t   sym_align;              // - alignment needed for symbol
-    unsigned        use_seg_id : 1;         // - for lookup
-    unsigned        use_attrs : 1;          // - for lookup
-    unsigned        use_align : 1;          // - for lookup
-    unsigned        use_sym_size_align : 1; // - for lookup
-    unsigned        use_name : 1;           // - for lookup
-    unsigned        use_only_strings : 1;   // - for lookup
+struct seg_look {                               // used to lookup segments
+    const char      *seg_name;                  // - segment name
+    const char      *class_name;                // - segment class name
+    unsigned        attrs;                      // -                                                                                                                                                                                                                                                                                                                                                                                                                                                                     attributes
+    fe_seg_id       seg_id;                     // - id for segment
+    target_offset_t align;                      // - segment alignment
+    target_size_t   sym_size;                   // - space needed for symbol
+    target_size_t   sym_align;                  // - alignment needed for symbol
+    unsigned        use_seg_id          : 1;    // - for lookup
+    unsigned        use_attrs           : 1;    // - for lookup
+    unsigned        use_align           : 1;    // - for lookup
+    unsigned        use_sym_size_align  : 1;    // - for lookup
+    unsigned        use_name            : 1;    // - for lookup
+    unsigned        use_only_strings    : 1;    // - for lookup
 };
 
 

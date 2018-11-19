@@ -160,7 +160,7 @@ static void CUnknown( void )
 static void CInclude( void )
 {
     struct {
-        bool    in_macro : 1;
+        bool    in_macro    : 1;
     } flags;
 
     auto char   buf[_MAX_PATH];

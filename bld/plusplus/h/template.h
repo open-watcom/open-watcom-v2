@@ -37,124 +37,124 @@
 
 typedef struct template_data TEMPLATE_DATA;
 struct template_data {
-    TEMPLATE_DATA       *next;          // (stack)
-    DECL_INFO           *args;          // template arguments
-    unsigned            num_args;       // number of template arguments
-    PTREE               spec_args;      // template specialization arguments
-    TYPE                unbound_type;   // unbound class type
-    SCOPE               decl_scope;     // template decl scope
-    REWRITE             *defn;          // class template definition
-    REWRITE             *member_defn;   // class template member definition
-    NAME                template_name; // name of the template
-    SCOPE               template_scope; // conaining scope of the template
-    TOKEN_LOCN          locn;           // location of class template id
-    error_state_t       errors;         // error state at beginning
-    bool                all_generic : 1;// all args are generic types
-    bool                defn_found : 1; // a template defn has been found
-    bool                member_found :1;// a class template member has been found
-    bool                defn_added : 1; // class template defn has just been added
+    TEMPLATE_DATA       *next;                  // (stack)
+    DECL_INFO           *args;                  // template arguments
+    unsigned            num_args;               // number of template arguments
+    PTREE               spec_args;              // template specialization arguments
+    TYPE                unbound_type;           // unbound class type
+    SCOPE               decl_scope;             // template decl scope
+    REWRITE             *defn;                  // class template definition
+    REWRITE             *member_defn;           // class template member definition
+    NAME                template_name;          // name of the template
+    SCOPE               template_scope;         // conaining scope of the template
+    TOKEN_LOCN          locn;                   // location of class template id
+    error_state_t       errors;                 // error state at beginning
+    bool                all_generic     : 1;    // all args are generic types
+    bool                defn_found      : 1;    // a template defn has been found
+    bool                member_found    : 1;    // a class template member has been found
+    bool                defn_added      : 1;    // class template defn has just been added
 };
 
 // these structures are private to TEMPLATE.C but they are exposed
 // for debug dump routines
 
-typedef struct member_inst MEMBER_INST; // template member instantiation
+typedef struct member_inst MEMBER_INST;         // template member instantiation
 PCH_struct member_inst {
-    MEMBER_INST         *next;          // (ring)
-    DECL_INFO           *dinfo;         // member definition
+    MEMBER_INST         *next;                  // (ring)
+    DECL_INFO           *dinfo;                 // member definition
     SCOPE               scope;
     SCOPE               class_parm_scope;
     SCOPE               class_parm_enclosing;
-    bool                is_inline : 1;
+    bool                is_inline       : 1;
 };
 
 #ifndef CLASS_INST_DEFINED
 #define CLASS_INST_DEFINED
-typedef struct class_inst CLASS_INST;   // class template instantiation
+typedef struct class_inst CLASS_INST;           // class template instantiation
 #endif
 PCH_struct class_inst {
-    CLASS_INST          *next;          // (ring)
-    TYPE                unbound_type;   // unbound class type
-    SCOPE               scope;          // scope containing instantiation
-    MEMBER_INST         *members;       // ring of pending member functions
-    TOKEN_LOCN          locn;           // location of first instantiation
-    bool                must_process :1;// must be post-processed
-    bool                dont_process :1;// should not be post-processed
-    bool                processed : 1;  // has been post-processed
-    bool                specific : 1;   // specific instantiation provided
-    bool                locn_set : 1;   // locn field has been set
-    bool                free : 1;       // used for precompiled headers
+    CLASS_INST          *next;                  // (ring)
+    TYPE                unbound_type;           // unbound class type
+    SCOPE               scope;                  // scope containing instantiation
+    MEMBER_INST         *members;               // ring of pending member functions
+    TOKEN_LOCN          locn;                   // location of first instantiation
+    bool                must_process    : 1;    // must be post-processed
+    bool                dont_process    : 1;    // should not be post-processed
+    bool                processed       : 1;    // has been post-processed
+    bool                specific        : 1;    // specific instantiation provided
+    bool                locn_set        : 1;    // locn field has been set
+    bool                free            : 1;    // used for precompiled headers
 };
 
 typedef struct template_member TEMPLATE_MEMBER; // class template member
 PCH_struct template_member {
-    TEMPLATE_MEMBER     *next;          // (ring)
-    SCOPE               scope;          // scope for member definition
-    REWRITE             *defn;          // member definition
-    NAME                *arg_names;    // argument names
+    TEMPLATE_MEMBER         *next;              // (ring)
+    SCOPE                   scope;              // scope for member definition
+    REWRITE                 *defn;              // member definition
+    NAME                    *arg_names;         // argument names
 };
 
 PCH_struct template_specialization {
-    TEMPLATE_SPECIALIZATION *next;      // (ring)
-    TEMPLATE_INFO       *tinfo;         // parent template info
-    CLASS_INST          *instantiations;// list of current instantiations
-    REWRITE             *defn;          // template def'n (may be NULL)
-    TEMPLATE_MEMBER     *member_defns;  // external member defns
-    SCOPE               decl_scope;     // template declaration scope
-    TOKEN_LOCN          locn;           // location of class template id
-    unsigned            num_args;       // number of template arguments
-    TYPE                *type_list;     // template argument types
-    NAME                *arg_names;     // argument names
-    PTREE               spec_args;      // template specialization arguments
-    unsigned char       *ordering;      // "at least as specialized as" bitmask
-    bool                corrupted : 1;  // template def'n contained errors
-    bool                defn_found : 1; // a template defn has been found
+    TEMPLATE_SPECIALIZATION *next;              // (ring)
+    TEMPLATE_INFO           *tinfo;             // parent template info
+    CLASS_INST              *instantiations;    // list of current instantiations
+    REWRITE                 *defn;              // template def'n (may be NULL)
+    TEMPLATE_MEMBER         *member_defns;      // external member defns
+    SCOPE                   decl_scope;         // template declaration scope
+    TOKEN_LOCN              locn;               // location of class template id
+    unsigned                num_args;           // number of template arguments
+    TYPE                    *type_list;         // template argument types
+    NAME                    *arg_names;         // argument names
+    PTREE                   spec_args;          // template specialization arguments
+    unsigned char           *ordering;          // "at least as specialized as" bitmask
+    bool                    corrupted   : 1;    // template def'n contained errors
+    bool                    defn_found  : 1;    // a template defn has been found
 };
 
 typedef struct unbound_template UNBOUND_TEMPLATE; // unbound template class
 PCH_struct unbound_template {
-    UNBOUND_TEMPLATE    *next;          // (ring)
-    TYPE                unbound_type;   // unbound class type
-    unsigned int        hash;           // hash code
+    UNBOUND_TEMPLATE        *next;              // (ring)
+    TYPE                    unbound_type;       // unbound class type
+    unsigned int            hash;               // hash code
 };
 
 PCH_struct template_info {
-    TEMPLATE_INFO       *next;          // (ring)
-    UNBOUND_TEMPLATE    *unbound_templates; // unbound template classes
-    TEMPLATE_SPECIALIZATION *specializations;// template specializations
-    REWRITE             **defarg_list;  // default arguments
-    SYMBOL              sym;            // template symbol
-    unsigned            nr_specs;       // number of template specializations (including the primary template)
-    bool                free : 1;       // used for precompiled headers
+    TEMPLATE_INFO           *next;              // (ring)
+    UNBOUND_TEMPLATE        *unbound_templates; // unbound template classes
+    TEMPLATE_SPECIALIZATION *specializations;   // template specializations
+    REWRITE                 **defarg_list;      // default arguments
+    SYMBOL                  sym;                // template symbol
+    unsigned                nr_specs;           // number of template specializations (including the primary template)
+    bool                    free        : 1;    // used for precompiled headers
 };
 
 typedef struct fn_template_inst FN_TEMPLATE_INST; // function template instantiation
 PCH_struct fn_template_inst {
-    FN_TEMPLATE_INST    *next;          // (ring)
-    SYMBOL              bound_sym;      // bound template function symbol
-    TOKEN_LOCN          locn;           // instantiation location
-    SCOPE               parm_scope;     // template parameter scope
-    SCOPE               inst_scope;     // template instantiation scope
-    bool                processed : 1;  // already processed instantiation
+    FN_TEMPLATE_INST        *next;              // (ring)
+    SYMBOL                  bound_sym;          // bound template function symbol
+    TOKEN_LOCN              locn;               // instantiation location
+    SCOPE                   parm_scope;         // template parameter scope
+    SCOPE                   inst_scope;         // template instantiation scope
+    bool                    processed   : 1;    // already processed instantiation
 };
 
 #ifndef FN_TEMPLATE_DEFINED
 #define FN_TEMPLATE_DEFINED
-typedef struct fn_template FN_TEMPLATE; // function template
+typedef struct fn_template FN_TEMPLATE;         // function template
 #endif
 PCH_struct fn_template {
-    FN_TEMPLATE         *next;          // (ring)
-    FN_TEMPLATE_INST    *instantiations;// list of instantiations
-    SYMBOL              sym;            // template function
-    SCOPE               decl_scope;     // template declaration scope
-    REWRITE             *defn;          // always non-NULL
-    bool                has_defn : 1;   // declaration or definition?
-    bool                free : 1;       // used for precompiled headers
+    FN_TEMPLATE             *next;              // (ring)
+    FN_TEMPLATE_INST        *instantiations;    // list of instantiations
+    SYMBOL                  sym;                // template function
+    SCOPE                   decl_scope;         // template declaration scope
+    REWRITE                 *defn;              // always non-NULL
+    bool                    has_defn    : 1;    // declaration or definition?
+    bool                    free        : 1;    // used for precompiled headers
 };
 
 typedef enum tc_directive {
-    TCD_EXTERN          = 0x01,         // compile no member fns in this module
-    TCD_INSTANTIATE     = 0x02,         // compile all member fns in this module
+    TCD_EXTERN          = 0x01,                 // compile no member fns in this module
+    TCD_INSTANTIATE     = 0x02,                 // compile all member fns in this module
     TCD_NULL            = 0x00
 } tc_directive;
 

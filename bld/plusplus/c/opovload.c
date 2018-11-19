@@ -138,20 +138,20 @@ typedef struct {                    // OVOP -- operand types
     TYPE class_type;                // - NULL, class type
 } OVOP;
 
-typedef struct {                    // OLINF -- overload information
-    PTREE expr;                     // - expression
-    OVOP left;                      // - operand classification: left
-    OVOP right;                     // - operand classification: right
-    SYMBOL scalars;                 // - scalars list
-    SEARCH_RESULT *result_mem;      // - search result (member)
-    SEARCH_RESULT *result_nonmem;   // - search result (non-member)
-    SEARCH_RESULT *result_nonmem_namespace;   // - search result (non-member)
-    OP_MASK mask;                   // - mask for operator
-    PTO_FLAG flags;                 // - flags for operand
-    unsigned scalar_overloadable:1; // - true ==> scalar overloadable
-    unsigned repeat_overload    :1; // - true ==> repeat overloading (->)
-    unsigned have_class_type    :1; // - true ==> have a class operand
-    unsigned have_user_type     :1; // - true ==> have a class,enum operand
+typedef struct {                            // OLINF -- overload information
+    PTREE       expr;                       // - expression
+    OVOP        left;                       // - operand classification: left
+    OVOP        right;                      // - operand classification: right
+    SYMBOL      scalars;                    // - scalars list
+    SEARCH_RESULT *result_mem;              // - search result (member)
+    SEARCH_RESULT *result_nonmem;           // - search result (non-member)
+    SEARCH_RESULT *result_nonmem_namespace; // - search result (non-member)
+    OP_MASK     mask;                       // - mask for operator
+    PTO_FLAG    flags;                      // - flags for operand
+    unsigned    scalar_overloadable : 1;    // - true ==> scalar overloadable
+    unsigned    repeat_overload     : 1;    // - true ==> repeat overloading (->)
+    unsigned    have_class_type     : 1;    // - true ==> have a class operand
+    unsigned    have_user_type      : 1;    // - true ==> have a class,enum operand
 } OLINF;
 
 #ifndef NDEBUG

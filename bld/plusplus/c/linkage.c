@@ -51,7 +51,7 @@ typedef struct linkage_stack *LINKAGE_STACK;
 struct linkage_stack {
     LINKAGE_STACK       prev;
     LINKAGE             linkage;
-    unsigned            block : 1;
+    unsigned            block       : 1;
 };
 
 static LINKAGE validLinkages;

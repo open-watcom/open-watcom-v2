@@ -44,53 +44,53 @@
 #define labelBlockPCHWrite(x,y) PCHWriteCVIndex( (cv_index)(pointer_int)labelBlockGetIndex(x,y) );
 
 typedef struct blk_init BLK_INIT;
-struct blk_init {               // BLK_INIT -- describes blocks for init. dcls
-    BLK_INIT    *next;          // - next at this level (in a ring)
-    BLK_INIT    *containing;    // - containing (enclosing) block
-    BLK_INIT    *contains;      // - ring of contained blocks
-    SCOPE       scope;          // - scope for block
-    SYMBOL      first_init;     // - first initialized symbol in block
-    SYMBOL      sym;            // - last symbol defined
-    SYMBOL      sym_containing; // - last symbol defined for containing block
-    SYMBOL      sym_dtored;     // - last symbol DTORed
-    SYMBOL      sym_dtored_containing;//- last symbol DTORed in containing block
-    SYMBOL      dcled_dtored;   // - last non-temporary DTORed
-    unsigned    var_no;         // - initialization no. for self
-    unsigned    var_no_containing; // - initialization no. for containing block
-    void        *try_id;        // - id of try, when catch block
-    CGFILE_INS  open_ins;       // - location of IC_BLOCK_OPEN, IC_BLOCK_DEAD
-    TOKEN_LOCN  locn;           // - location of definition
-    LAB_POSN    switch_posn;    // - position at switch/try statement
-    unsigned    open_zap : 1;   // - need to zap IC_BLOCK_OPEN
-    unsigned    dead_zap : 1;   // - need to zap IC_BLOCK_DEAD
-    unsigned    try_blk : 1;    // - is a try block
-    unsigned    catch_blk : 1;  // - is a catch block
-    unsigned    free : 1;       // used for precompiled headers
+struct blk_init {                       // BLK_INIT -- describes blocks for init. dcls
+    BLK_INIT    *next;                  // - next at this level (in a ring)
+    BLK_INIT    *containing;            // - containing (enclosing) block
+    BLK_INIT    *contains;              // - ring of contained blocks
+    SCOPE       scope;                  // - scope for block
+    SYMBOL      first_init;             // - first initialized symbol in block
+    SYMBOL      sym;                    // - last symbol defined
+    SYMBOL      sym_containing;         // - last symbol defined for containing block
+    SYMBOL      sym_dtored;             // - last symbol DTORed
+    SYMBOL      sym_dtored_containing;  //- last symbol DTORed in containing block
+    SYMBOL      dcled_dtored;           // - last non-temporary DTORed
+    unsigned    var_no;                 // - initialization no. for self
+    unsigned    var_no_containing;      // - initialization no. for containing block
+    void        *try_id;                // - id of try, when catch block
+    CGFILE_INS  open_ins;               // - location of IC_BLOCK_OPEN, IC_BLOCK_DEAD
+    TOKEN_LOCN  locn;                   // - location of definition
+    LAB_POSN    switch_posn;            // - position at switch/try statement
+    unsigned    open_zap        : 1;    // - need to zap IC_BLOCK_OPEN
+    unsigned    dead_zap        : 1;    // - need to zap IC_BLOCK_DEAD
+    unsigned    try_blk         : 1;    // - is a try block
+    unsigned    catch_blk       : 1;    // - is a catch block
+    unsigned    free            : 1;    // used for precompiled headers
 };
 
-static BLK_INIT *block_init_hdr;// - header for current block
-static BLK_INIT block_init_mod; // - block initialization for module
-static CGFILE_INS ins_temp;     // - zapped to IC_EXPR_TEMP
+static BLK_INIT *block_init_hdr;    // - header for current block
+static BLK_INIT block_init_mod;     // - block initialization for module
+static CGFILE_INS ins_temp;         // - zapped to IC_EXPR_TEMP
 
-                                // carving control
-static carve_t carveLAB_DEF;    // - LAB_DEF
-static carve_t carveLAB_REF;    // - LAB_REF
-static carve_t carveBLK_INIT;   // - BLK_INIT
+                                    // carving control
+static carve_t carveLAB_DEF;        // - LAB_DEF
+static carve_t carveLAB_REF;        // - LAB_REF
+static carve_t carveBLK_INIT;       // - BLK_INIT
 
-typedef struct                  // COND_BLK -- conditional block
-{   CGFILE_INS ins_true;        // - zapped to IC_SET_TRUE
-    CGFILE_INS ins_false;       // - zapped to IC_SET_FALSE
-    SYMBOL sym_dtored;          // - last DTOR'ed symbol at start of block
-    unsigned has_false :1;      // - true ==> has false part (?:)
+typedef struct                          // COND_BLK -- conditional block
+{   CGFILE_INS  ins_true;               // - zapped to IC_SET_TRUE
+    CGFILE_INS  ins_false;              // - zapped to IC_SET_FALSE
+    SYMBOL      sym_dtored;             // - last DTOR'ed symbol at start of block
+    unsigned    has_false       : 1;    // - true ==> has false part (?:)
 } COND_BLK;
 
-static VSTK_CTL stack_cond;     // stack of conditionals
-static SYMBOL expr_dtor_bound;  // last symbol requiring DTOR in block
-static unsigned expr_dtor_depth;// depth of conditional DTORing
+static VSTK_CTL stack_cond;         // stack of conditionals
+static SYMBOL expr_dtor_bound;      // last symbol requiring DTOR in block
+static unsigned expr_dtor_depth;    // depth of conditional DTORing
 
 static struct {
-    unsigned    has_setjmp : 1; // true ==> setjmp in expression
-    unsigned    has_newctor: 1; // true ==> has a new-ctor
+    unsigned    has_setjmp      : 1;    // true ==> setjmp in expression
+    unsigned    has_newctor     : 1;    // true ==> has a new-ctor
 } labelFlags;
 
 

@@ -45,17 +45,17 @@
 #define DWBLOCK_BSIZE   ( DWBLOCK_IOSIZE - DWBLOCK_EXTRA )
 
 typedef struct dwiobuff DWIOBUFF;
-struct dwiobuff                 // DWIOBUFF -- buffer in memory
-{   DWIOBUFF *next;             // - next in the ring
-    DISK_ADDR disk_addr;        // - block number in IC file
-    DISK_ADDR next_addr;        // - next block number in IC file
-    DISK_ADDR prev_addr;        // - prev block number in IC file
-    DISK_OFFSET current_offset; // - free offset
-    unsigned block_num;         // - block number in chain of blocks
-    unsigned reading;           // - number of items being read from block
-    unsigned written : 1;       // - block has been written (not dirty)
-    unsigned writing : 1;       // - being written to now
-    char data[DWBLOCK_IOSIZE];  // - buffer in memory
+struct dwiobuff                         // DWIOBUFF -- buffer in memory
+{   DWIOBUFF    *next;                  // - next in the ring
+    DISK_ADDR   disk_addr;              // - block number in IC file
+    DISK_ADDR   next_addr;              // - next block number in IC file
+    DISK_ADDR   prev_addr;              // - prev block number in IC file
+    DISK_OFFSET current_offset;         // - free offset
+    unsigned    block_num;              // - block number in chain of blocks
+    unsigned    reading;                // - number of items being read from block
+    unsigned    written         : 1;    // - block has been written (not dirty)
+    unsigned    writing         : 1;    // - being written to now
+    char        data[DWBLOCK_IOSIZE];   // - buffer in memory
 };
 
 // info that must be saved to disk when a buffer is freed

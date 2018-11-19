@@ -379,10 +379,10 @@ PTREE AnalyseNew(               // ANALYSE A "NEW" OPERATOR (WITH OVERLOADING)
     CGOP cgop;                  // - type of new expression
     TOKEN_LOCN err_locn;        // - error location
     struct {
-      unsigned needs_dtor : 1;  // - class says DTOR is req'd (DTOR may be empty)
-      unsigned really_dtorable:1;//- class DTOR really req'd
-      unsigned needs_count:1;   // - array new needs count in allocation
-      unsigned free_array_no :1;// - "array_number" needs to be freed
+        unsigned needs_dtor         : 1;    // - class says DTOR is req'd (DTOR may be empty)
+        unsigned really_dtorable    : 1;    //- class DTOR really req'd
+        unsigned needs_count        : 1;    // - array new needs count in allocation
+        unsigned free_array_no      : 1;    // - "array_number" needs to be freed
     } flag;
 
 
@@ -689,12 +689,12 @@ PTREE AnalyseDelete(            // ANALYSE DELETE OPERATOR
     TOKEN_LOCN err_locn;        // - error location
     unsigned num_args;          // - # of args for "op delete"
     struct {
-      unsigned test_null:1;     // - true ==> test for 0 address
-      unsigned array_delete:1;  // - true ==> delete[]
-      unsigned inside_dtor:1;   // - true ==> delete gening in DTOR
-      unsigned num_in_alloc:1;  // - true ==> number elements is in allocation
-      unsigned really_dtorable:1;//- true ==> non-trivial destructor req'd
-      unsigned adjust_for_num:1;// - true ==> subtract sizeof(int) from ptr
+        unsigned test_null          : 1;    // - true ==> test for 0 address
+        unsigned array_delete       : 1;    // - true ==> delete[]
+        unsigned inside_dtor        : 1;    // - true ==> delete gening in DTOR
+        unsigned num_in_alloc       : 1;    // - true ==> number elements is in allocation
+        unsigned really_dtorable    : 1;    // - true ==> non-trivial destructor req'd
+        unsigned adjust_for_num     : 1;    // - true ==> subtract sizeof(int) from ptr
     } flag;
 
     info = NULL;

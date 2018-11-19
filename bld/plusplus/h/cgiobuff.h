@@ -38,17 +38,17 @@
 #define CGIO_CRIPPLE_LIMIT      5000
 
 typedef struct cgiobuff CGIOBUFF;
-struct cgiobuff {               // CGIOBUFF -- buffer in memory
-    CGIOBUFF    *next;          // - next in the ring
-    CGIOBUFF    *reuse_next;    // - links for reuse doubly-linked ring
-    CGIOBUFF    *reuse_prev;    // - ...
-    DISK_ADDR   disk_addr;      // - block number in IC file
-    DISK_OFFSET free_offset;    // - free offset
-    unsigned    reading;        // - number of items being read from block
-    unsigned    written : 1;    // - block has been written (not dirty)
-    unsigned    writing : 1;    // - being written to now
-    unsigned    active : 1;     // - block is active
-    char        data[TMPBLOCK_BSIZE]; // - buffer in memory
+struct cgiobuff {                       // CGIOBUFF -- buffer in memory
+    CGIOBUFF    *next;                  // - next in the ring
+    CGIOBUFF    *reuse_next;            // - links for reuse doubly-linked ring
+    CGIOBUFF    *reuse_prev;            // - ...
+    DISK_ADDR   disk_addr;              // - block number in IC file
+    DISK_OFFSET free_offset;            // - free offset
+    unsigned    reading;                // - number of items being read from block
+    unsigned    written     : 1;        // - block has been written (not dirty)
+    unsigned    writing     : 1;        // - being written to now
+    unsigned    active      : 1;        // - block is active
+    char        data[TMPBLOCK_BSIZE];   // - buffer in memory
 #ifndef NDEBUG
 
     int         check;          // - consistency check

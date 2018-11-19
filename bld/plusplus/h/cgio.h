@@ -64,40 +64,40 @@ struct cgfile {                 // CGFILE -- control for a virtual file
     TOKEN_LOCN  defined;        // - location of definition
     unsigned    cond_flags;     // - # conditional flags req'd in state table
     union {
-        unsigned     flags;          // - overlays flags for .pch
+        unsigned     flags;     // - overlays flags for .pch
         struct {
-            unsigned    delayed      :1;// - true ==> delayed for code generation
-            unsigned    refed        :1;// - true ==> referenced during code gener.
-            unsigned    stgen        :1;// - true ==> code generated static init
-            unsigned    oe_inl       :1;// - true ==> can be inlined when /oe
-            unsigned    state_table  :1;// - true ==> has a state table
-            unsigned    once_inl     :1;// - true ==> should be inlined only once
-            unsigned    done         :1;// - true ==> IC_EOF has been written
-            unsigned    thunk        :1;// - true ==> is addressibility thunk
-            unsigned    thunk_gen    :1;// - true ==> generate addressibility thunk
-            unsigned    not_inline   :1;// - true ==> do not inline
-            unsigned    calls_inline :1;// - true ==> calls another inline
-            unsigned    can_throw    :1;// - true ==> could throw an exception
-            unsigned    stab_gen     :1;// - true ==> state table needs generation
-            unsigned    ctor_test    :1;// - true ==> might have ctor test
-            unsigned    write_to_pch :1;// - true ==> write out to PCH
-            unsigned    opt_retn_val :1;// - true ==> optimize struct return: value
-            unsigned    opt_retn_ref :1;// - true ==> optimize struct return: reference
+            unsigned    delayed         : 1;    // - true ==> delayed for code generation
+            unsigned    refed           : 1;    // - true ==> referenced during code gener.
+            unsigned    stgen           : 1;    // - true ==> code generated static init
+            unsigned    oe_inl          : 1;    // - true ==> can be inlined when /oe
+            unsigned    state_table     : 1;    // - true ==> has a state table
+            unsigned    once_inl        : 1;    // - true ==> should be inlined only once
+            unsigned    done            : 1;    // - true ==> IC_EOF has been written
+            unsigned    thunk           : 1;    // - true ==> is addressibility thunk
+            unsigned    thunk_gen       : 1;    // - true ==> generate addressibility thunk
+            unsigned    not_inline      : 1;    // - true ==> do not inline
+            unsigned    calls_inline    : 1;    // - true ==> calls another inline
+            unsigned    can_throw       : 1;    // - true ==> could throw an exception
+            unsigned    stab_gen        : 1;    // - true ==> state table needs generation
+            unsigned    ctor_test       : 1;    // - true ==> might have ctor test
+            unsigned    write_to_pch    : 1;    // - true ==> write out to PCH
+            unsigned    opt_retn_val    : 1;    // - true ==> optimize struct return: value
+            unsigned    opt_retn_ref    : 1;    // - true ==> optimize struct return: reference
         } s;    // of struct
     } u;        // of union
     SYMBOL      opt_retn;       // - symbol translated for optimized return
 };
 
-struct cgfile_gen {             // CGFILE_GEN -- data while generating file
-    unsigned    cs_label;       // - current CS (control-structure) label index
-    unsigned    cs_allocated;   // - number of CS labels pre-allocated
-    unsigned    goto_label;     // - current GOTO label index
-    SYMBOL      init_sym;       // - SYMBOL for IC_INIT_BEG
-    TYPE        curr_type;      // - current type
-    TYPE        emit_type;      // - emitted type
-    TOKEN_LOCN  emit_line_no;   // - emitted line #
-    unsigned    emit_init_beg :1;// - IC_INIT_BEG to be generated
-    unsigned    emit_init_end :1;// - IC_INIT_END to be generated
+struct cgfile_gen {                     // CGFILE_GEN -- data while generating file
+    unsigned    cs_label;               // - current CS (control-structure) label index
+    unsigned    cs_allocated;           // - number of CS labels pre-allocated
+    unsigned    goto_label;             // - current GOTO label index
+    SYMBOL      init_sym;               // - SYMBOL for IC_INIT_BEG
+    TYPE        curr_type;              // - current type
+    TYPE        emit_type;              // - emitted type
+    TOKEN_LOCN  emit_line_no;           // - emitted line #
+    unsigned    emit_init_beg   : 1;    // - IC_INIT_BEG to be generated
+    unsigned    emit_init_end   : 1;    // - IC_INIT_END to be generated
 };
 
 // MACROS

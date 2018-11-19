@@ -3692,10 +3692,10 @@ DECL_INFO *FinishDeclarator( DECL_SPEC *dspec, DECL_INFO *dinfo )
     type_flag ptr_flags;
     AUX_INFO *fn_pragma;
     struct {
-        unsigned memory_model_movement : 1;
-        unsigned add_type : 1;
-        unsigned diagnose_sym : 1;
-        unsigned OK_to_add_fnmod : 1;
+        unsigned memory_model_movement  : 1;
+        unsigned add_type               : 1;
+        unsigned diagnose_sym           : 1;
+        unsigned OK_to_add_fnmod        : 1;
     } flag;
 
     id_tree = nameOfId( dinfo->id );
@@ -5465,8 +5465,8 @@ static PTREE verifyQualifiedId( DECL_SPEC *dspec, PTREE id, SCOPE *scope, unsign
     SCOPE check_scope;
     SCOPE qualifying_scope;
     struct {
-        unsigned not_OK : 1;
-        unsigned strip_qualification : 1;
+        unsigned not_OK                 : 1;
+        unsigned strip_qualification    : 1;
     } flag;
 
     *scope = NULL;
@@ -7819,7 +7819,7 @@ static unsigned typesBind( type_bind_info *data, bool is_function )
     unsigned i;
     unsigned status;
     struct {
-        unsigned        arg_1st_level : 1;
+        unsigned        arg_1st_level   : 1;
     } flags;
 
     status = TB_BINDS;

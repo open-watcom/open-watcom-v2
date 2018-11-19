@@ -66,65 +66,65 @@ typedef struct switch_case SWCASE;
 struct switch_case {                    // CASE IN SWITCH
     SWCASE              *next;          // - next in ring for switch
     uint_32             value;          // - value
-    TOKEN_LOCN defined;                 // - where defined
+    TOKEN_LOCN          defined;        // - where defined
 };
 
 typedef struct blk_label BLK_LABEL;
 struct blk_label                        // LABEL IN BLOCK STRUCTURE
-{   CGLABEL id;                         // - id for code generation
-    LAB_DEF *defn;                      // - NULL, first ref, or label def'n
+{   CGLABEL             id;             // - id for code generation
+    LAB_DEF             *defn;          // - NULL, first ref, or label def'n
 };
 
 typedef struct fncatch FNCATCH;
 struct fncatch                          // CATCH INFORMATION
-{   FNCATCH *next;                      // - next in ring for try
-    TYPE type;                          // - type of catch expression
-    TOKEN_LOCN defined;                 // - where defined
+{   FNCATCH             *next;          // - next in ring for try
+    TYPE                type;           // - type of catch expression
+    TOKEN_LOCN          defined;        // - where defined
 };
 
-typedef struct control_stack CSTACK;    // CONTROL STACK
+typedef struct control_stack CSTACK;            // CONTROL STACK
 struct control_stack {
-    CSTACK              *next;          // - enclosing structure
-    BLK_LABEL           outside;        // - outside label
-    SYMBOL              try_var;        // - try variable for block
-    TOKEN_LOCN          defined;        // - where block defined
+    CSTACK              *next;                  // - enclosing structure
+    BLK_LABEL           outside;                // - outside label
+    SYMBOL              try_var;                // - try variable for block
+    TOKEN_LOCN          defined;                // - where block defined
     union {
-        struct {                        // CS_IF
+        struct {                                // CS_IF
             BLK_LABEL   else_part;
         } i;
-        struct {                        // CS_WHILE, CS_DO, CS_FOR
+        struct {                                // CS_WHILE, CS_DO, CS_FOR
             CGLABEL     top_loop;
             BLK_LABEL   continue_loop;
         } l;
-        struct {                        // CS_TRY
-            FNCATCH     *catches;       // - ring of catches
-            SCOPE       defn_scope;     // - scope containing try
-            uint_32     catch_no;       // - # for catch
-            SYMBOL      try_var;        // - try variable for try
-            TOKEN_LOCN  try_locn;       // - location of try stmt.
-            unsigned    catch_err : 1;  // - catch error detected
+        struct {                                // CS_TRY
+            FNCATCH     *catches;               // - ring of catches
+            SCOPE       defn_scope;             // - scope containing try
+            uint_32     catch_no;               // - # for catch
+            SYMBOL      try_var;                // - try variable for try
+            TOKEN_LOCN  try_locn;               // - location of try stmt.
+            unsigned    catch_err       : 1;    // - catch error detected
         } t;
-        struct {                        // CS_SWITCH
-            SWCASE      *cases;         // - ring of cases
-            SCOPE       defn_scope;     // - scope containing switch
-            SCOPE       imm_block;      // - immediate block for switch
-            uint_32     lo;             // - low value
-            uint_32     hi;             // - high value
-            TYPE        type;           // - type of switch expression
-            TOKEN_LOCN  switch_locn;    // - location of switch stmt.
-            TOKEN_LOCN  default_locn;   // - location of default stmt.
-            unsigned    is_signed : 1;  // - switch expression is signed
-            unsigned    default_dropped : 1; // - default has occurred
-            unsigned    block_after :1; // - block { .. } follows switch
+        struct {                                // CS_SWITCH
+            SWCASE      *cases;                 // - ring of cases
+            SCOPE       defn_scope;             // - scope containing switch
+            SCOPE       imm_block;              // - immediate block for switch
+            uint_32     lo;                     // - low value
+            uint_32     hi;                     // - high value
+            TYPE        type;                   // - type of switch expression
+            TOKEN_LOCN  switch_locn;            // - location of switch stmt.
+            TOKEN_LOCN  default_locn;           // - location of default stmt.
+            unsigned    is_signed       : 1;    // - switch expression is signed
+            unsigned    default_dropped : 1;    // - default has occurred
+            unsigned    block_after     : 1;    // - block { .. } follows switch
         } s;
-        struct {                        // CS_BLOCK
-            blk_count_t block;          // - counter
-            unsigned    block_switch :1;// - block { .. } following switch
+        struct {                                // CS_BLOCK
+            blk_count_t block;                  // - counter
+            unsigned    block_switch    : 1;    // - block { .. } following switch
         } b;
     } u;
-    cs_block_type       id;             // - type of block
-    unsigned            expr_true   : 1;// bracketted expr. was true
-    unsigned            expr_false  : 1;// bracketted expr. was false
+    cs_block_type       id;                     // - type of block
+    unsigned            expr_true       : 1;    // bracketted expr. was true
+    unsigned            expr_false      : 1;    // bracketted expr. was false
 };
 
 typedef struct fn_label FNLABEL;
@@ -133,9 +133,9 @@ struct fn_label {
     BLK_LABEL           destination;
     NAME                name;
     blk_count_t         block;
-    unsigned            defined : 1;
-    unsigned            referenced : 1;
-    unsigned            dangerous : 1;
+    unsigned            defined         : 1;
+    unsigned            referenced      : 1;
+    unsigned            dangerous       : 1;
 };
 
 typedef struct init_var INIT_VAR;

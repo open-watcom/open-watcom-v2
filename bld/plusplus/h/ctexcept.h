@@ -42,20 +42,20 @@
 
 typedef struct throw_cnv THROW_CNV;
 struct throw_cnv                // THROW_CNV -- a throw conversions
-{   THROW_CNV *next;            // - next conversion
-    TYPE_SIG *sig;              // - type signature
+{   THROW_CNV       *next;      // - next conversion
+    TYPE_SIG        *sig;       // - type signature
     target_offset_t offset;     // - offset for conversion
 };
 
 typedef struct throw_cnv_ctl THROW_CNV_CTL;
-struct throw_cnv_ctl            // THROW_CNV_CTL -- controls throw conversions
-{   THROW_CNV *hdr;             // - ring of conversions
-    THROW_CNV *cur;             // - current entry
-    carve_t carver;             // - carve information
-    TOKEN_LOCN err_locn;        // - location, in case of error
-    TYPE src_type;              // - source type (most derived)
-    target_offset_t offset;     // - offset of current element
-    unsigned error_occurred :1; // - true ==> error occurred
+struct throw_cnv_ctl                        // THROW_CNV_CTL -- controls throw conversions
+{   THROW_CNV       *hdr;                   // - ring of conversions
+    THROW_CNV       *cur;                   // - current entry
+    carve_t         carver;                 // - carve information
+    TOKEN_LOCN      err_locn;               // - location, in case of error
+    TYPE            src_type;               // - source type (most derived)
+    target_offset_t offset;                 // - offset of current element
+    unsigned        error_occurred  : 1;    // - true ==> error occurred
 };
 
 enum                            // TYPES OF MARKERS ON IC_SECT_xx

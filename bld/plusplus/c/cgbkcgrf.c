@@ -78,31 +78,31 @@
 #endif
 
 typedef struct vft_defn VFT_DEFN;
-struct vft_defn {               // VFT_DEFN -- definition for VFT
-    VFT_DEFN* next;             // - next in ring
-    SYMBOL vft;                 // - symbol for vft
-    CGFILE* cgfile;             // - virtual file containing definition
-    CGFILE_INS location;        // - where to scan for definition
+struct vft_defn {                   // VFT_DEFN -- definition for VFT
+    VFT_DEFN* next;                 // - next in ring
+    SYMBOL vft;                     // - symbol for vft
+    CGFILE* cgfile;                 // - virtual file containing definition
+    CGFILE_INS location;            // - where to scan for definition
 };
 
 typedef struct scope_dtor SCOPE_DTOR;
-struct scope_dtor               // SCOPE_DTOR -- delayed DTORing for a scope
-{   SCOPE_DTOR* next;           // - next in ring
-    SYMBOL dtor;                // - dtor
-    DTORING_KIND kind;          // - type of dtor
-    unsigned :0;                // - aligning
+struct scope_dtor                   // SCOPE_DTOR -- delayed DTORing for a scope
+{   SCOPE_DTOR      *next;          // - next in ring
+    SYMBOL          dtor;           // - dtor
+    DTORING_KIND    kind;           // - type of dtor
+    unsigned                : 0;    // - aligning
 };
 
-typedef struct                  // SCOPE_INFO -- scope information
-{   SCOPE scope;                // - scope in question
-    SCOPE_STATE state;          // - current state
-    SCOPE_DTOR* dtoring;        // - ring of delayed dtoring
+typedef struct                      // SCOPE_INFO -- scope information
+{   SCOPE           scope;          // - scope in question
+    SCOPE_STATE     state;          // - current state
+    SCOPE_DTOR      *dtoring;       // - ring of delayed dtoring
 } SCOPE_INFO;
 
-typedef struct                  // DTOR_SCOPE -- dtoring in a scope
-{   unsigned opcode;            // - type of dtoring
-    SYMBOL dtor;                // - dtor symbol
-    SCOPE scope;                // - scope for dtoring
+typedef struct                      // DTOR_SCOPE -- dtoring in a scope
+{   unsigned        opcode;         // - type of dtoring
+    SYMBOL          dtor;           // - dtor symbol
+    SCOPE           scope;          // - scope for dtoring
 } DTOR_SCOPE;
 
 static VFT_DEFN *vft_defs;          // ring of vftable defns
@@ -112,10 +112,10 @@ static unsigned max_inline_depth;   // maximum depth of inlining
 static unsigned oe_size = 0;        // size for inlining static functions
 
 static struct {
-    unsigned    inline_recursion:1; // true ==> inline recursion allowed
-    unsigned    any_state_tables:1; // true ==> state tables somewhere
-    unsigned    only_once_found :1; // true ==> ->once_inl fn somewhere
-//  unsigned    not_inlined_set :1; // true ==> not_inline set somewhere
+    unsigned    inline_recursion    : 1;    // true ==> inline recursion allowed
+    unsigned    any_state_tables    : 1;    // true ==> state tables somewhere
+    unsigned    only_once_found     : 1;    // true ==> ->once_inl fn somewhere
+//  unsigned    not_inlined_set     : 1;    // true ==> not_inline set somewhere
 } callGraphFlags;
 
 typedef enum                    // TCF -- types of functions
@@ -128,15 +128,15 @@ typedef enum                    // TCF -- types of functions
 ,   TCF_NULL                    // - NULL pointer
 } TCF;
 
-typedef struct                  // SCAN_INFO -- scanning information
-{   CALLNODE* cnode;            // - current node
-    CGFILE *file_ctl;           // - current file
-    unsigned has_except_spec :1;// - true ==> has except spec.
-    SYMBOL scope_call_cmp_dtor; // - component dtor for scope-call optimization
-    SYMBOL scope_call_tmp_dtor; // - temporary dtor for scope-call optimization
-    SYMBOL scope_call_blk_dtor; // - scope dtor for scope-call optimization
-    SCOPE curr_scope;           // - current scope
-    unsigned func_dtm;          // - dtor method for function
+typedef struct                              // SCAN_INFO -- scanning information
+{   CALLNODE    *cnode;                     // - current node
+    CGFILE      *file_ctl;                  // - current file
+    unsigned    has_except_spec     : 1;    // - true ==> has except spec.
+    SYMBOL      scope_call_cmp_dtor;        // - component dtor for scope-call optimization
+    SYMBOL      scope_call_tmp_dtor;        // - temporary dtor for scope-call optimization
+    SYMBOL      scope_call_blk_dtor;        // - scope dtor for scope-call optimization
+    SCOPE       curr_scope;                 // - current scope
+    unsigned    func_dtm;                   // - dtor method for function
 } SCAN_INFO;
 
 static void forceGeneration(    // FORCE CODE FILE TO BE GENERATED
@@ -1089,11 +1089,11 @@ static bool procStaticFunction( // PROCESS STATIC FUNCTIONS IN CALL GRAPH
     CALLGRAPH *ctl,             // - control information
     CALLNODE *node )            // - function in graph
 {
-    SYMBOL func;                // - function
-    CGFILE *cgfile;             // - cg file for function
+    SYMBOL func;                    // - function
+    CGFILE *cgfile;                 // - cg file for function
     struct {
-        unsigned oe_small : 1;  // - function is small enough to be -oe inlined
-        unsigned oe_static : 1; // - static function is called once
+        unsigned oe_small   : 1;    // - function is small enough to be -oe inlined
+        unsigned oe_static  : 1;    // - static function is called once
     } flags;
 
     /* unused parameters */ (void)ctl;

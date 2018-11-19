@@ -37,14 +37,14 @@ typedef struct string_literal_t STRING_LITERAL;
 typedef STRING_LITERAL *STRING_CONSTANT;
 
 struct string_literal_t {
-    STRING_CONSTANT     next;           // - next entry
-    back_handle         cg_handle;      // - handle during code generation
-    size_t              len;            // - length in bytes not including '\0'
-    fe_seg_id           segid;          // - segment containing string bytes
-    unsigned            concat : 1;     // - is result of concatenation
-    unsigned            multi_line : 1; // - concat parts were on different lines
-    unsigned            wide_string : 1;// - this is L"string"
-    char                string[1];      // - data
+    STRING_CONSTANT     next;               // - next entry
+    back_handle         cg_handle;          // - handle during code generation
+    size_t              len;                // - length in bytes not including '\0'
+    fe_seg_id           segid;              // - segment containing string bytes
+    unsigned            concat      : 1;    // - is result of concatenation
+    unsigned            multi_line  : 1;    // - concat parts were on different lines
+    unsigned            wide_string : 1;    // - this is L"string"
+    char                string[1];          // - data
 };
 
 extern void             StringTrash( STRING_CONSTANT );
