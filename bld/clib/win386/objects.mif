@@ -37,7 +37,6 @@
 !inject libent.obj                                                              w32
 !inject linedda.obj                                                             w32
 !inject mapa2f.obj                                                              w32
-!inject mklcl32.obj                                                             w32
 !inject mmiiop.obj                                                              w32
 !inject mmsyp.obj                                                               w32
 !inject mmsystem.obj                                                            w32
