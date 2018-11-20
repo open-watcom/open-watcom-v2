@@ -94,9 +94,9 @@ build_proc()
                 if [ $RC -eq 0 ]; then
                     if [ "$OWTRAVIS_DEBUG" = "1" ]; then
                         echo "copy build 1 to cache"
-                        cp -Rfv $OWSRCDIR $OWROOT/build1
+                        cp -Rfv $OWSRCDIR/* $OWROOT/build1
                     else
-                        cp -Rf $OWSRCDIR $OWROOT/build1
+                        cp -Rf $OWSRCDIR/* $OWROOT/build1
                     fi
                 fi
                 ;;
@@ -106,9 +106,9 @@ build_proc()
                 fi
                 if [ "$OWTRAVIS_DEBUG" = "1" ]; then
                     echo "load build 1 from cache"
-                    cp -Rnv $OWROOT/build1 $OWSRCDIR
+                    cp -Rnv $OWROOT/build1/* $OWSRCDIR
                 else
-                    cp -Rn $OWROOT/build1 $OWSRCDIR
+                    cp -Rn $OWROOT/build1/* $OWSRCDIR
                 fi
                 cd $OWSRCDIR
                 if [ "$TRAVIS_EVENT_TYPE" = "pull_request" ]; then
