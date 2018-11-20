@@ -94,10 +94,8 @@ build_proc()
                 if [ $RC -eq 0 ]; then
                     if [ "$OWTRAVIS_DEBUG" = "1" ]; then
                         echo "copy build 1 to cache"
-                        cp -Rfv $OWSRCDIR/* $OWROOT/build1
-                    else
-                        cp -Rf $OWSRCDIR/* $OWROOT/build1
                     fi
+                    cp -Rf $OWSRCDIR/* $OWROOT/build1
                 fi
                 ;;
             "BUILD2")
