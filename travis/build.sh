@@ -104,10 +104,8 @@ build_proc()
                 fi
                 if [ "$OWTRAVIS_DEBUG" = "1" ]; then
                     echo "load build 1 from cache"
-                    cp -Rnv $OWROOT/build1/* $OWSRCDIR
-                else
-                    cp -Rn $OWROOT/build1/* $OWSRCDIR
                 fi
+                cp -Rn $OWROOT/build1/* $OWSRCDIR
                 cd $OWSRCDIR
                 if [ "$TRAVIS_EVENT_TYPE" = "pull_request" ]; then
                     builder build2
