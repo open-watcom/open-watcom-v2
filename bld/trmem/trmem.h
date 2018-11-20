@@ -199,19 +199,7 @@ extern _trmem_who  _trmem_guess_who( void );
 extern _trmem_who  _trmem_whoami( void );
 
 #ifdef __WATCOMC__
-#if defined( __386__ )
-    #pragma aux _trmem_guess_who = \
-        "mov eax,[ebp+4]" \
-        parm caller [] value [eax] \
-        modify exact [eax];
-
-    #pragma aux _trmem_whoami = \
-        "call near ptr L1" \
-    "L1: pop  eax" \
-        parm caller [] value [eax] \
-        modify exact [eax];
-
-#elif defined( _M_I86SM ) || defined( _M_I86CM )
+#if defined( _M_I86SM ) || defined( _M_I86CM )
     #pragma aux _trmem_guess_who = \
         "mov ax,[bp+2]" \
         parm caller [] value [ax] \
@@ -236,6 +224,18 @@ extern _trmem_who  _trmem_whoami( void );
         "mov  dx,cs" \
         parm caller [] value [dx ax] \
         modify exact [dx ax];
+
+#elif defined( _M_IX86 )
+    #pragma aux _trmem_guess_who = \
+        "mov eax,[ebp+4]" \
+        parm caller [] value [eax] \
+        modify exact [eax];
+
+    #pragma aux _trmem_whoami = \
+        "call near ptr L1" \
+    "L1: pop  eax" \
+        parm caller [] value [eax] \
+        modify exact [eax];
 
 #endif
 #endif
