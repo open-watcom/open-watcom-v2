@@ -143,12 +143,6 @@ cdsay .
 [ INCLUDE <OWSRCDIR>/cpplib/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/f77/f77lib/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/rtdll/builder.ctl ]
-
-[ BLOCK <1> build rel clean cprel build2 clean2 cprel2 ]
-#=======================================================
-# Build all of Open Watcom using freshly built tools.
-# part 2
-#
 [ INCLUDE <OWSRCDIR>/fpuemu/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/omftools/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/graphlib/builder.ctl ]
@@ -161,7 +155,6 @@ cdsay .
 # Continue with OSI extenders stubs.
 [ INCLUDE <OWSRCDIR>/w32loadr/builder.ctl ]
 # Now we have enough to start cross building everything else
-
 # Start with the libs used by various tools
 [ INCLUDE <OWSRCDIR>/wres/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/orl/builder.ctl ]
@@ -175,6 +168,12 @@ cdsay .
 [ INCLUDE <OWSRCDIR>/wl/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/wmake/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/wtouch/builder.ctl ]
+
+[ BLOCK <1> build rel clean cprel build2 clean2 cprel2 ]
+#=======================================================
+# Build all of Open Watcom using freshly built tools.
+# part 2
+#
 # On to the compilers
 [ INCLUDE <OWSRCDIR>/cg/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/cc/builder.ctl ]
