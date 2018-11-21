@@ -541,7 +541,9 @@ static void ChkReference( SYMPTR sym, SYM_NAMEPTR name )
                     }
                 }
             } else if( (sym->flags & SYM_ASSIGNED) == 0 ) {
-                CWarn2p( WARN_SYM_NOT_ASSIGNED, ERR_SYM_NOT_ASSIGNED, name );
+                if( sym->attribs.stg_class != SC_STATIC ) {
+                    CWarn2p( WARN_SYM_NOT_ASSIGNED, ERR_SYM_NOT_ASSIGNED, name );
+                }
             }
         }
     }
