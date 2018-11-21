@@ -29,6 +29,7 @@
 ****************************************************************************/
 
 #include <stdlib.h>
+#include <stdio.h>
 #include "wio.h"
 #include "trmem.h"
 #include "memfuncs.h"
@@ -102,6 +103,8 @@ void MemClose( void )
 void MemPrintLine( void *handle, const char *buff, size_t len )
 /*************************************************************/
 {
+    /* unused parameters */ (void)handle;
+
     fwrite( buff, 1, len, TRFileFP );
 }
 #endif
