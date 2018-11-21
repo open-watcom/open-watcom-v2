@@ -1334,7 +1334,7 @@ static void SetSymAssigned( TREEPTR opnd )
 {
     SYM_ENTRY   sym;
 
-    while( opnd->op.opr == OPR_INDEX )
+    while( opnd->op.opr == OPR_DOT || opnd->op.opr == OPR_INDEX )
         opnd = opnd->left;
     if( opnd->op.opr == OPR_PUSHADDR ) {
         SymGet( &sym, opnd->op.u2.sym_handle );
