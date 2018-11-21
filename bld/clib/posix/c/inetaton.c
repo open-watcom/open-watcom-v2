@@ -37,7 +37,7 @@
 
 _WCRTLINK int inet_aton( const char *cp, struct in_addr *__inp )
 {
-    unsigned long int ip = htonl( inet_addr( cp ) );
+    unsigned long int ip = inet_addr( cp );
 
     if (__inp)
         __inp->s_addr = ip;
