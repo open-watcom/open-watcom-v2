@@ -530,6 +530,8 @@ SYM_HANDLE Sym0Look( id_hash_idx h, const char *id )
 
 static void ChkReference( SYMPTR sym, SYM_NAMEPTR name )
 {
+    TYPEPTR     typ;
+
     if( sym->flags & SYM_DEFINED ) {
         if( sym->attribs.stg_class != SC_EXTERN ) {
             if( (sym->flags & SYM_REFERENCED) == 0 ) {
@@ -541,7 +543,9 @@ static void ChkReference( SYMPTR sym, SYM_NAMEPTR name )
                     }
                 }
             } else if( (sym->flags & SYM_ASSIGNED) == 0 ) {
-                if( sym->attribs.stg_class != SC_STATIC ) {
+                typ = sym->sym_type;
+                SKIP_TYPEDEFS( typ );
+                if( sym->attribs.stg_class != SC_STATIC && typ->decl_type != TYPE_ARRAY ) {
                     CWarn2p( WARN_SYM_NOT_ASSIGNED, ERR_SYM_NOT_ASSIGNED, name );
                 }
             }
