@@ -877,6 +877,14 @@
 #define usergate_listen_socket 0x000002B3
 #define usergate_accept_ipv4_socket 0x000002B4
 
+#define usergate_add_wait_for_handle_read 0x000002B5
+#define usergate_add_wait_for_handle_write 0x000002B6
+#define usergate_add_wait_for_handle_exception 0x000002B7
+
+#define usergate_get_handle_read_buf_count 0x000002B8
+#define usergate_get_handle_write_buf_space 0x000002B9
+#define usergate_has_handle_exception 0x000002BA
+
 
 
 #ifdef __FLAT__
@@ -1759,6 +1767,14 @@
 #define CallGate_listen_socket 0x55 0x67 0x9a 179 2 0 0 3 0 0x5d
 #define CallGate_accept_ipv4_socket 0x55 0x67 0x9a 180 2 0 0 3 0 0x5d
 
+#define CallGate_add_wait_for_handle_read 0x55 0x67 0x9a 181 2 0 0 3 0 0x5d
+#define CallGate_add_wait_for_handle_write 0x55 0x67 0x9a 182 2 0 0 3 0 0x5d
+#define CallGate_add_wait_for_handle_exception 0x55 0x67 0x9a 183 2 0 0 3 0 0x5d
+
+#define CallGate_get_handle_read_buf_count 0x55 0x67 0x9a 184 2 0 0 3 0 0x5d
+#define CallGate_get_handle_write_buf_space 0x55 0x67 0x9a 185 2 0 0 3 0 0x5d
+#define CallGate_has_handle_exception 0x55 0x67 0x9a 186 2 0 0 3 0 0x5d
+
 #else
 
 #define CallGate_allocate_dos_mem 0x3e 0x67 0x9a 0 0 0 0 3 0
@@ -2638,5 +2654,13 @@
 #define CallGate_bind_ipv4_socket 0x3e 0x67 0x9a 178 2 0 0 3 0
 #define CallGate_listen_socket 0x3e 0x67 0x9a 179 2 0 0 3 0
 #define CallGate_accept_ipv4_socket 0x3e 0x67 0x9a 180 2 0 0 3 0
+
+#define CallGate_add_wait_for_handle_read 0x3e 0x67 0x9a 181 2 0 0 3 0
+#define CallGate_add_wait_for_handle_write 0x3e 0x67 0x9a 182 2 0 0 3 0
+#define CallGate_add_wait_for_handle_exception 0x3e 0x67 0x9a 183 2 0 0 3 0
+
+#define CallGate_get_handle_read_buf_count 0x3e 0x67 0x9a 184 2 0 0 3 0
+#define CallGate_get_handle_write_buf_space 0x3e 0x67 0x9a 185 2 0 0 3 0
+#define CallGate_has_handle_exception 0x3e 0x67 0x9a 186 2 0 0 3 0
 
 #endif

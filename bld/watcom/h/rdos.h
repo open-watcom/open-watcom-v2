@@ -450,6 +450,12 @@ int RDOSAPI RdosEofHandle(int Handle);
 int RDOSAPI RdosIsHandleDevice(int Handle);
 int RDOSAPI RdosGetHandleTime(int Handle, unsigned long *MsbTime, unsigned long *LsbTime);
 int RDOSAPI RdosSetHandleTime(int Handle, unsigned long MsbTime, unsigned long LsbTime);
+int RDOSAPI RdosGetHandleReadBufferCount(int Handle);
+int RDOSAPI RdosGetHandleWriteBufferSpace(int Handle);
+int RDOSAPI RdosHasHandleException(int Handle);
+int RDOSAPI RdosAddWaitForHandleRead(int WaitHandle, int Handle, void *ID);
+int RDOSAPI RdosAddWaitForHandleWrite(int WaitHandle, int Handle, void *ID);
+int RDOSAPI RdosAddWaitForHandleException(int WaitHandle, int Handle, void *ID);
 
 int RDOSAPI RdosOpenFile(const char *FileName, char Access);
 int RDOSAPI RdosCreateFile(const char *FileName, int Attrib);
