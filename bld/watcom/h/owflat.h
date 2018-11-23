@@ -1355,6 +1355,7 @@
 
 #pragma aux RdosHasHandleException = \
     CallGate_has_handle_exception  \
+    "cmc" \
     CarryToBool \
     parm [ebx]  \
     value [eax];
