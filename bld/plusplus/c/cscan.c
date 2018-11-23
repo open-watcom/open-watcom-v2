@@ -227,8 +227,8 @@ static bool scanHex( bool expanding )
 {
     int c;
     struct {
-        unsigned too_big : 1;
-        unsigned at_least_one : 1;
+        unsigned too_big        : 1;
+        unsigned at_least_one   : 1;
     } flag;
 
     flag.too_big = false;
@@ -431,7 +431,7 @@ static TOKEN charConst( type_id char_type, bool expanding )
     TOKEN token;
     int value;
     struct {
-        unsigned double_byte_char : 1;
+        unsigned double_byte_char   : 1;
     } flag;
 
     flag.double_byte_char = false;

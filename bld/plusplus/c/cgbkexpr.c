@@ -39,9 +39,9 @@
 #include "initdefs.h"
 
 typedef struct {                // CGEXPR -- codegen expression
-    cg_name expr;               // - expression
-    cg_type type;               // - expression type
-    unsigned garbage : 1;       // - true ==> is garbage
+    cg_name     expr;           // - expression
+    cg_type     type;           // - expression type
+    unsigned    garbage : 1;    // - true ==> is garbage
 } CGEXPR;
 
 static VSTK_CTL expressions;    // expressions stack

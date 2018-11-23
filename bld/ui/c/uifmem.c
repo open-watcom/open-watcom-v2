@@ -24,7 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  Allocate and free far memory.
+* Description:  Allocate and free far memory (stub functions)
 *
 ****************************************************************************/
 

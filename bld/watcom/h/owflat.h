@@ -1343,6 +1343,34 @@
     parm [ebx] [edx] [eax] \
     value [eax];
 
+#pragma aux RdosGetHandleReadBufferCount = \
+    CallGate_get_handle_read_buf_count  \
+    parm [ebx]  \
+    value [ecx];
+
+#pragma aux RdosGetHandleWriteBufferSpace = \
+    CallGate_get_handle_write_buf_space  \
+    parm [ebx]  \
+    value [ecx];
+
+#pragma aux RdosHasHandleException = \
+    CallGate_has_handle_exception  \
+    CarryToBool \
+    parm [ebx]  \
+    value [eax];
+
+#pragma aux RdosAddWaitForHandleRead = \
+    CallGate_add_wait_for_handle_read  \
+    parm [ebx] [eax] [ecx];
+
+#pragma aux RdosAddWaitForHandleWrite = \
+    CallGate_add_wait_for_handle_write  \
+    parm [ebx] [eax] [ecx];
+
+#pragma aux RdosAddWaitForHandleException = \
+    CallGate_add_wait_for_handle_exception  \
+    parm [ebx] [eax] [ecx];
+
 #pragma aux RdosOpenFile = \
     CallGate_open_file  \
     ValidateHandle  \

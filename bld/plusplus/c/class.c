@@ -2349,8 +2349,8 @@ void ClassMember( SCOPE scope, SYMBOL sym )
     NAME scope_name;
     NAME name;
     struct {
-        unsigned static_member : 1;
-        unsigned zero_sized_array : 1;
+        unsigned static_member      : 1;
+        unsigned zero_sized_array   : 1;
     } flags;
 
     /* members can be inserted in enclosing class definitions */

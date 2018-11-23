@@ -56,21 +56,21 @@ typedef enum                    // CONVRUFF -- rough conversion classification
 } CRUFF;
 #undef DfnCRUFF
 
-struct convtype                 // CONVTYPE -- information about a type
+struct convtype                         // CONVTYPE -- information about a type
 {
-    TYPE orig;                  // - original type
-    TYPE unmod;                 // - unmodified type
-    TYPE pted;                  // - type pointed at, unmodified
-    TYPE class_type;            // - class type when class_operand==true
-    type_flag modflags;         // - modifier flags (orig)
-    type_flag ptedflags;        // - modifier flags (pted)
-    RKD kind;                   // - kind of element
-    PC_PTR pc_ptr;              // - classification of PC ptr type
-    uint_8 reference        :1; // - true ==> is reference
-    uint_8 array            :1; // - true ==> is array
-    uint_8 bit_field        :1; // - true ==> is bit_field
-    uint_8 class_operand    :1; // - true ==> is class or ref-class operand
-    unsigned :0;                // alignment
+    TYPE        orig;                   // - original type
+    TYPE        unmod;                  // - unmodified type
+    TYPE        pted;                   // - type pointed at, unmodified
+    TYPE        class_type;             // - class type when class_operand==true
+    type_flag   modflags;               // - modifier flags (orig)
+    type_flag   ptedflags;              // - modifier flags (pted)
+    RKD         kind;                   // - kind of element
+    PC_PTR      pc_ptr;                 // - classification of PC ptr type
+    uint_8      reference       : 1;    // - true ==> is reference
+    uint_8      array           : 1;    // - true ==> is array
+    uint_8      bit_field       : 1;    // - true ==> is bit_field
+    uint_8      class_operand   : 1;    // - true ==> is class or ref-class operand
+    unsigned                    : 0;    // alignment
 };
 
 #define CONVCTL_FLAGS \
@@ -114,24 +114,24 @@ CONVCTL_FLAG( diag_bind_ncref )  /* - true ==> diag'ed non-const ref binding    
 
 struct convctl                  // CONVCTL -- conversion control information
 {
-    CONVTYPE src;               // - source data type
-    CONVTYPE tgt;               // - target data type
-    PTREE expr;                 // - expression being converted
-    CNV_DIAG* diag_good;        // - error-message list: conversion must pass
-    CNV_DIAG* diag_cast;        // - error-message list: for cast
-    SYMBOL conv_fun;            // - CTOR or UDF conversion function
-    TYPE conv_type;             // - conversion type, when UDF
-    MSG_NUM msg_no;             // - message # when error
-    FNOV_DIAG fnov_diag;        // - diagnosis list
-    PTREE destination;          // - node for destination
-    CNV_REQD reqd_cnv;          // - conversion request
-    CRUFF rough;                // - rough conversion classification
-    CTD ctd;                    // - common-type derivation
-    type_flag mismatch;         // - what was removed on cv mismatch
-    #define CONVCTL_FLAG( name ) uint_8 name :1;
+    CONVTYPE    src;            // - source data type
+    CONVTYPE    tgt;            // - target data type
+    PTREE       expr;           // - expression being converted
+    CNV_DIAG    * diag_good;    // - error-message list: conversion must pass
+    CNV_DIAG    * diag_cast;    // - error-message list: for cast
+    SYMBOL      conv_fun;       // - CTOR or UDF conversion function
+    TYPE        conv_type;      // - conversion type, when UDF
+    MSG_NUM     msg_no;         // - message # when error
+    FNOV_DIAG   fnov_diag;      // - diagnosis list
+    PTREE       destination;    // - node for destination
+    CNV_REQD    reqd_cnv;       // - conversion request
+    CRUFF       rough;          // - rough conversion classification
+    CTD         ctd;            // - common-type derivation
+    type_flag   mismatch;       // - what was removed on cv mismatch
+    #define CONVCTL_FLAG( name ) uint_8 name : 1;
     CONVCTL_FLAGS               // - define flags
     #undef CONVCTL_FLAG
-    unsigned :0;                // alignment
+    unsigned            : 0;    // alignment
 };
 
 

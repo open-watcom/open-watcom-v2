@@ -81,45 +81,45 @@ typedef enum {                  // RES_TYPE -- type of resolution
 ,   MAX_RES_DEF
 } RES_TYPE;
 
-struct unr_usage                // UNR_USAGE -- unresolved usage
-{   UNR_USAGE* next;            // - next in ring
-    SCOPE scope;                // - scope referenced
-    union {                     // - one of:
-        CALLNODE* node;         // - - CALLNODE for function used
-        SYMBOL fun;             // - - SYMBOL for function used
-        SCOPE_RES* res_scope;   // - - scope to be resolved
-        void* unresolved;       // - - general entry
+struct unr_usage                    // UNR_USAGE -- unresolved usage
+{   UNR_USAGE       *next;          // - next in ring
+    SCOPE           scope;          // - scope referenced
+    union {                         // - one of:
+        CALLNODE    *node;          // - - CALLNODE for function used
+        SYMBOL      fun;            // - - SYMBOL for function used
+        SCOPE_RES   *res_scope;     // - - scope to be resolved
+        void        *unresolved;    // - - general entry
     } u;
-    UNR_USE type;               // - type of usage
-    unsigned :0;                // - alignment
+    UNR_USE         type;           // - type of usage
+    unsigned                : 0;    // - alignment
 };
 
-struct scope_res                // SCOPE_RES -- unresolved scope
-{   SCOPE_RES* next;            // - next scope resolution
-    SCOPE_RES* enclosing;       // - enclosing scope
-    SCOPE scope;                // - the scope in question
-    UNR_USAGE* unresolved;      // - ring of unresolved
-    int toresolve;              // - # items to be resolved
-    CALLNODE* func;             // - function containing scope
-    DT_METHOD dtm;              // - function dtor method
-    unsigned : 0;               // - alignment
-    unsigned dtorables;         // - # dtorable items in scope
-    unsigned statement : 1;     // - true ==> is statement scope
-    unsigned dtor_ct : 1;       // - true ==> has can-throw dtorable
-    unsigned call_ct : 1;       // - true ==> has can-throw call
-    unsigned scanning : 1;      // - true ==> is being scanned now
-    unsigned gen_stab : 1;      // - true ==> scan detected state-table req'd
-    unsigned scope_throw : 1;   // - true ==> IC_SCOPE_THROW in scope
-    unsigned : 0;               // - alignment
+struct scope_res                    // SCOPE_RES -- unresolved scope
+{   SCOPE_RES   *next;              // - next scope resolution
+    SCOPE_RES   *enclosing;         // - enclosing scope
+    SCOPE       scope;              // - the scope in question
+    UNR_USAGE   *unresolved;        // - ring of unresolved
+    int         toresolve;          // - # items to be resolved
+    CALLNODE    *func;              // - function containing scope
+    DT_METHOD   dtm;                // - function dtor method
+    unsigned                : 0;    // - alignment
+    unsigned    dtorables;          // - # dtorable items in scope
+    unsigned    statement   : 1;    // - true ==> is statement scope
+    unsigned    dtor_ct     : 1;    // - true ==> has can-throw dtorable
+    unsigned    call_ct     : 1;    // - true ==> has can-throw call
+    unsigned    scanning    : 1;    // - true ==> is being scanned now
+    unsigned    gen_stab    : 1;    // - true ==> scan detected state-table req'd
+    unsigned    scope_throw : 1;    // - true ==> IC_SCOPE_THROW in scope
+    unsigned                : 0;    // - alignment
 };
 
-struct res_act                  // RES_ACT -- resolution action
-{   RES_TYPE type;              // - type of resolution
-    unsigned :0;                // - alignment
-    union                       // - one of:
-    {   CALLNODE* node;         // - - unresolved function
-        SCOPE_RES* scope;       // - - unresolved scope
-    } u;
+struct res_act                      // RES_ACT -- resolution action
+{   RES_TYPE    type;               // - type of resolution
+    unsigned                : 0;    // - alignment
+    union                           // - one of:
+    {   CALLNODE    *node;          // - - unresolved function
+        SCOPE_RES   *scope;         // - - unresolved scope
+    }           u;
 };
 
 static VSTK_CTL actions;        // actions pending

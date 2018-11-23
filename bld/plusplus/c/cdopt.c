@@ -85,59 +85,59 @@ typedef struct cl_elem          CL_ELEM;
 typedef struct acc_fun          ACC_FUN;
 
 
-struct acc_fun                  // ACC_SYM -- function accessed directly
-{   ACC_FUN* next;              // - next symbol
+struct acc_fun {                // ACC_SYM -- function accessed directly
+    ACC_FUN* next;              // - next symbol
     SYMBOL fun;                 // - function accessed
 };
 
-struct cd_descr                 // CD_DESCR -- ctor/dtor description
-{   CD_DESCR*       next;       // - next in cache ring
-    const MEMB_VFUNS* mfuns;    // - member functions
-    TYPE        orig_type;      // - originating class type
-    CL_ELEM*    elements;       // - significant elements
-    ACC_FUN*    accessed;       // - functions accessed
-    CDOPT_TYPE  opt;            // - type of optimization
-    unsigned    err_occurred:1; // - true ==> error detected during lookup
-    unsigned    has_vbt     :1; // - true ==> has virtual base table
-    unsigned    has_vft     :1; // - true ==> has virtual function table
-    unsigned    has_acc     :1; // - true ==> has functions accessed
-    unsigned    chk_acc     :1; // - true ==> accesses have been checked
+struct cd_descr {                   // CD_DESCR -- ctor/dtor description
+    CD_DESCR    *next;              // - next in cache ring
+    const MEMB_VFUNS *mfuns;        // - member functions
+    TYPE        orig_type;          // - originating class type
+    CL_ELEM*    elements;           // - significant elements
+    ACC_FUN*    accessed;           // - functions accessed
+    CDOPT_TYPE  opt;                // - type of optimization
+    unsigned    err_occurred : 1;   // - true ==> error detected during lookup
+    unsigned    has_vbt      : 1;   // - true ==> has virtual base table
+    unsigned    has_vft      : 1;   // - true ==> has virtual function table
+    unsigned    has_acc      : 1;   // - true ==> has functions accessed
+    unsigned    chk_acc      : 1;   // - true ==> accesses have been checked
     PAD_UNSIGNED
 };
 
-struct cl_elem                  // CL_ELEM -- significant class element
-{   CL_ELEM* next;              // - next in ring
-    TYPE cltype;                // - class/array type
-    SYMBOL cdtor;               // - CTOR,DTOR,OP=
-    SYMBOL sym;                 // - symbol, when data element
-    CD_DESCR* descr;            // - description of class for element
-    target_offset_t offset;     // - offset
-    TOB otype;                  // - type of object
-    unsigned    elim_intermed:1;// - intermediate function can be eliminated
-    unsigned    cannot_define:1;// - function could not be defined
-    unsigned    must_call:1;    // - item must be ctored,dtored,assigned
+struct cl_elem {                            // CL_ELEM -- significant class element
+    CL_ELEM         *next;                  // - next in ring
+    TYPE            cltype;                 // - class/array type
+    SYMBOL          cdtor;                  // - CTOR,DTOR,OP=
+    SYMBOL          sym;                    // - symbol, when data element
+    CD_DESCR        *descr;                 // - description of class for element
+    target_offset_t offset;                 // - offset
+    TOB             otype;                  // - type of object
+    unsigned        elim_intermed   : 1;    // - intermediate function can be eliminated
+    unsigned        cannot_define   : 1;    // - function could not be defined
+    unsigned        must_call       : 1;    // - item must be ctored,dtored,assigned
     PAD_UNSIGNED
 };
 
 typedef struct stkin STKIN;
-struct stkin                    // STKIN -- stack (input) entry
-{   CD_DESCR* info;             // - information for class being expanded
-    CL_ELEM* elem;              // - element being expanded
+struct stkin {                      // STKIN -- stack (input) entry
+    CD_DESCR        *info;          // - information for class being expanded
+    CL_ELEM         *elem;          // - element being expanded
 };
 
-typedef struct                  // CDOPT_DEFN : defines CDOPT type
-{   MEMB_VFUNS const* vfuns;    // - virtual functions
-    CDOPT_TYPE otype;           // - type of CDOPT
-    unsigned :0;                // alignment
+typedef struct {                        // CDOPT_DEFN : defines CDOPT type
+    MEMB_VFUNS const    *vfuns;         // - virtual functions
+    CDOPT_TYPE          otype;          // - type of CDOPT
+    unsigned                    : 0;    // alignment
 } CDOPT_DEFN;
 
-typedef struct                  // CL_EXPAND -- expansion information
-{   CD_DESCR* info;             // - class description
-    STKIN* source;              // - source item
+typedef struct {                        // CL_EXPAND -- expansion information
+    CD_DESCR        *info;              // - class description
+    STKIN           *source;            // - source item
 } CL_EXPAND;
 
-struct memb_vfuns               // VFT for CD_DESCR
-{   bool (*basePushable)        // - base class pushable ?
+struct memb_vfuns {             // VFT for CD_DESCR
+    bool (*basePushable)        // - base class pushable ?
         ( BASE_CLASS* );        // - - base class
     bool (*membPushable)        // - member pushable ?
         ( SYMBOL );             // - - symbol for member
@@ -163,22 +163,22 @@ struct memb_vfuns               // VFT for CD_DESCR
 #endif
 };
 
-typedef struct                  // CL_ITER: iteration info. per class
-{   CD_DESCR    *info;          // - class information
+typedef struct {                // CL_ITER: iteration info. per class
+    CD_DESCR    *info;          // - class information
     CL_ELEM     *elem;          // - current element
-    TOB comp_otype;             // - TOB for component being expanded
+    TOB         comp_otype;     // - TOB for component being expanded
 } CL_ITER;
 
-struct cdopt_iter               // CDOPT_ITER: iterator for traversals
-{   CD_DESCR    *info;          // - original class information
-    VSTK_CTL    stack;          // - stack of elements
-    BASE_CLASS  *vbase;         // - NULL or virtual base
-    target_offset_t off_comp;   // - offset of component being expanded
-    target_offset_t off_elem;   // - offset of element (exact)
-    target_offset_t off_vbase;  // - offset of virtual base
-    TITER       orig_otype;     // - object type of original component
-    unsigned    gened_comp  :1; // - true ==> gen'ed component element
-    unsigned    at_end      :1; // - true ==> processing TITER_NONE at end
+struct cdopt_iter {                     // CDOPT_ITER: iterator for traversals
+    CD_DESCR        *info;              // - original class information
+    VSTK_CTL        stack;              // - stack of elements
+    BASE_CLASS      *vbase;             // - NULL or virtual base
+    target_offset_t off_comp;           // - offset of component being expanded
+    target_offset_t off_elem;           // - offset of element (exact)
+    target_offset_t off_vbase;          // - offset of virtual base
+    TITER           orig_otype;         // - object type of original component
+    unsigned        gened_comp  : 1;    // - true ==> gen'ed component element
+    unsigned        at_end      : 1;    // - true ==> processing TITER_NONE at end
     PAD_UNSIGNED
 };
 
@@ -396,9 +396,6 @@ static void DumpCdoptCaches(    // DUMP CDOPT CACHES
     dumpRing( allDescriptors.cdopt_opeq );
     PragDbgToggle.cdopt = saved;
 }
-
-
-
 
 #else
 

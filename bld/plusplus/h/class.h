@@ -36,75 +36,75 @@ typedef struct vf_hide VF_HIDE;
 
 typedef struct class_data CLASS_DATA;
 struct class_data {
-    CLASS_DATA      *next;              /* enclosing class' data */
-    CLASS_DATA      *inline_data;       /* inlines stored here (non-NULL if defn seen) */
-    NAME            name;              /* name of class */
-    SYMBOL          sym;                /* symbol of current class typedef */
-    TYPE            type;               /* type of current class */
-    SCOPE           scope;              /* scope of current class */
-    SCOPE           enclosing;          /* enclosing scope of current class */
-    CLASSINFO       *info;              /* info part of class type */
-    BASE_CLASS      *bases;             /* base classes of current class */
-    BASE_CLASS      *base_vbptr;        /* base who's vbptr we are using */
-    BASE_CLASS      *base_vfptr;        /* base who's vfptr we are using */
+    CLASS_DATA      *next;                  /* enclosing class' data */
+    CLASS_DATA      *inline_data;           /* inlines stored here (non-NULL if defn seen) */
+    NAME            name;                   /* name of class */
+    SYMBOL          sym;                    /* symbol of current class typedef */
+    TYPE            type;                   /* type of current class */
+    SCOPE           scope;                  /* scope of current class */
+    SCOPE           enclosing;              /* enclosing scope of current class */
+    CLASSINFO       *info;                  /* info part of class type */
+    BASE_CLASS      *bases;                 /* base classes of current class */
+    BASE_CLASS      *base_vbptr;            /* base who's vbptr we are using */
+    BASE_CLASS      *base_vfptr;            /* base who's vfptr we are using */
 #ifdef OPTIMIZE_EMPTY
-    BASE_CLASS      *last_empty;        /* last empty base class (for optimizing) */
+    BASE_CLASS      *last_empty;            /* last empty base class (for optimizing) */
 #endif
-    DECL_INFO       *inlines;           /* ring of pending inline functions */
-    DECL_INFO       *nested_inlines;    /* pointer into ring of inline functions for nested classes */
-    DECL_INFO       *saved_inlines;     /* saved pointer to ring of inline functions */
-    DECL_INFO       *defargs;           /* ring of pending default arg exprs */
-    AUX_INFO        *fn_pragma;         /* function pragma for member functions */
-    TYPE            class_mod_type;     /* type representing mod in class <mod> X */
-    TYPE            base_class_with_mod;/* base class with a class mod */
-    VF_HIDE         *vf_hide_list;      /* vfns possibly hidden by this class */
-    error_state_t   errors;             /* error state at beginning of class */
-    target_offset_t start;              /* first offset in class */
-    target_offset_t offset;             /* current offset in class */
-    target_offset_t boffset;            /* offset of current bitfield */
-    target_offset_t max_align;          /* maximum alignment of any field */
-    target_offset_t pack_amount;        /* class packing requirement */
-    target_offset_t vf_offset;          /* offset of virtual fn ptr field */
-    target_offset_t vb_offset;          /* offset of virtual base ptr field */
-    vindex          vf_index;           /* next index for virtual fns */
-    vindex          vb_index;           /* next index for virtual bases */
-    type_flag       tflag;              /* TF1_STRUCT or TF1_UNION */
-    type_flag       fn_flags;           /* function flags for member functions */
-    type_flag       mod_flags;          /* modifier flags for members */
-    symbol_flag     perm;               /* current permissions */
-    uint_8          bit_offset;         /* next bit offset for a bitfield */
-    uint_8          bit_available;      /* available bits in current bitfield */
-    uint_8          bit_unit_width;     /* total bits in current bitfield */
+    DECL_INFO       *inlines;               /* ring of pending inline functions */
+    DECL_INFO       *nested_inlines;        /* pointer into ring of inline functions for nested classes */
+    DECL_INFO       *saved_inlines;         /* saved pointer to ring of inline functions */
+    DECL_INFO       *defargs;               /* ring of pending default arg exprs */
+    AUX_INFO        *fn_pragma;             /* function pragma for member functions */
+    TYPE            class_mod_type;         /* type representing mod in class <mod> X */
+    TYPE            base_class_with_mod;    /* base class with a class mod */
+    VF_HIDE         *vf_hide_list;          /* vfns possibly hidden by this class */
+    error_state_t   errors;                 /* error state at beginning of class */
+    target_offset_t start;                  /* first offset in class */
+    target_offset_t offset;                 /* current offset in class */
+    target_offset_t boffset;                /* offset of current bitfield */
+    target_offset_t max_align;              /* maximum alignment of any field */
+    target_offset_t pack_amount;            /* class packing requirement */
+    target_offset_t vf_offset;              /* offset of virtual fn ptr field */
+    target_offset_t vb_offset;              /* offset of virtual base ptr field */
+    vindex          vf_index;               /* next index for virtual fns */
+    vindex          vb_index;               /* next index for virtual bases */
+    type_flag       tflag;                  /* TF1_STRUCT or TF1_UNION */
+    type_flag       fn_flags;               /* function flags for member functions */
+    type_flag       mod_flags;              /* modifier flags for members */
+    symbol_flag     perm;                   /* current permissions */
+    uint_8          bit_offset;             /* next bit offset for a bitfield */
+    uint_8          bit_available;          /* available bits in current bitfield */
+    uint_8          bit_unit_width;         /* total bits in current bitfield */
 
-    unsigned        bitfield : 1;       /* bitfield in progress */
-    unsigned        defined : 1;        /* class has been defined */
-    unsigned        local_class : 1;    /* class is being def'd in a function */
-    unsigned        nested_class : 1;   /* class is being def'd in a class */
-    unsigned        is_union : 1;       /* current class is a union */
-    unsigned        is_explicit : 1;    /* programmer can still define members */
-    unsigned        own_vfptr : 1;      /* brand new vfptr */
-    unsigned        nameless_OK : 1;    /* we don't need a declarator */
-    unsigned        generic : 1;        /* template arg "class T" has been found */
-    unsigned        class_template : 1; /* processing a class template */
-    unsigned        specific_defn : 1;  /* class T<> {} definition */
-    unsigned        zero_array_defd : 1;/* zero size array has been defined */
-    unsigned        member_mod_adjust :1;/* class <modifier> <id> was specified */
-    unsigned        class_idiom : 1;    /* class C; idiom used */
+    unsigned        bitfield            : 1;    /* bitfield in progress */
+    unsigned        defined             : 1;    /* class has been defined */
+    unsigned        local_class         : 1;    /* class is being def'd in a function */
+    unsigned        nested_class        : 1;    /* class is being def'd in a class */
+    unsigned        is_union            : 1;    /* current class is a union */
+    unsigned        is_explicit         : 1;    /* programmer can still define members */
+    unsigned        own_vfptr           : 1;    /* brand new vfptr */
+    unsigned        nameless_OK         : 1;    /* we don't need a declarator */
+    unsigned        generic             : 1;    /* template arg "class T" has been found */
+    unsigned        class_template      : 1;    /* processing a class template */
+    unsigned        specific_defn       : 1;    /* class T<> {} definition */
+    unsigned        zero_array_defd     : 1;    /* zero size array has been defined */
+    unsigned        member_mod_adjust   : 1;    /* class <modifier> <id> was specified */
+    unsigned        class_idiom         : 1;    /* class C; idiom used */
 
-    unsigned        has_const_copy : 1; /* def'n has const copy ctor decl */
-    unsigned        has_nonconst_copy:1;/* def'n has non const copy ctor decl */
-    unsigned        has_const_opeq : 1; /* def'n has const op= decl */
-    unsigned        has_nonconst_opeq:1;/* def'n has non const op= decl */
-    unsigned        has_explicit_opeq:1;/* def'n has explicit op= decl */
+    unsigned        has_const_copy      : 1;    /* def'n has const copy ctor decl */
+    unsigned        has_nonconst_copy   : 1;    /* def'n has non const copy ctor decl */
+    unsigned        has_const_opeq      : 1;    /* def'n has const op= decl */
+    unsigned        has_nonconst_opeq   : 1;    /* def'n has non const op= decl */
+    unsigned        has_explicit_opeq   : 1;    /* def'n has explicit op= decl */
 
-                                        /* class has a ... */
-    unsigned        a_private : 1;      /* private member */
-    unsigned        a_protected : 1;    /* protected member */
-    unsigned        a_public : 1;       /* public member */
-    unsigned        a_const : 1;        /* const member */
-    unsigned        a_reference : 1;    /* reference member */
+                                                /* class has a ... */
+    unsigned        a_private           : 1;    /* private member */
+    unsigned        a_protected         : 1;    /* protected member */
+    unsigned        a_public            : 1;    /* public member */
+    unsigned        a_const             : 1;    /* const member */
+    unsigned        a_reference         : 1;    /* reference member */
 
-    unsigned        in_defn : 1;        /* ClassEnd will be called */
+    unsigned        in_defn             : 1;    /* ClassEnd will be called */
 };
 
 typedef enum {                  // context of class

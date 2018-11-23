@@ -68,8 +68,8 @@ struct nested_macros {
     NESTED_MACRO    *next;
     MEPTR           mentry;
     MACRO_ARG       *macro_parms;
-    unsigned        rescanning : 1;
-    unsigned        substituting_parms : 1;
+    unsigned        rescanning          : 1;
+    unsigned        substituting_parms  : 1;
 };
 
 static carve_t carveNESTED_MACRO;
@@ -183,8 +183,8 @@ static MACRO_TOKEN *doGetMacroToken(// GET NEXT TOKEN
     MACRO_TOKEN *mtok;
     size_t      i;
     struct {
-        unsigned keep_token : 1;
-        unsigned next_token : 1;
+        unsigned keep_token     : 1;
+        unsigned next_token     : 1;
     } flag;
 
     CurToken = T_NULL;

@@ -25,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation of gethostbyname() for Linux.
+* Description:  Implementation of gethostbyname() for Linux and RDOS.
 *
 * Author: J. Armstrong
 *
@@ -41,8 +41,10 @@
 #include <netdb.h>
 #include <string.h>
 #include "rterrno.h"
+#ifdef __RDOS__
+#include "rdos.h"
+#else
 #include "thread.h"
-
 
 #define DNSRESOLV   "/etc/resolv.conf"
 
@@ -162,13 +164,36 @@ static struct hostent *__check_dns_4( const char *name )
     }
     return( NULL );
 }
+#endif
+
 
 _WCRTLINK struct hostent *gethostbyname( const char *name )
 {
+#ifdef __RDOS__
+    static struct hostent  ret;
+    static uint32_t *list[2];
+    static uint32_t ip;
+    ip = inet_addr( name );
+    if( ip == INADDR_NONE ) {
+        ip = RdosNameToIp( name );
+        if( ip == 0 ) {
+            h_errno = HOST_NOT_FOUND;
+            return( NULL );
+        }
+    }
+    ret.h_name = (char *)name;
+    ret.h_aliases = NULL;
+    ret.h_addrtype = AF_INET;
+    ret.h_length = sizeof( uint32_t );
+    list[0] = &ip;
+    list[1] = 0;    
+    ret.h_addr_list = (char **)list;
+    return( &ret );
+#else
     static struct hostent   *ret;
-
     ret = __check_hostdb( name );
     if( ret == NULL )
         ret = __check_dns_4( name );
     return( ret );
+#endif
 }

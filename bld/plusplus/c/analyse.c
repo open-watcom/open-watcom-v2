@@ -2382,7 +2382,7 @@ static void warnIntTrunc(       // WARN WHEN INTEGER TRUNCATION
     TYPE left_type;             // - node's left subtree type
     TYPE right_type;            // - node's right subtree type
     struct {
-        unsigned exact_RHS_bits:1;// - we know RHS bits precisely
+        unsigned exact_RHS_bits : 1;    // - we know RHS bits precisely
     } flag;
 
     flag.exact_RHS_bits = 0;

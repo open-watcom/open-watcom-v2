@@ -104,7 +104,7 @@ struct base_path {
     SCOPE               scope;
     inherit_flag        flag;
     unsigned            checked_private : 1;
-    unsigned            failed_private : 1;
+    unsigned            failed_private  : 1;
 };
 
 typedef struct symbol_exclude SYMBOL_EXCLUDE;
@@ -123,7 +123,7 @@ struct path_cap {
     SYMBOL_NAME         sym_name;
     SYMBOL              sym;
     inherit_flag        flag;
-    unsigned            throw_away : 1;
+    unsigned            throw_away          : 1;
     unsigned            across_virtual_base : 1;
 };
 
@@ -136,7 +136,7 @@ struct base_stack {
     SYMBOL              access_changed;
     void                *hold;
     inherit_flag        access_perm;
-    unsigned            used : 1;
+    unsigned            used                : 1;
 };
 
 typedef enum {          /* return value for base class walking routines */
@@ -151,8 +151,8 @@ typedef struct {
     SCOPE               derived;
     SCOPE               base;
     unsigned            copies;
-    unsigned            virtual_base : 1;
-    unsigned            is_derived : 1;
+    unsigned            virtual_base        : 1;
+    unsigned            is_derived          : 1;
 } scope_derived_walk;
 
 typedef struct {
@@ -173,8 +173,8 @@ typedef struct {
 
 typedef struct {
     SCOPE               base;
-    unsigned            virtual_base : 1;
-    unsigned            is_derived : 1;
+    unsigned            virtual_base        : 1;
+    unsigned            is_derived          : 1;
 } derived_walk;
 
 typedef struct {
@@ -185,7 +185,7 @@ typedef struct {
 typedef struct {
     unsigned            depth;
     SCOPE               base;
-    unsigned            many_pathes : 1;
+    unsigned            many_pathes         : 1;
 } base_depth_walk;
 
 typedef struct {
@@ -206,7 +206,7 @@ typedef struct {
 typedef struct {
     CLASS_VBTABLE       *tables;
     SCOPE               start;
-    unsigned            already_done : 1;
+    unsigned            already_done        : 1;
 } vbtable_walk;
 
 typedef struct {
@@ -220,57 +220,57 @@ typedef struct {
     SCOPE               derived;
     THUNK_ACTION        *thunk;
     VSTK_CTL            disambig;
-    unsigned            OK_to_diagnose : 1;
-    unsigned            already_done : 1;
-    unsigned            thunk_code : 1;
+    unsigned            OK_to_diagnose      : 1;
+    unsigned            already_done        : 1;
+    unsigned            thunk_code          : 1;
 } vftable_walk;
 
-typedef struct {                                /* I - input, O - output */
-    SCOPE               start;                  /* I: type of (*p) in "p->C::a" */
-    SCOPE               disambiguate;           /* I: C in "p->C::a" */
-    SCOPE               ignore;                 /* I: don't search here */
-    NAME                name;                   /* I: a in "p->C::a" */
-    TYPE                type;                   /* I: T in "p->operator T()" */
-    TYPE                fn_type;                /* I: type of virtual fn */
-    SYMBOL              fn_sym;                 /* I: sym of virtual fn */
-    special_name_fn     is_special;             /* I: fn to check for special names */
-    unsigned            consider_mask;          /* I: mask to check curr scope */
-    BASE_STACK          *top;                   /* T: temp for storing 'top' */
-    MSG_NUM             error_msg;              /* O: error message to use */
-    MSG_NUM             info_msg;               /* O: info message for above msg */
-    SYMBOL              info1;                  /* O: parm for first info msg */
-    SYMBOL              info2;                  /* O: parm for second info msg */
-    SYMBOL_NAME         vfn_name;               /* O: vfn that shares table */
-    FNOV_LIST           *user_conv_list;        /* O: list of user convs in hierarchy */
-    PATH_CAP            *paths;                 /* O: paths to name */
-    unsigned            path_count;             /* O: # of paths to name */
-    inherit_flag        perm;                   /* O: permission of path to name */
-    type_flag           this_qualifier;         /* I: T cv-qual *this; cv-qual */
-    unsigned            virtual_override : 1;   /* I: find vfns with same name*/
-    unsigned            user_conversion : 1;    /* I: find conversion to 'type' */
-    unsigned            specific_user_conv : 1; /* I: must find specific conv */
-    unsigned            best_user_conv : 1;     /* I: must find best conv */
-    unsigned            check_special : 1;      /* I: use is_special() */
-    unsigned            no_inherit : 1;         /* I: no base classes searched */
-    unsigned            only_inherit : 1;       /* I: only base classes searched */
-    unsigned            only_bases : 1;         /* I: direct base classes searched */
-    unsigned            ok_to_diagnose : 1;     /* I: flag any errors found */
-    unsigned            find_all : 1;           /* I: find all pathes to base */
-    unsigned            ignore_access : 1;      /* I: access isn't important */
-    unsigned            saw_class : 1;          /* I: class scope was seen */
-    unsigned            ambiguous : 1;          /* O: ambiguity detected */
-    unsigned            overload_reqd : 1;      /* O: overload affects ambiguity */
-    unsigned            use_this : 1;           /* O: access could use "this" */
-    unsigned            no_this : 1;            /* O: access can't use "this" */
-    unsigned            saw_function : 1;       /* O: function scope was seen */
-    unsigned            use_index : 1;          /* O: use index of virtual fn */
-    unsigned            return_thunk : 1;       /* O: vfn needs return thunk */
-    unsigned            protected_OK : 1;       /* O: protected sym can be accessed */
-    unsigned            file_class_done : 1;    /* O: C::id search from file-scope done */
-    unsigned            file_ns_done : 1;       /* O: N::id search from file-scope done */
-    unsigned            same_table : 1;         /* O: vfn name is in same table */
-    unsigned            lookup_error : 1;       /* O: error to report from lookup */
-    unsigned            member_lookup : 1;
+typedef struct {                                    /* I - input, O - output */
+    SCOPE               start;                      /* I: type of (*p) in "p->C::a" */
+    SCOPE               disambiguate;               /* I: C in "p->C::a" */
+    SCOPE               ignore;                     /* I: don't search here */
+    NAME                name;                       /* I: a in "p->C::a" */
+    TYPE                type;                       /* I: T in "p->operator T()" */
+    TYPE                fn_type;                    /* I: type of virtual fn */
+    SYMBOL              fn_sym;                     /* I: sym of virtual fn */
+    special_name_fn     is_special;                 /* I: fn to check for special names */
+    unsigned            consider_mask;              /* I: mask to check curr scope */
+    BASE_STACK          *top;                       /* T: temp for storing 'top' */
+    MSG_NUM             error_msg;                  /* O: error message to use */
+    MSG_NUM             info_msg;                   /* O: info message for above msg */
+    SYMBOL              info1;                      /* O: parm for first info msg */
+    SYMBOL              info2;                      /* O: parm for second info msg */
+    SYMBOL_NAME         vfn_name;                   /* O: vfn that shares table */
+    FNOV_LIST           *user_conv_list;            /* O: list of user convs in hierarchy */
+    PATH_CAP            *paths;                     /* O: paths to name */
+    unsigned            path_count;                 /* O: # of paths to name */
+    inherit_flag        perm;                       /* O: permission of path to name */
+    type_flag           this_qualifier;             /* I: T cv-qual *this; cv-qual */
+    unsigned            virtual_override    : 1;    /* I: find vfns with same name */
+    unsigned            user_conversion     : 1;    /* I: find conversion to 'type' */
+    unsigned            specific_user_conv  : 1;    /* I: must find specific conv */
+    unsigned            best_user_conv      : 1;    /* I: must find best conv */
+    unsigned            check_special       : 1;    /* I: use is_special() */
+    unsigned            no_inherit          : 1;    /* I: no base classes searched */
+    unsigned            only_inherit        : 1;    /* I: only base classes searched */
+    unsigned            only_bases          : 1;    /* I: direct base classes searched */
+    unsigned            ok_to_diagnose      : 1;    /* I: flag any errors found */
+    unsigned            find_all            : 1;    /* I: find all pathes to base */
+    unsigned            ignore_access       : 1;    /* I: access isn't important */
+    unsigned            saw_class           : 1;    /* I: class scope was seen */
+    unsigned            ambiguous           : 1;    /* O: ambiguity detected */
+    unsigned            overload_reqd       : 1;    /* O: overload affects ambiguity */
+    unsigned            use_this            : 1;    /* O: access could use "this" */
+    unsigned            no_this             : 1;    /* O: access can't use "this" */
+    unsigned            saw_function        : 1;    /* O: function scope was seen */
+    unsigned            use_index           : 1;    /* O: use index of virtual fn */
+    unsigned            return_thunk        : 1;    /* O: vfn needs return thunk */
+    unsigned            protected_OK        : 1;    /* O: protected sym can be accessed */
+    unsigned            file_class_done     : 1;    /* O: C::id search from file-scope done */
+    unsigned            file_ns_done        : 1;    /* O: N::id search from file-scope done */
+    unsigned            same_table          : 1;    /* O: vfn name is in same table */
+    unsigned            lookup_error        : 1;    /* O: error to report from lookup */
+    unsigned            member_lookup       : 1;
 } lookup_walk;
 
 typedef struct access_data {
@@ -279,7 +279,7 @@ typedef struct access_data {
     SCOPE               member;
     SCOPE               located;
     inherit_flag        perm;
-    unsigned            protected_OK : 1;
+    unsigned            protected_OK        : 1;
 } access_data;
 
 typedef struct qualify_stack QUALIFICATION;
@@ -3878,8 +3878,8 @@ static void differentCopiesAmbiguity( lookup_walk *data )
     SYMBOL_NAME sym_name;
     CLASSINFO *info;
     struct {
-        unsigned static_found : 1;
-        unsigned nonstatic_found : 1;
+        unsigned static_found       : 1;
+        unsigned nonstatic_found    : 1;
     } flag;
 
     cap = data->paths;

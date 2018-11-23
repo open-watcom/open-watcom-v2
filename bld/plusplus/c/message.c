@@ -633,11 +633,11 @@ static msg_status_t doError(    // ISSUE ERROR
     va_list args,               // - varargs
     unsigned warn_inc )         // - amount to inc WngCount (if warning)
 {
-    msg_status_t retn;          // - message status
-    int level;                  // - warning level of message
+    msg_status_t retn;              // - message status
+    int level;                      // - warning level of message
     struct {
-        unsigned print_err : 1; // - true ==> print the message
-        unsigned too_many : 1;  // - true ==> too many messages
+        unsigned print_err  : 1;    // - true ==> print the message
+        unsigned too_many   : 1;    // - true ==> too many messages
     } flag;
 
 #ifndef NDEBUG

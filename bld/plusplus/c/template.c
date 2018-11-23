@@ -78,9 +78,9 @@ static struct {
     tc_fn_control       fn_control;
     SYMBOL              translate_fn;
     TYPE                extra_member_class;
-    unsigned            keep_going : 1;
-    unsigned            extra_members : 1;
-    unsigned            depth_diagnosed : 1;
+    unsigned            keep_going          : 1;
+    unsigned            extra_members       : 1;
+    unsigned            depth_diagnosed     : 1;
 } templateData;
 
 static CNV_DIAG diagTempParm =  // DIAGNOSIS FOR TEMPLATE ARGUMENT CONVERSION

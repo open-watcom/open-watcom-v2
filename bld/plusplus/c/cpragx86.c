@@ -389,15 +389,15 @@ void PragAux(                   // #PRAGMA AUX ...
     void )
 {
     struct {
-        unsigned f_call   : 1;
-        unsigned f_loadds : 1;
-        unsigned f_rdosdev: 1;
-        unsigned f_export : 1;
-        unsigned f_parm   : 1;
-        unsigned f_value  : 1;
-        unsigned f_modify : 1;
-        unsigned f_frame  : 1;
-        unsigned uses_auto: 1;
+        unsigned f_call         : 1;
+        unsigned f_loadds       : 1;
+        unsigned f_rdosdev      : 1;
+        unsigned f_export       : 1;
+        unsigned f_parm         : 1;
+        unsigned f_value        : 1;
+        unsigned f_modify       : 1;
+        unsigned f_frame        : 1;
+        unsigned uses_auto      : 1;
     } have;
 
     PPCTL_ENABLE_MACROS();
