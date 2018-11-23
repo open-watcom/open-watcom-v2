@@ -67,7 +67,10 @@ static void dump_rule( unsigned rule )
     }
     putchar( '\n' );
   #else
-    /* unused parameters */ (void)rule;
+    /* unused parameter       */ (void)rule      ;
+    /* unreference identifier */ (void)yyrhstoks ;
+    /* unreference identifier */ (void)yyrulebase;
+    /* unreference identifier */ (void)yytoknames;
   #endif
 }
 #endif
