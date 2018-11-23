@@ -1512,12 +1512,10 @@ void MIPSEmit( instruction *ins )
 #else
         emitIns( (char *)&result[ctr], sizeof( uint_32 ) );
 #endif
-#ifdef AS_DEBUG_DUMP
-    #ifdef _STANDALONE_
+#if defined( _STANDALONE_ ) && defined( AS_DEBUG_DUMP )
         if( _IsOption( DUMP_INSTRUCTIONS ) ) {
             printf( " [%#010x]\n", result[ctr] );
         }
-    #endif
 #endif
     }
     assert( reloc.first == NULL ); // Should all be emitted already!

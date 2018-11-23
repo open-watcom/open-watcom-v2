@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#if defined( AS_DEBUG_DUMP ) && defined( _STANDALONE_ )
+#if defined( _STANDALONE_ ) && defined( AS_DEBUG_DUMP )
     #define _DBGMSG1( a )               DebugPrintf( a )
     #define _DBGMSG2( a, b )            DebugPrintf( a, b )
     #define _DBGMSG3( a, b, c )         DebugPrintf( a, b, c )

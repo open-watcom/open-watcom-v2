@@ -39,18 +39,17 @@ YYSTYPE yylval;
 #define YYACCEPT        return(false)
 #define YYERROR         goto yyerrlab
 
-#ifdef AS_DEBUG_DUMP
+#ifdef YYDEBUG
 static void dump_rule( unsigned rule )
 {
-  #if defined( _STANDALONE_ ) || defined( MYDEBUG )
     unsigned i;
     const YYTOKENTYPE YYFAR *yytoken;
     const char YYFAR *p;
 
-    #if defined( _STANDALONE_ )
+  #if defined( _STANDALONE_ ) && defined( AS_DEBUG_DUMP )
     if( !_IsOption( DUMP_PARSE_TREE ) )
         return;
-    #endif
+  #endif
     for( p = yytoknames[ yyplhstab[ rule ] ]; *p; ++p ) {
         putchar( *p );
     }
@@ -66,9 +65,6 @@ static void dump_rule( unsigned rule )
         ++yytoken;
     }
     putchar( '\n' );
-  #else
-    /* unused parameters */ (void)rule;
-  #endif
 }
 #endif
 
@@ -161,7 +157,7 @@ yyerrlab:
             }
             *++yysp = yyaction;
             ++yyvp;
-#ifdef AS_DEBUG_DUMP
+#ifdef YYDEBUG
             dump_rule( yypnum );
 #endif
             switch( yypnum ) {

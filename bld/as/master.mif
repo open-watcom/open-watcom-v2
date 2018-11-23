@@ -112,7 +112,7 @@ extra_cppflags_mps = -DAS_MIPS
 extra_cppflags_ppc = -DAS_PPC
 extra_cpp_flags = $(extra_cppflags_$(target_cpu))
 !ifeq release 0
-extra_cpp_flags += -DTRMEM -DYYDEBUG=1 -DAS_DEBUG_DUMP
+extra_cpp_flags += -DTRMEM -DYYDEBUG -DAS_DEBUG_DUMP
 !endif
 
 extra_c_flags = -fh
