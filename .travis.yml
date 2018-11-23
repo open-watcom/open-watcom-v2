@@ -109,9 +109,6 @@ jobs:
         - export OWTRAVISJOB=BUILD1
         - export OWDOCBUILD=0
         - export OWVERBOSE=0
-          # install DOS Emulator
-        - brew install dosbox
-        - export OWDOSBOX=dosbox
       script: travis/build.sh
     #################################
     - stage: Build2
@@ -126,6 +123,7 @@ jobs:
           # install DOS Emulator
         - brew install dosbox
         - export OWDOSBOX=dosbox
+        - dosbox -noautoexec -noconsole -c "config -set \"mixer nosound=true\""
       script: travis/build.sh
     #################################
     - stage: Tests
