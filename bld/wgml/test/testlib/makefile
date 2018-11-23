@@ -219,7 +219,10 @@ gencop : .procedure
         @%append $(gendev_tmp_batchfile) w:\gml\dos\gendev.exe $(gendev_cmdl_params)
         @%append $(gendev_tmp_batchfile) exitemu
         @crlf -d $(gendev_tmp_batchfile) $(dosemu_gendev_batch)
-        $(GENDEVCMD)
+!ifeq verbose 0
+    	@echo gendev $@
+!endif
+        $(noecho)$(GENDEVCMD)
 !else ifeq use_dosemu dosbox
         $(noecho)%create $(dosemu_gendev_batch)
         @%append $(dosemu_gendev_batch) d:
@@ -227,11 +230,17 @@ gencop : .procedure
         @%append $(dosemu_gendev_batch) set GMLINC=e:\testsrc
         @%append $(dosemu_gendev_batch) c:\gml\dos\gendev.exe $(gendev_cmdl_params)
         @%append $(dosemu_gendev_batch) exit
-        $(GENDEVCMD)
+!ifeq verbose 0
+    	@echo gendev $@
+!endif
+        $(noecho)$(GENDEVCMD)
 !else
         set GMLLIB=..\testlib
         set GMLINC=..\testsrc
-        $(GENDEVCMD)
+!ifeq verbose 0
+    	@echo gendev $@
+!endif
+        $(noecho)$(GENDEVCMD)
 !endif
 
 clean   : .SYMBOLIC
