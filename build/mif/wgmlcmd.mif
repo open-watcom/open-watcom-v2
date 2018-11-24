@@ -28,7 +28,8 @@ dosbox_options = -noautoexec -noconsole &
     -c "config -set joystick joysticktype=none" &
     -c "config -set mixer nosound=true" &
     -c "config -set sblaster sblastertype=none" &
-    -c "midi mpu401=none" -c "midi mididevice=none" &
+    -c "config -set midi mpu401=none" &
+    -c "config -set midi mididevice=none" &
     -c "mount c $(docs_dir)" -c "mount d ."
 dosbox_wgml_options = -c "mount e $(src_dir)" -c "d:$(dosemu_wgml_batch)"
 dosbox_gendev_options = -c "mount e .." -c "d:$(dosemu_gendev_batch)"
