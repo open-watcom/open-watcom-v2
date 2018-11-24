@@ -79,10 +79,10 @@ jobs:
         - export OWVERBOSE=1
       script: travis/build.sh
     #################################
-    - stage: Build1
+    - stage: Build
       name: "OW tools build"
-      if: branch = master
       os: linux
+      if: branch = master AND os = linux
       compiler: gcc
       install:
         - export OWTOOLS=GCC
@@ -92,24 +92,11 @@ jobs:
           # install DOS Emulator
         - sudo apt-get install -y dosemu
       script: travis/build.sh
-    - # ...
-      name: "OW Documentation build"
-      if: branch = master
-      os: linux
-      compiler: gcc
-      install:
-        - export OWTOOLS=GCC
-        - export OWTRAVISJOB=DOCPDF
-        - export OWDOCBUILD=1
-        - export OWVERBOSE=0
-        - export OWGHOSTSCRIPTPATH=$PATH
-          # install DOS Emulator + Ghostscript
-        - sudo apt-get install -y dosemu ghostscript
-      script: travis/build.sh
-    - # ...
+    #################################
+    - stage: Build1
       name: "OW tools OSX build 1"
-      if: branch = master AND env(OWOSXBUILD) = 1
       os: osx
+      if: branch = master AND env(OWOSXBUILD) = 1
       compiler: clang
       install:
         - export OWTOOLS=CLANG
@@ -117,11 +104,10 @@ jobs:
         - export OWDOCBUILD=0
         - export OWVERBOSE=0
       script: travis/build.sh
-    #################################
     - stage: Build2
       name: "OW tools OSX build 2"
-      if: branch = master AND env(OWOSXBUILD) = 1
       os: osx
+      if: branch = master AND env(OWOSXBUILD) = 1
       compiler: clang
       install:
         - export OWTOOLS=CLANG
@@ -203,6 +189,21 @@ jobs:
         - export OWDOCBUILD=0
         - export OWVERBOSE=0
       script: travis/test.sh crtl
+    #################################
+    - stage: Documentation
+      name: "OW Documentation build (Cron)"
+      if: branch = master AND type = cron
+      os: linux
+      compiler: gcc
+      install:
+        - export OWTOOLS=GCC
+        - export OWTRAVISJOB=DOCPDF
+        - export OWDOCBUILD=1
+        - export OWVERBOSE=0
+        - export OWGHOSTSCRIPTPATH=$PATH
+          # install DOS Emulator + Ghostscript
+        - sudo apt-get install -y dosemu ghostscript
+      script: travis/builddoc.sh
     #################################
     - stage: Initiate
       name: "Initiate Coverity Scan by Cron"
