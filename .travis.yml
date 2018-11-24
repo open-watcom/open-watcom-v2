@@ -69,8 +69,7 @@ jobs:
       script: travis/build.sh
     - # ...
       name: "Build minimal set of build tools"
-      if: env(OWOSXBUILD) = 1
-      if: branch = master
+      if: branch = master AND env(OWOSXBUILD) = 1
       os: osx
       compiler: clang
       install:
@@ -109,8 +108,7 @@ jobs:
       script: travis/build.sh
     - # ...
       name: "OW tools OSX build 1"
-      if: env(OWOSXBUILD) = 1
-      if: branch = master
+      if: branch = master AND env(OWOSXBUILD) = 1
       os: osx
       compiler: clang
       install:
@@ -122,8 +120,7 @@ jobs:
     #################################
     - stage: Build2
       name: "OW tools OSX build 2"
-      if: env(OWOSXBUILD) = 1
-      if: branch = master
+      if: branch = master AND env(OWOSXBUILD) = 1
       os: osx
       compiler: clang
       install:
@@ -207,7 +204,7 @@ jobs:
         - export OWVERBOSE=0
       script: travis/test.sh crtl
     #################################
-    - stage: InitiateCoverity
+    - stage: Initiate
       name: "Initiate Coverity Scan by Cron"
       if: branch = coverity_scan AND type = cron
       os: linux
