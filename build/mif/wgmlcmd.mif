@@ -25,6 +25,8 @@ dosemu_wgml_batch=wgml.bat
 dosemu_gendev_batch=gendevb.bat
 
 dosbox_options = -noautoexec -noconsole &
+    -c "config -set cpu core=normal" &
+    -c "config -set cpu cycles=90" &
     -c "config -set joystick joysticktype=none" &
     -c "config -set mixer nosound=true" &
     -c "config -set sblaster sblastertype=none" &
