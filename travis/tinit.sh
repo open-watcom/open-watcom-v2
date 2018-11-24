@@ -10,9 +10,11 @@
 tinit_proc1()
 {
     if [ "$OWTRAVIS_DEBUG" = "1" ]; then
-        GITQUIET=-v
+        GITVERBOSE1=-v
+        GITVERBOSE2=-v
     else
-        GITQUIET=--quiet
+        GITVERBOSE1=--quiet
+        GITVERBOSE2=
     fi
     
     echo_msg="tinit.sh - skipped"
@@ -28,7 +30,7 @@ tinit_proc1()
             #
             # clone GitHub repository
             #
-            git clone $GITQUIET --branch=master https://${GITHUB_TOKEN}@github.com/${OWTRAVIS_REPO_SLUG}.git $OWTRAVIS_BUILD_DIR
+            git clone $GITVERBOSE1 --branch=master https://${GITHUB_TOKEN}@github.com/${OWTRAVIS_REPO_SLUG}.git $OWTRAVIS_BUILD_DIR
             #
             # compress GitHub repository to hold only a few last builds
             #
@@ -36,13 +38,13 @@ tinit_proc1()
             depth=`git rev-list HEAD --count`
             if [ $depth -gt 14 ]; then
                 echo "tinit.sh - start compression"
-                git checkout --orphan temp1
-                git add -A
-                git commit -am "Initial commit"
-                git branch -D master
-                git branch -m master
-                git push -f origin master
-                git branch --set-upstream-to=origin/master master
+                git checkout $GITVERBOSE2 --orphan temp1
+                git add $GITVERBOSE2 -A
+                git commit $GITVERBOSE1 -am "Initial commit"
+                git branch $GITVERBOSE1 -D master
+                git branch $GITVERBOSE1 -m master
+                git push $GITVERBOSE1 -f origin master
+                git branch $GITVERBOSE1 --set-upstream-to=origin/master master
                 echo "tinit.sh - end compression"
             fi
             cd $TRAVIS_BUILD_DIR

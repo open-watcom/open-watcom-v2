@@ -10,9 +10,11 @@ gitupds_proc()
 {
     if [ "$OWTRAVIS_DEBUG" = "1" ]; then
         set -x
-        GITQUIET=-v
+        GITVERBOSE1=-v
+        GITVERBOSE2=-v
     else
-        GITQUIET=--quiet
+        GITVERBOSE1=--quiet
+        GITVERBOSE2=
     fi
 
     echo_msg="gitupds.sh - skipped"
@@ -32,7 +34,7 @@ gitupds_proc()
                     #
                     # clone GitHub repository
                     #
-                    git clone $GITQUIET --branch=master https://${GITHUB_TOKEN}@github.com/${OWTRAVIS_REPO_SLUG}.git $OWTRAVIS_BUILD_DIR
+                    git clone $GITVERBOSE1 --branch=master https://${GITHUB_TOKEN}@github.com/${OWTRAVIS_REPO_SLUG}.git $OWTRAVIS_BUILD_DIR
                     #
                     # copy OW build to git tree
                     #
@@ -58,24 +60,24 @@ gitupds_proc()
                     # commit updated files to GitHub repository
                     #
                     cd $OWTRAVIS_BUILD_DIR
-                    git add -f .
+                    git add $GITVERBOSE2 -f .
                     case "$OWTRAVISJOB" in
                         "BUILD")
-                            git commit $GITQUIET -m "Travis CI build $TRAVIS_JOB_NUMBER - OW distribution"
+                            git commit $GITVERBOSE1 -m "Travis CI build $TRAVIS_JOB_NUMBER - OW distribution"
                             ;;
                         "BUILD1")
-                            git commit $GITQUIET -m "Travis CI build $TRAVIS_JOB_NUMBER - OW distribution 1"
+                            git commit $GITVERBOSE1 -m "Travis CI build $TRAVIS_JOB_NUMBER - OW distribution 1"
                             ;;
                         "BUILD2")
-                            git commit $GITQUIET -m "Travis CI build $TRAVIS_JOB_NUMBER - OW distribution 2"
+                            git commit $GITVERBOSE1 -m "Travis CI build $TRAVIS_JOB_NUMBER - OW distribution 2"
                             ;;
                         "DOCPDF")
-                            git commit $GITQUIET -m "Travis CI build $TRAVIS_JOB_NUMBER - Documentation"
+                            git commit $GITVERBOSE1 -m "Travis CI build $TRAVIS_JOB_NUMBER - Documentation"
                             ;;
                         *)
                             ;;
                     esac
-                    git push $GITQUIET -f origin
+                    git push $GITVERBOSE1 -f origin
                     cd $TRAVIS_BUILD_DIR
                     echo_msg="gitupds.sh - done"
                     ;;

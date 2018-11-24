@@ -10,9 +10,11 @@ gitupdf_proc()
 {
     if [ "$OWTRAVIS_DEBUG" = "1" ]; then
         set -x
-        GITQUIET=-v
+        GITVERBOSE1=-v
+        GITVERBOSE2=-v
     else
-        GITQUIET=--quiet
+        GITVERBOSE1=--quiet
+        GITVERBOSE2=
     fi
 
     echo_msg="gitupdf.sh - skipped"
@@ -33,7 +35,7 @@ gitupdf_proc()
                     #
                     # clone GitHub repository
                     #
-                    git clone $GITQUIET --branch=master https://${GITHUB_TOKEN}@github.com/${OWTRAVIS_REPO_SLUG}.git $OWTRAVIS_BUILD_DIR
+                    git clone $GITVERBOSE1 --branch=master https://${GITHUB_TOKEN}@github.com/${OWTRAVIS_REPO_SLUG}.git $OWTRAVIS_BUILD_DIR
                     #
                     # copy build log files to git repository tree
                     #
@@ -48,13 +50,13 @@ gitupdf_proc()
                     # commit new log files to GitHub repository
                     #
                     cd $OWTRAVIS_BUILD_DIR
-                    git add -f .
+                    git add $GITVERBOSE2 -f .
                     if [ "$TRAVIS_OS_NAME" = "osx" ]; then
-                        git commit $GITQUIET -m "Travis CI build $TRAVIS_JOB_NUMBER (failure) - log files (OSX)"
+                        git commit $GITVERBOSE1 -m "Travis CI build $TRAVIS_JOB_NUMBER (failure) - log files (OSX)"
                     else
-                        git commit $GITQUIET -m "Travis CI build $TRAVIS_JOB_NUMBER (failure) - log files (Linux)"
+                        git commit $GITVERBOSE1 -m "Travis CI build $TRAVIS_JOB_NUMBER (failure) - log files (Linux)"
                     fi
-                    git push $GITQUIET -f origin
+                    git push $GITVERBOSE1 -f origin
                     cd $TRAVIS_BUILD_DIR
                     echo_msg="gitupdf.sh - done"
                     ;;

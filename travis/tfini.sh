@@ -25,9 +25,11 @@ tfini_proc1()
 tfini_proc2()
 {
     if [ "$OWTRAVIS_DEBUG" = "1" ]; then
-        GITQUIET=-v
+        GITVERBOSE1=-v
+        GITVERBOSE2=-v
     else
-        GITQUIET=--quiet
+        GITVERBOSE1=--quiet
+        GITVERBOSE2=
     fi
 
     echo_msg="tfini.sh - skipped"
@@ -43,19 +45,19 @@ tfini_proc2()
             #
             cd ..
             rm -rf $TRAVIS_BUILD_DIR
-            git clone $GITQUIET https://${GITHUB_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git $TRAVIS_BUILD_DIR
+            git clone $GITVERBOSE1 https://${GITHUB_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git $TRAVIS_BUILD_DIR
             cd $TRAVIS_BUILD_DIR
             #
             if [ "$OWTRAVIS_DEBUG" = "1" ]; then echo "** git checkout"; fi
-            git checkout $OWBRANCH_COVERITY
+            git checkout $GITVERBOSE2 $OWBRANCH_COVERITY
             if [ "$OWTRAVIS_DEBUG" = "1" ]; then echo "** git merge"; fi
-            git merge $GITQUIET $OWBRANCH
+            git merge $GITVERBOSE1 $OWBRANCH
             if [ "$OWTRAVIS_DEBUG" = "1" ]; then echo "** git add"; fi
-            git add $GITQUIET -A
+            git add $GITVERBOSE2 -A
             if [ "$OWTRAVIS_DEBUG" = "1" ]; then echo "** git commit"; fi
-            git commit $GITQUIET -am "Travis CI update from $OWBRANCH branch"
+            git commit $GITVERBOSE1 -am "Travis CI update from $OWBRANCH branch"
             if [ "$OWTRAVIS_DEBUG" = "1" ]; then echo "** git push"; fi
-            git push $GITQUIET -f origin $OWBRANCH_COVERITY
+            git push $GITVERBOSE1 -f origin $OWBRANCH_COVERITY
             #
             echo_msg="tfini.sh - done"
         fi
