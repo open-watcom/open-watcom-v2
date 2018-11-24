@@ -220,11 +220,13 @@ jobs:
     #################################
     - stage: Finalize
       name: "Clean build cache Linux"
+      if: branch = master
       os: linux
       script: 
         - travis/tfini.sh
     - # ...
       name: "Clean build cache OSX"
+      if: branch = master AND env(OWOSXBUILD) = 1
       os: osx
       script: 
         - travis/tfini.sh
