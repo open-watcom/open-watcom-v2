@@ -26,9 +26,7 @@ cache:
     - build1
 
 before_script:
-   # initialize OW build environment variables
- - . ./cmnvars.sh
-   # get clone of GitHub repository to return Travis CI OW build/log files
+   # get environment/cache info if debug active
  - travis/envinfo.sh
  - travis/cacheinf.sh
 
@@ -53,154 +51,180 @@ jobs:
       if: branch = master AND type = push
       os: linux
       cache: false
-      before_script:
-        - travis/envinfo.sh
-        - travis/cacheinf.sh
-      script: travis/tinit.sh
+      script: 
+        - travis/tinit.sh
     #################################
     - stage: Bootstrap
       name: "Build minimal set of build tools"
       if: branch = master
       os: linux
       compiler: gcc
-      install:
+      before_install:
         - export OWTOOLS=GCC
         - export OWTRAVISJOB=BOOTSTRAP
         - export OWDOCBUILD=0
         - export OWVERBOSE=1
-      script: travis/build.sh
+      install:
+        - . ./cmnvars.sh
+      script: 
+        - travis/build.sh
     - # ...
       name: "Build minimal set of build tools"
       if: branch = master AND env(OWOSXBUILD) = 1
       os: osx
       compiler: clang
-      install:
+      before_install:
         - export OWTOOLS=CLANG
         - export OWTRAVISJOB=BOOTSTRAP
         - export OWDOCBUILD=0
         - export OWVERBOSE=1
-      script: travis/build.sh
+      install:
+        - . ./cmnvars.sh
+      script: 
+        - travis/build.sh
     #################################
     - stage: Build
       name: "OW tools build"
       os: linux
       if: branch = master
       compiler: gcc
-      install:
+      before_install:
         - export OWTOOLS=GCC
         - export OWTRAVISJOB=BUILD
         - export OWDOCBUILD=0
         - export OWVERBOSE=0
-          # install DOS Emulator
+      install:
+        # install DOS Emulator
         - sudo apt-get install -y dosemu
-      script: travis/build.sh
+        - . ./cmnvars.sh
+      script: 
+        - travis/build.sh
     - # ...
       name: "OW tools OSX build 1"
       os: osx
       if: branch = master AND env(OWOSXBUILD) = 1
       compiler: clang
-      install:
+      before_install:
         - export OWTOOLS=CLANG
         - export OWTRAVISJOB=BUILD1
         - export OWDOCBUILD=0
         - export OWVERBOSE=0
-      script: travis/build.sh
+      install:
+        - . ./cmnvars.sh
+      script: 
+        - travis/build.sh
     #################################
     - stage: Build2
       name: "OW tools OSX build 2"
       os: osx
       if: branch = master AND env(OWOSXBUILD) = 1
       compiler: clang
-      install:
+      before_install:
         - export OWTOOLS=CLANG
         - export OWTRAVISJOB=BUILD2
         - export OWDOCBUILD=0
         - export OWVERBOSE=0
-          # install DOS Emulator
-        - brew install dosbox
         - export OWDOSBOX=dosbox
-      script: travis/build.sh
+      install:
+        # install DOS Emulator
+        - brew install dosbox
+        - . ./cmnvars.sh
+      script: 
+        - travis/build.sh
     #################################
     - stage: Tests
       name: "Test wasm assembler"
       if: branch = master
       os: linux
-      install:
+      before_install:
         - export OWTOOLS=WATCOM
+        - export OWTRAVISJOB=TEST
+        - export OWDOCBUILD=0
+        - export OWVERBOSE=0
+      install:
         - export WATCOM=$OWROOT/test
         - export PATH=$WATCOM/binl:$PATH
         - export INCLUDE=$WATCOM/lh
         - unset LIB
-        - export OWTRAVISJOB=TEST
-        - export OWDOCBUILD=0
-        - export OWVERBOSE=0
-      script: travis/test.sh wasm
+        - . ./cmnvars.sh
+      script: 
+        - travis/test.sh wasm
     - # ...
       name: "Test C compiler"
       if: branch = master
       os: linux
-      install:
+      before_install:
         - export OWTOOLS=WATCOM
+        - export OWTRAVISJOB=TEST
+        - export OWDOCBUILD=0
+        - export OWVERBOSE=0
+      install:
         - export WATCOM=$OWROOT/test
         - export PATH=$WATCOM/binl:$PATH
         - export INCLUDE=$WATCOM/lh
         - unset LIB
-        - export OWTRAVISJOB=TEST
-        - export OWDOCBUILD=0
-        - export OWVERBOSE=0
-      script: travis/test.sh c
+        - . ./cmnvars.sh
+      script: 
+        - travis/test.sh c
     - # ...
       name: "Test FORTRAN 77 compiler"
       if: branch = master
       os: linux
-      install:
+      before_install:
         - export OWTOOLS=WATCOM
+        - export OWTRAVISJOB=TEST
+        - export OWDOCBUILD=0
+        - export OWVERBOSE=0
+      install:
         - export WATCOM=$OWROOT/test
         - export PATH=$WATCOM/binl:$PATH
         - export INCLUDE=$WATCOM/lh
         - unset LIB
-        - export OWTRAVISJOB=TEST
-        - export OWDOCBUILD=0
-        - export OWVERBOSE=0
-      script: travis/test.sh f77
+        - . ./cmnvars.sh
+      script: 
+        - travis/test.sh f77
     - # ...
       name: "Test C++ compiler"
       if: branch = master
       os: linux
-      install:
+      before_install:
         - export OWTOOLS=WATCOM
+        - export OWTRAVISJOB=TEST
+        - export OWDOCBUILD=0
+        - export OWVERBOSE=0
+      install:
         - export WATCOM=$OWROOT/test
         - export PATH=$WATCOM/binl:$PATH
         - export INCLUDE=$WATCOM/lh
         - unset LIB
-        - export OWTRAVISJOB=TEST
-        - export OWDOCBUILD=0
-        - export OWVERBOSE=0
-      script: travis/test.sh cpp
+        - . ./cmnvars.sh
+      script: 
+        - travis/test.sh cpp
     - # ...
       name: "Test C run-time library"
       if: branch = master
       os: linux
-      install:
+      before_install:
         - export OWTOOLS=WATCOM
+        - export OWTRAVISJOB=TEST
+        - export OWDOCBUILD=0
+        - export OWVERBOSE=0
+      install:
         - export WATCOM=$OWROOT/test
         - export PATH=$WATCOM/binl:$PATH
         - export INCLUDE=$WATCOM/lh
         - unset LIB
-        - export OWTRAVISJOB=TEST
-        - export OWDOCBUILD=0
-        - export OWVERBOSE=0
-      script: travis/test.sh crtl
+        - . ./cmnvars.sh
+      script: 
+        - travis/test.sh crtl
     #################################
     - stage: InitDocumentation
       name: "Initiate Documentation build by Cron"
       if: branch = documentation AND type = cron
       os: linux
       cache: false
-      before_script:
-        - travis/envinfo.sh
-        - travis/cacheinf.sh
-      script: travis/gitudocs.sh
+      script: 
+        - travis/gitudocs.sh
     #################################
     - stage: Documentation
       name: "OW Documentation build"
@@ -208,25 +232,26 @@ jobs:
       os: linux
       compiler: gcc
       cache: false
-      install:
+      before_install:
         - export OWTOOLS=GCC
         - export OWTRAVISJOB=DOCPDF
         - export OWDOCBUILD=1
         - export OWVERBOSE=0
-        - export OWGHOSTSCRIPTPATH=$PATH
-          # install DOS Emulator + Ghostscript
+      install:
+        # install DOS Emulator + Ghostscript
         - sudo apt-get install -y dosemu ghostscript
-      script: travis/builddoc.sh
+        - export OWGHOSTSCRIPTPATH=$PATH
+        - . ./cmnvars.sh
+      script: 
+        - travis/builddoc.sh
     #################################
     - stage: InitCoverity
       name: "Initiate Coverity Scan by Cron"
       if: branch = coverity_scan AND type = cron
       os: linux
       cache: false
-      before_script:
-        - travis/envinfo.sh
-        - travis/cacheinf.sh
-      script: travis/gitucov.sh
+      script: 
+        - travis/gitucov.sh
     #################################
     - stage: Coverity
       name: "Initiate Coverity Scan"
@@ -234,14 +259,17 @@ jobs:
       os: linux
       compiler: gcc
       cache: false
-      install:
+      before_install:
         - export OWTOOLS=GCC
         - export OWTRAVISJOB=BUILD
         - export OWDOCBUILD=0
         - export OWVERBOSE=0
-          # install DOS Emulator
+      install:
+        # install DOS Emulator
         - sudo apt-get install -y dosemu
-      script: travis/covscan.sh
+        - . ./cmnvars.sh
+      script: 
+        - travis/covscan.sh
 
 #  coverity_scan:
 #    project:
