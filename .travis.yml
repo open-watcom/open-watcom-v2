@@ -49,7 +49,7 @@ jobs:
     #################################
     - stage: Initialize
       name: "Initialize stages shared environment"
-      if: branch = master
+      if: branch = master AND type = push
       os: linux
       before_script:
         - travis/envinfo.sh
