@@ -1,28 +1,13 @@
 #!/bin/sh
 # *****************************************************************
-# tfini.sh - finalize all
+# gitudocs.sh - update documentation branch to trigger build
 # *****************************************************************
 
 ###################################################################
-# 1. clear Travis cache
+# 1. update GitHub repository documentation branch by master branch
 #
 
-tfini_proc1()
-{
-    rm -f   build/$OWOBJDIR/*
-#    rm -rf  bld/watcom/$OWOBJDIR/*
-    rm -rf  bld/*
-    rm -rf  test/*
-    rm -rf  build1/*
-    
-    return 0
-}
-
-###################################################################
-# 2. update GitHub repository documentation branch by master branch
-#
-
-tfini_proc2()
+gitudocs_proc1()
 {
     if [ "$OWTRAVIS_DEBUG" = "1" ]; then
         GITVERBOSE1=-v
@@ -61,5 +46,4 @@ tfini_proc2()
     return 0
 }
 
-tfini_proc1 $*
-tfini_proc2 $*
+gitudocs_proc1 $*

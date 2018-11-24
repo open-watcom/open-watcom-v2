@@ -47,7 +47,7 @@ jobs:
   include:
     #################################
     - stage: Initialize
-      name: "Initialize stages shared environment"
+      name: "Initialize Travis GitHub repository"
       if: branch = master AND type = push
       os: linux
       cache: false
@@ -217,6 +217,18 @@ jobs:
         - . ./cmnvars.sh
       script: 
         - travis/test.sh crtl
+    #################################
+    - stage: Finalize
+      name: "Clean build cache Linux"
+      os: linux
+      script: 
+        - travis/tfini.sh
+    - # ...
+      name: "Clean build cache OSX"
+      os: osx
+      script: 
+        - travis/tfini.sh
+
     #################################
     - stage: InitDocumentation
       name: "Initiate Documentation build by Cron"

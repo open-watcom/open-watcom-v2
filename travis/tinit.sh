@@ -4,7 +4,7 @@
 # *****************************************************************
 
 ###################################################################
-# 1. compress GitHub repository if necessary
+# 1. compress Travis GitHub repository if necessary
 #
 
 tinit_proc1()
@@ -32,7 +32,7 @@ tinit_proc1()
     #
     cd $OWTRAVIS_BUILD_DIR
     depth=`git rev-list HEAD --count`
-    if [ $depth -gt 14 ]; then
+    if [ $depth -gt 20 ]; then
         echo "tinit.sh - start compression"
         git checkout --orphan temp1
         git add $GITVERBOSE2 -A

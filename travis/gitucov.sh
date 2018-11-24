@@ -1,28 +1,13 @@
 #!/bin/sh
 # *****************************************************************
-# tfini.sh - finalize all
+# gitucov.sh - update coverity_scan branch to trigger scan
 # *****************************************************************
 
 ###################################################################
-# 1. clear Travis cache
+# 1. update GitHub repository coverity_scan branch by master branch
 #
 
-tfini_proc1()
-{
-    rm -f   build/$OWOBJDIR/*
-#    rm -rf  bld/watcom/$OWOBJDIR/*
-    rm -rf  bld/*
-    rm -rf  test/*
-    rm -rf  build1/*
-    
-    return 0
-}
-
-###################################################################
-# 2. update GitHub repository coverity_scan branch by master branch
-#
-
-tfini_proc2()
+gitucov_proc1()
 {
     if [ "$OWTRAVIS_DEBUG" = "1" ]; then
         GITVERBOSE1=-v
@@ -56,10 +41,9 @@ tfini_proc2()
     git push $GITVERBOSE1 -f origin $OWBRANCH_COVERITY
     #
     
-    echo "tfini.sh - done"
+    echo "gitucov.sh - done"
     
     return 0
 }
 
-tfini_proc1 $*
-tfini_proc2 $*
+gitucov_proc1 $*
