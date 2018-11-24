@@ -38,7 +38,7 @@ tinit_proc1()
             depth=`git rev-list HEAD --count`
             if [ $depth -gt 14 ]; then
                 echo "tinit.sh - start compression"
-                git checkout $GITVERBOSE2 --orphan temp1
+                git checkout --orphan temp1
                 git add $GITVERBOSE2 -A
                 git commit $GITVERBOSE1 -am "Initial commit"
                 git branch $GITVERBOSE1 -D master

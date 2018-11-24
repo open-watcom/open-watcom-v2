@@ -49,7 +49,7 @@ tfini_proc2()
             cd $TRAVIS_BUILD_DIR
             #
             if [ "$OWTRAVIS_DEBUG" = "1" ]; then echo "** git checkout"; fi
-            git checkout $GITVERBOSE2 $OWBRANCH_COVERITY
+            git checkout $OWBRANCH_COVERITY
             if [ "$OWTRAVIS_DEBUG" = "1" ]; then echo "** git merge"; fi
             git merge $GITVERBOSE1 $OWBRANCH
             if [ "$OWTRAVIS_DEBUG" = "1" ]; then echo "** git add"; fi

@@ -1,7 +1,5 @@
 language: c
 
-compiler: gcc
-
 sudo: required
 
 dist: trusty
@@ -51,6 +49,7 @@ jobs:
     #################################
     - stage: Initialize
       name: "Initialize stages shared environment"
+      if: branch = master
       os: linux
       before_script:
         - travis/envinfo.sh
@@ -59,7 +58,9 @@ jobs:
     #################################
     - stage: Bootstrap
       name: "Build minimal set of build tools"
+      if: branch = master
       os: linux
+      compiler: gcc
       install:
         - export OWTOOLS=GCC
         - export OWTRAVISJOB=BOOTSTRAP
@@ -69,7 +70,9 @@ jobs:
     - # ...
       name: "Build minimal set of build tools"
       if: env(OWOSXBUILD) = 1
+      if: branch = master
       os: osx
+      compiler: clang
       install:
         - export OWTOOLS=CLANG
         - export OWTRAVISJOB=BOOTSTRAP
@@ -79,7 +82,9 @@ jobs:
     #################################
     - stage: Build1
       name: "OW tools build"
+      if: branch = master
       os: linux
+      compiler: gcc
       install:
         - export OWTOOLS=GCC
         - export OWTRAVISJOB=BUILD
@@ -90,7 +95,9 @@ jobs:
       script: travis/build.sh
     - # ...
       name: "OW Documentation build"
+      if: branch = master
       os: linux
+      compiler: gcc
       install:
         - export OWTOOLS=GCC
         - export OWTRAVISJOB=DOCPDF
@@ -103,7 +110,9 @@ jobs:
     - # ...
       name: "OW tools OSX build 1"
       if: env(OWOSXBUILD) = 1
+      if: branch = master
       os: osx
+      compiler: clang
       install:
         - export OWTOOLS=CLANG
         - export OWTRAVISJOB=BUILD1
@@ -114,7 +123,9 @@ jobs:
     - stage: Build2
       name: "OW tools OSX build 2"
       if: env(OWOSXBUILD) = 1
+      if: branch = master
       os: osx
+      compiler: clang
       install:
         - export OWTOOLS=CLANG
         - export OWTRAVISJOB=BUILD2
@@ -127,6 +138,7 @@ jobs:
     #################################
     - stage: Tests
       name: "Test wasm assembler"
+      if: branch = master
       os: linux
       install:
         - export OWTOOLS=WATCOM
@@ -140,6 +152,7 @@ jobs:
       script: travis/test.sh wasm
     - # ...
       name: "Test C compiler"
+      if: branch = master
       os: linux
       install:
         - export OWTOOLS=WATCOM
@@ -153,6 +166,7 @@ jobs:
       script: travis/test.sh c
     - # ...
       name: "Test FORTRAN 77 compiler"
+      if: branch = master
       os: linux
       install:
         - export OWTOOLS=WATCOM
@@ -166,6 +180,7 @@ jobs:
       script: travis/test.sh f77
     - # ...
       name: "Test C++ compiler"
+      if: branch = master
       os: linux
       install:
         - export OWTOOLS=WATCOM
@@ -179,6 +194,7 @@ jobs:
       script: travis/test.sh cpp
     - # ...
       name: "Test C run-time library"
+      if: branch = master
       os: linux
       install:
         - export OWTOOLS=WATCOM
@@ -191,13 +207,28 @@ jobs:
         - export OWVERBOSE=0
       script: travis/test.sh crtl
     #################################
-    - stage: Finalize
-      name: "Clean stages shared environment"
+    - stage: InitiateCoverity
+      name: "Initiate Coverity Scan by Cron"
+      if: branch = coverity_scan AND type = cron
       os: linux
       before_script:
         - travis/envinfo.sh
         - travis/cacheinf.sh
       script: travis/tfini.sh
+    #################################
+    - stage: Coverity
+      name: "Initiate Coverity Scan"
+      if: branch = coverity_scan AND type = push
+      os: linux
+      compiler: gcc
+      install:
+        - export OWTOOLS=GCC
+        - export OWTRAVISJOB=BUILD
+        - export OWDOCBUILD=0
+        - export OWVERBOSE=0
+          # install DOS Emulator
+        - sudo apt-get install -y dosemu
+      script: travis/covscan.sh
 
 #  coverity_scan:
 #    project:
