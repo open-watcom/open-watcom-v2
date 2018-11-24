@@ -52,6 +52,7 @@ jobs:
       name: "Initialize stages shared environment"
       if: branch = master AND type = push
       os: linux
+      cache: false
       before_script:
         - travis/envinfo.sh
         - travis/cacheinf.sh
@@ -195,6 +196,7 @@ jobs:
       name: "Initiate Documentation build by Cron"
       if: branch = documentation AND type = cron
       os: linux
+      cache: false
       before_script:
         - travis/envinfo.sh
         - travis/cacheinf.sh
@@ -205,6 +207,7 @@ jobs:
       if: branch = documentation AND type = push
       os: linux
       compiler: gcc
+      cache: false
       install:
         - export OWTOOLS=GCC
         - export OWTRAVISJOB=DOCPDF
@@ -219,6 +222,7 @@ jobs:
       name: "Initiate Coverity Scan by Cron"
       if: branch = coverity_scan AND type = cron
       os: linux
+      cache: false
       before_script:
         - travis/envinfo.sh
         - travis/cacheinf.sh
@@ -229,6 +233,7 @@ jobs:
       if: branch = coverity_scan AND type = push
       os: linux
       compiler: gcc
+      cache: false
       install:
         - export OWTOOLS=GCC
         - export OWTRAVISJOB=BUILD
