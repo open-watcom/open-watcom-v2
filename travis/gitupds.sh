@@ -19,7 +19,7 @@ gitupds_proc()
 
     echo_msg="gitupds.sh - skipped"
 
-    if [ "$TRAVIS_BRANCH" = "$OWBRANCH" ]; then
+    if [ "$TRAVIS_BRANCH" = "$OWBRANCH" ] || [ "$TRAVIS_BRANCH" = "$OWBRANCH_DOCS" ]; then
         if [ "$TRAVIS_EVENT_TYPE" = "push" ] && [ "$TRAVIS_OS_NAME" = "linux" ]; then
             case "$OWTRAVISJOB" in
                 "BOOTSTRAP")
