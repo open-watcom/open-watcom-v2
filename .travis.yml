@@ -82,7 +82,7 @@ jobs:
     - stage: Build
       name: "OW tools build"
       os: linux
-      if: branch = master AND os = linux
+      if: branch = master
       compiler: gcc
       install:
         - export OWTOOLS=GCC
@@ -92,8 +92,7 @@ jobs:
           # install DOS Emulator
         - sudo apt-get install -y dosemu
       script: travis/build.sh
-    #################################
-    - stage: Build1
+    - # ...
       name: "OW tools OSX build 1"
       os: osx
       if: branch = master AND env(OWOSXBUILD) = 1
@@ -104,6 +103,7 @@ jobs:
         - export OWDOCBUILD=0
         - export OWVERBOSE=0
       script: travis/build.sh
+    #################################
     - stage: Build2
       name: "OW tools OSX build 2"
       os: osx
