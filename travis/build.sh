@@ -13,6 +13,8 @@ bootutil_proc()
     #
     # build new verison of wmake for host system
     #
+    if [ ! -d $OWBINDIR ]; then mkdir $OWBINDIR; fi
+    #
     cd $OWSRCDIR/wmake
     mkdir $OWOBJDIR
     cd $OWOBJDIR
