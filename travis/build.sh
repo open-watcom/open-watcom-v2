@@ -10,12 +10,14 @@
 
 copytocache()
 {
-    time -f "save build 1 to cache %e seconds" cp -Rf $OWSRCDIR/* $OWROOT/build1
+    echo "save build 1 to cache"
+    time cp -Rf $OWSRCDIR/* $OWROOT/build1
 }
 
 copyfromcache()
 {
-    time -f "load build 1 from cache %e seconds" cp -Rn $OWROOT/build1/* $OWSRCDIR
+    echo "load build 1 from cache"
+    time cp -Rn $OWROOT/build1/* $OWSRCDIR
 }
 
 bootutil_proc()
