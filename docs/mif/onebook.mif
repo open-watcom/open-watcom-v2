@@ -52,7 +52,6 @@ doc_verbose = 0
 company=Open Watcom
 
 wgml_optfile=wgmlopts.tmp
-wgml_tmp_batchfile=wgml.tmp
 whpcvt_optfile=whpcopts.tmp
 gml_lib=../gml/syslib
 wine_hc_batch=winehc.bat
@@ -352,9 +351,6 @@ $(hbook).ps : $(book_objs) $(book_objs_ps) $(proj_objs)
     @echo wgml $@
 !endif
     -$(WGMLCMD:$(to_os_path))
-!ifeq build_os osx
-    cat wgml.log
-!endif
     @if exist $@ @%erase $@
     @$(RENCMD) $(wgml_tmpfile) $@
 
@@ -591,6 +587,9 @@ compile_gml_to_xxx : .PROCEDURE
     @if exist $*.ptf @%erase $*.ptf
     @$(RENCMD) $(wgml_tmpfile) $*.ptf
     @%make prepare_whpcvt_opts
+!ifdef __UNIX__
+ ls -l
+!endif
     whpcvt -@ $(whpcvt_optfile) $*.ptf
     @%create $(wgml_sysfile_02)
 !ifeq verbose 0
