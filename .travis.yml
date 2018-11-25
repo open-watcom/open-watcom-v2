@@ -40,11 +40,6 @@ after_success:
  - travis/gitupds.sh
 
 jobs:
-  allow_failures:
-    - os: osx
-  allow_failures:
-    - stage: Tests
-
   include:
     #################################
     - stage: Initialize
@@ -96,8 +91,8 @@ jobs:
     #################################
     - stage: Build
       name: "OW tools build"
-      os: linux
       if: branch = master
+      os: linux
       compiler: gcc
       before_install:
         - export OWTOOLS=GCC
@@ -112,9 +107,10 @@ jobs:
         - travis/build.sh
     - # ...
       name: "OW tools OSX build 1"
-      os: osx
       if: branch = master AND env(OWOSXBUILD) = 1
+      os: osx
       compiler: clang
+      allow_failures: true
       before_install:
         - export OWTOOLS=CLANG
         - export OWTRAVISJOB=BUILD1
@@ -127,9 +123,10 @@ jobs:
     #################################
     - stage: Build2
       name: "OW tools OSX build 2"
-      os: osx
       if: branch = master AND env(OWOSXBUILD) = 1
+      os: osx
       compiler: clang
+      allow_failures: true
       before_install:
         - export OWTOOLS=CLANG
         - export OWTRAVISJOB=BUILD2
@@ -147,6 +144,7 @@ jobs:
       name: "Test wasm assembler"
       if: branch = master
       os: linux
+      allow_failures: true
       before_install:
         - export OWTOOLS=WATCOM
         - export OWTRAVISJOB=TEST
@@ -164,6 +162,7 @@ jobs:
       name: "Test C compiler"
       if: branch = master
       os: linux
+      allow_failures: true
       before_install:
         - export OWTOOLS=WATCOM
         - export OWTRAVISJOB=TEST
@@ -181,6 +180,7 @@ jobs:
       name: "Test FORTRAN 77 compiler"
       if: branch = master
       os: linux
+      allow_failures: true
       before_install:
         - export OWTOOLS=WATCOM
         - export OWTRAVISJOB=TEST
@@ -198,6 +198,7 @@ jobs:
       name: "Test C++ compiler"
       if: branch = master
       os: linux
+      allow_failures: true
       before_install:
         - export OWTOOLS=WATCOM
         - export OWTRAVISJOB=TEST
@@ -215,6 +216,7 @@ jobs:
       name: "Test C run-time library"
       if: branch = master
       os: linux
+      allow_failures: true
       before_install:
         - export OWTOOLS=WATCOM
         - export OWTRAVISJOB=TEST
