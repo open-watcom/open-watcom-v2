@@ -64,6 +64,7 @@ jobs:
         - export OWTRAVISJOB=BOOTSTRAP
         - export OWDOCBUILD=0
         - export OWVERBOSE=1
+        - travis/tfini.sh
       install:
         - . ./cmnvars.sh
       script: 
@@ -78,6 +79,7 @@ jobs:
         - export OWTRAVISJOB=BOOTSTRAP
         - export OWDOCBUILD=0
         - export OWVERBOSE=1
+        - travis/tfini.sh
       install:
         - . ./cmnvars.sh
       script: 
