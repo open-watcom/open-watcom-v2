@@ -216,7 +216,7 @@ sub make_boot_batch
 {
     open(BATCH, ">$build_boot_batch_name") || die "Unable to open $build_boot_batch_name file.";
     if (($Common::config{'INITCMD'} || '') ne '') {
-        print BATCH $Common::config{'INITCMD'};
+        print BATCH $Common::config{'INITCMD'}, " setup";
     }
     open(INPUT, "$setvars") || die "Unable to open $setvars file.";
     while (<INPUT>) {
@@ -244,6 +244,10 @@ sub make_boot_batch
     batch_output_build_wmake_builder();
     print BATCH "cd $OW"; print BATCH 'cd bld';
     print BATCH 'builder boot';
+    print BATCH "cd $home";
+    if (($Common::config{'INITCMD'} || '') ne '') {
+        print BATCH $Common::config{'INITCMD'}, " restore";
+    }
     close(BATCH);
     # On Windows it has no efect
     chmod 0777, $build_boot_batch_name;
@@ -253,7 +257,7 @@ sub make_build_batch
 {
     open(BATCH, ">$build_batch_name") || die "Unable to open $build_batch_name file.";
     if (($Common::config{'INITCMD'} || '') ne '') {
-        print BATCH $Common::config{'INITCMD'};
+        print BATCH $Common::config{'INITCMD'}, " setup";
     }
     open(INPUT, "$setvars") || die "Unable to open $setvars file.";
     while (<INPUT>) {
@@ -273,14 +277,16 @@ sub make_build_batch
     print BATCH "$setenv OWDOCBUILD=0";
     print BATCH "$setenv OWDOCQUIET=1";
     # start building by bootstrap tools.
-    # Remove release directory tree.
-    print BATCH 'builder -i cleanrel';
-    # Clean previous build.
+    # Remove release directory tree and clean previous build.
     print BATCH "cd $OW"; print BATCH 'cd bld';
-    print BATCH 'builder -i clean';
+    print BATCH 'builder -i passclean';
     # Start build process.
     print BATCH "cd $OW"; print BATCH 'cd bld';
     print BATCH 'builder -i pass';
+    print BATCH "cd $home";
+    if (($Common::config{'INITCMD'} || '') ne '') {
+        print BATCH $Common::config{'INITCMD'}, " restore";
+    }
     close(BATCH);
     # On Windows it has no efect
     chmod 0777, $build_batch_name;
@@ -290,7 +296,7 @@ sub make_docs_batch
 {
     open(BATCH, ">$docs_batch_name") || die "Unable to open $docs_batch_name file.";
     if (($Common::config{'INITCMD'} || '') ne '') {
-        print BATCH $Common::config{'INITCMD'};
+        print BATCH $Common::config{'INITCMD'}, " setup";
     }
     open(INPUT, "$setvars") || die "Unable to open $setvars file.";
     while (<INPUT>) {
@@ -324,6 +330,10 @@ sub make_docs_batch
     print BATCH "cd $OW"; print BATCH 'cd docs';
     print BATCH 'builder -i docsclean';
     print BATCH 'builder -i docs';
+    print BATCH "cd $home";
+    if (($Common::config{'INITCMD'} || '') ne '') {
+        print BATCH $Common::config{'INITCMD'}, " restore";
+    }
     close(BATCH);
     # On Windows it has no efect
     chmod 0777, $docs_batch_name;
@@ -333,7 +343,7 @@ sub make_test_batch
 {
     open(BATCH, ">$test_batch_name") || die "Unable to open $test_batch_name file.";
     if (($Common::config{'INITCMD'} || '') ne '') {
-        print BATCH $Common::config{'INITCMD'};
+        print BATCH $Common::config{'INITCMD'}, " setup";
     }
     open(INPUT, "$setvars") || die "Unable to open $setvars file.";
     while (<INPUT>) {
@@ -361,6 +371,10 @@ sub make_test_batch
     print BATCH "cd $OW"; print BATCH 'cd bld';
     print BATCH 'builder -i testclean';
     print BATCH 'builder -i test';
+    print BATCH "cd $home";
+    if (($Common::config{'INITCMD'} || '') ne '') {
+        print BATCH $Common::config{'INITCMD'}, " restore";
+    }
     close(BATCH);
     # On Windows it has no efect
     chmod 0777, $test_batch_name;
@@ -370,7 +384,7 @@ sub make_installer_batch
 {
     open(BATCH, ">$build_installer_name") || die "Unable to open $build_installer_name file.";
     if (($Common::config{'INITCMD'} || '') ne '') {
-        print BATCH $Common::config{'INITCMD'};
+        print BATCH $Common::config{'INITCMD'}, " setup";
     }
     open(INPUT, "$setvars") || die "Unable to open $setvars file.";
     while (<INPUT>) {
@@ -386,6 +400,10 @@ sub make_installer_batch
     print BATCH "cd $OW"; print BATCH 'cd distrib'; print BATCH 'cd ow';
     print BATCH 'builder missing';
     print BATCH 'builder build';
+    print BATCH "cd $home";
+    if (($Common::config{'INITCMD'} || '') ne '') {
+        print BATCH $Common::config{'INITCMD'}, " restore";
+    }
     close(BATCH);
     # On Windows it has no efect
     chmod 0777, $build_installer_name;

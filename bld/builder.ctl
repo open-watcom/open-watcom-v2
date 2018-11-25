@@ -9,7 +9,7 @@ echo Build host: <BLD_HOST>
 
 cdsay .
 
-[ BLOCK <BLDRULE> boot bootclean ]
+[ BLOCK <BLDRULE> bootclean boot ]
 #=================================
 # Build Open Watcom tools using the host platform's native compiler.
 #
@@ -124,8 +124,8 @@ cdsay .
 #[ INCLUDE <OWSRCDIR>/wprof/builder.ctl ]
 #[ ENDIF ]
 
-[ BLOCK <1> build rel clean cprel build1 clean1 cprel1 ]
-#=======================================================
+[ BLOCK <1> clean build rel cprel clean1 build1 cprel1 passclean pass ]
+#======================================================================
 # Build all of Open Watcom using freshly built tools.
 # part 1
 #
@@ -173,8 +173,8 @@ cdsay .
 [ INCLUDE <OWSRCDIR>/cc/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/plusplus/builder.ctl ]
 
-[ BLOCK <1> build rel clean cprel build2 clean2 cprel2 ]
-#=======================================================
+[ BLOCK <1> clean build rel cprel clean2 build2 cprel2 passclean pass ]
+#======================================================================
 # Build all of Open Watcom using freshly built tools.
 # part 2
 #
@@ -253,11 +253,11 @@ set OWTXTDOCBUILD=1
 [ INCLUDE <OWDOCSDIR>/builder.ctl ]
 set OWTXTDOCBUILD=
 
-[ BLOCK <BLDRULE> docs docsclean docpdf cpdocpdf ]
+[ BLOCK <BLDRULE> docsclean docs docpdf cpdocpdf ]
 #=================================================
 [ INCLUDE <OWDOCSDIR>/builder.ctl ]
 
-[ BLOCK <BLDRULE> test testclean cleanlog ]
+[ BLOCK <BLDRULE> testclean test cleanlog ]
 #==========================================
 [ INCLUDE <OWSRCDIR>/wasmtest/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/ctest/builder.ctl ]
@@ -265,8 +265,8 @@ set OWTXTDOCBUILD=
 [ INCLUDE <OWSRCDIR>/plustest/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/clibtest/builder.ctl ]
 
-[ BLOCK <BLDRULE> test cleanrel ]
-#================================
+[ BLOCK <1> relclean passclean ]
+#===============================
     echo rm -rf <OWRELROOT>
     rm -rf <OWRELROOT>
 

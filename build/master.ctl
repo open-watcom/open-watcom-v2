@@ -64,8 +64,8 @@ set BLDRULE=
     set LOGFNAME=<1>
     echo **** REL rule
 
-[ BLOCK <1> clean clean1 clean2 ]
-#================================
+[ BLOCK <1> clean clean1 clean2 passclean ]
+#==========================================
     set BLDRULE=clean
     set LOGFNAME=<1>
     echo **** CLEAN rule
