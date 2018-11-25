@@ -147,6 +147,7 @@ jobs:
       before_install:
         - export OWTOOLS=WATCOM
         - export OWTRAVISJOB=TEST
+        - export OWTRAVISTEST=WASM
         - export OWDOCBUILD=0
         - export OWVERBOSE=0
       install:
@@ -156,7 +157,7 @@ jobs:
         - unset LIB
         - . ./cmnvars.sh
       script: 
-        - travis/test.sh wasm
+        - travis/test.sh
     - # ...
       name: "Test C compiler"
       if: branch = env(OWBRANCH)
@@ -164,6 +165,7 @@ jobs:
       before_install:
         - export OWTOOLS=WATCOM
         - export OWTRAVISJOB=TEST
+        - export OWTRAVISTEST=C
         - export OWDOCBUILD=0
         - export OWVERBOSE=0
       install:
@@ -173,7 +175,7 @@ jobs:
         - unset LIB
         - . ./cmnvars.sh
       script: 
-        - travis/test.sh c
+        - travis/test.sh
     - # ...
       name: "Test FORTRAN 77 compiler"
       if: branch = env(OWBRANCH)
@@ -181,6 +183,7 @@ jobs:
       before_install:
         - export OWTOOLS=WATCOM
         - export OWTRAVISJOB=TEST
+        - export OWTRAVISTEST=F77
         - export OWDOCBUILD=0
         - export OWVERBOSE=0
       install:
@@ -190,7 +193,7 @@ jobs:
         - unset LIB
         - . ./cmnvars.sh
       script: 
-        - travis/test.sh f77
+        - travis/test.sh
     - # ...
       name: "Test C++ compiler"
       if: branch = env(OWBRANCH)
@@ -198,6 +201,7 @@ jobs:
       before_install:
         - export OWTOOLS=WATCOM
         - export OWTRAVISJOB=TEST
+        - export OWTRAVISTEST=CXX
         - export OWDOCBUILD=0
         - export OWVERBOSE=0
       install:
@@ -207,7 +211,7 @@ jobs:
         - unset LIB
         - . ./cmnvars.sh
       script: 
-        - travis/test.sh cpp
+        - travis/test.sh
     - # ...
       name: "Test C run-time library"
       if: branch = env(OWBRANCH)
@@ -215,6 +219,7 @@ jobs:
       before_install:
         - export OWTOOLS=WATCOM
         - export OWTRAVISJOB=TEST
+        - export OWTRAVISTEST=CRTL
         - export OWDOCBUILD=0
         - export OWVERBOSE=0
       install:
@@ -224,7 +229,7 @@ jobs:
         - unset LIB
         - . ./cmnvars.sh
       script: 
-        - travis/test.sh crtl
+        - travis/test.sh
     #################################
     - stage: Finalize
       name: "Clean build cache Linux"

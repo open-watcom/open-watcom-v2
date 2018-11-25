@@ -9,39 +9,46 @@
 
 build_proc()
 {
-    if [ "$1" = "wasm" ]; then
-        cd $OWSRCDIR/wasmtest
-        builder -q -i testclean
-        builder -i test
-        RC=$?
-        cat result.log
-    elif [ "$1" = "c" ]; then
-        cd $OWSRCDIR/ctest
-        builder -q -i testclean
-        builder -i test
-        RC=$?
-        cat result.log
-    elif [ "$1" = "f77" ]; then
-        cd $OWSRCDIR/f77test
-        builder -q -i testclean
-        builder -i test
-        RC=$?
-        cat result.log
-    elif [ "$1" = "cpp" ]; then
-        cd $OWSRCDIR/plustest
-        builder -q -i testclean
-        builder -i test
-        RC=$?
-        cat result.log
-    elif [ "$1" = "crtl" ]; then
-        cd $OWSRCDIR/clibtest
-        builder -q -i testclean
-        builder -i test
-        RC=$?
-        cat result.log
-    else
-        RC=0
-    fi
+    case "$OWTRAVISTEST" in
+        "WASM")
+            cd $OWSRCDIR/wasmtest
+            builder -q -i testclean
+            builder -i test
+            RC=$?
+            cat result.log
+            ;;
+        "C")
+            cd $OWSRCDIR/ctest
+            builder -q -i testclean
+            builder -i test
+            RC=$?
+            cat result.log
+            ;;
+        "CXX")
+            cd $OWSRCDIR/plustest
+            builder -q -i testclean
+            builder -i test
+            RC=$?
+            cat result.log
+            ;;
+        "F77")
+            cd $OWSRCDIR/f77test
+            builder -q -i testclean
+            builder -i test
+            RC=$?
+            cat result.log
+            ;;
+        "CRTL")
+            cd $OWSRCDIR/clibtest
+            builder -q -i testclean
+            builder -i test
+            RC=$?
+            cat result.log
+            ;;
+        *)
+            RC=0
+            ;;
+    esac
     cd $OWROOT
     return $RC
 }
