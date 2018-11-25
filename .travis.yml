@@ -46,7 +46,7 @@ jobs:
     #################################
     - stage: Initialize
       name: "Initialize Travis GitHub repository"
-      if: branch = master AND type = push
+      if: branch = env(OWBRANCH) AND type = push
       os: linux
       cache: false
       script: 
@@ -54,7 +54,7 @@ jobs:
     #################################
     - stage: Bootstrap
       name: "Build minimal set of build tools"
-      if: branch = master
+      if: branch = env(OWBRANCH)
       os: linux
       compiler: gcc
       before_install:
@@ -73,7 +73,7 @@ jobs:
         - travis/build.sh
     - # ...
       name: "Build minimal set of build tools"
-      if: branch = master AND env(OWOSXBUILD) = 1
+      if: branch = env(OWBRANCH) AND env(OWOSXBUILD) = 1
       os: osx
       compiler: clang
       before_install:
@@ -93,7 +93,7 @@ jobs:
     #################################
     - stage: Build
       name: "OW tools build"
-      if: branch = master
+      if: branch = env(OWBRANCH)
       os: linux
       compiler: gcc
       before_install:
@@ -109,7 +109,7 @@ jobs:
         - travis/build.sh
     - # ...
       name: "OW tools OSX build 1"
-      if: branch = master AND env(OWOSXBUILD) = 1
+      if: branch = env(OWBRANCH) AND env(OWOSXBUILD) = 1
       os: osx
       compiler: clang
       before_install:
@@ -124,7 +124,7 @@ jobs:
     #################################
     - stage: Build2
       name: "OW tools OSX build 2"
-      if: branch = master AND env(OWOSXBUILD) = 1
+      if: branch = env(OWBRANCH) AND env(OWOSXBUILD) = 1
       os: osx
       compiler: clang
       before_install:
@@ -142,7 +142,7 @@ jobs:
     #################################
     - stage: Tests
       name: "Test wasm assembler"
-      if: branch = master
+      if: branch = env(OWBRANCH)
       os: linux
       before_install:
         - export OWTOOLS=WATCOM
@@ -159,7 +159,7 @@ jobs:
         - travis/test.sh wasm
     - # ...
       name: "Test C compiler"
-      if: branch = master
+      if: branch = env(OWBRANCH)
       os: linux
       before_install:
         - export OWTOOLS=WATCOM
@@ -176,7 +176,7 @@ jobs:
         - travis/test.sh c
     - # ...
       name: "Test FORTRAN 77 compiler"
-      if: branch = master
+      if: branch = env(OWBRANCH)
       os: linux
       before_install:
         - export OWTOOLS=WATCOM
@@ -193,7 +193,7 @@ jobs:
         - travis/test.sh f77
     - # ...
       name: "Test C++ compiler"
-      if: branch = master
+      if: branch = env(OWBRANCH)
       os: linux
       before_install:
         - export OWTOOLS=WATCOM
@@ -210,7 +210,7 @@ jobs:
         - travis/test.sh cpp
     - # ...
       name: "Test C run-time library"
-      if: branch = master
+      if: branch = env(OWBRANCH)
       os: linux
       before_install:
         - export OWTOOLS=WATCOM
@@ -228,7 +228,7 @@ jobs:
     #################################
     - stage: Finalize
       name: "Clean build cache Linux"
-      if: branch = master
+      if: branch = env(OWBRANCH)
       os: linux
       script: 
         # clear cache
@@ -238,7 +238,7 @@ jobs:
         - rm -rf  build1/*
     - # ...
       name: "Clean build cache OSX"
-      if: branch = master AND env(OWOSXBUILD) = 1
+      if: branch = env(OWBRANCH) AND env(OWOSXBUILD) = 1
       os: osx
       script: 
         # clear cache
@@ -250,7 +250,7 @@ jobs:
     #################################
     - stage: InitDocumentation
       name: "Initiate Documentation build by Cron"
-      if: branch = documentation AND type = cron
+      if: branch = env(OWBRANCH_DOCS) AND type = cron
       os: linux
       cache: false
       script: 
@@ -258,7 +258,7 @@ jobs:
     #################################
     - stage: Documentation
       name: "OW Documentation build"
-      if: branch = documentation AND type = push
+      if: branch = env(OWBRANCH_DOCS) AND type = push
       os: linux
       compiler: gcc
       cache: false
@@ -277,7 +277,7 @@ jobs:
     #################################
     - stage: InitCoverity
       name: "Initiate Coverity Scan by Cron"
-      if: branch = coverity_scan AND type = cron
+      if: branch = env(OWBRANCH_COVERITY) AND type = cron
       os: linux
       cache: false
       script: 
@@ -285,7 +285,7 @@ jobs:
     #################################
     - stage: Coverity
       name: "Initiate Coverity Scan"
-      if: branch = coverity_scan AND type = push
+      if: branch = env(OWBRANCH_COVERITY) AND type = push
       os: linux
       compiler: gcc
       cache: false

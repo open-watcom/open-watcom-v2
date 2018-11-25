@@ -40,9 +40,9 @@ gitudocs_proc1()
     if [ "$OWTRAVIS_DEBUG" = "1" ]; then echo "** git push"; fi
     git push $GITVERBOSE1 -f origin $OWBRANCH_DOCS
     #
-    
+
     echo "gitudocs.sh - done"
-    
+
     return 0
 }
 
