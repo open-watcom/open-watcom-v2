@@ -21,7 +21,6 @@ cache:
   directories:
     - build/$OWOBJDIR
     - bld/watcom/$OWOBJDIR
-#    - bld
     - test
     - build1
 
@@ -64,7 +63,11 @@ jobs:
         - export OWTRAVISJOB=BOOTSTRAP
         - export OWDOCBUILD=0
         - export OWVERBOSE=1
-        - travis/tfini.sh
+        # clear cache
+        - rm -f   build/$OWOBJDIR/*
+        - rm -rf  bld/watcom/$OWOBJDIR/*
+        - rm -rf  test/*
+        - rm -rf  build1/*
       install:
         - . ./cmnvars.sh
       script: 
@@ -79,7 +82,11 @@ jobs:
         - export OWTRAVISJOB=BOOTSTRAP
         - export OWDOCBUILD=0
         - export OWVERBOSE=1
-        - travis/tfini.sh
+        # clear cache
+        - rm -f   build/$OWOBJDIR/*
+        - rm -rf  bld/watcom/$OWOBJDIR/*
+        - rm -rf  test/*
+        - rm -rf  build1/*
       install:
         - . ./cmnvars.sh
       script: 
@@ -225,13 +232,21 @@ jobs:
       if: branch = master
       os: linux
       script: 
-        - travis/tfini.sh
+        # clear cache
+        - rm -f   build/$OWOBJDIR/*
+        - rm -rf  bld/watcom/$OWOBJDIR/*
+        - rm -rf  test/*
+        - rm -rf  build1/*
     - # ...
       name: "Clean build cache OSX"
       if: branch = master AND env(OWOSXBUILD) = 1
       os: osx
       script: 
-        - travis/tfini.sh
+        # clear cache
+        - rm -f   build/$OWOBJDIR/*
+        - rm -rf  bld/watcom/$OWOBJDIR/*
+        - rm -rf  test/*
+        - rm -rf  build1/*
 
     #################################
     - stage: InitDocumentation

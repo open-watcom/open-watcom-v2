@@ -41,7 +41,7 @@ gitudocs_proc1()
     git push $GITVERBOSE1 -f origin $OWBRANCH_DOCS
     #
     
-    echo "tfini.sh - done"
+    echo "gitudocs.sh - done"
     
     return 0
 }
