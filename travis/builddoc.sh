@@ -38,6 +38,7 @@ build_proc()
 #            builder -q boot
 #            RC=$?
             if [ $RC -eq 0 ]; then
+                cd $OWSRCDIR
                 builder docpdf
                 RC=$?
             fi
