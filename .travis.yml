@@ -40,6 +40,8 @@ after_success:
  - travis/gitupds.sh
 
 jobs:
+  allow_failures:
+    - os: osx
   include:
     #################################
     - stage: Initialize
@@ -110,7 +112,6 @@ jobs:
       if: branch = master AND env(OWOSXBUILD) = 1
       os: osx
       compiler: clang
-      allow_failures: true
       before_install:
         - export OWTOOLS=CLANG
         - export OWTRAVISJOB=BUILD1
@@ -126,7 +127,6 @@ jobs:
       if: branch = master AND env(OWOSXBUILD) = 1
       os: osx
       compiler: clang
-      allow_failures: true
       before_install:
         - export OWTOOLS=CLANG
         - export OWTRAVISJOB=BUILD2
@@ -144,7 +144,6 @@ jobs:
       name: "Test wasm assembler"
       if: branch = master
       os: linux
-      allow_failures: true
       before_install:
         - export OWTOOLS=WATCOM
         - export OWTRAVISJOB=TEST
@@ -162,7 +161,6 @@ jobs:
       name: "Test C compiler"
       if: branch = master
       os: linux
-      allow_failures: true
       before_install:
         - export OWTOOLS=WATCOM
         - export OWTRAVISJOB=TEST
@@ -180,7 +178,6 @@ jobs:
       name: "Test FORTRAN 77 compiler"
       if: branch = master
       os: linux
-      allow_failures: true
       before_install:
         - export OWTOOLS=WATCOM
         - export OWTRAVISJOB=TEST
@@ -198,7 +195,6 @@ jobs:
       name: "Test C++ compiler"
       if: branch = master
       os: linux
-      allow_failures: true
       before_install:
         - export OWTOOLS=WATCOM
         - export OWTRAVISJOB=TEST
@@ -216,7 +212,6 @@ jobs:
       name: "Test C run-time library"
       if: branch = master
       os: linux
-      allow_failures: true
       before_install:
         - export OWTOOLS=WATCOM
         - export OWTRAVISJOB=TEST

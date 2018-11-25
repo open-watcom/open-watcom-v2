@@ -351,7 +351,7 @@ $(hbook).ps : $(book_objs) $(book_objs_ps) $(proj_objs)
 !ifeq verbose 0
     @echo wgml $@
 !endif
-    -$(WGMLCMD:$(to_os_path)) >wgml.log
+    -$(WGMLCMD:$(to_os_path))
 !ifeq build_os osx
     cat wgml.log
 !endif
@@ -459,28 +459,7 @@ prepare_wgml_opts : .PROCEDURE
     $(noecho)set GMLINC=$(%GMLINC:..\..\bld\=e:\)
     $(noecho)set GMLINC=$(%GMLINC:..\=c:\)
 !endif
-!ifeq use_dosemu dosemu
-#-------------------------------------------------------
-# create DOSEMU batch file to run wgml utility
-#-------------------------------------------------------
-    @%create $(wgml_tmp_batchfile)
-    @%append $(wgml_tmp_batchfile) lredir w: linux\fs$(docs_dir)
-    @%append $(wgml_tmp_batchfile) $(noecho)set GMLLIB=$(%GMLLIB)
-    @%append $(wgml_tmp_batchfile) $(noecho)set GMLINC=$(%GMLINC)
-    @%append $(wgml_tmp_batchfile) w:\gml\dos\wgml.exe $(wgml_cmdl_params)
-    @%append $(wgml_tmp_batchfile) exitemu
-    @crlf -d $(wgml_tmp_batchfile) $(dosemu_wgml_batch)
-!else ifeq use_dosemu dosbox
-#-------------------------------------------------------
-# create DOSBOX batch file to run wgml utility
-#-------------------------------------------------------
-    @%create $(dosemu_wgml_batch)
-    @%append $(dosemu_wgml_batch) d:
-    @%append $(dosemu_wgml_batch) $(noecho)set GMLLIB=$(%GMLLIB)
-    @%append $(dosemu_wgml_batch) $(noecho)set GMLINC=$(%GMLINC)
-    @%append $(dosemu_wgml_batch) c:\gml\dos\wgml.exe $(wgml_cmdl_params)
-    @%append $(dosemu_wgml_batch) exit
-!endif
+    @%make prepare_wgml_tmp_batch
 
 #--------------------------------------
 # common settings for any processing
@@ -608,10 +587,7 @@ compile_gml_to_xxx : .PROCEDURE
 !ifeq verbose 0
     @echo wgml $@
 !endif
-    -$(WGMLCMD:$(to_os_path)) >wgml.log
-!ifeq build_os osx
-    cat wgml.log
-!endif
+    -$(WGMLCMD:$(to_os_path))
     @if exist $*.ptf @%erase $*.ptf
     @$(RENCMD) $(wgml_tmpfile) $*.ptf
     @%make prepare_whpcvt_opts
@@ -620,10 +596,7 @@ compile_gml_to_xxx : .PROCEDURE
 !ifeq verbose 0
     @echo wgml $@
 !endif
-    -$(WGMLCMD:$(to_os_path)) >wgml.log
-!ifeq build_os osx
-    cat wgml.log
-!endif
+    -$(WGMLCMD:$(to_os_path))
     @if exist $*.ptf @%erase $*.ptf
     @$(RENCMD) $(wgml_tmpfile) $*.ptf
     @if exist $*.mix @%erase $*.mix

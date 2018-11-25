@@ -56,12 +56,12 @@ set GMLINC=%OWDOCSDIR%\doc\devguide;%OWDOCSDIR%\doc\gml;%OWDOCSDIR%\doc\whelp;%O
 
 if [%OWDOSBOX%] == [] goto NATIVE1
 REM create DOSBOX batch script for run wgml on 64-bit Windows under DOSBOX
-    echo d: > wgml.bat
-    echo set GMLINC=c:\doc\devguide;c:\doc\gml;c:\doc\whelp;c:\doc\hlp >> wgml.bat
-    echo set GMLLIB=c:\gml\syslib;c:\doc\whelp;c:\doc\hlp;.\testlib >> wgml.bat
-    echo c:\gml\dos\wgml.exe %1.gml ( file wgml.opt out %1.ops %2 %3 %4 %5 %6 %7 %8 %9 ^>%1.old >> wgml.bat
-    echo exit >> wgml.bat
-    %OWDOSBOX% -noautoexec -c "mount c %OWDOCSDIR%" -c "mount d ." -c "mount e %OWSRCDIR%" -c "d:wgml.bat" -noconsole
+    echo d: > wgmlb.bat
+    echo set GMLINC=c:\doc\devguide;c:\doc\gml;c:\doc\whelp;c:\doc\hlp >> wgmlb.bat
+    echo set GMLLIB=c:\gml\syslib;c:\doc\whelp;c:\doc\hlp;.\testlib >> wgmlb.bat
+    echo c:\gml\dos\wgml.exe %1.gml ( file wgml.opt out %1.ops %2 %3 %4 %5 %6 %7 %8 %9 ^>%1.old >> wgmlb.bat
+    echo exit >> wgmlb.bat
+    %OWDOSBOX% -noautoexec -c "mount c %OWDOCSDIR%" -c "mount d ." -c "mount e %OWSRCDIR%" -c "d:wgmlb.bat" -noconsole
     goto PAUSE1
 :NATIVE1   
     %OWDOCSDIR%\gml\%WG4_DIR%\wgml %1.gml ( file wgml.opt out %1.ops %2 %3 %4 %5 %6 %7 %8 %9 >%1.old
