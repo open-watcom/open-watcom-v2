@@ -99,11 +99,11 @@ build_proc()
                 fi
             fi
             if [ $RC -eq 0 ]; then
-                copytocache()
+                copytocache
             fi
             ;;
         "BUILD2")
-            copyfromcache()
+            copyfromcache
             cd $OWSRCDIR
             if [ "$TRAVIS_EVENT_TYPE" = "pull_request" ]; then
                 builder build2
