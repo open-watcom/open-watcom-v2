@@ -399,6 +399,26 @@ unsigned GetNumber( unsigned min, unsigned max, char **atstr, unsigned base )
     return( res );
 }
 
+static bool check_delimiter( char c )
+{
+    switch( c ) {
+    case ' ':
+#ifdef __DOS__
+    case '/':
+    case '-':
+#endif
+    case '\t':
+    case '\0':
+    case '<':
+    case '>':
+    case '|':
+        return( true );
+    default:
+        break;
+    }
+    return( false );
+}
+
 #define CNV_CEIL( size )    ((size * 1024U                            \
         - (sizeof( struct samp_samples ) - sizeof( samp_address )))   \
         / sizeof( samp_address ))
@@ -463,22 +483,8 @@ static char *Parse( char *line, char arg[], char **eoc )
     Margin = SafeMargin();
 
     /* scan over command name */
-    ptr = cmd;
-    for( ;; ) {
-        if( *ptr == ' ' )
-            break;
-#ifndef __UNIX__
-        if( *ptr == '/' )
-            break;
-#endif
-        if( *ptr == '-' )
-            break;
-        if( *ptr == '\t' )
-            break;
-        if( *ptr == '\0' )
-            break;
-        ++ptr;
-    }
+    for( ptr = cmd; !check_delimiter( *ptr ); ++ptr )
+        ;
     /* collect program arguments - arg will contain DOS-style command tail,
      * possibly truncated (max 126 usable chars).
      */
