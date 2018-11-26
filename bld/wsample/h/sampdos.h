@@ -31,6 +31,3 @@
 
 extern void WriteOvl( unsigned req_ovl, char is_return, unsigned offset, unsigned seg );
 extern void RememberComm( char FAR_PTR *address );
-extern void ResetCommArea( void );
-extern void SysDefaultOptions( void );
-extern void SysParseOptions( char c, char **cmd );
