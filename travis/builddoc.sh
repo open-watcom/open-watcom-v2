@@ -37,11 +37,9 @@ build_proc()
             cd $OWSRCDIR/watcom
             builder boot
             cd $OWSRCDIR/whpcvt
-            mkdir $OWOBJDIR
-            cd $OWOBJDIR
-            rm -f $OWBINDIR/whpcvt
-            $OWBINDIR/wmake -f ../binmake clean
-            $OWBINDIR/wmake -f ../binmake bootstrap=1
+            builder boot
+            cd $OWSRCDIR/bmp2eps
+            builder boot
             RC=$?
             if [ $RC -eq 0 ]; then
                 cd $OWSRCDIR
