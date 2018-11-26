@@ -36,6 +36,8 @@ build_proc()
         if [ $RC -eq 0 ]; then
             cd $OWSRCDIR/watcom
             builder boot
+            cd $OWSRCDIR/builder
+            builder boot
             cd $OWSRCDIR/whpcvt
             builder boot
             cd $OWSRCDIR/bmp2eps
