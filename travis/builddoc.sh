@@ -34,9 +34,13 @@ build_proc()
         $OWBINDIR/wmake -f ../binmake bootstrap=1 builder.exe
         RC=$?
         if [ $RC -eq 0 ]; then
-#            cd $OWSRCDIR
-#            builder -q boot
-#            RC=$?
+            cd $OWSRCDIR/whpcvt
+            mkdir $OWOBJDIR
+            cd $OWOBJDIR
+            rm -f $OWBINDIR/whpcvt
+            $OWBINDIR/wmake -f ../binmake clean
+            $OWBINDIR/wmake -f ../binmake bootstrap=1
+            RC=$?
             if [ $RC -eq 0 ]; then
                 cd $OWSRCDIR
                 builder docpdf
