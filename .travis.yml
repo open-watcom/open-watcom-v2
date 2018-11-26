@@ -27,10 +27,10 @@ cache:
 before_script:
    # Disable services enabled by default
    # http://docs.travis-ci.com/user/database-setup/#MySQL
-# - sudo /etc/init.d/mysql stop
-# - sudo /etc/init.d/postgresql stop
- - sudo service mysqld stop
- - sudo service postgresql stop
+ - sudo /etc/init.d/mysql stop
+ - sudo /etc/init.d/postgresql stop
+# - sudo service mysqld stop
+# - sudo service postgresql stop
    # get environment/cache info if debug active
  - travis/envinfo.sh
  - travis/cacheinf.sh
