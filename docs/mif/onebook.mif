@@ -587,9 +587,6 @@ compile_gml_to_xxx : .PROCEDURE
     @if exist $*.ptf @%erase $*.ptf
     @$(RENCMD) $(wgml_tmpfile) $*.ptf
     @%make prepare_whpcvt_opts
-!ifdef __UNIX__
- ls -l
-!endif
     whpcvt -@ $(whpcvt_optfile) $*.ptf
     @%create $(wgml_sysfile_02)
 !ifeq verbose 0
