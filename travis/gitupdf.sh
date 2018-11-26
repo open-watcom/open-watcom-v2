@@ -52,9 +52,9 @@ gitupdf_proc()
                     cd $OWTRAVIS_BUILD_DIR
                     git add $GITVERBOSE2 -f .
                     if [ "$TRAVIS_OS_NAME" = "osx" ]; then
-                        git commit $GITVERBOSE1 -m "Travis CI build $TRAVIS_JOB_NUMBER (failure) - log files (OSX)"
+                        git commit $GITVERBOSE1 -m "Travis CI build $TRAVIS_JOB_NUMBER (build failure) - log files (OSX)"
                     else
-                        git commit $GITVERBOSE1 -m "Travis CI build $TRAVIS_JOB_NUMBER (failure) - log files (Linux)"
+                        git commit $GITVERBOSE1 -m "Travis CI build $TRAVIS_JOB_NUMBER (build failure) - log files (Linux)"
                     fi
                     git push $GITVERBOSE1 -f origin
                     cd $TRAVIS_BUILD_DIR
