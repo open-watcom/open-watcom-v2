@@ -76,7 +76,7 @@ void FlushSamples( WORD limit )
             SampleIndex++;
         }
         SaveSamples();
-        MyOutput( MsgArray[MSG_SAMPLE_5 - ERR_FIRST_MESSAGE] );
+        OutputMsgNL( MSG_SAMPLE_5 );
         StartSampler();
     }
 
@@ -190,15 +190,27 @@ void CloseShop( void )
 
 } /* CloseShop */
 
+#if 0
 /*
  * internalError - a fatal internal error occurred
  */
 static void internalError( char * str )
 {
-    MyOutput( MsgArray[MSG_SAMPLE_6 - ERR_FIRST_MESSAGE], str );
+    OutputMsgParmNL( MSG_SAMPLE_6, str );
     fatal();
 
 } /* InternalError */
+#endif
+
+/*
+ * internalErrorMsg - a fatal internal error occurred
+ */
+static void internalErrorMsg( int msg )
+{
+    OutputMsgParmNL( MSG_SAMPLE_6, GET_MESSAGE( msg ) );
+    fatal();
+
+} /* internalErrorMsg */
 
 
 #define BSIZE 256
@@ -217,6 +229,7 @@ void StartProg( const char *cmd, const char *prog, char *full_args, char *dos_ar
     int                 rc;
     FARPROC             notify_fn;
     FARPROC             fault_fn;
+    char                buffer[10];
 
     /* unused parameters */ (void)cmd;
 
@@ -230,23 +243,27 @@ void StartProg( const char *cmd, const char *prog, char *full_args, char *dos_ar
             timer = 1;
         SetTimerTick( timer );
     }
-    MyOutput( MsgArray[MSG_SAMPLE_7 - ERR_FIRST_MESSAGE], SleepTime );
+    OutputMsg( MSG_SAMPLE_7 );
+    Output( itoa( SleepTime, buffer, 10 ) );
+    OutputMsgNL( MSG_SAMPLE_8 );
 
     /*
      * add existing modules
      */
-    MyOutput( MsgArray[MSG_SAMPLE_8 - ERR_FIRST_MESSAGE] );
+    OutputMsgNL( MSG_SAMPLE_9 );
     mod_count = 0;
     me.dwSize = sizeof( MODULEENTRY );
     if( !ModuleFirst( &me ) ) {
-        internalError( MsgArray[MSG_SAMPLE_1 - ERR_FIRST_MESSAGE] );
+        internalErrorMsg( MSG_SAMPLE_1 );
     }
     do {
         HandleLibLoad( SAMP_CODE_LOAD, me.hModule );
         me.dwSize = sizeof( MODULEENTRY );
         mod_count++;
     } while( ModuleNext( &me ) );
-    MyOutput( MsgArray[MSG_SAMPLE_9 - ERR_FIRST_MESSAGE], mod_count );
+    OutputMsg( MSG_SAMPLE_10 );
+    Output( itoa( mod_count, buffer, 10 ) );
+    OutputMsgNL( MSG_SAMPLE_11 );
 
     /*
      * register as interrupt and notify handler
@@ -254,16 +271,16 @@ void StartProg( const char *cmd, const char *prog, char *full_args, char *dos_ar
     fault_fn = MakeProcInstance( (FARPROC)IntHandler, InstanceHandle );
     notify_fn = MakeProcInstance( (FARPROC)NotifyHandler, InstanceHandle );
     if( !InterruptRegister( NULL, fault_fn ) ) {
-        internalError( MsgArray[MSG_SAMPLE_2 - ERR_FIRST_MESSAGE] );
+        internalErrorMsg( MSG_SAMPLE_2 );
     }
     if( !NotifyRegister( NULL, (LPFNNOTIFYCALLBACK)notify_fn, NF_NORMAL | NF_TASKSWITCH ) ) {
         InterruptUnRegister( NULL );
-        internalError( MsgArray[MSG_SAMPLE_3 - ERR_FIRST_MESSAGE] );
+        internalErrorMsg( MSG_SAMPLE_3 );
     }
     Start386Debug();
     if( WDebug386 ) {
         DebuggerIsExecuting( 1 );
-        MyOutput( MsgArray[MSG_SAMPLE_10 - ERR_FIRST_MESSAGE] );
+        OutputMsgNL( MSG_SAMPLE_12 );
     }
 
     rc = InitSampler( SampSave, MAX_SAMPLES, SleepTime );
@@ -272,7 +289,7 @@ void StartProg( const char *cmd, const char *prog, char *full_args, char *dos_ar
         NotifyUnRegister( NULL );
         DebuggerIsExecuting( -1 );
         Done386Debug();
-        internalError( MsgArray[MSG_SAMPLE_4 - ERR_FIRST_MESSAGE] );
+        internalErrorMsg( MSG_SAMPLE_4 );
     }
     WaitForFirst = FALSE;
     MessageLoop();
@@ -295,8 +312,11 @@ void StartProg( const char *cmd, const char *prog, char *full_args, char *dos_ar
     Done386Debug();
     InterruptUnRegister( NULL );
     NotifyUnRegister( NULL );
-    MyOutput( MsgArray[MSG_SAMPLE_11 - ERR_FIRST_MESSAGE],
-            TotalTime/1000, (WORD)( TotalTime - ( 1000 * ( TotalTime / 1000 ) ) ) );
+    OutputMsg( MSG_SAMPLE_13 );
+    Output( itoa( TotalTime/1000, buffer, 10 ) );
+    Output( "." );
+    Output( itoa( TotalTime % 1000, buffer, 10 ) );
+    OutputMsgNL( MSG_SAMPLE_14 );
     FlushSamples( 0 );
     report();
 
@@ -310,14 +330,8 @@ void SysDefaultOptions( void )
 
 void SysParseOptions( char c, char **cmd )
 {
-    char buff[2];
-
     if( c != 'r' ) {
-        MyOutput( MsgArray[MSG_INVALID_OPTION - ERR_FIRST_MESSAGE] );
-        buff[0] = c;
-        buff[1] = '\0';
-        MyOutput( buff );
-        MyOutput( "\r\n" );
+        OutputMsgCharNL( MSG_INVALID_OPTION, c );
         fatal();
     }
     SetTimerRate( cmd );

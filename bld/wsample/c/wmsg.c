@@ -85,13 +85,13 @@ static bool MsgReadErrArray( void )
                 return( false );
             buffer[0] = '\0';
         }
-        MsgArray[i - ERR_FIRST_MESSAGE] = my_alloc( strlen( buffer ) + 1 );
-        if( MsgArray[i - ERR_FIRST_MESSAGE] == NULL )
+        GET_MESSAGE( i ) = my_alloc( strlen( buffer ) + 1 );
+        if( GET_MESSAGE( i ) == NULL )
             return( false );
 #ifdef FARDATA
-        _fstrcpy( MsgArray[i - ERR_FIRST_MESSAGE], buffer );
+        _fstrcpy( GET_MESSAGE( i ), buffer );
 #else
-        strcpy( MsgArray[i - ERR_FIRST_MESSAGE], buffer );
+        strcpy( GET_MESSAGE( i ), buffer );
 #endif
     }
     return( true );
@@ -137,14 +137,13 @@ void MsgFini( void )
     int          i;
 
     for( i = ERR_FIRST_MESSAGE; i <= ERR_LAST_MESSAGE; i++ ) {
-        my_free( MsgArray[i - ERR_FIRST_MESSAGE] );
+        my_free( GET_MESSAGE( i ) );
     }
 }
 
 void MsgPrintfUsage( int first_ln, int last_ln )
 {
     for( ; first_ln <= last_ln; first_ln++ ) {
-        Output( MsgArray[first_ln - ERR_FIRST_MESSAGE] );
-        Output( "\r" );
+        OutputMsgNL( first_ln );
     }
 }

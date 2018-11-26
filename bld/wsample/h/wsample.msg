@@ -399,40 +399,52 @@ pick( MSG_SAMPLE_4
         , "ƒTƒ“ƒvƒŠƒ“ƒO‚ğŠJn‚Å‚«‚Ü‚¹‚ñ!"
 )
 pick( MSG_SAMPLE_5
-        , "Sample buffer flushed\n"
-        , "ƒTƒ“ƒvƒ‹ƒoƒbƒtƒ@‚ğƒtƒ‰ƒbƒVƒ…‚µ‚Ü‚µ‚½\n"
+        , "Sample buffer flushed"
+        , "ƒTƒ“ƒvƒ‹ƒoƒbƒtƒ@‚ğƒtƒ‰ƒbƒVƒ…‚µ‚Ü‚µ‚½"
 )
 pick( MSG_SAMPLE_6
-        , "internal error: %s\n"
-        , "“à•”ƒGƒ‰[: %s\n"
+        , "internal error: "
+        , "“à•”ƒGƒ‰[: "
 )
 pick( MSG_SAMPLE_7
-        , "Timer rate set to %d ms\n"
-        , "ƒ^ƒCƒ}ŠÔŠu‚ğ %d ĞØ•b‚Éİ’è‚µ‚Ü‚µ‚½\n"
+        , "Timer rate set to "
+        , "ƒ^ƒCƒ}ŠÔŠu‚ğ "
 )
 pick( MSG_SAMPLE_8
-        , "Determining what other modules are present...\n"
-        , "‘¼‚Ì‚Ç‚Ì‚æ‚¤‚Èƒ‚ƒWƒ…[ƒ‹‚ª‚ ‚é‚©‚ğ’Tõ’†...\n"
+        , " ms"
+        , "ƒ ms"
 )
 pick( MSG_SAMPLE_9
-        , "Found %d other modules\n"
-        , "‚Ù‚©‚É %d ŒÂ‚Ìƒ‚ƒWƒ…[ƒ‹‚ª‚ ‚è‚Ü‚·\n"
+        , "Determining what other modules are present..."
+        , "‘¼‚Ì‚Ç‚Ì‚æ‚¤‚Èƒ‚ƒWƒ…[ƒ‹‚ª‚ ‚é‚©‚ğ’Tõ’†..."
 )
 pick( MSG_SAMPLE_10
-        , "Will use WDEBUG.386\n"
-        , "WDEBUG.386‚ğg—p‚µ‚Ü‚·\n"
+        , "Found "
+        , "‚Ù‚©‚É "
 )
 pick( MSG_SAMPLE_11
-        , "Execution finished, total time=%ld.%03d seconds\n"
-        , "ÀsI—¹, ‘SŠÔ=%ld.%03d •b\n"
+        , " other modules"
+        , " ŒÂ‚Ìƒ‚ƒWƒ…[ƒ‹‚ª‚ ‚è‚Ü‚·"
 )
 pick( MSG_SAMPLE_12
+        , "Will use WDEBUG.386"
+        , "WDEBUG.386‚ğg—p‚µ‚Ü‚·"
+)
+pick( MSG_SAMPLE_13
+        , "Execution finished, total time="
+        , "ÀsI—¹, ‘SŠÔ="
+)
+pick( MSG_SAMPLE_14
+        , " seconds"
+        , " •b"
+)
+pick( MSG_SAMPLE_15
         , "Error loading sampler!"
         , "ƒTƒ“ƒvƒ‰Eƒ[ƒhEƒGƒ‰[!"
 )
-pick( MSG_SAMPLE_13
-        , "Cannot close sampler!\n"
-        , "ƒTƒ“ƒvƒ‰‚ğƒNƒ[ƒY‚Å‚«‚Ü‚¹‚ñ!\n"
+pick( MSG_SAMPLE_16
+        , "Cannot close sampler!"
+        , "ƒTƒ“ƒvƒ‰‚ğƒNƒ[ƒY‚Å‚«‚Ü‚¹‚ñ!"
 )
 #endif
 

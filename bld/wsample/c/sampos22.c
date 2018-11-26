@@ -288,12 +288,17 @@ static void CodeLoad( uDB_t FAR_PTR *buff, ULONG mte, const char *name, samp_blo
     }
 }
 
-
+#if 0
 static void InternalError( char * str )
 {
-    Output( MsgArray[MSG_SAMPLE_2 - ERR_FIRST_MESSAGE] );
-    Output( str );
-    Output( "\r\n" );
+    OutputMsgParmNL( MSG_SAMPLE_2, str );
+    _exit( -1 );
+}
+#endif
+
+static void internalErrorMsg( int msg )
+{
+    OutputMsgParmNL( MSG_SAMPLE_2, GET_MESSAGE( msg ) );
     _exit( -1 );
 }
 
@@ -319,7 +324,7 @@ static void DebugExecute( uDB_t *buff, ULONG cmd )
         buff->Value = value;
         buff->Cmd = cmd;
         if( DosDebug( buff ) ) {
-            InternalError( MsgArray[MSG_SAMPLE_7 - ERR_FIRST_MESSAGE] );
+            internalErrorMsg( MSG_SAMPLE_7 );
         }
         if( MainMod == 0 )
             MainMod = buff->MTE;
@@ -431,7 +436,7 @@ static void APIENTRY Sleeper( unsigned long parm )
 /* Only reason to fail is if the process has already died/stopped.
    This can happen if it takes us a long time to write out sample file
 */
-            InternalError( MsgArray[MSG_SAMPLE_8 - ERR_FIRST_MESSAGE] );
+            internalErrorMsg( MSG_SAMPLE_8 );
 #endif
         }
         if( mybuff.Cmd == -1 && mybuff.Value == ERROR_INVALID_PROCID ) {
@@ -466,11 +471,11 @@ static void LoadProg( char *cmd, char *cmd_tail )
         start.InheritOpt = 1;
         start.SessionType = 0;
         if( DosStartSession( &start, &SID, &Pid ) != 0 ) {
-            InternalError( MsgArray[MSG_SAMPLE_3 - ERR_FIRST_MESSAGE] );
+            internalErrorMsg( MSG_SAMPLE_3 );
         }
     } else {
         if( DosExecPgm( NULL, 0, EXEC_TRACE, cmd, NULL, &res, cmd ) != 0 ) {
-            InternalError( MsgArray[MSG_SAMPLE_3 - ERR_FIRST_MESSAGE] );
+            internalErrorMsg( MSG_SAMPLE_3 );
         }
         Pid = res.codeTerminate;
     }
@@ -530,20 +535,18 @@ void StartProg( const char *cmd, const char *prog, char *full_args, char *dos_ar
     Buff.Cmd = DBG_C_Connect;
     Buff.Value = DBG_L_386;
     if( DosDebug( &Buff ) != 0 ) {
-        InternalError( MsgArray[MSG_SAMPLE_9 - ERR_FIRST_MESSAGE] );
+        internalErrorMsg( MSG_SAMPLE_9 );
     }
-    Output( MsgArray[MSG_SAMPLE_1 - ERR_FIRST_MESSAGE] );
-    Output( UtilBuff );
-    Output( "\r\n" );
+    OutputMsgParmNL( MSG_SAMPLE_1, UtilBuff );
     DebugExecute( &Buff, DBG_C_Stop );
     InitialCS = Buff.CS;
     rc = DosCreateThread( &tid, Sleeper, 0, FALSE, STACK_SIZE );
     if( rc != 0 ) {
-        InternalError( MsgArray[MSG_SAMPLE_4 - ERR_FIRST_MESSAGE] );
+        internalErrorMsg( MSG_SAMPLE_4 );
     }
     rc = DosSetPriority( PRTYS_THREAD, PRTYC_TIMECRITICAL, 0, tid );
     if( rc != 0 ) {
-        InternalError( MsgArray[MSG_SAMPLE_5 - ERR_FIRST_MESSAGE] );
+        internalErrorMsg( MSG_SAMPLE_5 );
     }
     Buff.Pid = Pid;
     for( ;; ) {
@@ -582,8 +585,7 @@ void StartProg( const char *cmd, const char *prog, char *full_args, char *dos_ar
             DosDebug( &Buff );
             break;
         case DBG_N_Exception:
-            Output( MsgArray[MSG_SAMPLE_10 - ERR_FIRST_MESSAGE] );
-            Output( "\r\n" );
+            OutputMsgNL( MSG_SAMPLE_10 );
             /* fall through */
         case DBG_N_ProcTerm:
             Buff.Cmd = DBG_C_Term;
@@ -597,7 +599,7 @@ void StartProg( const char *cmd, const char *prog, char *full_args, char *dos_ar
                 report();
                 return;
             }
-            InternalError( MsgArray[MSG_SAMPLE_6 - ERR_FIRST_MESSAGE] );
+            internalErrorMsg( MSG_SAMPLE_6 );
         }
     }
 }
@@ -610,8 +612,6 @@ void SysDefaultOptions( void )
 
 void SysParseOptions( char c, char **cmd )
 {
-    char buff[2];
-
     switch( c ) {
     case 'r':
         SetTimerRate( cmd );
@@ -620,13 +620,13 @@ void SysParseOptions( char c, char **cmd )
         NewSession = 1;
         break;
     default:
-        Output( MsgArray[MSG_INVALID_OPTION - ERR_FIRST_MESSAGE] );
-        buff[0] = c;
-        buff[1] = '\0';
-        Output( buff );
-        Output( "\r\n" );
+        OutputMsgCharNL( MSG_INVALID_OPTION, c );
         fatal();
         break;
     }
 }
 
+void OutputNL( void )
+{
+    Output( "\r\n" );
+}

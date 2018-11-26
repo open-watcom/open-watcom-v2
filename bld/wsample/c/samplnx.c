@@ -454,14 +454,19 @@ static void CodeLoad( const char *name, u_long addr, samp_block_kinds kind )
 }
 
 
+#if 0
 static void InternalError( const char *str )
 {
-    Output( MsgArray[MSG_SAMPLE_2 - ERR_FIRST_MESSAGE] );
-    Output( str );
-    Output( "\n" );
+    OutputMsgParmNL( MSG_SAMPLE_2, str );
     _exit( -1 );
 }
+#endif
 
+static void internalErrorMsg( int msg )
+{
+    OutputMsgParmNL( MSG_SAMPLE_2, GET_MESSAGE( msg ) );
+    _exit( -1 );
+}
 
 #if defined( MD_x86 )
 
@@ -603,7 +608,7 @@ static void InstSigHandler( int msec_period )
     timer.it_value.tv_usec = msec_period * 1000;
 
     if( setitimer( ITIMER_REAL, &timer, NULL ) ) {
-        InternalError( MsgArray[MSG_SAMPLE_6 - ERR_FIRST_MESSAGE] );
+        internalErrorMsg( MSG_SAMPLE_6 );
     }
 }
 
@@ -774,20 +779,18 @@ void StartProg( const char *cmd, const char *prog, char *full_args, char *dos_ar
         argv[SplitParms( full_args, argv + 1, len ) + 1] = NULL;
         argv[0] = prog;
 
-        Output( MsgArray[MSG_SAMPLE_1 - ERR_FIRST_MESSAGE] );
-        Output( prog );
-        Output( "\n" );
+        OutputMsgParmNL( MSG_SAMPLE_1, prog );
 
         save_pgrp = getpgrp();
         setpgid( 0, OrigPGrp );
         pid = fork();
         if( pid == -1 )
-            InternalError( MsgArray[MSG_SAMPLE_3 - ERR_FIRST_MESSAGE] );
+            internalErrorMsg( MSG_SAMPLE_3 );
         if( pid == 0 ) {
             int     rc;
 
             if( ptrace( PTRACE_TRACEME, 0, NULL, NULL ) < 0 ) {
-                InternalError( MsgArray[MSG_SAMPLE_4 - ERR_FIRST_MESSAGE] );
+                internalErrorMsg( MSG_SAMPLE_4 );
             }
             dbg_printf( "executing '%s'\n", prog );
             for( rc = 0; argv[rc] != NULL; ++rc )
@@ -795,15 +798,13 @@ void StartProg( const char *cmd, const char *prog, char *full_args, char *dos_ar
 
             rc = execve( prog, (char const * const *)argv, (char const * const *)environ );
             dbg_printf( "execve() failed, returned %d\n", rc );
-            InternalError( MsgArray[MSG_SAMPLE_3 - ERR_FIRST_MESSAGE] );  // failsafe
+            internalErrorMsg( MSG_SAMPLE_3 );  // failsafe
         }
         setpgid( 0, save_pgrp );
         strcpy( exe_name, prog );
     } else if( pid ) {
         GetExeNameFromPid( pid, exe_name, PATH_MAX );
-        Output( MsgArray[MSG_SAMPLE_1 - ERR_FIRST_MESSAGE] );
-        Output( exe_name );
-        Output( "\n" );
+        OutputMsgParmNL( MSG_SAMPLE_1, exe_name );
     }
 
     if( (pid != -1) && (pid != 0) ) {
@@ -849,7 +850,7 @@ fail:
             waitpid( pid, &status, 0 );
         }
     }
-    InternalError( MsgArray[MSG_SAMPLE_5 - ERR_FIRST_MESSAGE] );
+    internalErrorMsg( MSG_SAMPLE_5 );
 }
 
 
@@ -860,8 +861,6 @@ void SysDefaultOptions( void )
 
 void SysParseOptions( char c, char **cmd )
 {
-    char buff[2];
-
     switch( c ) {
     case 'r':
         SetTimerRate( cmd );
@@ -870,12 +869,13 @@ void SysParseOptions( char c, char **cmd )
         SetPid( cmd );
         break;
     default:
-        Output( MsgArray[MSG_INVALID_OPTION - ERR_FIRST_MESSAGE] );
-        buff[0] = c;
-        buff[1] = '\0';
-        Output( buff );
-        Output( "\n" );
+        OutputMsgCharNL( MSG_INVALID_OPTION, c );
         fatal();
         break;
     }
+}
+
+void OutputNL( void )
+{
+    Output( "\n" );
 }

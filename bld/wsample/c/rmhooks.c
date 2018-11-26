@@ -30,7 +30,9 @@
 ****************************************************************************/
 
 
-#include "os.h"
+#if defined(__DOS__)
+    #include <dos.h>
+#endif
 #include "intrptr.h"
 #include "rmhooks.h"
 #include "sample.h"

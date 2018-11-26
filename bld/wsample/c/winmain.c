@@ -134,7 +134,7 @@ static long FAR PASCAL MainDriver( HWND hwnd, UINT message, WPARAM wparam, LPARA
             DestroyWindow( MainWindowHandle );
             return( 0 );
         }
-        MyOutput( MsgArray[MSG_SAMPLE_13 - ERR_FIRST_MESSAGE] );
+        OutputMsgNL( MSG_SAMPLE_16 );
         return( 0 );
         break;
     case WM_COMMAND:
@@ -229,15 +229,10 @@ static int WindowsInit( HANDLE inst, int showcmd )
 
 } /* WindowsInit */
 
-void Output( const char *str )
-{
-    MyOutput( str );
-}
-
 /*
  * Output a string to the list box
  */
-void MyOutput( const char *str, ... )
+static void MyOutput( const char *str, ... )
 {
     static char tmpStr[TMPSLEN+1];
     static int  tmpOff=0;
@@ -269,6 +264,16 @@ void MyOutput( const char *str, ... )
     }
 
 } /* MyOutput */
+
+void Output( const char FAR_PTR *str )
+{
+    MyOutput( str );
+}
+
+void OutputNL( void )
+{
+    MyOutput( "\r\n" );
+}
 
 /*
  * MessageLoop - process any pending messages
@@ -345,7 +350,7 @@ int PASCAL WinMain( HINSTANCE inst, HINSTANCE previnst, LPSTR cmd, int show)
         parm.dwReserved = 0;
         newinst = LoadModule( "wsamplew.exe", (LPVOID)&parm );
         if( newinst < HINSTANCE_ERROR ) {
-            WinMessage( MsgArray[MSG_SAMPLE_12 - ERR_FIRST_MESSAGE] );
+            WinMessage( GET_MESSAGE( MSG_SAMPLE_15 ) );
             CloseShop();
             return( FALSE );
         }
@@ -358,7 +363,7 @@ int PASCAL WinMain( HINSTANCE inst, HINSTANCE previnst, LPSTR cmd, int show)
             MessageLoop();
         } while( !IsSecondOK );
         if( IsSecondOK == NOT_OK ) {
-            WinMessage( MsgArray[MSG_SAMPLE_12 - ERR_FIRST_MESSAGE] );
+            WinMessage( GET_MESSAGE( MSG_SAMPLE_15 ) );
             CloseShop();
             return( FALSE );
         }

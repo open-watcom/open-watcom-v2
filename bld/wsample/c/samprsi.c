@@ -172,9 +172,7 @@ void StartProg( const char *cmd, const char *prog, char *full_args, char *dos_ar
         error_num = D32DebugLoad( prog, buff, &Proc );
     }
     if( error_num != 0 ) {
-        Output( MsgArray[MSG_SAMPLE_2 - ERR_FIRST_MESSAGE] );
-        Output( prog );
-        Output( "\r\n" );
+        OutputMsgParmNL( MSG_SAMPLE_2, prog );
         MsgFini();
         exit(1);
     }
@@ -228,9 +226,7 @@ void StartProg( const char *cmd, const char *prog, char *full_args, char *dos_ar
     }
     D32UnHookTimer();
     if( Proc.int_id != 0x21 ) {
-        Output( MsgArray[MSG_SAMPLE_1 - ERR_FIRST_MESSAGE] );
-        Output( MsgArray[Exceptions[Proc.int_id] + MSG_EXCEPT_0 - ERR_FIRST_MESSAGE] );
-        Output( "\r\n" );
+        OutputMsgParmNL( MSG_SAMPLE_1, GET_MESSAGE( MSG_EXCEPT_0 + Exceptions[Proc.int_id] ) );
     }
     D32DebugTerm();
     report();
@@ -242,19 +238,18 @@ void SysDefaultOptions( void )
 
 void SysParseOptions( char c, char **cmd )
 {
-    char buff[2];
-
     switch( c ) {
     case 'r':
         SetTimerRate( cmd );
         break;
     default:
-        Output( MsgArray[MSG_INVALID_OPTION - ERR_FIRST_MESSAGE] );
-        buff[0] = c;
-        buff[1] = '\0';
-        Output( buff );
-        Output( "\r\n" );
+        OutputMsgCharNL( MSG_INVALID_OPTION, c );
         fatal();
         break;
     }
+}
+
+void OutputNL( void )
+{
+    Output( "\r\n" );
 }

@@ -24,66 +24,44 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Execution sampler message output routines.
 *
 ****************************************************************************/
 
 
-#include "intrptr.h"
-#include "os.h"
-#include "miniproc.h"
-#include "hooks.h"
+#include "sample.h"
+#ifdef __WINDOWS__
+#include "commonui.h"
+#endif
+#include "smpstuff.h"
+#include "sysio.h"
+#include "wmsg.h"
+#ifdef __WINDOWS__
+#include "sampwin.h"
+#endif
 
 
-typedef struct {
-    WORD    limit;
-    LONG    base;
-} baseoffset;
-
-typedef struct {
-    WORD    loffs;
-    WORD    select;
-    BYTE    wcount;
-    BYTE    arights;
-    WORD    hoffs;
-} idtentry;
-
-extern void GetIDTBaseOff( baseoffset * );
-#pragma aux GetIDTBaseOff = \
-        0x0f 0x01 0x08 /* sidt  [eax] */ \
-    parm caller [eax];
-
-static intrptr HookVect( intrptr new_intrptr, int vect )
+void OutputMsg( int msg )
 {
-    LONG        temp;
-    intrptr     old_intrptr;
-    baseoffset  idt_baseoff;
-    idtentry    *idt_table;
-
-    GetIDTBaseOff( &idt_baseoff );
-    temp = MapAbsoluteAddressToDataOffset( idt_baseoff.base );
-    idt_table = (idtentry *)temp;
-    idt_table = &idt_table[vect];
-    temp = idt_table->hoffs;
-    temp <<= 16;
-    temp += idt_table->loffs;
-    old_intrptr = MK_FP( idt_table->select, temp );
-    temp = (unsigned)new_intrptr;
-    Disable();
-    idt_table->hoffs = temp >> 16;
-    idt_table->loffs = temp;
-    Enable();
-    return( old_intrptr );
+    Output( GET_MESSAGE( msg ) );
 }
 
-intrptr HookBreak( intrptr new_int03 )
+void OutputMsgNL( int msg )
 {
-    return( HookVect( new_int03, 3 ) );
+    OutputMsg( msg );
+    OutputNL();
 }
 
-
-intrptr HookTimer( intrptr new_int08 )
+void OutputMsgParmNL( int msg, const char FAR_PTR *str )
 {
-    return( HookVect( new_int08, FileServerMajorVersionNumber == 3 ? 8 : 40 ) );
+    OutputMsg( msg );
+    Output( str );
+    OutputNL();
+}
+
+void OutputMsgCharNL( int msg, char chr )
+{
+    OutputMsg( msg );
+    SysWrite( 2, &chr, 1 );
+    OutputNL();
 }

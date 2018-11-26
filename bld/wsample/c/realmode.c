@@ -35,7 +35,6 @@
 #include <ctype.h>
 #include <string.h>
 #include <process.h>
-//#include <malloc.h>
 #include <conio.h>
 #include <i86.h>
 #include <sys/types.h>
@@ -43,7 +42,6 @@
 #include "sample.h"
 #include "smpstuff.h"
 #include "intrptr.h"
-#include "os.h"
 #include "timermod.h"
 #include "interc.h"
 #include "indos.h"

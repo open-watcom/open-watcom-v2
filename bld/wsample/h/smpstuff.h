@@ -104,6 +104,11 @@ extern void REPORT_TYPE report( void );
 extern void             fatal( void );
 
 extern void             Output( const char FAR_PTR * );
+extern void             OutputNL( void );
+extern void             OutputMsg( int msg );
+extern void             OutputMsgNL( int msg );
+extern void             OutputMsgParmNL( int msg, const char FAR_PTR *str );
+extern void             OutputMsgCharNL( int msg, char chr );
 extern unsigned         GetNumber( unsigned, unsigned, char **, unsigned );
 extern void             StopAndSave( void );
 extern void             WriteCodeLoad( seg_offset, const char *, samp_block_kinds );

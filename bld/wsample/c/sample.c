@@ -44,7 +44,6 @@
 #include "commonui.h"
 #endif
 #include "banner.h"
-#include "os.h"
 #include "sample.h"
 #include "wmsg.h"
 #include "smpstuff.h"
@@ -55,7 +54,6 @@
 
 #include "clibext.h"
 
-#define NL      "\r\n"
 
 static samp_header          Header = {
     SAMP_SIGNATURE,
@@ -297,8 +295,7 @@ void RecordCGraph( void )
 static void AllFull( void )
 {
     SampClose();
-    Output( MsgArray[ERR_DISK_FULL - ERR_FIRST_MESSAGE] );
-    Output( "\r\n" );
+    OutputMsgNL( ERR_DISK_FULL );
     fatal();
 }
 
@@ -323,12 +320,10 @@ void REPORT_TYPE report( void )
     SampWrite( &Info, sizeof( Info ) );
     SampClose();
     if( LostData )  {
-        Output( MsgArray[ERR_SAMPLES_LOST - ERR_FIRST_MESSAGE] );
-        Output( "\r\n" );
+        OutputMsgNL( ERR_SAMPLES_LOST );
     }
     if( FarWriteProblem ) {
-        Output( MsgArray[ERR_SAMPLE_TRUNCATE - ERR_FIRST_MESSAGE] );
-        Output( "\r\n" );
+        OutputMsgNL( ERR_SAMPLE_TRUNCATE );
         fatal();
     }
 #if !defined(__NETWARE__) && !defined(__WINDOWS__)
@@ -340,14 +335,12 @@ void REPORT_TYPE report( void )
 
 void Usage( void )
 {
-    Output(
-        banner1w( "Execution Sampler", _WSAMP_VERSION_ ) NL
-        banner2 NL
-        banner2a( 1989 ) NL
-        banner3 NL
-        banner3a NL
-        NL
-    );
+    Output( banner1w( "Execution Sampler", _WSAMP_VERSION_ ) ); OutputNL();
+    Output( banner2 ); OutputNL();
+    Output( banner2a( 1989 ) ); OutputNL();
+    Output( banner3 ); OutputNL();
+    Output( banner3a ); OutputNL();
+    OutputNL();
     MsgPrintfUsage( MSG_USAGE_LN_1, MSG_USAGE_LN_3 );
 //  MSG_USAGE_4 is the option for call graph support
 //  (undocumented for now)
@@ -373,15 +366,10 @@ unsigned GetNumber( unsigned min, unsigned max, char **atstr, unsigned base )
     int         c;
     unsigned    res;
     unsigned    value;
-    char        buff[2];
 
     scan = skip( *atstr );
     if( scan[0] != '=' && scan[0] != '#' ) {
-        Output( MsgArray[MSG_EXPECTING - ERR_FIRST_MESSAGE] );
-        buff[0] = scan[0];
-        buff[1] = '\0';
-        Output( buff );
-        Output( "\r\n" );
+        OutputMsgCharNL( MSG_EXPECTING, scan[0] );
         fatal();
     }
     scan = skip( &scan[1] );
@@ -400,13 +388,11 @@ unsigned GetNumber( unsigned min, unsigned max, char **atstr, unsigned base )
         ++scan;
     }
     if( c != '\0' && c != ' ' && c != '\t' ) {
-        Output( MsgArray[MSG_INVALID_CHAR - ERR_FIRST_MESSAGE] );
-        Output( "\r\n" );
+        OutputMsgNL( MSG_INVALID_CHAR );
         fatal();
     }
     if(( res < min ) || ( res > max )) {
-        Output( MsgArray[MSG_OUT_OF_RANGE - ERR_FIRST_MESSAGE] );
-        Output( "\r\n" );
+        OutputMsgNL( MSG_OUT_OF_RANGE );
         fatal();
     }
     *atstr = scan;
@@ -422,7 +408,6 @@ static char *Parse( char *line, char arg[], char **eoc )
 {
     char        *cmd, *ptr;
     int         c, len;
-    char        buff[2];
 
     InitTimerRate();
     SysDefaultOptions();
@@ -451,11 +436,7 @@ static char *Parse( char *line, char arg[], char **eoc )
             break;
         case 'f':
             if( *cmd != '=' && *cmd != '#' ) {
-                Output( MsgArray[MSG_EXPECTING - ERR_FIRST_MESSAGE] );
-                buff[0] = *cmd;
-                buff[1] = '\0';
-                Output( buff );
-                Output( "\r\n" );
+                OutputMsgCharNL( MSG_EXPECTING, *cmd );
                 fatal();
             }
             ++cmd;
@@ -522,8 +503,7 @@ void AllocSamples( unsigned tid )
     Samples = my_alloc( sizeof( struct samp_samples )
             + Ceiling * sizeof( samp_address ) );
     if( Samples == NULL ) {
-        Output( MsgArray[MSG_SAMPLE_BUFF - ERR_FIRST_MESSAGE] );
-        Output( "\r\n" );
+        OutputMsgNL( MSG_SAMPLE_BUFF );
         fatal();
     }
     Samples->pref.kind = SAMP_SAMPLES;
@@ -531,8 +511,7 @@ void AllocSamples( unsigned tid )
     if( CallGraphMode ) {       /* allocate callgraph prefix storage */
         CallGraph = my_alloc( sizeof( struct samp_block ) );
         if( CallGraph == NULL ) {
-            Output( MsgArray[MSG_CALLGRAPH_BUFF - ERR_FIRST_MESSAGE] );
-            Output( "\r\n" );
+            OutputMsgNL( MSG_CALLGRAPH_BUFF );
             fatal();
         }
         CallGraph->pref.kind = SAMP_CALLGRAPH;
@@ -571,8 +550,7 @@ int main( int argc, char **argv )
     cmd_line = malloc( cmdlen + 1 );
     arg = malloc( cmdlen + 1 );
     if( ( cmd_line == NULL ) || ( arg == NULL ) ) {
-        Output( MsgArray[MSG_SAMPLE_BUFF - ERR_FIRST_MESSAGE] );
-        Output( "\r\n" );
+        OutputMsgNL( MSG_SAMPLE_BUFF );
         fatal();
     }
     getcmd( cmd_line );
@@ -581,8 +559,7 @@ int main( int argc, char **argv )
     cmd_line = malloc( 256 ); /* Just hope for the best */
     arg = malloc( 256 );
     if( ( cmd_line == NULL ) || ( arg == NULL ) ) {
-        Output( MsgArray[MSG_SAMPLE_BUFF - ERR_FIRST_MESSAGE] );
-        Output( "\r\n" );
+        OutputMsgNL( MSG_SAMPLE_BUFF );
         fatal();
     }
     _fstrcpy( cmd_line, win_cmd );
@@ -605,15 +582,13 @@ int main( int argc, char **argv )
     FarWriteProblem = false;
 
     if( !VersionCheck() ) {
-        Output( MsgArray[MSG_VERSION - ERR_FIRST_MESSAGE] );
-        Output( "\r\n" );
+        OutputMsgNL( MSG_VERSION );
         fatal();
     }
 
 #ifndef __WINDOWS__
     if( SampCreate( SampName ) != 0 ) {
-        Output( MsgArray[MSG_SAMPLE_FILE - ERR_FIRST_MESSAGE] );
-        Output( "\r\n" );
+        OutputMsgNL( MSG_SAMPLE_FILE );
         fatal();
     }
 #endif

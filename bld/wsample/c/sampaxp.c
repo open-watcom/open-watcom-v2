@@ -152,7 +152,7 @@ bool VersionCheck( void )
 /*
  * RecordSample - record a sample in a specific thread
  */
-void RecordSample( unsigned offset, unsigned short segment, DWORD real_tid )
+static void RecordSample( unsigned offset, unsigned short segment, DWORD real_tid )
 {
     samp_block  *old_samples;
     unsigned    old_sample_index;
@@ -252,11 +252,22 @@ void GetNextAddr( void )
 
 void StopProg( void ) {}
 
+void OutputNL( void )
+{
+    Output( "\r\n" );
+}
+
+#if 0
 static void internalError( char *str )
 {
-    Output( MsgArray[MSG_SAMPLE_2 - ERR_FIRST_MESSAGE] );
-    Output( str );
-    Output( "\r\n" );
+    OutputMsgParmNL( MSG_SAMPLE_2, str );
+    _exit( -1 );
+}
+#endif
+
+static void internalErrorMsg( int msg )
+{
+    OutputMsgParmNL( MSG_SAMPLE_2, GET_MESSAGE( msg ) );
     _exit( -1 );
 }
 
@@ -409,12 +420,12 @@ static void loadProg( const char *exe, char *cmdline )
                         &pinfo          /* process info */
                     );
     if( !rc ) {
-        internalError( MsgArray[MSG_SAMPLE_3 - ERR_FIRST_MESSAGE] );
+        internalErrorMsg( MSG_SAMPLE_3 );
     }
     rc = WaitForDebugEvent( &debugEvent, INFINITE );
     if( !rc || (debugEvent.dwDebugEventCode != CREATE_PROCESS_DEBUG_EVENT) ||
                 (debugEvent.dwProcessId != pinfo.dwProcessId) ) {
-        internalError( MsgArray[MSG_SAMPLE_3 - ERR_FIRST_MESSAGE] );
+        internalErrorMsg( MSG_SAMPLE_3 );
     }
     taskPid = debugEvent.dwProcessId;
     processHandle = debugEvent.u.CreateProcessInfo.hProcess;
@@ -595,14 +606,12 @@ void StartProg( const char *cmd, const char *prog, char *full_args, char *dos_ar
 
     tth = CreateThread( NULL, 2048, TimerThread, NULL, 0, &ttid );
     if( !tth ) {
-        internalError( MsgArray[MSG_SAMPLE_3 - ERR_FIRST_MESSAGE] );
+        internalErrorMsg( MSG_SAMPLE_3 );
     }
     /* Attempt to ensure that we can record our samples in one shot */
     SetThreadPriority( tth, THREAD_PRIORITY_TIME_CRITICAL );
 
-    Output( MsgArray[MSG_SAMPLE_1 - ERR_FIRST_MESSAGE] );
-    Output( prog );
-    Output( "\r\n" );
+    OutputMsgParmNL( MSG_SAMPLE_1, prog );
 
     waiting_for_first_bp = TRUE;
     continue_how = DBG_CONTINUE;
@@ -653,8 +662,7 @@ void StartProg( const char *cmd, const char *prog, char *full_args, char *dos_ar
                 if( debugEvent.u.Exception.dwFirstChance ) {
                     continue_how = DBG_EXCEPTION_NOT_HANDLED;
                 } else {
-                    Output( MsgArray[MSG_SAMPLE_4 - ERR_FIRST_MESSAGE] );
-                    Output( "\r\n" );
+                    OutputMsgNL( MSG_SAMPLE_4 );
                     doneSample = TRUE;
                     TerminateProcess( processHandle, 0 );
                     report();
@@ -694,18 +702,12 @@ void SysDefaultOptions( void ) { }
 
 void SysParseOptions( char c, char **cmd )
 {
-    char buff[2];
-
     switch( c ) {
     case 'r':
         SetTimerRate( cmd );
         break;
     default:
-        Output( MsgArray[MSG_INVALID_OPTION - ERR_FIRST_MESSAGE] );
-        buff[0] = c;
-        buff[1] = '\0';
-        Output( buff );
-        Output( "\r\n" );
+        OutputMsgCharNL( MSG_INVALID_OPTION, c );
         fatal();
         break;
     }

@@ -151,11 +151,17 @@ static int IsLX( void )
     return( sig == EXE_LX );
 }
 
+#if 0
 static void InternalError( char * str )
 {
-    Output( MsgArray[MSG_SAMPLE_2 - ERR_FIRST_MESSAGE] );
-    Output( str );
-    Output( "\r\n" );
+    OutputMsgParmNL( MSG_SAMPLE_2, str );
+    _exit( -1 );
+}
+#endif
+
+static void internalErrorMsg( int msg )
+{
+    OutputMsgParmNL( MSG_SAMPLE_2, GET_MESSAGE( msg ) );
     _exit( -1 );
 }
 
@@ -174,11 +180,11 @@ bool VersionCheck( void )
     DosGetVersion( &OSVer );
     if( OSVer >= 0x1400 && IsLX() ) {
         if( DosSearchPath( 0x0003, "PATH", OS22SAMPLER, (unsigned char *)UtilBuff, sizeof( UtilBuff ) ) ) {
-            InternalError( MsgArray[MSG_SAMPLE_8 - ERR_FIRST_MESSAGE] );
+            internalErrorMsg( MSG_SAMPLE_8 );
         }
         DosGetEnv( &env_sel, &cmd_off );
         if( DosExecPgm( NULL, 0, EXEC_ASYNC, MK_FP( env_sel, cmd_off ), NULL, &res, UtilBuff ) != 0 ) {
-            InternalError( MsgArray[MSG_SAMPLE_9 - ERR_FIRST_MESSAGE] );
+            internalErrorMsg( MSG_SAMPLE_9 );
         }
         _exit( 0 );
     }
@@ -457,11 +463,11 @@ static void LoadProg( char *cmd, char *cmd_tail )
         start.PgmHandle = 0;
         start.PgmControl = 0;
         if( DosStartSession( (void __far *)&start, &SID, &Pid ) != 0 ) {
-            InternalError( MsgArray[MSG_SAMPLE_3 - ERR_FIRST_MESSAGE] );
+            internalErrorMsg( MSG_SAMPLE_3 );
         }
     } else {
         if( DosExecPgm( NULL, 0, EXEC_TRACE, cmd, NULL, &res, cmd ) != 0 ) {
-            InternalError( MsgArray[MSG_SAMPLE_3 - ERR_FIRST_MESSAGE] );
+            internalErrorMsg( MSG_SAMPLE_3 );
         }
         Pid = res.codeTerminate;
     }
@@ -519,9 +525,7 @@ void StartProg( const char *cmd, const char *prog, char *full_args, char *dos_ar
     dst += strlen( dst );
     *++dst = '\0';      /* Need two nulls at end */
     LoadProg( UtilBuff, cmd_tail );
-    Output( MsgArray[MSG_SAMPLE_1 - ERR_FIRST_MESSAGE] );
-    Output( UtilBuff );
-    Output( "\r\n" );
+    OutputMsgParmNL( MSG_SAMPLE_1, UtilBuff );
     Buff.pid = Pid;
     Buff.tid = 1;
     Buff.cmd = PT_CMD_STOP;
@@ -533,18 +537,18 @@ void StartProg( const char *cmd, const char *prog, char *full_args, char *dos_ar
     InitialCS = Buff.u.r.CS;
     rc = DosCreateThread( Sleeper, (PUSHORT)&tid, Stack + STACK_SIZE );
     if( rc != 0 ) {
-        InternalError( MsgArray[MSG_SAMPLE_4 - ERR_FIRST_MESSAGE] );
+        internalErrorMsg( MSG_SAMPLE_4 );
     }
     rc = DosSetPrty( PRTYS_THREAD, PRTYC_TIMECRITICAL, 0, tid );
     if( rc != 0 ) {
-        InternalError( MsgArray[MSG_SAMPLE_5 - ERR_FIRST_MESSAGE] );
+        internalErrorMsg( MSG_SAMPLE_5 );
     }
     Buff.pid = Pid;
     Buff.tid = 1;
     for( ;; ) {
         Buff.cmd = PT_CMD_GO;
         if( LibLoadPTrace( &Buff ) != 0 ) {
-            InternalError( MsgArray[MSG_SAMPLE_7 - ERR_FIRST_MESSAGE] );
+            internalErrorMsg( MSG_SAMPLE_7 );
         }
         if( Buff.cmd == PT_RET_BREAK && Buff.u.r.DX != 0 ) {    /* a mark */
             len = 0;
@@ -587,7 +591,7 @@ void StartProg( const char *cmd, const char *prog, char *full_args, char *dos_ar
         if( Buff.cmd != PT_RET_LIB_LOADED
           && Buff.cmd != PT_RET_STOPPED
           && Buff.cmd != PT_RET_TRD_TERMINATE ) {
-            InternalError( MsgArray[MSG_SAMPLE_6 - ERR_FIRST_MESSAGE] );
+            internalErrorMsg( MSG_SAMPLE_6 );
             break;
         }
         RecordSample( Buff.u.r.IP, Buff.u.r.CS, Buff.tid );
@@ -602,8 +606,6 @@ void SysDefaultOptions( void )
 
 void SysParseOptions( char c, char **cmd )
 {
-    char buff[2];
-
     switch( c ) {
     case 'r':
         SetTimerRate( cmd );
@@ -612,12 +614,13 @@ void SysParseOptions( char c, char **cmd )
         NewSession = 1;
         break;
     default:
-        Output( MsgArray[MSG_INVALID_OPTION - ERR_FIRST_MESSAGE] );
-        buff[0] = c;
-        buff[1] = '\0';
-        Output( buff );
-        Output( "\r\n" );
+        OutputMsgCharNL( MSG_INVALID_OPTION, c );
         fatal();
         break;
     }
+}
+
+void OutputNL( void )
+{
+    Output( "\r\n" );
 }

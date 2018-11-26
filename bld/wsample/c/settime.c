@@ -40,7 +40,6 @@
 #include <sys/stat.h>
 #include "sample.h"
 #include "smpstuff.h"
-#include "os.h"
 #include "wmsg.h"
 
 #define global_timer_data
@@ -118,8 +117,7 @@ unsigned SafeMargin( void )
     margin = Ceiling - safe_wait;
 
     if( margin < ( TICKS_PER_HUNDRED / 100UL ) ) {
-        Output( MsgArray[MSG_BUFF_SMALL - ERR_FIRST_MESSAGE] );
-        Output( "\r\n" );
+        OutputMsgNL( MSG_BUFF_SMALL );
         fatal();
     }
     return( margin );

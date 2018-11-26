@@ -104,7 +104,6 @@ void CloseShop( void );
 DWORD WinGetCurrTick( void );
 
 /* winmain.c */
-void MyOutput( const char*, ... );
 char *ResName( char * );
 
 /* winopts.c */
