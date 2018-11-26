@@ -34,6 +34,8 @@ build_proc()
         $OWBINDIR/wmake -f ../binmake bootstrap=1 builder.exe
         RC=$?
         if [ $RC -eq 0 ]; then
+            cd $OWSRCDIR/watcom
+            builder boot
             cd $OWSRCDIR/whpcvt
             mkdir $OWOBJDIR
             cd $OWOBJDIR
