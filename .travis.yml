@@ -38,8 +38,7 @@ after_success:
 jobs:
   allow_failures:
     - os: osx
-  allow_failures:
-    - os: windows
+      os: windows
   include:
     #################################
     - stage: Initialize
@@ -58,6 +57,7 @@ jobs:
       os: linux
       dist: trusty
       sudo: required
+      cache: true
       compiler: gcc
       before_install:
         # stop unwanted services
@@ -80,6 +80,7 @@ jobs:
       name: "Build minimal set of build tools"
       if: branch = env(OWBRANCH) AND env(OWOSXBUILD) = 1
       os: osx
+      cache: true
       compiler: clang
       before_install:
         # stop unwanted services
@@ -102,6 +103,7 @@ jobs:
       name: "Build minimal set of build tools"
       if: branch = env(OWBRANCH)
       os: windows
+      cache: true
       before_install:
         # stop unwanted services
 #        - travis/services.sh
@@ -126,6 +128,7 @@ jobs:
       os: linux
       dist: trusty
       sudo: required
+      cache: true
       compiler: gcc
       before_install:
         # stop unwanted services
@@ -145,6 +148,7 @@ jobs:
       name: "OW tools OSX build 1"
       if: branch = env(OWBRANCH) AND env(OWOSXBUILD) = 1
       os: osx
+      cache: true
       compiler: clang
       before_install:
         # stop unwanted services
@@ -165,6 +169,7 @@ jobs:
       name: "OW tools OSX build 2"
       if: branch = env(OWBRANCH) AND env(OWOSXBUILD) = 1
       os: osx
+      cache: true
       compiler: clang
       before_install:
         # stop unwanted services
@@ -190,6 +195,7 @@ jobs:
       os: linux
       dist: trusty
       sudo: required
+      cache: true
       compiler: gcc
       before_install:
         # stop unwanted services
@@ -214,6 +220,7 @@ jobs:
       os: linux
       dist: trusty
       sudo: required
+      cache: true
       compiler: gcc
       before_install:
         # stop unwanted services
@@ -238,6 +245,7 @@ jobs:
       os: linux
       dist: trusty
       sudo: required
+      cache: true
       compiler: gcc
       before_install:
         # stop unwanted services
@@ -262,6 +270,7 @@ jobs:
       os: linux
       dist: trusty
       sudo: required
+      cache: true
       compiler: gcc
       before_install:
         # stop unwanted services
@@ -286,6 +295,7 @@ jobs:
       os: linux
       dist: trusty
       sudo: required
+      cache: true
       compiler: gcc
       before_install:
         # stop unwanted services
@@ -311,6 +321,7 @@ jobs:
       os: linux
       dist: trusty
       sudo: required
+      cache: true
       compiler: gcc
       script: 
         # clear cache
@@ -322,6 +333,7 @@ jobs:
       name: "Clean build cache OSX"
       if: branch = env(OWBRANCH) AND env(OWOSXBUILD) = 1
       os: osx
+      cache: true
       compiler: clang
       script: 
         # clear cache
