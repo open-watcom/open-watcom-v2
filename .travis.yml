@@ -36,10 +36,6 @@ after_success:
  - travis/gitupds.sh
 
 jobs:
-  allow_failures:
-    - os: 
-      - osx
-      - windows
   include:
     #################################
     - stage: Initialize
@@ -81,6 +77,7 @@ jobs:
       name: "Build minimal set of build tools"
       if: branch = env(OWBRANCH) AND env(OWOSXBUILD) = 1
       os: osx
+      allow_failures: true
       cache: true
       compiler: clang
       before_install:
@@ -104,6 +101,7 @@ jobs:
       name: "Build minimal set of build tools"
       if: branch = env(OWBRANCH)
       os: windows
+      allow_failures: true
       cache: true
       before_install:
         # stop unwanted services
@@ -149,6 +147,7 @@ jobs:
       name: "OW tools OSX build 1"
       if: branch = env(OWBRANCH) AND env(OWOSXBUILD) = 1
       os: osx
+      allow_failures: true
       cache: true
       compiler: clang
       before_install:
@@ -170,6 +169,7 @@ jobs:
       name: "OW tools OSX build 2"
       if: branch = env(OWBRANCH) AND env(OWOSXBUILD) = 1
       os: osx
+      allow_failures: true
       cache: true
       compiler: clang
       before_install:
@@ -334,6 +334,7 @@ jobs:
       name: "Clean build cache OSX"
       if: branch = env(OWBRANCH) AND env(OWOSXBUILD) = 1
       os: osx
+      allow_failures: true
       cache: true
       compiler: clang
       script: 
