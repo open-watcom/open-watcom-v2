@@ -4,8 +4,13 @@ if [ "$TRAVIS_OS_NAME" = "linux" ]; then
     sudo service postgresql stop
     sudo service mysql stop
 fi
-#list status all services
+# Display services informations
 if [ "$OWTRAVIS_DEBUG" = "1" ]; then
-    sudo initctl list
-    service --status-all
+    if [ "$TRAVIS_OS_NAME" = "linux" ]; then
+        sudo initctl list
+        service --status-all
+    elif [ "$TRAVIS_OS_NAME" = "osx" ]; then
+        sudo launchctl list
+        sudo top -l 1
+    fi
 fi
