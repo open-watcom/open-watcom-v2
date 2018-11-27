@@ -42,6 +42,7 @@ build_proc()
             cd $OWSRCDIR/clibtest
             builder -q -i testclean
             builder -i test
+# temporary set OK status until test will be ported to Linux
 #            RC=$?
             RC=0
             cat result.log
@@ -50,7 +51,7 @@ build_proc()
             RC=0
             ;;
     esac
-    cd $OWROOT
+    cd $TRAVIS_BUILD_DIR
     return $RC
 }
 

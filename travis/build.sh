@@ -105,7 +105,7 @@ build_proc()
             return 0
             ;;
     esac
-    cd $OWROOT
+    cd $TRAVIS_BUILD_DIR
     return $RC
 }
 

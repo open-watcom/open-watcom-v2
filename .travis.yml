@@ -19,10 +19,10 @@ env:
 
 cache:
   directories:
-    - build/$OWOBJDIR
-    - bld/watcom/$OWOBJDIR
-    - test
-    - build1
+    - $TRAVIS_BUILD_DIR/build/$OWOBJDIR
+    - $TRAVIS_BUILD_DIR/bld/watcom/$OWOBJDIR
+    - $TRAVIS_BUILD_DIR/test
+    - $TRAVIS_BUILD_DIR/build1
 
 before_script:
  # get environment/cache info if debug is active
@@ -66,10 +66,10 @@ jobs:
         - export OWDOCBUILD=0
         - export OWVERBOSE=1
         # clear cache
-        - rm -f   build/$OWOBJDIR/*
-        - rm -rf  bld/watcom/$OWOBJDIR/*
-        - rm -rf  test/*
-        - rm -rf  build1/*
+        - rm -f  $TRAVIS_BUILD_DIR/build/$OWOBJDIR/*
+        - rm -rf $TRAVIS_BUILD_DIR/bld/watcom/$OWOBJDIR/*
+        - rm -rf $TRAVIS_BUILD_DIR/test/*
+        - rm -rf $TRAVIS_BUILD_DIR/build1/*
       install:
         - . ./cmnvars.sh
       script: 
@@ -88,10 +88,10 @@ jobs:
         - export OWDOCBUILD=0
         - export OWVERBOSE=1
         # clear cache
-        - rm -f   build/$OWOBJDIR/*
-        - rm -rf  bld/watcom/$OWOBJDIR/*
-        - rm -rf  test/*
-        - rm -rf  build1/*
+        - rm -f  $TRAVIS_BUILD_DIR/build/$OWOBJDIR/*
+        - rm -rf $TRAVIS_BUILD_DIR/bld/watcom/$OWOBJDIR/*
+        - rm -rf $TRAVIS_BUILD_DIR/test/*
+        - rm -rf $TRAVIS_BUILD_DIR/build1/*
       install:
         - . ./cmnvars.sh
       script: 
@@ -134,7 +134,7 @@ jobs:
       script: 
         - travis/build.sh
         # save build 1 to cache
-        - cp -Rf $OWSRCDIR/* $OWROOT/build1
+        - cp -Rf $OWSRCDIR/* $TRAVIS_BUILD_DIR/build1
     #################################
     - stage: Build2
       name: "OW tools OSX build 2"
@@ -156,7 +156,7 @@ jobs:
         - . ./cmnvars.sh
       script: 
         # load build 1 from cache
-        - cp -Rn $OWROOT/build1/* $OWSRCDIR
+        - cp -Rn $TRAVIS_BUILD_DIR/build1/* $OWSRCDIR
         - travis/build.sh
     #################################
     - stage: Tests
@@ -173,7 +173,7 @@ jobs:
         - export OWDOCBUILD=0
         - export OWVERBOSE=0
       install:
-        - export WATCOM=$OWROOT/test
+        - export WATCOM=$TRAVIS_BUILD_DIR/test
         - export PATH=$WATCOM/binl:$PATH
         - export INCLUDE=$WATCOM/lh
         - unset LIB
@@ -194,7 +194,7 @@ jobs:
         - export OWDOCBUILD=0
         - export OWVERBOSE=0
       install:
-        - export WATCOM=$OWROOT/test
+        - export WATCOM=$TRAVIS_BUILD_DIR/test
         - export PATH=$WATCOM/binl:$PATH
         - export INCLUDE=$WATCOM/lh
         - unset LIB
@@ -215,7 +215,7 @@ jobs:
         - export OWDOCBUILD=0
         - export OWVERBOSE=0
       install:
-        - export WATCOM=$OWROOT/test
+        - export WATCOM=$TRAVIS_BUILD_DIR/test
         - export PATH=$WATCOM/binl:$PATH
         - export INCLUDE=$WATCOM/lh
         - unset LIB
@@ -236,7 +236,7 @@ jobs:
         - export OWDOCBUILD=0
         - export OWVERBOSE=0
       install:
-        - export WATCOM=$OWROOT/test
+        - export WATCOM=$TRAVIS_BUILD_DIR/test
         - export PATH=$WATCOM/binl:$PATH
         - export INCLUDE=$WATCOM/lh
         - unset LIB
@@ -257,7 +257,7 @@ jobs:
         - export OWDOCBUILD=0
         - export OWVERBOSE=0
       install:
-        - export WATCOM=$OWROOT/test
+        - export WATCOM=$TRAVIS_BUILD_DIR/test
         - export PATH=$WATCOM/binl:$PATH
         - export INCLUDE=$WATCOM/lh
         - unset LIB
@@ -271,20 +271,20 @@ jobs:
       os: linux
       script: 
         # clear cache
-        - rm -f   build/$OWOBJDIR/*
-        - rm -rf  bld/watcom/$OWOBJDIR/*
-        - rm -rf  test/*
-        - rm -rf  build1/*
+        - rm -f  $TRAVIS_BUILD_DIR/build/$OWOBJDIR/*
+        - rm -rf $TRAVIS_BUILD_DIR/bld/watcom/$OWOBJDIR/*
+        - rm -rf $TRAVIS_BUILD_DIR/test/*
+        - rm -rf $TRAVIS_BUILD_DIR/build1/*
     - # ...
       name: "Clean build cache OSX"
       if: branch = env(OWBRANCH) AND env(OWOSXBUILD) = 1
       os: osx
       script: 
         # clear cache
-        - rm -f   build/$OWOBJDIR/*
-        - rm -rf  bld/watcom/$OWOBJDIR/*
-        - rm -rf  test/*
-        - rm -rf  build1/*
+        - rm -f  $TRAVIS_BUILD_DIR/build/$OWOBJDIR/*
+        - rm -rf $TRAVIS_BUILD_DIR/bld/watcom/$OWOBJDIR/*
+        - rm -rf $TRAVIS_BUILD_DIR/test/*
+        - rm -rf $TRAVIS_BUILD_DIR/build1/*
 
     #################################
     - stage: InitDocumentation
