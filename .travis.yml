@@ -25,8 +25,7 @@ cache:
     - build1
 
 before_script:
- - travis/services.sh
- # get environment/cache info if debug active
+ # get environment/cache info if debug is active
  - travis/envinfo.sh
  - travis/cacheinf.sh
 
@@ -59,6 +58,9 @@ jobs:
       os: linux
       compiler: gcc
       before_install:
+        # stop unwanted services
+        - travis/services.sh
+        # set environmet variable
         - export OWTOOLS=GCC
         - export OWTRAVISJOB=BOOTSTRAP
         - export OWDOCBUILD=0
@@ -78,6 +80,9 @@ jobs:
       os: osx
       compiler: clang
       before_install:
+        # stop unwanted services
+        - travis/services.sh
+        # set environmet variable
         - export OWTOOLS=CLANG
         - export OWTRAVISJOB=BOOTSTRAP
         - export OWDOCBUILD=0
@@ -98,6 +103,9 @@ jobs:
       os: linux
       compiler: gcc
       before_install:
+        # stop unwanted services
+        - travis/services.sh
+        # set environmet variable
         - export OWTOOLS=GCC
         - export OWTRAVISJOB=BUILD
         - export OWDOCBUILD=0
@@ -114,6 +122,9 @@ jobs:
       os: osx
       compiler: clang
       before_install:
+        # stop unwanted services
+        - travis/services.sh
+        # set environmet variable
         - export OWTOOLS=CLANG
         - export OWTRAVISJOB=BUILD1
         - export OWDOCBUILD=0
@@ -129,6 +140,9 @@ jobs:
       os: osx
       compiler: clang
       before_install:
+        # stop unwanted services
+        - travis/services.sh
+        # set environmet variable
         - export OWTOOLS=CLANG
         - export OWTRAVISJOB=BUILD2
         - export OWDOCBUILD=0
@@ -146,6 +160,9 @@ jobs:
       if: branch = env(OWBRANCH)
       os: linux
       before_install:
+        # stop unwanted services
+        - travis/services.sh
+        # set environmet variable
         - export OWTOOLS=WATCOM
         - export OWTRAVISJOB=TEST
         - export OWTRAVISTEST=WASM
@@ -164,6 +181,9 @@ jobs:
       if: branch = env(OWBRANCH)
       os: linux
       before_install:
+        # stop unwanted services
+        - travis/services.sh
+        # set environmet variable
         - export OWTOOLS=WATCOM
         - export OWTRAVISJOB=TEST
         - export OWTRAVISTEST=C
@@ -182,6 +202,9 @@ jobs:
       if: branch = env(OWBRANCH)
       os: linux
       before_install:
+        # stop unwanted services
+        - travis/services.sh
+        # set environmet variable
         - export OWTOOLS=WATCOM
         - export OWTRAVISJOB=TEST
         - export OWTRAVISTEST=F77
@@ -200,6 +223,9 @@ jobs:
       if: branch = env(OWBRANCH)
       os: linux
       before_install:
+        # stop unwanted services
+        - travis/services.sh
+        # set environmet variable
         - export OWTOOLS=WATCOM
         - export OWTRAVISJOB=TEST
         - export OWTRAVISTEST=CXX
@@ -218,6 +244,9 @@ jobs:
       if: branch = env(OWBRANCH)
       os: linux
       before_install:
+        # stop unwanted services
+        - travis/services.sh
+        # set environmet variable
         - export OWTOOLS=WATCOM
         - export OWTRAVISJOB=TEST
         - export OWTRAVISTEST=CRTL
@@ -269,6 +298,9 @@ jobs:
       compiler: gcc
       cache: false
       before_install:
+        # stop unwanted services
+        - travis/services.sh
+        # set environmet variable
         - export OWTOOLS=GCC
         - export OWTRAVISJOB=DOCPDF
         - export OWDOCBUILD=1
@@ -296,6 +328,9 @@ jobs:
       compiler: gcc
       cache: false
       before_install:
+        # stop unwanted services
+        - travis/services.sh
+        # set environmet variable
         - export OWTOOLS=GCC
         - export OWTRAVISJOB=BUILD
         - export OWDOCBUILD=0
