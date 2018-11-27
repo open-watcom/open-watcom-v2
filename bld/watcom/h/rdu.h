@@ -885,6 +885,8 @@
 #define usergate_get_handle_write_buf_space 0x000002B9
 #define usergate_has_handle_exception 0x000002BA
 
+#define usergate_poll_handle 0x000002BB
+
 
 
 #ifdef __FLAT__
@@ -1775,6 +1777,8 @@
 #define CallGate_get_handle_write_buf_space 0x55 0x67 0x9a 185 2 0 0 3 0 0x5d
 #define CallGate_has_handle_exception 0x55 0x67 0x9a 186 2 0 0 3 0 0x5d
 
+#define CallGate_poll_handle 0x55 0x67 0x9a 187 2 0 0 3 0 0x5d
+
 #else
 
 #define CallGate_allocate_dos_mem 0x3e 0x67 0x9a 0 0 0 0 3 0
@@ -2662,5 +2666,7 @@
 #define CallGate_get_handle_read_buf_count 0x3e 0x67 0x9a 184 2 0 0 3 0
 #define CallGate_get_handle_write_buf_space 0x3e 0x67 0x9a 185 2 0 0 3 0
 #define CallGate_has_handle_exception 0x3e 0x67 0x9a 186 2 0 0 3 0
+
+#define CallGate_poll_handle 0x3e 0x67 0x9a 187 2 0 0 3 0
 
 #endif

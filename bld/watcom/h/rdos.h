@@ -436,6 +436,7 @@ int RDOSAPI RdosWaitForCanModuleProgramming(int Module, int *ErrorCode, int *Pos
 
 int RDOSAPI RdosOpenHandle(const char *Name, int Mode);
 int RDOSAPI RdosCloseHandle(int Handle);
+int RDOSAPI RdosPollHandle(int Handle, void *Buf, int Size);
 int RDOSAPI RdosReadHandle(int Handle, void *Buf, int Size);
 int RDOSAPI RdosWriteHandle(int Handle, const void *Buf, int Size);
 int RDOSAPI RdosDupHandle(int Handle);

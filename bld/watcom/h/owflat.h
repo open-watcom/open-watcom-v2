@@ -1267,6 +1267,11 @@
     CallGate_close_handle  \
     parm [ebx] \
     value [ebx];
+
+#pragma aux RdosPollHandle = \
+    CallGate_poll_handle  \
+    parm [ebx] [edi] [ecx]  \
+    value [eax];
     
 #pragma aux RdosReadHandle = \
     CallGate_read_handle  \

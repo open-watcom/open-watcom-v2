@@ -50,7 +50,10 @@ _WCRTLINK int recv( int s, void *buf, size_t len, int flags )
     args[3] = (unsigned long)flags;
     return( __socketcall( SYS_RECV, args ) );
 #elif defined( __RDOS__ )
-    return( RdosReadHandle( s, buf, len) );
+    if( flags & MSG_PEEK )
+        return( RdosPollHandle( s, buf, len) );
+    else
+        return( RdosReadHandle( s, buf, len) );
 #else
     return( -1 );
 #endif
