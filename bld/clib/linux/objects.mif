@@ -70,6 +70,7 @@
 !inject ptspin.obj                                                                              l32 lpc lmp
 !inject read.obj                                                                                l32 lpc lmp
 !inject readlink.obj                                                                            l32 lpc lmp
+!inject readv.obj                                                                               l32 lpc lmp
 !inject rename.obj                                                                              l32 lpc lmp
 !inject rmdir.obj                                                                               l32 lpc lmp
 !inject schgetpr.obj                                                                            l32 lpc lmp
@@ -82,6 +83,7 @@
 !inject sem_init.obj                                                                            l32 lpc lmp
 !inject sem_post.obj                                                                            l32 lpc lmp
 !inject sem_wait.obj                                                                            l32 lpc lmp
+!inject sendfile.obj                                                                            l32 lpc lmp
 !inject setegid.obj                                                                             l32 lpc lmp
 !inject seteuid.obj                                                                             l32 lpc lmp
 !inject setgid.obj                                                                              l32 lpc lmp
@@ -134,5 +136,6 @@
 !inject wait.obj                                                                                l32 lpc lmp
 !inject waitpid.obj                                                                             l32 lpc lmp
 !inject write.obj                                                                               l32 lpc lmp
+!inject writev.obj                                                                              l32 lpc lmp
 
 !include ../../../../objlist.mif

@@ -1,0 +1,34 @@
+/*
+ *  sys/uio.h      POSIX Vector functions
+ *
+:include crwat.sp
+ */
+#ifndef _SYS_UIO_H_INCLUDED
+#define _SYS_UIO_H_INCLUDED
+
+:include readonly.sp
+
+:include owrtlink.sp
+
+:include systypes.sp
+
+:include cpluspro.sp
+
+:segment LINUX
+:include lnxkpack.sp
+
+struct iovec {
+    void   *iov_base;
+    size_t  iov_len;
+};
+
+_WCRTLINK extern ssize_t readv( int __fd, const struct iovec *__v, int __vcnt );
+_WCRTLINK extern ssize_t writev( int __fd, const struct iovec *__v, int __vcnt );
+
+:endsegment
+
+:include poppack.sp
+
+:include cplusepi.sp
+
+#endif /* !_SYS_UIO_H_INCLUDED */

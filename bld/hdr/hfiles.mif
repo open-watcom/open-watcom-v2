@@ -211,6 +211,7 @@
 !inject sys/resource.h                   hlnx
 !inject sys/seginfo.h                         hqnx
 !inject sys/select.h                          hqnx
+!inject sys/sendfile.h                   hlnx
 !inject sys/sendmx.h                          hqnx
 !inject sys/ser_msg.h                         hqnx
 !inject sys/sched.h                           hqnx
@@ -233,7 +234,7 @@
 !inject sys/trace.h                           hqnx
 !inject sys/tracecod.h                        hqnx
 !inject sys/types.h                 hdos hlnx hqnx hrdos
-!inject sys/uio.h                             hqnx
+!inject sys/uio.h                        hlnx hqnx
 !inject sys/un.h                         hlnx
 !inject sys/uscsi.h                           hqnx
 !inject sys/utime.h                 hdos
