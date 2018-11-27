@@ -8,18 +8,6 @@
 #   - correct setup for all OW build environment variables
 #
 
-copytocache()
-{
-    echo "save build 1 to cache"
-    time cp -Rf $OWSRCDIR/* $OWROOT/build1
-}
-
-copyfromcache()
-{
-    echo "load build 1 from cache"
-    time cp -Rn $OWROOT/build1/* $OWSRCDIR
-}
-
 bootutil_proc()
 {
     #
@@ -98,12 +86,8 @@ build_proc()
                     builder -q cprel1
                 fi
             fi
-            if [ $RC -eq 0 ]; then
-                copytocache
-            fi
             ;;
         "BUILD2")
-            copyfromcache
             cd $OWSRCDIR
             if [ "$TRAVIS_EVENT_TYPE" = "pull_request" ]; then
                 builder build2

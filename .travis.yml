@@ -133,6 +133,8 @@ jobs:
         - . ./cmnvars.sh
       script: 
         - travis/build.sh
+        # save build 1 to cache
+        - cp -Rf $OWSRCDIR/* $OWROOT/build1
     #################################
     - stage: Build2
       name: "OW tools OSX build 2"
@@ -153,6 +155,8 @@ jobs:
         - brew install dosbox
         - . ./cmnvars.sh
       script: 
+        # load build 1 from cache
+        - cp -Rn $OWROOT/build1/* $OWSRCDIR
         - travis/build.sh
     #################################
     - stage: Tests
