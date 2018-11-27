@@ -25,24 +25,18 @@ cache:
     - build1
 
 before_script:
-   # Disable services enabled by default
-   # http://docs.travis-ci.com/user/database-setup/#MySQL
- - sudo /etc/init.d/postgresql stop
- - sudo /etc/init.d/mysql status
- - sudo /etc/init.d/mysql stop
-# - sudo service mysqld stop
-# - sudo service postgresql stop
-   # get environment/cache info if debug active
+ - travis/services.sh
+ # get environment/cache info if debug active
  - travis/envinfo.sh
  - travis/cacheinf.sh
 
 after_failure:
-   # after failure transfer log files back to GitHub repository
+ # after failure transfer log files back to GitHub repository
  - travis/cacheinf.sh
  - travis/gitupdf.sh
 
 after_success:
-   # after success transfer OW build to GitHub repository
+ # after success transfer OW build to GitHub repository
  - travis/cacheinf.sh
  - travis/gitupds.sh
 
