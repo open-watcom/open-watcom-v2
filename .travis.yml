@@ -22,7 +22,7 @@ cache:
     - $TRAVIS_BUILD_DIR/build/$OWOBJDIR
     - $TRAVIS_BUILD_DIR/bld/watcom/$OWOBJDIR
     - $TRAVIS_BUILD_DIR/test
-    - $TRAVIS_BUILD_DIR/build1
+    - $TRAVIS_BUILD_DIR/build-1
 
 before_script:
  # get environment/cache info if debug is active
@@ -53,7 +53,7 @@ jobs:
         - travis/tinit.sh
     #################################
     - stage: Bootstrap
-      name: "Build minimal set of build tools"
+      name: "Build minimal set of build tools Linux"
       if: branch = env(OWBRANCH)
       before_install:
         # stop unwanted services
@@ -67,13 +67,13 @@ jobs:
         - rm -f  $TRAVIS_BUILD_DIR/build/$OWOBJDIR/*
         - rm -rf $TRAVIS_BUILD_DIR/bld/watcom/$OWOBJDIR/*
         - rm -rf $TRAVIS_BUILD_DIR/test/*
-        - rm -rf $TRAVIS_BUILD_DIR/build1/*
+        - rm -rf $TRAVIS_BUILD_DIR/build-1/*
       install:
         - . ./cmnvars.sh
       script: 
         - travis/build.sh
     - # ...
-      name: "Build minimal set of build tools"
+      name: "Build minimal set of build tools OSX"
       if: branch = env(OWBRANCH) AND env(OWOSXBUILD) = 1
       os: osx
       compiler: clang
@@ -89,13 +89,13 @@ jobs:
         - rm -f  $TRAVIS_BUILD_DIR/build/$OWOBJDIR/*
         - rm -rf $TRAVIS_BUILD_DIR/bld/watcom/$OWOBJDIR/*
         - rm -rf $TRAVIS_BUILD_DIR/test/*
-        - rm -rf $TRAVIS_BUILD_DIR/build1/*
+        - rm -rf $TRAVIS_BUILD_DIR/build-1/*
       install:
         - . ./cmnvars.sh
       script: 
         - travis/build.sh
     - # ...
-      name: "Build minimal set of build tools"
+      name: "Build minimal set of build tools Windows"
       if: branch = env(OWBRANCH)
       os: windows
       compiler: cl
@@ -111,7 +111,7 @@ jobs:
         - rm -f  $TRAVIS_BUILD_DIR/build/$OWOBJDIR/*
         - rm -rf $TRAVIS_BUILD_DIR/bld/watcom/$OWOBJDIR/*
         - rm -rf $TRAVIS_BUILD_DIR/test/*
-        - rm -rf $TRAVIS_BUILD_DIR/build1/*
+        - rm -rf $TRAVIS_BUILD_DIR/build-1/*
       install:
         - . ./cmnvars.sh
       script: 
@@ -119,7 +119,7 @@ jobs:
         - travis/build.sh
     #################################
     - stage: Build
-      name: "OW tools build"
+      name: "OW tools build Linux"
       if: branch = env(OWBRANCH)
       before_install:
         # stop unwanted services
@@ -136,7 +136,7 @@ jobs:
       script: 
         - travis/build.sh
     - # ...
-      name: "OW tools OSX build 1"
+      name: "OW tools build-1 OSX"
       if: branch = env(OWBRANCH) AND env(OWOSXBUILD) = 1
       os: osx
       compiler: clang
@@ -145,18 +145,37 @@ jobs:
         - travis/services.sh
         # set environmet variable
         - export OWTOOLS=CLANG
-        - export OWTRAVISJOB=BUILD1
+        - export OWTRAVISJOB=BUILD-1
         - export OWDOCBUILD=0
         - export OWVERBOSE=0
       install:
         - . ./cmnvars.sh
       script: 
         - travis/build.sh
-        # save build 1 to cache
-        - cp -Rf $OWSRCDIR/* $TRAVIS_BUILD_DIR/build1
+        # save build-1 to cache
+        - cp -Rf $OWSRCDIR/* $TRAVIS_BUILD_DIR/build-1
+    - # ...
+      name: "OW tools build Windows"
+      if: branch = env(OWBRANCH)
+      os: windows
+      compiler: cl
+      before_install:
+        # stop unwanted services
+#        - travis/services.sh
+        # set environmet variable
+        - export OWTOOLS=VISUALC
+        - export OWTRAVISJOB=BUILD
+        - export OWDOCBUILD=0
+        - export OWVERBOSE=0
+      install:
+#        - install dosbox
+        - . ./cmnvars.sh
+      script: 
+#        - travis/build.sh
+         - echo "Windows build"
     #################################
     - stage: Build2
-      name: "OW tools OSX build 2"
+      name: "OW tools build-2 OSX"
       if: branch = env(OWBRANCH) AND env(OWOSXBUILD) = 1
       os: osx
       compiler: clang
@@ -174,8 +193,8 @@ jobs:
         - brew install dosbox
         - . ./cmnvars.sh
       script: 
-        # load build 1 from cache
-        - cp -Rn $TRAVIS_BUILD_DIR/build1/* $OWSRCDIR
+        # load build-1 from cache
+        - cp -Rn $TRAVIS_BUILD_DIR/build-1/* $OWSRCDIR
         - travis/build.sh
     #################################
     - stage: Tests
@@ -287,7 +306,7 @@ jobs:
         - rm -f  $TRAVIS_BUILD_DIR/build/$OWOBJDIR/*
         - rm -rf $TRAVIS_BUILD_DIR/bld/watcom/$OWOBJDIR/*
         - rm -rf $TRAVIS_BUILD_DIR/test/*
-        - rm -rf $TRAVIS_BUILD_DIR/build1/*
+        - rm -rf $TRAVIS_BUILD_DIR/build-1/*
     - # ...
       name: "Clean build cache OSX"
       if: branch = env(OWBRANCH) AND env(OWOSXBUILD) = 1
@@ -298,7 +317,7 @@ jobs:
         - rm -f  $TRAVIS_BUILD_DIR/build/$OWOBJDIR/*
         - rm -rf $TRAVIS_BUILD_DIR/bld/watcom/$OWOBJDIR/*
         - rm -rf $TRAVIS_BUILD_DIR/test/*
-        - rm -rf $TRAVIS_BUILD_DIR/build1/*
+        - rm -rf $TRAVIS_BUILD_DIR/build-1/*
     - # ...
       name: "Clean build cache Windows"
       if: branch = env(OWBRANCH)
@@ -309,7 +328,7 @@ jobs:
         - rm -f  $TRAVIS_BUILD_DIR/build/$OWOBJDIR/*
         - rm -rf $TRAVIS_BUILD_DIR/bld/watcom/$OWOBJDIR/*
         - rm -rf $TRAVIS_BUILD_DIR/test/*
-        - rm -rf $TRAVIS_BUILD_DIR/build1/*
+        - rm -rf $TRAVIS_BUILD_DIR/build-1/*
 
     #################################
     - stage: InitDocumentation
@@ -320,7 +339,7 @@ jobs:
         - travis/gitudocs.sh
     #################################
     - stage: Documentation
-      name: "OW Documentation build"
+      name: "OW Documentation build Linux"
       if: branch = env(OWBRANCH_DOCS) AND type = push
       cache: false
       before_install:
@@ -340,14 +359,14 @@ jobs:
         - travis/builddoc.sh
     #################################
     - stage: InitCoverity
-      name: "Initiate Coverity Scan by Cron"
+      name: "Initiate Coverity Scan by Cron Linux"
       if: branch = env(OWBRANCH_COVERITY) AND type = cron
       cache: false
       script: 
         - travis/gitucov.sh
     #################################
     - stage: Coverity
-      name: "Initiate Coverity Scan"
+      name: "Initiate Coverity Scan Linux"
       if: branch = env(OWBRANCH_COVERITY) AND type = push
       cache: false
       before_install:

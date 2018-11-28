@@ -73,7 +73,7 @@ build_proc()
                 fi
             fi
             ;;
-        "BUILD1")
+        "BUILD-1")
             cd $OWSRCDIR
             if [ "$TRAVIS_EVENT_TYPE" = "pull_request" ]; then
                 builder build1
@@ -87,7 +87,7 @@ build_proc()
                 fi
             fi
             ;;
-        "BUILD2")
+        "BUILD-2")
             cd $OWSRCDIR
             if [ "$TRAVIS_EVENT_TYPE" = "pull_request" ]; then
                 builder build2

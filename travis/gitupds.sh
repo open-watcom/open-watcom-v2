@@ -24,7 +24,7 @@ gitupds_proc()
             case "$OWTRAVISJOB" in
                 "BOOTSTRAP")
                     ;;
-                "BUILD" | "BUILD1" | "BUILD2" | "DOCPDF")
+                "BUILD" | "BUILD-1" | "BUILD-2" | "DOCPDF")
                     #
                     # setup client info
                     #
@@ -44,10 +44,10 @@ gitupds_proc()
                         "BUILD")
                             builder cprel
                             ;;
-                        "BUILD1")
+                        "BUILD-1")
                             builder cprel1
                             ;;
-                        "BUILD2")
+                        "BUILD-2")
                             builder cprel2
                             ;;
                         "DOCPDF")
@@ -65,10 +65,10 @@ gitupds_proc()
                         "BUILD")
                             git commit $GITVERBOSE1 -m "Travis CI build $TRAVIS_JOB_NUMBER - OW distribution"
                             ;;
-                        "BUILD1")
+                        "BUILD-1")
                             git commit $GITVERBOSE1 -m "Travis CI build $TRAVIS_JOB_NUMBER - OW distribution 1"
                             ;;
-                        "BUILD2")
+                        "BUILD-2")
                             git commit $GITVERBOSE1 -m "Travis CI build $TRAVIS_JOB_NUMBER - OW distribution 2"
                             ;;
                         "DOCPDF")
