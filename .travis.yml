@@ -71,7 +71,7 @@ jobs:
         - rm -rf $TRAVIS_BUILD_DIR/test/*
         - rm -rf $TRAVIS_BUILD_DIR/build-1/*
       install:
-        - travis/setmsvc.sh
+        - . ./travis/setmsvc.sh
         - . ./cmnvars.sh
       script: 
         - travis/build.sh
@@ -169,7 +169,7 @@ jobs:
         - export OWVERBOSE=0
       install:
 #        - install dosbox
-        - travis/setmsvc.sh
+        - . ./travis/setmsvc.sh
         - . ./cmnvars.sh
       script: 
         - travis/build.sh
