@@ -115,7 +115,7 @@ jobs:
       install:
         - . ./cmnvars.sh
       script: 
-        - find / -type f -name vcvarsall.bat -print
+        - find "/c/Program Files (x86)/" -name "vcvarsall*"
         - travis/build.sh
     #################################
     - stage: Build
