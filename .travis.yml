@@ -1,4 +1,6 @@
 language: c
+dist: trusty
+sudo: required
 
 env:
   global:
@@ -37,15 +39,15 @@ after_success:
 
 jobs:
   allow_failures:
-    - os: osx
+    os: 
+      - osx
+      - windows
   include:
     #################################
     - stage: Initialize
       name: "Initialize Travis GitHub repository"
       if: branch = env(OWBRANCH) AND type = push
       os: linux
-      dist: trusty
-      sudo: required
       cache: false
       script: 
         - travis/tinit.sh
@@ -54,9 +56,6 @@ jobs:
       name: "Build minimal set of build tools"
       if: branch = env(OWBRANCH)
       os: linux
-      dist: trusty
-      sudo: required
-      cache: true
       compiler: gcc
       before_install:
         # stop unwanted services
@@ -79,7 +78,6 @@ jobs:
       name: "Build minimal set of build tools"
       if: branch = env(OWBRANCH) AND env(OWOSXBUILD) = 1
       os: osx
-      cache: true
       compiler: clang
       before_install:
         # stop unwanted services
@@ -102,7 +100,6 @@ jobs:
       name: "Build minimal set of build tools"
       if: branch = env(OWBRANCH)
       os: windows
-      cache: true
       before_install:
         # stop unwanted services
 #        - travis/services.sh
@@ -125,9 +122,6 @@ jobs:
       name: "OW tools build"
       if: branch = env(OWBRANCH)
       os: linux
-      dist: trusty
-      sudo: required
-      cache: true
       compiler: gcc
       before_install:
         # stop unwanted services
@@ -147,7 +141,6 @@ jobs:
       name: "OW tools OSX build 1"
       if: branch = env(OWBRANCH) AND env(OWOSXBUILD) = 1
       os: osx
-      cache: true
       compiler: clang
       before_install:
         # stop unwanted services
@@ -168,7 +161,6 @@ jobs:
       name: "OW tools OSX build 2"
       if: branch = env(OWBRANCH) AND env(OWOSXBUILD) = 1
       os: osx
-      cache: true
       compiler: clang
       before_install:
         # stop unwanted services
@@ -192,9 +184,6 @@ jobs:
       name: "Test wasm assembler"
       if: branch = env(OWBRANCH)
       os: linux
-      dist: trusty
-      sudo: required
-      cache: true
       compiler: gcc
       before_install:
         # stop unwanted services
@@ -217,9 +206,6 @@ jobs:
       name: "Test C compiler"
       if: branch = env(OWBRANCH)
       os: linux
-      dist: trusty
-      sudo: required
-      cache: true
       compiler: gcc
       before_install:
         # stop unwanted services
@@ -242,9 +228,6 @@ jobs:
       name: "Test FORTRAN 77 compiler"
       if: branch = env(OWBRANCH)
       os: linux
-      dist: trusty
-      sudo: required
-      cache: true
       compiler: gcc
       before_install:
         # stop unwanted services
@@ -267,9 +250,6 @@ jobs:
       name: "Test C++ compiler"
       if: branch = env(OWBRANCH)
       os: linux
-      dist: trusty
-      sudo: required
-      cache: true
       compiler: gcc
       before_install:
         # stop unwanted services
@@ -292,9 +272,6 @@ jobs:
       name: "Test C run-time library"
       if: branch = env(OWBRANCH)
       os: linux
-      dist: trusty
-      sudo: required
-      cache: true
       compiler: gcc
       before_install:
         # stop unwanted services
@@ -318,9 +295,6 @@ jobs:
       name: "Clean build cache Linux"
       if: branch = env(OWBRANCH)
       os: linux
-      dist: trusty
-      sudo: required
-      cache: true
       compiler: gcc
       script: 
         # clear cache
@@ -332,7 +306,6 @@ jobs:
       name: "Clean build cache OSX"
       if: branch = env(OWBRANCH) AND env(OWOSXBUILD) = 1
       os: osx
-      cache: true
       compiler: clang
       script: 
         # clear cache
@@ -346,8 +319,6 @@ jobs:
       name: "Initiate Documentation build by Cron"
       if: branch = env(OWBRANCH_DOCS) AND type = cron
       os: linux
-      dist: trusty
-      sudo: required
       cache: false
       script: 
         - travis/gitudocs.sh
@@ -356,8 +327,6 @@ jobs:
       name: "OW Documentation build"
       if: branch = env(OWBRANCH_DOCS) AND type = push
       os: linux
-      dist: trusty
-      sudo: required
       compiler: gcc
       cache: false
       before_install:
@@ -380,8 +349,6 @@ jobs:
       name: "Initiate Coverity Scan by Cron"
       if: branch = env(OWBRANCH_COVERITY) AND type = cron
       os: linux
-      dist: trusty
-      sudo: required
       cache: false
       script: 
         - travis/gitucov.sh
@@ -390,8 +357,6 @@ jobs:
       name: "Initiate Coverity Scan"
       if: branch = env(OWBRANCH_COVERITY) AND type = push
       os: linux
-      dist: trusty
-      sudo: required
       compiler: gcc
       cache: false
       before_install:
