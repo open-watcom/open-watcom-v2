@@ -41,8 +41,8 @@ after_success:
 
 jobs:
   allow_failures:
-    os: osx
-    os: windows
+    - os: osx
+    - os: windows
   include:
     #################################
     - stage: Initialize
