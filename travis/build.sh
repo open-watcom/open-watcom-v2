@@ -19,16 +19,21 @@ bootutil_proc()
     mkdir $OWOBJDIR
     cd $OWOBJDIR
     rm -f $OWBINDIR/wmake
-    case `uname` in
-        Darwin)
-            make -f ../posmake clean
-            make -f ../posmake TARGETDEF=-D__OSX__
-            ;;
-        *)
-            make -f ../posmake clean
-            make -f ../posmake TARGETDEF=-D__LINUX__
-            ;;
-    esac
+    if [ "$TRAVIS_OS_NAME" = "windows" ]; then
+        nmake -f ../nmake clean
+        nmake -f ../nmake
+    else
+        case `uname` in
+            Darwin)
+                make -f ../posmake clean
+                make -f ../posmake TARGETDEF=-D__OSX__
+                ;;
+            *)
+                make -f ../posmake clean
+                make -f ../posmake TARGETDEF=-D__LINUX__
+                ;;
+        esac
+    fi
     RC=$?
     if [ $RC -eq 0 ]; then
         #
