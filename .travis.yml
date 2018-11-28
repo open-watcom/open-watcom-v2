@@ -98,7 +98,7 @@ jobs:
       name: "Build minimal set of build tools"
       if: branch = env(OWBRANCH)
       os: windows
-      compiler: visualc
+      compiler: cl
       before_install:
         # stop unwanted services
 #        - travis/services.sh
@@ -303,7 +303,7 @@ jobs:
       name: "Clean build cache Windows"
       if: branch = env(OWBRANCH)
       os: windows
-      compiler: visualc
+      compiler: cl
       script: 
         # clear cache
         - rm -f  $TRAVIS_BUILD_DIR/build/$OWOBJDIR/*
