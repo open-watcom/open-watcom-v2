@@ -71,7 +71,7 @@ jobs:
         - rm -rf $TRAVIS_BUILD_DIR/test/*
         - rm -rf $TRAVIS_BUILD_DIR/build-1/*
       install:
-        - PATH='/c/Program Files (x86)/Microsoft Visual Studio 14.0/VC/bin/amd64:/c/Windows/Microsoft.NET/Framework64/v4.0.30319:/c/Program Files (x86)/Microsoft Visual Studio 14.0/Common7/IDE:/c/Program Files (x86)/Microsoft Visual Studio 14.0/Common7/Tools:/c/Program Files (x86)/HTML Help Workshop:/c/Program Files (x86)/Windows Kits/10/bin/x64:/c/Program Files (x86)/Windows Kits/10/bin/x86:/c/Program Files (x86)/Microsoft SDKs/Windows/v10.0A/bin/NETFX 4.6.1 Tools/x64/:'$PATH
+        - travis/setmsvc.sh
         - . ./cmnvars.sh
       script: 
         - travis/build.sh
@@ -169,7 +169,7 @@ jobs:
         - export OWVERBOSE=0
       install:
 #        - install dosbox
-        - PATH='/c/Program Files (x86)/Microsoft Visual Studio 14.0/VC/bin/amd64:/c/Windows/Microsoft.NET/Framework64/v4.0.30319:/c/Program Files (x86)/Microsoft Visual Studio 14.0/Common7/IDE:/c/Program Files (x86)/Microsoft Visual Studio 14.0/Common7/Tools:/c/Program Files (x86)/HTML Help Workshop:/c/Program Files (x86)/Windows Kits/10/bin/x64:/c/Program Files (x86)/Windows Kits/10/bin/x86:/c/Program Files (x86)/Microsoft SDKs/Windows/v10.0A/bin/NETFX 4.6.1 Tools/x64/:'$PATH
+        - travis/setmsvc.sh
         - . ./cmnvars.sh
       script: 
         - travis/build.sh
