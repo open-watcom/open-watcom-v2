@@ -56,7 +56,7 @@ jobs:
       name: "Build minimal set of build tools Windows"
       if: branch = env(OWBRANCH)
       os: windows
-      compiler: cl
+#      compiler: none
       before_install:
         # stop unwanted services
 #        - travis/services.sh
@@ -71,7 +71,8 @@ jobs:
         - rm -rf $TRAVIS_BUILD_DIR/test/*
         - rm -rf $TRAVIS_BUILD_DIR/build-1/*
       install:
-        - travis/cmnwin.sh
+        - PATH='/c/Program Files (x86)/Microsoft Visual Studio 14.0/VC/bin/amd64:/c/Windows/Microsoft.NET/Framework64/v4.0.30319:/c/Program Files (x86)/Microsoft Visual Studio 14.0/Common7/IDE:/c/Program Files (x86)/Microsoft Visual Studio 14.0/Common7/Tools:/c/Program Files (x86)/HTML Help Workshop:/c/Program Files (x86)/Windows Kits/10/bin/x64:/c/Program Files (x86)/Windows Kits/10/bin/x86:/c/Program Files (x86)/Microsoft SDKs/Windows/v10.0A/bin/NETFX 4.6.1 Tools/x64/:'$PATH
+        - . ./cmnvars.sh
       script: 
         - travis/build.sh
     - # ...
@@ -157,7 +158,7 @@ jobs:
       name: "OW tools build Windows"
       if: branch = env(OWBRANCH)
       os: windows
-      compiler: cl
+#      compiler: none
       before_install:
         # stop unwanted services
 #        - travis/services.sh
@@ -168,10 +169,10 @@ jobs:
         - export OWVERBOSE=0
       install:
 #        - install dosbox
+        - PATH='/c/Program Files (x86)/Microsoft Visual Studio 14.0/VC/bin/amd64:/c/Windows/Microsoft.NET/Framework64/v4.0.30319:/c/Program Files (x86)/Microsoft Visual Studio 14.0/Common7/IDE:/c/Program Files (x86)/Microsoft Visual Studio 14.0/Common7/Tools:/c/Program Files (x86)/HTML Help Workshop:/c/Program Files (x86)/Windows Kits/10/bin/x64:/c/Program Files (x86)/Windows Kits/10/bin/x86:/c/Program Files (x86)/Microsoft SDKs/Windows/v10.0A/bin/NETFX 4.6.1 Tools/x64/:'$PATH
         - . ./cmnvars.sh
       script: 
-#        - travis/build.sh
-         - echo "Windows build"
+        - travis/build.sh
     #################################
     - stage: Build2
       name: "OW tools build-2 OSX"
@@ -321,7 +322,7 @@ jobs:
       name: "Clean build cache Windows"
       if: branch = env(OWBRANCH)
       os: windows
-      compiler: cl
+#      compiler: none
       script: 
         # clear cache
         - rm -f  $TRAVIS_BUILD_DIR/build/$OWOBJDIR/*
