@@ -71,8 +71,7 @@ jobs:
         - rm -rf $TRAVIS_BUILD_DIR/test/*
         - rm -rf $TRAVIS_BUILD_DIR/build-1/*
       install:
-        - . "/c/Program Files (x86)/Microsoft Visual Studio 14.0/VC/vcvarsall.bat" amd64
-        - . ./cmnvars.sh
+        - travis/cmnwin.sh
       script: 
         - travis/build.sh
     - # ...
