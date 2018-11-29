@@ -1,6 +1,15 @@
 @echo on off
 REM Script to build the Open Watcom bootstrap tools
 REM By Microsoft Visual Studio
+REM ...
+REM Remove NMAKE macros wrongly defined by Travis
+set CC=
+set CFLAGS=
+set CPP=
+set CPPFLAGS=
+set CXX=
+set CXXFLAGS=
+REM ...
 call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" amd64
 REM ...
 call cmnvars.bat
