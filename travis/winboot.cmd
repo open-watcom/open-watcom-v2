@@ -19,6 +19,7 @@ call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" amd6
 REM ...
 call cmnvars.bat
 REM ...
+set
 cd %OWSRCDIR%\wmake
 mkdir %OWOBJDIR%
 cd %OWOBJDIR%
