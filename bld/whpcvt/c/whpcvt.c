@@ -1753,10 +1753,7 @@ static void output_def_file( void )
         }
         len = strlen( ctx->ctx_name ) + 1;
         if( len > max_len ) {
-            if( buf != NULL ) {
-                free( buf );
-            }
-            buf = malloc( len );
+            buf = realloc( buf, len );
             max_len = len;
         }
         strcpy( buf, ctx->ctx_name );
@@ -1869,10 +1866,12 @@ int main( int argc, char *argv[] )
     int                 size;
     char                *dot;
     char                *slash;
+    int                 rc;
 
+    rc = -1;
     if( argc < 1 ) {
         print_help();
-        goto error;
+        goto error_exit;
     }
 
     /* This program can be a memory pig, so, to avoid fragmentation,
@@ -1891,7 +1890,7 @@ int main( int argc, char *argv[] )
     start_arg = valid_args( argc, argv );
     if( start_arg < 0 ) {
         print_help();
-        goto error;
+        goto error_exit;
     }
 
     strcpy( file, argv[start_arg] );
@@ -1905,7 +1904,7 @@ int main( int argc, char *argv[] )
     In_file = fopen( file, "r" );
     if( In_file == NULL ) {
         printf( "Could not open input file: %s\n", file );
-        goto error;
+        goto error_exit;
     }
 
     /* this is for the RTF 'Up' button support */
@@ -1917,7 +1916,7 @@ int main( int argc, char *argv[] )
         Idx_file = fopen( file, "w" );
         if( Idx_file == NULL ) {
             printf( "Could not open index file: %s\n", file );
-            goto error;
+            goto error_exit;
         }
     }
 
@@ -1926,7 +1925,7 @@ int main( int argc, char *argv[] )
         KW_file = fopen( file, "w" );
         if( KW_file == NULL ) {
             printf( "Could not open index file: %s\n", file );
-            goto error;
+            goto error_exit;
         }
     }
 
@@ -1935,7 +1934,7 @@ int main( int argc, char *argv[] )
         Blist_file = fopen( file, "w" );
         if( Blist_file == NULL ) {
             printf( "Could not open browse list file: %s\n", file );
-            goto error;
+            goto error_exit;
         }
     }
 
@@ -1944,7 +1943,7 @@ int main( int argc, char *argv[] )
         Contents_file = fopen( file, "w" );
         if( Contents_file == NULL ) {
             printf( "Could not open table of contents file: %s\n", file );
-            goto error;
+            goto error_exit;
         }
     }
 
@@ -1980,11 +1979,11 @@ int main( int argc, char *argv[] )
     Out_file = fopen( file, "w" );
     if( Out_file == NULL ) {
         printf( "Could not open output file: %s\n", file );
-        goto error;
+        goto error_exit;
     }
 
     if( 0 != setjmp( Jmp_buf ) ) {
-        goto error;
+        goto error_exit;
     }
 
     read_whp_file();
@@ -2010,7 +2009,7 @@ int main( int argc, char *argv[] )
         Def_file = fopen( file, "w" );
         if( Def_file == NULL ) {
             printf( "Could not open define file: %s\n", file );
-            goto error;
+            goto error_exit;
         }
     }
 
@@ -2019,7 +2018,7 @@ int main( int argc, char *argv[] )
         Hdef_file = fopen( file, "w" );
         if( Hdef_file == NULL ) {
             printf( "Could not open help define file: %s\n", file );
-            goto error;
+            goto error_exit;
         }
     }
 
@@ -2036,7 +2035,7 @@ int main( int argc, char *argv[] )
             } else {
                 printf( "Not enough braces ('}'). Off by %d\n", Brace_count );
             }
-            goto error;
+            goto error_exit;
         }
         break;
     case OUT_IPF:
@@ -2072,31 +2071,9 @@ int main( int argc, char *argv[] )
     if( Do_hdef ) {
         output_hdef_file();
     }
+    rc = 0;
 
-    if( Do_index ) {
-        fclose( Idx_file );
-    }
-    if( Do_keywords ) {
-        fclose( KW_file );
-    }
-    if( Do_blist ) {
-        fclose( Blist_file );
-    }
-    if( Do_contents ) {
-        fclose( Contents_file );
-    }
-    if( Do_def ) {
-        fclose( Def_file );
-    }
-    if( Do_hdef ) {
-        fclose( Hdef_file );
-    }
-    fclose( Out_file );
-
-    return( 0 );
-
-
-error:
+error_exit:
     if( Idx_file != NULL ) {
         fclose( Idx_file );
     }
@@ -2119,5 +2096,5 @@ error:
         fclose( Out_file );
     }
 
-    return( -1 );
+    return( rc );
 }
