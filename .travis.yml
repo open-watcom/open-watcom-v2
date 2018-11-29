@@ -71,7 +71,7 @@ jobs:
         - rm -rf $TRAVIS_BUILD_DIR/build-1/*
       install:
       script: 
-        - cmd.exe "/c travis/winboot.cmd"
+        - cmd.exe "/c travis\winboot.cmd"
     - # ...
       name: "Build minimal set of build tools Linux"
       if: branch = env(OWBRANCH)
@@ -166,7 +166,7 @@ jobs:
       install:
 #        - install dosbox
       script: 
-        - cmd.exe "/c travis/winbuild.cmd"
+        - cmd.exe "/c travis\winbuild.cmd"
     #################################
     - stage: Build2
       name: "OW tools build-2 OSX"
