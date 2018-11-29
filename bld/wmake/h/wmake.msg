@@ -160,7 +160,7 @@ pick( ERROR_TRMEM,              "Error in Memory Tracking Encountered",
 pick( MICROSOFT_MAKEFILE,       "Makefile may be Microsoft; try /ms switch",
                                 "Makefile may be Microsoft; try /ms switch")
 pick( ERROR_STRING_OPEN,        "Expecting double quote character to end open string.",
-                                "")
+                                "Expecting double quote character to end open string.")
 
 /*
  * all msgs beyond here should not have a number printed with them
@@ -291,6 +291,11 @@ pick( PRESS_KEY,                "Press any key...",
 
 
 /* system error messages */
+pick( SYS_ERR_UNKNOWN,          "Unknown Error", 
+                                "Unknown Error" )
+
+#if defined( __DOS__ )
+
 pick( SYS_ERR_0,                "Error 0",
                                 "エラー 0" )
 pick( SYS_ERR_1,                "No such file or directory",
@@ -324,22 +329,39 @@ pick( SYS_ERR_14,               "Result too large",
 pick( SYS_ERR_15,               "Resource deadlock would occur",
                                 "リソース・デッド・ロックが起こります" )
 
+#elif defined( __UNIX__ )
+
 /* common signals that cause abnormal termination (cf. sys_siglist) */
-#if defined( __UNIX__ )
-pick( SIG_ERR_0,                "Abnormal termination by signal %d", "" )
-pick( SIG_ERR_1,                "Hangup detected", "" )
-pick( SIG_ERR_2,                "Keyboard interrupt", "" )
-pick( SIG_ERR_3,                "Keyboard quit", "" )
-pick( SIG_ERR_4,                "Illegal instruction", "" )
-pick( SIG_ERR_5,                "Trap", "" )
-pick( SIG_ERR_6,                "Abort", "" )
-pick( SIG_ERR_7,                "Bus error", "" )
-pick( SIG_ERR_8,                "Floating point exception", "" )
-pick( SIG_ERR_9,                "Killed", "" )
-pick( SIG_ERR_10,               "User defined signal 1", "" )
-pick( SIG_ERR_11,               "Segmentation fault", "" )
-pick( SIG_ERR_12,               "User defined signal 2", "" )
-pick( SIG_ERR_13,               "Broken pipe", "" )
-pick( SIG_ERR_14,               "Alarm", "" )
-pick( SIG_ERR_15,               "Abnormal termination", "" )
+pick( SIG_ERR_0,                "Abnormal termination by signal %d", 
+                                "Abnormal termination by signal %d" )
+pick( SIG_ERR_1,                "Hangup detected", 
+                                "Hangup detected" )
+pick( SIG_ERR_2,                "Keyboard interrupt", 
+                                "Keyboard interrupt" )
+pick( SIG_ERR_3,                "Keyboard quit", 
+                                "Keyboard quit" )
+pick( SIG_ERR_4,                "Illegal instruction",
+                                "Illegal instruction" )
+pick( SIG_ERR_5,                "Trap",
+                                "Trap" )
+pick( SIG_ERR_6,                "Abort",
+                                "Abort" )
+pick( SIG_ERR_7,                "Bus error",
+                                "Bus error" )
+pick( SIG_ERR_8,                "Floating point exception",
+                                "Floating point exception" )
+pick( SIG_ERR_9,                "Killed",
+                                "Killed" )
+pick( SIG_ERR_10,               "User defined signal 1",
+                                "User defined signal 1" )
+pick( SIG_ERR_11,               "Segmentation fault",
+                                "Segmentation fault" )
+pick( SIG_ERR_12,               "User defined signal 2",
+                                "User defined signal 2" )
+pick( SIG_ERR_13,               "Broken pipe",
+                                "Broken pipe" )
+pick( SIG_ERR_14,               "Alarm",
+                                "Alarm" )
+pick( SIG_ERR_15,               "Abnormal termination",
+                                "Abnormal termination" )
 #endif
