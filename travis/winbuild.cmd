@@ -11,6 +11,9 @@ set CXX=
 set CXXFLAGS=
 REM ...
 set OWROOT=%CD%
+set OWTOOLS=VISUALC
+set OWDOCBUILD=0
+set OWVERBOSE=1
 REM ...
 call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" amd64
 REM ...
