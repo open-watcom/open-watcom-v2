@@ -42,6 +42,9 @@ gitupdf_proc()
                     if [ "$TRAVIS_OS_NAME" = "osx" ]; then
                         test -d $OWTRAVIS_BUILD_DIR/logs/osx || mkdir -p $OWTRAVIS_BUILD_DIR/logs/osx
                         cp $TRAVIS_BUILD_DIR/build/$OWOBJDIR/*.log $OWTRAVIS_BUILD_DIR/logs/osx/
+                    elif [ "$TRAVIS_OS_NAME" = "windows" ]; then
+                        test -d $OWTRAVIS_BUILD_DIR/logs/windows || mkdir -p $OWTRAVIS_BUILD_DIR/logs/windows
+                        cp $TRAVIS_BUILD_DIR/build/$OWOBJDIR/*.log $OWTRAVIS_BUILD_DIR/logs/windows/
                     else
                         test -d $OWTRAVIS_BUILD_DIR/logs/linux || mkdir -p $OWTRAVIS_BUILD_DIR/logs/linux
                         cp $TRAVIS_BUILD_DIR/build/$OWOBJDIR/*.log $OWTRAVIS_BUILD_DIR/logs/linux/
@@ -53,6 +56,8 @@ gitupdf_proc()
                     git add $GITVERBOSE2 -f .
                     if [ "$TRAVIS_OS_NAME" = "osx" ]; then
                         git commit $GITVERBOSE1 -m "Travis CI build $TRAVIS_JOB_NUMBER (build failure) - log files (OSX)"
+                    elif [ "$TRAVIS_OS_NAME" = "windows" ]; then
+                        git commit $GITVERBOSE1 -m "Travis CI build $TRAVIS_JOB_NUMBER (build failure) - log files (Windows)"
                     else
                         git commit $GITVERBOSE1 -m "Travis CI build $TRAVIS_JOB_NUMBER (build failure) - log files (Linux)"
                     fi
