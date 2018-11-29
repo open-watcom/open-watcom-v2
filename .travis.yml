@@ -56,7 +56,6 @@ jobs:
       name: "Build minimal set of build tools Windows"
       if: branch = env(OWBRANCH)
       os: windows
-#      compiler: none
       before_install:
         # stop unwanted services
 #        - travis/services.sh
@@ -71,10 +70,8 @@ jobs:
         - rm -rf $TRAVIS_BUILD_DIR/test/*
         - rm -rf $TRAVIS_BUILD_DIR/build-1/*
       install:
-        - . ./travis/setmsvc.sh
-        - . ./cmnvars.sh
       script: 
-        - travis/build.sh
+        - cmd.exe "/c travis/winboot.cmd"
     - # ...
       name: "Build minimal set of build tools Linux"
       if: branch = env(OWBRANCH)
@@ -158,7 +155,6 @@ jobs:
       name: "OW tools build Windows"
       if: branch = env(OWBRANCH)
       os: windows
-#      compiler: none
       before_install:
         # stop unwanted services
 #        - travis/services.sh
@@ -169,10 +165,8 @@ jobs:
         - export OWVERBOSE=0
       install:
 #        - install dosbox
-        - . ./travis/setmsvc.sh
-        - . ./cmnvars.sh
       script: 
-        - travis/build.sh
+        - cmd.exe "/c travis/winbuild.cmd"
     #################################
     - stage: Build2
       name: "OW tools build-2 OSX"
@@ -322,7 +316,6 @@ jobs:
       name: "Clean build cache Windows"
       if: branch = env(OWBRANCH)
       os: windows
-#      compiler: none
       script: 
         # clear cache
         - rm -f  $TRAVIS_BUILD_DIR/build/$OWOBJDIR/*
