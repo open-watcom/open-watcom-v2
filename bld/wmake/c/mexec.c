@@ -884,11 +884,7 @@ STATIC RET_T mySystem( const char *cmdname, const char *cmd )
     closeCurrentFile();
 #ifdef __UNIX__
     retcode = intSystem( cmd );
-#else
-    retcode = system( cmd );
-#endif
     lastErrorLevel = (UINT8)retcode;
-#ifdef __UNIX__
     if( retcode != -1 && WIFEXITED( retcode ) ) {
         lastErrorLevel = WEXITSTATUS( retcode );
         if( lastErrorLevel == 0 ) {
@@ -899,6 +895,8 @@ STATIC RET_T mySystem( const char *cmdname, const char *cmd )
         }
     }
 #else
+    retcode = system( cmd );
+    lastErrorLevel = (UINT8)retcode;
     if( retcode < 0 ) {
         PrtMsg( ERR | UNABLE_TO_EXEC, cmdname );
     }
