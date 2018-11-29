@@ -35,7 +35,7 @@ if not errorlevel == 1 (
         if "%TRAVIS_EVENT_TYPE%" == "pull_request" (
             builder boot
         ) else (
-            builder -q boot
+            builder -v -q boot
         )
     )
 )
