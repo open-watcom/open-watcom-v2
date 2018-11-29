@@ -104,64 +104,60 @@ static int isspecvar( int c )
 
 void InitPerlLine( char *text )
 {
-    while( *text != '\0' && isspace( *text ) ) {
-        text++;
-    }
+    SKIP_SPACES( text );
     firstNonWS = text;
 }
 
 static void getHex( ss_block *ss_new, char *start )
 {
     int     lastc;
-    char    *text = start + 2;
+    char    *end = start + 2;
     bool    nodigits = true;
 
     flags.beforeRegExp = false;
     ss_new->type = SE_HEX;
-    for( text = start + 2; *text != '\0' && isxdigit( *text ); ++text ) {
+    for( end = start + 2; isxdigit( *end ); ++end ) {
         nodigits = false;
     }
     if( nodigits ) {
         ss_new->type = SE_INVALIDTEXT;
     }
-    lastc = tolower ( *text );
+    lastc = tolower( *end );
     if( lastc == 'u' ) {
-        text++;
-        if( tolower( *text ) == 'l' ) {
-            text++;
+        end++;
+        if( tolower( *end ) == 'l' ) {
+            end++;
         }
-        if( tolower( *text ) == 'l' ) {
-            text++;
+        if( tolower( *end ) == 'l' ) {
+            end++;
         }
     } else if( lastc == 'l' ) {
-        text++;
-        if( tolower( *text ) == 'l' ) {
-            text++;
+        end++;
+        if( tolower( *end ) == 'l' ) {
+            end++;
         }
-        if( tolower( *text ) == 'u' ) {
-            text++;
+        if( tolower( *end ) == 'u' ) {
+            end++;
         }
     }
-    ss_new->len = text - start;
+    ss_new->len = end - start;
 }
 
 static void getFloat( ss_block *ss_new, char *start, int skip, int command )
 {
-    char    *text = start + skip;
+    char    *end = start + skip;
     char    lastc;
 
     ss_new->type = SE_FLOAT;
     flags.beforeRegExp = false;
     if( command == AFTER_ZERO ) {
-        while( isdigit( *text ) ) {
-            text++;
-        }
-        if( *text == 'E' || *text == 'e' ) {
+        SKIP_DIGITS( end );
+        if( *end == 'E' || *end == 'e' ) {
             command = AFTER_EXP;
-            text++;
-        } else if( *text == '.' ) {
+            end++;
+        } else if( *end == '.' ) {
             command = AFTER_DOT;
-            text++;
+            end++;
         } else {
             // simply a bad octal value (eg 09)
             ss_new->type = SE_INVALIDTEXT;
@@ -171,102 +167,98 @@ static void getFloat( ss_block *ss_new, char *start, int skip, int command )
 
     switch( command ) {
         case AFTER_DOT:
-            if( !isdigit( *text ) ) {
-                if( *text == 'e' || *text == 'E' ) {
-                    getFloat( ss_new, start, text - start + 1, AFTER_EXP );
+            if( !isdigit( *end ) ) {
+                if( *end == 'e' || *end == 'E' ) {
+                    getFloat( ss_new, start, end - start + 1, AFTER_EXP );
                     return;
                 }
-                if( *text == 'f' || *text == 'F' || *text == 'l' || *text == 'L' ) {
+                if( *end == 'f' || *end == 'F' || *end == 'l' || *end == 'L' ) {
                     break;
                 }
-                if( *text && !isspace( *text ) && !issymbol( *text ) ) {
-                    if( *text ) {
-                        text++;
+                if( *end != '\0' && !isspace( *end ) && !issymbol( *end ) ) {
+                    if( *end != '\0' ) {
+                        end++;
                     }
                     ss_new->type = SE_INVALIDTEXT;
                 }
                 break;
             }
-            text++;
-            while( isdigit( *text ) ) {
-                text++;
-            }
-            if( *text != 'E' && *text != 'e' ) {
+            end++;
+            SKIP_DIGITS( end );
+            if( *end != 'E' && *end != 'e' ) {
                 break;
             }
-            text++;
+            end++;
             // fall through
         case AFTER_EXP:
-            if( *text == '+' || *text == '-' ) {
-                text++;
+            if( *end == '+' || *end == '-' ) {
+                end++;
             }
-            if( !isdigit( *text ) ) {
-                if( *text ) {
-                    text++;
+            if( !isdigit( *end ) ) {
+                if( *end != '\0' ) {
+                    end++;
                 }
                 ss_new->type = SE_INVALIDTEXT;
                 break;
             }
-            text++;
-            while( isdigit( *text ) ) {
-                text++;
-            }
+            end++;
+            SKIP_DIGITS( end );
     }
 
     // get float/long spec
-    lastc = tolower( *text );
+    lastc = tolower( *end );
     if( lastc == 'f' || lastc == 'l' ) {
-        text++;
-    } else if( *text && !isspace( *text ) && !issymbol( *text ) ) {
+        end++;
+    } else if( *end != '\0' && !isspace( *end ) && !issymbol( *end ) ) {
         ss_new->type = SE_INVALIDTEXT;
-        text++;
+        end++;
     }
-    ss_new->len = text - start;
+    ss_new->len = end - start;
 }
 
 static void getNumber( ss_block *ss_new, char *start, char top )
 {
     int     lastc;
-    char    *text = start + 1;
+    char    *end = start + 1;
 
     flags.beforeRegExp = false;
-    while( (*text >= '0') && (*text <= top) ) {
-        text++;
+    while( (*end >= '0') && (*end <= top) ) {
+        end++;
     }
-    if( *text == '.' ) {
-        getFloat( ss_new, start, text - start + 1, AFTER_DOT );
+    if( *end == '.' ) {
+        getFloat( ss_new, start, end - start + 1, AFTER_DOT );
         return;
-    } else if( *text == 'e' || *text == 'E' ) {
-        getFloat( ss_new, start, text - start + 1, AFTER_EXP );
+    } else if( *end == 'e' || *end == 'E' ) {
+        getFloat( ss_new, start, end - start + 1, AFTER_EXP );
         return;
-    } else if( isdigit( *text ) ) {
+    } else if( isdigit( *end ) ) {
         // correctly handle something like 09.3
-        getFloat( ss_new, start, text - start + 1, AFTER_ZERO );
+        getFloat( ss_new, start, end - start + 1, AFTER_ZERO );
         return;
     }
 
-    ss_new->len = text - start;
+    ss_new->len = end - start;
     /* feature!: we display 0 as an integer (it's really an octal)
      *           as it is so common & is usually thought of as such
      */
     ss_new->type = (top == '7' && ss_new->len > 1) ? SE_OCTAL : SE_INTEGER;
-    lastc = tolower( *text );
+    lastc = tolower( *end );
     if( lastc == 'u' ) {
         ss_new->len++;
-        if( tolower( text[1] ) == 'l' ) {
-            text++;
+        if( tolower( end[1] ) == 'l' ) {
+            end++;
             ss_new->len++;
         }
-        if( tolower( text[1] ) == 'l' ) {
+        if( tolower( end[1] ) == 'l' ) {
             ss_new->len++;
         }
     } else if( lastc == 'l' ) {
         ss_new->len++;
-        if( tolower( text[1] ) == 'l' ) {
-            text++;
+        if( tolower( end[1] ) == 'l' ) {
+            end++;
             ss_new->len++;
         }
-        if( tolower( text[1] ) == 'u' ) {
+        if( tolower( end[1] ) == 'u' ) {
             ss_new->len++;
         }
     }
@@ -274,31 +266,27 @@ static void getNumber( ss_block *ss_new, char *start, char top )
 
 static void getWhiteSpace( ss_block *ss_new, char *start )
 {
-    char    *text = start + 1;
-    while( isspace( *text ) ) {
-        text++;
-    }
+    char    *end = start + 1;
+
+    SKIP_SPACES( end );
     ss_new->type = SE_WHITESPACE;
-    ss_new->len = text - start;
+    ss_new->len = end - start;
 }
 
 static void getText( ss_block *ss_new, char *start )
 {
-    char    *text = start + 1;
-    char    save_char;
+    char    *end = start + 1;
     bool    isKeyword;
-    while( isalnum( *text ) || (*text == '_') ) {
-        text++;
+
+    while( isalnum( *end ) || (*end == '_') ) {
+        end++;
     }
-    save_char = *text;
-    *text = '\0';
-    isKeyword = IsKeyword( start, false );
-    *text = save_char;
+    isKeyword = IsKeyword( start, end, false );
 
     // Expect a double regular expression after s, tr, and y.
-    if( text - start == 1 && (*start == 's' || *start == 'y') ) {
+    if( end - start == 1 && (*start == 's' || *start == 'y') ) {
         flags.doubleRegExp = true;
-    } else if( text - start == 2 && *start == 't' && *(start + 1) == 'r' ) {
+    } else if( end - start == 2 && *start == 't' && *(start + 1) == 'r' ) {
         flags.doubleRegExp = true;
     } else {
         flags.doubleRegExp = false;
@@ -307,46 +295,45 @@ static void getText( ss_block *ss_new, char *start )
     ss_new->type = SE_IDENTIFIER;
     if( isKeyword ) {
         ss_new->type = SE_KEYWORD;
-    } else if( text[0] == ':' && firstNonWS == start && text[1] != ':' && text[1] != '>' ) {
+    } else if( end[0] == ':' && firstNonWS == start && end[1] != ':' && end[1] != '>' ) {
         // : and > checked as it may be :: (CPP) operator or :> (base op.)
-        text++;
+        end++;
         ss_new->type = SE_JUMPLABEL;
     }
-    ss_new->len = text - start;
+    ss_new->len = end - start;
 }
 
 static void getVariable( ss_block *ss_new, char *start )
 {
-    char    *text = start + 1;
-    if( *text == '#' ) {
-        text++;
+    char    *end = start + 1;
+
+    if( *end == '#' ) {
+        end++;
     }
-    while( isalnum( *text ) || (*text == '_') ) {
-        text++;
-        if( text[0] == ':' && text[1] == ':' ) {
+    while( isalnum( *end ) || (*end == '_') ) {
+        end++;
+        if( end[0] == ':' && end[1] == ':' ) {
             // Allow scope resolution operator in variable names.
-            text += 2;
+            end += 2;
         }
     }
     flags.beforeRegExp = false;
     ss_new->type = SE_VARIABLE;
-    ss_new->len = text - start;
+    ss_new->len = end - start;
 }
 
 static void getSpecialVariable( ss_block *ss_new, char *start )
 {
-    char    *text = start + 1;
-    if( isdigit( *text ) ) {
-        text++;
-        while( isdigit( *text ) ) {
-            text++;
-        }
+    char    *end = start + 1;
+    if( isdigit( *end ) ) {
+        end++;
+        SKIP_DIGITS( end );
     } else {
-        text++;
+        end++;
     }
     flags.beforeRegExp = false;
     ss_new->type = SE_VARIABLE;
-    ss_new->len = text - start;
+    ss_new->len = end - start;
 }
 
 static void getSymbol( ss_block *ss_new, char *start )
@@ -361,24 +348,24 @@ static void getSymbol( ss_block *ss_new, char *start )
 
 static void getChar( ss_block *ss_new, char *start, int skip )
 {
-    char    *text;
+    char    *end;
 
     flags.beforeRegExp = false;
     ss_new->type = SE_CHAR;
-    for( text = start + skip; *text != '\0'; ++text ) {
-        if( text[0] == '\'' ) {
+    for( end = start + skip; *end != '\0'; ++end ) {
+        if( end[0] == '\'' ) {
             break;
         }
-        if( text[0] == '\\' && ( text[1] == '\\' || text[1] == '\'' ) ) {
-            ++text;
+        if( end[0] == '\\' && ( end[1] == '\\' || end[1] == '\'' ) ) {
+            ++end;
         }
     }
-    if( *text == '\0' ) {
+    if( *end == '\0' ) {
         ss_new->type = SE_INVALIDTEXT;
     } else {
-        ++text;
+        ++end;
     }
-    ss_new->len = text - start;
+    ss_new->len = end - start;
     if(ss_new->len == 2) {
 #if 0
         /* multibyte character constants are legal in the C standard */
@@ -406,32 +393,31 @@ static void getInvalidChar( ss_block *ss_new )
 
 static void getPerlComment( ss_block *ss_new, char *start )
 {
-    char    *text = start;
-    while( *text != '\0' ) {
-        text++;
-    }
+    char    *end = start;
+
+    SKIP_TOEND( end );
     flags.beforeRegExp = true;
     flags.doubleRegExp = false;
     ss_new->type = SE_COMMENT;
-    ss_new->len = text - start;
+    ss_new->len = end - start;
 }
 
 static void getString( ss_block *ss_new, char *start, int skip )
 {
-    char    *text;
+    char    *end;
 
     flags.beforeRegExp = false;
     ss_new->type = SE_STRING;
-    for( text = start + skip; *text != '\0'; ++text ) {
-        if( text[0] == '"' ) {
+    for( end = start + skip; *end != '\0'; ++end ) {
+        if( end[0] == '"' ) {
             break;
         }
-        if( text[0] == '\\' && (text[1] == '\\' || text[1] == '"') ) {
-            ++text;
+        if( end[0] == '\\' && (end[1] == '\\' || end[1] == '"') ) {
+            ++end;
         }
     }
-    if( text[0] == '\0' ) {
-        if( text[-1] != '\\' ) {
+    if( end[0] == '\0' ) {
+        if( end[-1] != '\\' ) {
             // unterminated string
             ss_new->type = SE_INVALIDTEXT;
 
@@ -442,38 +428,36 @@ static void getString( ss_block *ss_new, char *start, int skip )
             flags.inString = true;
         }
     } else {
-        text++;
+        end++;
         // definitely finished string
         flags.inString = false;
     }
-    ss_new->len = text - start;
+    ss_new->len = end - start;
 }
 
 static void getRegExp( ss_block *ss_new, char *start )
 {
-    char    *text;
+    char    *end;
 
     ss_new->type = SE_REGEXP;
     for( ;; ) {
-        for( text = start + 1; *text != '\0'; ++text ) {
-            if( text[0] != '/' ) {
+        for( end = start + 1; *end != '\0'; ++end ) {
+            if( end[0] != '/' ) {
                 break;
             }
-            if( text[0] == '\\' && (text[1] == '\\' || text[1] == '/') ) {
-                ++text;
+            if( end[0] == '\\' && (end[1] == '\\' || end[1] == '/') ) {
+                ++end;
             }
         }
-        if( text[0] == '\0' )
+        if( end[0] == '\0' )
             break;
-        ++text;
+        ++end;
         if( !flags.doubleRegExp )
             break;
         flags.doubleRegExp = false;
     }
-    while( isalpha( *text ) ) {
-        text++;
-    }
-    ss_new->len = text - start;
+    SKIP_SYMBOL( end );
+    ss_new->len = end - start;
 }
 
 void InitPerlFlagsGivenValues( ss_flags_p *newFlags )

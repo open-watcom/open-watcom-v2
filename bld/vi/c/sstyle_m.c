@@ -47,86 +47,93 @@ static  char        *firstChar;
 void InitMkLine( char *text )
 {
     firstChar = text;
-    while( *text != '\0' && isspace( *text ) ) {
-        text++;
-    }
+    SKIP_SPACES( text );
     firstNonWS = text;
 }
 
 static void getWhiteSpace( ss_block *ss_new, char *start )
 {
-    char    *text = start + 1;
+    char    *end = start + 1;
 
-    while( isspace( *text ) ) {
-        text++;
-    }
+    SKIP_SPACES( end );
     ss_new->type = SE_WHITESPACE;
-    ss_new->len = text - start;
+    ss_new->len = end - start;
 }
 
 static void getText( ss_block *ss_new, char *start )
 {
-    char    *text = start + 1;
+    char    *end = start + 1;
 
     // gather up symbol
-    while( isalnum( *text ) ) {
-        text++;
-    }
+    SKIP_SYMBOL( end );
     ss_new->type = SE_IDENTIFIER;
+    ss_new->len = end - start;
+}
 
-    ss_new->len = text - start;
+static bool isElse( const char *start )
+{
+    return( ( start[0] == 'e' || start[0] == 'E' )
+        && ( start[1] == 'l' || start[1] == 'L' )
+        && ( start[2] == 's' || start[2] == 'S' )
+        && ( start[3] == 'e' || start[3] == 'E' ) );
+}
+
+static bool isIf( const char *start )
+{
+    return( ( start[0] == 'i' || start[0] == 'I' )
+        && ( start[1] == 'f' || start[1] == 'F' ) );
 }
 
 static void getPreproc( ss_block *ss_new, char *start )
 {
-    char    *text = start + 1;
+    char    *end = start + 1;
     char    *keyword;
-    char    save_char;
+    char    *end2;
+    char    *keyword2;
 
     // whitespace is allowed after '!'
-    while( isspace( *text ) ) {
-        text++;
-    }
-    keyword = text;
+    SKIP_SPACES( end );
+    keyword = end;
     // gather up symbol
-    while( isalpha( *text ) ) {
-        text++;
-    }
+    SKIP_SYMBOL( end );
 
     ss_new->type = SE_IDENTIFIER;
 
     // see if symbol is a keyword
-    save_char = *text;
-    *text = '\0';
-    if( IsKeyword( keyword, true ) ) {
+    if( IsKeyword( keyword, end, true ) ) {
+        /* check "else .." */
+        if( isspace( *end ) && isElse( keyword ) ) {
+            end2 = end + 1;
+            SKIP_SPACES( end2 );
+            /* check "else if.." */
+            if( isIf( end2 ) ) {
+                keyword2 = end2;
+                SKIP_SYMBOL( end2 );
+                if( IsKeyword( keyword2, end2, true ) ) {
+                    end = end2;
+                }
+            }
+        }
         ss_new->type = SE_PREPROCESSOR;
         flags.inPreproc = false;
     }
-    *text = save_char;
 
-    ss_new->len = text - start;
+    ss_new->len = end - start;
 }
 
 static void getDirective( ss_block *ss_new, char *start )
 {
-    char    *text = start + 1;
-    char    save_char;
+    char    *end = start + 1;
 
     // gather up symbol
-    while( isalpha( *text ) ) {
-        text++;
-    }
+    SKIP_SYMBOL( end );
     ss_new->type = SE_IDENTIFIER;
 
     // see if symbol is a keyword
-    save_char = *text;
-    *text = '\0';
-    if( IsKeyword( start + 1, true ) ) {
+    if( IsKeyword( start + 1, end, true ) ) {
         ss_new->type = SE_KEYWORD;
     }
-    *text = save_char;
-
-    ss_new->len = text - start;
+    ss_new->len = end - start;
 }
 
 static void getSymbol( ss_block *ss_new )
@@ -143,60 +150,58 @@ static void getBeyondText( ss_block *ss_new )
 
 static void getComment( ss_block *ss_new, char *start )
 {
-    char    *text = start + 1;
+    char    *end = start + 1;
 
     // everything is a comment until the end of line
-    while( *text != '\0' ) {
-        text++;
-    }
+    SKIP_TOEND( end );
     ss_new->type = SE_COMMENT;
-    ss_new->len = text - start;
+    ss_new->len = end - start;
 }
 
 static void getMacro( ss_block *ss_new, char *start, int skip )
 {
     char    *nstart = start + skip;
-    char    *text = nstart;
+    char    *end = nstart;
 
     ss_new->type = SE_STRING;
 
-    if( *text && *text == '(' ) {
+    if( *end != '\0' && *end == '(' ) {
         int     nesting = 1;
 
         // parse a parenthesized macro
-        ++text;
+        ++end;
         // the '%' char is only allowed at start of macro
-        if( *text == '%' ) {
-            ++text;
+        if( *end == '%' ) {
+            ++end;
         }
 
-        while( *text != '\0' && nesting && (isalnum( *text ) || (*text == '_')
-            || (*text == '(') || (*text == ')') || (*text == '$')
-            || (*text == '&') || (*text == '[')) ) {
-            if( *text == '(' ) {
+        while( *end != '\0' && nesting && (isalnum( *end ) || (*end == '_')
+            || (*end == '(') || (*end == ')') || (*end == '$')
+            || (*end == '&') || (*end == '[')) ) {
+            if( *end == '(' ) {
                 ++nesting;
             }
-            if( *text == ')' ) {
+            if( *end == ')' ) {
                 --nesting;
             }
-            ++text;
+            ++end;
         }
-    } else if( *text != '\0' && isalnum( *text ) ) {
+    } else if( isalnum( *end ) ) {
         // parse a non-parenthesized macro
-        ++text;
-        while( *text != '\0' && (isalnum( *text ) || (*text == '_')) ) {
-            ++text;
+        ++end;
+        while( isalnum( *end ) || (*end == '_') ) {
+            ++end;
         }
     } else {
         bool    quit = false;
 
         // let's try a special macro
-        while( *text != '\0' && !quit ) {
-            switch( *text ) {
+        while( *end != '\0' && !quit ) {
+            switch( *end ) {
             case '^':
             case '[':
             case ']':
-                ++text;
+                ++end;
                 break;
             case '@':
             case '*':
@@ -208,7 +213,7 @@ static void getMacro( ss_block *ss_new, char *start, int skip )
             case '<':
             case '?':
                 quit = true;
-                ++text;
+                ++end;
                 break;
             default:
                 quit = true;
@@ -218,7 +223,7 @@ static void getMacro( ss_block *ss_new, char *start, int skip )
     }
 
     flags.inMacro = false;
-    ss_new->len = text - start;
+    ss_new->len = end - start;
 }
 
 void InitMkFlagsGivenValues( ss_flags_m *newFlags )

@@ -58,6 +58,11 @@
   #include "winvi.h"
 #endif
 
+#define SKIP_SPACES(s)  while( isspace( *s ) ) s++
+#define SKIP_DIGITS(s)  while( isdigit( *s ) ) s++
+#define SKIP_SYMBOL(s)  while( isalpha( *s ) ) s++
+#define SKIP_TOEND(s)   while( *s != '\0' ) s++
+
 typedef unsigned int U_INT;
 
 extern int      FileSysNeedsCR( int handle );

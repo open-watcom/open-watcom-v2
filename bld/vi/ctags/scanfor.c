@@ -49,9 +49,7 @@ void ScanFortran( void )
     while( GetString( buff, sizeof( buff ) ) ) {
 
         buffptr = buff;
-        while( isspace( *buffptr ) ) {
-            buffptr++;
-        }
+        SKIP_SPACES( buffptr );
         if( *buffptr == '\0' ) {
             continue;
         }
@@ -60,43 +58,31 @@ void ScanFortran( void )
             !MyStricmp( &buffptr, "integer" ) ||
             !MyStricmp( &buffptr, "logical" ) ||
             !MyStricmp( &buffptr, "real" ) ) {
-            while( isspace( *buffptr ) ) {
-                buffptr++;
-            }
+            SKIP_SPACES( buffptr );
             if( *buffptr == '*' ) {
                 buffptr++;
-                while( isspace( *buffptr ) ) {
-                    buffptr++;
-                }
+                SKIP_SPACES( buffptr );
                 if( !isdigit( *buffptr ) ) {
                     buffptr--;
                 } else {
-                    while( isdigit( *buffptr ) ) {
-                        buffptr++;
-                    }
+                    SKIP_DIGITS( buffptr );
                 }
             }
         } else if( !MyStricmp( &buffptr, "double" ) ) {
-            while( isspace( *buffptr ) ) {
-                buffptr++;
-            }
+            SKIP_SPACES( buffptr );
             if( MyStricmp( &buffptr, "precision" ) ) {
                 continue;
             }
         }
 
-        while( isspace( *buffptr ) ) {
-            buffptr++;
-        }
+        SKIP_SPACES( buffptr );
         if( MyStricmp( &buffptr, "function" ) &&
             MyStricmp( &buffptr, "program" ) &&
             MyStricmp( &buffptr, "procedure" ) &&
             MyStricmp( &buffptr, "subroutine" ) ) {
             continue;
         }
-        while( isspace( *buffptr ) ) {
-            buffptr++;
-        }
+        SKIP_SPACES( buffptr );
         i = 0;
         while( IsTokenChar( *(unsigned char *)buffptr ) ) {
             token[i++] = *buffptr++;

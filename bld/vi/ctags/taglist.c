@@ -84,11 +84,7 @@ void AddTag( const char *id )
         if( id != NULL ) {
             ++id;
             ptr = res;
-
-            while( *id != '\0' && isspace( *id ) ) {
-                ++id;
-            }
-
+            SKIP_SPACES( id );
             while( *id != '\0' && (*id != ',') ) {
                 *ptr++ = *id++;
             }
@@ -99,11 +95,7 @@ void AddTag( const char *id )
             if( *id == ',' ) {
                 ++id;
                 ptr = res;
-
-                while( *id != '\0' && isspace( *id ) ) {
-                    ++id;
-                }
-
+                SKIP_SPACES( id );
                 while( *id != '\0' && (*id != ')') ) {
                     *ptr++ = *id++;
                 }

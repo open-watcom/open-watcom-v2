@@ -58,21 +58,18 @@ static void getEOFText( ss_block *ss_new, char *text )
     }
 }
 
-static void getText( ss_block *ss_new, char *text )
+static void getText( ss_block *ss_new, char *start )
 {
-    char    *start = text;
+    char    *end = start;
 
-    if( *text == '\0' ) {
+    if( *end == '\0' ) {
         ss_new->type = SE_WHITESPACE;
         ss_new->len = BEYOND_TEXT;
         return;
     }
-
-    while( *text != '\0' ) {
-        text++;
-    }
+    SKIP_TOEND( end );
     ss_new->type = SE_TEXT;
-    ss_new->len = text - start;
+    ss_new->len = end - start;
 }
 
 static void getNextBlock( ss_block *ss_new, char *text, int text_col,

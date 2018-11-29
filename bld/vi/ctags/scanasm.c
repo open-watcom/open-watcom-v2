@@ -48,9 +48,7 @@ void ScanAsm( void )
     while( GetString( buff, sizeof( buff ) ) ) {
 
         buffptr = buff;
-        while( isspace( *buffptr ) ) {
-            buffptr++;
-        }
+        SKIP_SPACES( buffptr );
         if( *buffptr == '\0' ) {
             continue;
         }
@@ -62,9 +60,7 @@ void ScanAsm( void )
             continue;
         }
         token[i] = '\0';
-        while( isspace( *buffptr ) ) {
-            buffptr++;
-        }
+        SKIP_SPACES( buffptr );
         if( MyStricmp( &buffptr, "proc" ) ) {
             continue;
         }

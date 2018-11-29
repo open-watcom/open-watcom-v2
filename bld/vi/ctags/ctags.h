@@ -46,6 +46,10 @@ typedef enum {
 #define MAX_LINE                150
 #define MAX_STRUCT_DEPTH        64
 
+#define SKIP_SPACES(s)          while( isspace( *s ) ) s++
+#define SKIP_DIGITS(s)          while( isdigit( *s ) ) s++
+#define SKIP_NOTSPACE(s)        while( !isspace( *s ) && *s != '\0' ) s++
+
 /* global variables */
 extern bool     WantTypedefs;
 extern bool     WantMacros;

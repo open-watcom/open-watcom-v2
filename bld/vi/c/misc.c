@@ -292,16 +292,13 @@ static long doExec( const char *std_in, const char *std_out, const char *cmd )
     strcpy( buffer, cmd );
     s = buffer;
     for( i = 0; i < MAX_ARGS; i++ ) {
-        while( isspace( *s ) )
-            s++;
+        SKIP_SPACES( s );
         if( *s == '\0' ) {
             argv[i] = NULL;
             break;
         }
         argv[i] = s;
-        while( *s != '\0' && !isspace( *s ) ) {
-            s++;
-        }
+        SKIP_TOSPACE( s );
         if( *s != '\0' ) {
             *s++ = '\0';
         } else {
@@ -429,9 +426,7 @@ bool PromptThisFileForSave( const char *filename )
     info        *cinfo;
     HWND        hwnd_old = NO_WINDOW;
 
-    while( isspace( *filename ) ) {
-        filename++;
-    }
+    SKIP_SPACES( filename );
     for( cinfo = InfoHead; cinfo != NULL; cinfo = cinfo->next ) {
         if( SameFile( cinfo->CurrentFile->name, filename ) ) {
             if( cinfo->CurrentFile != NULL && cinfo->CurrentFile->dup_count == 0 &&
@@ -466,9 +461,7 @@ bool QueryFile( const char *filename )
 {
     info        *cinfo;
 
-    while( isspace( *filename ) ) {
-        filename++;
-    }
+    SKIP_SPACES( filename );
     for( cinfo = InfoHead; cinfo != NULL; cinfo = cinfo->next ) {
         if( SameFile( cinfo->CurrentFile->name, filename ) ) {
             return( true );

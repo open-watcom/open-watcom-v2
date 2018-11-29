@@ -348,24 +348,18 @@ static void processOptionFile( const char *fname )
         return;
     }
     while( (ptr = fgets( option, sizeof( option ), optfile )) != NULL ) {
-        while( isspace( *ptr ) ) {
-            ptr++;
-        }
+        SKIP_SPACES( ptr );
         if( *ptr == '#' || *ptr == '\0' ) {
             continue;
         }
         cmd = ptr;
-        while( !isspace( *ptr ) && *ptr != '\0' ) {
-            ptr++;
-        }
+        SKIP_NOTSPACE( ptr );
         if( *ptr == '\0' ) {
             continue;
         }
         *ptr = '\0';
         ptr++;
-        while( isspace( *ptr ) ) {
-            ptr++;
-        }
+        SKIP_SPACES( ptr );
         if( *ptr == '\0' ) {
             continue;
         }
@@ -397,17 +391,13 @@ static void processOptionFile( const char *fname )
             for( ; *ptr != '\0'; ptr++ ) {
                 if( *ptr == 'f' ) {
                     ptr++;
-                    while( isspace( *ptr ) ) {
-                        ptr++;
-                    }
+                    SKIP_SPACES( ptr );
                     if( *ptr == '\0' ) {
                         break;
                     }
                     strcpy( tmpFileName, ptr );
                     ptr = tmpFileName;
-                    while( !isspace( *ptr ) ) {
-                        ptr++;
-                    }
+                    SKIP_NOTSPACE( ptr );
                     *ptr = '\0';
                     optarg = tmpFileName;
                     doOption( 'f' );

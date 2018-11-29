@@ -55,8 +55,7 @@ static bool isIgnorable( char c, const char *ign )
  */
 char *SkipLeadingSpaces( const char *buff )
 {
-    while( isspace( *buff ) )
-        ++buff;
+    SKIP_SPACES( buff );
     return( (char *)buff );
 
 } /* SkipLeadingSpaces */
@@ -87,8 +86,7 @@ vi_rc GetStringWithPossibleQuote2( const char **pbuff, char *st, bool allow_slas
 {
     const char  *buff = *pbuff;
 
-    while( isspace( *buff ) )
-        ++buff;
+    SKIP_SPACES( buff );
     if( allow_slash && *buff == '/' ) {
         buff = GetNextWord( buff, st, SingleSlash );
         if( *buff == '/' ) {
@@ -123,8 +121,7 @@ char *GetNextWord1( const char *buff, char *res )
 {
     char    c;
 
-    while( isspace( *buff ) )
-        ++buff;
+    SKIP_SPACES( buff );
     /*
      * get word
      */
@@ -145,8 +142,7 @@ char *GetNextWord2( const char *buff, char *res, char alt_delim )
 {
     char    c;
 
-    while( isspace( *buff ) )
-        ++buff;
+    SKIP_SPACES( buff );
     /*
      * get word
      */
@@ -156,8 +152,7 @@ char *GetNextWord2( const char *buff, char *res, char alt_delim )
         }
         if( isspace( c ) ) {
             ++buff;
-            while( isspace( *buff ) )
-                buff++;
+            SKIP_SPACES( buff );
             break;
         }
         *res++ = c;
@@ -311,9 +306,7 @@ int Tokenize( const char *Tokens, const char *token, bool entireflag )
             t++;
             tkn++;
         }
-        while( *t != '\0' ) {
-            t++;
-        }
+        SKIP_TOEND( t );
         i++;
     }
     return( TOK_INVALID );

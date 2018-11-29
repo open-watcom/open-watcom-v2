@@ -70,79 +70,91 @@ static int hashpjw( char *s, int entries )
     return( h % entries );
 }
 
-bool IsKeyword( char *keyword, bool case_ignore )
+bool IsKeyword( char *start, char *end, bool case_ignore )
 {
     hash_entry  *entry;
+    char        save_char;
+    bool        found;
 
     assert( langInfo[CurrentInfo->fsi.Language].ref_count > 0 );
 
-    if( langInfo[CurrentInfo->fsi.Language].keyword_table == NULL ) {
-        return( false );
-    }
-
-    entry = langInfo[CurrentInfo->fsi.Language].keyword_table +
-        hashpjw( keyword, langInfo[CurrentInfo->fsi.Language].table_entries );
-    if( !entry->real ) {
-        return( false );
-    }
-    if( case_ignore ) {
-        while( entry != NULL && stricmp( entry->keyword, keyword ) != 0 ) {
-            entry = entry->next;
-            if( entry ) {
-                assert( !entry->real );
+    found = false;
+    if( langInfo[CurrentInfo->fsi.Language].keyword_table != NULL ) {
+        save_char = *end;
+        *end = '\0';
+        entry = langInfo[CurrentInfo->fsi.Language].keyword_table +
+            hashpjw( start, langInfo[CurrentInfo->fsi.Language].table_entries );
+        if( entry->real ) {
+            if( case_ignore ) {
+                while( entry != NULL && stricmp( entry->keyword, start ) != 0 ) {
+                    entry = entry->next;
+                    if( entry ) {
+                        assert( !entry->real );
+                    }
+                }
+            } else {
+                while( entry != NULL && strcmp( entry->keyword, start ) != 0 ) {
+                    entry = entry->next;
+                    if( entry ) {
+                        assert( !entry->real );
+                    }
+                }
             }
+            found = ( entry != NULL );
         }
-    } else {
-        while( entry != NULL && strcmp( entry->keyword, keyword ) != 0 ) {
-            entry = entry->next;
-            if( entry ) {
-                assert( !entry->real );
-            }
-        }
+        *end = save_char;
     }
-    return( entry != NULL );
+    return( found );
 }
 
-bool IsPragma( char *pragma )
+bool IsPragma( char *start, char *end )
 {
     hash_entry  *entry;
+    char        save_char;
+    bool        found;
 
-    if( pragma_table == NULL ) {
-        return( false );
-    }
-
-    entry = pragma_table + hashpjw( pragma, pragma_table_entries );
-    if( !entry->real ) {
-        return( false );
-    }
-    while( entry != NULL && strcmp( entry->keyword, pragma ) != 0 ) {
-        entry = entry->next;
-        if( entry ) {
-            assert( !entry->real );
+    found = false;
+    if( pragma_table != NULL ) {
+        save_char = *end;
+        *end = '\0';
+        entry = pragma_table + hashpjw( start, pragma_table_entries );
+        if( entry->real ) {
+            while( entry != NULL && strcmp( entry->keyword, start ) != 0 ) {
+                entry = entry->next;
+                if( entry ) {
+                    assert( !entry->real );
+                }
+            }
+            found = ( entry != NULL );
         }
+        *end = save_char;
     }
-    return( entry != NULL );
+    return( found );
 }
 
-bool IsDeclspec( char *keyword )
+bool IsDeclspec( char *start, char *end )
 {
     hash_entry  *entry;
+    char        save_char;
+    bool        found;
 
+    found = false;
     if( declspec_table == NULL ) {
-        return( false );
-    }
-
-    entry = declspec_table + hashpjw( keyword, declspec_table_entries );
-    if( !entry->real ) {
-        return( false );
-    }
-    while( entry != NULL && strcmp( entry->keyword, keyword ) != 0 ) {
-        entry = entry->next;
-        if( entry ) {
-            assert( !entry->real );
+        save_char = *end;
+        *end = '\0';
+        entry = declspec_table + hashpjw( start, declspec_table_entries );
+        if( entry->real ) {
+            while( entry != NULL && strcmp( entry->keyword, start ) != 0 ) {
+                entry = entry->next;
+                if( entry ) {
+                    assert( !entry->real );
+                }
+            }
+            found = ( entry != NULL );
         }
+        *end = save_char;
     }
-    return( entry != NULL );
+    return( found );
 }
 
 static hash_entry *createTable( int entries )
@@ -153,14 +165,6 @@ static hash_entry *createTable( int entries )
     memset( table, 0, entries * sizeof( hash_entry ) );
 
     return( table );
-}
-
-static char *nextKeyword( char *keyword )
-{
-    while( *keyword != '\0' ) {
-        keyword++;
-    }
-    return( keyword + 1 );
 }
 
 static void addTable( hash_entry *table, char *Keyword, int NumKeyword, int entries )
@@ -180,7 +184,8 @@ static void addTable( hash_entry *table, char *Keyword, int NumKeyword, int entr
         tmpIndex->hashValue = hashpjw( keyword, entries );
         tmpIndex->keyword = keyword;
         table[tmpIndex->hashValue].real = true;
-        keyword = nextKeyword( keyword );
+        SKIP_TOEND( keyword );
+        keyword++;
         tmpIndex++;
     }
 

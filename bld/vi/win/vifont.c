@@ -403,9 +403,7 @@ vi_rc SetFont( const char *data )
      * using the common dialog - or he/she can do the full
      * 'setfont x n n n n n n... ad nauseum to define a font.
      */
-    while( isspace( *data ) ) {
-        data++;
-    }
+    SKIP_SPACES( data );
     if( *data == '\0' ) {
         if( !userPickFont( &lf, root_window_id ) ) {
             return( ERR_NO_ERR );

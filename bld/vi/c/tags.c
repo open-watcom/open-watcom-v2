@@ -179,10 +179,11 @@ static vi_rc selectTag( FILE *fp, const char *str, char *buff, char *fname )
         tag_list = MemReAlloc( tag_list, sizeof( char * ) * ( tag_count + 1 ) );
         tag_list[tag_count] = DupString( p );
         i = 0;
-        while( !isspace( tag_list[tag_count][i] ) ) {
+        p = tag_list[tag_count];
+        while( !isspace( p[i] ) && p[i] != '\0' ) {
             i++;
         }
-        tag_list[tag_count][i] = '\0';
+        p[i] = '\0';
         tag_count++;
         if( fgets( buff, MAX_STR, fp ) == NULL )  {
             break;

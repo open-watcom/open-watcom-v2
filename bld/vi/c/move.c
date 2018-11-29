@@ -481,9 +481,7 @@ vi_rc LocateCmd( const char *data )
     c = atoi( tmp );
 
     // real selection length
-    while( isspace( *data ) ) {
-        data++;
-    }
+    SKIP_SPACES( data );
     len = 0;
     if( *data != 0 ) {
         data = GetNextWord1( data, tmp );
