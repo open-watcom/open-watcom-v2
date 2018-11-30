@@ -56,9 +56,6 @@ static const char *txtmsgs[] = {
 #include "wresset2.h"
 #include "wreslang.h"
 
-#define NO_RES_MESSAGE  "Error: could not open message resource file.\r\n"
-#define NO_RES_SIZE     (sizeof( NO_RES_MESSAGE ) - 1)
-
 static  HANDLE_INFO     hInstance = { 0 };
 static  unsigned        MsgShift;
 
@@ -166,8 +163,7 @@ bool MsgInit( void )
         }
     }
     CloseResFile( &hInstance );
-    fwrite( NO_RES_MESSAGE, 1, NO_RES_SIZE, stdout );
-    fflush( stdout );
+    printf( "Error: could not open message resource file.\n" );
     return( false );
 #else
     return( true );
