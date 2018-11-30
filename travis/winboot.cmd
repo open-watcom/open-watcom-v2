@@ -12,6 +12,12 @@ call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" amd6
 REM ...
 call cmnvars.bat
 REM ...
+if "%OWTRAVIS_DEBUG%" == "1" (
+    echo INCLUDE=%INCLUDE%
+    echo LIB=%LIB%
+    echo LIBPATH=%LIBPATH%
+)
+REM ...
 cd %OWSRCDIR%\wmake
 mkdir %OWOBJDIR%
 cd %OWOBJDIR%

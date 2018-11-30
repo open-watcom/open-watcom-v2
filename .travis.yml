@@ -54,7 +54,7 @@ jobs:
     #################################
     - stage: Bootstrap
       name: "Build minimal set of build tools Windows"
-      if: branch = env(OWBRANCH)
+      if: branch = env(OWBRANCH) AND type = push
       os: windows
       before_install:
         # stop unwanted services
@@ -92,7 +92,7 @@ jobs:
         - travis/build.sh
     - # ...
       name: "Build minimal set of build tools OSX"
-      if: branch = env(OWBRANCH) AND env(OWOSXBUILD) = 1
+      if: branch = env(OWBRANCH) AND type = push AND env(OWOSXBUILD) = 1
       os: osx
       compiler: clang
       before_install:
@@ -129,7 +129,7 @@ jobs:
         - travis/build.sh
     - # ...
       name: "OW tools build-1 OSX"
-      if: branch = env(OWBRANCH) AND env(OWOSXBUILD) = 1
+      if: branch = env(OWBRANCH) AND type = push AND env(OWOSXBUILD) = 1
       os: osx
       compiler: clang
       before_install:
@@ -146,7 +146,7 @@ jobs:
         - cp -Rf $OWSRCDIR/* build-1
     - # ...
       name: "OW tools build Windows"
-      if: branch = env(OWBRANCH)
+      if: branch = env(OWBRANCH) AND type = push
       os: windows
       before_install:
         # stop unwanted services
@@ -161,7 +161,7 @@ jobs:
     #################################
     - stage: Build2
       name: "OW tools build-2 OSX"
-      if: branch = env(OWBRANCH) AND env(OWOSXBUILD) = 1
+      if: branch = env(OWBRANCH) AND type = push AND env(OWOSXBUILD) = 1
       os: osx
       compiler: clang
       before_install:
@@ -182,7 +182,7 @@ jobs:
     #################################
     - stage: Tests
       name: "Test wasm assembler"
-      if: branch = env(OWBRANCH)
+      if: branch = env(OWBRANCH) AND type = push
       before_install:
         # stop unwanted services
         - travis/services.sh
@@ -200,7 +200,7 @@ jobs:
         - travis/test.sh
     - # ...
       name: "Test C compiler"
-      if: branch = env(OWBRANCH)
+      if: branch = env(OWBRANCH) AND type = push
       before_install:
         # stop unwanted services
         - travis/services.sh
@@ -218,7 +218,7 @@ jobs:
         - travis/test.sh
     - # ...
       name: "Test FORTRAN 77 compiler"
-      if: branch = env(OWBRANCH)
+      if: branch = env(OWBRANCH) AND type = push
       before_install:
         # stop unwanted services
         - travis/services.sh
@@ -236,7 +236,7 @@ jobs:
         - travis/test.sh
     - # ...
       name: "Test C++ compiler"
-      if: branch = env(OWBRANCH)
+      if: branch = env(OWBRANCH) AND type = push
       before_install:
         # stop unwanted services
         - travis/services.sh
@@ -254,7 +254,7 @@ jobs:
         - travis/test.sh
     - # ...
       name: "Test C run-time library"
-      if: branch = env(OWBRANCH)
+      if: branch = env(OWBRANCH) AND type = push
       before_install:
         # stop unwanted services
         - travis/services.sh
@@ -282,7 +282,7 @@ jobs:
         - rm -rf build-1/*
     - # ...
       name: "Clean build cache OSX"
-      if: branch = env(OWBRANCH) AND env(OWOSXBUILD) = 1
+      if: branch = env(OWBRANCH) AND type = push AND env(OWOSXBUILD) = 1
       os: osx
       compiler: clang
       script: 
@@ -293,7 +293,7 @@ jobs:
         - rm -rf build-1/*
     - # ...
       name: "Clean build cache Windows"
-      if: branch = env(OWBRANCH)
+      if: branch = env(OWBRANCH) AND type = push
       os: windows
       script: 
         # clear cache

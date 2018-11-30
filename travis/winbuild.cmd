@@ -13,6 +13,12 @@ REM ...
 call cmnvars.bat
 set OWDOSBOX=%OWROOT%\travis\dosbox\dosbox.exe
 REM ...
+if "%OWTRAVIS_DEBUG%" == "1" (
+    echo INCLUDE=%INCLUDE%
+    echo LIB=%LIB%
+    echo LIBPATH=%LIBPATH%
+)
+REM ...
 @echo on off
 cd %OWSRCDIR%
 if "%OWTRAVISJOB%" == "BUILD" (
