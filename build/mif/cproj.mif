@@ -340,7 +340,10 @@ fpu_flags = $(def_fpu_flags_$(host_os)_$(host_cpu))
 #######################
 # PREPROCESSOR SETINGS
 ######
-cppflags_all    = $(mode_cppflags) -D_ENABLE_AUTODEPEND
+cppflags_all    = $(mode_cppflags)
+!ifdef __WATCOM_TOOLS__
+cppflags_all    += -D_ENABLE_AUTODEPEND
+!endif
 !ifdef bootstrap
 cppflags_all    += -DBOOTSTRAP
 !endif
