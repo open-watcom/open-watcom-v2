@@ -1309,8 +1309,18 @@ char *_cmdname( char *name )
 char *_cmdname( char *name )
 {
     char    *pgm;
+    char    buff[_MAX_PATH];
+    DWORD   size;
 
-    _get_pgmptr( &pgm );
+    pgm = NULL;
+    if( _get_pgmptr( &pgm ) != 0 ) || pgm == NULL || *pgm == '\0' ) {
+        /* fix for buggy _get_pgmptr in some versions of Microsoft CRTL */
+        pgm = buff;
+        size = GetModuleFileName( NULL, buff, sizeof( buff ) );
+        if( size == sizeof( buff ) )
+            size--;
+        buff[size] = '\0';
+    }
     return( strcpy( name, pgm ) );
 }
 
