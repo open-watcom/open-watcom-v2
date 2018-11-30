@@ -1313,7 +1313,7 @@ char *_cmdname( char *name )
     DWORD   size;
 
     pgm = NULL;
-    if( _get_pgmptr( &pgm ) != 0 ) || pgm == NULL || *pgm == '\0' ) {
+    if( _get_pgmptr( &pgm ) != 0 || pgm == NULL || *pgm == '\0' ) {
         /* fix for buggy _get_pgmptr in some versions of Microsoft CRTL */
         pgm = buff;
         size = GetModuleFileName( NULL, buff, sizeof( buff ) );
