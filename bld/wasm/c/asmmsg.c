@@ -162,7 +162,7 @@ static void PrtMsg1( char *prefix, int msgnum, va_list args1, va_list args2 )
     if( ErrFile == NULL )
         OpenErrFile();
     PutMsg( errout, prefix, msgnum, args1 );
-    fflush( errout );                       /* 27-feb-90 */
+    fflush( errout );
     if( ErrFile ) {
         Errfile_Written = true;
         PutMsg( ErrFile, prefix, msgnum, args2 );
@@ -258,5 +258,5 @@ void PrintStats( void )
 #ifdef DEBUG_OUT
     printf( "%u passes\n", Parse_Pass + 1 );
 #endif
-    fflush( stdout );                   /* 27-feb-90 for QNX */
+    fflush( stdout );
 }

@@ -34,7 +34,6 @@
 #ifdef __WATCOMC__
     #include <process.h>
 #endif
-#include "wio.h"
 #include "asmalloc.h"
 #include "fatal.h"
 #include "asmexpnd.h"
@@ -816,18 +815,20 @@ static char *ReadIndirectFile( char *name )
 {
     char        *env;
     char        *str;
-    int         handle;
+    FILE        *fp;
     int         len;
     char        ch;
 
     env = NULL;
-    handle = open( name, O_RDONLY | O_BINARY );
-    if( handle != -1 ) {
-        len = filelength( handle );
+    fp = fopen( name, "rb" );
+    if( fp != NULL ) {
+        fseek( fp, 0, SEEK_END );
+        len = ftell( fp );
+        fseek( fp, 0, SEEK_SET );
         env = AsmAlloc( len + 1 );
-        read( handle, env, len );
+        fread( env, 1, len, fp );
         env[len] = '\0';
-        close( handle );
+        fclose( fp );
         // zip through characters changing \r, \n etc into ' '
         for( str = env; *str != '\0'; ++str ) {
             ch = *str;
