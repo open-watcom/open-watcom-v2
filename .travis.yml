@@ -88,7 +88,6 @@ jobs:
         - rm -rf build-1/*
       install:
         - . ./cmnvars.sh
-        - cd $TRAVIS_BUILD_DIR
       script: 
         - travis/build.sh
     - # ...
@@ -110,7 +109,6 @@ jobs:
         - rm -rf build-1/*
       install:
         - . ./cmnvars.sh
-        - cd $TRAVIS_BUILD_DIR
       script: 
         - travis/build.sh
     #################################
@@ -127,7 +125,6 @@ jobs:
         # install DOS Emulator
         - sudo apt-get install -y dosemu
         - . ./cmnvars.sh
-        - cd $TRAVIS_BUILD_DIR
       script: 
         - travis/build.sh
     - # ...
@@ -143,7 +140,6 @@ jobs:
         - export OWTRAVISJOB=BUILD-1
       install:
         - . ./cmnvars.sh
-        - cd $TRAVIS_BUILD_DIR
       script: 
         - travis/build.sh
         # save build-1 to cache
@@ -179,7 +175,6 @@ jobs:
         # install DOS Emulator
         - brew install dosbox
         - . ./cmnvars.sh
-        - cd $TRAVIS_BUILD_DIR
       script: 
         # load build-1 from cache
         - cp -Rn build-1/* $OWSRCDIR
@@ -201,7 +196,6 @@ jobs:
         - export INCLUDE=$WATCOM/lh
         - unset LIB
         - . ./cmnvars.sh
-        - cd $TRAVIS_BUILD_DIR
       script: 
         - travis/test.sh
     - # ...
@@ -220,7 +214,6 @@ jobs:
         - export INCLUDE=$WATCOM/lh
         - unset LIB
         - . ./cmnvars.sh
-        - cd $TRAVIS_BUILD_DIR
       script: 
         - travis/test.sh
     - # ...
@@ -239,7 +232,6 @@ jobs:
         - export INCLUDE=$WATCOM/lh
         - unset LIB
         - . ./cmnvars.sh
-        - cd $TRAVIS_BUILD_DIR
       script: 
         - travis/test.sh
     - # ...
@@ -258,7 +250,6 @@ jobs:
         - export INCLUDE=$WATCOM/lh
         - unset LIB
         - . ./cmnvars.sh
-        - cd $TRAVIS_BUILD_DIR
       script: 
         - travis/test.sh
     - # ...
@@ -277,7 +268,6 @@ jobs:
         - export INCLUDE=$WATCOM/lh
         - unset LIB
         - . ./cmnvars.sh
-        - cd $TRAVIS_BUILD_DIR
       script: 
         - travis/test.sh
     #################################
@@ -336,7 +326,6 @@ jobs:
         - sudo apt-get install -y dosemu ghostscript
         - export OWGHOSTSCRIPTPATH=$PATH
         - . ./cmnvars.sh
-        - cd $TRAVIS_BUILD_DIR
       script: 
         - travis/builddoc.sh
     #################################
@@ -361,7 +350,6 @@ jobs:
         # install DOS Emulator
         - sudo apt-get install -y dosemu
         - . ./cmnvars.sh
-        - cd $TRAVIS_BUILD_DIR
       script: 
         - travis/covscan.sh
 
