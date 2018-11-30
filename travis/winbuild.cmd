@@ -1,4 +1,4 @@
-@echo off
+@echo on off
 SETLOCAL EnableExtensions
 REM Script to build the Open Watcom bootstrap tools
 REM By Microsoft Visual Studio

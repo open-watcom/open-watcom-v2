@@ -23,9 +23,6 @@ gitupdf_proc()
         if [ "$TRAVIS_EVENT_TYPE" = "push" ]; then
             case "$OWTRAVISJOB" in
                 "BOOTSTRAP" | "BUILD" | "BUILD-1" | "BUILD-2" | "DOCPDF")
-                    if [ "$TRAVIS_OS_NAME" = "osx" ] && [ "$OWOSXBUILD" != "1" ]; then
-                        return 0
-                    fi
                     #
                     # setup client info
                     #
