@@ -19,10 +19,10 @@ env:
 
 cache:
   directories:
-    - $TRAVIS_BUILD_DIR/build/$OWOBJDIR
-    - $TRAVIS_BUILD_DIR/bld/watcom/$OWOBJDIR
-    - $TRAVIS_BUILD_DIR/test
-    - $TRAVIS_BUILD_DIR/build-1
+    - build/$OWOBJDIR
+    - bld/watcom/$OWOBJDIR
+    - test
+    - build-1
 
 before_script:
  # get environment/cache info if debug is active
@@ -65,13 +65,13 @@ jobs:
         - export OWDOCBUILD=0
         - export OWVERBOSE=1
         # clear cache
-        - rm -rf $TRAVIS_BUILD_DIR/build/$OWOBJDIR/*
-        - rm -rf $TRAVIS_BUILD_DIR/bld/watcom/$OWOBJDIR/*
-        - rm -rf $TRAVIS_BUILD_DIR/test/*
-        - rm -rf $TRAVIS_BUILD_DIR/build-1/*
+        - rm -rf build/$OWOBJDIR/*
+        - rm -rf bld/watcom/$OWOBJDIR/*
+        - rm -rf test/*
+        - rm -rf build-1/*
       install:
       script: 
-        - cmd.exe /e:on /c "travis\winboot.cmd"
+        - cmd.exe /c "travis\winboot.cmd"
     - # ...
       name: "Build minimal set of build tools Linux"
       if: branch = env(OWBRANCH)
@@ -84,10 +84,10 @@ jobs:
         - export OWDOCBUILD=0
         - export OWVERBOSE=1
         # clear cache
-        - rm -rf $TRAVIS_BUILD_DIR/build/$OWOBJDIR/*
-        - rm -rf $TRAVIS_BUILD_DIR/bld/watcom/$OWOBJDIR/*
-        - rm -rf $TRAVIS_BUILD_DIR/test/*
-        - rm -rf $TRAVIS_BUILD_DIR/build-1/*
+        - rm -rf build/$OWOBJDIR/*
+        - rm -rf bld/watcom/$OWOBJDIR/*
+        - rm -rf test/*
+        - rm -rf build-1/*
       install:
         - . ./cmnvars.sh
       script: 
@@ -106,10 +106,10 @@ jobs:
         - export OWDOCBUILD=0
         - export OWVERBOSE=1
         # clear cache
-        - rm -rf $TRAVIS_BUILD_DIR/build/$OWOBJDIR/*
-        - rm -rf $TRAVIS_BUILD_DIR/bld/watcom/$OWOBJDIR/*
-        - rm -rf $TRAVIS_BUILD_DIR/test/*
-        - rm -rf $TRAVIS_BUILD_DIR/build-1/*
+        - rm -rf build/$OWOBJDIR/*
+        - rm -rf bld/watcom/$OWOBJDIR/*
+        - rm -rf test/*
+        - rm -rf build-1/*
       install:
         - . ./cmnvars.sh
       script: 
@@ -166,7 +166,7 @@ jobs:
       install:
 #        - install dosbox
       script: 
-        - cmd.exe /e:on /c "travis\winbuild.cmd"
+        - cmd.exe /c "travis\winbuild.cmd"
     #################################
     - stage: Build2
       name: "OW tools build-2 OSX"
@@ -297,10 +297,10 @@ jobs:
       if: branch = env(OWBRANCH)
       script: 
         # clear cache
-        - rm -rf $TRAVIS_BUILD_DIR/build/$OWOBJDIR/*
-        - rm -rf $TRAVIS_BUILD_DIR/bld/watcom/$OWOBJDIR/*
-        - rm -rf $TRAVIS_BUILD_DIR/test/*
-        - rm -rf $TRAVIS_BUILD_DIR/build-1/*
+        - rm -rf build/$OWOBJDIR/*
+        - rm -rf bld/watcom/$OWOBJDIR/*
+        - rm -rf test/*
+        - rm -rf build-1/*
     - # ...
       name: "Clean build cache OSX"
       if: branch = env(OWBRANCH) AND env(OWOSXBUILD) = 1
@@ -308,20 +308,20 @@ jobs:
       compiler: clang
       script: 
         # clear cache
-        - rm -rf $TRAVIS_BUILD_DIR/build/$OWOBJDIR/*
-        - rm -rf $TRAVIS_BUILD_DIR/bld/watcom/$OWOBJDIR/*
-        - rm -rf $TRAVIS_BUILD_DIR/test/*
-        - rm -rf $TRAVIS_BUILD_DIR/build-1/*
+        - rm -rf build/$OWOBJDIR/*
+        - rm -rf bld/watcom/$OWOBJDIR/*
+        - rm -rf test/*
+        - rm -rf build-1/*
     - # ...
       name: "Clean build cache Windows"
       if: branch = env(OWBRANCH)
       os: windows
       script: 
         # clear cache
-        - rm -rf $TRAVIS_BUILD_DIR/build/$OWOBJDIR/*
-        - rm -rf $TRAVIS_BUILD_DIR/bld/watcom/$OWOBJDIR/*
-        - rm -rf $TRAVIS_BUILD_DIR/test/*
-        - rm -rf $TRAVIS_BUILD_DIR/build-1/*
+        - rm -rf build/$OWOBJDIR/*
+        - rm -rf bld/watcom/$OWOBJDIR/*
+        - rm -rf test/*
+        - rm -rf build-1/*
 
     #################################
     - stage: InitDocumentation
