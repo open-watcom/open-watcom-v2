@@ -32,10 +32,11 @@ if not errorlevel == 1 (
     %OWBINDIR%\wmake -f ..\binmake clean
     %OWBINDIR%\wmake -f ..\binmake bootstrap=1 builder.exe
     if not errorlevel == 1 (
+	cd %OWSRCDIR%
         if "%TRAVIS_EVENT_TYPE%" == "pull_request" (
             builder boot
         ) else (
-            builder -v -q boot
+            builder -q boot
         )
     )
 )

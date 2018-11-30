@@ -65,7 +65,7 @@ jobs:
         - export OWDOCBUILD=0
         - export OWVERBOSE=1
         # clear cache
-        - rm -f  $TRAVIS_BUILD_DIR/build/$OWOBJDIR/*
+        - rm -rf $TRAVIS_BUILD_DIR/build/$OWOBJDIR/*
         - rm -rf $TRAVIS_BUILD_DIR/bld/watcom/$OWOBJDIR/*
         - rm -rf $TRAVIS_BUILD_DIR/test/*
         - rm -rf $TRAVIS_BUILD_DIR/build-1/*
@@ -84,7 +84,7 @@ jobs:
         - export OWDOCBUILD=0
         - export OWVERBOSE=1
         # clear cache
-        - rm -f  $TRAVIS_BUILD_DIR/build/$OWOBJDIR/*
+        - rm -rf $TRAVIS_BUILD_DIR/build/$OWOBJDIR/*
         - rm -rf $TRAVIS_BUILD_DIR/bld/watcom/$OWOBJDIR/*
         - rm -rf $TRAVIS_BUILD_DIR/test/*
         - rm -rf $TRAVIS_BUILD_DIR/build-1/*
@@ -106,7 +106,7 @@ jobs:
         - export OWDOCBUILD=0
         - export OWVERBOSE=1
         # clear cache
-        - rm -f  $TRAVIS_BUILD_DIR/build/$OWOBJDIR/*
+        - rm -rf $TRAVIS_BUILD_DIR/build/$OWOBJDIR/*
         - rm -rf $TRAVIS_BUILD_DIR/bld/watcom/$OWOBJDIR/*
         - rm -rf $TRAVIS_BUILD_DIR/test/*
         - rm -rf $TRAVIS_BUILD_DIR/build-1/*
@@ -297,7 +297,7 @@ jobs:
       if: branch = env(OWBRANCH)
       script: 
         # clear cache
-        - rm -f  $TRAVIS_BUILD_DIR/build/$OWOBJDIR/*
+        - rm -rf $TRAVIS_BUILD_DIR/build/$OWOBJDIR/*
         - rm -rf $TRAVIS_BUILD_DIR/bld/watcom/$OWOBJDIR/*
         - rm -rf $TRAVIS_BUILD_DIR/test/*
         - rm -rf $TRAVIS_BUILD_DIR/build-1/*
@@ -308,7 +308,7 @@ jobs:
       compiler: clang
       script: 
         # clear cache
-        - rm -f  $TRAVIS_BUILD_DIR/build/$OWOBJDIR/*
+        - rm -rf $TRAVIS_BUILD_DIR/build/$OWOBJDIR/*
         - rm -rf $TRAVIS_BUILD_DIR/bld/watcom/$OWOBJDIR/*
         - rm -rf $TRAVIS_BUILD_DIR/test/*
         - rm -rf $TRAVIS_BUILD_DIR/build-1/*
@@ -318,7 +318,7 @@ jobs:
       os: windows
       script: 
         # clear cache
-        - rm -f  $TRAVIS_BUILD_DIR/build/$OWOBJDIR/*
+        - rm -rf $TRAVIS_BUILD_DIR/build/$OWOBJDIR/*
         - rm -rf $TRAVIS_BUILD_DIR/bld/watcom/$OWOBJDIR/*
         - rm -rf $TRAVIS_BUILD_DIR/test/*
         - rm -rf $TRAVIS_BUILD_DIR/build-1/*
