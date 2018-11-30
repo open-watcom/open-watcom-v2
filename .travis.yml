@@ -8,9 +8,9 @@ env:
   global:
     - OWROOT=$TRAVIS_BUILD_DIR
     - OWOBJDIR=binbuild
+    - OWVERBOSE=0
     - OWDOCBUILD=0
     - OWDOCQUIET=1
-#    - OWUSE_FILENAME_VERSION=1
     - OWBRANCH=master
     - OWBRANCH_DOCS=documentation
     - OWBRANCH_COVERITY=coverity_scan
@@ -62,7 +62,6 @@ jobs:
         # set environmet variable
         - export OWTOOLS=VISUALC
         - export OWTRAVISJOB=BOOTSTRAP
-        - export OWDOCBUILD=0
         - export OWVERBOSE=1
         # clear cache
         - rm -rf build/$OWOBJDIR/*
@@ -81,7 +80,6 @@ jobs:
         # set environmet variable
         - export OWTOOLS=GCC
         - export OWTRAVISJOB=BOOTSTRAP
-        - export OWDOCBUILD=0
         - export OWVERBOSE=1
         # clear cache
         - rm -rf build/$OWOBJDIR/*
@@ -103,7 +101,6 @@ jobs:
         # set environmet variable
         - export OWTOOLS=CLANG
         - export OWTRAVISJOB=BOOTSTRAP
-        - export OWDOCBUILD=0
         - export OWVERBOSE=1
         # clear cache
         - rm -rf build/$OWOBJDIR/*
@@ -124,8 +121,6 @@ jobs:
         # set environmet variable
         - export OWTOOLS=GCC
         - export OWTRAVISJOB=BUILD
-        - export OWDOCBUILD=0
-        - export OWVERBOSE=0
       install:
         # install DOS Emulator
         - sudo apt-get install -y dosemu
@@ -143,8 +138,6 @@ jobs:
         # set environmet variable
         - export OWTOOLS=CLANG
         - export OWTRAVISJOB=BUILD-1
-        - export OWDOCBUILD=0
-        - export OWVERBOSE=0
       install:
         - . ./cmnvars.sh
       script: 
@@ -161,8 +154,6 @@ jobs:
         # set environmet variable
         - export OWTOOLS=VISUALC
         - export OWTRAVISJOB=BUILD
-        - export OWDOCBUILD=0
-        - export OWVERBOSE=0
       install:
 #        - install dosbox
       script: 
@@ -179,8 +170,6 @@ jobs:
         # set environmet variable
         - export OWTOOLS=CLANG
         - export OWTRAVISJOB=BUILD2
-        - export OWDOCBUILD=0
-        - export OWVERBOSE=0
         - export OWDOSBOX=dosbox
       install:
         # install DOS Emulator
@@ -201,8 +190,6 @@ jobs:
         - export OWTOOLS=WATCOM
         - export OWTRAVISJOB=TEST
         - export OWTRAVISTEST=WASM
-        - export OWDOCBUILD=0
-        - export OWVERBOSE=0
       install:
         - export WATCOM=$TRAVIS_BUILD_DIR/test
         - export PATH=$WATCOM/binl:$PATH
@@ -221,8 +208,6 @@ jobs:
         - export OWTOOLS=WATCOM
         - export OWTRAVISJOB=TEST
         - export OWTRAVISTEST=C
-        - export OWDOCBUILD=0
-        - export OWVERBOSE=0
       install:
         - export WATCOM=$TRAVIS_BUILD_DIR/test
         - export PATH=$WATCOM/binl:$PATH
@@ -241,8 +226,6 @@ jobs:
         - export OWTOOLS=WATCOM
         - export OWTRAVISJOB=TEST
         - export OWTRAVISTEST=F77
-        - export OWDOCBUILD=0
-        - export OWVERBOSE=0
       install:
         - export WATCOM=$TRAVIS_BUILD_DIR/test
         - export PATH=$WATCOM/binl:$PATH
@@ -261,8 +244,6 @@ jobs:
         - export OWTOOLS=WATCOM
         - export OWTRAVISJOB=TEST
         - export OWTRAVISTEST=CXX
-        - export OWDOCBUILD=0
-        - export OWVERBOSE=0
       install:
         - export WATCOM=$TRAVIS_BUILD_DIR/test
         - export PATH=$WATCOM/binl:$PATH
@@ -281,8 +262,6 @@ jobs:
         - export OWTOOLS=WATCOM
         - export OWTRAVISJOB=TEST
         - export OWTRAVISTEST=CRTL
-        - export OWDOCBUILD=0
-        - export OWVERBOSE=0
       install:
         - export WATCOM=$TRAVIS_BUILD_DIR/test
         - export PATH=$WATCOM/binl:$PATH
@@ -342,7 +321,6 @@ jobs:
         - export OWTOOLS=GCC
         - export OWTRAVISJOB=DOCPDF
         - export OWDOCBUILD=1
-        - export OWVERBOSE=0
       install:
         # install DOS Emulator + Ghostscript
         - sudo apt-get install -y dosemu ghostscript
@@ -368,8 +346,6 @@ jobs:
         # set environmet variable
         - export OWTOOLS=GCC
         - export OWTRAVISJOB=BUILD
-        - export OWDOCBUILD=0
-        - export OWVERBOSE=0
       install:
         # install DOS Emulator
         - sudo apt-get install -y dosemu

@@ -3,6 +3,7 @@ SETLOCAL EnableExtensions
 REM Script to build the Open Watcom bootstrap tools
 REM By Microsoft Visual Studio
 REM ...
+set
 REM Remove NMAKE macros wrongly defined by Travis
 set CC=
 set CFLAGS=
