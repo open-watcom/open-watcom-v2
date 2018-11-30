@@ -4,18 +4,7 @@ REM Script to build the Open Watcom bootstrap tools
 REM By Microsoft Visual Studio
 REM ...
 REM Remove NMAKE macros wrongly defined by Travis
-echo CC=%CC%
-echo CFLAGS=%CFLAGS%
-echo CPP=%CPP%
-echo CPPFLAGS=%CPPFLAGS%
-echo CXX=%CXX%
-echo CXXFLAGS=%CXXFLAGS%
 set CC=
-set CFLAGS=
-set CPP=
-set CPPFLAGS=
-set CXX=
-set CXXFLAGS=
 REM ...
 set OWROOT=%CD%
 REM ...

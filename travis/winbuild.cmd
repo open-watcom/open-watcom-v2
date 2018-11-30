@@ -5,11 +5,6 @@ REM By Microsoft Visual Studio
 REM ...
 REM Remove NMAKE macros wrongly defined by Travis
 set CC=
-set CFLAGS=
-set CPP=
-set CPPFLAGS=
-set CXX=
-set CXXFLAGS=
 REM ...
 set OWROOT=%CD%
 REM ...
@@ -17,6 +12,7 @@ call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" amd6
 REM ...
 call cmnvars.bat
 REM ...
+@echo on off
 cd %OWSRCDIR%
 if "%OWTRAVISJOB%" == "BUILD" (
     if "%TRAVIS_EVENT_TYPE%" == "pull_request" (
