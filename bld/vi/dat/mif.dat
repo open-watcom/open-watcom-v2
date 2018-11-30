@@ -1,6 +1,13 @@
-42
+49
 define
 else
+elseif
+elseifdef
+elseifeq
+elseifeqi
+elseifndef
+elseifneq
+elseifneqi
 endif
 error
 if

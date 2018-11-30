@@ -75,11 +75,13 @@ static bool isElse( const char *start )
     return( ( start[0] == 'e' || start[0] == 'E' )
         && ( start[1] == 'l' || start[1] == 'L' )
         && ( start[2] == 's' || start[2] == 'S' )
-        && ( start[3] == 'e' || start[3] == 'E' ) );
+        && ( start[3] == 'e' || start[3] == 'E' )
+        && ( start[4] == '\0' ) );
 }
 
 static bool isIf( const char *start )
 {
+    /* check only for first two characters, that include all "if.." variants */
     return( ( start[0] == 'i' || start[0] == 'I' )
         && ( start[1] == 'f' || start[1] == 'F' ) );
 }
