@@ -1,10 +1,15 @@
-@echo on off
+@echo off
 SETLOCAL EnableExtensions
 REM Script to build the Open Watcom bootstrap tools
 REM By Microsoft Visual Studio
 REM ...
-set
 REM Remove NMAKE macros wrongly defined by Travis
+echo CC=%CC%
+echo CFLAGS=%CFLAGS%
+echo CPP=%CPP%
+echo CPPFLAGS=%CPPFLAGS%
+echo CXX=%CXX%
+echo CXXFLAGS=%CXXFLAGS%
 set CC=
 set CFLAGS=
 set CPP=
@@ -13,15 +18,11 @@ set CXX=
 set CXXFLAGS=
 REM ...
 set OWROOT=%CD%
-set OWTOOLS=VISUALC
-set OWDOCBUILD=0
-set OWVERBOSE=1
 REM ...
 call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" amd64
 REM ...
 call cmnvars.bat
 REM ...
-@echo on off
 cd %OWSRCDIR%\wmake
 mkdir %OWOBJDIR%
 cd %OWOBJDIR%

@@ -88,6 +88,7 @@ jobs:
         - rm -rf build-1/*
       install:
         - . ./cmnvars.sh
+        - cd $TRAVIS_BUILD_DIR
       script: 
         - travis/build.sh
     - # ...
@@ -109,6 +110,7 @@ jobs:
         - rm -rf build-1/*
       install:
         - . ./cmnvars.sh
+        - cd $TRAVIS_BUILD_DIR
       script: 
         - travis/build.sh
     #################################
@@ -125,6 +127,7 @@ jobs:
         # install DOS Emulator
         - sudo apt-get install -y dosemu
         - . ./cmnvars.sh
+        - cd $TRAVIS_BUILD_DIR
       script: 
         - travis/build.sh
     - # ...
@@ -140,10 +143,11 @@ jobs:
         - export OWTRAVISJOB=BUILD-1
       install:
         - . ./cmnvars.sh
+        - cd $TRAVIS_BUILD_DIR
       script: 
         - travis/build.sh
         # save build-1 to cache
-        - cp -Rf $OWSRCDIR/* $TRAVIS_BUILD_DIR/build-1
+        - cp -Rf $OWSRCDIR/* build-1
     - # ...
       name: "OW tools build Windows"
       if: branch = env(OWBRANCH)
@@ -175,9 +179,10 @@ jobs:
         # install DOS Emulator
         - brew install dosbox
         - . ./cmnvars.sh
+        - cd $TRAVIS_BUILD_DIR
       script: 
         # load build-1 from cache
-        - cp -Rn $TRAVIS_BUILD_DIR/build-1/* $OWSRCDIR
+        - cp -Rn build-1/* $OWSRCDIR
         - travis/build.sh
     #################################
     - stage: Tests
@@ -196,6 +201,7 @@ jobs:
         - export INCLUDE=$WATCOM/lh
         - unset LIB
         - . ./cmnvars.sh
+        - cd $TRAVIS_BUILD_DIR
       script: 
         - travis/test.sh
     - # ...
@@ -214,6 +220,7 @@ jobs:
         - export INCLUDE=$WATCOM/lh
         - unset LIB
         - . ./cmnvars.sh
+        - cd $TRAVIS_BUILD_DIR
       script: 
         - travis/test.sh
     - # ...
@@ -232,6 +239,7 @@ jobs:
         - export INCLUDE=$WATCOM/lh
         - unset LIB
         - . ./cmnvars.sh
+        - cd $TRAVIS_BUILD_DIR
       script: 
         - travis/test.sh
     - # ...
@@ -250,6 +258,7 @@ jobs:
         - export INCLUDE=$WATCOM/lh
         - unset LIB
         - . ./cmnvars.sh
+        - cd $TRAVIS_BUILD_DIR
       script: 
         - travis/test.sh
     - # ...
@@ -268,6 +277,7 @@ jobs:
         - export INCLUDE=$WATCOM/lh
         - unset LIB
         - . ./cmnvars.sh
+        - cd $TRAVIS_BUILD_DIR
       script: 
         - travis/test.sh
     #################################
@@ -326,6 +336,7 @@ jobs:
         - sudo apt-get install -y dosemu ghostscript
         - export OWGHOSTSCRIPTPATH=$PATH
         - . ./cmnvars.sh
+        - cd $TRAVIS_BUILD_DIR
       script: 
         - travis/builddoc.sh
     #################################
@@ -350,6 +361,7 @@ jobs:
         # install DOS Emulator
         - sudo apt-get install -y dosemu
         - . ./cmnvars.sh
+        - cd $TRAVIS_BUILD_DIR
       script: 
         - travis/covscan.sh
 
