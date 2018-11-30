@@ -95,7 +95,7 @@ void GUIMemClose( void )
     _trmem_prt_list( GUIMemHandle );
     _trmem_close( GUIMemHandle );
     if( GUIMemFP != stderr ) {
-        close( GUIMemFP );
+        fclose( GUIMemFP );
     }
 #endif
 }
