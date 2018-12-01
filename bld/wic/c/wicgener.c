@@ -112,7 +112,8 @@ void zapErrorFile(void)
     errorFile = NULL;
 }
 
-void logError(char *s) {
+void logError(char *s)
+{
     FILE *output = errorFile;
     if (errorFile == NULL) {
         output = stderr;
@@ -133,37 +134,37 @@ void reportError(WicErrors err, ...)
 
     errStr[0] = 0;
     errStrLen = 0;
-    if (WITHIN_RANGE(err, ERR_MIN, ERR_MAX) || err == ERR_NONE) {
+    if( WITHIN_RANGE( err, ERR_MIN, ERR_MAX ) || err == ERR_NONE ) {
         errType = ERR;
-    } else if (WITHIN_RANGE(err, RERR_MIN, RERR_MAX)) {
+    } else if( WITHIN_RANGE( err, RERR_MIN, RERR_MAX ) ) {
         errType = RERR;
-    } else if (WITHIN_RANGE(err, CERR_MIN, CERR_MAX)) {
+    } else if( WITHIN_RANGE( err, CERR_MIN, CERR_MAX ) ) {
         errType = CERR;
-    } else if (WITHIN_RANGE(err, FATAL_MIN, FATAL_MAX)) {
+    } else if( WITHIN_RANGE( err, FATAL_MIN, FATAL_MAX ) ) {
         errType = FATAL;
     } else {
         printf("Internal error inside ReportError, exiting...\n");
         exit(1);
     }
-    switch (g_opt.supressLevel) {
-        case 0:  // display all errors
+    switch( g_opt.supressLevel ) {
+    case 0:  // display all errors
+        displayThisError = 1;
+        break;
+    case 1:  // Supress CERR
+        if (errType != CERR) {
             displayThisError = 1;
-            break;
-        case 1:  // Supress CERR
-            if (errType != CERR) {
-                displayThisError = 1;
-            }
-            break;
-        case 2:  // Supress CERR and RERR
-            if (errType != CERR && errType != RERR) {
-                displayThisError = 1;
-            }
-            break;
-        case 3:  // Supress CERR and RERR and ERR
-            if (errType != CERR && errType != RERR && errType != ERR) {
-                displayThisError = 1;
-            }
-            break;
+        }
+        break;
+    case 2:  // Supress CERR and RERR
+        if (errType != CERR && errType != RERR) {
+            displayThisError = 1;
+        }
+        break;
+    case 3:  // Supress CERR and RERR and ERR
+        if (errType != CERR && errType != RERR && errType != ERR) {
+            displayThisError = 1;
+        }
+        break;
     }
 
     if (g_currFileName != NULL) {
@@ -202,56 +203,63 @@ void reportError(WicErrors err, ...)
 /*---------------------- Memory Management ---------------------------*/
 
 #ifdef TRMEM
-    static _trmem_hdl TrHdl;
-    static unsigned NumMessages = 0;
 
-    #pragma initialize 40;
+#pragma initialize  40;
 
-    static enum {
-        _MEMOUT_NORMAL,
-        _MEMOUT_INFO
-    } _memOutput = _MEMOUT_NORMAL;
+static _trmem_hdl   TrHdl;
+static unsigned     NumMessages = 0;
 
-    static void _printLine( void *dummy1, const char *buf, size_t dummy2 )
-    {
-        dummy1 = dummy1;  dummy2 = dummy2;
-        if (_memOutput == _MEMOUT_NORMAL) {
-            debugOut("%s", buf);
-            NumMessages++;
-            if (strstr(buf, "overrun") != NULL) {
-                printf("%s", buf);
-            }
-        } else {
-            printf("%s", buf);
+static enum {
+    _MEMOUT_NORMAL,
+    _MEMOUT_INFO
+} _memOutput = _MEMOUT_NORMAL;
+
+static void _printLine( void *parm, const char *buf, size_t len )
+{
+    /* unused parameters */ (void)parm; (void)len;
+
+    if( _memOutput == _MEMOUT_NORMAL ) {
+        debugOut( "%s", buf );
+        NumMessages++;
+        if( strstr( buf, "overrun" ) != NULL ) {
+            printf( "%s", buf );
         }
+    } else {
+        printf( "%s", buf );
     }
-#endif
-
-void printMemUsage(void) {
-    #ifdef TRMEM
-        int save = _memOutput;
-        _memOutput = _MEMOUT_INFO;
-        _trmem_prt_usage( TrHdl );
-        _memOutput = save;
-    #else
-        printf("Memory used: %d.\n", g_memUsed);
-    #endif
 }
 
-void outOfMemory(void) {
-    reportError(FATAL_OUT_OF_MEM);
+#endif
+
+void printMemUsage( void )
+{
+#ifdef TRMEM
+    int save = _memOutput;
+    _memOutput = _MEMOUT_INFO;
+    _trmem_prt_usage( TrHdl );
+    _memOutput = save;
+#else
+    printf( "Memory used: %d.\n", g_memUsed );
+#endif
+}
+
+void outOfMemory( void )
+{
+    reportError( FATAL_OUT_OF_MEM );
 }
 
 #ifdef TRMEM
-    void *_debugVar = 0;
+void *_debugVar = 0;
 #endif
-void *BasicAlloc(size_t size) {
+
+void *BasicAlloc(size_t size)
+{
     void *temp;
-    #ifdef TRMEM
-        temp = _trmem_alloc( size, _trmem_guess_who(), TrHdl );
-    #else
-        temp = malloc(size);
-    #endif
+#ifdef TRMEM
+    temp = _trmem_alloc( size, _trmem_guess_who(), TrHdl );
+#else
+    temp = malloc(size);
+#endif
     if (temp == NULL && size != 0) {
         outOfMemory();
     }
@@ -260,18 +268,19 @@ void *BasicAlloc(size_t size) {
         g_memUsed += _msize(temp);
     }
     incDebugCount();
-    #ifdef TRMEM
-        if (_debugVar == 0) {
-            printf("Enter _debugVar (in hex): "); scanf("%x", &_debugVar);
-        }
-        if (temp == _debugVar) {
-            printf("temp = _debugVar!\n");
-        }
-    #endif
+#ifdef TRMEM
+    if (_debugVar == 0) {
+        printf("Enter _debugVar (in hex): "); scanf("%x", &_debugVar);
+    }
+    if (temp == _debugVar) {
+        printf("temp = _debugVar!\n");
+    }
+#endif
     return temp;
 }
 
-char *wicStrdup(const char *src) {
+char *wicStrdup(const char *src)
+{
     char *temp;
     unsigned len;
 
@@ -285,20 +294,22 @@ char *wicStrdup(const char *src) {
     return temp;
 }
 
-void BasicFree(void *ptr) {
+void BasicFree(void *ptr)
+{
     incDebugCount();
     if (ptr != NULL) {
         unsigned temp = _msize(ptr);
-        #ifdef TRMEM
-            _trmem_free( ptr, _trmem_guess_who(), TrHdl );
-        #else
-            free(ptr);
-        #endif
+#ifdef TRMEM
+        _trmem_free( ptr, _trmem_guess_who(), TrHdl );
+#else
+        free(ptr);
+#endif
         g_memUsed -= temp;
     }
 }
 
-static void GetOffset(void) {
+static void GetOffset(void)
+{
     GetOffset(); // Dummy function, needed just to get offest for os/2.
                      // (Ask Ivan for details).  It calls itself to avoid
                      // warning message of not being referenced.
@@ -335,7 +346,9 @@ void zapMemory(void)
 }
 
 static int numCallsToCheckMemory = 0;
-static void reportBadHeap(int retval) {
+
+static void reportBadHeap(int retval)
+{
     switch(retval) {
     case _HEAPOK:
     case _HEAPEMPTY:
@@ -350,7 +363,8 @@ static void reportBadHeap(int retval) {
     }
 }
 
-void checkMemory(void) {
+void checkMemory(void)
+{
     struct _heapinfo h_info;
     int ret;
 
@@ -395,14 +409,17 @@ void printUsageAndExit( void )
 
 long _debugSize = 1029204;
 int _modifyMe = 1;
-void incDebugCount(void) {
+
+void incDebugCount(void)
+{
     g_debugCount++;
     if (g_debugCount >= _debugSize) {
         _modifyMe = !_modifyMe;
     }
 }
 
-void wicAssert( int exprTrue, char *expr, char *file, int line) {
+void wicAssert( int exprTrue, char *expr, char *file, int line)
+{
     if (!exprTrue) {
         fprintf(stderr, "Assertion failed: %s (file %s, line %d)\n",
             expr, file, line);
@@ -412,42 +429,46 @@ void wicAssert( int exprTrue, char *expr, char *file, int line) {
 
 
 #ifndef NDEBUG
-    static FILE *_debugFile;
+static FILE *_debugFile;
 #endif
-void initDebug(void) {
-    #ifndef NDEBUG
-        _debugFile = wicFopen("debug.wic", "wt");
-        if (_debugFile == NULL) {
-            reportError(ERR_CLOSE_FILE, strerror(errno));
-        }
-    #endif
+
+void initDebug(void)
+{
+#ifndef NDEBUG
+    _debugFile = wicFopen("debug.wic", "wt");
+    if (_debugFile == NULL) {
+        reportError(ERR_CLOSE_FILE, strerror(errno));
+    }
+#endif
 }
 
-void zapDebug() {
-    #ifndef NDEBUG
-        wicFclose(_debugFile);
-        if (_fileNum != 0) {
-            printf("DEBUG: _fileNum = %d != 0,  at the end!", _fileNum);
-        }
-    #endif
+void zapDebug()
+{
+#ifndef NDEBUG
+    wicFclose(_debugFile);
+    if (_fileNum != 0) {
+        printf("DEBUG: _fileNum = %d != 0,  at the end!", _fileNum);
+    }
+#endif
 }
 
-void debugOut(char *format, ...) {
-    #ifndef NDEBUG
-        va_list arglist;
+void debugOut(char *format, ...)
+{
+#ifndef NDEBUG
+    va_list arglist;
 
-        va_start(arglist, format);
-        if (_debugFile == NULL) {
-            _debugFile = stderr;
-        }
-        if (vfprintf(_debugFile, format, arglist) < 0) {
-            perror("Unable to write to debug file");
-        }
-        va_end(arglist);
-        fflush(_debugFile);
-    #else
-        format = format;
-    #endif
+    va_start(arglist, format);
+    if (_debugFile == NULL) {
+        _debugFile = stderr;
+    }
+    if (vfprintf(_debugFile, format, arglist) < 0) {
+        perror("Unable to write to debug file");
+    }
+    va_end(arglist);
+    fflush(_debugFile);
+#else
+    format = format;
+#endif
 }
 
 /*---------------------------- File IO ----------------------------------*/
@@ -455,7 +476,8 @@ void debugOut(char *format, ...) {
 #define MAX_OPEN_FILES  100   // Actually, OS itself will probably impose
                               // a limit of about 10-40 open files maximum
 
-void wicFclose(FILE *fp) {
+void wicFclose(FILE *fp)
+{
     assert(_fileNum > 0);
     if (fp != NULL) {
         if (fclose(fp)) {
@@ -466,7 +488,8 @@ void wicFclose(FILE *fp) {
     }
 }
 
-FILE *wicFopen(const char *filename, const char *mode) {
+FILE *wicFopen(const char *filename, const char *mode)
+{
     FILE *retval = NULL;
     assert(filename != NULL);
     assert(mode != NULL);
@@ -483,7 +506,8 @@ FILE *wicFopen(const char *filename, const char *mode) {
     return retval;
 }
 
-int fileReadable(char *fname) {
+int fileReadable(char *fname)
+{
     if (_fileNum >= MAX_OPEN_FILES) {
         return 0;
     } else {
@@ -495,7 +519,8 @@ int fileReadable(char *fname) {
 
 static int lineLen = 0;
 
-void dribble(void) {
+void dribble(void)
+{
     int newLineLen = 0;
     static char line[200];
     int         len;
@@ -507,14 +532,14 @@ void dribble(void) {
         newLineLen += sprintf(line+newLineLen, "%s", g_currFileName);
         newLineLen += sprintf(line+newLineLen, "(%d)   ", g_currLineNum);
     }
-    #ifdef NDEBUG
+#ifdef NDEBUG
     newLineLen += sprintf(line+newLineLen, "TOTAL: %d   SYM: %d   ERR: %d",
         g_totalNumLines, g_numSymbols, g_numErrNotDisp);
-    #else
-        newLineLen += sprintf(line+newLineLen,
+#else
+    newLineLen += sprintf(line+newLineLen,
             "TOTAL: %d  SYM: %d   MEM: %d   ERR: %d",
             g_totalNumLines, g_numSymbols, g_memUsed, g_numErrNotDisp);
-    #endif
+#endif
     if (newLineLen > 79) {
         newLineLen = 79;
         line[newLineLen] = 0;
@@ -542,7 +567,8 @@ void wicPrintMessage(char *s)
 }
 
 
-char *setNewFileExt(char *newName, char *oldName, char *newExt) {
+char *setNewFileExt(char *newName, char *oldName, char *newExt)
+{
     int i;
     int len = strlen(oldName);
     int len1;
@@ -564,7 +590,8 @@ char *setNewFileExt(char *newName, char *oldName, char *newExt) {
     return newName;
 }
 
-void setDefaultExt(char *fname, char *ext) {
+void setDefaultExt(char *fname, char *ext)
+{
     int i;
     int len = strlen(fname);
     int len1;
@@ -580,4 +607,3 @@ void setDefaultExt(char *fname, char *ext) {
     fname[len] = '.';
     strcpy( fname + len + 1, ext );
 }
-

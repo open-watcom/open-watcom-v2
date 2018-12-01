@@ -41,10 +41,11 @@
 
 static _trmem_hdl TrHdl;
 
-static void PrintLine( void *handle, const char *buff, size_t len )
-/*****************************************************************/
+static void PrintLine( void *parm, const char *buff, size_t len )
+/****************************************************************/
 {
-    /* unused parameters */ (void)handle;
+    /* unused parameters */ (void)parm;
+
     QWrite( stderr, buff, len, NULL );
     QWriteNL( stderr, NULL );
 }

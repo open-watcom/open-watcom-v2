@@ -36,19 +36,24 @@
 #include "global.h"
 #include "error.h"
 #include "mem.h"
-
 #ifdef TRMEM
 #include "trmemcvr.h"
+#endif
+
+
+#ifdef TRMEM
+
 #define malloc  TRMemAlloc
 #define realloc TRMemRealloc
 #define free    TRMemFree
+
 #endif
 
 void    InitMem( void ) {
 /************************/
 #ifdef TRMEM
     TRMemOpen();
-    TRMemRedirect( stdout->_handle );
+    TRMemRedirect( stdout );
 #endif
 }
 
@@ -69,9 +74,9 @@ void    *MemMalloc( int size ) {
 #ifdef MEM_TRACK
     printf( "ALLOC %lX          size %d\n", tmp, size );
 #endif
-    if( !tmp ) {
+    if( tmp == NULL ) {
         Error( OUT_OF_MEMORY );
-    };
+    }
     return( tmp );
 }
 
@@ -86,9 +91,9 @@ void    *MemRealloc( void *old, int size ) {
     printf( "FREE %lX\n", old );
     printf( "REALLOC %lX                size %d\n", tmp, size );
 #endif
-    if( !tmp ) {
+    if( tmp == NULL ) {
         Error( OUT_OF_MEMORY );
-    };
+    }
     return( tmp );
 }
 
@@ -96,7 +101,7 @@ void    *MemRealloc( void *old, int size ) {
 void    MemFree( void *blck ) {
 /*****************************/
 
-     if( blck ) {
+     if( blck != NULL ) {
          free( blck );
      }
 #ifdef MEM_TRACK
@@ -110,7 +115,7 @@ char    *MemStrDup( const char *src ) {
 
     char                *dst;
 
-    if( !src ) {
+    if( src == NULL ) {
         return( NULL );
     }
 

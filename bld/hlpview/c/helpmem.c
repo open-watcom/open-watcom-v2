@@ -33,24 +33,27 @@
 #include <stdio.h>
 #include "wio.h"
 #include "helpmem.h"
-
 #ifdef TRMEM
     #include "trmemcvr.h"
-    #define malloc      TRMemAlloc
-    #define free        TRMemFree
-    #define realloc     TRMemRealloc
 #endif
 
-static int      memFHdl;
+
+#ifdef TRMEM
+
+#define malloc      TRMemAlloc
+#define free        TRMemFree
+#define realloc     TRMemRealloc
+
+static FILE         *memFP = NULL;
+
+#endif
 
 void HelpMemInit( void )
 {
 #ifdef TRMEM
-    memFHdl= open( "MEMERR", O_WRONLY | O_TRUNC | O_CREAT | O_TEXT, PMODE_RW );
     TRMemOpen();
-    TRMemRedirect( memFHdl );
-#else
-    /* unused parameters */ (void)memFHdl;
+    memFP = fopen( "MEMERR", "w" );
+    TRMemRedirect( memFP );
 #endif
 }
 
@@ -59,12 +62,12 @@ void HelpMemFini( void )
 #ifdef TRMEM
 //    TRMemPrtList();
     TRMemClose();
-    if( tell( memFHdl ) != 0 ) {
+    if( ftell( memFP ) != 0 ) {
         printf( "***************************\n" );
         printf( "* A memory error occurred *\n" );
         printf( "***************************\n" );
     }
-    close( memFHdl );
+    fclose( memFP );
 #endif
 }
 

@@ -33,14 +33,14 @@
 #include "wlib.h"
 #ifdef TRMEM
 #include "trmem.h"
-
-
-static _trmem_hdl   TRMemHandle;
 #endif
+
 
 static MemPtr   *memPtr;
 
 #ifdef TRMEM
+static _trmem_hdl   TRMemHandle;
+
 extern void TRPrintLine( void *parm, const char *buff, size_t len )
 /*****************************************************************/
 {

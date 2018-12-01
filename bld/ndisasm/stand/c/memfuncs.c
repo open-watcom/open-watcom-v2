@@ -39,8 +39,15 @@
 
 #ifdef TRMEM
 static _trmem_hdl   TRMemHandle = NULL;
-static FILE         *TRFileFP;              /* stream to put output on */
-static void         MemPrintLine( void *, const char * buff, size_t len );
+static FILE         *TRFileFP = NULL;       /* stream to put output on */
+
+void MemPrintLine( void *parm, const char *buff, size_t len )
+/***********************************************************/
+{
+    /* unused parameters */ (void)parm;
+
+    fwrite( buff, 1, len, TRFileFP );
+}
 #endif
 
 void MemOpen( void )
@@ -98,13 +105,3 @@ void MemClose( void )
     }
 #endif
 }
-
-#ifdef TRMEM
-void MemPrintLine( void *handle, const char *buff, size_t len )
-/*************************************************************/
-{
-    /* unused parameters */ (void)handle;
-
-    fwrite( buff, 1, len, TRFileFP );
-}
-#endif

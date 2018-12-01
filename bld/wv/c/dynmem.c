@@ -82,21 +82,21 @@ extern int _d16ReserveExt( int );
 
 #ifdef TRMEM
 
-static  int             TrackFile;
+static FILE             *TrackFile = NULL;
 static _trmem_hdl       TRMemHandle;
 
 
 /* extern to avoid problems with taking address and overlays */
 static bool Closing = false;
 
-static void TRPrintLine( void *handle, const char *buff, size_t len )
-/*******************************************************************/
+static void TRPrintLine( void *parm, const char *buff, size_t len )
+/*****************************************************************/
 {
-    handle = handle;
-    len = len;
+    /* unused parameters */ (void)parm;
+
     if( !Closing )
         PopErrBox( buff );
-    write( TrackFile, buff, len );
+    fwrite( buff, 1, len, TrackFile );
 }
 
 static void TRMemOpen( void )
@@ -167,9 +167,9 @@ static void MemTrackInit( void )
 {
     char        name[FILENAME_MAX];
 
-    TrackFile = STDERR_FILENO;
+    TrackFile = stderr;
     if( DUIEnvLkup( "TRMEMFILE", name, sizeof( name ) ) ) {
-        TrackFile = open( name, O_CREAT+O_RDWR+O_TEXT+O_TRUNC );
+        TrackFile = fopen( name, "w" );
     }
     TRMemOpen();
 }
@@ -180,13 +180,14 @@ static const char TrackErr[] = { "Memory Tracker Errors Detected" };
 static void MemTrackFini( void )
 {
     Closing = true;
-    if( TrackFile != STDERR_FILENO ) {
-        if( lseek( TrackFile, 0, SEEK_END ) != 0 ) {
+    if( TrackFile != stderr ) {
+        fseek( TrackFile, 0, SEEK_END );
+        if( ftell( TrackFile ) != 0 ) {
             PopErrBox( TrackErr );
         } else if( TRMemPrtList() != 0 ) {
             PopErrBox( UnFreed );
         }
-        close( TrackFile );
+        fclose( TrackFile );
     }
     TRMemClose();
 }

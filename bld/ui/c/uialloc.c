@@ -34,29 +34,32 @@
 #include <string.h>
 #include "wio.h"
 #include "stdui.h"
-
 #ifdef TRMEM
 #include "trmem.h"
 
 #include "clibext.h"
+#endif
 
 
+#ifdef TRMEM
 _trmem_hdl  UIMemHandle;
-static int  UIMemFileHandle;   /* stream to put output on */
-static void UIMemPrintLine( void *, const char *buff, size_t len );
 
+static FILE *UIMemFileHandle = NULL;    /* stream to put output on */
 static int  UIMemOpened = 0;
 
+static void UIMemPrintLine( void *parm, const char *buff, size_t len )
+{
+    fwrite( buff, 1, len, UIMemFileHandle );
+}
 #endif
 
 #if 0
-void UIMemRedirect( int handle )
+void UIMemRedirect( FILE *fp )
 {
-    handle=handle;
 #ifdef TRMEM
-    UIMemFileHandle = handle;
+    UIMemFileHandle = fp;
 #else
-    handle = handle;
+    /* unused parameters */ (void)fp;
 #endif
 }
 #endif
@@ -67,11 +70,7 @@ void UIMemOpen( void )
     const char      *tmpdir;
 
     if( !UIMemOpened ) {
-#ifdef NLM
-        UIMemFileHandle = STDERR_HANDLE;
-#else
-        UIMemFileHandle = STDERR_FILENO;
-#endif
+        UIMemFileHandle = stderr;
         UIMemHandle = _trmem_open( malloc, free, realloc, NULL,
             &UIMemFileHandle, UIMemPrintLine,
             _TRMEM_ALLOC_SIZE_0 | _TRMEM_REALLOC_SIZE_0 |
@@ -79,7 +78,7 @@ void UIMemOpen( void )
 
         tmpdir = getenv( "TRMEMFILE" );
         if( tmpdir != NULL ) {
-            UIMemFileHandle = open( tmpdir, O_RDWR | O_CREAT | O_TRUNC | O_BINARY, PMODE_RW );
+            UIMemFileHandle = fopen( tmpdir, "w" );
         }
         UIMemOpened = 1;
     }
@@ -91,12 +90,8 @@ void UIMemClose( void )
 #ifdef TRMEM
     _trmem_prt_list( UIMemHandle );
     _trmem_close( UIMemHandle );
-#ifdef NLM
-    if( UIMemFileHandle != STDERR_HANDLE ) {
-#else
-    if( UIMemFileHandle != STDERR_FILENO ) {
-#endif
-        close( UIMemFileHandle );
+    if( UIMemFileHandle != stderr ) {
+        fclose( UIMemFileHandle );
     }
 #endif
 }
@@ -137,14 +132,3 @@ void *uirealloc( void *old, size_t size )
     return( realloc( old, size ) );
 #endif
 }
-
-#ifdef TRMEM
-void UIMemPrintLine( void *handle, const char *buff, size_t len )
-{
-#ifdef TRMEM
-    write( *(int *)handle, buff, len );
-#else
-    handle = handle, buff = buff, len = len;
-#endif
-}
-#endif

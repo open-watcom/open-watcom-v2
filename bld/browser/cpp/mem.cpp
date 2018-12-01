@@ -68,8 +68,10 @@ extern "C" {
 
     static Memory bogus;        // just need to get the ctor's called
 
-    void PrintLine( void *, const char *buf, size_t len )
+    void PrintLine( void *parm, const char *buf, size_t len )
     {
+        /* unused parameters */ (void)parm;
+
         bogus.write( buf, len );
         bogus._numMessages++;
     }

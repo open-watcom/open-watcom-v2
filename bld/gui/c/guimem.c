@@ -42,14 +42,14 @@
 
 #ifdef TRMEM
 _trmem_hdl  GUIMemHandle;
-static FILE *GUIMemFP;          /* stream to put output on */
 
+static FILE *GUIMemFP = NULL;   /* stream to put output on */
 static int  GUIMemOpened = 0;
 
-static void GUIMemPrintLine( void *handle, const char *buff, size_t len )
-/***********************************************************************/
+static void GUIMemPrintLine( void *parm, const char *buff, size_t len )
+/*********************************************************************/
 {
-    /* unused parameters */ (void)handle;
+    /* unused parameters */ (void)parm;
 
     fwrite( buff, 1, len, GUIMemFP );
 }

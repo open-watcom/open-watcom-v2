@@ -166,7 +166,7 @@ void WPMemOpen( void )
 {
 #ifdef TRMEM
     TRMemOpen();
-    TRMemRedirect( STDOUT_FILENO );
+    TRMemRedirect( stdout );
 #endif
 }
 
