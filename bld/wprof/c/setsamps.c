@@ -586,6 +586,7 @@ STATIC void loadImageInfo( image_info * curr_image )
     curr_image->dip_handle = NO_MOD;
     if( curr_image->gather_image ) {
         curr_image->exe_not_found = true;
+        initModuleInfo( curr_image );
     } else {
         if( curr_image->sym_deleted ) {
         } else if( curr_image->sym_name != NULL ) {
@@ -644,13 +645,13 @@ STATIC void loadImageInfo( image_info * curr_image )
                 ErrorMsg( LIT( Exe_Not_Found ), curr_image->name );
             }
         }
-    }
-    if( curr_image->dip_handle != NO_MOD ) {
-        DIPMapInfo( curr_image->dip_handle, curr_image );
-    }
-    initModuleInfo( curr_image );
-    if( curr_image->dip_handle != NO_MOD ) {
-        DIPWalkModList( curr_image->dip_handle, &loadModuleInfo, curr_image );
+        if( curr_image->dip_handle != NO_MOD ) {
+            DIPMapInfo( curr_image->dip_handle, curr_image );
+        }
+        initModuleInfo( curr_image );
+        if( curr_image->dip_handle != NO_MOD ) {
+            DIPWalkModList( curr_image->dip_handle, &loadModuleInfo, curr_image );
+        }
     }
 }
 
