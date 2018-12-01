@@ -3,6 +3,7 @@ SETLOCAL EnableExtensions
 REM Script to build the Open Watcom bootstrap tools
 REM By Microsoft Visual Studio
 REM ...
+set CC=
 set OWROOT=%CD%
 REM ...
 call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" amd64
