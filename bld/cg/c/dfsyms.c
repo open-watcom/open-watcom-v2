@@ -472,7 +472,7 @@ void    DFBegCCU( segment_id code, dw_sym_handle dbg_pch )
     segment_id      old;
 #endif
 
-#ifndef DWARF_CU_REC_NO_PCLO_PCHI
+#ifdef DWARF_CU_REC_NO_PCLO_PCHI
     /* unused parameters */ (void *)code;
 #endif
 
