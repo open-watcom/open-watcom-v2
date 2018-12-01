@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,10 +52,9 @@ extern "C" {
 
 #pragma initialize 40;
 
-unsigned NumMessages = 0;
-
-static _trmem_hdl TrHdl;
-static FILE *TrFileHandle = NULL;
+static unsigned     NumMessages = 0;
+static _trmem_hdl   TrHdl;
+static FILE         *TrFileHandle = NULL;
 
 struct Memory
 {
@@ -189,3 +189,4 @@ Memory::~Memory()
 #endif
 }
 #endif
+

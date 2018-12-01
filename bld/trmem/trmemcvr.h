@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -54,17 +55,18 @@ No special options are required for routines that call the routine in trmemcvr.
 #define _TRMEMCVR_H_INCLUDED
 
 #include <stddef.h>
+#include <stdio.h>
 
 /* open and close the tracker */
 extern void     TRMemOpen( void );
-extern void     TRMemRedirect( int );
+extern void     TRMemRedirect( FILE * );
 extern void     TRMemClose( void );
 
 /* change all calls to malloc, free, realloc and strdup with calls to these */
-extern void *   TRMemAlloc( size_t size );
-extern void     TRMemFree( void * ptr );
-extern void *   TRMemRealloc( void * ptr, size_t size );
-extern char *   TRMemStrdup( const char * str );
+extern void     *TRMemAlloc( size_t size );
+extern void     TRMemFree( void *ptr );
+extern void     *TRMemRealloc( void *ptr, size_t size );
+extern char     *TRMemStrdup( const char *str );
 
 
 /* the rest of these functions are only available if trmemcvr was compiled */
@@ -77,12 +79,13 @@ extern void     TRMemPrtUsage( void );
 extern unsigned TRMemPrtList( void );
 
 /* check that ptr is valid */
-extern int      TRMemValidate( void * ptr );
+extern int      TRMemValidate( void *ptr );
 
 /* check that the heap is valid */
 extern int      TRMemValidateAll( void );
 
 /* check that the len locations starting at start are properly allocated */
-extern int      TRMemChkRange( void * start, size_t len );
+extern int      TRMemChkRange( void *start, size_t len );
 
 #endif
+
