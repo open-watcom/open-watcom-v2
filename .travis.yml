@@ -72,25 +72,6 @@ jobs:
       script: 
         - travis/build.sh
     - # ...
-      name: "Build minimal set of build tools Windows"
-      if: branch = env(OWBRANCH) AND (type = cron OR (type = push AND env(OWTRAVIS_ALL) = 1))
-      os: windows
-      before_install:
-        # stop unwanted services
-#        - travis/services.sh
-        # set environmet variable
-        - export OWTOOLS=VISUALC
-        - export OWTRAVISJOB=BOOTSTRAP
-        - export OWVERBOSE=1
-        # clear cache
-        - rm -rf build/$OWOBJDIR/*
-        - rm -rf bld/watcom/$OWOBJDIR/*
-        - rm -rf test/*
-        - rm -rf build-1/*
-      install:
-      script: 
-        - cmd.exe /c "travis\winboot.cmd"
-    - # ...
       name: "Build minimal set of build tools OSX"
       if: branch = env(OWBRANCH) AND (type = cron OR (type = push AND env(OWTRAVIS_ALL) = 1))
       os: osx
@@ -111,6 +92,25 @@ jobs:
         - . ./cmnvars.sh
       script: 
         - travis/build.sh
+    - # ...
+      name: "Build minimal set of build tools Windows"
+      if: branch = env(OWBRANCH) AND (type = cron OR (type = push AND env(OWTRAVIS_ALL) = 1))
+      os: windows
+      before_install:
+        # stop unwanted services
+#        - travis/services.sh
+        # set environmet variable
+        - export OWTOOLS=VISUALC
+        - export OWTRAVISJOB=BOOTSTRAP
+        - export OWVERBOSE=1
+        # clear cache
+        - rm -rf build/$OWOBJDIR/*
+        - rm -rf bld/watcom/$OWOBJDIR/*
+        - rm -rf test/*
+        - rm -rf build-1/*
+      install:
+      script: 
+        - cmd.exe /c "travis\winboot.cmd"
     #################################
     - stage: Build
       name: "OW tools build Linux"
