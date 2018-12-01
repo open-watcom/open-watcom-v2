@@ -32,23 +32,21 @@
 
 #include "wlib.h"
 #ifdef TRMEM
-#include "wio.h"
 #include "trmem.h"
-
-#include "clibext.h"
 
 
 static _trmem_hdl   TRMemHandle;
-static int          TRFileHandle;   /* stream to put output on */
 #endif
 
 static MemPtr   *memPtr;
 
 #ifdef TRMEM
-extern void TRPrintLine( void *handle, const char *buff, size_t len )
-/*******************************************************************/
+extern void TRPrintLine( void *parm, const char *buff, size_t len )
+/*****************************************************************/
 {
-    posix_write( *(int *)handle, buff, len );
+    /* unused parameters */ (void)parm;
+
+    fwrite( buff, 1, len, stderr );
 }
 #endif
 
@@ -56,13 +54,8 @@ void InitMem( void )
 /******************/
 {
 #ifdef TRMEM
-  #ifdef NLM
-    TRFileHandle = STDERR_HANDLE;
-  #else
-    TRFileHandle = STDERR_FILENO;
-  #endif
     TRMemHandle = _trmem_open( malloc, free, realloc, NULL,
-            &TRFileHandle, TRPrintLine,
+            NULL, TRPrintLine,
             _TRMEM_ALLOC_SIZE_0 | _TRMEM_REALLOC_SIZE_0 |
             _TRMEM_OUT_OF_MEMORY | _TRMEM_CLOSE_CHECK_FREE );
 #endif
