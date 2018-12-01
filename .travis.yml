@@ -97,6 +97,7 @@ jobs:
       if: branch = env(OWBRANCH) AND (type = cron OR (type = push AND env(OWTRAVIS_ALL) = 1))
       os: windows
       before_install:
+        - test -n $CC && unset CC
         # stop unwanted services
 #        - travis/services.sh
         # set environmet variable
@@ -149,6 +150,7 @@ jobs:
       if: branch = env(OWBRANCH) AND (type = cron OR (type = push AND env(OWTRAVIS_ALL) = 1))
       os: windows
       before_install:
+        - test -n $CC && unset CC
         # stop unwanted services
 #        - travis/services.sh
         # set environmet variable
