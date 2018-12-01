@@ -43,9 +43,6 @@
   #define OBJ_EXT        ".obj"
 #endif
 
-#define OWLF2FH(f)      (((int)(pointer_int)(f)) - 1)
-#define FH2OWLF(fh)     ((owl_client_file)(pointer_int)((fh) + 1))
-
 extern int              ExitStatus;
 
 owl_handle              OwlHandle;
@@ -55,7 +52,7 @@ FILE                    *ErrorFile;
 static char             errorFilename[ _MAX_PATH2 ];
 
 static bool             objectDefined = false;
-static int              objFile;
+static FILE             *objFP;
 static char             objName[ _MAX_PATH2 ];
 
 owl_section_handle      CurrentSection;
@@ -111,18 +108,19 @@ void ObjSwitchSection( reserved_section section ) {
 
 static int owl_write( owl_client_file f, const char *buff, size_t size )
 {
-    posix_write( OWLF2FH( f ), buff, size );
+    fwrite( buff, 1, size, f );
     return( 0 );
 }
 
 static long owl_tell( owl_client_file f )
 {
-    return( tell( OWLF2FH( f ) ) );
+    return( ftell( f ) );
 }
 
 static long owl_seek( owl_client_file f, long offset, int where )
 {
-    return( lseek( OWLF2FH( f ), offset, where ) );
+    fseek( f, offset, where );
+    return( ftell( f ) );
 }
 
 bool ObjInit( char *fname ) {
@@ -151,8 +149,8 @@ bool ObjInit( char *fname ) {
     }
     objectDefined = false;      // so that the /fo applies only to the 1st obj
     _makepath( errorFilename, NULL, NULL, name, ".err" );
-    objFile = open( objName, O_CREAT | O_TRUNC | O_BINARY | O_WRONLY, PMODE_RW );
-    if( objFile == -1 ) {
+    objFP = fopen( objName, "wb" );
+    if( objFP == NULL ) {
         AsOutMessage( stderr, UNABLE_TO_CREATE, objName );
         fputc( '\n', stderr );
         return( false );
@@ -160,7 +158,7 @@ bool ObjInit( char *fname ) {
     ErrorFile = fopen( errorFilename, "wt" );
     OwlHandle = OWLInit( &funcs, OBJ_OWL_CPU );
     obj_format = ( _IsOption( OBJ_COFF ) ? OWL_FORMAT_COFF : OWL_FORMAT_ELF );
-    OwlFile = OWLFileInit( OwlHandle, fname, FH2OWLF( objFile ), obj_format, OWL_FILE_OBJECT );
+    OwlFile = OWLFileInit( OwlHandle, fname, objFP, obj_format, OWL_FILE_OBJECT );
     ObjSwitchSection( AS_SECTION_TEXT );
     CurrAlignment = 0;
     return( true );
@@ -489,7 +487,7 @@ void ObjFini( void ) {
 
     ObjFlushLabels();       // In case there're still pending labels
     OWLFileFini( OwlFile );
-    close( objFile );
+    fclose( objFP );
     fclose( ErrorFile );
     if( ErrorsExceeding( 0 ) || ( _IsOption( WARNING_ERROR ) && WarningsExceeding( 0 ) ) ) {
         remove( objName );

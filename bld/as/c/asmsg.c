@@ -67,9 +67,6 @@ static unsigned         msgShift;
 
 #ifdef _STANDALONE_
 
-#define NO_RES_MESSAGE  "Error: could not open message resource file\r\n"
-#define NO_RES_SIZE     (sizeof(NO_RES_MESSAGE)-1)
-
 static HANDLE_INFO      hInstance = {0};
 
 #endif
@@ -88,7 +85,7 @@ bool AsMsgInit( void )
         }
     }
     CloseResFile( &hInstance );
-    posix_write( STDOUT_FILENO, NO_RES_MESSAGE, NO_RES_SIZE );
+    printf( "Error: could not open message resource file\n" );
     return( false );
 #else
     msgShift = _WResLanguage() * TXT_MSG_LANG_SPACING;
