@@ -35,3 +35,4 @@ if not errorlevel == 1 (
         )
     )
 )
+echo ERRORLEVEL=%ERRORLEVEL%

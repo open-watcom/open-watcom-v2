@@ -53,3 +53,4 @@ if "%OWTRAVISJOB%" == "BUILD-2" (
         )
     )
 )
+echo ERRORLEVEL=%ERRORLEVEL%
