@@ -85,7 +85,7 @@ bool AsMsgInit( void )
         }
     }
     CloseResFile( &hInstance );
-    printf( "Error: could not open message resource file\n" );
+    printf( NO_RES_MESSAGE );
     return( false );
 #else
     msgShift = _WResLanguage() * TXT_MSG_LANG_SPACING;

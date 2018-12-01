@@ -38,7 +38,6 @@
 #include <process.h>
 #endif
 #include "bool.h"
-#include "wio.h"
 #include "wtmsg.h"
 #include "wressetr.h"
 #include "wresset2.h"
@@ -46,9 +45,6 @@
 
 #include "clibext.h"
 
-
-#define NO_RES_MESSAGE "Error: could not open message resource file.\r\n"
-#define NO_RES_SIZE (sizeof( NO_RES_MESSAGE ) - 1)
 
 static  HANDLE_INFO     hInstance = { 0 };
 static  unsigned        MsgShift;
@@ -67,7 +63,7 @@ bool MsgInit( void )
         }
     }
     CloseResFile( &hInstance );
-    posix_write( STDOUT_FILENO, NO_RES_MESSAGE, NO_RES_SIZE );
+    printf( NO_RES_MESSAGE );
     return( false );
 }
 

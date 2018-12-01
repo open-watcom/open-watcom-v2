@@ -36,6 +36,11 @@
 # include <windows.h>
 #endif
 
+
+#define NO_RES_MESSAGE          "Error: could not open message resource file.\n"
+#define NO_RES_MESSAGE_PREFIX   "Error: could not open message resource file ("
+#define NO_RES_MESSAGE_SUFFIX   ").\n"
+
 typedef struct handle_info {
     FILE        *fp;
     int         status;

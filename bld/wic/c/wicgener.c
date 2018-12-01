@@ -36,7 +36,6 @@
 #include <malloc.h>
 #include <conio.h>
 #include <sys/types.h>
-#include "wio.h"
 #include "wic.h"
 #include "wressetr.h"
 #include "wresset2.h"
@@ -78,7 +77,7 @@ void initWicResources( char * fname )
         return;
     }
     CloseResFile( &hInstance );
-    fprintf( stderr, "Internal error: Cannot open resources" );
+    printf( NO_RES_MESSAGE );
     wicExit( -1 );
 }
 

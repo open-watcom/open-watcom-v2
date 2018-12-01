@@ -74,7 +74,6 @@ bool Msg_Fini( void )
 #include "wresset2.h"
 #include "wreslang.h"
 
-#define NO_RES_MESSAGE "Error: could not open message resource file.\n"
 
 static  HANDLE_INFO     hInstance = { 0 };
 static  unsigned        MsgShift;

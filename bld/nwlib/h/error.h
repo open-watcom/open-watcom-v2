@@ -31,8 +31,6 @@
 
 #include <setjmp.h>
 
-#define NO_RES_MESSAGE  "Error: could not open message resource file.\r\n"
-#define NO_RES_SIZE     (sizeof( NO_RES_MESSAGE ) - 1)
 
 #define MAX_ERROR_SIZE  256
 
@@ -41,7 +39,7 @@ extern jmp_buf Env;
 extern void InitMsg( void );
 extern void FiniMsg( void );
 extern void FatalError( int str, ... );
-extern void FatalResError( void );
+extern void FatalResError( char *msg );
 extern void DisplayError( int str, ... );
 extern void Warning( int str, ... );
 extern void Message( char *msg, ... );

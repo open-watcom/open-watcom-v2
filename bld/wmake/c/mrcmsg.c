@@ -69,24 +69,21 @@
  * keep it in order.
  */
 static  TABLE_TYPE  PARA_TABLE[] = {
-/*        msgid                         msgtype */
-        { TARGET_ALREADY_M,             "EM" },
-        { SKIPPING_AFTER_ELSE,          "12" },
-        { NOT_ALLOWED_AFTER_ELSE,       "12" },
-        { DELETING_ITEM,                "12" },
-        { NO_DEF_CMDS_FOR_MAKE,         "sE" },
-        { PTARG_IS_TYPE_M,              "EM" },
-        { IMP_ENV_M,                    "EM" },
-        { GETDATE_MSG,                  "sE" }
+/*    msgid                         msgtype */
+    { TARGET_ALREADY_M,             "EM" },
+    { SKIPPING_AFTER_ELSE,          "12" },
+    { NOT_ALLOWED_AFTER_ELSE,       "12" },
+    { DELETING_ITEM,                "12" },
+    { NO_DEF_CMDS_FOR_MAKE,         "sE" },
+    { PTARG_IS_TYPE_M,              "EM" },
+    { IMP_ENV_M,                    "EM" },
+    { GETDATE_MSG,                  "sE" }
 };
 
 #ifndef BOOTSTRAP
 
 static  HANDLE_INFO hInstance = { 0 };
 static  unsigned    MsgShift;
-
-#define NO_RES_MESSAGE "Error: could not open message resource file.\r\n"
-#define NO_RES_SIZE (sizeof( NO_RES_MESSAGE ) - 1)
 
 #endif
 
@@ -104,7 +101,7 @@ bool MsgInit( void )
         }
     }
     CloseResFile( &hInstance );
-    fwrite( NO_RES_MESSAGE, 1, NO_RES_SIZE, stdout );
+    printf( NO_RES_MESSAGE );
     return( false );
 #else
     return( true );

@@ -48,11 +48,13 @@ extern "C" {
 #include <os2.h>
 #endif
 
-static _trmem_hdl TrHdl;
-int TrFileHandle;
-unsigned NumMessages = 0;
 
 #pragma initialize 40;
+
+unsigned NumMessages = 0;
+
+static _trmem_hdl TrHdl;
+static FILE *TrFileHandle = NULL;
 
 struct Memory
 {
@@ -64,8 +66,9 @@ static Memory bogus;    // just need to get the ctors called
 
 void PrintLine( void *parm, const char *buf, size_t len )
 {
-    parm = parm;
-    write( TrFileHandle, (void *) buf, (unsigned int) len );
+    /* unused parameters */ (void)parm;
+
+    fwrite( buf, 1, len, TrFileHandle );
     NumMessages++;
 }
 #endif
@@ -161,10 +164,9 @@ Memory::Memory()
             _TRMEM_ALLOC_SIZE_0 | _TRMEM_REALLOC_SIZE_0 | _TRMEM_REALLOC_NULL |
             _TRMEM_FREE_NULL | _TRMEM_OUT_OF_MEMORY | _TRMEM_CLOSE_CHECK_FREE );
 #ifdef TRMEM_NO_STDOUT
-    TrFileHandle = open( "c:\\tmp\\tracker.txt",
-                                O_RDWR | O_CREAT | O_TRUNC | O_TEXT, S_IRUSR | S_IWUSR );
+    TrFileHandle = fopen( "tracker.txt", "w" );
 #else
-    TrFileHandle = STDOUT_FILENO;
+    TrFileHandle = stdout;
 #endif
 }
 
@@ -172,19 +174,17 @@ Memory::~Memory()
 {
     _trmem_prt_list( TrHdl );
     _trmem_close( TrHdl );
-#ifdef __WINDOWS__
-    close( TrFileHandle );
+#ifdef TRMEM_NO_STDOUT
+    fclose( TrFileHandle );
     if( NumMessages > 1 ) {
+  #ifdef __WINDOWS__
         MessageBox ( NULL, "memory problems detected", "Memory Tracker",
                      MB_ICONINFORMATION | MB_OK | MB_TASKMODAL );
-    }
-#endif
-#ifdef __OS2__
-    close( TrFileHandle );
-    if( NumMessages > 1 ) {
+  #elif defined( __OS2__ )
         WinMessageBox ( HWND_DESKTOP, NULL, "memory problems detected",
                     "Memory Tracker", 0,
                      MB_ICONASTERISK | MB_OK | MB_APPLMODAL );
+  #endif
     }
 #endif
 }

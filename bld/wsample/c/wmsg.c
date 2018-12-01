@@ -46,7 +46,6 @@
     #include "wressetr.h"
     #include "wresset2.h"
 #endif
-#include "wio.h"
 #include "sample.h"
 #include "smpstuff.h"
 #include "wreslang.h"
@@ -54,9 +53,6 @@
 
 #include "clibext.h"
 
-
-#define NO_RES_MESSAGE  "Error: could not open message resource file.\r\n"
-#define NO_RES_SIZE     (sizeof( NO_RES_MESSAGE ) - 1)
 
 char    FAR_PTR         *MsgArray[ERR_LAST_MESSAGE - ERR_FIRST_MESSAGE + 1];
 
@@ -127,7 +123,7 @@ bool MsgInit( void )
         }
     }
     CloseResFile( &hInstance );
-    posix_write( STDOUT_FILENO, NO_RES_MESSAGE, NO_RES_SIZE );
+    printf( NO_RES_MESSAGE );
     return( false );
 }
 #endif

@@ -163,7 +163,7 @@ bool MsgInit( void )
         }
     }
     CloseResFile( &hInstance );
-    printf( "Error: could not open message resource file.\n" );
+    printf( NO_RES_MESSAGE );
     return( false );
 #else
     return( true );

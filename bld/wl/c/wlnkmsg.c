@@ -58,8 +58,6 @@
 #include "clibext.h"
 
 
-#define NO_RES_MESSAGE "could not open message resource file"
-
 static  HANDLE_INFO     hInstance = { 0 };
 static  unsigned        MsgShift;
 

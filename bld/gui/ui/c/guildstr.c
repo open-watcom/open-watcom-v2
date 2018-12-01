@@ -38,7 +38,6 @@
 #include <string.h>
 #include <sys/types.h>
 #include <stdio.h>
-#include "wio.h"
 #include "watcom.h"
 #include "wresdefn.h"
 #include "wressetr.h"
@@ -49,17 +48,6 @@
 #include "seekres.h"
 #include "guildstr.h"
 
-#include "clibext.h"
-
-
-#if defined( __QNX__ ) || defined( __UNIX__ )
-    #define _newline "\n"
-#else
-    #define _newline "\r\n"
-#endif
-
-#define NO_RES_MESSAGE_PREFIX "Error: could not open message resource file ("
-#define NO_RES_MESSAGE_SUFFIX ")." _newline
 
 static  HANDLE_INFO     hInstance = { 0 };
 
@@ -76,9 +64,9 @@ bool GUILoadStrInit( const char *fname )
         return( true );
     }
     CloseResFile( &hInstance );
-    fwrite( NO_RES_MESSAGE_PREFIX, 1, sizeof( NO_RES_MESSAGE_PREFIX ) - 1, stdout );
-    fwrite( fname, 1, strlen( fname ), stdout );
-    fwrite( NO_RES_MESSAGE_SUFFIX, 1, sizeof( NO_RES_MESSAGE_SUFFIX ) - 1, stdout );
+    printf( NO_RES_MESSAGE_PREFIX );
+    printf( fname );
+    printf( NO_RES_MESSAGE_SUFFIX );
     return( false );
 }
 
