@@ -15,29 +15,28 @@ cd %OWROOT%
 call cmnvars.bat
 @echo on off
 REM ...
-if "%OWTRAVIS_DEBUG%" == "1" (
-    echo INCLUDE=%INCLUDE%
-    echo LIB=%LIB%
-    echo LIBPATH=%LIBPATH%
-)
+if not "%OWTRAVIS_DEBUG%" == "1" goto no_env_info
+    echo "INCLUDE=%INCLUDE%"
+    echo "LIB=%LIB%"
+    echo "LIBPATH=%LIBPATH%"
+:no_env_info
 REM ...
 cd %OWSRCDIR%\wmake
 mkdir %OWOBJDIR%
 cd %OWOBJDIR%
 nmake -f ..\nmake clean
 nmake -f ..\nmake
-if not errorlevel == 1 (
+if errorlevel == 1 goto error_exit
     cd %OWSRCDIR%\builder
     mkdir %OWOBJDIR%
     cd %OWOBJDIR%
     %OWBINDIR%\wmake -f ..\binmake clean
     %OWBINDIR%\wmake -f ..\binmake bootstrap=1 builder.exe
-    if not errorlevel == 1 (
-	cd %OWSRCDIR%
-        if "%TRAVIS_EVENT_TYPE%" == "pull_request" (
-            builder boot
-        ) else (
-            builder -q boot
-        )
+    if errorlevel == 1 goto error_exit
+    cd %OWSRCDIR%
+    if "%TRAVIS_EVENT_TYPE%" == "pull_request" (
+        builder boot
+    ) else (
+        builder -q boot
     )
-)
+:error_exit

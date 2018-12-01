@@ -15,38 +15,38 @@ cd %OWROOT%
 call cmnvars.bat
 set OWDOSBOX=%OWROOT%\travis\dosbox\dosbox.exe
 REM ...
-if "%OWTRAVIS_DEBUG%" == "1" (
-    echo INCLUDE=%INCLUDE%
-    echo LIB=%LIB%
-    echo LIBPATH=%LIBPATH%
-)
+if not "%OWTRAVIS_DEBUG%" == "1" goto no_env_info
+    echo "INCLUDE=%INCLUDE%"
+    echo "LIB=%LIB%"
+    echo "LIBPATH=%LIBPATH%"
+:no_env_info
 REM ...
 @echo on off
 cd %OWSRCDIR%
-if "%OWTRAVISJOB%" == "BUILD" (
+if not "%OWTRAVISJOB%" == "BUILD" goto no_build
     if "%TRAVIS_EVENT_TYPE%" == "pull_request" (
         builder build
     ) else (
         builder -q build
-	set OWRELROOT=%OWROOT%\test
-	builder -q cprel
+	    set OWRELROOT=%OWROOT%\test
+	    builder -q cprel
     )
-}
-if "%OWTRAVISJOB%" == "BUILD-1" (
+:no_build
+if not "%OWTRAVISJOB%" == "BUILD-1" goto no_build1
     if "%TRAVIS_EVENT_TYPE%" == "pull_request" (
         builder build1
     ) else (
         builder -q build1
-	set OWRELROOT=%OWROOT%\test
-	builder -q cprel1
+	    set OWRELROOT=%OWROOT%\test
+	    builder -q cprel1
     )
-}
-if "%OWTRAVISJOB%" == "BUILD-2" (
+:no_build1
+if not "%OWTRAVISJOB%" == "BUILD-2" goto no_build2
     if "%TRAVIS_EVENT_TYPE%" == "pull_request" (
         builder build2
     ) else (
         builder -q build2
-	set OWRELROOT=%OWROOT%\test
-	builder -q cprel2
+	    set OWRELROOT=%OWROOT%\test
+	    builder -q cprel2
     )
-}
+:no_build2
