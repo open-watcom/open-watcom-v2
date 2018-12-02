@@ -66,12 +66,12 @@ enum allocation_state {
     ALLOC_CONST_TEMP
 };
 
-static  bool    ContainedIn( name *name1, name *name2 ) {
+static  bool    ContainedIn( name *name1, name *name2 )
 /********************************************************
     Returns true if name1 is completely contained within the location
     occupied by name2
 */
-
+{
     if( name1->n.class != name2->n.class )
         return( false );
     if( name1->n.class == N_TEMP ) {
@@ -93,13 +93,12 @@ static  bool    ContainedIn( name *name1, name *name2 ) {
 }
 
 
-static  hw_reg_set      SearchTree( reg_tree *tree,
-                                    name *opnd, hw_reg_set reg ) {
+static hw_reg_set   SearchTree( reg_tree *tree, name *opnd, hw_reg_set reg )
 /*****************************************************************
     Given a register "reg", and a reg_tree "tree", return the
     appropriate piece of "reg" to be associated with name "opnd".
 */
-
+{
     if( tree->offset == opnd->v.offset && tree->size == opnd->n.size ) {
         return( reg );
     }
@@ -111,21 +110,20 @@ static  hw_reg_set      SearchTree( reg_tree *tree,
 }
 
 
-static  name    *FindReg( reg_tree *tree, name *opnd, name *reg ) {
+static  name    *FindReg( reg_tree *tree, name *opnd, name *reg )
 /******************************************************************
     see SearchTree
 */
-
+{
     return( AllocRegName( SearchTree( tree, opnd, reg->r.reg ) ) );
 }
 
 
-static  name    *ReplIndex( instruction *ins,
-                            reg_tree *tree, name *x, name *reg ) {
+static name *ReplIndex( instruction *ins, reg_tree *tree, name *x, name *reg )
 /*****************************************************************
     Replace the index field of "x" with register "reg" in instruction "ins".
 */
-
+{
     name        *new_x;
 
     ins->t.index_needs = RL_;
@@ -160,9 +158,9 @@ static  void    AssignMoreBits( void )
 
 
 #if 0 /* 2007-07-10 RomanT -- This method is not used anymore */
-static  void    InitAChoice( name *temp ) {
-/*****************************************/
-
+static  void    InitAChoice( name *temp )
+/***************************************/
+{
     name        *alias;
 
     if( temp->n.class != N_TEMP )
@@ -224,7 +222,7 @@ static  void    InitChoices( void )
 }
 
 
-static  void    ReAlias( reg_tree *tree ) {
+static  void    ReAlias( reg_tree *tree )
 /******************************************
     Given a name tree, turn all temporaries into MASTER (not ALIAS)
     temporaries if their ancestor in the tree has no restrictions on
@@ -232,7 +230,7 @@ static  void    ReAlias( reg_tree *tree ) {
     part of a temporary so they may be treated separately during
     register allocation.
 */
-
+{
     name        *curr;
     name        *new_ring;
     name        **owner;
@@ -250,7 +248,7 @@ static  void    ReAlias( reg_tree *tree ) {
             new_ring = NULL;
             for( ;; ) {
                 curr = *owner;
-                if( curr->v.offset < begpoint || curr->v.offset + curr->n.size > endpoint ) {
+                if( curr->v.offset < begpoint || ( curr->v.offset + curr->n.size ) > endpoint ) {
                     owner = &curr->t.alias;
                 } else {
                     *owner = curr->t.alias;
@@ -306,7 +304,7 @@ static  bool    SplitConflicts( void )
 }
 
 
-void    NullConflicts( var_usage off ) {
+void    NullConflicts( var_usage off )
 /***********************************************
     Turn off the usage attributes for each temporary, and null the
     conflict field.  This is called in preparation for calling
@@ -316,13 +314,13 @@ void    NullConflicts( var_usage off ) {
     bit is initially turned on for all front end symbols since we don't
     know how it is going to be used.
 */
-
+{
     name        *temp;
 
     for( temp = Names[N_TEMP]; temp != NULL; temp = temp->n.next_name ) {
         temp->v.conflict = NULL;
-        temp->v.usage &= (USE_IN_ANOTHER_BLOCK|USE_MEMORY|USE_ADDRESS|VAR_VOLATILE|NEEDS_MEMORY|HAS_MEMORY);
-        if( ( temp->v.usage & (USE_MEMORY|USE_ADDRESS|VAR_VOLATILE|NEEDS_MEMORY) ) == 0 ) {
+        temp->v.usage &= (USE_IN_ANOTHER_BLOCK | USE_MEMORY | USE_ADDRESS | VAR_VOLATILE | NEEDS_MEMORY | HAS_MEMORY);
+        if( (temp->v.usage & (USE_MEMORY | USE_ADDRESS | VAR_VOLATILE | NEEDS_MEMORY)) == 0 ) {
             temp->v.usage &= ~off;
         }
         temp->v.block_usage = 0;
@@ -331,21 +329,21 @@ void    NullConflicts( var_usage off ) {
 
 
 static  bool  FixInstructions( conflict_node *conf, reg_tree *tree,
-                               hw_reg_set reg, bool need_live_update ) {
+                               hw_reg_set reg, bool need_live_update )
 /***********************************************************************
     Run the the instruction list assigning register "reg" to conflict
     "conf" whose tree is "tree".  "need_live_info_update" will be set to
     false if the caller of this function is going to update the live
     information itself.
 */
-
+{
     name                *reg_name;
 #define _InRegAssgn
 #include "savcache.h"
 
     reg_name = AllocRegName( reg );
-    if( ( conf->name->v.usage & USE_IN_ANOTHER_BLOCK )
-      && ( conf->name->v.usage & ( NEEDS_MEMORY | USE_ADDRESS ) ) ) {
+    if( (conf->name->v.usage & USE_IN_ANOTHER_BLOCK)
+      && (conf->name->v.usage & (NEEDS_MEMORY | USE_ADDRESS)) ) {
         conf->name->v.usage |= USE_MEMORY;
     }
     opnd = tree->temp;
@@ -368,30 +366,29 @@ static  bool  FixInstructions( conflict_node *conf, reg_tree *tree,
 }
 
 
-static  bool    Idx( name *op ) {
+static  bool    Idx( name *op )
 /********************************
     Return true if "op" is a name that has been used as the index field
     of an N_INDEXED (eg: 5[t1])
 */
-
+{
     if( op == NULL )
         return( false );
     if( op->n.class != N_TEMP )
         return( false );
-    if( ( op->t.temp_flags & INDEXED ) == 0 )
+    if( (op->t.temp_flags & INDEXED) == 0 )
         return( false );
     return( true );
 }
 
 
-static  void    BitOff( conflict_node *conf ) {
+static  void    BitOff( conflict_node *conf )
 /**********************************************
     Run through the instruction turning the bits for conflict "conf" off
     in the live information.  (Done after it's been given a register or
     stuffed in memory).
 */
-
-
+{
     block       *blk;
     instruction *ins;
     instruction *last;
@@ -413,9 +410,9 @@ static  void    BitOff( conflict_node *conf ) {
 }
 
 
-static  signed_32     CountRegMoves( conflict_node *conf,
+static signed_32     CountRegMoves( conflict_node *conf,
                                hw_reg_set reg, reg_tree *tree,
-                               int levels ) {
+                               int levels )
 /********************************************
     For a conflict "conf", whose tree is "tree", count the number of
     instructions of the form (1) "MOV Rn => Rn" or (2) "OP Rn,x => Rn"
@@ -423,7 +420,7 @@ static  signed_32     CountRegMoves( conflict_node *conf,
     are good things to create since the go away (1) or are easy to
     generate in one machine instruction (2).
 */
-
+{
     block               *blk;
     instruction         *ins;
     instruction         *last;
@@ -431,7 +428,7 @@ static  signed_32     CountRegMoves( conflict_node *conf,
     int                 half;
     name                *reg_name;
     name                *op1;
-#if _TARGET & (_TARG_80386|_TARG_IAPX86|_TARG_370)
+#if _TARGET & (_TARG_80386 | _TARG_IAPX86 | _TARG_370)
     name                *op2;
 #endif
     name                *res;
@@ -460,7 +457,7 @@ static  signed_32     CountRegMoves( conflict_node *conf,
             ins = blk->ins.hd.next;
         } else {
             if( ins->head.opcode != OP_MOV ) {
-#if _TARGET & (_TARG_80386|_TARG_IAPX86|_TARG_370)
+#if _TARGET & (_TARG_80386 | _TARG_IAPX86 | _TARG_370)
                 op1 = NULL;
                 op2 = NULL;
                 if( ins->num_operands != 0 ) {
@@ -528,14 +525,14 @@ static  signed_32     CountRegMoves( conflict_node *conf,
             ins = ins->head.next;
         }
     }
-#if ( _TARGET & _TARG_370 )
-    if( 1 ) {
-#else
+#if ( _TARGET & _TARG_370 ) == 0
     if( _IsModel( SUPER_OPTIMAL ) ) {
 #endif
         count += CountRegMoves( conf, HighOffsetReg( reg ), tree->hi, levels );
         count += CountRegMoves( conf, LowOffsetReg( reg ), tree->lo, levels );
+#if ( _TARGET & _TARG_370 ) == 0
     }
+#endif
     if( _IsModel( SUPER_OPTIMAL ) ) {
         /*
          * This is really expensive, compile time-wise, but what it does is
@@ -551,7 +548,8 @@ static  signed_32     CountRegMoves( conflict_node *conf,
         hw_reg_set      saved_regs;
 
         saved_regs = MustSaveRegs();
-        if( !HW_Ovlap( saved_regs, reg ) ) count += 2;
+        if( !HW_Ovlap( saved_regs, reg ) )
+            count += 2;
         count <<= levels;
         if( count != 0 || levels == 0 )
             return( count );
@@ -590,13 +588,13 @@ static  signed_32     CountRegMoves( conflict_node *conf,
 }
 
 
-static  bool    UnaryOpGetsReg( instruction *ins, hw_reg_set reg,
-                                name *op ) {
+static  bool    UnaryOpGetsReg( instruction *ins, hw_reg_set reg, name *op )
 /******************************************************************************
     return true if this is a unary operator and we can generate code
     given that the result or operand gets a register (a little machine specific
     but I don't know of any machines for which this isn't true).
 */
+{
      return( OpcodeNumOperands( ins ) == 1 && ins->result != NULL &&
             !IsSegReg( reg ) && ins->head.opcode != OP_CONVERT &&
             ( ins->operands[0] == op || ins->result == op ) );
@@ -605,11 +603,11 @@ static  bool    UnaryOpGetsReg( instruction *ins, hw_reg_set reg,
 
 static  bool    StealsSeg( instruction *ins,
                            hw_reg_set reg, hw_reg_set except,
-                           name *actual_op ) {
+                           name *actual_op )
 /***************************************************************
     Does giving "reg" to "conf" steal the last segment away from "ins"?
 */
-
+{
     hw_reg_set          *index_needs;
     name                *op;
     conflict_node       *new_conf;
@@ -637,13 +635,12 @@ static  bool    StealsSeg( instruction *ins,
 }
 
 
-static  bool    StealsIdx( instruction *ins,
-                           hw_reg_set except, name *actual_op ) {
+static bool StealsIdx( instruction *ins, hw_reg_set except, name *actual_op )
 /****************************************************************
     Does precluding the set of regiseters "except" from operands of
     "ins" make it impossible to generate an indexed addressing mode?
 */
-
+{
     hw_reg_set          *index_needs;
     name                *op;
     conflict_node       *new_conf;
@@ -772,13 +769,13 @@ static  bool_maybe TooGreedy( conflict_node *conf, hw_reg_set reg, name *op )
 }
 
 
-static  void    CheckIndexZap( conflict_node *conf, block *blk, instruction *ins ) {
+static  void    CheckIndexZap( conflict_node *conf, block *blk, instruction *ins )
 /***********************************************************************************
     If the given instruction uses the name for conf as an index in the result,
     then mark the conflict as conflicting with anything in the instructions
     zap set, as the zap will take place before the result is written.
 */
-
+{
     name        *dst;
 
     dst = ins->result;
@@ -790,14 +787,14 @@ static  void    CheckIndexZap( conflict_node *conf, block *blk, instruction *ins
 }
 
 
-static  void    NeighboursUse( conflict_node *conf ) {
+static  void    NeighboursUse( conflict_node *conf )
 /*****************************************************
     Calculate which conflicts "conf" could not share the same register
     with by running through the live range of the conflict and checking
     what other conflicts are live and what registers are live or
     modified at a point where "conf" is also live.
 */
-
+{
     block               *blk;
     instruction         *ins;
     name                *dst;
@@ -838,18 +835,15 @@ static  void    NeighboursUse( conflict_node *conf ) {
                         _NameSetInit( no_conflict );
                     }
                 } else if( ins->operands[0] == conf->name ) {
-                    NowAlive( dst, FindConflictNode( dst, blk, ins ),
-                                    &no_conflict, blk );
+                    NowAlive( dst, FindConflictNode( dst, blk, ins ), &no_conflict, blk );
                 } else if( dst == conf->name ) {
                     _NameSetInit( no_conflict );
                     definition = ins->operands[0];
-                    NowAlive( definition,
-                              FindConflictNode( definition, blk, ins ),
-                              &no_conflict, blk );
+                    NowAlive( definition, FindConflictNode( definition, blk, ins ), &no_conflict, blk );
                 }
                 /* it only conflicts if temp is live across result/zap*/
                 if( ins != last ) {
-                    if( ( conf->name->v.usage & ( NEEDS_MEMORY | USE_ADDRESS ) )
+                    if( (conf->name->v.usage & (NEEDS_MEMORY | USE_ADDRESS))
                      || ( _LBitEmpty( conf->id.within_block ) && _GBitEmpty( conf->id.out_of_block ) )
                      || ( _LBitOverlap( conf->id.within_block, ins->head.next->head.live.within_block ) )
                      || ( _GBitOverlap( conf->id.out_of_block, ins->head.next->head.live.out_of_block ) ) ) {
@@ -883,8 +877,7 @@ static  void    NeighboursUse( conflict_node *conf ) {
                 _LBitTurnOff( lbit, no_conflict.within_block );
                 _LBitTurnOn( conf->with.within_block, lbit );
             }
-            if( ins->head.opcode == OP_CALL
-                        || ins->head.opcode == OP_CALL_INDIRECT ) {
+            if( ins->head.opcode == OP_CALL || ins->head.opcode == OP_CALL_INDIRECT ) {
                 _NameSetInit( no_conflict );
             } else if( ins->head.opcode == OP_BLOCK ) {
                 _LBitInit( conf->with.within_block, EMPTY );
@@ -926,8 +919,8 @@ static  void    NeighboursUse( conflict_node *conf ) {
 }
 
 
-static  hw_reg_set      GiveBestReg( conflict_node *conf, reg_tree *tree,
-                                     hw_reg_set except, bool needs_one ) {
+static hw_reg_set   GiveBestReg( conflict_node *conf, reg_tree *tree,
+                                     hw_reg_set except, bool needs_one )
 /*************************************************************************
     Give the best possible register to conflict "conf", (whose tree is
     "tree"), excluding registers in the set "except".  The best register
@@ -938,7 +931,7 @@ static  hw_reg_set      GiveBestReg( conflict_node *conf, reg_tree *tree,
     this routine fails, but needs_one is true, something truly bad has
     happened.
 */
-
+{
     hw_reg_set  reg;
     hw_reg_set  best;
     int         best_saves;
@@ -1035,12 +1028,12 @@ static  hw_reg_set      GiveBestReg( conflict_node *conf, reg_tree *tree,
 }
 
 
-bool    AssignARegister( conflict_node *conf, hw_reg_set reg ) {
+bool    AssignARegister( conflict_node *conf, hw_reg_set reg )
 /***********************************************************************
     Used to assign register "reg" to conflict "conf", before we've
     started the true register allocator.  (used by I87REG.C)
 */
-
+{
     bool        need_live_update;
 
     BuildRegTree( conf );
@@ -1052,14 +1045,14 @@ bool    AssignARegister( conflict_node *conf, hw_reg_set reg ) {
 }
 
 
-static  void    PutInMemory( conflict_node *conf ) {
+static  void    PutInMemory( conflict_node *conf )
 /***************************************************
     Put "conf" into memory.  Also if the conflict is only used by one
     instruction, its useless, so we zap that instruction to not get
     generated.  We also turn the bit for "conf" off in the live
     information
 */
-
+{
     block       *blk;
     instruction *ins;
     instruction *first;
@@ -1114,14 +1107,14 @@ static  void    PutInMemory( conflict_node *conf ) {
 }
 
 
-conflict_node   *InMemory( conflict_node *conf ) {
+conflict_node   *InMemory( conflict_node *conf )
 /*********************************************************
     Put conflict "conf" and all other conflicts associated with the same
     name as "conf" into memory.  Sorry charlie, no register.
     Save conf as last to go so it's next_conf will be valid in case
     a bunch got freed in MemConstTemp
 */
-
+{
     conflict_node       *next;
     conflict_node       *conf_list;
 
@@ -1140,8 +1133,8 @@ conflict_node   *InMemory( conflict_node *conf ) {
 }
 
 
-conflict_node   *GiveRegister( conflict_node *conf, bool needs_one ) {
-/*****************************************************************************
+conflict_node   *GiveRegister( conflict_node *conf, bool needs_one )
+/**********************************************************************
     Give a register to conflict "conf", if at all possible.  The
     NEEDS_INDEX and NEEDS_SEGMENT stuff is just saying that if we tried
     to give a register to a conflict that needs to be an index or
@@ -1159,7 +1152,7 @@ conflict_node   *GiveRegister( conflict_node *conf, bool needs_one ) {
     very short lived temporary, which will be guaranteed to get the
     right type of register (ensured by TooGreedy).
 */
-
+{
     reg_tree            *tree;
     conflict_node       *next_valid;
     hw_reg_set          given;
@@ -1197,11 +1190,11 @@ conflict_node   *GiveRegister( conflict_node *conf, bool needs_one ) {
 }
 
 
-static  bool            ConfBefore( void *c1, void *c2 ) {
+static bool         ConfBefore( void *c1, void *c2 )
 /*********************************************************
     used by SortConflicts
 */
-
+{
     return( ((conflict_node *)c1)->savings > ((conflict_node *)c2)->savings );
 }
 
@@ -1304,7 +1297,7 @@ void    ReConstFold( void )
 }
 
 
-bool    RegAlloc( bool keep_on_truckin ) {
+bool    RegAlloc( bool keep_on_truckin )
 /*************************************************
     Allocate registers to variables while expanding instructions.
     Instructions are expanded until they correspond 1 to 1 with machine
@@ -1318,7 +1311,7 @@ bool    RegAlloc( bool keep_on_truckin ) {
     and gives out registers in turn until no more instructions or
     operands need work.
 */
-
+{
     int unknowns;
     enum allocation_state       last;
 
