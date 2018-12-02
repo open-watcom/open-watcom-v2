@@ -179,7 +179,7 @@ jobs:
         - . ./cmnvars.sh
       script: 
         # load build-1 from cache
-        - cp -Rn build-1/* $OWSRCDIR
+        - cp -Rn build-1/* $OWSRCDIR; true
         - travis/build.sh
     #################################
     - stage: Tests
