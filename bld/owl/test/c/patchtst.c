@@ -35,31 +35,25 @@
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <io.h>
-#include <fcntl.h>
-
-#include "clibext.h"
 
 
 #define BUFFER_SIZE     1024
 
-#define OWLF2FH(f)      (((int)(pointer_int)(f)) - 1)
-#define FH2OWLF(fh)     ((owl_client_file)(pointer_int)((fh) + 1))
-
 static int owl_write( owl_client_file f, const char *buff, size_t size )
 {
-    posix_write( OWLF2FH( f ), buff, size );
+    fwrite( buff, 1, size, f );
     return( 0 );
 }
 
 static long owl_tell( owl_client_file f )
 {
-    return( tell( OWLF2FH( f ) ) );
+    return( ftell( f ) );
 }
 
 static long owl_seek( owl_client_file f, long offset, int where )
 {
-    return( lseek( OWLF2FH( f ), offset, where ) );
+    fseek( f, offset, where );
+    return( ftell( f ) );
 }
 
 void main( int argc, char *argv[] ) {
@@ -71,14 +65,14 @@ void main( int argc, char *argv[] ) {
     unsigned            i, test_size;
 
     owl = OWLInit( &funcs, OWL_CPU_PPC );
-    file = OWLFileInit( owl, "test", FH2OWLF( STDOUT_FILENO ), OWL_FORMAT_ELF, OWL_FILE_OBJECT );
+    file = OWLFileInit( owl, "test", stdout, OWL_FORMAT_ELF, OWL_FILE_OBJECT );
     buffer = OWLBufferInit( file );
     test_size = ( ( argc > 1 ) ? atoi( argv[ 1 ] ) : 8192 ) / sizeof( i );
     for( i = 0; i < test_size; i++ ) {
         OWLBufferWrite( buffer, &i, sizeof( i ) );
     }
     OWLBufferEmit( buffer );
-    write( STDOUT_FILENO, "PASS2", strlen( "PASS2" ) );
+    fwrite( "PASS2", 1, strlen( "PASS2" ), stdout );
     for( i = 0; i < test_size; i++ ) {
         OWLBufferPatch( buffer, i * 4, i );
     }
