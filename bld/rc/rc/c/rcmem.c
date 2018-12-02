@@ -40,17 +40,17 @@
 #include "rcalloc1.h"
 
 #ifdef RC_USE_TRMEM
-    #include "trmem.h"
+#include "trmem.h"
 
 
-    _trmem_hdl RcMemHandle = NULL;
+static _trmem_hdl   RcMemHandle = NULL;
 
-    static void RcPutLine( void *dummy, const char *buf, size_t len )
-    /***************************************************************/
-    {
-        dummy = dummy;
-        printf( buf );
-    }
+static void RcPutLine( void *dummy, const char *buf, size_t len )
+/***************************************************************/
+{
+    dummy = dummy;
+    printf( buf );
+}
 #endif
 
 void RcMemInit( void )
