@@ -560,7 +560,7 @@
 .fnc intdos                     intdos.gml      DOS
 .fnc intdosx                    intdosx.gml     DOS
 .fnc intr                       intr.gml        DOS QNX W
-.fnc intrf                      intr.gml        DOS QNX W
+.fnc intrf                      intrf.gml       DOS QNX W
 .fnc isalkana                   isalkana.gml    NEC
 .fnc isalnmkana                 isalnmkana.gml  NEC
 .fnc isalnum                    isalnum.gml     DOS QNX W WIN32

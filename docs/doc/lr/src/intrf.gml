@@ -1,7 +1,7 @@
-.func intr
+.func intrf
 .synop begin
 #include <i86.h>
-void intr( int inter_no, union REGPACK *regs );
+void intrf( int inter_no, union REGPACK *regs );
 .ixfunc2 '&CpuInt' &funcb
 .synop end
 .desc begin
@@ -15,8 +15,11 @@ Before the interrupt, the CPU registers are loaded from the structure
 located by
 .arg regs
 .ct .li
- and low 8-bit of CPU flags are set to 0 for
-.id &funcb.
+ and low 8-bit of CPU flags are set to flags member of the structure
+.arg regs
+.ct .li
+ for
+.id &funcb.f
 function.
 .np
 All of the segment registers must contain valid values.
@@ -29,11 +32,14 @@ Following the interrupt, the structure located by
 is filled with the contents of the CPU registers.
 .np
 .id &funcb.
-functions are similar to the
+functions is similar to the
 .kw int86x
-function, except that only one structure is used for the register
+function. Exception is that only one structure is used for the register
 values and that the BP (EBP in 386 library) register is included in
-the set of registers that are passed and saved.
+the set of registers that are passed and saved and that CPU flags are
+set to flags member of the structure
+.arg regs
+.
 .np
 You should consult the technical documentation for the computer that
 you are using to determine the expected register contents before and
@@ -61,7 +67,8 @@ void main() /* Print location of Break Key Vector */
 .exmp break
     memset( &regs, 0, sizeof(union REGPACK) );
     regs.w.ax = 0x3523;
-    intr( 0x21, &regs );
+    regs.w.flags = 0;
+    intrf( 0x21, &regs );
     printf( "Break Key vector is "
 #if defined(__386__)
             "%x:%lx\n", regs.w.es, regs.x.ebx );
