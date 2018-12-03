@@ -76,8 +76,8 @@ static type_class_def   OneClass[] = {
 
 type_length     TypeClassSize[XX + 1];
 
-static name *AllocName( int class, type_class_def type_class, type_length size )
-/******************************************************************************/
+static name *AllocName( name_class_def class, type_class_def type_class, type_length size )
+/*****************************************************************************************/
 {
     name        *new;
 
