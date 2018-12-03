@@ -369,15 +369,15 @@ void GenJType( uint_8 opcode, pointer label )
 }
 
 
-static  void GenFloatRType( type_class_def type, uint_8 fnc, uint_8 fd, uint_8 fs, uint_8 ft )
-/********************************************************************************************/
+static  void GenFloatRType( type_class_def type_class, uint_8 fnc, uint_8 fd, uint_8 fs, uint_8 ft )
+/**************************************************************************************************/
 {
     int                 fmt;
 
     // Select operand format
-    if( type == FS ) {
+    if( type_class == FS ) {
         fmt = 0x10;
-    } else if( type == FD || type == FL ) {
+    } else if( type_class == FD || type_class == FL ) {
         fmt = 0x11;
     } else {
         fmt = 0;
@@ -672,12 +672,12 @@ static  void GenCallIndirect( instruction *call )
 }
 
 
-static  void doZero( instruction *ins, type_class_def class )
-/***********************************************************/
+static  void doZero( instruction *ins, type_class_def type_class )
+/****************************************************************/
 {
     unsigned    size;
 
-    size = TypeClassSize[class];
+    size = TypeClassSize[type_class];
     switch( size ) {
     case 1:
         // 'andi res,op1,0x00ff'
@@ -693,8 +693,8 @@ static  void doZero( instruction *ins, type_class_def class )
 }
 
 
-static  void doSignExtend( instruction *ins, type_class_def from )
-/****************************************************************/
+static  void doSignExtend( instruction *ins, type_class_def type_class )
+/**********************************************************************/
 {
     unsigned    from_size;
     int         res_index;
@@ -703,7 +703,7 @@ static  void doSignExtend( instruction *ins, type_class_def from )
 
     res_index = _NameReg( ins->result );
     src_index = _NameReg( ins->operands[0] );
-    from_size = TypeClassSize[from];
+    from_size = TypeClassSize[type_class];
     if( from_size == 4 ) {
         // 'addu rd,$zero,rs' - MIPS64 only?
         GenRType( 0x00, 0x21, res_index, MIPS_ZERO_SINK, src_index );

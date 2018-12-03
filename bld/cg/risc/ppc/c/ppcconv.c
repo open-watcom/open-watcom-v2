@@ -221,17 +221,17 @@ bool    CvtOk( type_class_def fr, type_class_def to )
     return( false );
 }
 
-static instruction *doConversion( instruction *ins, type_class_def class )
-/************************************************************************/
+static instruction *doConversion( instruction *ins, type_class_def type_class )
+/*****************************************************************************/
 {
     name            *temp;
     instruction     *new_ins;
 
-    temp = AllocTemp( class );
-    new_ins = MakeConvert( ins->operands[0], temp, class, ins->base_type_class );
+    temp = AllocTemp( type_class );
+    new_ins = MakeConvert( ins->operands[0], temp, type_class, ins->base_type_class );
     new_ins->table = NULL;
     ins->operands[0] = temp;
-    ins->base_type_class = class;
+    ins->base_type_class = type_class;
     PrefixIns( ins, new_ins );
     UpdateLive( new_ins, ins );
     return( new_ins );
@@ -247,8 +247,8 @@ instruction     *rDOCVT( instruction *ins )
 
     src = ins->operands[0];
     dst = ins->result;
-    if( src->n.name_class != XX && ins->base_type_class == XX ) {
-        ins->base_type_class = src->n.name_class;
+    if( src->n.type_class != XX && ins->base_type_class == XX ) {
+        ins->base_type_class = src->n.type_class;
     }
     ins->head.state = INS_NEEDS_WORK;
     if( src->n.class == N_CONSTANT && src->c.const_type == CONS_ABSOLUTE

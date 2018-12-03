@@ -138,7 +138,7 @@
 
 #endif
 
-    class = opnd->n.name_class;
+    class = opnd->n.type_class;
     blk = conf->start_block;
     ins = conf->ins_range.first;
     last = false;

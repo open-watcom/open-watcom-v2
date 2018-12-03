@@ -218,8 +218,8 @@ an      BGCall( cn call, bool use_return, bool in_line )
                 temp = AllocTemp( WD ); /* assume near pointer*/
                 AddIns( MakeMove( reg_name, temp, WD ) );
                 temp = SAllocIndex( temp, NULL, 0,
-                                    result->n.name_class, call->tipe->length );
-                AddIns( MakeMove( temp, result, result->n.name_class ) );
+                                    result->n.type_class, call->tipe->length );
+                AddIns( MakeMove( temp, result, result->n.type_class ) );
             }
         } else {
             call_ins->result = result;
@@ -244,7 +244,7 @@ an      BGCall( cn call, bool use_return, bool in_line )
         reg_name = AllocRegName( state->return_reg );
         AddCall( call_ins, call );
         if( use_return ) {
-            ret_ins = MakeMove( reg_name, result, result->n.name_class );
+            ret_ins = MakeMove( reg_name, result, result->n.type_class );
             if( HW_COvlap( reg_name->r.reg, HW_FLTS ) ) {
                 ret_ins->stk_entry = 1;
                 ret_ins->stk_exit = 0;
@@ -359,9 +359,9 @@ static  void    AddCall( instruction *ins, cn call ) {
 reg_set_index   CallIPossible( instruction *ins )
 /***********************************************/
 {
-     if( ins->operands[CALL_OP_ADDR]->n.name_class == CP )
+     if( ins->operands[CALL_OP_ADDR]->n.type_class == CP )
         return( RL_ );
-     if( ins->operands[CALL_OP_ADDR]->n.name_class == PT )
+     if( ins->operands[CALL_OP_ADDR]->n.type_class == PT )
         return( RL_ );
 #if _TARGET & _TARG_IAPX86
      return( RL_WORD );

@@ -67,7 +67,7 @@ void    FreeIns( instruction *ins ) {
 */
     instruction         *next;
 
-#if 0  /* Debugging code for integrity of conflict edges */
+#if 1  /* Debugging code for integrity of conflict edges */
     conflict_node       *conf;
 
     for (conf = ConfList; conf != NULL; conf = conf->next_conflict) {
@@ -140,8 +140,8 @@ instruction     *MakeNop( void ) {
 
 instruction     *MakeNary( opcode_defs opcode, name *left,
                                      name *right, name *result,
-                                     type_class_def class,
-                                     type_class_def base_class,
+                                     type_class_def type_class,
+                                     type_class_def base_type_class,
                                      opcnt num_operands )
 /************************************************************
     Make a N-ary instruction (OPCODE left, right => result)
@@ -151,8 +151,8 @@ instruction     *MakeNary( opcode_defs opcode, name *left,
 
     ins = NewIns( num_operands );
     ins->head.opcode = opcode;
-    ins->type_class = class;
-    ins->base_type_class = base_class;
+    ins->type_class = type_class;
+    ins->base_type_class = base_type_class;
     ins->operands[0] = left;
     ins->operands[1] = right;
     ins->result = result;
@@ -161,71 +161,72 @@ instruction     *MakeNary( opcode_defs opcode, name *left,
 
 
 instruction     *MakeMove( name *src, name *dst,
-                                   type_class_def class ) {
+                                   type_class_def type_class )
 /**********************************************************
     Make a move instruction (MOV src => dst)
 */
-
+{
     instruction *move;
 
-    move = MakeNary( OP_MOV, src, NULL, dst, class, XX, 1 );
+    move = MakeNary( OP_MOV, src, NULL, dst, type_class, XX, 1 );
     return( move );
 }
 
 
 instruction     *MakeUnary( opcode_defs op, name *src,
-                                    name *dst, type_class_def class ) {
+                                    name *dst, type_class_def type_class )
+{
 /**********************************************************************
     Make a unary instruction (op  src => dst)
 */
 
-    return( MakeNary( op, src, NULL, dst, class, XX, 1 ) );
+    return( MakeNary( op, src, NULL, dst, type_class, XX, 1 ) );
 }
 
 
-instruction     *MakeConvert( name *src, name *dst, type_class_def class,
-                                      type_class_def base_class ) {
+instruction     *MakeConvert( name *src, name *dst, type_class_def type_class,
+                                      type_class_def base_type_class ) {
 /**********************************************************************
     Make a conversion instruction.  Convert "src" (type = "base_class") to
     "dst" (type = "class")
 */
 
-    return( MakeNary( OP_CONVERT, src, NULL, dst, class, base_class, 1 ) );
+    return( MakeNary( OP_CONVERT, src, NULL, dst, type_class, base_type_class, 1 ) );
 }
 
 
-instruction     *MakeRound( name *src, name *dst, type_class_def class,
-                                      type_class_def base_class ) {
+instruction     *MakeRound( name *src, name *dst, type_class_def type_class,
+                                      type_class_def base_type_class ) {
 /**********************************************************************
     Make a round instruction.  Convert "src" (type = "base_class") to
     "dst" (type = "class")
 */
 
-    return( MakeNary( OP_ROUND, src, NULL, dst, class, base_class, 1 ) );
+    return( MakeNary( OP_ROUND, src, NULL, dst, type_class, base_type_class, 1 ) );
 }
 
 
 instruction     *MakeBinary( opcode_defs opcode, name *left,
                                      name *right, name *result,
-                                     type_class_def class ) {
+                                     type_class_def type_class ) {
 /************************************************************
     Make a binary instruction (OPCODE left, right => result)
 */
 
-    return( MakeNary( opcode, left, right, result, class, XX, 2 ) );
+    return( MakeNary( opcode, left, right, result, type_class, XX, 2 ) );
 }
 
 
 instruction     *MakeCondition( opcode_defs opcode, name *left,
                                         name *right, byte t, byte f,
-                                        type_class_def class ) {
+                                        type_class_def type_class ) {
 /***************************************************************
     Make a conditional (IF ( left opcode right ) goto "t" else goto "f")
 */
 
     instruction *cond;
 
-    cond = MakeNary( opcode, left, right, NULL, class, XX, 2 );
+    cond = MakeNary( opcode, left, right, NULL, type_class, XX, 2 );
     _SetBlockIndex( cond, t, f );
     return( cond );
 }

@@ -411,8 +411,8 @@ void    GenICall( instruction *ins ) {
     } else {
         entry |= OC_CALLI;
     }
-    if( ins->operands[CALL_OP_ADDR]->n.name_class == PT
-     || ins->operands[CALL_OP_ADDR]->n.name_class == CP ) {
+    if( ins->operands[CALL_OP_ADDR]->n.type_class == PT
+     || ins->operands[CALL_OP_ADDR]->n.type_class == CP ) {
         entry |= ATTR_FAR;
         opcode = M_CJILONG;
     } else {

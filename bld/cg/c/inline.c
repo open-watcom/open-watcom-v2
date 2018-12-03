@@ -152,7 +152,7 @@ void    BGParmInline( cg_sym_handle sym, type_def *tipe )
     temp->v.usage |= USE_IN_ANOTHER_BLOCK;
     parm_value = GenIns( parm->addr );
     BGDone( parm->addr );
-    AddIns( MakeMove( parm_value, temp, temp->n.name_class ) );
+    AddIns( MakeMove( parm_value, temp, temp->n.type_class ) );
     CGFree( parm );
 }
 

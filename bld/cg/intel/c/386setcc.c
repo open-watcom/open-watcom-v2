@@ -97,7 +97,7 @@ static  bool    FindFlowOut( block *blk ) {
     name                *temp;
     name                *result;
     name                *konst;
-    type_class_def      class;
+    type_class_def      type_class;
 
     for( ins = blk->ins.hd.prev; !_OpIsCondition( ins->head.opcode ); ) {
         ins = ins->head.prev;
@@ -146,26 +146,26 @@ static  bool    FindFlowOut( block *blk ) {
     result = ins0->result;
     if( result != ins1->result )
         return( false );
-    class = ins0->type_class;
-    if( class != ins1->type_class )
+    type_class = ins0->type_class;
+    if( type_class != ins1->type_class )
         return( false );
 
     if( reverse )
         FlipCond( ins );
 
     u1temp = AllocTemp( U1 );
-    temp = AllocTemp( class );
+    temp = AllocTemp( type_class );
 
     ins->result = u1temp;
-    ins1 = MakeConvert( u1temp, temp, class, U1 );
+    ins1 = MakeConvert( u1temp, temp, type_class, U1 );
     SuffixIns( ins, ins1 );
     ins = ins1;
 
     if( I64Test( &false_cons ) != 0 ) {
         konst = AllocS64Const( false_cons.u._32[I64LO32], false_cons.u._32[I64HI32] );
-        ins1 = MakeBinary( OP_ADD, temp, konst, result, class );
+        ins1 = MakeBinary( OP_ADD, temp, konst, result, type_class );
     } else {
-        ins1 = MakeMove( temp, result, class );
+        ins1 = MakeMove( temp, result, type_class );
     }
     SuffixIns( ins, ins1 );
 

@@ -69,18 +69,18 @@ hw_reg_set SavedRegs( void )
     return( saved );
 }
 
-void    UpdateReturn( call_state *state, type_def *tipe, type_class_def class, aux_handle aux )
-/*********************************************************************************************/
+void    UpdateReturn( call_state *state, type_def *tipe, type_class_def type_class, aux_handle aux )
+/**************************************************************************************************/
 {
     /* unused parameters */ (void)tipe; (void)aux;
 
-    state->return_reg = ReturnReg( class );
+    state->return_reg = ReturnReg( type_class );
 }
 
 type_class_def  CallState( aux_handle aux, type_def *tipe, call_state *state )
 /****************************************************************************/
 {
-    type_class_def      class;
+    type_class_def      type_class;
     byte                i;
     hw_reg_set          parms[20];
     hw_reg_set          *parm_src;
@@ -127,9 +127,9 @@ type_class_def  CallState( aux_handle aux, type_def *tipe, call_state *state )
     HW_CAsgn( state->parm.used, HW_EMPTY );
     state->parm.curr_entry = state->parm.table;
     state->parm.offset  = 0;
-    class = ReturnClass( tipe, state->attr );
-    UpdateReturn( state, tipe, class, aux );
-    return( class );
+    type_class = ReturnClass( tipe, state->attr );
+    UpdateReturn( state, tipe, type_class, aux );
+    return( type_class );
 }
 
 #if 0

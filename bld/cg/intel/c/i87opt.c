@@ -461,7 +461,7 @@ static  void    AdjustST( name **p, int adjust )
 
 static  void    MoveThrough( name *from, name *to, instruction *from_ins,
                              instruction *to_ins, name *reg,
-                             type_class_def class ) {
+                             type_class_def type_class ) {
 /****************************************************
     Move from "from" to "to" using register name "reg". Segments if
     any should be taken from "from_ins" and "to_ins".
@@ -470,11 +470,11 @@ static  void    MoveThrough( name *from, name *to, instruction *from_ins,
     bool        dummy;
     instruction *new;
 
-    new = MakeMove( from, reg, class );
+    new = MakeMove( from, reg, type_class );
     new->u.gen_table = FindGenEntry( new, &dummy );
     DupSeg( from_ins, new );
     PrefixIns( to_ins, new );
-    new = MakeMove( reg, to, class );
+    new = MakeMove( reg, to, type_class );
     DupSeg( to_ins, new );
     new->u.gen_table = FindGenEntry( new, &dummy );
     PrefixIns( to_ins, new );
@@ -507,7 +507,7 @@ static  instruction    *To86Move( instruction *ins, instruction *next ) {
         reg = AllocRegName( *regs );
         break;
     }
-    if( next->result->n.name_class == FS ) {
+    if( next->result->n.type_class == FS ) {
 #if _TARGET & _TARG_IAPX86
         if( OptForSize > 50 )
             return( ret );
@@ -573,7 +573,7 @@ static  instruction    *Opt87Sequence( instruction *ins, bool *again ) {
     instruction         *next;
     instruction         *third;
     instruction         *ret;
-    type_class_def      class;
+    type_class_def      type_class;
 
     next = Next87Ins( ins );
     ret = ins->head.next;
@@ -625,8 +625,8 @@ static  instruction    *Opt87Sequence( instruction *ins, bool *again ) {
     } else if( G( ins ) == G_RFLD || G( ins ) == G_MFLD ) {
         if( ( G( next ) == G_RRFBINP || G( next ) == G_RNFBINP ) ) {
             if( G( ins ) == G_MFLD ) {
-                class = ins->operands[0]->n.name_class;
-                if( !_IsFloating( class ) ) {
+                type_class = ins->operands[0]->n.type_class;
+                if( !_IsFloating( type_class ) ) {
                     return( ret ); /* need convert! */
                 }
             }
@@ -682,7 +682,7 @@ static  instruction    *Opt87Sequence( instruction *ins, bool *again ) {
             }
         } else if( G( ins ) == G_MFLD ) {
             if( G( next ) == G_MFST ) {
-                if(ins->operands[0]->n.name_class==next->result->n.name_class) {
+                if( ins->operands[0]->n.type_class == next->result->n.type_class ) {
                     ret = To86Move( ins, next );
                 }
             } else if( G( next ) == G_MRFBIN || G( next ) == G_MNFBIN ) {
@@ -701,7 +701,7 @@ static  instruction    *Opt87Sequence( instruction *ins, bool *again ) {
     } else if( G( ins ) == G_MFST || G( ins ) == G_RFST ) {
         if( G( next ) == G_MFLD
           && ( next->operands[0] == ins->result )
-          &&   _IsFloating( ins->result->n.name_class )
+          &&   _IsFloating( ins->result->n.type_class )
           && !IsVolatile( ins->result ) ) {
 
             /* FSTP X, FLD X ==> FST X */
@@ -824,11 +824,11 @@ void    FPOptimize( void )
     }
 }
 
-bool    FPDivIsADog( type_class_def class )
-/*****************************************/
+bool    FPDivIsADog( type_class_def type_class )
+/**********************************************/
 {
 
-    return( _FPULevel( FPU_87 ) && _IsFloating( class ) );
+    return( _FPULevel( FPU_87 ) && _IsFloating( type_class ) );
 }
 
 #if 0

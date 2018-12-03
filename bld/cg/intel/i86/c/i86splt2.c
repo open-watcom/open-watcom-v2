@@ -60,8 +60,8 @@ typedef struct eight_byte_name {
         union name     *high;
 } eight_byte_name;
 
-name    *LowPart( name *tosplit, type_class_def class )
-/*****************************************************/
+name    *LowPart( name *tosplit, type_class_def type_class )
+/***********************************************************/
 {
     name                *new = NULL;
     name                *new_cons;
@@ -74,19 +74,19 @@ name    *LowPart( name *tosplit, type_class_def class )
     switch( tosplit->n.class ) {
     case N_CONSTANT:
         if( tosplit->c.const_type == CONS_ABSOLUTE ) {
-            if( class == U1 ) {
+            if( type_class == U1 ) {
                 u8 = tosplit->c.lo.int_value & 0xff;
                 new = AllocUIntConst( u8 );
-            } else if( class == I1 ) {
+            } else if( type_class == I1 ) {
                 s8 = tosplit->c.lo.int_value & 0xff;
                 new = AllocIntConst( s8 );
-            } else if( class == U2 ) {
+            } else if( type_class == U2 ) {
                 u16 = tosplit->c.lo.int_value & 0xffff;
                 new = AllocUIntConst( u16 );
-            } else if( class == I2 ) {
+            } else if( type_class == I2 ) {
                 s16 = tosplit->c.lo.int_value & 0xffff;
                 new = AllocIntConst( s16 );
-            } else if( class == FL ) {
+            } else if( type_class == FL ) {
                 _Zoiks( ZOIKS_125 );
             } else { /* FD */
                 floatval = GetFloat( tosplit, FD );
@@ -99,31 +99,31 @@ name    *LowPart( name *tosplit, type_class_def class )
         }
         break;
     case N_REGISTER:
-        if( class == U1 || class == I1 ) {
+        if( type_class == U1 || type_class == I1 ) {
             new = AllocRegName( Low16Reg( tosplit->r.reg ) );
         } else {
             new = AllocRegName( Low32Reg( tosplit->r.reg ) );
         }
         break;
     case N_TEMP:
-        new = TempOffset( tosplit, 0, class );
+        new = TempOffset( tosplit, 0, type_class );
         if( new->t.temp_flags & CONST_TEMP ) {
-            if( tosplit->n.name_class == FS ) {
+            if( tosplit->n.type_class == FS ) {
                 new_cons = IntEquivalent( tosplit->v.symbol );
             } else {
                 new_cons = tosplit->v.symbol;
             }
-            new->v.symbol = LowPart( new_cons, class );
+            new->v.symbol = LowPart( new_cons, type_class );
         }
         break;
     case N_MEMORY:
         new = AllocMemory( tosplit->v.symbol, tosplit->v.offset,
-                                tosplit->m.memory_type, class );
+                                tosplit->m.memory_type, type_class );
         new->v.usage = tosplit->v.usage;
         break;
     case N_INDEXED:
         new = ScaleIndex( tosplit->i.index, tosplit->i.base,
-                                tosplit->i.constant, class, 0, tosplit->i.scale,
+                                tosplit->i.constant, type_class, 0, tosplit->i.scale,
                                 tosplit->i.index_flags );
         break;
     default:
@@ -133,8 +133,8 @@ name    *LowPart( name *tosplit, type_class_def class )
 }
 
 
-name    *HighPart( name *tosplit, type_class_def class )
-/******************************************************/
+name    *HighPart( name *tosplit, type_class_def type_class )
+/***********************************************************/
 {
     name                *new = NULL;
     name                *new_cons;
@@ -148,19 +148,19 @@ name    *HighPart( name *tosplit, type_class_def class )
     switch( tosplit->n.class ) {
     case N_CONSTANT:
         if( tosplit->c.const_type == CONS_ABSOLUTE ) {
-            if( class == U1 ) {
+            if( type_class == U1 ) {
                 u8 = ( tosplit->c.lo.int_value >> 8 ) & 0xff;
                 new = AllocUIntConst( u8 );
-            } else if( class == I1 ) {
+            } else if( type_class == I1 ) {
                 s8 = ( tosplit->c.lo.int_value >> 8 ) & 0xff;
                 new = AllocIntConst( s8 );
-            } else if( class == U2 ) {
+            } else if( type_class == U2 ) {
                 u16 = ( tosplit->c.lo.int_value >> 16 ) & 0xffff;
                 new = AllocUIntConst( u16 );
-            } else if( class == I2 ) {
+            } else if( type_class == I2 ) {
                 s16 = ( tosplit->c.lo.int_value >> 16 ) & 0xffff;
                 new = AllocIntConst( s16 );
-            } else if( class == FL ) {
+            } else if( type_class == FL ) {
                 _Zoiks( ZOIKS_125 );
             } else { /* FD */
                 floatval = GetFloat( tosplit, FD );
@@ -173,21 +173,21 @@ name    *HighPart( name *tosplit, type_class_def class )
         }
         break;
     case N_REGISTER:
-        if( class == U1 || class == I1 ) {
+        if( type_class == U1 || type_class == I1 ) {
             new = AllocRegName( High16Reg( tosplit->r.reg ) );
         } else {
             new = AllocRegName( High32Reg( tosplit->r.reg ) );
         }
         break;
     case N_TEMP:
-        new = TempOffset( tosplit, tosplit->n.size/2, class );
+        new = TempOffset( tosplit, tosplit->n.size / 2, type_class );
         if( new->t.temp_flags & CONST_TEMP ) {
-            if( tosplit->n.name_class == FS ) {
+            if( tosplit->n.type_class == FS ) {
                 new_cons = IntEquivalent( tosplit->v.symbol );
             } else {
                 new_cons = tosplit->v.symbol;
             }
-            op = HighPart( new_cons, class );
+            op = HighPart( new_cons, type_class );
             if( op->n.class == N_REGISTER )
                 return( op );
             new->v.symbol = op;
@@ -195,13 +195,13 @@ name    *HighPart( name *tosplit, type_class_def class )
         break;
     case N_MEMORY:
         new = AllocMemory( tosplit->v.symbol,
-                                tosplit->v.offset + tosplit->n.size/2,
-                                tosplit->m.memory_type, class );
+                                tosplit->v.offset + tosplit->n.size / 2,
+                                tosplit->m.memory_type, type_class );
         new->v.usage = tosplit->v.usage;
         break;
     case N_INDEXED:
         new = ScaleIndex( tosplit->i.index, tosplit->i.base,
-                tosplit->i.constant+ tosplit->n.size/2, class, 0,
+                tosplit->i.constant+ tosplit->n.size / 2, type_class, 0,
                 tosplit->i.scale, tosplit->i.index_flags );
         break;
     default:
@@ -565,7 +565,7 @@ instruction     *rSPLIT8CMP( instruction *ins )
     byte                true_idx;
     byte                false_idx;
     instruction         *new[8];
-    type_class_def      high_class;
+    type_class_def      high_type_class;
     unsigned            i;
     unsigned            j;
 
@@ -580,7 +580,7 @@ instruction     *rSPLIT8CMP( instruction *ins )
     Split8Name( ins, ins->operands[1], &rite );
     true_idx = _TrueIndex( ins );
     false_idx = _FalseIndex( ins );
-    high_class = HalfClass[HalfClass[ins->type_class]];
+    high_type_class = HalfClass[HalfClass[ins->type_class]];
     i = 0;
     switch( ins->head.opcode ) {
     case OP_CMP_EQUAL:
@@ -606,7 +606,7 @@ instruction     *rSPLIT8CMP( instruction *ins )
     case OP_CMP_GREATER:
     case OP_CMP_GREATER_EQUAL:
         new[i++] = MakeCondition( OP_CMP_GREATER, left.high, rite.high,
-                                        true_idx, NO_JUMP, high_class );
+                                        true_idx, NO_JUMP, high_type_class );
         new[i++] = MakeCondition( OP_CMP_NOT_EQUAL, left.high, rite.high,
                                         false_idx, NO_JUMP, U2 );
         new[i++] = MakeCondition( OP_CMP_GREATER, left.mid_high, rite.mid_high,
@@ -623,7 +623,7 @@ instruction     *rSPLIT8CMP( instruction *ins )
     case OP_CMP_LESS:
     case OP_CMP_LESS_EQUAL:
         new[i++] = MakeCondition( OP_CMP_LESS, left.high, rite.high,
-                                        true_idx, NO_JUMP, high_class );
+                                        true_idx, NO_JUMP, high_type_class );
         new[i++] = MakeCondition( OP_CMP_NOT_EQUAL, left.high, rite.high,
                                         false_idx, NO_JUMP, U2 );
         new[i++] = MakeCondition( OP_CMP_LESS, left.mid_high, rite.mid_high,
@@ -763,7 +763,7 @@ instruction     *rCYPSHIFT( instruction *ins )
                         AllocIntConst( half_count ),
                         temp, ins->type_class );
         ins2 = NULL;
-        ins3 = MakeConvert( temp, ins->result, ins->result->n.name_class,
+        ins3 = MakeConvert( temp, ins->result, ins->result->n.type_class,
                             ins->type_class );
     }
     DupSegOp( ins, ins1, 0 );
@@ -836,7 +836,7 @@ instruction      *rLOADLONGADDR( instruction *ins )
                 LowPart(name1->i.index,U2),
                 name1->i.base,
                 name1->i.constant,
-                name1->n.name_class,
+                name1->n.type_class,
                 name1->n.size,
                 name1->i.scale,
                 name1->i.index_flags );
@@ -930,15 +930,15 @@ instruction     *rINTCOMP( instruction *ins )
     name                *rite;
     instruction         *low;
     instruction         *high;
-    type_class_def      half_class;
-    type_class_def      quarter_class;
+    type_class_def      half_type_class;
+    type_class_def      quarter_type_class;
     byte                true_idx;
     byte                false_idx;
     byte                first_idx;
     bool                rite_is_zero;
 
     rite_is_zero = CFTest( ins->operands[1]->c.value ) == 0;
-    half_class = HalfClass[ins->type_class];
+    half_type_class = HalfClass[ins->type_class];
     left = ins->operands[0];
     rite = ins->operands[1];
     true_idx = _TrueIndex( ins );
@@ -949,57 +949,57 @@ instruction     *rINTCOMP( instruction *ins )
          first_idx = true_idx;
     }
     if( ins->type_class == FD ) {
-        quarter_class = HalfClass[half_class];
+        quarter_type_class = HalfClass[half_type_class];
 
         if( rite_is_zero ) {
             high = MakeCondition( OP_BIT_TEST_TRUE,
-                        HighPart( HighPart( left, half_class ), quarter_class ),
+                        HighPart( HighPart( left, half_type_class ), quarter_type_class ),
                         AllocIntConst( 0x7fff ),
-                        first_idx, NO_JUMP, quarter_class );
+                        first_idx, NO_JUMP, quarter_type_class );
         } else {
             high = MakeCondition( OP_CMP_NOT_EQUAL,
-                        HighPart( HighPart( left, half_class ), quarter_class ),
-                        HighPart( HighPart( rite, half_class ), quarter_class ),
-                        first_idx, NO_JUMP, quarter_class );
+                        HighPart( HighPart( left, half_type_class ), quarter_type_class ),
+                        HighPart( HighPart( rite, half_type_class ), quarter_type_class ),
+                        first_idx, NO_JUMP, quarter_type_class );
         }
         DupSeg( ins, high );
         PrefixIns( ins, high );
         low = MakeCondition( OP_CMP_NOT_EQUAL,
-                        LowPart( HighPart( left, half_class ), quarter_class ),
-                        LowPart( HighPart( rite, half_class ), quarter_class ),
-                        first_idx, NO_JUMP, quarter_class );
+                        LowPart( HighPart( left, half_type_class ), quarter_type_class ),
+                        LowPart( HighPart( rite, half_type_class ), quarter_type_class ),
+                        first_idx, NO_JUMP, quarter_type_class );
         DupSeg( ins, low );
         PrefixIns( ins, low );
         low = MakeCondition( OP_CMP_NOT_EQUAL,
-                        HighPart( LowPart( left, half_class ), quarter_class ),
-                        HighPart( LowPart( rite, half_class ), quarter_class ),
-                        first_idx, NO_JUMP, quarter_class );
+                        HighPart( LowPart( left, half_type_class ), quarter_type_class ),
+                        HighPart( LowPart( rite, half_type_class ), quarter_type_class ),
+                        first_idx, NO_JUMP, quarter_type_class );
         DupSeg( ins, low );
         PrefixIns( ins, low );
         low = MakeCondition( ins->head.opcode,
-                        LowPart( LowPart( left, half_class ), quarter_class ),
-                        LowPart( LowPart( rite, half_class ), quarter_class ),
-                        true_idx, false_idx, quarter_class );
+                        LowPart( LowPart( left, half_type_class ), quarter_type_class ),
+                        LowPart( LowPart( rite, half_type_class ), quarter_type_class ),
+                        true_idx, false_idx, quarter_type_class );
     } else {
         rite = IntEquivalent( rite );
         if( rite_is_zero ) {
             high = MakeCondition( OP_BIT_TEST_TRUE,
-                        HighPart( left, half_class ),
+                        HighPart( left, half_type_class ),
                         AllocIntConst( 0x7fff ),
-                        first_idx, NO_JUMP, half_class );
+                        first_idx, NO_JUMP, half_type_class );
         } else {
             high = MakeCondition( OP_CMP_NOT_EQUAL,
-                        HighPart( left, half_class ),
-                        HighPart( rite, half_class ),
-                        first_idx, NO_JUMP, half_class );
+                        HighPart( left, half_type_class ),
+                        HighPart( rite, half_type_class ),
+                        first_idx, NO_JUMP, half_type_class );
         }
         DupSeg( ins, high );
         PrefixIns( ins, high );
         low = MakeCondition( ins->head.opcode,
-                        LowPart( left, half_class ),
-                        LowPart( rite, half_class ),
+                        LowPart( left, half_type_class ),
+                        LowPart( rite, half_type_class ),
                         true_idx, false_idx,
-                        half_class );
+                        half_type_class );
     }
     DupSeg( ins, low );
     ReplIns( ins, low );
@@ -1028,7 +1028,7 @@ instruction     *rMAKEU2( instruction *ins )
             new_ins = ins;
         }
         ins->operands[0] = LowPart( ins->operands[0], U2 );
-        if( ins->operands[1]->n.name_class == U4 || ins->operands[1]->n.name_class == I4 ) {
+        if( ins->operands[1]->n.type_class == U4 || ins->operands[1]->n.type_class == I4 ) {
             ins->operands[1] = LowPart( ins->operands[1], U2 );
         }
         if( ins->result != NULL ) {

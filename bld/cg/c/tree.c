@@ -1526,7 +1526,7 @@ static  name *TNFindBase( tn node )
         if( op->n.class == N_TEMP ) {
             if( op->v.symbol == NULL )
                 return( NULL );
-            op = SAllocUserTemp( FEAuxInfo( op->v.symbol, SHADOW_SYMBOL ), op->n.name_class, op->n.size );
+            op = SAllocUserTemp( FEAuxInfo( op->v.symbol, SHADOW_SYMBOL ), op->n.type_class, op->n.size );
         }
         return( op );
     default:

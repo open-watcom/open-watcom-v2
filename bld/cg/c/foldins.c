@@ -110,7 +110,7 @@ static  instruction *KillCompare( instruction *ins, name *result ) {
     instruction *new_ins;
 
     if( ins->result != NULL ) {
-        new_ins = MakeMove( result, ins->result, ins->result->n.name_class );
+        new_ins = MakeMove( result, ins->result, ins->result->n.type_class );
         DupSeg( ins, new_ins );
         SetCSEBits( ins, new_ins );
         ReplIns( ins, new_ins );
@@ -219,10 +219,10 @@ static  instruction    *FoldAbsolute( instruction *ins ) {
     if( num_operands != 0 ) {
         left = TName( ins->operands[0], left_tipe );
         if( num_operands > 1 ) {
-            if( ins->operands[1]->n.name_class == XX ) {
+            if( ins->operands[1]->n.type_class == XX ) {
                 rite_tipe = tipe;
             } else {
-                rite_tipe = ClassType( ins->operands[1]->n.name_class );
+                rite_tipe = ClassType( ins->operands[1]->n.type_class );
             }
             rite = TName( ins->operands[1], rite_tipe );
         }

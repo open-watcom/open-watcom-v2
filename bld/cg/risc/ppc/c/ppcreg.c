@@ -92,7 +92,7 @@ hw_reg_set SavedRegs( void )
 type_class_def  CallState( aux_handle aux, type_def *tipe, call_state *state )
 /****************************************************************************/
 {
-    type_class_def      class;
+    type_class_def      type_class;
     byte                i;
     hw_reg_set          parms[24];
     hw_reg_set          *parm_src;
@@ -126,21 +126,21 @@ type_class_def  CallState( aux_handle aux, type_def *tipe, call_state *state )
     state->parm.curr_entry = state->parm.table;
     state->parm.offset  = 0;
     InitPPCParmState( state );
-    class = ReturnClass( tipe, state->attr );
+    type_class = ReturnClass( tipe, state->attr );
     if( *(call_class *)FEAuxInfo( aux, CALL_CLASS ) & HAS_VARARGS ) {
         state->attr |= ROUTINE_HAS_VARARGS;
     }
-    UpdateReturn( state, tipe, class, aux );
-    return( class );
+    UpdateReturn( state, tipe, type_class, aux );
+    return( type_class );
 }
 
 
-void    UpdateReturn( call_state *state, type_def *tipe, type_class_def class, aux_handle aux )
-/*********************************************************************************************/
+void    UpdateReturn( call_state *state, type_def *tipe, type_class_def type_class, aux_handle aux )
+/**************************************************************************************************/
 {
     /* unused parameters */ (void)tipe; (void)aux;
 
-    state->return_reg = ReturnReg( class );
+    state->return_reg = ReturnReg( type_class );
 }
 
 #if 0

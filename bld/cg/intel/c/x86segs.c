@@ -206,7 +206,7 @@ name    *SegName( name *op ) {
         return( GetSegment( op ) );
     if( op->n.class == N_INDEXED ) {
         idx = op->i.index;
-        if( op->i.base != NULL && idx->n.name_class != PT ) {
+        if( op->i.base != NULL && idx->n.type_class != PT ) {
             // even though it's based - huge arrays cannot assume segment
             // of base is same as segment of the huge pointer - BBB Sept 14, 1995
             return( SegName( op->i.base ) );
@@ -219,7 +219,7 @@ name    *SegName( name *op ) {
                 _Zoiks( ZOIKS_022 );
                 return( op );
             }
-        } else if( idx->n.name_class == CP || idx->n.name_class == PT ) {
+        } else if( idx->n.type_class == CP || idx->n.type_class == PT ) {
             return( SegmentPart( idx ) );
         } else {
             return( NearSegment() );

@@ -114,7 +114,7 @@ const char  *AskRTName( rt_class rtindex )
 }
 
 
-name    *Addressable( name *cons, type_class_def class )
+name    *Addressable( name *cons, type_class_def type_class )
 /***************************************************************
     make sure a floating point constant is addressable (dropped
     it into memory if it isnt)
@@ -123,20 +123,20 @@ name    *Addressable( name *cons, type_class_def class )
     unsigned_64         buffer;
 
     if( cons->n.class == N_CONSTANT ) {
-        switch( class ) {
+        switch( type_class ) {
         case FD:
         case FS:
-            return( GenFloat( cons, class ) );
+            return( GenFloat( cons, type_class ) );
         case U8:
         case I8:
             buffer.u._32[I64LO32] = cons->c.lo.int_value;
             buffer.u._32[I64HI32] = cons->c.hi.int_value;
-            return( GenConstData( &buffer, class ) );
+            return( GenConstData( &buffer, type_class ) );
         default:
             Zoiks( ZOIKS_138 );
             break;
         }
-        return( GenFloat( cons, class ) );
+        return( GenFloat( cons, type_class ) );
     }
     return( cons );
 }
@@ -149,8 +149,8 @@ static rt_class CheckForPCS( instruction *ins, rt_class rtindex )
 */
 {
     if( rtindex == RT_PTS ) {
-        if( ins->operands[1]->n.name_class != PT
-         && ins->operands[1]->n.name_class != CP ) {
+        if( ins->operands[1]->n.type_class != PT
+         && ins->operands[1]->n.type_class != CP ) {
             rtindex = RT_PCS;
         }
     }
@@ -393,7 +393,7 @@ instruction     *rMAKECALL( instruction *ins )
 }
 
 
-name    *ScanCall( tbl_control *table, name *value, type_class_def class )
+name    *ScanCall( tbl_control *table, name *value, type_class_def type_class )
 /*********************************************************************************
     generates a fake call to a runtime routine that looks up "value" in a table
     and jumps to the appropriate case, using either a pointer or index
@@ -410,7 +410,7 @@ name    *ScanCall( tbl_control *table, name *value, type_class_def class )
     name        *temp_result;
     rt_class    rtindex;
 
-    switch( class ) {
+    switch( type_class ) {
     case U1:
         rtindex = RT_SCAN1;
         break;
@@ -426,7 +426,7 @@ name    *ScanCall( tbl_control *table, name *value, type_class_def class )
     }
 
     reg_name = AllocRegName( FirstReg( RTInfo[rtindex].left ) );
-    new_ins = MakeConvert( value, reg_name, class, value->n.name_class );
+    new_ins = MakeConvert( value, reg_name, type_class, value->n.type_class );
     AddIns( new_ins );
 
     reg_name = AllocRegName( HW_CX );
@@ -438,7 +438,7 @@ name    *ScanCall( tbl_control *table, name *value, type_class_def class )
     AddIns( new_ins );
 
     reg_name = AllocRegName( HW_DI );
-    if( class == U4 ) {
+    if( type_class == U4 ) {
         label = AllocMemory( table, -2, CG_VTB, U2 );
     } else {
         label = AllocMemory( table, 0, CG_VTB, U2 );
@@ -463,7 +463,7 @@ name    *ScanCall( tbl_control *table, name *value, type_class_def class )
     AddIns( new_ins );
 
     result = AllocMemory( table, 0, CG_TBL, U2 ); /* so table gets freed!*/
-    if( class == U2 ) {
+    if( type_class == U2 ) {
         result = AllocRegName( HW_ES_DI );
         result = AllocIndex( result, NULL, ( table->size - 1 ) * 2, U2 );
     } else {

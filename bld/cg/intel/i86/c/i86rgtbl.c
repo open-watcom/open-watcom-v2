@@ -587,15 +587,15 @@ reg_set_index   RegIntersect( reg_set_index s1, reg_set_index s2 )
 }
 
 
-hw_reg_set        *ParmChoices( type_class_def class )
-/****************************************************/
+hw_reg_set        *ParmChoices( type_class_def type_class )
+/*********************************************************/
 {
     hw_reg_set  *list;
 
     if( _FPULevel( FPU_87 ) ) {
-        list = ParmSets8087[class];
+        list = ParmSets8087[type_class];
     } else {
-        list = ParmSets[class];
+        list = ParmSets[type_class];
     }
     return( list );
 }
@@ -629,15 +629,15 @@ hw_reg_set      StructReg( void )
 }
 
 
-hw_reg_set      ReturnReg( type_class_def class, bool use_87 )
-/************************************************************/
+hw_reg_set  ReturnReg( type_class_def type_class, bool use_87 )
+/*************************************************************/
 {
     hw_reg_set          *list;
 
     if( _FPULevel( FPU_87 ) && use_87 ) {
-        list = RegSets[Return8087[class]];
+        list = RegSets[Return8087[type_class]];
     } else {
-        list = RegSets[ReturnSets[class]];
+        list = RegSets[ReturnSets[type_class]];
     }
     return( *list );
 }
@@ -660,27 +660,27 @@ reg_set_index   NoSegments( reg_set_index regs_idx )
 }
 
 
-reg_set_index   IndexIntersect( reg_set_index curr, type_class_def class, bool is_temp_index )
-/********************************************************************************************/
+reg_set_index   IndexIntersect( reg_set_index curr, type_class_def type_class, bool is_temp_index )
+/*************************************************************************************************/
 {
     if( is_temp_index ) {
         curr = RegIntersect( curr, RL_TEMP_INDEX );
     } else {
-        curr = RegIntersect( curr, IndexSets[class] );
+        curr = RegIntersect( curr, IndexSets[type_class] );
     }
     return( curr );
 }
 
 
-bool    IsIndexReg( hw_reg_set reg, type_class_def class, bool is_temp_index )
-/****************************************************************************/
+bool    IsIndexReg( hw_reg_set reg, type_class_def type_class, bool is_temp_index )
+/*********************************************************************************/
 {
     hw_reg_set  *list;
 
     if( is_temp_index ) {
         list = RegSets[RL_TEMP_INDEX];
     } else {
-        list = RegSets[IndexSets[class]];
+        list = RegSets[IndexSets[type_class]];
     }
     for( ; !HW_CEqual( *list, HW_EMPTY ); ++list ) {
         if( HW_Equal( *list, reg ) ) {
@@ -695,7 +695,7 @@ type_class_def  RegClass( hw_reg_set regs )
 /*****************************************/
 {
     hw_reg_set          *possible;
-    type_class_def      class;
+    type_class_def      type_class;
 
     if( HW_COvlap( regs, HW_FLTS ) ) {
         if( HW_CEqual( regs, HW_ST0 ) )
@@ -706,10 +706,10 @@ type_class_def  RegClass( hw_reg_set regs )
             }
         }
     } else {
-        for( class = U1; class < XX; ++class ) {
-            for( possible = RegSets[ClassSets[class]]; !HW_CEqual( *possible, HW_EMPTY ); ++possible ) {
+        for( type_class = U1; type_class < XX; ++type_class ) {
+            for( possible = RegSets[ClassSets[type_class]]; !HW_CEqual( *possible, HW_EMPTY ); ++possible ) {
                 if( HW_Equal( *possible, regs ) ) {
-                    return( class );
+                    return( type_class );
                 }
             }
         }
@@ -884,12 +884,12 @@ hw_reg_set      FullReg( hw_reg_set regs )
 }
 
 
-bool    IsRegClass( hw_reg_set regs, type_class_def class )
-/*********************************************************/
+bool    IsRegClass( hw_reg_set regs, type_class_def type_class )
+/**************************************************************/
 {
     hw_reg_set  *list;
 
-    for( list = RegSets[IsSets[class]]; !HW_CEqual( *list, HW_EMPTY ); ++list ) {
+    for( list = RegSets[IsSets[type_class]]; !HW_CEqual( *list, HW_EMPTY ); ++list ) {
         if( HW_Equal( *list, regs ) ) {
             return( true );
         }

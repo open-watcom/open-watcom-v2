@@ -404,7 +404,7 @@ static  void    PrefixChop( instruction *ins ) {
 
     if( ins->head.opcode == OP_ROUND )
         return;
-    if( _IsFloating( ins->result->n.name_class ) )
+    if( _IsFloating( ins->result->n.type_class ) )
         return;
     new_ins = MakeUnary( OP_MOV, ST0, ST0, FD );
     new_ins->u.gen_table = FCHOP;
@@ -420,7 +420,7 @@ static    int     WantsChop( instruction *ins ) {
 */
     if( ins->head.opcode == OP_ROUND )
         return( false );
-    if( _IsFloating( ins->result->n.name_class ) )
+    if( _IsFloating( ins->result->n.type_class ) )
         return( false );
     return( true );
 }

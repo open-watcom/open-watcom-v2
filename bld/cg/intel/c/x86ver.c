@@ -68,7 +68,7 @@ bool    DoVerify( vertype kind, instruction *ins )
             return( true );
          break;
     case V_DIFF_TYPES:
-        if( op1->n.name_class != result->n.name_class )
+        if( op1->n.type_class != result->n.type_class )
             return( true );
         break;
     case V_HIGHEQLOW:
@@ -156,7 +156,7 @@ bool    DoVerify( vertype kind, instruction *ins )
             return( true );
         break;
     case V_OP2PTR:
-        if( op2->n.name_class == PT || op2->n.name_class == CP )
+        if( op2->n.type_class == PT || op2->n.type_class == CP )
             return( true );
         break;
     case V_LEA_GOOD:

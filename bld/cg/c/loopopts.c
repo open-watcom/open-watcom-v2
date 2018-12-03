@@ -919,13 +919,13 @@ static bool     SameInvariant( invariant *i1, invariant *i2 )
     }
 }
 
-static bool     DifferentClasses( type_class_def c1, type_class_def c2 )
+static bool     DifferentClasses( type_class_def type_class1, type_class_def type_class2 )
 /***********************************************************************
-    return true if "c1" and "c2" are different, ignoring signed v.s.
+    return true if "type_class1" and "type_class2" are different, ignoring signed v.s.
     unsigned differences.
 */
 {
-    return( Unsigned[c1] != Unsigned[c2] );
+    return( Unsigned[type_class1] != Unsigned[type_class2] );
 }
 
 
@@ -981,7 +981,7 @@ static bool_maybe   DifferentIV( induction *alias, induction *new )
         return( MB_TRUE );
     if( !SameInvariant( alias->invar, new->invar ) )
         return( MB_TRUE );
-    if( DifferentClasses( alias->name->n.name_class, new->name->n.name_class ) ) {
+    if( DifferentClasses( alias->name->n.type_class, new->name->n.type_class ) ) {
         return( MB_TRUE );
     }
     if( alias->plus != new->plus )
@@ -1535,7 +1535,7 @@ static  void    AdjOneIndex( name **pop, induction *var, induction *new )
         return;
     *pop = ScaleIndex( new->name, op->i.base,
                       op->i.constant - ( new->plus - var->plus ),
-                      op->n.name_class, op->n.size,
+                      op->n.type_class, op->n.size,
                       op->i.scale, op->i.index_flags );
 }
 
@@ -1830,11 +1830,11 @@ static  name    *FindPointerPart( induction *var )
     name        *first;
 
     first = var->basic->name;
-    if( first->n.name_class == CP || first->n.name_class == PT )
+    if( first->n.type_class == CP || first->n.type_class == PT )
         return( first );
     for( invar = var->invar; invar != NULL; invar = invar->next ) {
         first = invar->name;
-        if( first->n.name_class == CP || first->n.name_class == PT ) {
+        if( first->n.type_class == CP || first->n.type_class == PT ) {
             return( first );
         }
     }
@@ -1843,7 +1843,7 @@ static  name    *FindPointerPart( induction *var )
 
 
 static  instruction     *Multiply( name *op, signed_32 by, name *temp,
-                                   type_class_def class, instruction *prev )
+                                   type_class_def type_class, instruction *prev )
 /*****************************************************************************
     Generate "optimal" code for op*by => temp and suffix instruction
     "prev" with it.  Return a pointer to the last instruction generated.
@@ -1861,17 +1861,17 @@ static  instruction     *Multiply( name *op, signed_32 by, name *temp,
     }
     log2 = GetLog2( by );
     if( log2 == 0 ) {
-        ins = MakeMove( op, temp, class );
+        ins = MakeMove( op, temp, type_class );
         SuffixIns( prev, ins );
     } else if( log2 == -1 ) {
-        ins = MakeBinary( OP_MUL, op, AllocS32Const( by ), temp, class );
+        ins = MakeBinary( OP_MUL, op, AllocS32Const( by ), temp, type_class );
         SuffixIns( prev, ins );
     } else {
-        ins = MakeBinary( OP_LSHIFT, op, AllocS32Const( log2 ), temp, class );
+        ins = MakeBinary( OP_LSHIFT, op, AllocS32Const( log2 ), temp, type_class );
         SuffixIns( prev, ins );
     }
     if( negative ) {
-        prev = MakeUnary( OP_NEGATE, temp, temp, op->n.name_class );
+        prev = MakeUnary( OP_NEGATE, temp, temp, op->n.type_class );
         SuffixIns( ins, prev );
         ins = prev;
     }
@@ -1889,13 +1889,13 @@ static  instruction     *MakeMul( instruction *prev,
 {
     instruction         *ins;
     name                *temp;
-    type_class_def      class;
+    type_class_def      type_class;
 
-    class = op->n.name_class;
-    temp = AllocTemp( class );
-    ins = Multiply( op, by, temp, class, prev );
+    type_class = op->n.type_class;
+    temp = AllocTemp( type_class );
+    ins = Multiply( op, by, temp, type_class, prev );
     if( ivtimes != NULL ) {
-        prev = MakeBinary( OP_MUL, temp, ivtimes, temp, class );
+        prev = MakeBinary( OP_MUL, temp, ivtimes, temp, type_class );
         SuffixIns( ins, prev );
         ins = prev;
     }
@@ -1919,7 +1919,7 @@ void    SuffixPreHeader( instruction *ins )
 }
 
 
-static  void    IncAndInit( induction *var, name *iv, type_class_def class )
+static  void    IncAndInit( induction *var, name *iv, type_class_def type_class )
 /****************************************************************************
     Generate code in the pre-header to initialize newly created
     induction variable "iv", based on the information found in "var".
@@ -1940,27 +1940,27 @@ static  void    IncAndInit( induction *var, name *iv, type_class_def class )
 
     basic = var->basic;
     if( var->ivtimes != NULL ) {
-        temp = AllocTemp( var->ivtimes->n.name_class );
+        temp = AllocTemp( var->ivtimes->n.type_class );
         ins = Multiply( var->ivtimes, var->times * basic->plus,
-                        temp, temp->n.name_class, PreHead->ins.hd.prev );
+                        temp, temp->n.type_class, PreHead->ins.hd.prev );
         temp = ins->result;
         temp->t.temp_flags |= CROSSES_BLOCKS;
     } else {
         temp = AllocS32Const( var->times * basic->plus );
     }
-    ins = MakeBinary( OP_ADD, iv, temp, iv, class );
+    ins = MakeBinary( OP_ADD, iv, temp, iv, type_class );
     PrefixIns( basic->ins, ins );
 
     /* initialize the new induction variable in the loop preheader. */
 
-    temp = AllocTemp( class );
-    if( class != CP && class != PT ) {
+    temp = AllocTemp( type_class );
+    if( type_class != CP && type_class != PT ) {
         first = NULL;
     } else {
         first = FindPointerPart( var );
     }
     if( first != NULL ) { /* can do this because ptr multiplies aren't allowed*/
-        ins = MakeBinary( OP_ADD, first, AllocS32Const( var->plus ), temp, class );
+        ins = MakeBinary( OP_ADD, first, AllocS32Const( var->plus ), temp, type_class );
         SuffixPreHeader( ins );
     }
     if( first != basic->name ) {
@@ -1968,34 +1968,34 @@ static  void    IncAndInit( induction *var, name *iv, type_class_def class )
         if( first == NULL ) {
             ins->result = temp;
         } else {
-            ins = MakeBinary( OP_ADD, temp, ins->result, temp, class );
+            ins = MakeBinary( OP_ADD, temp, ins->result, temp, type_class );
             SuffixPreHeader( ins );
         }
     }
     if( first == NULL ) {
-        ins = MakeBinary( OP_ADD, temp, AllocS32Const( var->plus ), temp, class );
+        ins = MakeBinary( OP_ADD, temp, AllocS32Const( var->plus ), temp, type_class );
         SuffixPreHeader( ins );
     }
     for( invar = var->invar; invar != NULL; invar = invar->next ) {
         if( invar->name != first ) {
             if( invar->times == 1 && ( invar->id > var->lasttimes ) ) {
-                ins = MakeBinary( OP_ADD, temp, invar->name, temp, class );
+                ins = MakeBinary( OP_ADD, temp, invar->name, temp, type_class );
                 SuffixPreHeader( ins );
             } else {
                 ins = MakeMul(PreHead->ins.hd.prev,invar->name, invar->times,
                       (invar->id > var->lasttimes) ? NULL : var->ivtimes );
-                ins = MakeBinary( OP_ADD, temp, ins->result, temp, class );
+                ins = MakeBinary( OP_ADD, temp, ins->result, temp, type_class );
                 SuffixPreHeader( ins );
             }
         }
     }
     if( var->plus2 != 0 ) {
         ins = Multiply( var->ivtimes, var->plus2,
-                        AllocTemp( var->ivtimes->n.name_class ),
-                        var->ivtimes->n.name_class, PreHead->ins.hd.prev );
-        ins = MakeBinary( OP_ADD, temp, ins->result, iv, class );
+                        AllocTemp( var->ivtimes->n.type_class ),
+                        var->ivtimes->n.type_class, PreHead->ins.hd.prev );
+        ins = MakeBinary( OP_ADD, temp, ins->result, iv, type_class );
     } else {
-        ins = MakeMove( temp, iv, class );
+        ins = MakeMove( temp, iv, type_class );
     }
     SuffixPreHeader( ins );
 }
@@ -2265,7 +2265,7 @@ static  void            AdjustOp( instruction *blk_end, name **pop,
         return;
     *pop = ScaleIndex( op->i.index, op->i.base,
                        op->i.constant + adjust,
-                       op->n.name_class, op->n.size,
+                       op->n.type_class, op->n.size,
                        op->i.scale, op->i.index_flags );
 }
 
@@ -2388,10 +2388,10 @@ static  bool    BlueMoonUnRoll( block *cond_blk, induction *var,
     }
     if( know_bounds ) {
         ins = MakeMove( AllocS32Const( initial + remainder * var->plus ),
-                        var->name, var->name->n.name_class );
+                        var->name, var->name->n.type_class );
     } else {
         ins = MakeBinary( OP_ADD, var->name, AllocS32Const( remainder * var->plus ),
-                          var->name, var->name->n.name_class );
+                          var->name, var->name->n.type_class );
     }
     SuffixPreHeader( ins );
     adjust = var->plus;
@@ -2410,10 +2410,10 @@ static  bool    BlueMoonUnRoll( block *cond_blk, induction *var,
         MakeJumpBlock( cond_blk, exit_edge );
         if( know_bounds ) {
             ins = MakeMove( AllocS32Const( final ), var->name,
-                            var->name->n.name_class );
+                            var->name->n.type_class );
         } else {
             ins = MakeBinary( OP_ADD, var->name, AllocS32Const( iterations * var->plus ),
-                              var->name, var->name->n.name_class );
+                              var->name, var->name->n.type_class );
         }
         SuffixIns( blk_end, ins );
     }
@@ -2434,14 +2434,14 @@ static  induction       *FindReplacement( induction *var )
     induction           *other;
     uint                log2rep;
     uint                log2oth;
-    type_class_def      varclass;
-    type_class_def      othclass;
+    type_class_def      var_type_class;
+    type_class_def      oth_type_class;
 
     if( var->ivtimes != NULL )
         return( NULL );
     replacement = NULL;
-    varclass = Unsigned[var->name->n.name_class];
-    if( Unsigned[var->ins->type_class] != varclass )
+    var_type_class = Unsigned[var->name->n.type_class];
+    if( Unsigned[var->ins->type_class] != var_type_class )
         return( NULL );
     log2rep = 0;
     for( other = IndVarList; other != NULL; other = other->next ) {
@@ -2455,10 +2455,10 @@ static  induction       *FindReplacement( induction *var )
             continue;
         if( other->basic != var )
             continue;
-        othclass = Unsigned[other->name->n.name_class];
-        if( othclass == varclass || ( othclass == WD && varclass == CP )
+        oth_type_class = Unsigned[other->name->n.type_class];
+        if( oth_type_class == var_type_class || ( oth_type_class == WD && var_type_class == CP )
 #ifndef _TARG_IS_SEGMENTED
-          || ( othclass == WD && varclass == PT ) || ( othclass == PT && varclass == WD )
+          || ( oth_type_class == WD && var_type_class == PT ) || ( oth_type_class == PT && var_type_class == WD )
 #endif
         ) {
             log2oth = GetLog2( other->times );
@@ -2721,7 +2721,7 @@ static  bool    FinalValue( instruction *ins, block *blk, induction *var )
     name                *op;
     signed_32           final;
     signed_32           initial;
-    type_class_def      class;
+    type_class_def      type_class;
     block               *dest;
 
     if( !CalcFinalValue( var, blk, ins, &final, &initial ) ) {
@@ -2732,18 +2732,18 @@ static  bool    FinalValue( instruction *ins, block *blk, induction *var )
         return( false );
     if( _IsBlkAttr( dest, BLK_LOOP_HEADER ) )
         return( false );
-    // class = var->name->n.name_class;
-    class = ins->type_class;
-    assert( TypeClassSize[class] == TypeClassSize[var->name->n.name_class] );
+    // type_class = var->name->n.type_class;
+    type_class = ins->type_class;
+    assert( TypeClassSize[type_class] == TypeClassSize[var->name->n.type_class] );
     op = AllocS32Const( final );
     other = MakeCondition( OP_CMP_EQUAL, var->name, op,
-                           _TrueIndex( ins ), _FalseIndex( ins ), class );
+                           _TrueIndex( ins ), _FalseIndex( ins ), type_class );
     ReplIns( ins, other );
     if( dest->inputs == 1 ) {
         // if dest has 1 input then we can do this assignment since we
         // know we must have come from the loop when arriving there
         // (otherwise we might be mucking with vars used in a later block)
-        ins = MakeMove( op, var->name, class );
+        ins = MakeMove( op, var->name, type_class );
         SuffixIns( (instruction *)&dest->ins, ins );
     }
     return( true );
@@ -2758,11 +2758,11 @@ static  bool    PointerOk( name *op )
 
     return( false );
 #else
-    if( op->n.name_class == PT )
+    if( op->n.type_class == PT )
         return( true );
-    if( op->n.name_class == CP )
+    if( op->n.type_class == CP )
         return( true );
-    if( op->n.name_class != U2 )
+    if( op->n.type_class != U2 )
         return( false );
     if( op->n.class != N_TEMP )
         return( false );
@@ -2793,7 +2793,7 @@ static  bool    DangerousTypeChange( induction *var, induction *other )
     return( true );
 }
 
-static  bool    ConstOverflowsType( signed_64 *val, type_class_def class )
+static  bool    ConstOverflowsType( signed_64 *val, type_class_def type_class )
 /*************************************************************************
     Return true if the given (signed) constant is too big or too small for
     the given type_class.
@@ -2804,15 +2804,15 @@ static  bool    ConstOverflowsType( signed_64 *val, type_class_def class )
     signed_64           max;
     signed_64           one;
 
-    if( class == XX ) {
+    if( type_class == XX ) {
         _Zoiks( ZOIKS_139 );
         return( false );
     }
-    if( class == I8 || class == U8 )
+    if( type_class == I8 || type_class == U8 )
         return( false );
-    len = TypeClassSize[class] * 8;
+    len = TypeClassSize[type_class] * 8;
     I32ToI64( 1, &one );
-    if( Unsigned[class] != class ) {
+    if( Unsigned[type_class] != type_class ) {
         // signed type of length 'len' bits
         U64ShiftL( &one, len - 1, &max );
         U64Neg( &max, &min );
@@ -2831,7 +2831,7 @@ static  bool    ConstOverflowsType( signed_64 *val, type_class_def class )
 }
 
 static  bool    DoReplacement( instruction *ins, induction *rep,
-                               opcnt ind, opcnt non_ind, type_class_def class )
+                               opcnt ind, opcnt non_ind, type_class_def type_class )
 /******************************************************************************
     Replace operands[ind] with "rep" in instruction "ins".
     operands[non_ind] is guaranteed not to be another induction variable.
@@ -2861,19 +2861,19 @@ static  bool    DoReplacement( instruction *ins, induction *rep,
         U64Add( &big_cons, &temp, &big_cons );
         // make sure we always allow negative values - hack for BMark
         if( (big_cons.u._32[I64HI32] & 0x80000000) == 0 ) {
-            if( ConstOverflowsType( &big_cons, class ) ) {
+            if( ConstOverflowsType( &big_cons, type_class ) ) {
                 return( false );
             }
         }
-        ins->type_class = class;
+        ins->type_class = type_class;
         ins->operands[ind] = rep->name;
         ins->operands[non_ind] = AllocS64Const( big_cons.u._32[I64LO32], big_cons.u._32[I64HI32] );
     } else {
-        ins->type_class = class;
+        ins->type_class = type_class;
         ins->operands[ind] = rep->name;
         new_ins = MakeMul( prev_ins, non_ind_op, rep->times, NULL );
         prev_ins = new_ins;
-        new_ins = MakeBinary( OP_ADD, new_ins->result, AllocS32Const( rep->plus ), new_ins->result, class );
+        new_ins = MakeBinary( OP_ADD, new_ins->result, AllocS32Const( rep->plus ), new_ins->result, type_class );
         ins->operands[non_ind] = new_ins->result;
         SuffixIns( prev_ins, new_ins );
         prev_ins = new_ins;
@@ -2884,14 +2884,14 @@ static  bool    DoReplacement( instruction *ins, induction *rep,
     for( invar = rep->invar; invar != NULL; invar = invar->next ) {
         new_ins = MakeMul( prev_ins, invar->name, invar->times, NULL );
         prev_ins = new_ins;
-        if( DifferentClasses( new_ins->result->n.name_class, class ) ) {
-            new_ins = MakeConvert( new_ins->result, AllocTemp( class ),
-                                   class, ins->operands[non_ind]->n.name_class );
+        if( DifferentClasses( new_ins->result->n.type_class, type_class ) ) {
+            new_ins = MakeConvert( new_ins->result, AllocTemp( type_class ),
+                                   type_class, ins->operands[non_ind]->n.type_class );
             SuffixIns( prev_ins, new_ins );
             prev_ins = new_ins;
         }
         new_ins = MakeBinary( OP_ADD, new_ins->result, ins->operands[non_ind],
-                                AllocTemp( class ), class );
+                                AllocTemp( type_class ), type_class );
         ins->operands[non_ind] = new_ins->result;
         SuffixIns( prev_ins, new_ins );
         prev_ins = new_ins;
@@ -2900,13 +2900,13 @@ static  bool    DoReplacement( instruction *ins, induction *rep,
 }
 
 static  bool    RepIndVar( instruction *ins, induction *rep,
-                           opcnt i_ind, opcnt i_non_ind, type_class_def class )
+                           opcnt i_ind, opcnt i_non_ind, type_class_def type_class )
 /******************************************************************************
     One operand of "ins" needs to be replaced with "rep"
 */
 {
     if( InvariantOp( ins->operands[i_non_ind] ) ) {
-        if( !DoReplacement( ins, rep, i_ind, i_non_ind, class ) ) {
+        if( !DoReplacement( ins, rep, i_ind, i_non_ind, type_class ) ) {
             return( false );
         }
     }
@@ -2914,7 +2914,7 @@ static  bool    RepIndVar( instruction *ins, induction *rep,
 }
 
 
-static  void    RepBoth( instruction *ins, induction *rep, type_class_def class )
+static  void    RepBoth( instruction *ins, induction *rep, type_class_def type_class )
 /****************************************************************
     Both operands of "ins" need to be replaced with "rep".
 */
@@ -2924,12 +2924,12 @@ static  void    RepBoth( instruction *ins, induction *rep, type_class_def class 
     if( rep->times < 0 ) {
         RevCond( ins );
     }
-    ins->type_class = class;
+    ins->type_class = type_class;
 }
 
 
 static  bool    ReplUses( induction *var, induction *rep,
-                          instruction *ins, type_class_def class )
+                          instruction *ins, type_class_def type_class )
 /*******************************************************************
     Replace all uses of induction variable "var" with "rep" in
     instruction "ins".
@@ -2943,15 +2943,15 @@ static  bool    ReplUses( induction *var, induction *rep,
         op2use = Uses( ins->operands[1], var->name ); /* UNUSED | USED_AS_OP*/
         if( op1use == IVU_USED_AS_OPERAND ) {
             if( op2use == IVU_USED_AS_OPERAND ) {
-                RepBoth( ins, rep, class );
+                RepBoth( ins, rep, type_class );
             } else if( op2use == IVU_USED_AS_INVARIANT ) {
-                if( !RepIndVar( ins, rep, 0, 1, class ) ) {
+                if( !RepIndVar( ins, rep, 0, 1, type_class ) ) {
                     return( false );
                 }
             }
         } else if( op2use == IVU_USED_AS_OPERAND ) {
             if( op1use == IVU_USED_AS_INVARIANT ) {
-                if( !RepIndVar( ins, rep, 1, 0, class ) ) {
+                if( !RepIndVar( ins, rep, 1, 0, type_class ) ) {
                     return( false );
                 }
             }
@@ -2977,12 +2977,12 @@ static  void    Replace( induction *var, induction *replacement )
     instruction         *cond;
     block               *cond_blk;
     bool                onecond;
-    type_class_def      class;
+    type_class_def      type_class;
     bool                free_ins;
 
     if( !AnalyseLoop( var, &onecond, &cond, &cond_blk ) )
         return;
-    class = replacement->type_class;
+    type_class = replacement->type_class;
     free_ins = false;
     if( onecond ) {
         if( FinalValue( cond, cond_blk, var ) ) {
@@ -2992,7 +2992,7 @@ static  void    Replace( induction *var, induction *replacement )
     for( blk = Loop; blk != NULL; blk = blk->u.loop ) {
         for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             if( _OpIsCompare( ins->head.opcode ) ) {
-                if( !ReplUses( var, replacement, ins, class ) ) {
+                if( !ReplUses( var, replacement, ins, type_class ) ) {
                     return;
                 }
             }
@@ -3136,12 +3136,12 @@ static  bool    FindInvariants( void )
                     _SetLoopUsage( op, VU_INVARIANT );
                     FPNotStack( op );
                 } else {
-                    temp = AllocTemp( op->n.name_class );
+                    temp = AllocTemp( op->n.type_class );
                     temp->n.size = op->n.size;
                     temp->t.temp_flags |= ( CROSSES_BLOCKS | ONE_DEFINITION );
                     ins->result = temp;
                     SuffixPreHeader( ins );
-                    PrefixIns( next, MakeMove( temp, op, op->n.name_class ) );
+                    PrefixIns( next, MakeMove( temp, op, op->n.type_class ) );
                 }
                 change = true;
             } else if( ins->head.opcode != OP_CALL_INDIRECT ) {
@@ -3253,7 +3253,7 @@ static  bool    ReduceVar( induction *var )
 {
     induction           *alias;
     name                *new_temp;
-    type_class_def      class;
+    type_class_def      type_class;
     induction           *new;
     instruction         *ins;
 
@@ -3268,27 +3268,27 @@ static  bool    ReduceVar( induction *var )
         return( false );
     if( IsAddressMode( var ) )
         return( false );
-    class = var->type_class;
-    new_temp = AllocTemp( class );
+    type_class = var->type_class;
+    new_temp = AllocTemp( type_class );
     new_temp->t.temp_flags |= CROSSES_BLOCKS;
-    ins = MakeMove( new_temp, var->name, class );
+    ins = MakeMove( new_temp, var->name, type_class );
     ReplIns( var->ins, ins );
     var->ins = ins;
-    IncAndInit( var, new_temp, class );
+    IncAndInit( var, new_temp, type_class );
     for( alias = var->alias; alias != var; alias = alias->alias ) {
         if( NoPathThru( var->ins, alias->ins, var->basic->ins )
           && (alias->name->v.usage & USE_IN_ANOTHER_BLOCK) == 0
           && (var->name->v.usage & USE_IN_ANOTHER_BLOCK) == 0 ) {
             ReplaceOccurences( alias->name, var->name );
-            ins = MakeMove(new_temp,alias->name,class);
-            PrefixIns(alias->ins,ins);
-            ins = MakeMove(new_temp,var->name,class);
+            ins = MakeMove( new_temp, alias->name, type_class );
+            PrefixIns( alias->ins, ins );
+            ins = MakeMove( new_temp, var->name, type_class );
         } else {
-            ins = MakeMove(new_temp,alias->name,class);
+            ins = MakeMove( new_temp, alias->name, type_class );
         }
         ReplIns( alias->ins, ins );
         alias->ins = ins;
-// why? ins = MakeMove( new_temp, alias->name, class );
+// why? ins = MakeMove( new_temp, alias->name, type_class );
 //      SuffixPreHeader( ins );
     }
     new = AddIndVar( var->basic->ins->head.prev, new_temp,

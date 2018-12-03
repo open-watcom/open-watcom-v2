@@ -56,7 +56,7 @@ static  void    CheckName( name **pop, name *gblreg )
     op = *pop;
     if( op->n.class == N_MEMORY && !SegIsCS( op ) ) {
         *pop = SAllocIndex( gblreg, op, op->v.offset,
-                            op->n.name_class, op->n.size );
+                            op->n.type_class, op->n.size );
     } else if( op->n.class == N_INDEXED ) {
         if( op->i.base != NULL && op->i.base->n.class == N_MEMORY &&
             !SegIsCS( op->i.base ) ) {
@@ -70,7 +70,7 @@ static  void    CheckName( name **pop, name *gblreg )
                 flags = X_LOW_BASE;
             }
             *pop = ScaleIndex( index, op->i.base, op->i.constant,
-            op->n.name_class, op->n.size, op->i.scale, op->i.index_flags|flags);
+            op->n.type_class, op->n.size, op->i.scale, op->i.index_flags|flags);
         }
     }
 }

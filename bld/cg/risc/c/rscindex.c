@@ -52,7 +52,7 @@ bool    IndexOkay( instruction *ins, name *index ) {
 
     name = index->i.index;
     if( name->n.class == N_REGISTER ) {
-        return( IsIndexReg( name->r.reg, name->n.name_class, 0 ) );
+        return( IsIndexReg( name->r.reg, name->n.type_class, 0 ) );
     }
     if( name->v.conflict == NULL )
         return( false );
@@ -110,9 +110,9 @@ static  const int AlignmentMap[] = {
     1,
 };
 
-static  name    *MakeIndex( instruction *memory_ins, name *memory, type_class_def class ) {
-/*****************************************************************************************/
-
+static  name    *MakeIndex( instruction *memory_ins, name *memory, type_class_def type_class )
+/********************************************************************************************/
+{
     name        *op;
     name        *temp;
     instruction *ins;
@@ -138,7 +138,7 @@ static  name    *MakeIndex( instruction *memory_ins, name *memory, type_class_de
             ins->zap = &AllocRegName( HW_R0 )->r;
         }
     }
-    op = ScaleIndex( temp, NULL, 0, class, memory->n.size, 0, flags );
+    op = ScaleIndex( temp, NULL, 0, type_class, memory->n.size, 0, flags );
     return( op );
 }
 
@@ -156,14 +156,14 @@ static  name    *TruncImmediate( instruction *mem_ins, name *index ) {
         temp = AllocTemp( I4 );
         ins = MakeBinary( OP_ADD, index->i.index, AllocS32Const( index->i.constant ), temp, I4 );
         PrefixIns( mem_ins, ins );
-        result = ScaleIndex( temp, NULL, 0, index->n.name_class, index->n.size, index->i.scale, index->i.index_flags );
+        result = ScaleIndex( temp, NULL, 0, index->n.type_class, index->n.size, index->i.scale, index->i.index_flags );
     }
     return( result );
 }
 
-static  name    *MakeSimpleIndex( instruction *mem_ins, name *index, type_class_def class ) {
-/*******************************************************************************************/
-
+static  name    *MakeSimpleIndex( instruction *mem_ins, name *index, type_class_def type_class )
+/**********************************************************************************************/
+{
     name        *op;
     instruction *ins;
     name        *temp;
@@ -177,7 +177,7 @@ static  name    *MakeSimpleIndex( instruction *mem_ins, name *index, type_class_
         PrefixIns( mem_ins, ins );
         ins = MakeBinary( OP_ADD, temp, index->i.index, temp, U4 );
         PrefixIns( mem_ins, ins );
-        op = ScaleIndex( temp, NULL, index->i.constant, class, index->n.size, 0, index->i.index_flags );
+        op = ScaleIndex( temp, NULL, index->i.constant, type_class, index->n.size, 0, index->i.index_flags );
     }
     return( TruncImmediate( mem_ins, op ) );
 }

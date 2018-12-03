@@ -99,5 +99,5 @@ bool    ScRealRegister( name *reg )
     monstrosity like R1:R0:R2 used for calls.
 */
 {
-    return( reg->n.name_class != XX );
+    return( reg->n.type_class != XX );
 }

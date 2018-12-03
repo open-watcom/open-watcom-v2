@@ -96,18 +96,18 @@ name    *IndexToTemp( instruction * ins, name * index ) {
     instruction         *new_ins;
     name                *new_idx;
     name                *name;
-    type_class_def      class;
+    type_class_def      type_class;
 
     name = index->i.index;
     if( name->n.class == N_CONSTANT ) {
-        class = WD;
+        type_class = WD;
     } else {
-        class = name->n.name_class;
+        type_class = name->n.type_class;
     }
-    temp = AllocTemp( class );
-    new_ins = MakeMove( name, temp, class );
+    temp = AllocTemp( type_class );
+    new_ins = MakeMove( name, temp, type_class );
     new_idx = ScaleIndex( temp, index->i.base,
-                           index->i.constant, index->n.name_class,
+                           index->i.constant, index->n.type_class,
                            index->n.size, index->i.scale,
                            index->i.index_flags );
     ReplaceOperand( ins, index, new_idx );
@@ -176,25 +176,25 @@ static  name    *OpTemp( instruction *ins, opcnt i, opcnt j ) {
 */
 
     name                *temp;
-    type_class_def      class;
+    type_class_def      type_class;
     instruction         *new_ins;
 
-    class = FPInsClass( ins );
-    if( class == XX ) {
-        if( ins->operands[i]->n.name_class == XX ) {
-            class = ins->type_class;
+    type_class = FPInsClass( ins );
+    if( type_class == XX ) {
+        if( ins->operands[i]->n.type_class == XX ) {
+            type_class = ins->type_class;
         } else {
-            class = ins->operands[i]->n.name_class;
+            type_class = ins->operands[i]->n.type_class;
         }
     }
 #if _TARGET & _TARG_AXP
     if( i == 0 && ins->head.opcode == OP_CONVERT ) {
-        class = ins->base_type_class;
+        type_class = ins->base_type_class;
     }
 #endif
-    temp = AllocTemp( class );
+    temp = AllocTemp( type_class );
     FPSetStack( temp );
-    new_ins = MakeMove( ins->operands[i], temp, class );
+    new_ins = MakeMove( ins->operands[i], temp, type_class );
     ins->operands[i] = temp;
     ins->operands[j] = temp;
     PrefixIns( ins, new_ins );
@@ -213,12 +213,12 @@ static  instruction     *Split3( instruction *ins ) {
     if( ins->operands[0]->n.class == N_INDEXED
      || ins->operands[0]->n.class == N_MEMORY ) {
         temp = OpTemp( ins, 0, 0 );
-        if( temp->n.name_class != ins->result->n.name_class
+        if( temp->n.type_class != ins->result->n.type_class
           || FPIsStack( temp ) ) {
-            temp = AllocTemp( ins->result->n.name_class );
+            temp = AllocTemp( ins->result->n.type_class );
             FPSetStack( temp );
         }
-        new_ins = MakeMove( temp, ins->result, temp->n.name_class );
+        new_ins = MakeMove( temp, ins->result, temp->n.type_class );
         ins->result = temp;
         SuffixIns( ins, new_ins );
         ins = new_ins;
@@ -238,9 +238,9 @@ static  instruction     *ResTemp( instruction *ins ) {
     name        *temp;
     instruction *new_ins;
 
-    temp = AllocTemp( ins->result->n.name_class );
+    temp = AllocTemp( ins->result->n.type_class );
     FPSetStack( temp );
-    new_ins = MakeMove( temp, ins->result, temp->n.name_class );
+    new_ins = MakeMove( temp, ins->result, temp->n.type_class );
     ins->result = temp;
     SuffixIns( ins, new_ins );
     return( new_ins );

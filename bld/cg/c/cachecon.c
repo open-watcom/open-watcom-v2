@@ -93,10 +93,10 @@ static  type_class_def  FindMaxClass( name *cons, int *prefs ) {
     block               *blk;
     instruction         *ins;
     opcnt               i;
-    int                 class;
+    int                 type_class;
     opcnt               num_operands;
 
-    class = -1;
+    type_class = -1;
     *prefs = 0;
     for( blk = Head; blk != NULL; blk = Next( blk ) ) {
         for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
@@ -104,18 +104,18 @@ static  type_class_def  FindMaxClass( name *cons, int *prefs ) {
             for( i = 0; i < num_operands; ++i ) {
                 if( ins->operands[i] == cons ) {
                     ++*prefs;
-                    if( (int)ins->type_class >= class ) {
-                        class = _OpClass( ins );
+                    if( (int)ins->type_class >= type_class ) {
+                        type_class = _OpClass( ins );
                     }
                 }
             }
         }
     }
-    if( class == -1 )
-        class = XX;
-    // return( Unsigned[class] );
+    if( type_class == -1 )
+        type_class = XX;
+    // return( Unsigned[type_class] );
     // why? BBB - June 28, 1995
-    return( class );
+    return( type_class );
 }
 
 
@@ -131,26 +131,28 @@ static  bool    ReplaceConst( name *cons, name *temp, type_class_def tmp_class )
     block               *blk;
     instruction         *ins;
     opcnt               i;
-    type_class_def      ins_class;
+    type_class_def      type_class;
     bool                change;
     opcnt               num_operands;
 
+#if ( _TARGET & _TARG_AXP ) || ( _TARG_MEMORY & _TARG_LOW_FIRST ) == 0
     /* unused parameters */ (void)tmp_class;
+#endif
 
     change = false;
     for( blk = Head; blk != NULL; blk = Next( blk ) ) {
         for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
-            ins_class = Unsigned[_OpClass( ins )];
+            type_class = Unsigned[_OpClass( ins )];
             num_operands = CountOps( ins, cons );
             for( i = 0; i < num_operands; ++i ) {
                 if( ins->operands[i] == cons  ) {
-                    if( ins_class == temp->n.name_class ) {
+                    if( type_class == temp->n.type_class ) {
                         ins->operands[i] = temp;
                         change = true;
 #if ( _TARGET & _TARG_AXP ) == 0 && ( _TARG_MEMORY & _TARG_LOW_FIRST )
                     } else {
-                        if( _IsIntegral( ins_class ) && _IsIntegral( tmp_class ) ) {
-                            ins->operands[i] = TempOffset( temp, 0, ins_class );
+                        if( _IsIntegral( type_class ) && _IsIntegral( tmp_class ) ) {
+                            ins->operands[i] = TempOffset( temp, 0, type_class );
                             change = true;
                         }
 #endif
@@ -172,22 +174,25 @@ void    ConstToTemp( block *pre, block *head, block*(*next)(block*) )
 {
     name                *cons;
     name                *temp;
-    type_class_def      class;
+    type_class_def      type_class;
     int                 num_refs;
 
     Head = head;
     Next = next;
     for( cons = Names[N_CONSTANT]; cons != NULL; cons = cons->n.next_name ) {
         if( cons->c.const_type == CONS_TEMP_ADDR ) continue;
-        class = FindMaxClass( cons, &num_refs );
-        if( class == XX ) continue;
-        if( head == HeadBlock && num_refs < 2 ) continue;
-        temp = AllocTemp( class );
+        type_class = FindMaxClass( cons, &num_refs );
+        if( type_class == XX )
+            continue;
+        if( head == HeadBlock && num_refs < 2 )
+            continue;
+        temp = AllocTemp( type_class );
         temp->t.temp_flags |= CONST_TEMP;
         temp->v.symbol = cons;
-        if( !ReplaceConst( cons, temp, class ) ) continue;
+        if( !ReplaceConst( cons, temp, type_class ) )
+            continue;
         temp->v.usage |= USE_IN_ANOTHER_BLOCK;
-        SuffixIns( pre->ins.hd.prev, MakeMove( cons, temp, class ) );
+        SuffixIns( pre->ins.hd.prev, MakeMove( cons, temp, type_class ) );
     }
 }
 

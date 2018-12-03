@@ -146,8 +146,8 @@ static void DoOneParm( instruction *parm_ins, instruction *decl_ins, instruction
     type_class_def      dst_class;
 
     src = parm_ins->operands[0];
-    src_class = src->n.name_class;
-    dst_class = decl_ins->result->n.name_class;
+    src_class = src->n.type_class;
+    dst_class = decl_ins->result->n.type_class;
     tmp = AllocTemp( dst_class );
     first = MakeConvert( src, tmp, dst_class, src_class );
     second = MakeMove( tmp, decl_ins->result, dst_class );

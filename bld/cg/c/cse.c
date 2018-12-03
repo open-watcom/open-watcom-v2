@@ -666,7 +666,7 @@ static  instruction     *ProcessExpr( instruction *ins1, instruction *ins2, bool
     instruction         *new_ins;
     instruction         *dead_or_new_ins;
     name                *temp;
-    type_class_def      class;
+    type_class_def      type_class;
     who_dies            killed;
     opcnt               i;
 
@@ -702,16 +702,16 @@ static  instruction     *ProcessExpr( instruction *ins1, instruction *ins2, bool
         if( (ins1->ins_flags & INS_DEFINES_OWN_OPERAND) == 0 ) {
             killed = BinOpsLiveFrom( ins1, ins2, ins1->operands[0], ins1->operands[i], ins1->result );
             if( killed != OP_DIES ) {
-                class = ins1->result->n.name_class;
+                type_class = ins1->result->n.type_class;
                 if( killed == RESULT_DIES || !CanCrossBlocks( ins1, ins2, ins1->result ) ) {
-                    temp = AllocTemp( class );
-                    new_ins = MakeMove( temp, ins1->result, class );
+                    temp = AllocTemp( type_class );
+                    new_ins = MakeMove( temp, ins1->result, type_class );
                     ins1->result = temp;
                     SuffixIns( ins1, new_ins );
                     SetCSEBits( ins1, new_ins );
                     FPNotStack( temp );
                 }
-                new_ins = MakeMove( ins1->result, ins2->result, class );
+                new_ins = MakeMove( ins1->result, ins2->result, type_class );
                 UseInOther( ins1, ins2, ins1->result );
                 dead_or_new_ins = ins2;
                 SetCSEBits( ins2, new_ins );
@@ -727,22 +727,22 @@ static  instruction     *ProcessExpr( instruction *ins1, instruction *ins2, bool
           && BinOpsLiveFrom( first->head.next, ins2, ins2->operands[0], ins2->operands[i], NULL ) == ALL_LIVE
           && HoistLooksGood( first, ins1 )
           && HoistLooksGood( first, ins2 ) ) {
-            class = ins1->type_class;
-            temp = AllocTemp( class );
+            type_class = ins1->type_class;
+            temp = AllocTemp( type_class );
             temp->t.temp_flags |= CROSSES_BLOCKS;
             if( _OpIsBinary( ins1->head.opcode ) ) {
-                new_ins = MakeBinary( ins1->head.opcode, ins1->operands[0], ins1->operands[1], temp, class );
+                new_ins = MakeBinary( ins1->head.opcode, ins1->operands[0], ins1->operands[1], temp, type_class );
             } else {
-                new_ins = MakeUnary( ins1->head.opcode, ins1->operands[0], temp, class );
+                new_ins = MakeUnary( ins1->head.opcode, ins1->operands[0], temp, type_class );
             }
             new_ins->base_type_class = ins1->base_type_class;
             dead_or_new_ins = new_ins;
             SetCSEBits( first, new_ins );
             SuffixIns( first, new_ins );
-            new_ins = MakeMove( temp, ins1->result, class );
+            new_ins = MakeMove( temp, ins1->result, type_class );
             SetCSEBits( ins1, new_ins );
             SuffixIns( ins1, new_ins );
-            new_ins = MakeMove( temp, ins2->result, class );
+            new_ins = MakeMove( temp, ins2->result, type_class );
             SetCSEBits( ins2, new_ins );
             SuffixIns( ins2, new_ins );
         }
@@ -1372,12 +1372,12 @@ static  bool    PropOpnd( instruction *ins, name **op,
                     }
                 } else if( opnd->n.class == N_INDEXED && definition->result->n.class == N_TEMP ) {
                     if( defop->n.class == N_TEMP
-                          && defop->n.name_class==opnd->i.index->n.name_class
+                          && defop->n.type_class==opnd->i.index->n.type_class
                           && CanCrossBlocks( definition, ins, defop ) ) {
                         UseInOther( definition, ins, defop );
                         *op = ScaleIndex( defop, opnd->i.base,
                                         opnd->i.constant,
-                                        opnd->n.name_class, opnd->n.size,
+                                        opnd->n.type_class, opnd->n.size,
                                         opnd->i.scale, opnd->i.index_flags );
                         change = true;
                     } else if( defop->n.class == N_CONSTANT
@@ -1413,14 +1413,14 @@ static  bool    PropOpnd( instruction *ins, name **op,
                             case N_TEMP:
                                 *op = STempOffset( base,
                                                 disp,
-                                                opnd->n.name_class,
+                                                opnd->n.type_class,
                                                 opnd->n.size );
                                 break;
                             case N_MEMORY:
                                 *op = (name *)SAllocMemory( base->v.symbol,
                                             base->v.offset + disp,
                                             base->m.memory_type,
-                                            opnd->n.name_class,
+                                            opnd->n.type_class,
                                             opnd->n.size );
                                 break;
                             default:

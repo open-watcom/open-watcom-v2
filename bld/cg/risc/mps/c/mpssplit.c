@@ -159,20 +159,20 @@ instruction *rCONSTLOAD( instruction *ins )
     name                *temp;
     instruction         *first_ins;
     instruction         *new_ins;
-    type_class_def      class;
+    type_class_def      type_class;
 
     assert( ins->operands[0]->n.class == N_CONSTANT );
     assert( ins->operands[0]->c.const_type == CONS_ABSOLUTE );
 
-    class = ins->type_class;
+    type_class = ins->type_class;
     c = ins->operands[0]->c.lo.uint_value;
     high = ( c >> 16 ) & 0xffff;
     low  = c & 0xffff;
-    high_part = AllocAddrConst( NULL, high, CONS_HIGH_ADDR, class );
-    temp = AllocTemp( class );
-    first_ins = MakeMove( high_part, temp, class );
+    high_part = AllocAddrConst( NULL, high, CONS_HIGH_ADDR, type_class );
+    temp = AllocTemp( type_class );
+    first_ins = MakeMove( high_part, temp, type_class );
     PrefixIns( ins, first_ins );
-    new_ins = MakeBinary( OP_OR, temp, AllocS32Const( low ), ins->result, class );
+    new_ins = MakeBinary( OP_OR, temp, AllocS32Const( low ), ins->result, type_class );
     ReplIns( ins, new_ins );
     UpdateLive( first_ins, new_ins );
     return( first_ins );
@@ -260,31 +260,31 @@ instruction *rALLOCA( instruction *ins )
     unsigned_32         value;
     instruction         *first;
     instruction         *last;
-    type_class_def      class;
+    type_class_def      type_class;
     bool                check;
 
     sreg = AllocRegName( StackReg() );
     amount = ins->operands[0];
     temp = AllocTemp( ins->type_class );
-    class = WD;
+    type_class = WD;
     check = true;
     CurrProc->targ.base_is_fp = true;
     if( amount->n.class == N_CONSTANT && amount->c.const_type == CONS_ABSOLUTE ) {
         value = amount->c.lo.uint_value;
         value = _RoundUp( value, STACK_ALIGNMENT );
         real_amount = AllocS32Const( value );
-        first = MakeBinary( OP_SUB, sreg, AllocS32Const( value ), temp, class );
+        first = MakeBinary( OP_SUB, sreg, AllocS32Const( value ), temp, type_class );
         PrefixIns( ins, first );
         if( value <= ( _TARGET_PAGE_SIZE - 7 ) ) {
             check = false;
         }
     } else {
         real_amount = AllocTemp( ins->type_class );
-        first = MakeBinary( OP_ADD, amount, AllocS32Const( STACK_ALIGNMENT - 1 ), temp, class );
+        first = MakeBinary( OP_ADD, amount, AllocS32Const( STACK_ALIGNMENT - 1 ), temp, type_class );
         PrefixIns( ins, first );
-        last = MakeBinary( OP_AND, temp, AllocU32Const( ~(STACK_ALIGNMENT - 1) ), real_amount, class );
+        last = MakeBinary( OP_AND, temp, AllocU32Const( ~(STACK_ALIGNMENT - 1) ), real_amount, type_class );
         PrefixIns( ins, last );
-        last = MakeBinary( OP_SUB, sreg, real_amount, temp, class );
+        last = MakeBinary( OP_SUB, sreg, real_amount, temp, type_class );
         PrefixIns( ins, last );
     }
     last = MakeMove( temp, sreg, WD );
@@ -299,9 +299,9 @@ instruction *rALLOCA( instruction *ins )
             CopyStack( ins, real_amount, MaxStack );
 
         }
-        last = MakeBinary( OP_ADD, temp, AllocS32Const( MaxStack ), ins->result, class );
+        last = MakeBinary( OP_ADD, temp, AllocS32Const( MaxStack ), ins->result, type_class );
     } else {
-        last = MakeMove( temp, ins->result, class );
+        last = MakeMove( temp, ins->result, type_class );
     }
     ReplIns( ins, last );
     UpdateLive( first, last );
@@ -628,13 +628,13 @@ instruction     *rSPLITCMP( instruction *ins )
     instruction         *low = NULL;
     instruction         *high = NULL;
     instruction         *not_equal = NULL;
-    type_class_def      high_class;
-    type_class_def      low_class;
+    type_class_def      high_type_class;
+    type_class_def      low_type_class;
     byte                true_idx;
     byte                false_idx;
 
-    high_class = HalfClass[ins->type_class];
-    low_class  = Unsigned[high_class];
+    high_type_class = HalfClass[ins->type_class];
+    low_type_class  = Unsigned[high_type_class];
     left = ins->operands[0];
     right = ins->operands[1];
     true_idx = _TrueIndex( ins );
@@ -642,52 +642,52 @@ instruction     *rSPLITCMP( instruction *ins )
     switch( ins->head.opcode ) {
     case OP_BIT_TEST_TRUE:
         high = MakeCondition( ins->head.opcode,
-                        HighPart( left, high_class ),
-                        HighPart( right, high_class ),
+                        HighPart( left, high_type_class ),
+                        HighPart( right, high_type_class ),
                         true_idx, NO_JUMP,
                         WORD );
         low = MakeCondition( ins->head.opcode,
-                        LowPart( left, low_class ),
-                        LowPart( right, low_class ),
+                        LowPart( left, low_type_class ),
+                        LowPart( right, low_type_class ),
                         true_idx, false_idx,
                         WORD );
         not_equal = NULL;
         break;
     case OP_BIT_TEST_FALSE:
         high = MakeCondition( OP_BIT_TEST_TRUE,
-                        HighPart( left, high_class ),
-                        HighPart( right, high_class ),
+                        HighPart( left, high_type_class ),
+                        HighPart( right, high_type_class ),
                         false_idx, NO_JUMP,
                         WORD );
         low = MakeCondition( ins->head.opcode,
-                        LowPart( left, low_class ),
-                        LowPart( right, low_class ),
+                        LowPart( left, low_type_class ),
+                        LowPart( right, low_type_class ),
                         true_idx, false_idx,
                         WORD );
         not_equal = NULL;
         break;
     case OP_CMP_EQUAL:
         high = MakeCondition( OP_CMP_NOT_EQUAL,
-                        HighPart( left, high_class ),
-                        HighPart( right, high_class ),
+                        HighPart( left, high_type_class ),
+                        HighPart( right, high_type_class ),
                         false_idx, NO_JUMP,
                         WORD );
         low = MakeCondition( ins->head.opcode,
-                        LowPart( left, low_class ),
-                        LowPart( right, low_class ),
+                        LowPart( left, low_type_class ),
+                        LowPart( right, low_type_class ),
                         true_idx, false_idx,
                         WORD );
         not_equal = NULL;
         break;
     case OP_CMP_NOT_EQUAL:
         high = MakeCondition( OP_CMP_NOT_EQUAL,
-                        HighPart( left, high_class ),
-                        HighPart( right, high_class ),
+                        HighPart( left, high_type_class ),
+                        HighPart( right, high_type_class ),
                         true_idx, NO_JUMP,
                         WORD );
         low = MakeCondition( ins->head.opcode,
-                        LowPart( left, low_class ),
-                        LowPart( right, low_class ),
+                        LowPart( left, low_type_class ),
+                        LowPart( right, low_type_class ),
                         true_idx, false_idx,
                         WORD );
         not_equal = NULL;
@@ -695,11 +695,11 @@ instruction     *rSPLITCMP( instruction *ins )
     case OP_CMP_LESS:
     case OP_CMP_LESS_EQUAL:
         not_equal = MakeCondition( OP_CMP_NOT_EQUAL,
-                        HighPart( left, high_class ),
-                        HighPart( right, high_class ),
+                        HighPart( left, high_type_class ),
+                        HighPart( right, high_type_class ),
                         false_idx, NO_JUMP,
-                        high_class );
-        if( high_class == WORD
+                        high_type_class );
+        if( high_type_class == WORD
          && right->n.class == N_CONSTANT
          && right->c.const_type == CONS_ABSOLUTE
          && HIGH_WORD( right ) == 0 ) {
@@ -708,22 +708,22 @@ instruction     *rSPLITCMP( instruction *ins )
             high = MakeCondition( OP_CMP_LESS,
                         not_equal->operands[0], not_equal->operands[1],
                         true_idx, NO_JUMP,
-                        high_class );
+                        high_type_class );
         }
         low = MakeCondition( ins->head.opcode,
-                        LowPart( left, low_class ),
-                        LowPart( right, low_class ),
+                        LowPart( left, low_type_class ),
+                        LowPart( right, low_type_class ),
                         true_idx, false_idx,
-                        low_class );
+                        low_type_class );
         break;
     case OP_CMP_GREATER_EQUAL:
     case OP_CMP_GREATER:
         not_equal = MakeCondition( OP_CMP_NOT_EQUAL,
-                        HighPart( left, high_class ),
-                        HighPart( right, high_class ),
+                        HighPart( left, high_type_class ),
+                        HighPart( right, high_type_class ),
                         false_idx, NO_JUMP,
-                        high_class );
-        if( high_class == WORD
+                        high_type_class );
+        if( high_type_class == WORD
          && right->n.class == N_CONSTANT
          && right->c.const_type == CONS_ABSOLUTE
          && HIGH_WORD( right ) == 0 ) {
@@ -733,13 +733,13 @@ instruction     *rSPLITCMP( instruction *ins )
             high = MakeCondition( OP_CMP_GREATER,
                         not_equal->operands[0], not_equal->operands[1],
                         true_idx, NO_JUMP,
-                        high_class );
+                        high_type_class );
         }
         low = MakeCondition( ins->head.opcode,
-                        LowPart( left, low_class ),
-                        LowPart( right, low_class ),
+                        LowPart( left, low_type_class ),
+                        LowPart( right, low_type_class ),
                         true_idx, false_idx,
-                        low_class );
+                        low_type_class );
         break;
     default:
         break;

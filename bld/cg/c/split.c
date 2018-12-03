@@ -571,7 +571,7 @@ instruction      *rCONVERT_LOW( instruction *ins )
 /************************************************/
 /* change convert 4 byte==>1 byte to 2 byte ==> 1 byte */
 {
-    ins->operands[0] = LowPart( ins->operands[0], HalfClass[ins->operands[0]->n.name_class] );
+    ins->operands[0] = LowPart( ins->operands[0], HalfClass[ins->operands[0]->n.type_class] );
     ins->base_type_class = HalfClass[ins->base_type_class];
     ins->table = NULL;
     return( ins );

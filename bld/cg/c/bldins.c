@@ -236,12 +236,12 @@ static  an      FlowOut( an node, type_def *tipe ) {
 
     lbl = AskForNewLabel();
     temp = BGGlobalTemp( tipe );
-    AddIns( MakeMove( AllocIntConst( FETrue() ), temp, temp->n.name_class ) );
+    AddIns( MakeMove( AllocIntConst( FETrue() ), temp, temp->n.type_class ) );
     *(node->u.b.t) = CurrBlock->label;
     GenBlock( BLK_JUMP, 1 );
     AddTarget( lbl, false );
     EnLink( AskForNewLabel(), true );
-    AddIns( MakeMove( AllocIntConst( 0 ), temp, temp->n.name_class ) );
+    AddIns( MakeMove( AllocIntConst( 0 ), temp, temp->n.type_class ) );
     *(node->u.b.f) = CurrBlock->label;
     GenBlock( BLK_JUMP, 1 );
     AddTarget( lbl, false );
@@ -318,21 +318,21 @@ void    BG3WayControl( an node, label_handle lt, label_handle eq, label_handle g
     instruction         *ins;
     name                *op;
     label_handle        lbl;
-    type_class_def      class;
+    type_class_def      type_class;
 
     node = Arithmetic( node, node->tipe );
-    class = TypeClass( node->tipe );
+    type_class = TypeClass( node->tipe );
     NamesCrossBlocks();
     op = GenIns( node );
     BGDone( node );
     ins = NULL;
 #if _TARGET & _TARG_80386
-    if( class == FS ) {
+    if( type_class == FS ) {
         ins = MakeCondition( OP_BIT_TEST_FALSE, op, AllocS32Const( 0x7FFFFFFFL ), 0, 1, SW );
     }
 #endif
     if( ins == NULL ) {
-        ins = MakeCondition( OP_CMP_EQUAL, op, AllocIntConst( 0 ), 0, 1, class );
+        ins = MakeCondition( OP_CMP_EQUAL, op, AllocIntConst( 0 ), 0, 1, type_class );
     }
     AddIns( ins );
     GenBlock( BLK_CONDITIONAL, 2 );
@@ -342,11 +342,11 @@ void    BG3WayControl( an node, label_handle lt, label_handle eq, label_handle g
 
     EnLink( lbl, true );
 #if _TARGET & _TARG_80386
-    if( class == FS ) {
-        class = SW;
+    if( type_class == FS ) {
+        type_class = SW;
     }
 #endif
-    ins = MakeCondition( OP_CMP_LESS, op, AllocIntConst( 0 ), 0, 1, class );
+    ins = MakeCondition( OP_CMP_LESS, op, AllocIntConst( 0 ), 0, 1, type_class );
     AddIns( ins );
     GenBlock( BLK_CONDITIONAL, 2 );
     AddTarget( lt, false );

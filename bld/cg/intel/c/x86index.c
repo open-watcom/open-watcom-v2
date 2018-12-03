@@ -121,15 +121,15 @@ bool    IndexOkay( instruction *ins, name *index ) {
     if( IsString( ins->table ) )
         return( true );
     if( name->n.class == N_REGISTER ) {
-        return( IsIndexReg( name->r.reg, name->n.name_class, is_temp_index ) );
+        return( IsIndexReg( name->r.reg, name->n.type_class, is_temp_index ) );
     }
 /* The next two lines require some explanation. If there is a CP/PT
    index still hanging around, it is because a reduction routine
    created it, so it can be handled. Normally, all CP/PT indecies are broken
    up into seg:foo[offset] before we ever get to register allocation */
-    if( name->n.name_class == CP )
+    if( name->n.type_class == CP )
         return( true );
-    if( name->n.name_class == PT )
+    if( name->n.type_class == PT )
         return( true );
     if( name->v.conflict == NULL )
         return( false );
@@ -249,7 +249,7 @@ void    AddSegment( instruction *ins ) {
             new_index = ScaleIndex( OffsetPart( index->i.index ),
                                     index->i.base,
                                     index->i.constant,
-                                    index->n.name_class,
+                                    index->n.type_class,
                                     index->n.size,
                                     index->i.scale,
                                     index->i.index_flags | X_SEGMENTED );
@@ -395,7 +395,7 @@ static  void    Merge( name **pname, instruction *ins ) {
     HW_TurnOn( tmp, ins->operands[ins->num_operands - 1]->r.reg );
     reg = AllocRegName( tmp );
     *pname = ScaleIndex( reg, index->i.base, index->i.constant,
-                         index->n.name_class, index->n.size,
+                         index->n.type_class, index->n.size,
                          index->i.scale, index->i.index_flags );
 }
 

@@ -62,8 +62,8 @@ static  void    AddSegOverride( instruction *ins, hw_reg_set reg )
     ins->operands[ins->num_operands++] = reg_name;
 }
 
-static  name    *GetNTTLSDataRef( instruction *ins, name *op, type_class_def tipe )
-/**********************************************************************************
+static  name    *GetNTTLSDataRef( instruction *ins, name *op, type_class_def type_class )
+/****************************************************************************************
     Emit instructions to load allow a reference to op (a piece of
     TLS data) and return the resulting index name.
 */
@@ -94,7 +94,7 @@ static  name    *GetNTTLSDataRef( instruction *ins, name *op, type_class_def tip
     temp_index = AllocIndex( t1, NULL, 0, WD );
     new_ins = MakeMove( temp_index, t3, WD );
     PrefixIns( ins, new_ins );
-    result_index = ScaleIndex( t3, op, op->v.offset, tipe, TypeClassSize[tipe], 0, 0 );
+    result_index = ScaleIndex( t3, op, op->v.offset, type_class, TypeClassSize[type_class], 0, 0 );
     return( result_index );
 }
 
@@ -121,8 +121,8 @@ static  void    DropCall( instruction *ins, name *temp )
     PrefixIns( ins, new_ins );
 }
 
-static  name    *GetGenericTLSDataRef( instruction *ins, name *op, type_class_def tipe )
-/**************************************************************************************/
+static  name    *GetGenericTLSDataRef( instruction *ins, name *op, type_class_def type_class )
+/********************************************************************************************/
 {
     name                *tls;
     name                *result_index;
@@ -149,17 +149,17 @@ static  name    *GetGenericTLSDataRef( instruction *ins, name *op, type_class_de
     temp = AllocTemp( WD );
     new_ins = MakeMove( tls, temp, WD );
     PrefixIns( ins, new_ins );
-    result_index = ScaleIndex( temp, op, op->v.offset, tipe, TypeClassSize[tipe], 0, 0 );
+    result_index = ScaleIndex( temp, op, op->v.offset, type_class, TypeClassSize[type_class], 0, 0 );
     return( result_index );
 }
 
-static  name    *GetTLSDataRef( instruction *ins, name *op, type_class_def tipe )
-/*******************************************************************************/
+static  name    *GetTLSDataRef( instruction *ins, name *op, type_class_def type_class )
+/*************************************************************************************/
 {
     if( _IsTargetModel( GENERIC_TLS ) ) {
-        return( GetNTTLSDataRef( ins, op, tipe ) );
+        return( GetNTTLSDataRef( ins, op, type_class ) );
     } else {
-        return( GetGenericTLSDataRef( ins, op, tipe ) );
+        return( GetGenericTLSDataRef( ins, op, type_class ) );
     }
 }
 

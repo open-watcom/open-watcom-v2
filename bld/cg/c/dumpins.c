@@ -515,8 +515,8 @@ void    DumpSym( name *sym )
     DumpPtr( sym );
     DumpChar( ' ' );
     DumpOperand( sym );
-    DumpClass( sym->n.name_class );
-    if( sym->n.name_class == XX ) {
+    DumpClass( sym->n.type_class );
+    if( sym->n.type_class == XX ) {
         DumpLong( sym->n.size );
     }
     if( sym->n.class == N_MEMORY || sym->n.class == N_TEMP ) {

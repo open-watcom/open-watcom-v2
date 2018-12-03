@@ -83,16 +83,16 @@ void    InitPPCParmState( call_state *state )
 type_length     ParmAlignment( type_def *tipe )
 /*********************************************/
 {
-    type_class_def      class;
+    type_class_def      type_class;
 
-    class = TypeClass( tipe );
-    if( class == XX ) {
+    type_class = TypeClass( tipe );
+    if( type_class == XX ) {
         if( tipe->length > 7 ) {
             return( 8 );
         }
-    } else if( class == FD ) {
+    } else if( type_class == FD ) {
         return( 8 );
-    } else if( class == U8 || class == I8 ) {
+    } else if( type_class == U8 || type_class == I8 ) {
         return( 8 );
     }
     return( 4 );
@@ -112,8 +112,8 @@ static  hw_reg_set      scalarRegSet( int index )
     return( scalarRegs[index - FIRST_SCALAR_PARM_REG] );
 }
 
-hw_reg_set      ParmReg( type_class_def class, type_length len, type_length alignment, call_state *state )
-/********************************************************************************************************/
+hw_reg_set      ParmReg( type_class_def type_class, type_length len, type_length alignment, call_state *state )
+/*************************************************************************************************************/
 {
     hw_reg_set          parm;
 
@@ -127,7 +127,7 @@ hw_reg_set      ParmReg( type_class_def class, type_length len, type_length alig
         state->parm.gr += 1;
         state->parm.offset += 4;
     }
-    if( _IsFloating( class ) ) {
+    if( _IsFloating( type_class ) ) {
         // if we are passing on stack it was busted up in AssgnParms prior to this
         if( state->parm.fr <= LAST_FLOAT_PARM_REG ) {
             state->parm.fr += 1;
@@ -135,7 +135,7 @@ hw_reg_set      ParmReg( type_class_def class, type_length len, type_length alig
             state->parm.offset += 8;
             parm = floatRegSet( state->parm.fr - 1 );
         }
-    } else if( _IsI64( class ) ) {
+    } else if( _IsI64( type_class ) ) {
         if( state->parm.gr <= (LAST_SCALAR_PARM_REG - 1) ) {
             state->parm.gr += 2;
             state->parm.offset += 8;

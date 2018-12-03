@@ -103,14 +103,14 @@ an      BGCall( cn call, bool use_return, bool in_line )
 void    BGProcDecl( cg_sym_handle sym, type_def *tipe )
 /*****************************************************/
 {
-    type_class_def      class;
+    type_class_def      type_class;
     name                *temp;
     hw_reg_set          reg;
 
-    class = AddCallBlock( sym, tipe );
+    type_class = AddCallBlock( sym, tipe );
     SaveTargetModel = TargetModel;
     if( tipe != TypeNone ) {
-        if( class == XX ) {
+        if( type_class == XX ) {
             reg = HW_D16;
             temp = AllocTemp( WD );
             temp->v.usage |= USE_IN_ANOTHER_BLOCK;
@@ -132,7 +132,7 @@ type_def        *PassParmType( cg_sym_handle func, type_def *tipe, call_class cl
     return( tipe );
 }
 
-instruction    *PushOneParm( instruction *ins, name *curr, type_class_def class,
+instruction    *PushOneParm( instruction *ins, name *curr, type_class_def type_class,
                                         type_length offset, call_state *state )
 /******************************************************************************/
 {
@@ -143,8 +143,8 @@ instruction    *PushOneParm( instruction *ins, name *curr, type_class_def class,
     /* unused parameters */ (void)state;
 
     stack_reg = AllocRegName( StackReg() );
-    dst = AllocIndex( stack_reg, NULL, offset, class );
-    new = MakeMove( curr, dst, class );
+    dst = AllocIndex( stack_reg, NULL, offset, type_class );
+    new = MakeMove( curr, dst, type_class );
     SuffixIns( ins, new );
     return( new );
 }

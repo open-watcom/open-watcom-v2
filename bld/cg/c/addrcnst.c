@@ -71,7 +71,7 @@ void    KillMovAddrConsts( void )
     instruction         *new_ins;
     name                *op;
     name                *new_op;
-    type_class_def      class;
+    type_class_def      type_class;
     opcnt               i;
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
@@ -79,9 +79,9 @@ void    KillMovAddrConsts( void )
             for( i = ins->num_operands; i-- > 0; ) {
                 op = ins->operands[i];
                 if( op->n.class == N_CONSTANT && op->c.const_type == CONS_TEMP_ADDR ) {
-                    class = _OpClass( ins );
-                    new_op = AllocTemp( class );
-                    new_ins = MakeUnary( OP_LA, op->c.value, new_op, class );
+                    type_class = _OpClass( ins );
+                    new_op = AllocTemp( type_class );
+                    new_ins = MakeUnary( OP_LA, op->c.value, new_op, type_class );
                     ins->operands[i] = new_op;
                     PrefixIns( ins, new_ins );
                 }

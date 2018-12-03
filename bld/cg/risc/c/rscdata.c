@@ -188,13 +188,13 @@ void    DataLabel( label_handle lbl )
     TellByPassOver();
 }
 
-static constant_defn    *GetI64Const( name *cons, type_class_def class )
-/**********************************************************************/
+static constant_defn    *GetI64Const( name *cons, type_class_def type_class )
+/***************************************************************************/
 {
     static constant_defn i64Defn = { NULL, NULL, { 0, 0, 0, 0 }, I8 };
 
     i64Defn.label = NULL;
-    i64Defn.const_class = class;
+    i64Defn.const_class = type_class;
     i64Defn.value[0] = cons->c.lo.uint_value & 0xffff;
     i64Defn.value[1] = ( cons->c.lo.uint_value >> 16 ) & 0xffff;
     i64Defn.value[2] = cons->c.hi.uint_value & 0xffff;
@@ -202,18 +202,18 @@ static constant_defn    *GetI64Const( name *cons, type_class_def class )
     return( &i64Defn );
 }
 
-name    *GenFloat( name *cons, type_class_def class )
-/***************************************************/
+name    *GenFloat( name *cons, type_class_def type_class )
+/********************************************************/
 {
     constant_defn       *defn;
     segment_id          old;
     name                *result;
 
     TellOptimizerByPassed();
-    if( _IsFloating( class ) ) {
-        defn = GetFloat( cons, class );
+    if( _IsFloating( type_class ) ) {
+        defn = GetFloat( cons, type_class );
     } else {
-        defn = GetI64Const( cons, class );
+        defn = GetI64Const( cons, type_class );
     }
     if( defn->label == NULL ) {
         defn->label = AskForLabel( NULL );
@@ -221,11 +221,11 @@ name    *GenFloat( name *cons, type_class_def class )
         AlignObject( 8 );
         assert( ( AskLocation() & 0x07 ) == 0 );
         OutLabel( defn->label );
-        DataBytes( TypeClassSize[class], &defn->value );
+        DataBytes( TypeClassSize[type_class], &defn->value );
         SetOP( old );
 
     }
-    result = AllocMemory( defn->label, 0, CG_LBL, class );
+    result = AllocMemory( defn->label, 0, CG_LBL, type_class );
     result->v.usage |= USE_IN_ANOTHER_BLOCK;
     TellByPassOver();
     return( result );

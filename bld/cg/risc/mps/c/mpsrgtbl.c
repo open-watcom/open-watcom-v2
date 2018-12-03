@@ -401,10 +401,10 @@ hw_reg_set InLineParm( hw_reg_set regs, hw_reg_set used )
 }
 
 
-hw_reg_set *ParmChoices( type_class_def class )
-/*********************************************/
+hw_reg_set *ParmChoices( type_class_def type_class )
+/**************************************************/
 {
-    switch( class ) {
+    switch( type_class ) {
     case I4:
     case U4:
     case CP:
@@ -425,10 +425,10 @@ hw_reg_set *ParmChoices( type_class_def class )
 }
 
 
-hw_reg_set ReturnReg( type_class_def class )
-/******************************************/
+hw_reg_set ReturnReg( type_class_def type_class )
+/***********************************************/
 {
-    switch( class ) {
+    switch( type_class ) {
     case FS:
     case FD:
     case FL:
@@ -509,23 +509,23 @@ reg_set_index NoSegments( reg_set_index regs_idx )
 
 
 reg_set_index IndexIntersect( reg_set_index curr,
-                                      type_class_def class,
+                                      type_class_def type_class,
                                       bool is_temp_index )
 /*********************************************************/
 {
-    /* unused parameters */ (void)curr; (void)class; (void)is_temp_index;
+    /* unused parameters */ (void)curr; (void)type_class; (void)is_temp_index;
 
     return( RL_DWORD );
 }
 
 
-bool IsIndexReg( hw_reg_set reg, type_class_def class,
+bool IsIndexReg( hw_reg_set reg, type_class_def type_class,
                          bool is_temp_index )
 /************************************************************/
 {
     hw_reg_set          *dregs;
 
-    /* unused parameters */ (void)class; (void)is_temp_index;
+    /* unused parameters */ (void)type_class; (void)is_temp_index;
 
     for( dregs = &DWordRegs[0]; !HW_CEqual( *dregs, HW_EMPTY ); ++dregs ) {
         if( HW_Equal( *dregs, reg ) ) {
@@ -708,12 +708,12 @@ hw_reg_set FullReg( hw_reg_set regs )
 }
 
 
-bool IsRegClass( hw_reg_set regs, type_class_def class )
-/******************************************************/
+bool IsRegClass( hw_reg_set regs, type_class_def type_class )
+/***********************************************************/
 {
     hw_reg_set  *list;
 
-    for( list = RegSets[IsSets[class]]; !HW_CEqual( *list, HW_EMPTY ); ++list ) {
+    for( list = RegSets[IsSets[type_class]]; !HW_CEqual( *list, HW_EMPTY ); ++list ) {
         if( HW_Equal( *list, regs ) ) {
             return( true );
         }
@@ -722,10 +722,10 @@ bool IsRegClass( hw_reg_set regs, type_class_def class )
 }
 
 
-reg_set_index UsualPossible( type_class_def class )
-/*************************************************/
+reg_set_index UsualPossible( type_class_def type_class )
+/******************************************************/
 {
-    return( IsSets[class] );
+    return( IsSets[type_class] );
 }
 
 

@@ -245,15 +245,15 @@ static  type_def        *UnSignedIntTipe( type_def *tipe )
     return( NULL );
 }
 
-static  void    ScanBlock( tbl_control *table, an node, type_class_def class, label_handle other )
-/************************************************************************************************/
+static  void    ScanBlock( tbl_control *table, an node, type_class_def type_class, label_handle other )
+/*****************************************************************************************************/
 {
     uint                i;
     uint                targets;
     name                *value;
 
     value = GenIns( node );
-    MkSelOp( ScanCall( table, value, class ), class );
+    MkSelOp( ScanCall( table, value, type_class ), type_class );
     i = 0;
     targets = 0;
     for( ;; ) {

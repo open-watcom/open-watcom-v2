@@ -131,7 +131,7 @@ static  bool    CanChange( instruction **pins,
                         return( false );
                     new_ins->operands[i] = ScaleIndex( to, opnd->i.base,
                                                          opnd->i.constant,
-                                                         opnd->n.name_class,
+                                                         opnd->n.type_class,
                                                          opnd->n.size,
                                                          opnd->i.scale,
                                                          opnd->i.index_flags );

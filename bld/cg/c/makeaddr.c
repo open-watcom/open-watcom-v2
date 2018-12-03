@@ -246,7 +246,7 @@ an      MakeGets( an dst, an src, type_def *tipe )
     name                *dst_name;
     name                *src_name;
     instruction         *ins;
-    type_class_def      class;
+    type_class_def      type_class;
     name                *temp;
 
     InsToAddr( dst );
@@ -259,18 +259,18 @@ an      MakeGets( an dst, an src, type_def *tipe )
         src_name = GetValue( src, dst_name );
         if( src_name != dst_name ||
          (( src_name->n.class == N_MEMORY ) && ( src_name->v.usage & VAR_VOLATILE )) ) {
-            class = TypeClass( tipe );
+            type_class = TypeClass( tipe );
             src_name = GenIns( src );
             if( dst_name->n.class == N_INDEXED &&
              (dst_name->i.index_flags & X_VOLATILE) == 0 ) {
                 /* don't give him back an indexed name - it extends the life of*/
                 /* a pointer*/
-                temp = SAllocTemp( dst_name->n.name_class, dst_name->n.size );
-                AddIns( MakeMove( src_name, dst_name, class ) );
-                AddIns( MakeMove( dst_name, temp, class ) );
+                temp = SAllocTemp( dst_name->n.type_class, dst_name->n.size );
+                AddIns( MakeMove( src_name, dst_name, type_class ) );
+                AddIns( MakeMove( dst_name, temp, type_class ) );
                 dst_name = temp;
             } else {
-                AddIns( MakeMove( src_name, dst_name, class ) );
+                AddIns( MakeMove( src_name, dst_name, type_class ) );
             }
         }
     }
@@ -321,12 +321,12 @@ an      InsName( instruction *ins, type_def *tipe )
     return( addr );
 }
 
-name    *LoadTemp( name *temp, type_class_def class )
-/***************************************************/
+name    *LoadTemp( name *temp, type_class_def type_class )
+/********************************************************/
 {
     instruction *ins;
 
-    ins = MakeMove( temp, AllocTemp( class ), class );
+    ins = MakeMove( temp, AllocTemp( type_class ), type_class );
     temp = ins->result;
     AddIns( ins );
     return( temp );
@@ -337,7 +337,7 @@ static  name    *Temporary( name *temp, type_def *tipe )
 /******************************************************/
 {
     if( temp->n.class != N_TEMP ) {
-        temp = LoadTemp( temp, TypeClass( tipe ) /*temp->n.name_class*/ );
+        temp = LoadTemp( temp, TypeClass( tipe ) /*temp->n.type_class*/ );
     }
     return( temp );
 }
@@ -365,20 +365,20 @@ void    MoveAddress(  an src,  an  dest )
 }
 
 
-void    Convert( an addr, type_class_def class )
-/**********************************************/
+void    Convert( an addr, type_class_def type_class )
+/***************************************************/
 {
     instruction *ins;
 
     if( addr->u.n.offset != 0 ) {
         ins = MakeBinary( OP_ADD, addr->u.n.name,
                                 AllocIntConst( addr->u.n.offset ),
-                                AllocTemp( addr->u.n.name->n.name_class ),
+                                AllocTemp( addr->u.n.name->n.type_class ),
                                 TypeClass( addr->tipe ) );
         addr->u.n.name = ins->result;
         AddIns( ins );
     }
-    ins = MakeUnary( OP_CONVERT, addr->u.n.name, AllocTemp( class ), class );
+    ins = MakeUnary( OP_CONVERT, addr->u.n.name, AllocTemp( type_class ), type_class );
     addr->u.n.name = ins->result;
     addr->u.n.offset = 0;
     AddIns( ins );
@@ -459,11 +459,11 @@ void    AddrDemote( an node )
 }
 
 
-name    *MaybeTemp( name *op, type_class_def kind )
-/*************************************************/
+name    *MaybeTemp( name *op, type_class_def type_class )
+/*******************************************************/
 {
     if( op == NULL ) {
-        op = AllocTemp( kind );
+        op = AllocTemp( type_class );
     }
     return( op );
 }
@@ -514,30 +514,30 @@ name    *LoadAddress( name *op, name *suggest, type_def *type_ptr )
 /*****************************************************************/
 {
     name                *new;
-    type_class_def      class;
+    type_class_def      type_class;
 
     if( op->n.class == N_INDEXED && !HasTrueBase( op ) ) {
         if( op->i.constant != 0 ) {
-            class = op->i.index->n.name_class;
-            new = MaybeTemp( suggest, class );
+            type_class = op->i.index->n.type_class;
+            new = MaybeTemp( suggest, type_class );
             AddIns( MakeBinary( OP_ADD, op->i.index,
                          AllocS32Const( op->i.constant ),
-                         new, class ) );
+                         new, type_class ) );
         } else {
             new = op->i.index;
         }
     } else {
         if( suggest != NULL ) {
-            class = suggest->n.name_class;
+            type_class = suggest->n.type_class;
         } else {
             if( type_ptr->length == WORD_SIZE ) {
-                class = WD;
+                type_class = WD;
             } else {
-                class = CP;
+                type_class = CP;
             }
         }
-        new = MaybeTemp( suggest, class );
-        AddIns( MakeUnary( OP_LA, op, new, class ) );
+        new = MaybeTemp( suggest, type_class );
+        AddIns( MakeUnary( OP_LA, op, new, type_class ) );
     }
     return( new );
 }

@@ -179,13 +179,13 @@ static  instruction     *CheckMul( instruction *ins )
     instruction         *new_ins;
     name                *orig;
     name                *temp;
-    type_class_def      class;
+    type_class_def      type_class;
     int                 cost;
 
     rhs = ins->operands[1]->c.lo.int_value;
     neg = false;
-    class = ins->type_class;
-    if( class == SW && rhs < 0 ) {
+    type_class = ins->type_class;
+    if( type_class == SW && rhs < 0 ) {
         rhs = -rhs;
         neg = true;
     }
@@ -194,33 +194,33 @@ static  instruction     *CheckMul( instruction *ins )
         return( ins );
     if( i == MAXOPS )
         return( ins );
-    orig = AllocTemp( class );
-    new_ins = MakeMove( ins->operands[0], orig, class );
+    orig = AllocTemp( type_class );
+    new_ins = MakeMove( ins->operands[0], orig, type_class );
     PrefixIns( ins, new_ins );
-    temp = AllocTemp( class );
-    new_ins = MakeMove( orig, temp, class );
+    temp = AllocTemp( type_class );
+    new_ins = MakeMove( orig, temp, type_class );
     PrefixIns( ins, new_ins );
     for( ; i < MAXOPS; ++i ) {
         switch( Ops[i].op ) {
         case DO_XFR:
-            new_ins = MakeUnary( OP_MOV, temp, orig, class );
+            new_ins = MakeUnary( OP_MOV, temp, orig, type_class );
             break;
         case DO_ADD:
-            new_ins = MakeBinary( OP_ADD, temp, orig, temp, class );
+            new_ins = MakeBinary( OP_ADD, temp, orig, temp, type_class );
             break;
         case DO_SUB:
-            new_ins = MakeBinary( OP_SUB, temp, orig, temp, class );
+            new_ins = MakeBinary( OP_SUB, temp, orig, temp, type_class );
             break;
         case DO_SHL:
-            new_ins = MakeBinary( OP_LSHIFT, temp, AllocIntConst( Ops[i].cnt ), temp, class );
+            new_ins = MakeBinary( OP_LSHIFT, temp, AllocIntConst( Ops[i].cnt ), temp, type_class );
             break;
         }
         PrefixIns( ins, new_ins );
     }
     if( neg ) {
-        new_ins = MakeUnary( OP_NEGATE, temp, ins->result, class );
+        new_ins = MakeUnary( OP_NEGATE, temp, ins->result, type_class );
     } else {
-        new_ins = MakeMove( temp, ins->result, class );
+        new_ins = MakeMove( temp, ins->result, type_class );
     }
     PrefixIns( ins, new_ins );
     FreeIns( ins );

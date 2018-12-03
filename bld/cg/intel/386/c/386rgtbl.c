@@ -674,17 +674,17 @@ reg_set_index   RegIntersect( reg_set_index s1, reg_set_index s2 )
 }
 
 
-hw_reg_set      *ParmChoices( type_class_def class )
-/***************************************************
+hw_reg_set      *ParmChoices( type_class_def type_class )
+/********************************************************
     return a list of register which could be used to return type "class"
 */
 {
     hw_reg_set  *list;
 
     if( _FPULevel( FPU_87 ) ) {
-        list = ParmSets8087[class];
+        list = ParmSets8087[type_class];
     } else {
-        list = ParmSets[class];
+        list = ParmSets[type_class];
     }
     return( list );
 }
@@ -720,17 +720,17 @@ hw_reg_set      StructReg( void )
 }
 
 
-hw_reg_set      ReturnReg( type_class_def class, bool use_87 )
-/*************************************************************
+hw_reg_set      ReturnReg( type_class_def type_class, bool use_87 )
+/******************************************************************
     return the "normal" return register used for type "class"
 */
 {
     hw_reg_set          *list;
 
     if( _FPULevel( FPU_87 ) && use_87 ) {
-        list = RegSets[Return8087[class]];
+        list = RegSets[Return8087[type_class]];
     } else {
-        list = RegSets[ReturnSets[class]];
+        list = RegSets[ReturnSets[type_class]];
     }
     return( *list );
 }
@@ -755,9 +755,7 @@ reg_set_index   NoSegments( reg_set_index regs_idx )
 }
 
 
-reg_set_index   IndexIntersect( reg_set_index curr,
-                                       type_class_def class,
-                                       bool is_temp_index )
+reg_set_index   IndexIntersect( reg_set_index curr, type_class_def type_class, bool is_temp_index )
 /***********************************************************
     return the intersection of "curr" with the set of index
     registers of type "class"
@@ -765,11 +763,11 @@ reg_set_index   IndexIntersect( reg_set_index curr,
 {
     /* unused parameters */ (void)is_temp_index;
 
-    return( RegIntersect( curr, IndexSets[class] ) );
+    return( RegIntersect( curr, IndexSets[type_class] ) );
 }
 
 
-bool    IsIndexReg( hw_reg_set reg, type_class_def class, bool is_temp_index )
+bool    IsIndexReg( hw_reg_set reg, type_class_def type_class, bool is_temp_index )
 /*****************************************************************************
     return true if "reg" can be used as an index of type "class"
 */
@@ -778,7 +776,7 @@ bool    IsIndexReg( hw_reg_set reg, type_class_def class, bool is_temp_index )
 
     /* unused parameters */ (void)is_temp_index;
 
-    for( list = RegSets[IndexSets[class]]; !HW_CEqual( *list, HW_EMPTY ); ++list ) {
+    for( list = RegSets[IndexSets[type_class]]; !HW_CEqual( *list, HW_EMPTY ); ++list ) {
         if( HW_Equal( *list, reg ) ) {
             break;
         }
@@ -790,12 +788,12 @@ static  type_class_def  NotFloatRegClass( hw_reg_set regs )
 /*********************************************************/
 {
     hw_reg_set          *possible;
-    type_class_def      class;
+    type_class_def      type_class;
 
-    for( class = U1; class < XX; ++class ) {
-        for( possible = RegSets[ClassSets[class]]; !HW_CEqual( *possible, HW_EMPTY ); ++possible ) {
+    for( type_class = U1; type_class < XX; ++type_class ) {
+        for( possible = RegSets[ClassSets[type_class]]; !HW_CEqual( *possible, HW_EMPTY ); ++possible ) {
             if( HW_Equal( *possible, regs ) ) {
-                return( class );
+                return( type_class );
             }
         }
     }
@@ -1074,14 +1072,14 @@ hw_reg_set      LowOffsetReg( hw_reg_set regs )
 
 
 
-bool    IsRegClass( hw_reg_set regs, type_class_def class )
-/**********************************************************
+bool    IsRegClass( hw_reg_set regs, type_class_def type_class )
+/***************************************************************
     return true if "regs" has type "class" (eg I4, U4, etc)
 */
 {
     hw_reg_set  *list;
 
-    for( list = RegSets[IsSets[class]]; !HW_Equal( *list, HW_EMPTY ); ++list ) {
+    for( list = RegSets[IsSets[type_class]]; !HW_Equal( *list, HW_EMPTY ); ++list ) {
         if( HW_Equal( *list, regs ) ) {
             break;
         }

@@ -64,13 +64,13 @@ an      TNPatch( tn node )
 {
     patch               *p;
     an                  addr;
-    type_class_def      tipe;
+    type_class_def      type_class;
 
     p = (patch *)node->u.handle;
     p->in_tree = false;
-    tipe = TypeClass( node->tipe );
-    addr = AddrName( AllocTemp( tipe ), node->tipe );
-    p->u.ins = MakeMove( NULL, addr->u.n.name, tipe );
+    type_class = TypeClass( node->tipe );
+    addr = AddrName( AllocTemp( type_class ), node->tipe );
+    p->u.ins = MakeMove( NULL, addr->u.n.name, type_class );
     p->u.ins->num_operands = 0;
     AddIns( p->u.ins );
     return( addr );

@@ -59,7 +59,7 @@ static  int     Size[] = {
     sizeof( indexed_name )
 };
 
-static  type_length     OneClass[] = {
+static type_class_def   OneClass[] = {
     U1,             /* U1 */
     U1,             /* I1 */
     U2,             /* U2 */
@@ -87,7 +87,7 @@ static name *AllocName( int class, type_class_def type_class, type_length size )
     new->n.class = class;
     new->n.next_name = Names[class];
     Names[class] = new;
-    new->n.name_class = type_class;
+    new->n.type_class = type_class;
     new->n.size = TypeClassSize[type_class];
     if( new->n.size == 0 ) {
         new->n.size = size;
@@ -120,12 +120,12 @@ static name *findConst64( unsigned_32 low, unsigned_32 high, pointer cf_value )
 }
 
 
-static void ZapXX( name *xx, type_class_def class, type_length size )
-/*******************************************************************/
+static void ZapXX( name *xx, type_class_def type_class, type_length size )
+/************************************************************************/
 {
-    if( class != XX ) {                     /* if he's making a type with same size as xx */
-        xx->n.name_class = class;           /* zap the XX one to be a real type */
-        xx->n.size = TypeClassSize[class];
+    if( type_class != XX ) {                     /* if he's making a type with same size as xx */
+        xx->n.type_class = type_class;           /* zap the XX one to be a real type */
+        xx->n.size = TypeClassSize[type_class];
     } else if( size != 0 ) {
         xx->n.size = size;
     }
@@ -194,7 +194,7 @@ name    *AllocConst( float_handle value )
     return( new_c );
 }
 
-name    *AllocAddrConst( name *value, int seg, constant_class class, type_class_def name_class )
+name    *AllocAddrConst( name *value, int seg, constant_class class, type_class_def type_class )
 /**********************************************************************************************/
 {
     name        *new_c;
@@ -202,12 +202,12 @@ name    *AllocAddrConst( name *value, int seg, constant_class class, type_class_
     for( new_c = Names[N_CONSTANT]; new_c != NULL; new_c = new_c->n.next_name ) {
         if( new_c->c.const_type == class
           && new_c->c.value == value
-          && new_c->n.name_class == name_class
+          && new_c->n.type_class == type_class
           && new_c->c.lo.int_value == seg ) {
             return( new_c );
         }
     }
-    new_c = AllocName( N_CONSTANT, name_class, 0 );
+    new_c = AllocName( N_CONSTANT, type_class, 0 );
     new_c->c.value = value;
     new_c->c.lo.int_value = seg;
     new_c->c.static_defn = NULL;
@@ -313,20 +313,20 @@ name    *AllocU64Const( unsigned_32 low, unsigned_32 high )
     return( new_c );
 }
 
-constant_defn   *GetFloat( name *cons, type_class_def class )
-/***********************************************************/
+constant_defn   *GetFloat( name *cons, type_class_def type_class )
+/****************************************************************/
 {
     constant_defn       *defn;
 
     for( defn = cons->c.static_defn; defn != NULL; defn = defn->next_defn ) {
-        if( defn->const_class == class ) {
+        if( defn->const_class == type_class ) {
             return( defn );
         }
     }
     defn = AllocFrl( &ConstDefnFrl, sizeof( constant_defn ) );
-    defn->const_class = class;
+    defn->const_class = type_class;
     defn->label = NULL;
-    CFCnvTarget( cons->c.value, (flt*)&defn->value, TypeClassSize[class] );
+    CFCnvTarget( cons->c.value, (flt*)&defn->value, TypeClassSize[type_class] );
     defn->next_defn = cons->c.static_defn;
     cons->c.static_defn = defn;
     return( defn );
@@ -334,8 +334,8 @@ constant_defn   *GetFloat( name *cons, type_class_def class )
 
 
 memory_name     *SAllocMemory( pointer symbol, type_length offset, cg_class class,
-                                            type_class_def nclass, type_length size )
-/***********************************************************************************/
+                                            type_class_def type_class, type_length size )
+/***************************************************************************************/
 {
     name        *new_m;
     name        *other;
@@ -349,12 +349,12 @@ memory_name     *SAllocMemory( pointer symbol, type_length offset, cg_class clas
                 other = new_m;
                 new_m->v.usage |= USE_MEMORY | NEEDS_MEMORY;
             } else {
-                if( nclass == XX && size == 0 )
+                if( type_class == XX && size == 0 )
                     return( &( new_m->m ) ); /* 89-07-07 */
-                if( new_m->n.name_class == nclass && nclass != XX ) {/*exact!*/
+                if( new_m->n.type_class == type_class && type_class != XX ) {/*exact!*/
                     return( &( new_m->m ) );
                 }
-                if( new_m->n.name_class == XX && new_m->n.size == size ) {
+                if( new_m->n.type_class == XX && new_m->n.size == size ) {
                     xx = new_m;
                 }
                 other = new_m;
@@ -363,13 +363,13 @@ memory_name     *SAllocMemory( pointer symbol, type_length offset, cg_class clas
         }
     }
     if( xx != NULL ) {
-        ZapXX( xx, nclass, size );
+        ZapXX( xx, type_class, size );
         return( &( xx->m ) );
     }
-    new_m = AllocName( N_MEMORY, nclass, size );
+    new_m = AllocName( N_MEMORY, type_class, size );
     new_m->v.symbol = symbol;
     new_m->v.offset = offset;
-    new_m->m.memory_type    = class;
+    new_m->m.memory_type = class;
     new_m->m.alignment = 0;
     if( other != NULL ) {
         if( other->m.same_sym != NULL ) {
@@ -402,24 +402,24 @@ name    *AllocMemory( pointer symbol, type_length offset, cg_class class, type_c
 }
 
 
-name    *STempOffset( name *temp, type_length offset, type_class_def class, type_length size )
-/********************************************************************************************/
+name    *STempOffset( name *temp, type_length offset, type_class_def type_class, type_length size )
+/*************************************************************************************************/
 {
     name        *new_t;
     name        *xx;
 
-    class = OneClass[class];
+    type_class = OneClass[type_class];
     offset += temp->v.offset;
     new_t = temp->t.alias;
     xx = NULL;
     for( ;; ) {
         if( new_t->t.v.id == temp->t.v.id && new_t->v.offset == offset ) {
-            if( class == XX && size == 0 )
+            if( type_class == XX && size == 0 )
                 return( new_t ); /* 89-07-07 */
-            if( new_t->n.name_class == class && class != XX ) {
+            if( new_t->n.type_class == type_class && type_class != XX ) {
                 return( new_t ); /* exact match */
             }
-            if( new_t->n.name_class == XX && new_t->n.size == size ) {
+            if( new_t->n.type_class == XX && new_t->n.size == size ) {
                 xx = new_t; /* an XX with the right size */
             }
         }
@@ -428,10 +428,10 @@ name    *STempOffset( name *temp, type_length offset, type_class_def class, type
         new_t = new_t->t.alias;
     }
     if( xx != NULL ) {
-        ZapXX( xx, class, size );
+        ZapXX( xx, type_class, size );
         return( xx );
     }
-    new_t = AllocName( N_TEMP, class, size );
+    new_t = AllocName( N_TEMP, type_class, size );
     new_t->t.v.id = temp->t.v.id;
     new_t->v.symbol = temp->v.symbol;
     new_t->v.offset = offset;
@@ -452,13 +452,13 @@ name    *STempOffset( name *temp, type_length offset, type_class_def class, type
 }
 
 
-name    *SAllocTemp( type_class_def class, type_length size )
-/***********************************************************/
+name    *SAllocTemp( type_class_def type_class, type_length size )
+/****************************************************************/
 {
     name        *new_t;
 
-    class = OneClass[class];
-    new_t = AllocName( N_TEMP, class, size );
+    type_class = OneClass[type_class];
+    new_t = AllocName( N_TEMP, type_class, size );
     new_t->t.v.id = ++TempId;
     new_t->v.symbol = NULL;
     new_t->v.offset = 0;
@@ -473,29 +473,29 @@ name    *SAllocTemp( type_class_def class, type_length size )
 }
 
 
-name    *AllocTemp( type_class_def class )
+name    *AllocTemp( type_class_def type_class )
 /****************************************/
 {
-    return( SAllocTemp( class, 0 ) );
+    return( SAllocTemp( type_class, 0 ) );
 }
 
 
-name    *TempOffset( name *temp, type_length offset, type_class_def class )
-/*************************************************************************/
+name    *TempOffset( name *temp, type_length offset, type_class_def type_class )
+/******************************************************************************/
 {
-    return( STempOffset( temp, offset, class, 0 ) );
+    return( STempOffset( temp, offset, type_class, 0 ) );
 }
 
 
-name    *SAllocUserTemp( pointer symbol, type_class_def class, type_length size )
-/*******************************************************************************/
+name    *SAllocUserTemp( pointer symbol, type_class_def type_class, type_length size )
+/************************************************************************************/
 {
     name        *new_t;
 
-    class = OneClass[class];
+    type_class = OneClass[type_class];
     new_t = LkAddBack( symbol, NULL );
     if( new_t == NULL ) {
-        new_t = AllocTemp( class );
+        new_t = AllocTemp( type_class );
         new_t->v.symbol = symbol;
         if( size != 0 ) {
             new_t->n.size = size;
@@ -503,17 +503,17 @@ name    *SAllocUserTemp( pointer symbol, type_class_def class, type_length size 
         LkAddBack( symbol, new_t );
         return( new_t );
     } else {
-        if( new_t->n.name_class == class && class != XX )
+        if( new_t->n.type_class == type_class && type_class != XX )
             return( new_t );
-        return( STempOffset( new_t, 0, class, size ) );
+        return( STempOffset( new_t, 0, type_class, size ) );
     }
 }
 
 
-name    *AllocUserTemp( pointer symbol, type_class_def class )
-/************************************************************/
+name    *AllocUserTemp( pointer symbol, type_class_def type_class )
+/*****************************************************************/
 {
-    return( SAllocUserTemp( symbol, class, 0 ) );
+    return( SAllocUserTemp( symbol, type_class, 0 ) );
 }
 
 
@@ -557,24 +557,24 @@ name    *AllocRegName( hw_reg_set regs )
 }
 
 
-name    *ScaleIndex( name *index, name *base, type_length offset, type_class_def class,
+name    *ScaleIndex( name *index, name *base, type_length offset, type_class_def type_class,
                                         type_length size, scale_typ scale, i_flags flags )
 /*************************************************************************************/
 {
     name        *new_x;
 
-    class = OneClass[class];
+    type_class = OneClass[type_class];
     for( new_x = Names[N_INDEXED]; new_x != NULL; new_x = new_x->n.next_name ) {
         if( new_x->i.base == base
           && new_x->i.index == index
           && new_x->i.constant == offset
           && new_x->i.scale == scale
           && new_x->i.index_flags == flags
-          && ( ( new_x->n.name_class == class && new_x->n.name_class != XX )
-          || ( new_x->n.name_class == XX && new_x->n.size == size ) ) ) {
-            if( class != XX ) {
-                new_x->n.name_class = class;
-                new_x->n.size = TypeClassSize[class];
+          && ( ( new_x->n.type_class == type_class && new_x->n.type_class != XX )
+          || ( new_x->n.type_class == XX && new_x->n.size == size ) ) ) {
+            if( type_class != XX ) {
+                new_x->n.type_class = type_class;
+                new_x->n.size = TypeClassSize[type_class];
             }
             if( index->n.class == N_TEMP ) {
                 index->t.temp_flags |= INDEXED;
@@ -582,7 +582,7 @@ name    *ScaleIndex( name *index, name *base, type_length offset, type_class_def
             return( new_x );
         }
     }
-    new_x = AllocName( N_INDEXED, class, size );
+    new_x = AllocName( N_INDEXED, type_class, size );
     new_x->i.index = index;
     new_x->i.base = base;
     new_x->i.constant = offset;
@@ -596,32 +596,33 @@ name    *ScaleIndex( name *index, name *base, type_length offset, type_class_def
 
 
 name    *SAllocIndex( name *index, name *base, type_length offset,
-                            type_class_def class, type_length size )
-/******************************************************************/
+                            type_class_def type_class, type_length size )
+/***********************************************************************/
 {
-    return( ScaleIndex( index, base, offset, class, size, 0, EMPTY ) );
+    return( ScaleIndex( index, base, offset, type_class, size, 0, EMPTY ) );
 }
 
 
 name    *AllocIndex( name *index, name *base, type_length offset,
-                                            type_class_def class )
-/****************************************************************/
+                                        type_class_def type_class )
+/*****************************************************************/
 {
-    return( SAllocIndex( index, base, offset, class, 0 ) );
+    return( SAllocIndex( index, base, offset, type_class, 0 ) );
 }
 
 
 void    InitNames( void )
 /***********************/
 {
-    int                 class;
+    name_class_def      class;
+    type_class_def      type_class;
 
     for( class = N_CONSTANT; class <= N_INDEXED; ++class ) {
         InitFrl( &FrlHead[class] );
     }
     InitFrl( &ConstDefnFrl );
-    for( class = U1; class <= XX; ++class ) {
-        TypeClassSize[class] = ClassType( class )->length;
+    for( type_class = U1; type_class <= XX; ++type_class ) {
+        TypeClassSize[type_class] = ClassType( type_class )->length;
     }
     ReInitNames();
 }
@@ -630,7 +631,7 @@ void    InitNames( void )
 void    ReInitNames( void )
 /*************************/
 {
-    int class;
+    name_class_def  class;
 
     TempId = 0;
     NullReg = NULL;
@@ -647,9 +648,9 @@ void    ReInitNames( void )
 void    FreeNames( void )
 /***********************/
 {
-    int         class;
-    name        *temp;
-    name        *next;
+    name_class_def  class;
+    name            *temp;
+    name            *next;
 
     for( class = N_CONSTANT; class <= N_INDEXED; ++class ) {
         for( temp = Names[class]; temp != NULL; temp = next ) {
@@ -703,8 +704,8 @@ void    FreeAName( name *op )
 bool    NameFrlFree( void )
 /*************************/
 {
-    bool        freed;
-    int         class;
+    bool            freed;
+    name_class_def  class;
 
     freed = false;
     for( class = N_CONSTANT; class <= N_INDEXED; ++class ) {

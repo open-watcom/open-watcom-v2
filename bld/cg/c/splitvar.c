@@ -107,7 +107,7 @@ bool    RepOp( name **pop, name *of, name *with )
         }
         if( change ) {
             *pop = ScaleIndex( index, base, op->i.constant,
-                                op->n.name_class, op->n.size,
+                                op->n.type_class, op->n.size,
                                 op->i.scale, op->i.index_flags );
         }
     }
@@ -160,7 +160,7 @@ static  bool    Split1Var( conflict_node *conf )
     change = false;
     while( Instance > 1 ) {
         change = true;
-        ReplaceInstances( op, SAllocTemp( op->n.name_class, op->n.size ) );
+        ReplaceInstances( op, SAllocTemp( op->n.type_class, op->n.size ) );
         --Instance;
     }
     return( change );

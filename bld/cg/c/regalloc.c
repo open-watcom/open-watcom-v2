@@ -129,7 +129,7 @@ static name *ReplIndex( instruction *ins, reg_tree *tree, name *x, name *reg )
     ins->t.index_needs = RL_;
     reg = FindReg( tree, x->i.index, reg );
     new_x = ScaleIndex(reg, x->i.base, x->i.constant,
-                        x->n.name_class, x->n.size, x->i.scale,
+                        x->n.type_class, x->n.size, x->i.scale,
                         x->i.index_flags );
     return( new_x );
 }
@@ -443,7 +443,7 @@ static signed_32     CountRegMoves( conflict_node *conf,
     reg_name = AllocRegName( reg );
     count = 0;
     if( tree->temp != NULL ) {
-        idx = IsIndexReg( reg, tree->temp->n.name_class, false );
+        idx = IsIndexReg( reg, tree->temp->n.type_class, false );
     } else {
         idx = false;
     }

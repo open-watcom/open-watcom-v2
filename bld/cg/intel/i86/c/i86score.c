@@ -85,7 +85,7 @@ static  name    *NewRegName( hw_reg_set reg )
     name        *reg_name;
 
     reg_name = AllocRegName( reg );
-    reg_name->n.name_class = CP;
+    reg_name->n.type_class = CP;
     return( reg_name );
 }
 
@@ -236,5 +236,5 @@ bool    ScRealRegister( name *reg )
     monstrosity like AX:DX:BX used for calls.
 */
 {
-    return( reg->n.name_class != XX );
+    return( reg->n.type_class != XX );
 }

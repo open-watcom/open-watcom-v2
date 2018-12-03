@@ -518,8 +518,8 @@ void    DoMAddr( name *op )
 }
 
 
-void    DoRelocConst( name *op, type_class_def kind )
-/***************************************************/
+void    DoRelocConst( name *op, type_class_def type_class )
+/*********************************************************/
 {
     if( op->c.const_type == CONS_OFFSET ) {
         ILen += 4;
@@ -531,7 +531,7 @@ void    DoRelocConst( name *op, type_class_def kind )
         } else {
             DoSymRef( op->c.value, 0, true );
         }
-        if( kind == U4 || kind == I4 ) {        /* as in PUSH seg _x */
+        if( type_class == U4 || type_class == I4 ) {        /* as in PUSH seg _x */
             AddByte( 0 );
             AddByte( 0 );
         }

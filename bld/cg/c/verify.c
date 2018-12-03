@@ -57,8 +57,8 @@ static  bool    SameLocation( name *n1, name *n2 )
     loc1 = base->t.location + n1->v.offset - base->v.offset;
     base = DeAlias( n2 );
     loc2 = base->t.location + n2->v.offset - base->v.offset;
-    if( _IsFloating( n1->n.name_class ) || _IsFloating( n2->n.name_class ) ) {
-        if( n1->n.name_class != n2->n.name_class ) {
+    if( _IsFloating( n1->n.type_class ) || _IsFloating( n2->n.type_class ) ) {
+        if( n1->n.type_class != n2->n.type_class ) {
             return( false );
         }
     }
@@ -292,11 +292,11 @@ bool    OtherVerify( vertype kind, instruction *ins,
     case V_SAME_TYPE:
         /* if we have a constant, the name_class of op1 is bogus */
         if( op1->n.class == N_CONSTANT ) {
-            if( ins->type_class == result->n.name_class ) {
+            if( ins->type_class == result->n.type_class ) {
                 return( true );
             }
         } else {
-            if( op1->n.name_class == result->n.name_class ) {
+            if( op1->n.type_class == result->n.type_class ) {
                 return( true );
             }
         }

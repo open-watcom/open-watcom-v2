@@ -132,7 +132,7 @@ instruction      *rOP2CL( instruction *ins )
 
     name1 = AllocRegName( HW_CL );
     new_ins = MakeConvert( ins->operands[1], name1, U1,
-                           ins->operands[1]->n.name_class );
+                           ins->operands[1]->n.type_class );
     ins->operands[1] = name1;
     MoveSegOp( ins, new_ins, 0 );
     PrefixIns( ins, new_ins );
@@ -148,7 +148,7 @@ instruction      *rOP2CX( instruction *ins )
 
     name1 = AllocRegName( HW_CX );
     new_ins = MakeConvert( ins->operands[1], name1, U2,
-                           ins->operands[1]->n.name_class );
+                           ins->operands[1]->n.type_class );
     ins->operands[1] = name1;
     MoveSegOp( ins, new_ins, 0 );
     PrefixIns( ins, new_ins );
@@ -363,7 +363,7 @@ static name *FakeIndex( name *op, hw_reg_set index ) {
         flags = EMPTY;
     }
     return( ScaleIndex( AllocRegName( index ), base, 0,
-                                op->n.name_class, op->n.size, 0, flags ) );
+                                op->n.type_class, op->n.size, 0, flags ) );
 }
 
 static  bool    SegmentFloats( name *op ) {
@@ -561,7 +561,7 @@ instruction      *rMOVRESMEM( instruction *ins )
         name_int = TempOffset( name_flt, 0, U4 );
     }
     name_flt->v.usage |= USE_MEMORY | NEEDS_MEMORY;
-    new_ins = MakeMove( name_int, ins->result, name_int->n.name_class);
+    new_ins = MakeMove( name_int, ins->result, name_int->n.type_class);
     ins->result = name_flt;
     MoveSegRes( ins, new_ins );
     SuffixIns( ins, new_ins );
@@ -585,7 +585,7 @@ instruction      *rMOVOP1MEM( instruction *ins )
         name_int = TempOffset( name_flt, 0, U4 );
     }
     name_flt->v.usage |= USE_MEMORY | NEEDS_MEMORY;
-    new_ins = MakeMove( ins->operands[0], name_int, name_int->n.name_class);
+    new_ins = MakeMove( ins->operands[0], name_int, name_int->n.type_class);
     ins->operands[0] = name_flt;
     MoveSegOp( ins, new_ins, 0 );
     PrefixIns( ins, new_ins );

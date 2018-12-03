@@ -90,14 +90,14 @@ static void ConvertOtherOperands( instruction *ins, name *temp )
         if( ins->operands[i] != temp &&
             ins->operands[i]->n.class != N_CONSTANT ) {
             new_ins = MakeConvert( ins->operands[i], AllocTemp( SW ),
-                                   SW, ins->operands[i]->n.name_class );
+                                   SW, ins->operands[i]->n.type_class );
             ins->operands[i] = new_ins->result;
             PrefixIns( ins, new_ins );
         }
     }
     if( ins->result != NULL && ins->result != temp ) {
         new_ins = MakeConvert( AllocTemp( SW ), ins->result,
-                               ins->result->n.name_class, SW );
+                               ins->result->n.type_class, SW );
         ins->result = new_ins->operands[0];
         SuffixIns( ins, new_ins );
     }
@@ -176,7 +176,7 @@ static bool ConvertToInt( name *temp )
     bool                change;
 
     change = false;
-    temp->n.name_class = SW;
+    temp->n.type_class = SW;
     temp->n.size = 4;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
@@ -203,7 +203,7 @@ static bool ConvertIfPossible( name *temp )
         return( false );
     if( temp->t.alias != temp )
         return( false );
-    switch( temp->n.name_class ) {
+    switch( temp->n.type_class ) {
     case I1:
     case I2:
         return( ConvertToInt( temp ) );

@@ -155,7 +155,7 @@ static  bool    AssignFPResult( block *blk, instruction *ins, int *stk_level ) {
         return( false );
     if( op->v.usage & (USE_ADDRESS | USE_IN_ANOTHER_BLOCK) )
         return( false );
-    if( !_IsFloating( op->n.name_class ) )
+    if( !_IsFloating( op->n.type_class ) )
         return( false );
     if( *stk_level < 0 )
         return( false );
@@ -250,14 +250,14 @@ static  void    CnvOperand( instruction *ins ) {
 
     name                *t;
     instruction         *new_ins;
-    type_class_def      class;
+    type_class_def      type_class;
 
-    class = ins->base_type_class;
-    switch( class ) {
+    type_class = ins->base_type_class;
+    switch( type_class ) {
     case U1:
     case I1:
         t = AllocTemp( I2 );
-        new_ins = MakeConvert( ins->operands[0], t, I2, class );
+        new_ins = MakeConvert( ins->operands[0], t, I2, type_class );
         ins->base_type_class = I2;
         ins->operands[0] = t;
         MoveSegOp( ins, new_ins, 0 );
@@ -266,7 +266,7 @@ static  void    CnvOperand( instruction *ins ) {
         break;
     case U2:
         t = AllocTemp( I4 );
-        new_ins = MakeConvert( ins->operands[0], t, I4, class );
+        new_ins = MakeConvert( ins->operands[0], t, I4, type_class );
         ins->base_type_class = I4;
         ins->operands[0] = t;
         MoveSegOp( ins, new_ins, 0 );
@@ -279,8 +279,8 @@ static  void    CnvOperand( instruction *ins ) {
     case U8:
         if( ins->operands[0]->n.class == N_TEMP &&
                 ( ins->operands[0]->v.usage & HAS_MEMORY ) == 0 ) {
-            t = AllocTemp( class );
-            new_ins = MakeMove( ins->operands[0], t, class );
+            t = AllocTemp( type_class );
+            new_ins = MakeMove( ins->operands[0], t, type_class );
             ins->operands[0] = t;
             MoveSegOp( ins, new_ins, 0 );
             PrefixIns( ins, new_ins );
@@ -311,15 +311,15 @@ static  void    CnvResult( instruction *ins ) {
 
     name                *t;
     instruction         *new_ins;
-    type_class_def      class;
+    type_class_def      type_class;
 
-    class = ins->type_class;
-    switch( class ) {
+    type_class = ins->type_class;
+    switch( type_class ) {
     case U1:
     case I1:
         t = AllocTemp( I2 );
         t->v.usage |= NEEDS_MEMORY | USE_MEMORY;
-        new_ins = MakeConvert( t, ins->result, class, I2 );
+        new_ins = MakeConvert( t, ins->result, type_class, I2 );
         ins->result = t;
         MoveSegRes( ins, new_ins );
         SuffixIns( ins, new_ins );
@@ -327,7 +327,7 @@ static  void    CnvResult( instruction *ins ) {
     case U2:
         t = AllocTemp( I4 );
         t->v.usage |= NEEDS_MEMORY | USE_MEMORY;
-        new_ins = MakeConvert( t, ins->result, class, I4 );
+        new_ins = MakeConvert( t, ins->result, type_class, I4 );
         ins->result = t;
         MoveSegRes( ins, new_ins );
         SuffixIns( ins, new_ins );
@@ -763,7 +763,7 @@ void    FPSetStack( name *name )
         return;
     if( name->v.usage & USE_IN_ANOTHER_BLOCK )
         return;
-    if( !_IsFloating( name->n.name_class ) )
+    if( !_IsFloating( name->n.type_class ) )
         return;
     name->t.temp_flags |= CAN_STACK;
 }
@@ -811,16 +811,16 @@ bool    FPIsConvert( instruction *ins )
     return true if "ins" is a converstion that could be handled by the 8087.
 */
 {
-    type_class_def      op_class;
-    type_class_def      res_class;
+    type_class_def      op_type_class;
+    type_class_def      res_type_class;
 
     if( !_FPULevel( FPU_87 ) )
         return( false );
     if( ins->operands[0]->n.class == N_CONSTANT )
         return( false );
-    op_class = ins->operands[0]->n.name_class;
-    res_class = ins->result->n.name_class;
-    if( op_class == res_class )
+    op_type_class = ins->operands[0]->n.type_class;
+    res_type_class = ins->result->n.type_class;
+    if( op_type_class == res_type_class )
         return( false );
     if( _Is87Ins( ins ) )
         return( true );

@@ -526,7 +526,7 @@ static  void    LayMF( name *op ) {
 */
 
     if( op->n.class != N_CONSTANT ) {
-        switch( op->n.name_class ) {
+        switch( op->n.type_class ) {
         case FS:
             Inst[KEY] |= MF_FS;
             break;
@@ -674,7 +674,7 @@ static  void    DoP5MemoryDivide( instruction *ins ) {
     }
 
     _Code;
-    switch( ins->operands[0]->n.name_class ) {
+    switch( ins->operands[0]->n.type_class ) {
     case FS:
 #if _TARGET & _TARG_IAPX86
         high = HighPart( ins->operands[0], U2 );

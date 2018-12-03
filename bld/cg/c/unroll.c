@@ -338,12 +338,12 @@ static  bool    ReplaceName( name **pop, name *orig, name *new )
         if( op->i.index == orig ) {
             *pop = ScaleIndex( new, op->i.base,
                                op->i.constant,
-                               op->n.name_class, op->n.size,
+                               op->n.type_class, op->n.size,
                                op->i.scale, op->i.index_flags );
             return( true );
         } else if( op->i.base == orig ) {
             *pop = ScaleIndex( op->i.index, new, op->i.constant,
-                               op->n.name_class, op->n.size,
+                               op->n.type_class, op->n.size,
                                op->i.scale, op->i.index_flags );
         }
         break;
@@ -351,7 +351,7 @@ static  bool    ReplaceName( name **pop, name *orig, name *new )
         op = DeAlias( op );
         if( op == orig ) {
             offset = (*pop)->v.offset - op->v.offset;
-            *pop = TempOffset( new, offset, (*pop)->n.name_class );
+            *pop = TempOffset( new, offset, (*pop)->n.type_class );
             return( true );
         }
         break;
@@ -388,10 +388,10 @@ static  void    ReplaceInductionVars( block *loop, instruction *ins_list,
         if( _IsV( ind, IV_DEAD ) )
             continue;
         var = ind->name;
-        temp = AllocTemp( var->n.name_class );
+        temp = AllocTemp( var->n.type_class );
         adjust = scale * ind->plus;
         new_ins = MakeBinary( OP_ADD, var, AllocS32Const( adjust ),
-                            temp, temp->n.name_class );
+                            temp, temp->n.type_class );
         for( blk = loop; blk != NULL; blk = blk->u.loop ) {
             for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
                 ReplaceName( &ins->result, var, temp );
@@ -402,7 +402,7 @@ static  void    ReplaceInductionVars( block *loop, instruction *ins_list,
         }
         /* have to add this after we run the list replacing vars */
         PrefixIns( ins_list, new_ins );
-        new_ins = MakeMove( temp, var, temp->n.name_class );
+        new_ins = MakeMove( temp, var, temp->n.type_class );
         SuffixIns( loop->ins.hd.prev, new_ins );
     }
 }

@@ -796,7 +796,7 @@ static void FixIndexAdjust( instruction *adj, bool forward )
             if( ScaleAdjust( op, reg, &scale_adj ) ) {
                 chk->operands[i] = ScaleIndex( op->i.index, op->i.base,
                               op->i.constant + (bias << scale_adj),
-                              op->n.name_class, op->n.size,
+                              op->n.type_class, op->n.size,
                               op->i.scale, op->i.index_flags );
             }
         }
@@ -805,7 +805,7 @@ static void FixIndexAdjust( instruction *adj, bool forward )
             if( ScaleAdjust( op, reg, &scale_adj ) ) {
                 chk->result = ScaleIndex( op->i.index, op->i.base,
                               op->i.constant + (bias << scale_adj),
-                              op->n.name_class, op->n.size,
+                              op->n.type_class, op->n.size,
                               op->i.scale, op->i.index_flags );
             }
         }

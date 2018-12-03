@@ -89,8 +89,8 @@ an      BGCall( cn call, bool use_return, bool in_line )
     if( use_return ) {
 #if 1
         if( call_ins->type_class != XX ){
-            conv_ins = MakeConvert( call_ins->result, result, result->n.name_class,
-                                    call_ins->result->n.name_class );
+            conv_ins = MakeConvert( call_ins->result, result, result->n.type_class,
+                                    call_ins->result->n.type_class );
             AddIns( conv_ins );
         } else {
             // conv_ins = MakeMove( call_result, result, XX );
@@ -104,14 +104,14 @@ an      BGCall( cn call, bool use_return, bool in_line )
 void    BGProcDecl( cg_sym_handle sym, type_def *tipe )
 /*****************************************************/
 {
-    type_class_def      class;
+    type_class_def      type_class;
     name                *temp;
     hw_reg_set          reg;
 
-    class = AddCallBlock( sym, tipe );
+    type_class = AddCallBlock( sym, tipe );
     SaveTargetModel = TargetModel;
     if( tipe != TypeNone ) {
-        if( class == XX ) {
+        if( type_class == XX ) {
             reg = HW_D3;
             temp = AllocTemp( WD );
             temp->v.usage |= USE_IN_ANOTHER_BLOCK;
@@ -133,7 +133,7 @@ type_def    *PassParmType( cg_sym_handle func, type_def* tipe, call_class class 
 }
 
 instruction    *PushOneParm( instruction *ins, name *curr,
-                                     type_class_def class,
+                                     type_class_def type_class,
                                      type_length offset,
                                      call_state *state )
 /********************************************************/
@@ -145,8 +145,8 @@ instruction    *PushOneParm( instruction *ins, name *curr,
     /* unused parameters */ (void)state;
 
     stack_reg = AllocRegName( StackReg() );
-    dst = AllocIndex( stack_reg, NULL, offset + STACK_HEADER_SIZE, class );
-    new = MakeMove( curr, dst, class );
+    dst = AllocIndex( stack_reg, NULL, offset + STACK_HEADER_SIZE, type_class );
+    new = MakeMove( curr, dst, type_class );
     SuffixIns( ins, new );
     return( new );
 }

@@ -93,7 +93,7 @@ void    ScoreCalcList( void )
             if( ScRealRegister( reg_name ) ) {
                 curr->reg_name = reg_name;
                 curr->reg = reg_name->r.reg;
-                curr->class = reg_name->n.name_class;
+                curr->class = reg_name->n.type_class;
                 curr->size  = reg_name->n.size;
                 curr->high_of = NO_INDEX;
                 curr->low_of = NO_INDEX;

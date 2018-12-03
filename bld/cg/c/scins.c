@@ -180,7 +180,7 @@ static  bool    TryOldIndex( score *sc, instruction *ins, name **opp ) {
                 index = ScaleIndex( reg_name,
                                     op->i.base,
                                     op->i.constant,
-                                    op->n.name_class,
+                                    op->n.type_class,
                                     op->n.size, op->i.scale,
                                     op->i.index_flags );
                 if( IndexOkay( ins, index ) && ChangeIns( ins, index, opp, CHANGE_NORMAL ) ) {

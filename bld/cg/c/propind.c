@@ -86,7 +86,7 @@ static  bool    Adjusted( name **pop, name *res, signed_32 c ) {
     if( op->n.class == N_INDEXED ) {
         if( SameThing( op->i.index, res ) ) {
             *pop = ScaleIndex( op->i.index, op->i.base, op->i.constant + c,
-                op->n.name_class, op->n.size, op->i.scale, op->i.index_flags );
+                op->n.type_class, op->n.size, op->i.scale, op->i.index_flags );
             return( true );
         }
     }

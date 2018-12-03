@@ -598,7 +598,7 @@ name    *LowPart( name *tosplit, type_class_def class )
         new = TempOffset( tosplit, 0, class );
         if( new->t.temp_flags & CONST_TEMP ) {
             name *cons = tosplit->v.symbol;
-            if( tosplit->n.name_class == FD ) {
+            if( tosplit->n.type_class == FD ) {
                 cons = Int64Equivalent( cons );
             }
             new->v.symbol = LowPart( cons, class );
@@ -680,7 +680,7 @@ name    *HighPart( name *tosplit, type_class_def class )
         new = TempOffset( tosplit, tosplit->n.size/2, class );
         if( new->t.temp_flags & CONST_TEMP ) {
             name *cons = tosplit->v.symbol;
-            if( tosplit->n.name_class == FD ) {
+            if( tosplit->n.type_class == FD ) {
                 cons = Int64Equivalent( cons );
             }
             new->v.symbol = HighPart( cons, class );
@@ -708,7 +708,7 @@ name    *OffsetMem( name *mem, type_length offset, type_class_def tipe )
 
     if( mem->n.class == N_INDEXED ) {
         new_mem = ScaleIndex( mem->i.index, mem->i.base,
-                        mem->i.constant + offset, mem->n.name_class,
+                        mem->i.constant + offset, mem->n.type_class,
                         TypeClassSize[tipe], mem->i.scale, mem->i.index_flags );
     } else {
         assert( mem->n.class == N_TEMP );

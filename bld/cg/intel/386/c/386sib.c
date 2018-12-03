@@ -216,7 +216,7 @@ bool FoldIntoIndex( instruction *ins )
         for( curr_sib = sib_head; curr_sib != NULL; curr_sib = curr_sib->next ) {
             new_x = ScaleIndex( curr_sib->reg, curr_sib->index->i.base,
                                 curr_sib->index->i.constant + curr_sib->offset,
-                                curr_sib->index->n.name_class,
+                                curr_sib->index->n.type_class,
                                 curr_sib->index->n.size, curr_sib->scale,
                                 curr_sib->flags );
             ReplaceOperand( curr_sib->ins, curr_sib->index, new_x );

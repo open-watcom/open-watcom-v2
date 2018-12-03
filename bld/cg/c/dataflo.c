@@ -133,7 +133,7 @@ static  void    RoughSortTemps( void )
 }
 
 
-static  global_bit_set AssignGlobalBits( name_class_def list,
+static  global_bit_set AssignGlobalBits( name_class_def class,
                              global_bit_set *bit, bool first_time )
 /*****************************************************************/
 {
@@ -142,22 +142,22 @@ static  global_bit_set AssignGlobalBits( name_class_def list,
     name                *actual_name;
     name                *opnd;
 
-    if( list == N_TEMP ) {
+    if( class == N_TEMP ) {
         _GBitInit( all_used, EMPTY );
         if( !MoreUseInOtherTemps )
             return( all_used );
         MoreUseInOtherTemps = false;
     }
     _GBitInit( all_used, EMPTY );
-    for( opnd = Names[list]; opnd != NULL; opnd = opnd->n.next_name ) {
+    for( opnd = Names[class]; opnd != NULL; opnd = opnd->n.next_name ) {
         if( ( opnd->v.usage & (USE_MEMORY | USE_ADDRESS) ) ) {
             opnd->v.usage |= NEEDS_MEMORY | USE_MEMORY;
         } else if( opnd->v.usage & USE_IN_ANOTHER_BLOCK ) {
             actual_name = opnd;
-            if( list == N_TEMP ) {
+            if( class == N_TEMP ) {
                 actual_name = DeAlias( actual_name );
             }
-            if( _GBitEmpty( *bit ) && ( list == N_MEMORY ) ) {
+            if( _GBitEmpty( *bit ) && ( class == N_MEMORY ) ) {
                 actual_name->v.usage |= NEEDS_MEMORY | USE_MEMORY;
             } else {
                 conf = actual_name->v.conflict;

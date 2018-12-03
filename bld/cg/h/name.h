@@ -121,7 +121,7 @@ typedef enum {
 typedef struct name_def {
         union name              *next_name;
         name_class_def          class;
-        type_class_def          name_class;
+        type_class_def          type_class;
         type_length             size;
 } name_def;
 

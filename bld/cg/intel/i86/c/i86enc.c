@@ -418,10 +418,10 @@ void    LayModRM( name *op )
 }
 
 
-void    DoRelocConst( name *op, type_class_def kind )
-/***************************************************/
+void    DoRelocConst( name *op, type_class_def type_class )
+/*********************************************************/
 {
-    /* unused parameters */ (void)kind;
+    /* unused parameters */ (void)type_class;
 
     ILen += 2;
     if( op->c.const_type == CONS_OFFSET ) {

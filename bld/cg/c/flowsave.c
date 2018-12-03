@@ -300,7 +300,7 @@ void FlowSave( hw_reg_set *preg )
     block               *save;
     block               *restore;
     instruction         *ins;
-    type_class_def      reg_type;
+    type_class_def      reg_type_class;
 
     HW_CAsgn( flowedRegs, HW_EMPTY );
     if( _IsntModel( FLOW_REG_SAVES ) )
@@ -357,16 +357,16 @@ void FlowSave( hw_reg_set *preg )
         save = reg_info[curr_reg].save;
         restore = reg_info[curr_reg].restore;
         if( ( save != NULL && save != HeadBlock ) && ( restore != NULL && !_IsBlkAttr( restore, BLK_RETURN ) ) ) {
-            reg_type = WD;
+            reg_type_class = WD;
 #if _TARGET & _TARG_INTEL
             if( IsSegReg( reg_info[curr_reg].reg ) ) {
-                reg_type = U2;
+                reg_type_class = U2;
             }
 #endif
-            ins = MakeUnary( OP_PUSH, AllocRegName( reg_info[curr_reg].reg ), NULL, reg_type );
+            ins = MakeUnary( OP_PUSH, AllocRegName( reg_info[curr_reg].reg ), NULL, reg_type_class );
             ResetGenEntry( ins );
             PrefixIns( save->ins.hd.next, ins );
-            ins = MakeUnary( OP_POP, NULL, AllocRegName( reg_info[curr_reg].reg ), reg_type );
+            ins = MakeUnary( OP_POP, NULL, AllocRegName( reg_info[curr_reg].reg ), reg_type_class );
             ins->num_operands = 0;
             ResetGenEntry( ins );
             SuffixIns( restore->ins.hd.prev, ins );

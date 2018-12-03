@@ -512,7 +512,7 @@ instruction      *rCONSTLOAD( instruction *ins )
     unsigned_32         low;
     unsigned_32         k;
     unsigned_32         c;
-    type_class_def      index_class;
+    type_class_def      index_type_class;
     bool                cruft_in_high_dword;
 
     assert( ins->operands[0]->n.class == N_CONSTANT );
@@ -539,9 +539,9 @@ instruction      *rCONSTLOAD( instruction *ins )
             UpdateLive( first_ins, new_ins );
         }
     } else {
-        index_class = I4;
-        temp = AllocTemp( index_class );
-        first_ins = MakeMove( high_part, temp, index_class );
+        index_type_class = I4;
+        temp = AllocTemp( index_type_class );
+        first_ins = MakeMove( high_part, temp, index_type_class );
         PrefixIns( ins, first_ins );
         low_part = AllocIndex( temp, NULL, low, ins->type_class );
         new_ins = MakeUnary( OP_LA, low_part, ins->result, ins->type_class );
@@ -620,31 +620,31 @@ instruction *rALLOCA( instruction *ins )
     unsigned_32         value;
     instruction         *first;
     instruction         *last;
-    type_class_def      class;
+    type_class_def      type_class;
     bool                check;
 
     sreg = AllocRegName( StackReg() );
     amount = ins->operands[0];
     temp = AllocTemp( ins->type_class );
-    class = WD;
+    type_class = WD;
     check = true;
     CurrProc->targ.base_is_fp = true;
     if( amount->n.class == N_CONSTANT && amount->c.const_type == CONS_ABSOLUTE ) {
         value = amount->c.lo.uint_value;
         value = _RoundUp( value, STACK_ALIGNMENT );
         real_amount = AllocS32Const( value );
-        first = MakeBinary( OP_SUB, sreg, AllocS32Const( value ), temp, class );
+        first = MakeBinary( OP_SUB, sreg, AllocS32Const( value ), temp, type_class );
         PrefixIns( ins, first );
         if( value <= ( _TARGET_PAGE_SIZE - 7 ) ) {
             check = false;
         }
     } else {
         real_amount = AllocTemp( ins->type_class );
-        first = MakeBinary( OP_ADD, amount, AllocS32Const( STACK_ALIGNMENT - 1 ), temp, class );
+        first = MakeBinary( OP_ADD, amount, AllocS32Const( STACK_ALIGNMENT - 1 ), temp, type_class );
         PrefixIns( ins, first );
-        last = MakeBinary( OP_AND, temp, AllocU32Const( ~( STACK_ALIGNMENT - 1 ) ), real_amount, class );
+        last = MakeBinary( OP_AND, temp, AllocU32Const( ~( STACK_ALIGNMENT - 1 ) ), real_amount, type_class );
         PrefixIns( ins, last );
-        last = MakeBinary( OP_SUB, sreg, real_amount, temp, class );
+        last = MakeBinary( OP_SUB, sreg, real_amount, temp, type_class );
         PrefixIns( ins, last );
     }
     last = MakeMove( temp, sreg, WD );
@@ -659,9 +659,9 @@ instruction *rALLOCA( instruction *ins )
             CopyStack( ins, real_amount, MaxStack );
 
         }
-        last = MakeBinary( OP_ADD, temp, AllocS32Const( MaxStack ), ins->result, class );
+        last = MakeBinary( OP_ADD, temp, AllocS32Const( MaxStack ), ins->result, type_class );
     } else {
-        last = MakeMove( temp, ins->result, class );
+        last = MakeMove( temp, ins->result, type_class );
     }
     ReplIns( ins, last );
     UpdateLive( first, last );
