@@ -33,10 +33,10 @@
 #ifndef _TRAP_H
 #define _TRAP_H
 
-#if defined(__386__) || defined(__I86__)
-void __trap();
+#if defined( _M_IX86 )
+extern void __trap( void );
 #pragma aux __trap = "int 3h";
-#elif defined(__AXP__)
+#elif defined( __AXP__ )
 #define __trap()        _asm { call_pal 0x080 };
 #endif
 
