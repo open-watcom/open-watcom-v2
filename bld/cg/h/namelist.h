@@ -31,7 +31,7 @@
 
 
 extern name             *AllocConst( float_handle value );
-extern name             *AllocAddrConst( name *value, int seg, constant_class const_class, type_class_def type_class );
+extern name             *AllocAddrConst( name *value, int seg, constant_type_class const_type, type_class_def type_class );
 extern name             *FindIntValue( signed_32 value );
 extern name             *AllocIntConst( int value );
 extern name             *AllocUIntConst( uint value );

@@ -908,11 +908,15 @@ void    LayOpword( gen_opcode op )
     IEsc = 2;
 }
 
-void    LayW( type_class_def class )
-/**********************************/
+void    LayW( type_class_def type_class )
+/***************************************/
 {
-    switch( class ) {
-    case U2: case I2: case U4: case I4: case FS:
+    switch( type_class ) {
+    case U2:
+    case I2:
+    case U4:
+    case I4:
+    case FS:
         Inst[KEY] |= B_KEY_W;       /* turn on the W bit*/
         break;
     default:
@@ -1141,13 +1145,12 @@ void    GenRegMove( hw_reg_set src, hw_reg_set dst )
 }
 
 
-static  void    AddSWData( opcode_defs op, signed_32 val,
-                           type_class_def class ) {
-/**************************************************
+static  void    AddSWData( opcode_defs op, signed_32 val, type_class_def type_class )
+/**************************************************************************
     Add a const (signed_32) to Inst[] with sign extension if the opcode
     allows it
 */
-
+{
     switch( op ) {
     case OP_ADD:
     case OP_EXT_ADD:
@@ -1163,29 +1166,29 @@ static  void    AddSWData( opcode_defs op, signed_32 val,
     case OP_CMP_LESS_EQUAL:
     case OP_CMP_LESS:
     case OP_CMP_GREATER_EQUAL:
-        AddSData( val, class );
+        AddSData( val, type_class );
         break;
     default:
-        AddWData( val, class );
+        AddWData( val, type_class );
         break;
     }
 }
 
 
-static  void    AddSWCons( opcode_defs op, name *opnd, type_class_def class ) {
+static  void    AddSWCons( opcode_defs op, name *opnd, type_class_def type_class )
 /******************************************************************************
     Add a const (name *) to Inst[] with sign extension if the opcode allows it
 */
-
+{
     if( opnd->c.const_type == CONS_ABSOLUTE ) {
-        AddSWData( op, opnd->c.lo.int_value, class );
+        AddSWData( op, opnd->c.lo.int_value, type_class );
     } else {
-        switch( class ) {
+        switch( type_class ) {
         case U2:
         case I2:
         case U4:
         case I4:
-            DoRelocConst( opnd, class );
+            DoRelocConst( opnd, type_class );
             break;
         default:
             Zoiks( ZOIKS_045 );
@@ -1195,15 +1198,15 @@ static  void    AddSWCons( opcode_defs op, name *opnd, type_class_def class ) {
 }
 
 
-void    AddWData( signed_32 value, type_class_def kind )
-/******************************************************/
+void    AddWData( signed_32 value, type_class_def type_class )
+/************************************************************/
 {
     AddByte( value );
-    if( kind == U1 || kind == I1 )
+    if( type_class == U1 || type_class == I1 )
         return;
     value >>= 8;
     AddByte( value );
-    if( kind == U2 || kind == I2 )
+    if( type_class == U2 || type_class == I2 )
         return;
     value >>= 8;
     AddByte( value );
@@ -1211,20 +1214,20 @@ void    AddWData( signed_32 value, type_class_def kind )
     AddByte( value );
 }
 
-void    AddWCons( name *op, type_class_def kind )
+void    AddWCons( name *op, type_class_def type_class )
 /************************************************
     Add a WORD constant to Inst[]
 */
 {
     if( op->c.const_type == CONS_ABSOLUTE ) {
-        AddWData( op->c.lo.int_value, kind );
+        AddWData( op->c.lo.int_value, type_class );
     } else  {
-        switch( kind ) {
+        switch( type_class ) {
         case U2:
         case I2:
         case U4:
         case I4:
-            DoRelocConst( op, kind );
+            DoRelocConst( op, type_class );
             break;
         default:
             Zoiks( ZOIKS_045 );
@@ -1233,40 +1236,40 @@ void    AddWCons( name *op, type_class_def kind )
     }
 }
 
-void    AddSData( signed_32 value, type_class_def kind )
+void    AddSData( signed_32 value, type_class_def type_class )
 /*****************************************************************
     Add a constant (signed_32) to Inst[], with possible sign extension
 */
 {
-    if( ( kind == U2 || kind == I2 )
+    if( ( type_class == U2 || type_class == I2 )
         && ( ( value & 0xff80 ) == 0xff80
           || ( value & 0xff80 ) == 0 ) ) {
         Inst[KEY] |= B_KEY_S;
         AddByte( _IntToByte( value ) );
-    } else if( ( kind == U4 || kind == I4 )
+    } else if( ( type_class == U4 || type_class == I4 )
         && ( ( value & 0xffffff80 ) == 0xffffff80
           || ( value & 0xffffff80 ) == 0 ) ) {
         Inst[KEY] |= B_KEY_S;
         AddByte( _IntToByte( value ) );
     } else {
-        AddWData( value, kind );
+        AddWData( value, type_class );
     }
 }
 
-static  void    AddSCons( name *op, type_class_def kind ) {
+static  void    AddSCons( name *op, type_class_def type_class )
 /**********************************************************
     Add a constant (name *) to Inst[], with possible sign extension
 */
-
+{
     if( op->c.const_type == CONS_ABSOLUTE ) {
-        AddSData( op->c.lo.int_value, kind );
+        AddSData( op->c.lo.int_value, type_class );
     } else {
-        switch( kind ) {
+        switch( type_class ) {
         case U2:
         case I2:
         case U4:
         case I4:
-            DoRelocConst( op, kind );
+            DoRelocConst( op, type_class );
             break;
         default:
             Zoiks( ZOIKS_045 );
@@ -1279,13 +1282,13 @@ static  void    AddSCons( name *op, type_class_def kind ) {
 static  void    GenRegOp( hw_reg_set dst, type_length value, gen_opcode op )
 /**************************************************************************/
 {
-    type_class_def      kind;
+    type_class_def      type_class;
 
     _Code;
     LayOpword( op | B_KEY_W );
-    kind = OpndSize( dst );
+    type_class = OpndSize( dst );
     LayRegRM( dst );
-    AddSData( value, kind );
+    AddSData( value, type_class );
     _Emit;
 }
 

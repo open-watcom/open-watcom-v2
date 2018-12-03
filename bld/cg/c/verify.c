@@ -84,14 +84,14 @@ static  bool    NextCmp( instruction *ins )
 }
 
 
-static  bool    IsMin( name *op, type_class_def class ) {
+static  bool    IsMin( name *op, type_class_def type_class )
 /********************************************************
     Verify if "op" is a constant which is the smallest of possible
     values for type "class".
 */
-
+{
     if( op->c.const_type == CONS_ABSOLUTE ) {
-        switch( class ) {
+        switch( type_class ) {
         case U1:
         case U2:
         case U4:
@@ -115,14 +115,14 @@ static  bool    IsMin( name *op, type_class_def class ) {
     return( false );
 }
 
-static  bool    IsMax( name *op, type_class_def class ) {
+static  bool    IsMax( name *op, type_class_def type_class )
 /********************************************************
     Verify if "op" is a constant which is the largest of possible
     values for type "class".
 */
-
+{
     if( op->c.const_type == CONS_ABSOLUTE ) {
-        switch( class ) {
+        switch( type_class ) {
         case U1:
             if( CFIsU8( op->c.value ) && op->c.lo.int_value == 0xff )
                 return( true );

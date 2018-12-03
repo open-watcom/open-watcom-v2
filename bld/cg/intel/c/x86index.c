@@ -489,13 +489,13 @@ void    FixFPConsts( instruction *ins ) {
 */
 
     opcnt               i;
-    type_class_def      class;
+    type_class_def      type_class;
 
     if( !FPCInCode() && (_IsTargetModel( FLOATING_SS ) && _IsTargetModel( FLOATING_DS )) ) {
-        class = FltClass( ins );
-        if( class != XX ) {
+        type_class = FltClass( ins );
+        if( type_class != XX ) {
             for( i = ins->num_operands; i-- > 0; ) {
-                ins->operands[i] = Addressable( ins->operands[i], class );
+                ins->operands[i] = Addressable( ins->operands[i], type_class );
             }
         }
     }

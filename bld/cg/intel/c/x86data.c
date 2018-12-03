@@ -302,8 +302,8 @@ static  cg_class ConstDataClass( void )
     }
 }
 
-name    *GenConstData( const void *buffer, type_class_def class )
-/***************************************************************/
+name    *GenConstData( const void *buffer, type_class_def type_class )
+/********************************************************************/
 {
     segment_id          old;
     cg_class            cgclass;
@@ -313,7 +313,7 @@ name    *GenConstData( const void *buffer, type_class_def class )
 
     TellOptimizerByPassed();
     cgclass = ConstDataClass();
-    size = TypeClassSize[class];
+    size = TypeClassSize[type_class];
     label = AskForLabel( NULL );
     if( cgclass == CG_CLB ) {
         old = SetOP( AskCodeSeg() );
@@ -331,23 +331,23 @@ name    *GenConstData( const void *buffer, type_class_def class )
     }
     SetOP( old );
     TellByPassOver();
-    result = AllocMemory( label, 0, cgclass, class );
+    result = AllocMemory( label, 0, cgclass, type_class );
     result->v.usage |= USE_IN_ANOTHER_BLOCK;
     return( result );
 }
 
-name    *GenFloat( name *cons, type_class_def class )
-/***************************************************/
+name    *GenFloat( name *cons, type_class_def type_class )
+/********************************************************/
 {
     constant_defn       *defn;
     name                *result;
 
-    defn = GetFloat( cons, class );
+    defn = GetFloat( cons, type_class );
     if( defn->label == NULL ) {
-        result = GenConstData( defn->value, class );
+        result = GenConstData( defn->value, type_class );
         defn->label = result->v.symbol;
     } else {
-        result = AllocMemory( defn->label, 0, ConstDataClass(), class );
+        result = AllocMemory( defn->label, 0, ConstDataClass(), type_class );
     }
     return( result );
 }

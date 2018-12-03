@@ -419,15 +419,15 @@ type_def        *SelNodeType( an node, bool is_signed )
 }
 
 
-void    MkSelOp( name *idx, type_class_def class )
-/************************************************/
+void    MkSelOp( name *idx, type_class_def type_class )
+/*****************************************************/
 {
     instruction         *ins;
 
     ins = NewIns( 1 );
     ins->operands[0] = idx;
     ins->head.opcode = OP_SELECT;
-    ins->type_class = class;
+    ins->type_class = type_class;
     ins->result = NULL;
     AddIns( ins );
 }

@@ -266,14 +266,14 @@ void    BGProcDecl( cg_sym_handle sym, type_def *tipe )
 {
     hw_reg_set          reg;
     name                *temp;
-    type_class_def      class;
+    type_class_def      type_class;
     segment_id          old;
     label_handle        lbl;
 
     SaveTargetModel = TargetModel;
-    class = AddCallBlock( sym, tipe );
+    type_class = AddCallBlock( sym, tipe );
     if( tipe != TypeNone ) {
-        if( class == XX ) {
+        if( type_class == XX ) {
             if( CurrProc->state.attr & ROUTINE_ALLOCS_RETURN ) {
                 old = SetOP( AskBackSeg() );
                 lbl = AskForNewLabel();
@@ -417,7 +417,7 @@ void    PushInSameBlock( instruction *ins )
 
 
 instruction *   PushOneParm( instruction *ins, name *curr,
-                                type_class_def class,
+                                type_class_def type_class,
                                 type_length offset,
                                 call_state *state )
 /********************************************************/
@@ -427,11 +427,11 @@ instruction *   PushOneParm( instruction *ins, name *curr,
 
     /* unused parameters */ (void)state; (void)offset;
 
-    new = MakeUnary( OP_PUSH, curr, NULL, class );
+    new = MakeUnary( OP_PUSH, curr, NULL, type_class );
     SuffixIns( ins, new );
 #if 0
     if( curr->n.class == N_CONSTANT ) {
-        size = TypeClassSize[class];
+        size = TypeClassSize[type_class];
     } else {
         size = curr->n.size;
     }
@@ -453,10 +453,10 @@ void    PostCall( cn call )
     /* unused parameters */ (void)call;
 }
 
-type_def    *PassParmType( cg_sym_handle func, type_def* tipe, call_class class )
-/*******************************************************************************/
+type_def    *PassParmType( cg_sym_handle func, type_def* tipe, call_class cclass )
+/********************************************************************************/
 {
-    if( class & FAR16_CALL )
+    if( cclass & FAR16_CALL )
         return( tipe );
     return( QParmType( func, NULL, tipe ) );
 }

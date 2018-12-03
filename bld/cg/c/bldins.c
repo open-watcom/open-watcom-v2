@@ -182,8 +182,7 @@ static  an Unary( cg_op op, an left, type_def *tipe )
     instruction *ins;
     an          res;
 
-    ins = MakeNary( (opcode_defs)op, GenIns( left ), NULL, NULL,
-                    TypeClass( tipe ), TypeClass( left->tipe ), 1 );
+    ins = MakeNary( (opcode_defs)op, GenIns( left ), NULL, NULL, TypeClass( tipe ), TypeClass( left->tipe ), 1 );
     res = InsName( ins, tipe );
     AddIns( ins );
     BGDone( left );
@@ -585,24 +584,24 @@ an      BGOpGets( cg_op op, an left, an rite, type_def *tipe, type_def *optipe )
     an                  result;
     an                  leftp;
     name                *temp;
-    type_class_def      opclass;
-    type_class_def      class;
+    type_class_def      op_type_class;
+    type_class_def      type_class;
     name                *left_name;
     instruction         *ins;
 
     leftp = MakePoints( left, tipe );
     left_name = GenIns( leftp );
-    class = TypeClass( tipe );
-    opclass = TypeClass( optipe );
+    type_class = TypeClass( tipe );
+    op_type_class = TypeClass( optipe );
     if( NeedConvert( tipe, optipe ) ) {
-        temp = AllocTemp( opclass );
-        ins = MakeConvert( left_name, temp, opclass, class );
+        temp = AllocTemp( op_type_class );
+        ins = MakeConvert( left_name, temp, op_type_class, type_class );
         AddIns( ins );
-        AddIns( MakeBinary( (opcode_defs)op, temp, GenIns( rite ), temp, opclass ) );
-        ins = MakeConvert( temp, left_name, class, opclass );
+        AddIns( MakeBinary( (opcode_defs)op, temp, GenIns( rite ), temp, op_type_class ) );
+        ins = MakeConvert( temp, left_name, type_class, op_type_class );
         AddIns( ins );
     } else {
-        ins = MakeBinary( (opcode_defs)op, left_name, GenIns( rite ), left_name, opclass );
+        ins = MakeBinary( (opcode_defs)op, left_name, GenIns( rite ), left_name, op_type_class );
         if( tipe != optipe ) {
             ins->ins_flags |= INS_DEMOTED; /* its not quite the right type */
         }

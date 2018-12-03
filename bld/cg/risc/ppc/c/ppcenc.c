@@ -59,7 +59,6 @@
 
 
 #define _NameReg( op )                  ( (op)->r.arch_index )
-#define _IsSigned( type )               ( Unsigned[type] != type )
 #define _EmitIns( ins )                 ObjBytes( &(ins), sizeof( ppc_ins ) )
 #define _ObjEmitSeq( code )             ObjBytes( code->data, code->length )
 

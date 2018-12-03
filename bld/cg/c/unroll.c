@@ -929,19 +929,19 @@ static  void    MakeWorldGoAround( block *loop, loop_abstract *cleanup_copy, loo
     name                *temp;
     instruction         *add;
     name                *modifier;
-    type_class_def      comp_type;
+    type_class_def      comp_type_class;
     block               *new;
     instruction         *ins;
     unsigned_32         high_bit;
 
-    comp_type = cond->compare_ins->type_class;
-    temp = AllocTemp( comp_type );
+    comp_type_class = cond->compare_ins->type_class;
+    temp = AllocTemp( comp_type_class );
     modifier = AllocS32Const( -1 * reps * cond->induction->plus );
-    add = MakeBinary( OP_ADD, cond->invariant, modifier, temp, comp_type );
+    add = MakeBinary( OP_ADD, cond->invariant, modifier, temp, comp_type_class );
     SuffixPreHeader( add );
 
     // add a piece of code to check and make sure n and ( n - reps ) have the same sign
-    if( !cond->complete && Signed[comp_type] != comp_type ) {
+    if( !cond->complete && Signed[comp_type_class] != comp_type_class ) {
         new = MakeBlock( AskForNewLabel(), 2 );
         _SetBlkAttr( new, BLK_CONDITIONAL );
         new->loop_head = PreHead->loop_head;
@@ -951,11 +951,11 @@ static  void    MakeWorldGoAround( block *loop, loop_abstract *cleanup_copy, loo
         new->id = NO_BLOCK_ID;
         new->gen_id = PreHead->gen_id;
         new->ins.hd.line_num = 0;
-        temp = AllocTemp( comp_type );
-        ins = MakeBinary( OP_XOR, add->result, cond->invariant, temp, comp_type );
+        temp = AllocTemp( comp_type_class );
+        ins = MakeBinary( OP_XOR, add->result, cond->invariant, temp, comp_type_class );
         SuffixIns( new->ins.hd.prev, ins );
-        high_bit = 1 << ( ( 8 * TypeClassSize[comp_type] ) - 1 );
-        ins = MakeCondition( OP_BIT_TEST_TRUE, temp, AllocS32Const( high_bit ), 0, 1, comp_type );
+        high_bit = 1 << ( ( 8 * TypeClassSize[comp_type_class] ) - 1 );
+        ins = MakeCondition( OP_BIT_TEST_TRUE, temp, AllocS32Const( high_bit ), 0, 1, comp_type_class );
         SuffixIns( new->ins.hd.prev, ins );
         PointEdge( &new->edge[0], cleanup_copy->head );
         PointEdge( &new->edge[1], loop->loop_head );

@@ -34,7 +34,7 @@
 extern void             FPSetStack( name * );
 extern void             FPNotStack( name * );
 extern void             FPPushParms( pn, call_state * );
-extern bool             FPDivIsADog( type_class_def class );
+extern bool             FPDivIsADog( type_class_def type_class );
 extern bool             FPStackOp( name * );
 extern bool             FPIsConvert( instruction * );
 extern type_class_def   FPInsClass( instruction * );

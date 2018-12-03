@@ -51,7 +51,7 @@ static bool WorthAConversion( name *temp )
     return( true );
 }
 
-static instruction *AndResult( instruction *ins, type_class_def class )
+static instruction *AndResult( instruction *ins, type_class_def type_class )
 /**********************************************************************
 
     And the result of "ins" with 255 or 65535 to clear out the high
@@ -61,9 +61,9 @@ static instruction *AndResult( instruction *ins, type_class_def class )
     signed_32           constant;
     instruction         *new_ins;
 
-    if( class == U1 ) {
+    if( type_class == U1 ) {
         constant = 0xFF;
-    } else if( class == U2 ) {
+    } else if( type_class == U2 ) {
         constant = 0xFFFF;
     } else {
         return( ins );
@@ -172,7 +172,7 @@ static bool ConvertToInt( name *temp )
 {
     block               *blk;
     instruction         *ins;
-    type_class_def      class;
+    type_class_def      type_class;
     bool                change;
 
     change = false;
@@ -180,10 +180,10 @@ static bool ConvertToInt( name *temp )
     temp->n.size = 4;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
-             class = ins->type_class;
+             type_class = ins->type_class;
              change |= ConvertInsToInt( ins, temp );
              if( ins->result == temp ) {
-                 ins = AndResult( ins, class );
+                 ins = AndResult( ins, type_class );
              }
         }
     }

@@ -111,26 +111,26 @@ hw_reg_set      CalcSegment( cg_sym_handle sym, cg_class class ) {
 }
 
 
-name    *AddrConst( name *value, segment_id seg, constant_class class ) {
-/************************************************************************/
-
+name    *AddrConst( name *value, segment_id seg, constant_type_class const_type )
+/*******************************************************************************/
+{
     hw_reg_set  reg;
 
-    switch( class ) {
+    switch( const_type ) {
     case CONS_SEGMENT:
         HW_CAsgn( reg, HW_EMPTY );
         if( value != NULL ) {
             reg = CalcSegment( value->v.symbol, value->m.memory_type );
         }
         if( HW_CEqual( reg, HW_EMPTY ) ) {
-            return( AllocAddrConst( value, seg, class, U2 ) );
+            return( AllocAddrConst( value, seg, const_type, U2 ) );
         } else {
             return( AllocRegName( reg ) );
         }
     case CONS_OFFSET:
-        return( AllocAddrConst( value, seg, class, WD ) );
+        return( AllocAddrConst( value, seg, const_type, WD ) );
     case CONS_ADDRESS:
-        return( AllocAddrConst( value, seg, class, CP ) );
+        return( AllocAddrConst( value, seg, const_type, CP ) );
     default:
         _Zoiks( ZOIKS_115 );
         return( NULL );

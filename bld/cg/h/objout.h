@@ -83,4 +83,4 @@ extern void         DataShort( unsigned_16 val );
 extern void         DataLong( unsigned_32 val );
 extern void         IterBytes( offset len, byte pat );
 extern void         DataLabel( label_handle lbl );
-extern name         *GenFloat( name *cons, type_class_def class );
+extern name         *GenFloat( name *cons, type_class_def type_class );

@@ -137,10 +137,10 @@ static const char * ClassNames[] = {
 };
 
 
-void    DumpClass( type_class_def tipe )
-/**************************************/
+void    DumpClass( type_class_def type_class )
+/********************************************/
 {
-    DumpString( ClassNames[tipe] );
+    DumpString( ClassNames[type_class] );
 }
 
 

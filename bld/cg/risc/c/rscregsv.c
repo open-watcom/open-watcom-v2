@@ -87,23 +87,22 @@ bool    WorthProlog( conflict_node *conf, hw_reg_set reg )
     save_def            cost;
     save_def            savings;
     hw_reg_set          must_save;
-    type_class_def      class;
+    type_class_def      type_class;
     name                *op;
 
-    class = conf->name->n.type_class;
+    type_class = conf->name->n.type_class;
     must_save = MustSaveRegs();
     if( BlockByBlock || HW_Ovlap( reg, GivenRegisters ) ||
        !HW_Ovlap( reg, must_save ) ) {
         cost = 0;
     } else {
-        cost = Save.pop_cost[class] + Save.push_cost[class];
+        cost = Save.pop_cost[type_class] + Save.push_cost[type_class];
     }
     op = conf->name;
     savings = conf->savings;
     if( _ConstTemp( op ) ) {
         /* adjust for the initial load */
-        cost += Weight( Save.load_cost[class] + Save.def_save[class],
-                        conf->start_block );
+        cost += Weight( Save.load_cost[type_class] + Save.def_save[type_class], conf->start_block );
         /* Adjust by a fudge factor */
         savings /= LOOP_FACTOR;
     } else {

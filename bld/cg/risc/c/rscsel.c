@@ -99,10 +99,10 @@ name    *SelIdx( tbl_control *table, an node )
     return( NULL );
 }
 
-name    *ScanCall( tbl_control* tbl, name* tmp, type_class_def class )
-/********************************************************************/
+name    *ScanCall( tbl_control* tbl, name* tmp, type_class_def type_class )
+/*************************************************************************/
 {
-    /* unused parameters */ (void)tbl; (void)tmp; (void)class;
+    /* unused parameters */ (void)tbl; (void)tmp; (void)type_class;
 
     return( NULL );
 }
@@ -134,8 +134,8 @@ type_def    *SelNodeType( an node, bool is_signed )
     return( TypeAddress( is_signed ? signed_t : unsigned_t ) );
 }
 
-void    MkSelOp( name *idx, type_class_def class )
-/************************************************/
+void    MkSelOp( name *idx, type_class_def type_class )
+/*****************************************************/
 {
     instruction         *ins;
 
@@ -150,7 +150,7 @@ void    MkSelOp( name *idx, type_class_def class )
     ins->operands[0] = idx;
     ins->result = idx->i.index;
     ins->head.opcode = OP_SELECT;
-    ins->type_class = class;
+    ins->type_class = type_class;
     ins->ins_flags |= INS_CC_USED;
     AddIns( ins );
 }

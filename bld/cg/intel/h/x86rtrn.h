@@ -31,4 +31,4 @@
 ****************************************************************************/
 
 
-extern  name    *Addressable( name *cons, type_class_def class );
+extern  name    *Addressable( name *cons, type_class_def type_class );

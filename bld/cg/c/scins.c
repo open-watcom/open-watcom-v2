@@ -90,7 +90,7 @@ bool    ChangeIns( instruction *ins, name *to, name **op, change_type flags )
     name                *old_op;
     opcnt               i;
     name                *save_ops[MAX_OPS_PER_INS];
-    type_class_def      class;
+    type_class_def      type_class;
     bool                ok;
 
     ok = true;
@@ -98,12 +98,12 @@ bool    ChangeIns( instruction *ins, name *to, name **op, change_type flags )
     gen_table = ins->u.gen_table;
     old_op = *op;
     if( ins->head.opcode == OP_CONVERT ) {
-        class = ins->base_type_class;
+        type_class = ins->base_type_class;
     } else {
-        class = ins->type_class;
+        type_class = ins->type_class;
     }
     if( to->n.class != N_CONSTANT ) {
-        if( TypeClassSize[class] != to->n.size ) {
+        if( TypeClassSize[type_class] != to->n.size ) {
             return( false );
         }
     }

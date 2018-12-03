@@ -61,8 +61,6 @@
 
 #define _NameReg( op )                  ( (op)->r.arch_index )
 
-#define _IsSigned( type )               ( Unsigned[type] != type )
-
 #define _BinaryOpcode( a, b )           { { a, b }, { a, b } }
 #define _SignedOpcode( a, b, c, d )     { { a, b }, { c, d } }
 #define _BinaryImmOpcode( a )           { a, a }

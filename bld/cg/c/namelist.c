@@ -194,13 +194,13 @@ name    *AllocConst( float_handle value )
     return( new_c );
 }
 
-name    *AllocAddrConst( name *value, int seg, constant_class class, type_class_def type_class )
-/**********************************************************************************************/
+name    *AllocAddrConst( name *value, int seg, constant_type_class const_type, type_class_def type_class )
+/********************************************************************************************************/
 {
     name        *new_c;
 
     for( new_c = Names[N_CONSTANT]; new_c != NULL; new_c = new_c->n.next_name ) {
-        if( new_c->c.const_type == class
+        if( new_c->c.const_type == const_type
           && new_c->c.value == value
           && new_c->n.type_class == type_class
           && new_c->c.lo.int_value == seg ) {
@@ -211,7 +211,7 @@ name    *AllocAddrConst( name *value, int seg, constant_class class, type_class_
     new_c->c.value = value;
     new_c->c.lo.int_value = seg;
     new_c->c.static_defn = NULL;
-    new_c->c.const_type = class;
+    new_c->c.const_type = const_type;
     return( new_c );
 }
 

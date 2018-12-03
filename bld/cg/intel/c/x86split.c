@@ -131,8 +131,7 @@ instruction      *rOP2CL( instruction *ins )
     name                *name1;
 
     name1 = AllocRegName( HW_CL );
-    new_ins = MakeConvert( ins->operands[1], name1, U1,
-                           ins->operands[1]->n.type_class );
+    new_ins = MakeConvert( ins->operands[1], name1, U1, ins->operands[1]->n.type_class );
     ins->operands[1] = name1;
     MoveSegOp( ins, new_ins, 0 );
     PrefixIns( ins, new_ins );
@@ -147,8 +146,7 @@ instruction      *rOP2CX( instruction *ins )
     name                *name1;
 
     name1 = AllocRegName( HW_CX );
-    new_ins = MakeConvert( ins->operands[1], name1, U2,
-                           ins->operands[1]->n.type_class );
+    new_ins = MakeConvert( ins->operands[1], name1, U2, ins->operands[1]->n.type_class );
     ins->operands[1] = name1;
     MoveSegOp( ins, new_ins, 0 );
     PrefixIns( ins, new_ins );
@@ -189,9 +187,7 @@ instruction      *rDIVREGISTER( instruction *ins )
     name                *name2;
 
     name1 = AllocRegName( Op1Reg( ins ) );
-    new_ins = MakeConvert( ins->operands[0], name1,
-                          DoubleClass[ins->type_class],
-                          ins->type_class );
+    new_ins = MakeConvert( ins->operands[0], name1, DoubleClass[ins->type_class], ins->type_class );
     ins->operands[0] = name1;
     MoveSegOp( ins, new_ins, 0 );
     PrefixIns( ins, new_ins );
@@ -355,15 +351,14 @@ static name *FakeIndex( name *op, hw_reg_set index ) {
     name                *base;
     i_flags             flags;
 
-    if( op->n.class==N_TEMP || op->n.class==N_MEMORY ) {
+    if( op->n.class == N_TEMP || op->n.class == N_MEMORY ) {
         base = op;
         flags = X_FAKE_BASE;
     } else {
         base = NULL;
         flags = EMPTY;
     }
-    return( ScaleIndex( AllocRegName( index ), base, 0,
-                                op->n.type_class, op->n.size, 0, flags ) );
+    return( ScaleIndex( AllocRegName( index ), base, 0, op->n.type_class, op->n.size, 0, flags ) );
 }
 
 static  bool    SegmentFloats( name *op ) {
@@ -551,11 +546,11 @@ instruction      *rMOVRESMEM( instruction *ins )
     instruction         *new_ins;
     name                *name_flt;
     name                *name_int;
-    type_class_def      class;
+    type_class_def      type_class;
 
-    class = ins->type_class;
-    name_flt = AllocTemp( class );
-    if( class == FD || class == FL ) {
+    type_class = ins->type_class;
+    name_flt = AllocTemp( type_class );
+    if( type_class == FD || type_class == FL ) {
         name_int = name_flt;
     } else {
         name_int = TempOffset( name_flt, 0, U4 );
@@ -575,11 +570,11 @@ instruction      *rMOVOP1MEM( instruction *ins )
     instruction         *new_ins;
     name                *name_flt;
     name                *name_int;
-    type_class_def      class;
+    type_class_def      type_class;
 
-    class = ins->type_class;
-    name_flt = AllocTemp( class );
-    if( class == FD || class == FL ) {
+    type_class = ins->type_class;
+    name_flt = AllocTemp( type_class );
+    if( type_class == FD || type_class == FL ) {
         name_int = name_flt;
     } else {
         name_int = TempOffset( name_flt, 0, U4 );
@@ -833,7 +828,7 @@ instruction     *rDOLONGPUSH( instruction *ins )
 }
 
 
-name    *OpAdjusted( name *op, int bias, type_class_def type )
+name    *OpAdjusted( name *op, int bias, type_class_def type_class )
 /*********************************************************************
     Return a new op of type 'type' which is offset from the old op by the
     amount specified by 'bias'.
@@ -843,11 +838,10 @@ name    *OpAdjusted( name *op, int bias, type_class_def type )
 
     switch( op->n.class ) {
     case N_MEMORY:
-        new_op = AllocMemory( op->v.symbol, op->v.offset + bias,
-                              op->m.memory_type, type );
+        new_op = AllocMemory( op->v.symbol, op->v.offset + bias, op->m.memory_type, type_class );
         break;
     case N_TEMP:
-        new_op = TempOffset( op, bias, type );
+        new_op = TempOffset( op, bias, type_class );
         new_op->t.temp_flags |= CG_INTRODUCED;
         break;
     case N_INDEXED:

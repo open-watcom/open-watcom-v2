@@ -344,26 +344,26 @@ extern  void    Attrs( sym s ) {
     Action( " seg id %d%n", FESegID( s ) );
 }
 
-extern  void    DumpCClass( call_class c ) {
-/******************************************/
-
+extern  void    DumpCClass( call_class cclass )
+/*********************************************/
+{
 #if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
-    if( c & FAR_CALL )
+    if( cclass & FAR_CALL )
         Action( "FAR " );
-    if( c & ROUTINE_RETURN )
+    if( cclass & ROUTINE_RETURN )
         Action( "ROUTINE_RETURN " );
-    if( c & SPECIAL_RETURN )
+    if( cclass & SPECIAL_RETURN )
         Action( "SPECIAL_RETURN " );
 #endif
-    if( c & CALLER_POPS )
+    if( cclass & CALLER_POPS )
         Action( "CALLER_POPS " );
-    if( c & NO_MEMORY_CHANGED )
+    if( cclass & NO_MEMORY_CHANGED )
         Action( "NO_MEMORY_CHANGED " );
-    if( c & NO_MEMORY_READ )
+    if( cclass & NO_MEMORY_READ )
         Action( "NO_MEMORY_READ " );
-    if( c & SUICIDAL )
+    if( cclass & SUICIDAL )
         Action( "SUICIDAL " );
-    if( c & NORETURN ) {
+    if( cclass & NORETURN ) {
         Action( "NORETURN " );
     }
 }
@@ -371,10 +371,10 @@ extern  void    DumpCClass( call_class c ) {
 extern  void    CClass( sym  s ) {
 /********************************/
 
-    call_class  *pc;
+    call_class  *cclass;
 
-    pc = FindAuxInfoSym( s, CALL_CLASS );
-    DumpCClass( *pc );
+    cclass = FindAuxInfoSym( s, CALL_CLASS );
+    DumpCClass( *cclass );
     Action( "%n" );
 }
 
@@ -865,14 +865,14 @@ extern  void    CGAddParm( n *l, n *p, cg_type t ) {
 extern  n       *CGCall( n *r ) {
 /*******************************/
 
-    call_class  *pc;
+    call_class  *cclass;
 
     Action( "CGCall( %t )", r );
-    pc = (call_class *)FEAuxInfo( r->h, CALL_CLASS );
-    if( *pc & MAKE_CALL_INLINE ) {
+    cclass = (call_class *)FEAuxInfo( r->h, CALL_CLASS );
+    if( *cclass & MAKE_CALL_INLINE ) {
         Action( " inline handle=%p%n", r );
     } else {
-        DumpCClass( *pc );
+        DumpCClass( *cclass );
         Action( "%n" );
     }
     VerNode( r );

@@ -264,7 +264,7 @@ tn  TGCallback( cg_callback rtn, callback_handle ptr )
 }
 
 static  type_def    *ResultType( tn left, tn rite, type_def *tipe,
-                     type_class_def *mat, bool demote_const )
+                     type_class_def *mat_type_class, bool demote_const )
 /*****************************************************************
     What is the resulting type of "left" op "rite" given that the front
     end says it should be "tipe" (T_DEFAULT if its not sure).
@@ -301,7 +301,7 @@ static  type_def    *ResultType( tn left, tn rite, type_def *tipe,
         rtipe = TypeInteger;
     }
     if( tipe->refno == TY_DEFAULT ) {
-        return( ClassType( mat[TypeClass( ltipe ) * XX + TypeClass( rtipe )] ) );
+        return( ClassType( mat_type_class[TypeClass( ltipe ) * XX + TypeClass( rtipe )] ) );
     }
 #if _TARGET & 0
     return( tipe );

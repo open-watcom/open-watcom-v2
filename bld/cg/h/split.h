@@ -30,6 +30,8 @@
 ****************************************************************************/
 
 
+#define _IsSigned( type )       (Unsigned[type] != type)
+
 extern type_class_def   Unsigned[];
 extern type_class_def   Signed[];
 extern type_class_def   DoubleClass[];
@@ -40,15 +42,15 @@ extern instruction *(*ReduceTab[])( instruction * );
 extern hw_reg_set       Op1Reg( instruction *ins );
 extern hw_reg_set       ResultReg( instruction *ins );
 extern hw_reg_set       ZapReg( instruction *ins );
-extern instruction      *MoveConst( unsigned_32 value, name *result, type_class_def class );
+extern instruction      *MoveConst( unsigned_32 value, name *result, type_class_def type_class );
 extern instruction      *Reduce( instruction *ins );
 extern instruction      *SplitUnary( instruction *ins );
 extern void             CheckCC( instruction *ins, instruction *new_ins );
 
 extern void             HalfType( instruction *ins );
-extern void             ChangeType( instruction *ins, type_class_def class );
-extern name             *LowPart( name *tosplit, type_class_def class );
-extern name             *HighPart( name *tosplit, type_class_def class );
+extern void             ChangeType( instruction *ins, type_class_def type_class );
+extern name             *LowPart( name *tosplit, type_class_def type_class );
+extern name             *HighPart( name *tosplit, type_class_def type_class );
 extern name             *OffsetPart( name *tosplit );
 extern name             *SegmentPart( name *tosplit );
 

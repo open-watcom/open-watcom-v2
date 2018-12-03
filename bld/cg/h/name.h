@@ -108,7 +108,7 @@ typedef enum {
         CONS_TEMP_ADDR, /*  address constant of temp */
         CONS_HIGH_ADDR, /*  high part of a 32-bit address */
         CONS_LOW_ADDR,  /*  low part of a 32-bit address */
-} constant_class;
+} constant_type_class;
 
 typedef enum {
         MF_EMPTY                = 0x0000,
@@ -152,7 +152,7 @@ typedef struct const_name {
         value32                 lo;
         value32                 hi;             /* high part of 64-bit const */
         struct constant_defn    *static_defn;
-        constant_class          const_type;
+        constant_type_class     const_type;
 } const_name;
 
 typedef struct memory_name {                    /*  global name value or address */

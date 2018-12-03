@@ -232,13 +232,13 @@ instruction     *rSPLITCMP( instruction *ins )
     instruction         *low = NULL;
     instruction         *high = NULL;
     instruction         *not_equal = NULL;
-    type_class_def      high_class;
-    type_class_def      low_class;
+    type_class_def      high_type_class;
+    type_class_def      low_type_class;
     byte                true_idx;
     byte                false_idx;
 
-    high_class = HalfClass[ins->type_class];
-    low_class  = Unsigned[high_class];
+    high_type_class = HalfClass[ins->type_class];
+    low_type_class  = Unsigned[high_type_class];
     left = ins->operands[0];
     right = ins->operands[1];
     true_idx = _TrueIndex( ins );
@@ -246,52 +246,52 @@ instruction     *rSPLITCMP( instruction *ins )
     switch( ins->head.opcode ) {
     case OP_BIT_TEST_TRUE:
         high = MakeCondition( ins->head.opcode,
-                        HighPart( left, high_class ),
-                        HighPart( right, high_class ),
+                        HighPart( left, high_type_class ),
+                        HighPart( right, high_type_class ),
                         true_idx, NO_JUMP,
                         WORD );
         low = MakeCondition( ins->head.opcode,
-                        LowPart( left, low_class ),
-                        LowPart( right, low_class ),
+                        LowPart( left, low_type_class ),
+                        LowPart( right, low_type_class ),
                         true_idx, false_idx,
                         WORD );
         not_equal = NULL;
         break;
     case OP_BIT_TEST_FALSE:
         high = MakeCondition( OP_BIT_TEST_TRUE,
-                        HighPart( left, high_class ),
-                        HighPart( right, high_class ),
+                        HighPart( left, high_type_class ),
+                        HighPart( right, high_type_class ),
                         false_idx, NO_JUMP,
                         WORD );
         low = MakeCondition( ins->head.opcode,
-                        LowPart( left, low_class ),
-                        LowPart( right, low_class ),
+                        LowPart( left, low_type_class ),
+                        LowPart( right, low_type_class ),
                         true_idx, false_idx,
                         WORD );
         not_equal = NULL;
         break;
     case OP_CMP_EQUAL:
         high = MakeCondition( OP_CMP_NOT_EQUAL,
-                        HighPart( left, high_class ),
-                        HighPart( right, high_class ),
+                        HighPart( left, high_type_class ),
+                        HighPart( right, high_type_class ),
                         false_idx, NO_JUMP,
                         WORD );
         low = MakeCondition( ins->head.opcode,
-                        LowPart( left, low_class ),
-                        LowPart( right, low_class ),
+                        LowPart( left, low_type_class ),
+                        LowPart( right, low_type_class ),
                         true_idx, false_idx,
                         WORD );
         not_equal = NULL;
         break;
     case OP_CMP_NOT_EQUAL:
         high = MakeCondition( OP_CMP_NOT_EQUAL,
-                        HighPart( left, high_class ),
-                        HighPart( right, high_class ),
+                        HighPart( left, high_type_class ),
+                        HighPart( right, high_type_class ),
                         true_idx, NO_JUMP,
                         WORD );
         low = MakeCondition( ins->head.opcode,
-                        LowPart( left, low_class ),
-                        LowPart( right, low_class ),
+                        LowPart( left, low_type_class ),
+                        LowPart( right, low_type_class ),
                         true_idx, false_idx,
                         WORD );
         not_equal = NULL;
@@ -299,11 +299,11 @@ instruction     *rSPLITCMP( instruction *ins )
     case OP_CMP_LESS:
     case OP_CMP_LESS_EQUAL:
         not_equal = MakeCondition( OP_CMP_NOT_EQUAL,
-                        HighPart( left, high_class ),
-                        HighPart( right, high_class ),
+                        HighPart( left, high_type_class ),
+                        HighPart( right, high_type_class ),
                         false_idx, NO_JUMP,
-                        high_class );
-        if( high_class == WORD
+                        high_type_class );
+        if( high_type_class == WORD
           && right->n.class == N_CONSTANT
           && right->c.const_type == CONS_ABSOLUTE
           && HIGH_WORD( right ) == 0 ) {
@@ -312,22 +312,22 @@ instruction     *rSPLITCMP( instruction *ins )
             high = MakeCondition( OP_CMP_LESS,
                         not_equal->operands[0], not_equal->operands[1],
                         true_idx, NO_JUMP,
-                        high_class );
+                        high_type_class );
         }
         low = MakeCondition( ins->head.opcode,
-                        LowPart( left, low_class ),
-                        LowPart( right, low_class ),
+                        LowPart( left, low_type_class ),
+                        LowPart( right, low_type_class ),
                         true_idx, false_idx,
-                        low_class );
+                        low_type_class );
         break;
     case OP_CMP_GREATER_EQUAL:
     case OP_CMP_GREATER:
         not_equal = MakeCondition( OP_CMP_NOT_EQUAL,
-                        HighPart( left, high_class ),
-                        HighPart( right, high_class ),
+                        HighPart( left, high_type_class ),
+                        HighPart( right, high_type_class ),
                         false_idx, NO_JUMP,
-                        high_class );
-        if( high_class == WORD
+                        high_type_class );
+        if( high_type_class == WORD
           && right->n.class == N_CONSTANT
           && right->c.const_type == CONS_ABSOLUTE
           && HIGH_WORD( right ) == 0 ) {
@@ -337,13 +337,13 @@ instruction     *rSPLITCMP( instruction *ins )
             high = MakeCondition( OP_CMP_GREATER,
                         not_equal->operands[0], not_equal->operands[1],
                         true_idx, NO_JUMP,
-                        high_class );
+                        high_type_class );
         }
         low = MakeCondition( ins->head.opcode,
-                        LowPart( left, low_class ),
-                        LowPart( right, low_class ),
+                        LowPart( left, low_type_class ),
+                        LowPart( right, low_type_class ),
                         true_idx, false_idx,
-                        low_class );
+                        low_type_class );
         break;
     default:
         break;

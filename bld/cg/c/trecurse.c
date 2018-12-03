@@ -142,15 +142,15 @@ static void DoOneParm( instruction *parm_ins, instruction *decl_ins, instruction
     instruction         *second;
     name                *tmp;
     name                *src;
-    type_class_def      src_class;
-    type_class_def      dst_class;
+    type_class_def      src_type_class;
+    type_class_def      dst_type_class;
 
     src = parm_ins->operands[0];
-    src_class = src->n.type_class;
-    dst_class = decl_ins->result->n.type_class;
-    tmp = AllocTemp( dst_class );
-    first = MakeConvert( src, tmp, dst_class, src_class );
-    second = MakeMove( tmp, decl_ins->result, dst_class );
+    src_type_class = src->n.type_class;
+    dst_type_class = decl_ins->result->n.type_class;
+    tmp = AllocTemp( dst_type_class );
+    first = MakeConvert( src, tmp, dst_type_class, src_type_class );
+    second = MakeMove( tmp, decl_ins->result, dst_type_class );
     ReplIns( parm_ins, first );
     PrefixIns( callins, second );
 }

@@ -125,18 +125,18 @@ static  type_class_def  InsTypeClass( instruction *ins )
     return( ins->type_class );
 }
 
-static  bool    Aligned( name *op, type_length align, type_class_def tipe )
-/*************************************************************************/
+static  bool    Aligned( name *op, type_length align, type_class_def type_class )
+/*******************************************************************************/
 {
     type_length         natural;
     type_length         actual;
 
     assert( align <= 8 );
     assert( op->n.class == N_TEMP || op->n.class == N_MEMORY || op->n.class == N_INDEXED );
-    if( tipe == XX ) {
+    if( type_class == XX ) {
         natural = 1;    // FIXME - should be largest element of this structure
     } else {
-        natural = TypeClassSize[tipe];
+        natural = TypeClassSize[type_class];
     }
     if( natural == 2 ) {
         if( _IsntTargetModel( ALIGNED_SHORT ) ) {

@@ -47,8 +47,8 @@ _OE(                           NO_CC,  V_NO,           RG_,          G_LDSES,   
 };
 
 
-static  bool    AdjacentMem( name *s, name *r, type_class_def tipe )
-/******************************************************************/
+static  bool    AdjacentMem( name *s, name *r, type_class_def type_class )
+/************************************************************************/
 {
     name        *base_s;
     name        *base_r;
@@ -56,7 +56,7 @@ static  bool    AdjacentMem( name *s, name *r, type_class_def tipe )
     int         locn_r;
     int         stride;
 
-    stride = TypeClassSize[tipe];
+    stride = TypeClassSize[type_class];
     if( s->n.class != r->n.class )
         return( false );
     if( s->n.class == N_MEMORY ) {
@@ -115,7 +115,7 @@ static bool     OptMemMove( instruction *ins, instruction *next )
     unsigned_32         shift;
     unsigned_32         lo;
     unsigned_32         hi;
-    type_class_def      result_type = 0;
+    type_class_def      result_type_class = 0;
     unsigned_32         result_const;
     name                *result;
 
@@ -128,7 +128,7 @@ static bool     OptMemMove( instruction *ins, instruction *next )
             switch( TypeClassSize[ins->type_class] ) {
             case 1:
                 shift = 8;
-                result_type = U2;
+                result_type_class = U2;
                 break;
             case 2:
 #if _TARGET & _TARG_IAPX86
@@ -138,11 +138,11 @@ static bool     OptMemMove( instruction *ins, instruction *next )
                 }
 #endif
                 shift = 16;
-                result_type = U4;
+                result_type_class = U4;
                 break;
             default:
                 shift = 0;
-                result_type = 0;
+                result_type_class = 0;
                 break;
             }
             if( shift ) {
@@ -162,7 +162,7 @@ static bool     OptMemMove( instruction *ins, instruction *next )
                 hi &= ( ( 1 << shift ) - 1 );
                 result_const = lo | ( hi << shift );
                 ins->operands[0] = AllocS32Const( result_const );
-                ins->type_class = result_type;
+                ins->type_class = result_type_class;
                 ins->result = result;
                 DoNothing( next );
                 return( true );

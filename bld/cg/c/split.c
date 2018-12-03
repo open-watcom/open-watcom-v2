@@ -184,10 +184,10 @@ hw_reg_set      ZapReg( instruction *ins )
     return( *list );
 }
 
-instruction *MoveConst( unsigned_32 value, name *result, type_class_def class )
-/*****************************************************************************/
+instruction *MoveConst( unsigned_32 value, name *result, type_class_def type_class )
+/**********************************************************************************/
 {
-    return( MakeMove( AllocConst( CFCnvU32F( value ) ), result, class ) );
+    return( MakeMove( AllocConst( CFCnvU32F( value ) ), result, type_class ) );
 }
 
 
@@ -208,10 +208,10 @@ void    HalfType( instruction *ins )
 }
 
 
-void    ChangeType( instruction *ins, type_class_def class )
-/**********************************************************/
+void    ChangeType( instruction *ins, type_class_def type_class )
+/***************************************************************/
 {
-    ins->type_class = class;
+    ins->type_class = type_class;
     ins->table = NULL;
     ins->head.state = INS_NEEDS_WORK;
 }
@@ -230,12 +230,12 @@ instruction     *rMOVOP1TEMP( instruction *ins )
 /**********************************************/
 {
     instruction         *new_ins;
-    type_class_def      class;
+    type_class_def      type_class;
     name                *name;
 
-    class = _OpClass( ins );
-    name = AllocTemp( class );
-    new_ins = MakeMove( ins->operands[0], name, class );
+    type_class = _OpClass( ins );
+    name = AllocTemp( type_class );
+    new_ins = MakeMove( ins->operands[0], name, type_class );
     ins->operands[0] = name;
     MoveSegOp( ins, new_ins, 0 );
     PrefixIns( ins, new_ins );
@@ -263,11 +263,11 @@ instruction      *rOP1REG( instruction *ins )
 {
     instruction         *new_ins;
     name                *name1;
-    type_class_def      class;
+    type_class_def      type_class;
 
-    class = _OpClass( ins );
-    name1 = AllocTemp( class );
-    new_ins = MakeMove( ins->operands[0], name1, class );
+    type_class = _OpClass( ins );
+    name1 = AllocTemp( type_class );
+    new_ins = MakeMove( ins->operands[0], name1, type_class );
     ins->operands[0] = name1;
     MoveSegOp( ins, new_ins, 0 );
     PrefixIns( ins, new_ins );
@@ -282,11 +282,11 @@ instruction      *rOP2REG( instruction *ins )
 {
     instruction         *new_ins;
     name                *name1;
-    type_class_def      class;
+    type_class_def      type_class;
 
-    class = _OpClass( ins );
-    name1 = AllocTemp( class );
-    new_ins = MakeMove( ins->operands[1], name1, class );
+    type_class = _OpClass( ins );
+    name1 = AllocTemp( type_class );
+    new_ins = MakeMove( ins->operands[1], name1, type_class );
     ins->operands[1] = name1;
     MoveSegOp( ins, new_ins, 0 );
     PrefixIns( ins, new_ins );
@@ -475,15 +475,15 @@ instruction      *rCLRHI_BW( instruction *ins )
     instruction         *new_ins;
     instruction         *ins2;
     name                *name1;
-    type_class_def      class;
+    type_class_def      half_type_class;
 
-    class = HalfClass[ins->type_class];
+    half_type_class = HalfClass[ins->type_class];
     name1 = AllocTemp( ins->type_class );
-    new_ins = MakeMove( ins->operands[0], LowPart( name1, class ), class );
+    new_ins = MakeMove( ins->operands[0], LowPart( name1, half_type_class ), half_type_class );
     ins->operands[0] = name1;
     MoveSegOp( ins, new_ins, 0 );
     PrefixIns( ins, new_ins );
-    ins2 = MoveConst( 0, HighPart( name1, class ), class );
+    ins2 = MoveConst( 0, HighPart( name1, half_type_class ), half_type_class );
     PrefixIns( ins, ins2 );
     ins->head.opcode = OP_MOV;
     ins->table = NULL;
@@ -497,16 +497,16 @@ instruction      *rCLRHI_R( instruction *ins )
 {
     instruction         *new_ins;
     instruction         *and_ins;
-    type_class_def      class;
+    type_class_def      type_class;
     hw_reg_set          high;
     name                *res;
     signed_32           value;
-    type_class_def      half_class;
+    type_class_def      half_type_class;
     name                *op;
 
-    half_class = HalfClass[ins->type_class];
+    half_type_class = HalfClass[ins->type_class];
     op = ins->operands[0];
-    class = ins->base_type_class;
+    type_class = ins->base_type_class;
     res = ins->result;
     high = HighReg( res->r.reg );
     if( op->n.class == N_INDEXED
@@ -520,12 +520,12 @@ instruction      *rCLRHI_R( instruction *ins )
          *     (zoiks register allocator)
          */
         new_ins = NULL;
-    } else if( !HW_CEqual( high, HW_EMPTY ) && half_class == class ) {
+    } else if( !HW_CEqual( high, HW_EMPTY ) && half_type_class == type_class ) {
         if( op->n.class == N_REGISTER && HW_Equal( op->r.reg, high ) ) {        // BBB - may 19, 1994
             /* look out for movzd ax,ah */
             new_ins = NULL;
         } else {
-            new_ins = MoveConst( 0, HighPart( res, class ), class );
+            new_ins = MoveConst( 0, HighPart( res, type_class ), type_class );
         }
     } else if( op->n.class == N_REGISTER
             && HW_Ovlap( op->r.reg, res->r.reg ) ) {
@@ -534,12 +534,12 @@ instruction      *rCLRHI_R( instruction *ins )
     } else {
         new_ins = MoveConst( 0, res, ins->type_class );
     }
-    ins->result = LowPart( res, class );
+    ins->result = LowPart( res, type_class );
     if( new_ins != NULL ) {
         PrefixIns( ins, new_ins );
     } else {
         value = 0;
-        switch( class ) {
+        switch( type_class ) {
         case U1:
         case I1:
             value = 0xff;
@@ -559,7 +559,7 @@ instruction      *rCLRHI_R( instruction *ins )
         SuffixIns( new_ins, and_ins );
         new_ins = ins;
     }
-    ins->type_class = class;
+    ins->type_class = type_class;
     ins->head.opcode = OP_MOV;
     ins->table = NULL;
     ins->u.gen_table = NULL;
@@ -613,8 +613,7 @@ instruction      *rDOUBLEHALF( instruction *ins )
     name1 = ins->operands[1];
     name1 = AllocIntConst( name1->c.lo.int_value >> 1 );
     ins->operands[1] = name1;
-    new_ins = MakeBinary( ins->head.opcode, ins->operands[0], name1,
-                            ins->result, ins->type_class );
+    new_ins = MakeBinary( ins->head.opcode, ins->operands[0], name1, ins->result, ins->type_class );
     new_ins->table = ins->table;
     DupSeg( ins, new_ins );
     PrefixIns( ins, new_ins );
@@ -663,8 +662,7 @@ instruction      *rMAKEXORRR( instruction *ins )
 {
     instruction         *new_ins;
 
-    new_ins = MakeBinary( OP_XOR, ins->result, ins->result, ins->result,
-                                    ins->type_class );
+    new_ins = MakeBinary( OP_XOR, ins->result, ins->result, ins->result, ins->type_class );
     ReplIns( ins, new_ins );
     return( new_ins );
 }
@@ -748,8 +746,7 @@ instruction      *rMOVEINDEX( instruction *ins )
 {
     instruction         *new_ins;
 
-    new_ins = MakeMove( ins->operands[0]->i.index,
-                         ins->result, ins->type_class );
+    new_ins = MakeMove( ins->operands[0]->i.index, ins->result, ins->type_class );
     ReplIns( ins, new_ins );
     return( new_ins );
 }
@@ -779,8 +776,7 @@ instruction      *rNEGADD( instruction *ins )
 {
     instruction         *new_ins;
 
-    new_ins = MakeUnary( OP_NEGATE, ins->operands[1],
-                          AllocTemp( U4 ), U4 );
+    new_ins = MakeUnary( OP_NEGATE, ins->operands[1], AllocTemp( U4 ), U4 );
     MoveSegOp( ins, new_ins, 0 );
     ins->operands[1] = new_ins->result;
     ins->head.opcode = OP_ADD;
@@ -812,8 +808,7 @@ instruction      *rMAKENEG( instruction *ins )
 {
     instruction         *new_ins;
 
-    new_ins = MakeUnary( OP_NEGATE, ins->operands[1], ins->result,
-                          ins->type_class );
+    new_ins = MakeUnary( OP_NEGATE, ins->operands[1], ins->result, ins->type_class );
     DupSeg( ins, new_ins );
     ReplIns( ins, new_ins );
     return( new_ins );

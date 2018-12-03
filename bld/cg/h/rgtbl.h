@@ -35,13 +35,13 @@ extern op_regs          RegList[];
 
 extern void             InitRegTbl( void );
 extern reg_set_index    RegIntersect( reg_set_index s1, reg_set_index s2 );
-extern hw_reg_set       *ParmChoices( type_class_def class );
+extern hw_reg_set       *ParmChoices( type_class_def type_class );
 extern hw_reg_set       InLineParm( hw_reg_set regs, hw_reg_set used );
 extern hw_reg_set       StructReg( void );
 extern reg_set_index    SegIndex( void );
 extern reg_set_index    NoSegments( reg_set_index idx );
-extern reg_set_index    IndexIntersect( reg_set_index curr, type_class_def class, bool is_temp_index );
-extern bool             IsIndexReg( hw_reg_set reg, type_class_def class, bool is_temp_index );
+extern reg_set_index    IndexIntersect( reg_set_index curr, type_class_def type_class, bool is_temp_index );
+extern bool             IsIndexReg( hw_reg_set reg, type_class_def type_class, bool is_temp_index );
 extern type_class_def   RegClass( hw_reg_set regs );
 extern bool             IndexRegOk( hw_reg_set reg, bool is_temp_index );
 extern bool             IsSegReg( hw_reg_set regs );
@@ -56,7 +56,7 @@ extern hw_reg_set       LowReg( hw_reg_set regs );
 extern hw_reg_set       LowOffsetReg( hw_reg_set regs );
 extern hw_reg_set       LowTreePart( hw_reg_set regs );
 extern hw_reg_set       FullReg( hw_reg_set regs );
-extern bool             IsRegClass( hw_reg_set regs, type_class_def class );
+extern bool             IsRegClass( hw_reg_set regs, type_class_def type_class );
 extern hw_reg_set       ActualParmReg( hw_reg_set reg );
 extern hw_reg_set       FixedRegs( void );
 extern bool             IsStackReg( name *sp );
@@ -78,11 +78,11 @@ extern hw_reg_set       MustSaveRegs( void );
 extern hw_reg_set       ScratchReg( void );
 
 #if _TARGET & _TARG_INTEL
-extern hw_reg_set       ReturnReg( type_class_def class, bool use_87 );
+extern hw_reg_set       ReturnReg( type_class_def type_class, bool use_87 );
 extern hw_reg_set       FPRegs[];
 #else
-extern hw_reg_set       ReturnReg( type_class_def class );
-extern reg_set_index    UsualPossible( type_class_def class );
+extern hw_reg_set       ReturnReg( type_class_def type_class );
+extern reg_set_index    UsualPossible( type_class_def type_class );
 extern hw_reg_set       FrameBaseReg( void );
 extern hw_reg_set       FrameReg( void );
 extern void             SetArchIndex( name *new_r, hw_reg_set regs );

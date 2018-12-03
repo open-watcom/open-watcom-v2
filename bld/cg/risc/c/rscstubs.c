@@ -341,10 +341,10 @@ void CheckCC( instruction *ins, instruction *new_ins )
     /* unused parameters */ (void)ins; (void)new_ins;
 }
 
-bool FPDivIsADog( type_class_def class )
-/**************************************/
+bool FPDivIsADog( type_class_def type_class )
+/*******************************************/
 {
-    return( _IsFloating( class ) );
+    return( _IsFloating( type_class ) );
 }
 
 bool AskSegNear( segment_id id )

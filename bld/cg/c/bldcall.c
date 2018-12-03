@@ -637,21 +637,21 @@ void    BGReturn( an retval, type_def *tipe ) {
     instruction         *last_ins;
     instruction         *ret_ins;
     name                *name;
+    type_class_def      tipe_type_class;
     type_class_def      type_class;
-    type_class_def      aclass;
 
     ins = MakeNop();
     last_ins = NULL;
     if( retval != NULL ) {
-        type_class = TypeClass( tipe );
-        aclass = ReturnClass( tipe, CurrProc->state.attr );
-        UpdateReturn( &CurrProc->state, tipe, aclass, FEAuxInfo( AskForLblSym(CurrProc->label), AUX_LOOKUP ) );
+        tipe_type_class = TypeClass( tipe );
+        type_class = ReturnClass( tipe, CurrProc->state.attr );
+        UpdateReturn( &CurrProc->state, tipe, type_class, FEAuxInfo( AskForLblSym(CurrProc->label), AUX_LOOKUP ) );
         if( _IsModel( DBG_LOCALS ) ){  // d1+ or d2
             DbgRetLoc();
         }
-        if( aclass == XX ) {
+        if( type_class == XX ) {
             name = StReturn( retval, tipe, &last_ins );
-            AddIns( MakeMove( GenIns( retval ), name, type_class ) );
+            AddIns( MakeMove( GenIns( retval ), name, tipe_type_class ) );
         } else {
             if( HW_CEqual( CurrProc->state.return_reg, HW_EMPTY ) ) {
                 name = StReturn( retval, tipe, &last_ins );
@@ -659,20 +659,19 @@ void    BGReturn( an retval, type_def *tipe ) {
                 name = AllocRegName( CurrProc->state.return_reg );
             }
 #if _TARGET & _TARG_AXP
-            if( type_class == U4 && aclass == I8 ) {
+            if( tipe_type_class == U4 && type_class == I8 ) {
                 ret_ins = MakeConvert( GenIns( retval ), name, I8, I4 );
             } else {
 #endif
                 if( tipe->length == name->n.size ) {
                     ret_ins = MakeMove( GenIns( retval ), name, name->n.type_class );
                 } else {
-                    ret_ins = MakeConvert( GenIns( retval ), name, name->n.type_class, type_class );
+                    ret_ins = MakeConvert( GenIns( retval ), name, name->n.type_class, tipe_type_class );
                 }
                 // BBB - we can get a situation where we are returning
                 // a float in eax (when compiling -3s) and we don't want
                 // to do a convert - ack.
-                // ret_ins = MakeConvert( GenIns( retval ), name,
-                //                     name->n.type_class, class );
+                // ret_ins = MakeConvert( GenIns( retval ), name, name->n.type_class, class );
 #if _TARGET & _TARG_AXP
             }
 #endif
@@ -696,8 +695,8 @@ void    BGReturn( an retval, type_def *tipe ) {
 
 #if _TARGET & _TARG_RISC
 
-static pn   BustUpStruct( pn parm, type_class_def from, type_class_def using_class )
-/**********************************************************************************/
+static pn   BustUpStruct( pn parm, type_class_def from, type_class_def using_type_class )
+/***************************************************************************************/
 {
     pn                  curr;
     pn                  last;
@@ -708,7 +707,7 @@ static pn   BustUpStruct( pn parm, type_class_def from, type_class_def using_cla
     instruction         *ins;
 
     curr = NULL;
-    size = TypeClassSize[using_class];
+    size = TypeClassSize[using_type_class];
     len = _RoundUp( parm->name->tipe->length, size );
     temp = AllocTemp( from );
     temp->n.size = len;
@@ -717,10 +716,10 @@ static pn   BustUpStruct( pn parm, type_class_def from, type_class_def using_cla
     for( offset = len - size; offset >= 0; offset -= size ) {
         // create a parm node for this part of the struct
         curr = CGAlloc( sizeof( parm_node ) );
-        ins = MakeMove( STempOffset( temp, offset, using_class, size ), NULL, using_class );
+        ins = MakeMove( STempOffset( temp, offset, using_type_class, size ), NULL, using_type_class );
         AddIns( ins );
         curr->next = last;
-        curr->name = InsName( ins, ClassType( using_class ) );
+        curr->name = InsName( ins, ClassType( using_type_class ) );
         curr->name->flags = parm->name->flags;
         curr->alignment = 4;
         last = curr;
@@ -739,21 +738,21 @@ static void SplitStructParms( pn *parm_list, call_state *state )
     pn                  parm;
     pn                  *last_parm;
     an                  name;
-    type_class_def      tipe;
+    type_class_def      using_type_class;
     type_class_def      type_class;
 
 #if _TARGET & _TARG_PPC
     if( _IsTargetModel( CG_OS2_CC ) )
         return;
-    tipe = U4;
+    using_type_class = U4;
 #elif _TARGET & _TARG_AXP
     /* unused parameters */ (void)state;
 
-    tipe = U8;
+    using_type_class = U8;
 #elif _TARGET & _TARG_MIPS
     /* unused parameters */ (void)state;
 
-    tipe = U4;
+    using_type_class = U4;
 #else
     #error Unknown RISC CPU
 #endif
@@ -770,7 +769,7 @@ static void SplitStructParms( pn *parm_list, call_state *state )
             if( ( type_class == FD ) || ( name->tipe->length > 7 ) ) {
                 parm->alignment = 8;
             }
-            *last_parm = BustUpStruct( parm, type_class, tipe );
+            *last_parm = BustUpStruct( parm, type_class, using_type_class );
             name->format = NF_ADDR; /* so instruction doesn't get freed! */
             BGDone( name );
             CGFree( parm );

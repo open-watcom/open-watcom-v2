@@ -50,7 +50,7 @@ type_class_def  CallState( aux_handle aux, type_def *tipe, call_state *state )
 /****************************************************************************/
 {
     call_class          cclass;
-    type_class_def      class;
+    type_class_def      type_class;
     uint                i;
     hw_reg_set          parms[10];
     hw_reg_set          *parm_src;
@@ -152,7 +152,7 @@ type_class_def  CallState( aux_handle aux, type_def *tipe, call_state *state )
             CurrProc->prolog_state |= GENERATE_RDOSDEV_PROLOG;
         }
     }
-    class = ReturnClass( tipe, state->attr );
+    type_class = ReturnClass( tipe, state->attr );
     i = 0;
     parm_dst = &parms[0];
     for( parm_src = FEAuxInfo( aux, PARM_REGS ); !HW_CEqual( *parm_src, HW_EMPTY ); ++parm_src ) {
@@ -173,7 +173,7 @@ type_class_def  CallState( aux_handle aux, type_def *tipe, call_state *state )
     state->parm.offset  = 0;
     if( tipe == TypeNone ) {
         HW_CAsgn( state->return_reg, HW_EMPTY );
-    } else if( class == XX ) {
+    } else if( type_class == XX ) {
         if( cclass & SPECIAL_STRUCT_RETURN ) {
             pregs = FEAuxInfo( aux, STRETURN_REG );
             state->return_reg = *pregs;
@@ -191,16 +191,16 @@ type_class_def  CallState( aux_handle aux, type_def *tipe, call_state *state )
             state->return_reg = *pregs;
             state->attr |= ROUTINE_HAS_SPECIAL_RETURN;
         } else {
-            state->return_reg = ReturnReg( class, _NPX( state->attr ) );
+            state->return_reg = ReturnReg( type_class, _NPX( state->attr ) );
         }
     }
-    UpdateReturn( state, tipe, class, aux );
-    return( class );
+    UpdateReturn( state, tipe, type_class, aux );
+    return( type_class );
 }
 
 
-void    UpdateReturn( call_state *state, type_def *tipe, type_class_def class, aux_handle aux )
-/*********************************************************************************************/
+void    UpdateReturn( call_state *state, type_def *tipe, type_class_def type_class, aux_handle aux )
+/**************************************************************************************************/
 {
     hw_reg_set  normal;
 
@@ -215,7 +215,7 @@ void    UpdateReturn( call_state *state, type_def *tipe, type_class_def class, a
         FEMessage( MSG_BAD_RETURN_REGISTER, aux );
         HW_CAsgn( state->return_reg, HW_EMPTY );
         state->attr &= ~ROUTINE_HAS_SPECIAL_RETURN;
-    } else if( class == XX ) {
+    } else if( type_class == XX ) {
         normal = ReturnReg( WD, _NPX( state->attr ) );
         if( HW_Equal( state->return_reg, normal ) )
             return;
@@ -230,13 +230,13 @@ void    UpdateReturn( call_state *state, type_def *tipe, type_class_def class, a
         state->return_reg = normal;
         state->attr &= ~ROUTINE_HAS_SPECIAL_RETURN;
     } else {
-        normal = ReturnReg( class, _NPX( state->attr ) );
+        normal = ReturnReg( type_class, _NPX( state->attr ) );
         if( HW_Equal( state->return_reg, normal ) )
             return;
         // if( !HW_Ovlap( state->return_reg, state->unalterable ) &&
-        //    IsRegClass( state->return_reg, class ) )
+        //    IsRegClass( state->return_reg, type_class ) )
         //     return;
-        if( IsRegClass( state->return_reg, class ) )
+        if( IsRegClass( state->return_reg, type_class ) )
             return;
         FEMessage( MSG_BAD_RETURN_REGISTER, aux );
         state->return_reg = normal;
