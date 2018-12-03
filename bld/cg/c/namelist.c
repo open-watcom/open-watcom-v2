@@ -52,11 +52,9 @@ static  name            *ConstZero;
 static  name            *ConstOne;
 
 static  int     Size[] = {
-    sizeof( const_name ),
-    sizeof( memory_name ),
-    sizeof( temp_name ),
-    sizeof( register_name ),
-    sizeof( indexed_name )
+    #define pick(e,s)   s,
+    #include "nclass.h"
+    #undef pick
 };
 
 static type_class_def   OneClass[] = {
