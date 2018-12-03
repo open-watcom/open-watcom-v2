@@ -649,11 +649,7 @@ instruction     *rCONVERT_UP( instruction *ins )
     // Fixed wrong type of temp.variable (must have sign of source operand).
     // Now it goes: U1/2->U4->U8/I8, I1/2->I4->U8/I8.
     //
-    if ( Unsigned[ins->base_type_class] == ins->base_type_class ) {
-        type_class = U4;
-    } else {
-        type_class = I4;
-    }
+    type_class = ( _IsSigned( ins->base_type_class ) ) ? I4 : U4;
     temp = AllocTemp( type_class );
     ins1 = MakeConvert( ins->operands[0], temp, type_class, ins->base_type_class );
     DupSegOp( ins, ins1, 0 );    // 2005-09-25 RomanT (bug #341)

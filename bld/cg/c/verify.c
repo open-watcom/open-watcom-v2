@@ -161,7 +161,7 @@ static  bool    Op2Pow2( instruction *ins ) {
     if( log == -1 )
         return( false );
     if( log == ( ( TypeClassSize[ins->type_class] * 8 ) - 1 ) ) {
-        if( Unsigned[ins->type_class] != ins->type_class ) {
+        if( _IsSigned( ins->type_class ) ) {
             return( false );
         }
     }

@@ -494,10 +494,7 @@ instruction     *rBIN2INT( instruction *ins )
 {
     type_class_def      type_class;
 
-    type_class = I4;
-    if( Unsigned[ins->type_class] == ins->type_class ) {
-        type_class = U4;
-    }
+    type_class = ( _IsSigned( ins->type_class ) ) ? I4 : U4;
     return( doPromote( ins, type_class ) );
 }
 
@@ -506,11 +503,7 @@ instruction     *rBIN2QUAD( instruction *ins )
 {
     type_class_def      type_class;
 
-    type_class = I8;
-    if( Unsigned[ins->type_class] == ins->type_class ) {
-        type_class = U8;
-    }
-
+    type_class = ( _IsSigned( ins->type_class ) ) ? I8 : U8;
     return( doPromote( ins, type_class ) );
 }
 
@@ -730,10 +723,7 @@ instruction     *rSHR( instruction *ins )
     // shift right. To do this - we make a convert up to 8-byte
     // thing and then convert back down afterwords.
 
-    target_type_class = U8;
-    if( Unsigned[ins->type_class] != ins->type_class ) {
-        target_type_class = I8;
-    }
+    target_type_class = ( _IsSigned( ins->type_class ) ) ? I8 : U8;
     temp_1 = AllocTemp( target_type_class );
     temp_2 = AllocTemp( target_type_class );
     first_ins = MakeConvert( ins->operands[0], temp_1, target_type_class, ins->type_class );

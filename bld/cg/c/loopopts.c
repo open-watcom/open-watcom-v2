@@ -2812,7 +2812,7 @@ static  bool    ConstOverflowsType( signed_64 *val, type_class_def type_class )
         return( false );
     len = TypeClassSize[type_class] * 8;
     I32ToI64( 1, &one );
-    if( Unsigned[type_class] != type_class ) {
+    if( _IsSigned( type_class ) ) {
         // signed type of length 'len' bits
         U64ShiftL( &one, len - 1, &max );
         U64Neg( &max, &min );
