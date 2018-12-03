@@ -410,9 +410,9 @@ void    DumpFlowGraph( block *blk )
 void    DumpSymTab( void )
 /************************/
 {
-    int         class;
+    name_class_def  class;
 
-    for( class = N_CONSTANT; class <= N_INDEXED; ++class ) {
+    for( class = 0; class < N_CLASS_MAX; ++class ) {
         if( Names[class] != NULL ) {
             DumpNL();
             switch( class ) {

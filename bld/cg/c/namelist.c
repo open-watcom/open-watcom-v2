@@ -45,7 +45,7 @@
 #include "typemap.h"
 
 
-static  pointer         *FrlHead[N_INDEXED + 1];
+static  pointer         *FrlHead[N_CLASS_MAX];
 static  pointer         *ConstDefnFrl;
 static  name            *NullReg;
 static  name            *ConstZero;
@@ -617,7 +617,7 @@ void    InitNames( void )
     name_class_def      class;
     type_class_def      type_class;
 
-    for( class = N_CONSTANT; class <= N_INDEXED; ++class ) {
+    for( class = 0; class < N_CLASS_MAX; ++class ) {
         InitFrl( &FrlHead[class] );
     }
     InitFrl( &ConstDefnFrl );
@@ -639,7 +639,7 @@ void    ReInitNames( void )
     ConstZero = NULL;
     LastTemp = NULL;
     DummyIndex = NULL;
-    for( class = N_CONSTANT; class <= N_INDEXED; ++class ) {
+    for( class = 0; class < N_CLASS_MAX; ++class ) {
         Names[class] = NULL;
     }
 }
@@ -652,7 +652,7 @@ void    FreeNames( void )
     name            *temp;
     name            *next;
 
-    for( class = N_CONSTANT; class <= N_INDEXED; ++class ) {
+    for( class = 0; class < N_CLASS_MAX; ++class ) {
         for( temp = Names[class]; temp != NULL; temp = next ) {
             next = temp->n.next_name;
             FreeAName( temp );
@@ -708,7 +708,7 @@ bool    NameFrlFree( void )
     name_class_def  class;
 
     freed = false;
-    for( class = N_CONSTANT; class <= N_INDEXED; ++class ) {
+    for( class = 0; class < N_CLASS_MAX; ++class ) {
         freed |= FrlFreeAll( &FrlHead[class], Size[class] );
     }
     freed |= FrlFreeAll( &ConstDefnFrl, sizeof( constant_defn ) );

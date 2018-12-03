@@ -484,7 +484,8 @@ bool    BlkTooBig( void )
 void    NewProc( level_depth level )
 /**********************************/
 {
-    proc_def    *new;
+    proc_def        *new;
+    name_class_def  class;
 
     if( CurrProc != NULL ) {
         SaveToTargProc();
@@ -493,11 +494,9 @@ void    NewProc( level_depth level )
         CurrProc->curr_block = CurrBlock;
         CurrProc->lasttemp = LastTemp;
         CurrProc->dummy_index = DummyIndex;
-        CurrProc->names[N_CONSTANT] = Names[N_CONSTANT];
-        CurrProc->names[N_MEMORY]   = Names[N_MEMORY];
-        CurrProc->names[N_TEMP]     = Names[N_TEMP];
-        CurrProc->names[N_REGISTER] = Names[N_REGISTER];
-        CurrProc->names[N_INDEXED]  = Names[N_INDEXED];
+        for( class = 0; class < N_CLASS_MAX; class++ ) {
+            CurrProc->names[class] = Names[class];
+        }
         CurrProc->block_by_block = BlockByBlock;
         CurrProc->ins_id = InsId;
         CurrProc->untrimmed = BlocksUnTrimmed;
@@ -528,7 +527,8 @@ void    NewProc( level_depth level )
 void    FreeProc( void )
 /**********************/
 {
-    proc_def    *oldproc;
+    proc_def        *oldproc;
+    name_class_def  class;
 
     for( CurrBlock = HeadBlock; CurrBlock != NULL; CurrBlock = HeadBlock ) {
         HeadBlock = CurrBlock->next_block;
@@ -550,11 +550,9 @@ void    FreeProc( void )
             HeadBlock = CurrProc->head_block;
             BlockList = CurrProc->tail_block;
             CurrBlock = CurrProc->curr_block;
-            Names[N_CONSTANT] = CurrProc->names[N_CONSTANT];
-            Names[N_MEMORY]   = CurrProc->names[N_MEMORY];
-            Names[N_TEMP]     = CurrProc->names[N_TEMP];
-            Names[N_REGISTER] = CurrProc->names[N_REGISTER];
-            Names[N_INDEXED]  = CurrProc->names[N_INDEXED];
+            for( class = 0; class < N_CLASS_MAX; class++ ) {
+                Names[class] = CurrProc->names[class];
+            }
             LastTemp = CurrProc->lasttemp;
             DummyIndex = CurrProc->dummy_index;
             BlockByBlock = CurrProc->block_by_block;
