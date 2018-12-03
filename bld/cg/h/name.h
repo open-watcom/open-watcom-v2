@@ -31,14 +31,10 @@
 
 /* aligned */
 typedef enum {
-        N_CONSTANT,
-        N_MEMORY,
-        N_TEMP,
-        N_REGISTER,
-        N_INDEXED,
-        N_INITIAL,      /*  the next 3 used only by the scoreboarder */
-        N_VOLATILE,
-        N_ADDRESS
+    #define pick(e,s)   e,
+    #include "nclass.h"
+    #undef pick
+    N_CLASS_MAX
 } name_class_def;
 
 #define N_VISITED       0x80

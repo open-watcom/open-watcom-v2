@@ -848,7 +848,7 @@ instruction     *rCLRHI_4( instruction *ins )
     name                *high;
     name                *low;
     instruction         *new_ins;
-    type_class_def      type_class;
+    type_class_def      half_type_class;
 
     half_type_class = HalfClass[ins->type_class];
     low = LowPart( ins->result, half_type_class );

@@ -53,22 +53,22 @@ static  void    DumpScList( score_list *curr )
 {
     DumpLiteral( "    " );
     switch( curr->info.class ) {
-    case N_CONSTANT:
+    case SC_N_CONSTANT:
         DumpChar( '&' );
         DumpLong( curr->info.offset );
         break;
-    case N_TEMP:
+    case SC_N_TEMP:
         DumpChar( 't' );
         DumpInt( curr->info.symbol.t->v.id );
         DumpLiteral( " offset " );
         DumpLong( curr->info.offset );
         break;
-    case N_MEMORY:
+    case SC_N_MEMORY:
         DumpXString( FEName( curr->info.symbol.p ) );
         DumpLiteral( " offset " );
         DumpLong( curr->info.offset );
         break;
-    case N_INDEXED:
+    case SC_N_INDEXED:
         if( curr->info.base == NULL ) {
             ;
         } else if( curr->info.base->n.class == N_TEMP ) {
@@ -84,15 +84,15 @@ static  void    DumpScList( score_list *curr )
         DumpRegName( ScoreList[curr->info.index_reg]->reg );
         DumpChar( ']' );
         break;
-    case N_INITIAL:
+    case SC_N_INITIAL:
         DumpLiteral( "INITIAL(" );
         DumpLong( curr->info.offset );
         DumpChar( ')' );
         break;
-    case N_VOLATILE:
+    case SC_N_VOLATILE:
         DumpLiteral( "VOLATILE - Oh No!" );
         break;
-    case N_ADDRESS:
+    case SC_N_ADDRESS:
         DumpLiteral( "ADDRESS(" );
         DumpOperand(curr->info.symbol.p);
         DumpChar( ')' );

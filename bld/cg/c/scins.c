@@ -216,23 +216,21 @@ static  bool    TryRegOp( score *sc, instruction *ins, name **opp ) {
             for( curr_reg = this_reg->next_reg; curr_reg != this_reg; curr_reg = curr_reg->next_reg ) {
                 if( HW_Ovlap( live, ScoreList[curr_reg->index]->reg )
                 && curr_reg->generation < this_reg->generation
-                && ChangeIns( ins, ScoreList[curr_reg->index]->reg_name,
-                              opp, CHANGE_GEN ) ) {
+                && ChangeIns( ins, ScoreList[curr_reg->index]->reg_name, opp, CHANGE_GEN ) ) {
                      return( true );
                 }
             }
         }
         for( curr_reg = this_reg->next_reg; curr_reg != this_reg; curr_reg = curr_reg->next_reg ) {
             if( curr_reg->generation < this_reg->generation
-             && ChangeIns( ins, ScoreList[curr_reg->index]->reg_name,
-                           opp, CHANGE_GEN ) ) {
+             && ChangeIns( ins, ScoreList[curr_reg->index]->reg_name, opp, CHANGE_GEN ) ) {
                 return( true );
             }
         }
         return( false );
     } else {
         ScoreInfo( &info, op );
-        if( info.class == N_CONSTANT ) {
+        if( info.class == SC_N_CONSTANT ) {
             if( _OpIsCondition( ins->head.opcode ) &&
                 info.symbol.p == NULL && info.offset == 0 ) {
                 /* don't change cmp x,0 */
@@ -361,8 +359,7 @@ bool    ScoreMove( score *sc, instruction *ins )
                 FreeIns( ins );
                 return( true );
             } else {
-                ScoreKillInfo( sc, dst, &info,
-                                  src->r.reg );
+                ScoreKillInfo( sc, dst, &info, src->r.reg );
                 if( !FPIsConvert( ins ) ) {
                     ScoreAssign( sc, src_index, &info );
                 }

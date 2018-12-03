@@ -93,7 +93,7 @@ void    ScoreCalcList( void )
             if( ScRealRegister( reg_name ) ) {
                 curr->reg_name = reg_name;
                 curr->reg = reg_name->r.reg;
-                curr->class = reg_name->n.type_class;
+                curr->type_class = reg_name->n.type_class;
                 curr->size  = reg_name->n.size;
                 curr->high_of = NO_INDEX;
                 curr->low_of = NO_INDEX;
@@ -223,20 +223,20 @@ void    MemChanged( score *p, bool statics_too )
             for( owner = p->list; (curr = *owner) != NULL; ) {
                 changed = false;
                 switch( curr->info.class ) {
-                case N_CONSTANT:
+                case SC_N_CONSTANT:
                     changed = true;
                     break;
-                case N_TEMP:
+                case SC_N_TEMP:
                     if( (curr->info.symbol.v->usage & USE_ADDRESS) == 0 ) {
                         changed = true;
                     }
                     break;
-                case N_MEMORY:
+                case SC_N_MEMORY:
                     if( !statics_too ) {
                         changed = true;
                     }
                     break;
-                case N_INDEXED:
+                case SC_N_INDEXED:
                     if( curr->info.base != NULL ) {
                         if( curr->info.base->n.class == N_MEMORY ) {
                             if( !statics_too ) {
