@@ -34,7 +34,6 @@
 #include "optwif.h"
 #include "inslist.h"
 #include "rtrtn.h"
-#include "dmpinc.h"
 #include "dumpio.h"
 #include "dumpopt.h"
 #include "feprotos.h"

@@ -54,7 +54,6 @@
 #include "namelist.h"
 #include "fixindex.h"
 #include "revcond.h"
-#include "dmpinc.h"
 #include "dumpio.h"
 #include "dumpins.h"
 #include "dumptab.h"

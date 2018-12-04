@@ -37,7 +37,6 @@
 #include "intrface.h"
 #include "rgtbl.h"
 #include "namelist.h"
-#include "dmpinc.h"
 #include "dumpio.h"
 #include "dumpins.h"
 #include "dumpblk.h"

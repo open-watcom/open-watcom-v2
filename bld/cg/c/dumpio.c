@@ -34,6 +34,16 @@
 #include <stdio.h>
 #include "dumpio.h"
 
+/*
+ * this include file includes references to all Dump... routines
+ * this ensure that they will be included in the executable
+ * even if they are not used in code generator
+ * Dump... routines can be used for interactive code generator debugging
+ * by Open Watcom debugger (see vc.dbg debugger setup file and cg/doc/debugcg.html)
+ */
+#include "dmpinc.h"
+
+
 static  char    *dumpFileName = "cgdump.tmp";
 static  FILE    *dumpFile;
 

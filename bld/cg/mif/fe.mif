@@ -64,9 +64,9 @@ cg_libs = &
     $(o_dir)/cgdllcli.lib &
     $(dwarfw_lib)
 !else ifeq use_owl_lib_$(target_cpu) 1
-!ifeq debug_cg 1
-cg_objs = $(o_dir)/dmpinc.obj $(owl_debug_objs)
-!endif
+! ifeq debug_cg 1
+cg_objs = $(owl_debug_objs)
+! endif
 cg_libs = &
     $(o_dir)/cg$(target_cpu).lib &
     $(o_dir)/cg$(target_cpu)$(cg_host).lib &
@@ -74,9 +74,6 @@ cg_libs = &
     $(cfloat_lib) &
     $(dwarfw_lib)
 !else
-!ifeq debug_cg 1
-cg_objs = $(o_dir)/dmpinc.obj
-!endif
 cg_libs = &
     $(o_dir)/cg$(target_cpu).lib &
     $(o_dir)/cg$(target_cpu)$(cg_host).lib &

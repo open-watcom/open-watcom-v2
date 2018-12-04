@@ -52,7 +52,6 @@
 #include "split.h"
 #include "namelist.h"
 #include "revcond.h"
-#include "dmpinc.h"
 #include "dumpio.h"
 #include "dumpins.h"
 #include "dumptab.h"
