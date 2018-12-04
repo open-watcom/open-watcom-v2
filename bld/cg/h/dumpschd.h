@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -24,39 +25,9 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Dump instruction scheduling information.
 *
 ****************************************************************************/
 
 
-typedef struct FU_entry {
-    unsigned short      good_fu;
-    byte                unit_stall;
-    byte                opnd_stall;
-} FU_entry;
-
-typedef struct data_dag {
-    struct data_dag             *prev;
-    instruction                 *ins;
-    struct dep_list_entry       *deps;
-    struct data_dag             *ready;
-    unsigned                    stallable       : 8;
-    unsigned                    visited         : 1;
-    unsigned                    scheduled       : 1;
-    unsigned                    height;
-    unsigned                    anc_count;
-} data_dag;
-
-typedef struct dep_list_entry {
-    struct dep_list_entry   *next;
-    data_dag                *dep;
-} dep_list_entry;
-
-
-extern data_dag         *DataDag;   /* global for dump routines */
-
-extern const FU_entry   *FUEntry( instruction *ins );
-extern void             Schedule( void );
-extern bool             SchedFrlFree( void );
-extern bool             InsOrderDependant( instruction *ins_i, instruction *ins_j );
+extern void DumpDataDag( void );
