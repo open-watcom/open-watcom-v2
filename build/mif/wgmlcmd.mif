@@ -27,6 +27,7 @@ wgml_tmp_batchfile = wgml.tmp
 dos_gendev_tmp_batch=gendevb.bat
 dos_wgml_tmp_batch=wgmlb.bat
 
+!ifeq bld_os osx
 dosbox_options = -noautoexec -noconsole &
     -c "config -set cpu core=normal" &
     -c "config -set joystick joysticktype=none" &
@@ -35,6 +36,16 @@ dosbox_options = -noautoexec -noconsole &
     -c "config -set midi mpu401=none" &
     -c "config -set midi mididevice=none" &
     -c "mount c $(docs_dir)" -c "mount d ."
+!else
+dosbox_options = -noautoexec -noconsole &
+    -c "config -set joystick joysticktype=none" &
+    -c "config -set mixer nosound=true" &
+    -c "config -set sblaster sblastertype=none" &
+    -c "config -set midi mpu401=none" &
+    -c "config -set midi mididevice=none" &
+    -c "mount c $(docs_dir)" -c "mount d ."
+!endif
+
 dosbox_wgml_options = -c "mount e $(src_dir)" -c "d:$(dos_wgml_tmp_batch)"
 dosbox_gendev_options = -c "mount e .." -c "d:$(dos_gendev_tmp_batch)"
 
