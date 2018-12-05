@@ -52,6 +52,7 @@
 #include "split.h"
 #include "namelist.h"
 #include "ppclbl.h"
+#include "insutil.h"
 #include "dumpio.h"
 #include "dumpins.h"
 #include "dumptab.h"
@@ -950,20 +951,7 @@ static label_handle LocateLabel( instruction *ins, byte dst_idx )
 {
     if( dst_idx == NO_JUMP )
         return( NULL );
-    for( ins = ins->head.next; ins->head.opcode != OP_BLOCK; ) {
-        ins = ins->head.next;
-    }
-    return( _BLOCK( ins )->edge[dst_idx].destination.u.lbl );
-}
-
-
-static  block   *InsBlock( instruction *ins )
-/*******************************************/
-{
-    while( ins->head.opcode != OP_BLOCK ) {
-        ins = ins->head.next;
-    }
-    return( _BLOCK( ins ) );
+    return( InsBlock( ins->head.next )->edge[dst_idx].destination.u.lbl );
 }
 
 

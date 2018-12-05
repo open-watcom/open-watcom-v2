@@ -1565,8 +1565,8 @@ static  void    MergeVars( void )
 {
     induction   *var;
     block       *varblock;
+    block       *otherblock;
     induction   *other;
-    instruction *ins;
 
     for( var = IndVarList; var != NULL; var = var->next ) {
         if( _IsntV( var, IV_TOP ) )
@@ -1575,10 +1575,7 @@ static  void    MergeVars( void )
             continue;
         if( _IsV( var , IV_BASIC | IV_ALIAS ) )
             continue;
-        for( ins = var->ins; ins->head.opcode != OP_BLOCK; ) {
-            ins = ins->head.next;
-        }
-        varblock = _BLOCK( ins );
+        varblock = InsBlock( var->ins );
         for( other = var->next; other != NULL; other = other->next ) {
             if( _IsntV( other, IV_TOP ) )
                 continue;
@@ -1592,10 +1589,8 @@ static  void    MergeVars( void )
                 continue;
             if( _IsntV( other, IV_INDEXED ) )
                 continue;
-            for( ins = other->ins; ins->head.opcode != OP_BLOCK; ) {
-                ins = ins->head.next;
-            }
-            if( _BLOCK( ins ) != varblock )
+            otherblock = InsBlock( other->ins );
+            if( otherblock != varblock )
                 continue;
             _INS_NOT_BLOCK( var->ins );
             _INS_NOT_BLOCK( other->ins );

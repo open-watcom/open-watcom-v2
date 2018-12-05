@@ -216,13 +216,13 @@ void    NowDead( name *opnd, conflict_node *conf, name_set *alive, block *blk )
 }
 
 
-static  void    FlowConflicts( instruction *first,
-                               instruction *last, block *blk )
-/************************************************************/
-/* Scan through instructions backwards in the block*/
-/* Mark each instruction with the set of names live*/
-/* from the assignment of the previous instruction to the*/
-/* assignment of the current instruction*/
+static  void    FlowConflicts( instruction *first, instruction *last, block *blk )
+/********************************************************************************
+ * Scan through instructions backwards in the block
+ * Mark each instruction with the set of names live
+ * from the assignment of the previous instruction to the
+ * assignment of the current instruction
+ */
 {
     instruction         *ins;
     name                *opnd;
@@ -392,7 +392,8 @@ void    UpdateLive( instruction *first, instruction *last )
     if( ins->head.next == ins->head.prev ) { /* 1 or 2 instructions*/
         FlowConflicts( ins, ins, _BLOCK( ins ) );
     } else {
-        if( first->head.opcode != OP_BLOCK ) first = first->head.prev;
+        if( first->head.opcode != OP_BLOCK )
+            first = first->head.prev;
         FlowConflicts( first, last, _BLOCK( ins ) );
     }
 }

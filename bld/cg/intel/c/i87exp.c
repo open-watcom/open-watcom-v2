@@ -822,13 +822,8 @@ static  void    RevFPCond( instruction *ins ) {
     codes as well.
 */
 
-    instruction         *other;
-
     _MarkBlkAllUnVisited();
-    for( other = ins; other->head.opcode != OP_BLOCK; ) {
-        other = other->head.next;
-    }
-    RevOtherCond( _BLOCK( other ), ins );
+    RevOtherCond( InsBlock( ins ), ins );
     RevCond( ins );
 }
 

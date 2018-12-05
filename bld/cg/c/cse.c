@@ -467,10 +467,8 @@ static  instruction *WhichIsAncestor( instruction *ins1, instruction *ins2 )
         first = ins2;
     } else { /* find a hoist point*/
         bits1 &= bits2;
-        for( ins = ins1; ins->head.opcode != OP_BLOCK; ) {
-            ins = ins->head.next;
-        }
-        for( blk = _BLOCK( ins ); _BLKBITS( blk ) != bits1; ) {
+        blk = InsBlock( ins1 );
+        while( _BLKBITS( blk ) != bits1 ) {
             blk = blk->u.partition;
         }
         for( first = blk->ins.hd.prev; first->head.opcode == OP_NOP; first = first->head.prev ) {
@@ -503,9 +501,8 @@ static  void    CleanPartition( void )
 }
 
 
-static  bool    CanCrossBlocks( instruction *ins1,
-                                instruction *ins2, name *op )
-/************************************************************
+static bool CanCrossBlocks( instruction *ins1, instruction *ins2, name *op )
+/***************************************************************************
     If we're generating a partial routine, we cannot cause an
     existing N_TEMP to cross blocks, due to an assumption
     in ForceTempsMemory.
@@ -618,20 +615,13 @@ static  bool            HoistLooksGood( instruction *target, instruction *orig )
     out of a switch statement.
 */
 {
-    instruction         *ins;
     block               *target_blk;
     block               *blk;
 
     if( OptForSize > 50 )
         return( true );
-    for( ins = target; ins->head.opcode != OP_BLOCK; ) {
-        ins = ins->head.next;
-    }
-    target_blk = _BLOCK( ins );
-    for( ins = orig; ins->head.opcode != OP_BLOCK; ) {
-        ins = ins->head.next;
-    }
-    blk = _BLOCK( ins );
+    target_blk = InsBlock( target );
+    blk = InsBlock( orig );
     if( blk == target_blk )
         return( true );
     while( blk != NULL ) {

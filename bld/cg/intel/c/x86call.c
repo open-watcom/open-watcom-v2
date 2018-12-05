@@ -406,10 +406,7 @@ void    PushInSameBlock( instruction *ins )
 #if ( _TARGET & _TARG_IAPX86 )
     /* unused parameters */ (void)ins;
 #else
-    while( ins->head.opcode != OP_BLOCK ) {
-        ins = ins->head.next;
-    }
-    if( _BLOCK( ins ) != CurrBlock ) {
+    if( InsBlock( ins ) != CurrBlock ) {
         CurrProc->targ.never_sp_frame = true;
     }
 #endif

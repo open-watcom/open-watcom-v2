@@ -41,6 +41,7 @@
 #include "objout.h"
 #include "revcond.h"
 #include "dumpio.h"
+#include "insutil.h"
 
 
 static  label_handle    LocateLabel( instruction *ins, byte dst_idx )
@@ -50,10 +51,7 @@ static  label_handle    LocateLabel( instruction *ins, byte dst_idx )
 {
     if( dst_idx == NO_JUMP )
         return( NULL );
-    for( ins = ins->head.next; ins->head.opcode != OP_BLOCK; ) {
-        ins = ins->head.next;
-    }
-    return( _BLOCK( ins )->edge[dst_idx].destination.u.lbl );
+    return( InsBlock( ins->head.next )->edge[dst_idx].destination.u.lbl );
 }
 
 #if _TARGET & _TARG_RISC
@@ -150,14 +148,12 @@ static  void    DoCondJump( instruction *cond )
     label_handle        dest_true;
     label_handle        dest_false;
     label_handle        dest_next;
-    instruction         *next;
+    block               *blk;
 
-    for( next = cond->head.next; next->head.opcode != OP_BLOCK; ) {
-        next = next->head.next;
-    }
+    blk = InsBlock( cond->head.next );
     dest_next = NULL;
-    if( _BLOCK( next )->next_block != NULL ) {
-        dest_next = _BLOCK( next )->next_block->label;
+    if( blk->next_block != NULL ) {
+        dest_next = blk->next_block->label;
     }
     dest_false = LocateLabel( cond, _FalseIndex( cond ) );
     dest_true = LocateLabel( cond, _TrueIndex( cond ) );

@@ -326,18 +326,13 @@ void    SuffixIns( instruction *ins, instruction *suff )
     }
 }
 
-
-static  block   *GetBlockPointer( block *blk, instruction *ins )
-/**************************************************************/
+block *InsBlock( instruction *ins )
+/*********************************/
 {
-    if( blk != NULL )
-        return( blk );
-    while( ins->head.opcode != OP_BLOCK ) {
+    while( ins->head.opcode != OP_BLOCK )
         ins = ins->head.next;
-    }
     return( _BLOCK( ins ) );
 }
-
 
 void    ReplIns( instruction *ins, instruction *new )
 /***************************************************/
@@ -400,13 +395,16 @@ void    ReplIns( instruction *ins, instruction *new )
                 if( conf->ins_range.last == ins ) {
                     conf->ins_range.last = new;
                 }
-                if( info->flags & CB_FOR_INS2 ) continue;
+                if( info->flags & CB_FOR_INS2 )
+                    continue;
                 if( conf->ins_range.first == new ) {
-                    blk = GetBlockPointer( blk, ins );
+                    if( blk == NULL )
+                        blk = InsBlock( ins );
                     conf->ins_range.first = blk->ins.hd.prev;
                 }
                 if( conf->ins_range.last == new ) {
-                    blk = GetBlockPointer( blk, ins );
+                    if( blk == NULL )
+                        blk = InsBlock( ins );
                     conf->ins_range.last = blk->ins.hd.next; /* 89-08-16 */
                     if( blk->ins.hd.next == ins ) {
                         // oops - grasping for a straw and caught hold of
