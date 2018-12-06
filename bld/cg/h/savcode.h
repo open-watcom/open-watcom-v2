@@ -33,10 +33,8 @@
 #ifdef _InRegAssgn
 
 #define _UpdateLive( ins, conf, reg_name ) \
-             if( ( _GBitOverlap( ins->head.live.out_of_block, \
-                                 conf->id.out_of_block ) ) \
-              || ( _LBitOverlap( ins->head.live.within_block, \
-                                 conf->id.within_block ) ) ) { \
+             if( ( _GBitOverlap( ins->head.live.out_of_block, conf->id.out_of_block ) ) \
+              || ( _LBitOverlap( ins->head.live.within_block, conf->id.within_block ) ) ) { \
                  HW_TurnOn( ins->head.live.regs, reg_name->r.reg ); \
              }
 
@@ -60,13 +58,11 @@
 
 #define _ReplaceOpnd( tree, ins, i, reg_name, _1 ) \
              DelSegOp( ins, i ); \
-             ins->operands[i] \
-                = FindReg( tree, ins->operands[i], reg_name ); \
+             ins->operands[i] = FindReg( tree, ins->operands[i], reg_name ); \
              FixGenEntry( ins );
 
 #define _ReplaceIdxOpnd( tree, ins, i, reg_name ) \
-             ins->operands[i] = \
-                ReplIndex(ins,tree,ins->operands[i],reg_name); \
+             ins->operands[i] = ReplIndex(ins,tree,ins->operands[i],reg_name); \
              ins->head.state = INS_NEEDS_WORK
 
 #define _ReplaceResult( tree, ins, reg_name, _1 ) \
@@ -84,8 +80,7 @@
 
 #define _UpdateLive( _1, _2, _3 )
 
-#define _Equal( op1, op2 ) ( ( (op1)->n.class==N_TEMP ? DeAlias(op1) : (op1) ) \
-                            == (op2) )
+#define _Equal( op1, op2 ) ( ( (op1)->n.class==N_TEMP ? DeAlias(op1) : (op1) ) == (op2) )
 
 #define _SuffixLoad( _1, _2, _3, class )   \
              block_cost += Save.load_cost[class];
@@ -113,8 +108,7 @@
              && ins->result->n.class == N_TEMP \
              && ins->operands[0]->n.class == N_TEMP \
              && ins->result->t.location != NO_LOCATION \
-             && ins->result->t.location \
-                     == ins->operands[0]->t.location ) { \
+             && ins->result->t.location == ins->operands[0]->t.location ) { \
                 block_cost+=Save.load_cost[class]; \
             } else { \
                 block_save+=Save.def_save[class]; \
@@ -142,8 +136,7 @@
     blk = conf->start_block;
     ins = conf->ins_range.first;
     last = false;
-    if( _LBitOverlap( conf->ins_range.first->head.live.within_block,
-                      conf->id.within_block ) ) {
+    if( _LBitOverlap( conf->ins_range.first->head.live.within_block, conf->id.within_block ) ) {
         flows_in = true;
     } else {
         flows_in = false;
@@ -212,13 +205,13 @@
                     final_defn = ins;
                     _ReplaceResult( tree, ins, reg_name, class );
                 } else if( ins->result->n.class == N_INDEXED
-                     && _Equal( ins->result->i.index, opnd ) ) {
+                        && _Equal( ins->result->i.index, opnd ) ) {
                     _ReplaceIdxResult( tree, ins, reg_name );
                 }
             }
             _UpdateLive( ins, conf, reg_name );
             ins = next;
-            last = ins->head.prev == conf->ins_range.last;
+            last = ( ins->head.prev == conf->ins_range.last );
             if( last ) {
                 break;
             }
@@ -226,33 +219,33 @@
         _UpdateLive( ins, conf, reg_name );
         if( opnd->v.usage & USE_IN_ANOTHER_BLOCK ) {
 #ifdef _InRegAssgn
-                if( first_use == NULL ) {
-                    first_use = conf->ins_range.first;
-                    _INS_NOT_BLOCK( first_use );
-                    _INS_NOT_BLOCK( blk->ins.hd.next );
-                    if( first_use->id < blk->ins.hd.next->id ) {
-                        first_use = blk->ins.hd.next;
-                    }
+            if( first_use == NULL ) {
+                first_use = conf->ins_range.first;
+                _INS_NOT_BLOCK( first_use );
+                _INS_NOT_BLOCK( blk->ins.hd.next );
+                if( first_use->id < blk->ins.hd.next->id ) {
+                    first_use = blk->ins.hd.next;
                 }
-                if( final_defn == NULL ) {
-                    final_defn = conf->ins_range.last;
-                    _INS_NOT_BLOCK( final_defn );
-                    _INS_NOT_BLOCK( blk->ins.hd.prev );
-                    if( final_defn->id > blk->ins.hd.prev->id ) {
-                        final_defn = blk->ins.hd.prev;
-                        if( _IsBlkAttr( blk, BLK_CONDITIONAL | BLK_SELECT ) ) {
-                            final_defn = blk->ins.hd.next;
-                            while( !_OpIsJump( final_defn->head.opcode ) ) {
-                                final_defn = final_defn->head.next;
-                            }
+            }
+            if( final_defn == NULL ) {
+                final_defn = conf->ins_range.last;
+                _INS_NOT_BLOCK( final_defn );
+                _INS_NOT_BLOCK( blk->ins.hd.prev );
+                if( final_defn->id > blk->ins.hd.prev->id ) {
+                    final_defn = blk->ins.hd.prev;
+                    if( _IsBlkAttr( blk, BLK_CONDITIONAL | BLK_SELECT ) ) {
+                        final_defn = blk->ins.hd.next;
+                        while( !_OpIsJump( final_defn->head.opcode ) ) {
+                            final_defn = final_defn->head.next;
+                        }
+                        final_defn = final_defn->head.prev;
+                    } else {
+                        while( final_defn->head.opcode == OP_NOP ) {
                             final_defn = final_defn->head.prev;
-                        } else {
-                            while( final_defn->head.opcode == OP_NOP ) {
-                                final_defn = final_defn->head.prev;
-                            }
                         }
                     }
                 }
+            }
 #endif
             if( (instruction *)&blk->ins == blk->ins.hd.next ) {
                 if( _GBitOverlap( conf->id.out_of_block, flow->need_store ) ) {

@@ -178,7 +178,7 @@ static void TransferOneTempBlockUsage( name *op )
         if( HasTrueBase( op ) ) {
             TransferOneTempBlockUsage( op->i.base );
         }
-    } else if ( op->n.class == N_TEMP ) {
+    } else if( op->n.class == N_TEMP ) {
         alias = op->t.alias;
         for( ;; ) {
             TransferBlockUsage( alias );
@@ -237,7 +237,7 @@ static void TransferOneMemBlockUsage( name *op )
         if( HasTrueBase( op ) ) {
             TransferOneMemBlockUsage( op->i.base );
         }
-    } else if ( op->n.class == N_MEMORY ) {
+    } else if( op->n.class == N_MEMORY ) {
         TransferBlockUsage( op );
     }
 }

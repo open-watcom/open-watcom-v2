@@ -255,7 +255,7 @@ static  void    ConstSizes( void )
 
     for( cons = Names[N_CONSTANT]; cons != NULL; cons = cons->n.next_name ) {
         if( cons->c.const_type == CONS_ABSOLUTE ) {
-            if ( CFIsU16( cons->c.value ) ) {
+            if( CFIsU16( cons->c.value ) ) {
                 cons->n.size = 2;
             } else {
                 cons->n.size = 4;

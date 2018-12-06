@@ -370,7 +370,7 @@ void    OptSegs( void )
                  && ( ins->operands[1] == ins->result ) ) {
                     hw_reg_set full_reg = FullReg( next->result->r.reg );
                     /* check if instructions operate on correct halves */
-                    if ( HW_Equal( Low16Reg( full_reg ), next->result->r.reg )
+                    if( HW_Equal( Low16Reg( full_reg ), next->result->r.reg )
                       && HW_Equal( High16Reg( full_reg ), ins->result->r.reg )
                        ) {
                         /* convert to "and fullreg, imm" */

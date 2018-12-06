@@ -887,7 +887,7 @@ instruction     *rTEMP2CONST( instruction *ins )
     Copy( ins, new, sizeof( instruction ) );  // without operands
     for( i = ins->num_operands; i-- > 0; ) {
         op = ins->operands[i];
-        if ( _ConstTemp( op ) ) {
+        if( _ConstTemp( op ) ) {
             new->operands[i] = op->v.symbol;
         } else {
             new->operands[i] = op;

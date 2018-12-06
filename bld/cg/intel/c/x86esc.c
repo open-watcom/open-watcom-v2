@@ -519,7 +519,7 @@ static  label_handle ExpandObj( byte *cur, int explen ) {
         }
         if( class == F_BASE ) {
             _OutFarSeg( val );
-        } else if ( class == F_OFFSET || class == F_LDR_OFFSET ) {
+        } else if( class == F_OFFSET || class == F_LDR_OFFSET ) {
             _OutFarOff( val );      /* offset */
         } else if( class == F_PTR ) {
             _OutFarOff( val );

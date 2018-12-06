@@ -160,7 +160,7 @@ typedef struct instruction {
                                        ? (ins)->base_type_class \
                                        : (ins)->type_class )
 
-#define _INS_NOT_BLOCK( ins )        if ( (ins)->head.opcode == OP_BLOCK ) Zoiks( ZOIKS_142 )
+#define _INS_NOT_BLOCK( ins )        if( (ins)->head.opcode == OP_BLOCK ) Zoiks( ZOIKS_142 )
 
 typedef enum {
     MB_FALSE    = false,

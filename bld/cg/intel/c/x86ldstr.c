@@ -436,7 +436,8 @@ bool    LdStAlloc( void )
     }
 
 #if 0  /* You can optionally disable riscifer when optimizing for size */
-    if (PreferSize) return( false );
+    if( PreferSize )
+        return( false );
 #endif
 
     changed = false;
@@ -575,14 +576,13 @@ static void     CompressIns( instruction *ins )
          * be resolved to XOR/AND 0/OR -1/XOR+INC only during generation
          * of machine code.
          */
-        if ( prev->head.opcode == OP_XOR            &&
-             prev_op0 == prev->operands[1]          &&
-             ( TypeClassSize[prev->type_class] == 1
+        if( prev->head.opcode == OP_XOR
+            && prev_op0 == prev->operands[1]
+            && ( TypeClassSize[prev->type_class] == 1
 #if _TARGET & _TARG_IAPX86  /* Does not work right on 386 - temps becomes 32-bit much later. Todo. */
-               || ( TypeClassSize[prev->type_class] == 2 && ins->result && ins->result->n.class == N_TEMP )
+                || ( TypeClassSize[prev->type_class] == 2 && ins->result && ins->result->n.class == N_TEMP )
 #endif
-             )
-            ) {
+            ) ) {
             prev_op0 = AllocIntConst( 0 );  /* fake "MOV RESULT, 0" */
         } else {
             prev = NULL;

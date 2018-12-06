@@ -147,7 +147,7 @@ cost_val JumpCost( sel_handle s_node )
         cost = MIN_JUMPS_SETUP + WORD_SIZE * in_range;
         /* an extra two bytes are needed to zero the high part before
            the jump */
-        if ( SelType( 0xffffffff ) == TY_UINT_1 )
+        if( SelType( 0xffffffff ) == TY_UINT_1 )
             cost += 2;
         cost = Balance( cost, 1 );
     }
@@ -186,7 +186,7 @@ cost_val IfCost( sel_handle s_node, int entries )
     cost = jumpsize + CmpSize[tipe_length];
     /* for char-sized switches, often the two-byte "cmp al,xx" is used.
        otherwise we need three bytes */
-    if ( SelType( 0xffffffff ) != TY_UINT_1 && tipe_length == 1 )
+    if( SelType( 0xffffffff ) != TY_UINT_1 && tipe_length == 1 )
         cost++;
     cost *= entries;
     log_entries = 0;

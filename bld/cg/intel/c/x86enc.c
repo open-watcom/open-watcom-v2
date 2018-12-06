@@ -1008,7 +1008,7 @@ void    GenSeg( hw_reg_set regs )
     /* produce segment override prefix*/
     if( HW_COvlap( regs, HW_FS ) ) {
         AddToTemp( M_SEGFS );
-    } else if ( HW_COvlap( regs, HW_GS ) ) {
+    } else if( HW_COvlap( regs, HW_GS ) ) {
         AddToTemp( M_SEGGS );
     } else {
         AddToTemp( M_SEGOVER | ( SegTrans( regs ) << S_KEY_SR ) );
@@ -1057,7 +1057,7 @@ static  void    PushSeg( hw_reg_set reg ) {
 
     if( HW_COvlap( reg, HW_FS ) ) {
         LayOpword( M_PUSHFS );
-    } else if ( HW_COvlap( reg, HW_GS ) ) {
+    } else if( HW_COvlap( reg, HW_GS ) ) {
         LayOpword( M_PUSHGS );
     } else {
         LayOpbyte( M_PUSHSEG | ( SegTrans( reg ) << S_KEY_SR ) );
@@ -1071,7 +1071,7 @@ static  void    PopSeg( hw_reg_set reg ) {
 
     if( HW_COvlap( reg, HW_FS ) ) {
         LayOpword( M_POPFS );
-    } else if ( HW_COvlap( reg, HW_GS ) ) {
+    } else if( HW_COvlap( reg, HW_GS ) ) {
         LayOpword( M_POPGS );
     } else {
         LayOpbyte( M_POPSEG | ( SegTrans( reg ) << S_KEY_SR ) );
@@ -1818,8 +1818,7 @@ void    GenObjCode( instruction *ins ) {
             }
         }
 
-        if (gen == G_MFSTRND)
-        {
+        if( gen == G_MFSTRND ) {
             /*
             68 3F 0C 00 00            push        0x00000c3f
             D9 7C 24 02               fnstcw      word ptr 0x2[esp]
