@@ -42,9 +42,9 @@
 
 
 typedef enum {
+        CB_NONE                 = 0x00,
         CB_FOR_INS1             = 0x01,
-        CB_FOR_INS2             = 0x02,
-        CB_NONE                 = 0x00
+        CB_FOR_INS2             = 0x02
 } conflict_bits;
 
 typedef struct  conflict_info {
@@ -83,6 +83,27 @@ static void RenumFrom( instruction *ins )
     }
 }
 
+static void     CleanConfInfo( void )
+/***********************************/
+{
+    int     i;
+
+    for( i = 0; i < MAX_CONF_INFO; ++i ) {
+        ConflictInfo[i].conf = NULL;
+        ConflictInfo[i].flags = CB_NONE;
+    }
+    CurrInfo = 0;
+}
+
+static void     ResetConfInfo( void )
+/***********************************/
+{
+    conflict_info       *info;
+
+    for( info = ConflictInfo; info->conf != NULL; ++info ) {
+        _SetFalse( info->conf, CST_CONF_VISITED );
+    }
+}
 
 static  conflict_info   *AddConfInfo( conflict_node *conf )
 /*********************************************************/
@@ -147,19 +168,10 @@ static  void    FindAllConflicts( instruction *ins, instruction *other, conflict
 static  void    MakeConflictInfo( instruction *ins1, instruction *ins2 )
 /**********************************************************************/
 {
-    int                 i;
-    conflict_info       *info;
-
-    for( i = 0; i < MAX_CONF_INFO; ++i ) {
-        ConflictInfo[i].conf = NULL;
-        ConflictInfo[i].flags = CB_NONE;
-    }
-    CurrInfo = 0;
+    CleanConfInfo();
     FindAllConflicts( ins1, ins2, CB_FOR_INS1 );
     FindAllConflicts( ins2, ins1, CB_FOR_INS2 );
-    for( info = ConflictInfo; info->conf != NULL; ++info ) {
-        _SetFalse( info->conf, CST_CONF_VISITED );
-    }
+    ResetConfInfo();
 }
 
 
@@ -171,10 +183,11 @@ void    PrefixInsRenum( instruction *ins, instruction *pref, bool renum )
     block               *blk;
     instruction         *next;
 
-/*   Link the new instruction into the instruction ring*/
-/*   If renum = true, assign id and renumber. renum can be false only */
-/*   if you're going to call Renumber() manually. */
-
+    /*
+     * Link the new instruction into the instruction ring
+     * If renum = true, assign id and renumber.
+     * renum can be false only if you're going to call Renumber() manually.
+     */
     _INS_NOT_BLOCK( pref );
     pref->head.prev = ins->head.prev;
     pref->head.prev->head.next = pref;
@@ -193,8 +206,8 @@ void    PrefixInsRenum( instruction *ins, instruction *pref, bool renum )
     } else {
         pref->head.line_num = 0;
 
-        if ( renum ) {
-             /*
+        if( renum ) {
+            /*
              * Oops. There is no id in OP_BLOCK and assigned id will be invalid.
              * This condition happens sometimes in loop optimizer.
              * NOTE: this case can be a bug. It means that we're trying to add
@@ -210,7 +223,7 @@ void    PrefixInsRenum( instruction *ins, instruction *pref, bool renum )
                     break;
                 }
                 next = blk->ins.hd.next;
-                if ( next->head.opcode != OP_BLOCK ) {
+                if( next->head.opcode != OP_BLOCK ) {
                     break;
                 }
             }
@@ -218,7 +231,7 @@ void    PrefixInsRenum( instruction *ins, instruction *pref, bool renum )
         }
     }
 
-    if ( renum ) {
+    if( renum ) {
         RenumFrom( pref );
     }
 
