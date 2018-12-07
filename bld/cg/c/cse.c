@@ -530,7 +530,7 @@ static  void    UseInOther( instruction *ins1, instruction *ins2, name *op )
     if( _INSBITS( ins1 ) != _INSBITS( ins2 ) ) {
         if( op->n.class == N_MEMORY ) {
             op->v.usage |= USE_IN_ANOTHER_BLOCK;
-        } else if ( op->n.class == N_TEMP ) {
+        } else if( op->n.class == N_TEMP ) {
             op->t.temp_flags |= CROSSES_BLOCKS;
         }
     }

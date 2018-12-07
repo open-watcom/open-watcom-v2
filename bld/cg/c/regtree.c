@@ -177,7 +177,7 @@ static  void    BuildPossible( reg_tree *tree )
             }
             *dst = *src;
 #ifndef NDEBUG
-            if ( dst - tree->regs >= REG_COUNT ) { /* '>=' 'coz no increment before 'break' */
+            if( dst - tree->regs >= REG_COUNT ) { /* '>=' 'coz no increment before 'break' */
                 Zoiks( ZOIKS_143 );
             }
 #endif

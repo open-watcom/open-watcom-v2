@@ -89,7 +89,7 @@ static  void            *MergeList( void *list1, void *list2,
     }
     if( list1 != NULL ) {
         *owner = list1;
-    } else if ( list2 != NULL ) {
+    } else if( list2 != NULL ) {
         *owner = list2;
     }
     return( list );

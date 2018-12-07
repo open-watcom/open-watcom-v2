@@ -340,6 +340,7 @@ static  bool  FixInstructions( conflict_node *conf, reg_tree *tree,
     name                *reg_name;
 #define _InRegAssgn
 #include "savcache.h"
+#undef _InRegAssgn
 
     reg_name = AllocRegName( reg );
     if( (conf->name->v.usage & USE_IN_ANOTHER_BLOCK)
@@ -351,7 +352,9 @@ static  bool  FixInstructions( conflict_node *conf, reg_tree *tree,
         DBAllocReg( reg_name, opnd );
     }
 
+#define _InRegAssgn
 #include "savcode.h"
+#undef _InRegAssgn
 
     if( _LBitEmpty( conf->id.within_block ) && _GBitEmpty( conf->id.out_of_block ) ) {
         /* update live info since the conflict had no id.*/

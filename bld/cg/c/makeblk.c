@@ -57,7 +57,7 @@ block   *MakeBlock( label_handle label, block_num edges )
     block_edge  *edge;
     block_num   i;
 
-    blk = CGAlloc( sizeof( block ) + (edges-1)*sizeof( block_edge ) );
+    blk = CGAlloc( sizeof( block ) + ( edges - 1 ) * sizeof( block_edge ) );
     blk->next_block = NULL;
     blk->prev_block = NULL;
     blk->label = label;
@@ -184,7 +184,7 @@ void    GenBlock( block_class class, int targets )
     BlockList = CurrBlock;
     CurrBlock->next_block = NULL;
     if( targets > 1 ) {
-        new = CGAlloc( sizeof( block ) + (targets-1) * sizeof( block_edge ) );
+        new = CGAlloc( sizeof( block ) + ( targets - 1 ) * sizeof( block_edge ) );
         Copy( CurrBlock, new, sizeof( block ) );
         if( CurrBlock->ins.hd.next == (instruction *)&CurrBlock->ins ) {
             new->ins.hd.next = (instruction *)&new->ins;
@@ -232,7 +232,7 @@ block   *ReGenBlock( block *blk, label_handle lbl )
     block_num   targets;
 
     targets = blk->targets + 1;
-    new = CGAlloc( sizeof( block ) + (targets-1) * sizeof( block_edge ) );
+    new = CGAlloc( sizeof( block ) + ( targets - 1 ) * sizeof( block_edge ) );
     Copy( blk, new, sizeof( block ) + ( targets - 2 ) * sizeof( block_edge ) );
     new->edge[targets - 1].destination.u.lbl = lbl;
     new->edge[targets - 1].flags = 0;

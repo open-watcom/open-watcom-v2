@@ -416,7 +416,7 @@ static  void    DoBinarySearch( an node, select_list *list, type_def *tipe,
         if( a == c3 ) goto l3;
         goto default;
         lt:
-        if ( a != c1 ) goto default;
+        if( a != c1 ) goto default;
         l1: ...
 
         Advantage of the linear search:

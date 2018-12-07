@@ -126,7 +126,6 @@ void    CalcSavings( conflict_node *conf )
     save_def            block_cost;
     save_def            cost;
     save_def            save;
-#undef   _InRegAssgn
 #include "savcache.h"
 
     if( ( conf->name->v.usage & USE_IN_ANOTHER_BLOCK )

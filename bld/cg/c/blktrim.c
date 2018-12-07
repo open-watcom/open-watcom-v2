@@ -191,7 +191,7 @@ void    RemoveInputEdge( block_edge *edge )
     block       *dest;
     block_edge  *prev;
 
-    if( ( edge->flags & DEST_IS_BLOCK ) == EMPTY )
+    if( (edge->flags & DEST_IS_BLOCK) == 0 )
         return;
     dest = edge->destination.u.blk;
     dest->inputs --;
