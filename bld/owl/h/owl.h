@@ -150,7 +150,7 @@ typedef void *owl_client_file;
 typedef struct {
     int                 (*write)( owl_client_file, const char *, size_t );
     long                (*tell)( owl_client_file );
-    long                (*seek)( owl_client_file, long int, int );
+    int                 (*seek)( owl_client_file, long int, int );
     void *              (*alloc)( size_t );
     void                (*free)( void * );
 } owl_client_funcs;

@@ -108,8 +108,7 @@ void ObjSwitchSection( reserved_section section ) {
 
 static int owl_write( owl_client_file f, const char *buff, size_t size )
 {
-    fwrite( buff, 1, size, f );
-    return( 0 );
+    return( fwrite( buff, 1, size, f ) != size );
 }
 
 static long owl_tell( owl_client_file f )
@@ -117,10 +116,9 @@ static long owl_tell( owl_client_file f )
     return( ftell( f ) );
 }
 
-static long owl_seek( owl_client_file f, long offset, int where )
+static int owl_seek( owl_client_file f, long offset, int where )
 {
-    fseek( f, offset, where );
-    return( ftell( f ) );
+    return( fseek( f, offset, where ) );
 }
 
 bool ObjInit( char *fname ) {
