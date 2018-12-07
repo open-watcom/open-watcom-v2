@@ -36,7 +36,6 @@
 #else
  #include <direct.h>
 #endif
-#include "wio.h"
 #include "preproc.h"
 #include "memmgr.h"
 #include "iosupp.h"
@@ -64,17 +63,12 @@ struct buf_alloc {              // BUF_ALLOC -- allocated buffer
 };
 
 
-static carve_t carve_buf;       // carver: BUF_ALLOC
-static BUF_ALLOC* buffers;      // allocated buffers
-static int  temphandle;         // handle for temp file
-static char *tempname;          // name of temp file
-static DISK_ADDR tempBlock;     // next available block in temp file
-static unsigned outFileChecked; // mask for checking output files
+static carve_t      carve_buf;      // carver: BUF_ALLOC
+static BUF_ALLOC    *buffers;       // allocated buffers
+static FILE         *tempfileFP;    // file ptr for temp file
+static DISK_ADDR    tempBlock;      // next available block in temp file
+static unsigned     outFileChecked; // mask for checking output files
 
-                                // template for work file name
-static char workFile[] = "__wrk0__.tmp";
-
-#define MAX_TMP_PATH (_MAX_PATH - sizeof( workFile ) - 1)       // 1 character for missing path separator
 
 #if defined(__OS2__) || defined(__DOS__) || defined(__NT__) || defined(__RDOS__)
 
@@ -800,38 +794,6 @@ bool IoSuppOpenSrc(             // OPEN A SOURCE FILE (PRIMARY,HEADER)
     return( doIoSuppOpenSrc( &fd, fap, typ ) );
 }
 
-static void tempFname( char *fname )
-{
-    const char  *env;
-    size_t      len;
-
-#if defined(__UNIX__)
-    env = CppGetEnv( "TMPDIR" );
-    if( env == NULL )
-        env = CppGetEnv( "TMP" );
-#else
-    env = CppGetEnv( "TMP" );
-#endif
-    if( env == NULL )
-        env = "";
-
-    strncpy( fname, env, MAX_TMP_PATH );
-    fname[MAX_TMP_PATH] = '\0';
-    len = strlen( fname );
-    fname += len;
-    if( len > 0 && !IS_PATH_SEP( fname[-1] ) ) {
-        *fname++ = DIR_SEP;
-    }
-    strcpy( fname, workFile );
-}
-
-#if defined(__DOS__)
-
-#include "tinyio.h"
-extern void __SetIOMode( int, unsigned );
-
-#endif
-
 static void ioSuppError(        // SIGNAL I/O ERROR AND ABORT
     MSG_NUM error_code )            // - error code
 {
@@ -853,65 +815,12 @@ static void ioSuppWriteError(     // SIGNAL ERROR ON WRITE
     ioSuppError( ERR_WORK_FILE_WRITE_ERROR );
 }
 
-#ifdef __QNX__
-#define AMODE   (O_RDWR | O_CREAT | O_EXCL | O_BINARY | O_TEMP)
-#else
-#define AMODE   (O_RDWR | O_CREAT | O_EXCL | O_BINARY)
-#endif
 
 static void ioSuppTempOpen(             // OPEN TEMPORARY FILE
     void )
 {
-    auto char   fname[_MAX_PATH];
-
-    for(;;) {
-        tempFname( fname );
-#if defined(__DOS__)
-        {
-            tiny_ret_t  rc;
-
-            rc = TinyCreateNew( fname, 0 );
-            if( TINY_ERROR( rc ) ) {
-                temphandle = -1;
-            } else {
-                temphandle = TINY_INFO( rc );
-                __SetIOMode( temphandle, _READ | _WRITE | _BINARY );
-            }
-        }
-#else
-        temphandle = open( fname, AMODE, PMODE_RW );
-#endif
-        if( temphandle != -1 )
-            break;
-        if( workFile[5] == 'Z' ) {
-            temphandle = -1;
-            break;
-        }
-        switch( workFile[5] ) {
-        case '9':
-            workFile[5] = 'A';
-            break;
-        case 'I':
-            workFile[5] = 'J';  /* file-system may be EBCDIC */
-            break;
-        case 'R':
-            workFile[5] = 'S';  /* file-system may be EBCDIC */
-            break;
-        default:
-            ++workFile[5];
-            break;
-        }
-    }
-#if defined(__UNIX__)
-    /* Under POSIX it's legal to remove a file that's open. The file
-       space will be reclaimed when the handle is closed. This makes
-       sure that the work file always gets removed. */
-    remove( fname );
-    tempname = NULL;
-#else
-    tempname = FNameAdd( fname );
-#endif
-    if( temphandle == -1 ) {
+    tempfileFP = tmpfile();
+    if( tempfileFP == NULL ) {
         ioSuppError( ERR_UNABLE_TO_OPEN_WORK_FILE );
     }
 }
@@ -950,13 +859,13 @@ void IoSuppTempWrite(           // WRITE TO TEMPORARY FILE
     size_t      block_size,     // - size of blocks
     void        *data )         // - buffer to write
 {
-    if( temphandle == -1 )
+    if( tempfileFP == NULL )
         ioSuppTempOpen();
     block_num--;
-    if( -1 == lseek( temphandle, block_size * block_num, SEEK_SET ) ) {
+    if( fseek( tempfileFP, block_size * block_num, SEEK_SET ) ) {
         ioSuppWriteError();
     }
-    if( block_size != write( temphandle, data, block_size ) ) {
+    if( block_size != fwrite( data, 1, block_size, tempfileFP ) ) {
         ioSuppWriteError();
     }
 }
@@ -967,13 +876,13 @@ void IoSuppTempRead(            // READ FROM TEMPORARY FILE
     size_t      block_size,     // - size of blocks
     void        *data )         // - buffer to read
 {
-    if( temphandle == -1 )
+    if( tempfileFP == NULL )
         ioSuppTempOpen();
     block_num--;
-    if( -1 == lseek( temphandle, block_size * block_num, SEEK_SET ) ) {
+    if( fseek( tempfileFP, block_size * block_num, SEEK_SET ) ) {
         ioSuppReadError();
     }
-    if( block_size != read( temphandle, data, block_size ) ) {
+    if( block_size != fread( data, 1, block_size, tempfileFP ) ) {
         ioSuppReadError();
     }
 }
@@ -1023,9 +932,7 @@ static void ioSuppInit(         // INITIALIZE IO SUPPORT
 
     outFileChecked = 0;
     tempBlock = 0;
-    tempname = NULL;
-    temphandle = -1;
-    workFile[5] = '0';
+    tempfileFP = NULL;
     FNameBuf = CMemAlloc( _MAX_PATH );
     carve_buf = CarveCreate( sizeof( BUF_ALLOC ), 8 );
     setPaths( pathSrc );
@@ -1039,11 +946,8 @@ static void ioSuppFini(         // FINALIZE IO SUPPORT
 {
     /* unused parameters */ (void)defn;
 
-    if( temphandle != -1 ) {
-        close( temphandle );
-        if( tempname != NULL ) {
-            remove( tempname );
-        }
+    if( tempfileFP != NULL ) {
+        fclose( tempfileFP );
     }
     while( NULL != buffers ) {
         freeBuffer( buffers );

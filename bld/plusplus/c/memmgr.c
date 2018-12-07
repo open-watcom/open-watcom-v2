@@ -33,10 +33,7 @@
 #define USE_CG_MEMMGT
 
 #include "plusplus.h"
-
 #include <stddef.h>
-#include "wio.h"
-
 #include "memmgr.h"
 #include "toggle.h"
 #include "ring.h"
@@ -79,8 +76,9 @@ static _trmem_hdl   trackerHdl;
 static void printLine( void *dummy, const char *buf, size_t len )
 /***************************************************************/
 {
-    dummy = dummy;      /* done to avoid a warning */
-    write( STDOUT_FILENO, buf, len );
+    /* unused parameters */ (void)dummy;
+
+    fwrite( buf, 1, len, stdout );
 }
 
 #define alloc_mem( size ) _trmem_alloc( size, _trmem_guess_who(), trackerHdl )
@@ -97,8 +95,8 @@ static void printLine( void *dummy, const char *buf, size_t len )
 
 
 
-static void *alloc_from_cleanup(
-    size_t amt )
+static void *alloc_from_cleanup( size_t amt )
+/*******************************************/
 {
     PERMPTR p;
     CLEANPTR curr;
@@ -283,8 +281,7 @@ static void cmemInit(           // INITIALIZATION
         if( CppGetEnv( "TRQUIET" ) == NULL ) {
             trmem_flags |= _TRMEM_CLOSE_CHECK_FREE;
         }
-        trackerHdl = _trmem_open( malloc, free, NULL, NULL, NULL,printLine,
-                                  trmem_flags );
+        trackerHdl = _trmem_open( malloc, free, NULL, NULL, NULL,printLine, trmem_flags );
     }
 #elif defined( USE_CG_MEMMGT )
     BEMemInit();
