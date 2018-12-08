@@ -42,6 +42,11 @@ void ChangePrintDest( FILE *dest )
     CurrentDest = dest;
 }
 
+void PrintBuffer( const char *string, size_t len )
+{
+    fwrite( string, 1, len, CurrentDest );
+}
+
 void Print( const char *string )
 {
     fwrite( string, 1, strlen( string ), CurrentDest );

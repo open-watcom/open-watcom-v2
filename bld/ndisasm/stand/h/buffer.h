@@ -33,18 +33,20 @@
 #ifndef WDIS_BUFFER_INCLUDED
 #define WDIS_BUFFER_INCLUDED
 
-#define BUFFER_LEN MAX_SYM_LEN * 3
-#define PRINT_AT_LEN MAX_SYM_LEN * 2
-
 extern void             BufferConcat( const char * );
+extern void             BufferQuoteText( const char *text, char quote );
 extern void             BufferQuoteName( const char * );
 extern void             BufferConcatChar( char );
 extern void             BufferConcatNL( void );
-extern size_t           BufferStore( const char * format, ... );
 extern void             BufferHex( unsigned prec, dis_value value );
+extern void             BufferHexU32( unsigned prec, uint_32 value );
+extern void             BufferDecimal( long value );
+extern void             BufferUnsigned( unsigned long value );
 extern void             BufferPrint( void );
 extern size_t           BufferMsg( int );
 extern void             BufferAlignToTab( unsigned );
-extern void             FmtHexNum( char *buff, unsigned prec, dis_value value );
+extern void             BufferLabelNum( uint_32 value );
+extern char             *FmtHexNum( char *buff, unsigned prec, dis_value value );
+extern char             *FmtLabelNum( char *buff, uint_32 value );
 
 #endif

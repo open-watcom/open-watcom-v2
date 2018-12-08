@@ -63,7 +63,7 @@ static ref_entry doDescriptorRelocs( ref_entry r_entry, dis_sec_offset offset, u
         HandleRefInData( r_entry, &address, false );
         r_entry = r_entry->next;
     } else {
-        BufferStore("%08X", address );
+        BufferHexU32( 8, address );
     }
     return( r_entry );
 }
@@ -77,48 +77,58 @@ static ref_entry printDescriptor( dis_sec_offset offset, descriptor_struct *desc
     } else {
         PreString = "\t";
     }
-    BufferStore("%s", PreString );
+    BufferConcat( PreString );
     r_entry = doDescriptorRelocs( r_entry, offset, descriptor->begin_address );
-    BufferAlignToTab(6);
-    BufferStore("%s ", CommentString );
+    BufferAlignToTab( 6 );
+    BufferConcat( CommentString );
+    BufferConcatChar( ' ' );
     BufferMsg( BEGIN_ADDRESS );
-    BufferStore(": %d", descriptor->begin_address );
+    BufferConcat( ": " );
+    BufferDecimal( descriptor->begin_address );
     BufferConcatNL();
     BufferPrint();
 
-    BufferStore("%s", PreString );
+    BufferConcat( PreString );
     r_entry = doDescriptorRelocs( r_entry, offset+4, descriptor->end_address );
-    BufferAlignToTab(6);
-    BufferStore("%s ", CommentString );
+    BufferAlignToTab( 6 );
+    BufferConcat( CommentString );
+    BufferConcatChar( ' ' );
     BufferMsg( END_ADDRESS );
-    BufferStore(": %d", descriptor->end_address );
+    BufferConcat( ": " );
+    BufferDecimal( descriptor->end_address );
     BufferConcatNL();
     BufferPrint();
 
-    BufferStore("%s", PreString );
+    BufferConcat( PreString );
     r_entry = doDescriptorRelocs( r_entry, offset+8, descriptor->exception_handler );
-    BufferAlignToTab(6);
-    BufferStore("%s ", CommentString );
+    BufferAlignToTab( 6 );
+    BufferConcat( CommentString );
+    BufferConcatChar( ' ' );
     BufferMsg( EXCEPTION_HANDLER );
-    BufferStore(": %d", descriptor->exception_handler );
+    BufferConcat( ": " );
+    BufferDecimal( descriptor->exception_handler );
     BufferConcatNL();
     BufferPrint();
 
-    BufferStore("%s", PreString );
+    BufferConcat( PreString );
     r_entry = doDescriptorRelocs( r_entry, offset+12, descriptor->handler_data );
-    BufferAlignToTab(6);
-    BufferStore("%s ", CommentString );
+    BufferAlignToTab( 6 );
+    BufferConcat( CommentString );
+    BufferConcatChar( ' ' );
     BufferMsg( HANDLER_DATA );
-    BufferStore(": %d", descriptor->handler_data );
+    BufferConcat( ": " );
+    BufferDecimal( descriptor->handler_data );
     BufferConcatNL();
     BufferPrint();
 
-    BufferStore("%s", PreString );
+    BufferConcat( PreString );
     r_entry = doDescriptorRelocs( r_entry, offset+16, descriptor->prolog_end );
-    BufferAlignToTab(6);
-    BufferStore("%s ", CommentString );
+    BufferAlignToTab( 6 );
+    BufferConcat( CommentString );
+    BufferConcatChar( ' ' );
     BufferMsg( PROLOG_END );
-    BufferStore(": %d", descriptor->prolog_end );
+    BufferConcat( ": " );
+    BufferDecimal( descriptor->prolog_end );
     BufferConcatNL();
     BufferConcatNL();
     BufferPrint();
@@ -165,12 +175,16 @@ return_val DumpPDataSection( section_ptr section, unsigned_8 *contents, dis_sec_
             break;
         memcpy( &descriptor, contents + loop, sizeof( descriptor_struct ) );
         if( DFormat & DFF_ASM ) {
-            BufferStore( "\t\t" );
-            BufferStore( "%s %04X\t\t", CommentString, loop );
+            BufferConcat( "\t\t" );
+            BufferConcat( CommentString );
+            BufferConcatChar( ' ' );
+            BufferHexU32( 4, loop );
+            BufferConcat( "\t\t" );
         } else {
             PrintLinePrefixAddress( loop, is32bit );
             BufferAlignToTab( PREFIX_SIZE_TABS );
-            BufferStore( "%s ", CommentString );
+            BufferConcat( CommentString );
+            BufferConcatChar( ' ' );
         }
         BufferMsg( PROCEDURE_DESCRIPTOR );
 
@@ -190,7 +204,7 @@ return_val DumpPDataSection( section_ptr section, unsigned_8 *contents, dis_sec_
             BufferQuoteName( r_entry->label->label.name );
             break;
         default:
-            BufferStore( "%c$%d", LabelChar, r_entry->label->label.number );
+            BufferLabelNum( r_entry->label->label.number );
             break;
         }
         BufferConcatNL();

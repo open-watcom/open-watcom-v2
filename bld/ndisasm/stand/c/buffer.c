@@ -42,11 +42,13 @@
 #include "labproc.h"
 
 
-static unsigned                 OutputPos = 0;
-static char                     Buffer[BUFFER_LEN] = {0};
-static char                     IntermedBuffer[BUFFER_LEN] = {0};
+static unsigned         OutputPos = 0;
+static char             Buffer[1024] = {0};
+static char             IntermedBuffer[30] = {0};
 
-void FmtHexNum( char *buff, unsigned prec, dis_value value )
+static char             *buffer_pos = Buffer;
+
+char *FmtHexNum( char *buff, unsigned prec, dis_value value )
 {
     char        *src;
     char        *dst;
@@ -86,25 +88,44 @@ void FmtHexNum( char *buff, unsigned prec, dis_value value )
             }
         }
     }
+    return( buff );
+}
+
+char *FmtLabelNum( char *buff, uint_32 value )
+{
+    sprintf( buff, "%c$%lu", LabelChar, value );
+    return( buff );
+}
+
+static void write_char( char c )
+{
+    if( buffer_pos == Buffer + sizeof( Buffer ) ) {
+        BufferPrint();
+    }
+    *buffer_pos++ = c;
+}
+
+static void write_string( const char *str )
+{
+    while( *str != '\0' ) {
+        write_char( *str++ );
+    }
 }
 
 void BufferAlignToTab( unsigned pos )
 // align the buffer to a particular tab position
 {
     unsigned            num_tabs;
-    unsigned            loop;
 
     if( pos * TAB_WIDTH < OutputPos ) {
         BufferConcatNL();
         num_tabs = pos;
     } else {
-        num_tabs = (pos * TAB_WIDTH - OutputPos + TAB_WIDTH - 1 ) / TAB_WIDTH;
+        num_tabs = ( pos * TAB_WIDTH - OutputPos + TAB_WIDTH - 1 ) / TAB_WIDTH;
     }
-    for( loop = 0; loop < num_tabs; loop++ ) {
-        IntermedBuffer[loop] = '\t';
+    while( num_tabs-- > 0 ) {
+        write_char( '\t' );
     }
-    IntermedBuffer[loop] = '\0';
-    strcat( Buffer, IntermedBuffer );
     OutputPos = pos * TAB_WIDTH;
 }
 
@@ -133,40 +154,22 @@ static void updateOutputPos( const char *string )
 void BufferConcat( const char *string )
 // concatenate a string on the end of the buffer
 {
-    strcat( Buffer, string );
+    write_string( string );
     updateOutputPos( string );
 }
 
 void BufferConcatChar( char c )
 // concatentate a character on the end of the buffer
 {
-    size_t  len;
-
-    len = strlen( Buffer );
-    Buffer[len++] = c;
-    Buffer[len] = '\0';
+    write_char( c );
     updateOutputPosChar( c );
 }
 
 void BufferConcatNL( void )
 // concatentate a \n on the end of the buffer
 {
-    strcat( Buffer, "\n" );
+    write_char( '\n' );
     OutputPos = 0;
-}
-
-size_t BufferStore( const char *format, ... )
-// do the equivalent of a printf to the end of the buffer
-{
-    va_list     arg_list;
-    size_t      len;
-
-    va_start( arg_list, format );
-    len = vsprintf( IntermedBuffer, format, arg_list );
-    va_end( arg_list );
-    strcat( Buffer, IntermedBuffer );
-    updateOutputPos( IntermedBuffer );
-    return( len );
 }
 
 size_t BufferMsg( int resourceid )
@@ -184,8 +187,8 @@ size_t BufferMsg( int resourceid )
 void BufferPrint( void )
 // print the buffer to current output destination
 {
-    Print( Buffer );
-    *Buffer = '\0';
+    PrintBuffer( Buffer, buffer_pos - Buffer );
+    buffer_pos = Buffer;
 }
 
 void BufferHex( unsigned prec, dis_value value )
@@ -194,13 +197,46 @@ void BufferHex( unsigned prec, dis_value value )
     BufferConcat( IntermedBuffer );
 }
 
+void BufferHexU32( unsigned prec, uint_32 value )
+{
+    dis_value   dvalue;
+
+    dvalue.u._32[I64LO32] = value;
+    dvalue.u._32[I64HI32] = 0;
+    FmtHexNum( IntermedBuffer, prec, dvalue );
+    BufferConcat( IntermedBuffer );
+}
+
+void BufferDecimal( long value )
+{
+    sprintf( IntermedBuffer, "%ld", value );
+    BufferConcat( IntermedBuffer );
+}
+
+void BufferUnsigned( unsigned long value )
+{
+    sprintf( IntermedBuffer, "%lu", value );
+    BufferConcat( IntermedBuffer );
+}
+
+void BufferQuoteText( const char *text, char quote )
+{
+    BufferConcatChar( quote );
+    BufferConcat( text );
+    BufferConcatChar( quote );
+}
+
 void BufferQuoteName( const char *name )
 {
     if( NeedsQuoting( name ) ) {
-        BufferConcatChar( '`' );
-        BufferConcat( name );
-        BufferConcatChar( '`' );
+        BufferQuoteText( name, '`' );
     } else {
         BufferConcat( name );
     }
+}
+
+void BufferLabelNum( uint_32 value )
+{
+    FmtLabelNum( IntermedBuffer, value );
+    BufferConcat( IntermedBuffer );
 }

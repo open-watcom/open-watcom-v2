@@ -114,9 +114,9 @@ void PrintExterns( externs sec_externs )
             BufferPrint();
             prev_label = entry->label;
         }
-        BufferStore( "%04X ", entry->offset );
+        BufferHexU32( 4, entry->offset );
     }
+    BufferConcatNL();
+    BufferConcatNL();
     BufferPrint();
-    BufferConcatNL();
-    BufferConcatNL();
 }

@@ -33,8 +33,8 @@
 #ifndef WDIS_PRINT_INCLUDED
 #define WDIS_PRINT_INCLUDED
 
+extern void PrintBuffer( const char *string, size_t len );
 extern void Print( const char * );
 extern void ChangePrintDest( FILE * );
-
 
 #endif

@@ -55,7 +55,9 @@ return_val      DumpASMGroupName( const char *name, bool fasm )
         BufferQuoteName( name );
         BufferConcat( "\t\tGROUP\t" );
     } else {
-        BufferStore( "GROUP: '%s' ", name );
+        BufferConcat( "GROUP: " );
+        BufferQuoteText( name, '\'' );
+        BufferConcatChar( ' ' );
     }
     return( RC_OKAY );
 }

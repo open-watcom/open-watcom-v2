@@ -91,9 +91,9 @@ void PrintPublics( void )
     BufferConcatNL();
     BufferConcatNL();
     BufferMsg( SYMBOL );
-    BufferConcat("\t\t\t");
+    BufferConcat( "\t\t\t" );
     BufferMsg( SECTION );
-    BufferConcat("\t\t\t");
+    BufferConcat( "\t\t\t" );
     BufferMsg( OFFSET );
     BufferConcatNL();
     BufferPrint();
@@ -110,7 +110,7 @@ void PrintPublics( void )
             BufferConcat( section->name );
         }
         BufferAlignToTab( ADDRESS_TAB_POS );
-        BufferStore( "%08X", entry->offset );
+        BufferHexU32( 8, entry->offset );
         BufferConcatNL();
         BufferPrint();
     }
