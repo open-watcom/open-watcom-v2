@@ -115,7 +115,7 @@ static void updateOutputPosChar( char c )
         OutputPos = 0;
     } else if( c == '\t' ) {
         OutputPos = ((OutputPos / 8) + 1) * 8;
-    } else if( c == '\0' ) {
+    } else if( c != '\0' ) {
         OutputPos++;
     }
 }
