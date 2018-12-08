@@ -16,7 +16,7 @@ pick( NO_LINE_NUMS,             "File contains no line numbers.",
                                 "ファイルに行番号がありません" )
 pick( EXTERNAL_REFS,            "List of external references",
                                 "外部参照のリスト" )
-pick( LIST_OF_PUBLICS,          "List of public symbols\n\n",
+pick( LIST_OF_PUBLICS,          "List of public symbols",
                                 "パブリックシンボルのリスト" )
 pick( SYMBOL,                   "SYMBOL",
                                 "シンボル" )

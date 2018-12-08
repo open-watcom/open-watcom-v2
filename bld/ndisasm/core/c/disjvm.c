@@ -35,6 +35,7 @@
 #include "distypes.h"
 #include "distjvm.h"
 
+
 static unsigned GetUByte( void *d, unsigned off )
 {
     unsigned_8  data;

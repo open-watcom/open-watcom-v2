@@ -73,7 +73,7 @@ hash_table      SkipRefTable = NULL;
 
 orl_handle              ORLHnd;
 orl_file_handle         ObjFileHnd = ORL_NULL_HANDLE;
-orl_sec_handle          debugHnd = ORL_NULL_HANDLE;
+orl_sec_handle          DebugHnd = ORL_NULL_HANDLE;
 dis_handle              DHnd;
 dis_format_flags        DFormat;
 
@@ -81,8 +81,6 @@ section_list_struct     Sections;
 publics_struct          Publics;
 
 static int              flatModel = 0;
-
-extern char             *SourceFileInObject;
 
 static void printUnixHeader( section_ptr section )
 {
@@ -538,10 +536,11 @@ static label_entry dumpLabel( label_entry l_entry, section_ptr section,
         default:
             PrintLinePrefixAddress( loop, is32bit );
             BufferAlignToTab( PREFIX_SIZE_TABS );
+            BufferQuoteName( l_entry->label.name );
             if( loop != l_entry->offset ) {
-                BufferStore( "%s equ $-%d", l_entry->label.name, (int)( loop - l_entry->offset ) );
+                BufferStore( " equ $-%d", (int)( loop - l_entry->offset ) );
             } else {
-                BufferStore( "%s:", l_entry->label.name );
+                BufferConcatChar( ':' );
             }
             BufferConcatNL();
             break;
@@ -732,7 +731,8 @@ static void bssSection( section_ptr section, dis_sec_size size, unsigned pass )
         case LTYP_UNNAMED:
             PrintLinePrefixAddress( l_entry->offset, is32bit );
             BufferAlignToTab( PREFIX_SIZE_TABS );
-            BufferStore("%c$%d:\n", LabelChar, l_entry->label.number );
+            BufferStore("%c$%d:", LabelChar, l_entry->label.number );
+            BufferConcatNL();
             break;
         case LTYP_SECTION:
             if( strcmp( l_entry->label.name, section->name ) == 0 )
@@ -741,7 +741,9 @@ static void bssSection( section_ptr section, dis_sec_size size, unsigned pass )
         case LTYP_NAMED:
             PrintLinePrefixAddress( l_entry->offset, is32bit );
             BufferAlignToTab( PREFIX_SIZE_TABS );
-            BufferStore("%s:\n", l_entry->label.name );
+            BufferQuoteName( l_entry->label.name );
+            BufferConcatChar( ':' );
+            BufferConcatNL();
             break;
         }
         BufferPrint();
@@ -837,7 +839,7 @@ static hash_table emitGlobls( void )
                     name = l_entry->label.name;
                     if( ( l_entry->binding != ORL_SYM_BINDING_LOCAL ) && (l_entry->type == LTYP_NAMED) && strcmp( name, section->name ) ) {
                         BufferConcat( globl );
-                        BufferConcat( name );
+                        BufferQuoteName( name );
                         BufferConcatNL();
                         BufferPrint();
                         key_entry.key.u.string = name;
@@ -862,15 +864,17 @@ static void emitExtrns( hash_table hash )
     char                *extrn;
     char                *name;
     hash_entry_data     key_entry;
+    bool                masm_output;
 
     if( hash == NULL ) {
         hash = HashTableCreate( TMP_TABLE_SIZE, HASH_STRING );
     }
 
-    if( IsMasmOutput() ) {
-        extrn = "\t\tEXTRN\t%s:BYTE";
+    masm_output = IsMasmOutput();
+    if( masm_output ) {
+        extrn = "\t\tEXTRN\t";
     } else {
-        extrn = ".extern\t\t%s";
+        extrn = ".extern\t\t";
     }
 
     for( section = Sections.first; section != NULL; section = section->next ) {
@@ -890,7 +894,11 @@ static void emitExtrns( hash_table hash )
                             key_entry.data.u.string = name;
                             HashTableInsert( hash, &key_entry );
                             if( ( r_entry->label->type != LTYP_GROUP ) && (r_entry->label->binding != ORL_SYM_BINDING_LOCAL) ) {
-                                BufferStore( extrn, name );
+                                BufferConcat( extrn );
+                                BufferQuoteName( name );
+                                if( masm_output ) {
+                                    BufferConcat( ":BYTE" );
+                                }
                                 BufferConcatNL();
                                 BufferPrint();
                             }
@@ -917,7 +925,11 @@ static void emitExtrns( hash_table hash )
                     HashTableInsert( hash, &key_entry );
                     if( ( l_entry->binding != ORL_SYM_BINDING_LOCAL ) &&
                         ( l_entry->type == LTYP_EXTERNAL_NAMED ) ) {
-                        BufferStore( extrn, name );
+                        BufferConcat( extrn );
+                        BufferQuoteName( name );
+                        if( masm_output ) {
+                            BufferConcat( ":BYTE" );
+                        }
                         BufferConcatNL();
                         BufferPrint();
                     }
@@ -959,12 +971,12 @@ void UseFlatModel( void )
 
 static void doPrologue( void )
 {
-    int         masm;
+    int         masm_output;
 
-    masm = IsMasmOutput();
+    masm_output = IsMasmOutput();
 
     /* output the listing */
-    if( masm ) {
+    if( masm_output ) {
         if( DFormat & DFF_ASM ) {
             BufferConcat( ".387" );
             BufferConcatNL();
@@ -990,7 +1002,7 @@ static void doPrologue( void )
         emitExtrns( emitGlobls() );
     }
 
-    if( masm ) {
+    if( masm_output ) {
         ORLGroupsScan( ObjFileHnd, groupWalker );
         if( (DFormat & DFF_ASM) == 0 ) {
             BufferConcatNL();

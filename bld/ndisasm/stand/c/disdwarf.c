@@ -59,10 +59,6 @@ typedef struct {
     uint_8              end_sequence    :1;
 } state_info;
 
-extern char                     *SourceFileInDwarf;
-extern hash_table               HandleToRefListTable;
-extern orl_sec_handle           debugHnd;
-
 static void fixupLines( uint_8 *relocContents, orl_sec_handle shnd )
 {
     hash_data           *h_data;
@@ -382,14 +378,14 @@ void GetDwarfLines( state_lines *ls, section_ptr section )
     unsigned_8          *contents;
     unsigned_8          *relocContents;
 
-    if( debugHnd != ORL_NULL_HANDLE ) {
-        ORLSecGetContents( debugHnd, &contents );
-        size = ORLSecGetSize( debugHnd );
+    if( DebugHnd != ORL_NULL_HANDLE ) {
+        ORLSecGetContents( DebugHnd, &contents );
+        size = ORLSecGetSize( DebugHnd );
         limit = ORLSecGetSize( section->shnd );
         relocContents = MemAlloc( size );
         memcpy( relocContents, contents, size );
 
-        fixupLines( relocContents, debugHnd );
+        fixupLines( relocContents, DebugHnd );
 
         ConvertLines( relocContents, size, limit, ls );
 

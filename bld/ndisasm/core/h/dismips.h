@@ -32,6 +32,7 @@
 extern const dis_range          MIPSRangeTable[];
 extern const int                MIPSRangeTablePos[];
 extern const unsigned char      MIPSMaxInsName;
+extern const dis_cpu_data       MIPSData;
 
 extern dis_handler_return MIPSNull( dis_handle *h, void *d, dis_dec_ins *ins );
 extern dis_handler_return MIPSJType( dis_handle *h, void *d, dis_dec_ins *ins );

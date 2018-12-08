@@ -36,6 +36,7 @@
 #include "distypes.h"
 #include "disx64.h"
 
+
 typedef union {
     unsigned_8  full;
     struct {

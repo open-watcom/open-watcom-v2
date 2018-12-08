@@ -39,8 +39,6 @@
 #include "formasm.h"
 #include "hashtabl.h"
 
-extern dis_handle       DHnd;
-
 
 ref_entry DoPass1Relocs( unsigned_8 *contents, ref_entry r_entry, dis_sec_offset start, dis_sec_offset end )
 {

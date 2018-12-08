@@ -32,6 +32,7 @@
 extern const dis_range          AXPRangeTable[];
 extern const int                AXPRangeTablePos[];
 extern const unsigned char      AXPMaxInsName;
+extern const dis_cpu_data       AXPData;
 
 extern dis_handler_return AXPPal( dis_handle *h, void *d, dis_dec_ins *ins );
 extern dis_handler_return AXPMemory( dis_handle *h, void *d, dis_dec_ins *ins );

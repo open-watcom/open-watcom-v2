@@ -43,12 +43,8 @@
 #include "clibext.h"
 
 
-extern char             *ObjFileName;
-extern char             *CommentString;
-extern dis_format_flags DFormat;
-
 char                    *SourceFileName = NULL;
-char                    *SourceFileInObject = NULL;
+const char              *SourceFileInObject = NULL;
 char                    *SourceFileInDwarf = NULL;
 bool                    source_mix = false;
 FILE                    *SourceFile = NULL;

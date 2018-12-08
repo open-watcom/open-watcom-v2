@@ -41,8 +41,8 @@
 static _trmem_hdl   TRMemHandle = NULL;
 static FILE         *TRFileFP = NULL;       /* stream to put output on */
 
-void MemPrintLine( void *parm, const char *buff, size_t len )
-/***********************************************************/
+static void MemPrintLine( void *parm, const char *buff, size_t len )
+/******************************************************************/
 {
     /* unused parameters */ (void)parm;
 

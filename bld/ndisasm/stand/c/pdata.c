@@ -40,6 +40,7 @@
 #include "main.h"
 #include "formasm.h"
 
+
 typedef struct {
     uint_32     begin_address;
     uint_32     end_address;
@@ -47,12 +48,6 @@ typedef struct {
     uint_32     handler_data;
     uint_32     prolog_end;
 } descriptor_struct;
-
-extern hash_table           HandleToRefListTable;
-extern char                 LabelChar;
-extern char                 *CommentString;
-extern dis_format_flags     DFormat;
-extern section_list_struct  Sections;
 
 static orl_reloc            pdataReloc;
 
@@ -87,15 +82,17 @@ static ref_entry printDescriptor( dis_sec_offset offset, descriptor_struct *desc
     BufferAlignToTab(6);
     BufferStore("%s ", CommentString );
     BufferMsg( BEGIN_ADDRESS );
-    BufferStore(": %d\n", descriptor->begin_address );
+    BufferStore(": %d", descriptor->begin_address );
+    BufferConcatNL();
+    BufferPrint();
 
     BufferStore("%s", PreString );
     r_entry = doDescriptorRelocs( r_entry, offset+4, descriptor->end_address );
     BufferAlignToTab(6);
     BufferStore("%s ", CommentString );
     BufferMsg( END_ADDRESS );
-    BufferStore(": %d\n", descriptor->end_address );
-
+    BufferStore(": %d", descriptor->end_address );
+    BufferConcatNL();
     BufferPrint();
 
     BufferStore("%s", PreString );
@@ -103,22 +100,27 @@ static ref_entry printDescriptor( dis_sec_offset offset, descriptor_struct *desc
     BufferAlignToTab(6);
     BufferStore("%s ", CommentString );
     BufferMsg( EXCEPTION_HANDLER );
-    BufferStore(": %d\n", descriptor->exception_handler );
+    BufferStore(": %d", descriptor->exception_handler );
+    BufferConcatNL();
+    BufferPrint();
 
     BufferStore("%s", PreString );
     r_entry = doDescriptorRelocs( r_entry, offset+12, descriptor->handler_data );
     BufferAlignToTab(6);
     BufferStore("%s ", CommentString );
     BufferMsg( HANDLER_DATA );
-    BufferStore(": %d\n", descriptor->handler_data );
+    BufferStore(": %d", descriptor->handler_data );
+    BufferConcatNL();
+    BufferPrint();
 
     BufferStore("%s", PreString );
     r_entry = doDescriptorRelocs( r_entry, offset+16, descriptor->prolog_end );
     BufferAlignToTab(6);
     BufferStore("%s ", CommentString );
     BufferMsg( PROLOG_END );
-    BufferStore(": %d\n\n", descriptor->prolog_end );
-
+    BufferStore(": %d", descriptor->prolog_end );
+    BufferConcatNL();
+    BufferConcatNL();
     BufferPrint();
 
     return( r_entry );
@@ -180,12 +182,12 @@ return_val DumpPDataSection( section_ptr section, unsigned_8 *contents, dis_sec_
         }
         switch( r_entry->label->type ) {
         case LTYP_EXTERNAL_NAMED:
-            BufferStore( "%s", r_entry->label->label.name );
+            BufferQuoteName( r_entry->label->label.name );
             break;
         case LTYP_NAMED:
         case LTYP_SECTION:
         case LTYP_GROUP:
-            BufferStore( "%s", r_entry->label->label.name );
+            BufferQuoteName( r_entry->label->label.name );
             break;
         default:
             BufferStore( "%c$%d", LabelChar, r_entry->label->label.number );

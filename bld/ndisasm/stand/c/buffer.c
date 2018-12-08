@@ -41,7 +41,6 @@
 #include "formasm.h"
 #include "labproc.h"
 
-extern dis_format_flags         DFormat;
 
 static unsigned                 OutputPos = 0;
 static char                     Buffer[BUFFER_LEN] = {0};
@@ -109,18 +108,24 @@ void BufferAlignToTab( unsigned pos )
     OutputPos = pos * TAB_WIDTH;
 }
 
+static void updateOutputPosChar( char c )
+// update the position of the last character as it will be seen in output
+{
+    if( c == '\n' ) {
+        OutputPos = 0;
+    } else if( c == '\t' ) {
+        OutputPos = ((OutputPos / 8) + 1) * 8;
+    } else if( c == '\0' ) {
+        OutputPos++;
+    }
+}
+
 static void updateOutputPos( const char *string )
 // update the position of the last character as it will be seen in output
 {
     if( string != NULL ) {
         for( ; *string != '\0'; ++string ) {
-            if( *string == '\n' ) {
-                OutputPos = 0;
-            } else if( *string == '\t' ) {
-                OutputPos = ((OutputPos / 8) + 1) * 8;
-            } else {
-                OutputPos++;
-            }
+            updateOutputPosChar( *string );
         }
     }
 }
@@ -130,6 +135,17 @@ void BufferConcat( const char *string )
 {
     strcat( Buffer, string );
     updateOutputPos( string );
+}
+
+void BufferConcatChar( char c )
+// concatentate a character on the end of the buffer
+{
+    size_t  len;
+
+    len = strlen( Buffer );
+    Buffer[len++] = c;
+    Buffer[len] = '\0';
+    updateOutputPosChar( c );
 }
 
 void BufferConcatNL( void )
@@ -181,9 +197,9 @@ void BufferHex( unsigned prec, dis_value value )
 void BufferQuoteName( const char *name )
 {
     if( NeedsQuoting( name ) ) {
-        BufferConcat( "`" );
+        BufferConcatChar( '`' );
         BufferConcat( name );
-        BufferConcat( "`" );
+        BufferConcatChar( '`' );
     } else {
         BufferConcat( name );
     }

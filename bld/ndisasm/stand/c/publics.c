@@ -47,9 +47,6 @@
 #define SECTION_TAB_POS 3
 #define ADDRESS_TAB_POS 6
 
-extern hash_table       HandleToSectionTable;
-extern publics_struct   Publics;
-
 static int alpha_compare( const void *entry1, const void *entry2 )
 {
     return( stricmp( (*(label_entry *)entry1)->label.name, (*(label_entry *)entry2)->label.name ) );
@@ -91,6 +88,8 @@ void PrintPublics( void )
 
     // fixme:  data labels get a _ in front, others one after ??
     BufferMsg( LIST_OF_PUBLICS );
+    BufferConcatNL();
+    BufferConcatNL();
     BufferMsg( SYMBOL );
     BufferConcat("\t\t\t");
     BufferMsg( SECTION );
@@ -101,7 +100,7 @@ void PrintPublics( void )
     Print( "--------------------------------------------------------\n" );
     for( loop = 0; loop < Publics.number; loop++ ) {
         entry = Publics.public_symbols[loop];
-        BufferConcat( entry->label.name );
+        BufferQuoteName( entry->label.name );
         h_key.u.sec_handle = entry->shnd;
         h_data = HashTableQuery( HandleToSectionTable, h_key );
         // fixme: what is the proper behavour if no section found??
@@ -111,7 +110,8 @@ void PrintPublics( void )
             BufferConcat( section->name );
         }
         BufferAlignToTab( ADDRESS_TAB_POS );
-        BufferStore( "%08X\n", entry->offset );
+        BufferStore( "%08X", entry->offset );
+        BufferConcatNL();
         BufferPrint();
     }
 }

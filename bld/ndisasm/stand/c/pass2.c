@@ -40,6 +40,7 @@
 #include "init.h"
 #include "main.h"
 #include "print.h"
+#include "labproc.h"
 
 #define COMMENT_TAB_POS 4
 #define OPS_REP_TAB_POS 10
@@ -51,17 +52,6 @@ struct pass2 {
     num_errors          disassembly_errors;
     ref_entry           r_entry;
 };
-
-extern wd_options               Options;
-extern char                     LabelChar;
-extern dis_handle               DHnd;
-extern bool                     Prettify;
-extern section_list_struct      Sections;
-extern hash_table               HandleToSectionTable;
-extern hash_table               SymbolToLabelTable;
-extern dis_format_flags         DFormat;
-extern bool                     source_mix;
-extern char *                   CommentString;
 
 static dis_sec_offset   routineBase = 0;
 static dis_sec_size     routineSize = 0;
@@ -118,7 +108,9 @@ static label_entry handleLabels( const char *sec_name, dis_sec_offset offset, di
                     BufferMsg( BYTES );
                     BufferConcat(",    ");
                     BufferMsg( ROUTINE_BASE );
-                    BufferStore(" %s + %04X\n\n", sec_name, routineBase );
+                    BufferStore(" %s + %04X", sec_name, routineBase );
+                    BufferConcatNL();
+                    BufferConcatNL();
                     routineBase = offset;
                 }
             }
@@ -128,19 +120,33 @@ static label_entry handleLabels( const char *sec_name, dis_sec_offset offset, di
                 PrintLinePrefixAddress( offset, is32bit );
                 BufferAlignToTab( PREFIX_SIZE_TABS );
             }
-            BufferStore( "%s:\n", l_entry->label.name );
+            BufferQuoteName( l_entry->label.name );
+            BufferConcatChar( ':' );
+            BufferConcatNL();
             break;
         case LTYP_UNNAMED:
             if( (DFormat & DFF_ASM) == 0 ) {
                 PrintLinePrefixAddress( offset, is32bit );
                 BufferAlignToTab( PREFIX_SIZE_TABS );
             }
-            BufferStore( "%c$%d:\n", LabelChar, l_entry->label.number );
+            BufferStore( "%c$%d:", LabelChar, l_entry->label.number );
+            BufferConcatNL();
             break;
         }
         BufferPrint();
     }
     return( l_entry );
+}
+
+static void quoteName( const char *name, char *buff )
+{
+    if( NeedsQuoting( name ) ) {
+        strcat( buff, "`" );
+        strcat( buff, name );
+        strcat( buff, "`" );
+    } else {
+        strcat( buff, name );
+    }
 }
 
 static return_val referenceString( ref_entry r_entry, dis_sec_size size,
@@ -175,18 +181,22 @@ static return_val referenceString( ref_entry r_entry, dis_sec_size size,
             sprintf( buff, "%s%s%c$%ld%s", frame, frame_sep, LabelChar, (long)l_entry->label.number, post );
             break;
         default:
-            sprintf( buff, "%s%s%s%s", frame, frame_sep, l_entry->label.name, post );
+            sprintf( buff, "%s%s", frame, frame_sep );
+            quoteName( l_entry->label.name, buff );
+            strcat( buff, post );
             break;
         }
     } else {
         switch( l_entry->type ) {
         case LTYP_EXTERNAL_NAMED:
-            sprintf( buff, "%s%s%s%s", ext_pref, frame, frame_sep, l_entry->label.name );
+            sprintf( buff, "%s%s%s", ext_pref, frame, frame_sep );
+            quoteName( l_entry->label.name, buff );
             break;
         case LTYP_NAMED:
         case LTYP_SECTION:
         case LTYP_GROUP:
-            sprintf( buff, "%s%s%s%s", int_pref, frame, frame_sep, l_entry->label.name );
+            sprintf( buff, "%s%s%s", int_pref, frame, frame_sep );
+            quoteName( l_entry->label.name, buff );
             break;
 
         case LTYP_ABSOLUTE:
@@ -710,7 +720,8 @@ num_errors DoPass2( section_ptr section, unsigned_8 *contents, dis_sec_size size
             if( (DFormat & DFF_ASM) == 0 ) {
                 BufferAlignToTab( PREFIX_SIZE_TABS );
             }
-            BufferStore( "\t%sFPU fixup %s\n", CommentString, FPU_fixup );
+            BufferStore( "\t%sFPU fixup %s", CommentString, FPU_fixup );
+            BufferConcatNL();
         }
         if( (DFormat & DFF_ASM) == 0 ) {
             unsigned_64     *tmp_64;
@@ -762,7 +773,9 @@ num_errors DoPass2( section_ptr section, unsigned_8 *contents, dis_sec_size size
         BufferMsg( BYTES );
         BufferConcat(",    ");
         BufferMsg( ROUTINE_BASE );
-        BufferStore(" %s + %04X\n\n", section->name, routineBase );
+        BufferStore(" %s + %04X", section->name, routineBase );
+        BufferConcatNL();
+        BufferConcatNL();
         BufferPrint();
     }
     if( source_mix ) {

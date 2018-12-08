@@ -43,42 +43,19 @@
 #include "formasm.h"
 
 
-extern wd_options       Options;
-extern hash_table       HandleToLabelListTable;
-extern hash_table       SymbolToLabelTable;
-extern publics_struct   Publics;
-extern const char       *SourceFileInObject;
-extern dis_format_flags DFormat;
-
 static void labelNameAlloc( label_entry entry, const char *name )
 {
-    char    *p;
     size_t  len;
 
     // Demangle the name, if necessary
     if( !((Options & NODEMANGLE_NAMES) || (DFormat & DFF_ASM)) ) {
         len = __demangle_l( name, 0, NULL, 0 );
-        entry->label.name = MemAlloc( len + 4 );
-        __demangle_l( name, 0, entry->label.name + 2, len + 1 );
+        entry->label.name = MemAlloc( len + 1 );
+        __demangle_l( name, 0, entry->label.name, len + 1 );
     } else {
         len = strlen( name );
-        entry->label.name = MemAlloc( len + 4 );
-        strcpy( entry->label.name + 2, name );
-    }
-    entry->label.name[0] = 0;
-    entry->label.name[1] = 0;
-    p = entry->label.name + 2;
-    if( NeedsQuoting( p ) ) {
-        // entry->label.name[-1] will be 1 if we have added a quote,
-        // 0 otherwise.  This is helpful when freeing the memory.
-        entry->label.name[0] = 1;
-        entry->label.name[1] = '`';
-        entry->label.name += 1;
-        p += strlen( p );
-        p[0] = '`';
-        p[1] = '\0';
-    } else {
-        entry->label.name += 2;
+        entry->label.name = MemAlloc( len + 1 );
+        strcpy( entry->label.name, name );
     }
 }
 
@@ -90,12 +67,6 @@ void FreeLabel( label_entry entry )
         break;
     default:
         if( entry->label.name != NULL ) {
-            // Step back over backquote (`) or space where it should be.
-            if( entry->label.name[-1] == 1 ) {
-                entry->label.name -= 1;
-            } else {
-                entry->label.name -= 2;
-            }
             MemFree( entry->label.name );
         }
         break;

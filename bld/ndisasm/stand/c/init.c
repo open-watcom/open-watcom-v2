@@ -71,30 +71,6 @@ typedef struct recognized_struct recognized_struct;
 #define CPP_COMMENT_STRING  "// "
 #define MASM_COMMENT_STRING "; "
 
-extern wd_options       Options;
-extern char             LabelChar;
-extern char             QuoteChar;
-extern FILE             *OutputDest;
-extern char             *ListFileName;
-
-extern orl_handle       ORLHnd;
-extern orl_file_handle  ObjFileHnd;
-extern char             *ObjFileName;
-
-extern dis_handle       DHnd;
-
-extern hash_table       HandleToSectionTable;
-extern hash_table       HandleToLabelListTable;
-extern hash_table       HandleToRefListTable;
-extern hash_table       SymbolToLabelTable;
-extern hash_table       NameRecognitionTable;
-extern hash_table       SkipRefTable;
-
-extern section_list_struct      Sections;
-extern publics_struct           Publics;
-
-extern orl_sec_handle           debugHnd;
-
 char    *CommentString  = CPP_COMMENT_STRING;
 
 // sections that require name-checking should be inserted in this array
@@ -440,7 +416,7 @@ static orl_return sectionInit( orl_sec_handle shnd )
         // Ignore OMF relocs section
         break;
     case SECTION_TYPE_LINES:
-        debugHnd = shnd;
+        DebugHnd = shnd;
         type = SECTION_TYPE_DATA;
         // fall through
     case SECTION_TYPE_TEXT:

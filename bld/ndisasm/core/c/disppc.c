@@ -35,7 +35,6 @@
 #include "distypes.h"
 #include "disppc.h"
 
-extern const unsigned short     DisRegisterTable[];
 
 #define MK_SPR(a,b) (((a)<<5)|(b))
 

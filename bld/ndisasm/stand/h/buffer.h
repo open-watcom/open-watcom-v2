@@ -38,6 +38,7 @@
 
 extern void             BufferConcat( const char * );
 extern void             BufferQuoteName( const char * );
+extern void             BufferConcatChar( char );
 extern void             BufferConcatNL( void );
 extern size_t           BufferStore( const char * format, ... );
 extern void             BufferHex( unsigned prec, dis_value value );
