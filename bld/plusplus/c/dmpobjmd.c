@@ -34,6 +34,8 @@
 #include "pragdefn.h"
 #include "vbuf.h"
 #include "vstk.h"
+#include "name.h"
+
 
 typedef enum dump_struct_control {
     DS_BASE     = 0x0001,
