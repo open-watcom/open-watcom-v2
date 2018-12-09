@@ -1476,7 +1476,6 @@ OVL_EXTERN brkp *SetPoint( memory_expr def_seg, mad_type_handle mth )
             NewCurrRadix( old_radix );
             ReqComma();
             break;
-            /* fall through */
         default:
             Error( ERR_LOC, LIT_ENG( ERR_BAD_OPTION ), GetCmdName( CMD_BREAK ) );
             break;
@@ -1515,6 +1514,7 @@ OVL_EXTERN brkp *SetPoint( memory_expr def_seg, mad_type_handle mth )
         case 8:
             if( Is8ByteBreakpointsSupported() )
                 break;
+            /* fall through */
         default:
             Error( ERR_NONE, LIT_ENG( ERR_NOT_WATCH_SIZE ) );
             break;
@@ -1568,7 +1568,7 @@ bool BreakWrite( address addr, mad_type_handle mth, const char *comment )
         if( !Is8ByteBreakpointsSupported() ) {
             ok_to_try = false;
         }
-        // fall down
+        /* fall through */
     case 1:
     case 2:
     case 4:
@@ -1583,7 +1583,7 @@ bool BreakWrite( address addr, mad_type_handle mth, const char *comment )
             RecordBreakEvent( bp, B_SET );
             return( true );
         }
-        // fall down
+        /* fall through */
     default:
         return( false );
     }
