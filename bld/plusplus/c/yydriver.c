@@ -2036,8 +2036,9 @@ static p_action doAction( YYTOKENTYPE t, PARSE_STACK *state )
         unsigned stackDepth;
 #endif
         yyk = *(state->ssp);
-        DbgStmt( if( PragDbgToggle.parser_states ) printf( "parser top state: %u token: 0x%x (%s)\n", yyk, t , yytoknames[t] ); );
-        DbgStmt(stackDepth = (state->ssp - &(state->sstack[0])) + 1; );
+        DbgStmt( if( PragDbgToggle.parser_states ) \
+                     printf( "parser top state: %u token: 0x%x (%s)\n", yyk, t , yytoknames[t] ); );
+        DbgStmt( stackDepth = (state->ssp - &(state->sstack[0])) + 1; );
 
         /*
         //  DumpStack

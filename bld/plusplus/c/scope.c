@@ -610,7 +610,8 @@ static SCOPE makeScope( scope_type_t scope_type )
     new_scope->owner.sym = NULL;
     new_scope->names = HashCreateByIndex( hashTableSizeIndex[scope_type] );
     new_scope->using_list = NULL;
-    DbgStmt( if( recordableScope( new_scope ) ) DbgRememberScope( new_scope ); );
+    DbgStmt( if( recordableScope( new_scope ) ) \
+                 DbgRememberScope( new_scope ); );
     return( new_scope );
 }
 
@@ -1062,7 +1063,8 @@ void ScopeClear( SCOPE scope )
 void ScopeBurn( SCOPE scope )
 /***************************/
 {
-    DbgStmt( if( recordableScope( scope ) ) DbgForgetScope( scope ); );
+    DbgStmt( if( recordableScope( scope ) ) \
+                 DbgForgetScope( scope ); );
     ScopeWalkNames( scope, FreeSymbolName );
     HashDestroy( scope->names );
     CarveFree( carveSCOPE, scope );
@@ -5337,12 +5339,14 @@ static void checkAmbiguousOverride( THUNK_ACTION *thunk, vftable_walk *data )
     }
 #endif
     for( top = data->top; top != NULL; top = top->parent ) {
-        DbgStmt( if( PragDbgToggle.dump_vftables ) printScopeName( top->scope, NULL ); );
+        DbgStmt( if( PragDbgToggle.dump_vftables ) \
+                     printScopeName( top->scope, NULL ); );
         if( top->scope == override_scope ) {
             break;
         }
     }
-    DbgStmt( if( PragDbgToggle.dump_vftables ) putchar( '\n' ); );
+    DbgStmt( if( PragDbgToggle.dump_vftables ) \
+                 putchar( '\n' ); );
     if( top != NULL ) {
         /* quick check to see if override is in this path succeeded! */
         return;
@@ -5351,7 +5355,8 @@ static void checkAmbiguousOverride( THUNK_ACTION *thunk, vftable_walk *data )
     virtual_base = NULL;
     first_top = data->top;
     for( top = first_top; top != NULL; top = top->parent ) {
-        DbgStmt( if( PragDbgToggle.dump_vftables ) printScopeName( top->scope, "\n" ); );
+        DbgStmt( if( PragDbgToggle.dump_vftables ) \
+                     printScopeName( top->scope, "\n" ); );
         if( virtual_base == NULL ) {
             base = top->base;
             if( base != NULL ) {
@@ -5504,7 +5509,8 @@ static walk_status collectVFTable( BASE_STACK *top, void *parm )
 
     data->top = top;
     scope = top->scope;
-    DbgStmt( if( PragDbgToggle.dump_vftables ) printScopeName( scope, "collectVFTable()\n" ); );
+    DbgStmt( if( PragDbgToggle.dump_vftables ) \
+                 printScopeName( scope, "collectVFTable()\n" ); );
     class_type = ScopeClass( scope );
     info = class_type->u.c.info;
     if( ! info->has_vfn ) {
@@ -5586,7 +5592,8 @@ CLASS_VFTABLE *ScopeCollectVFTable( SCOPE scope, scv_control control )
         data.OK_to_diagnose = true;
     }
     VstkOpen( &data.disambig, sizeof( SCOPE ), 8 );
-    DbgStmt( if( PragDbgToggle.dump_vftables ) printScopeName( scope, "collecting virtual function table\n" ); );
+    DbgStmt( if( PragDbgToggle.dump_vftables ) \
+                 printScopeName( scope, "collecting virtual function table\n" ); );
     walkDirectBases( scope, collectVFTable, &data );
     VstkClose( &data.disambig );
     /* caller must do a RingFree */

@@ -231,7 +231,7 @@ NAME NameCreateNoLen( const char *id )
     idname **head;
 
     len = strlen( id );
-    if( id[0] != NAME_OPERATOR_OR_DUMMY_PREFIX1 ) {
+    if( id[0] != NAME_INTERNAL_PREFIX1 ) {
         return( NameCreateLen( id, len ) );
     }
     // everybody uses the same 'name' so the hash doesn't have to be generated
@@ -263,7 +263,7 @@ NAME NameDummy( void )
     ni = nameDummyIndex++;
     xhash = ni % NAME_TABLE_HASH;
     bucket = xhash;
-    buff[0] = NAME_OPERATOR_OR_DUMMY_PREFIX1;
+    buff[0] = NAME_INTERNAL_PREFIX1;
     buff[1] = NAME_DUMMY_PREFIX2;
     // the contents of the name don't have to be different just the address
     // but for debugging it is handy to have unique contents
@@ -281,7 +281,7 @@ NAME NameDummy( void )
 bool IsNameDummy( NAME name )
 /***************************/
 {
-    return( NameStr( name )[0] == NAME_OPERATOR_OR_DUMMY_PREFIX1 && NameStr( name )[1] == NAME_DUMMY_PREFIX2 );
+    return( NameStr( name )[0] == NAME_INTERNAL_PREFIX1 && NameStr( name )[1] == NAME_DUMMY_PREFIX2 );
 }
 
 static int cmpName( const void *lp, const void *rp )

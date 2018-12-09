@@ -1141,7 +1141,7 @@ bool IsCppNameInterestingDebug( // CHECK FOR INTERNAL NAMES
         // internal symbol names
         return( false );
     }
-    if( NameStr( name )[0] == NAME_OPERATOR_OR_DUMMY_PREFIX1 ) {
+    if( NameStr( name )[0] == NAME_INTERNAL_PREFIX1 ) {
         if( name == specialNames[SPECIAL_NAME_RETURN_VALUE] ) {
             // special case for ".return"
             return( true );

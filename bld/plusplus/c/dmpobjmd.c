@@ -350,7 +350,7 @@ void DumpObjectModelEnum(       // DUMP OBJECT MODEL: ENUM
     sym = base->u.t.sym;
     VbufInit( &buffer );
     VbufConcStr( &buffer, "Object Model for: " );
-    if( NULL == sym->name->name || NameStr( sym->name->name )[0] == '.' ) {
+    if( NULL == sym->name->name || NameStr( sym->name->name )[0] == NAME_INTERNAL_PREFIX1 ) {
         VbufConcStr( &buffer, "anonymous enum type" );
     } else {
         VbufConcStr( &buffer, NameStr( sym->name->name ) );
@@ -405,10 +405,7 @@ void DumpObjectModelEnum(       // DUMP OBJECT MODEL: ENUM
     } else {
         mask = ( 1 << ( mask * 8 ) ) - 1;
     }
-    for( ; ; ) {
-        sym = sym->thread;
-        if( ! SymIsEnumeration( sym ) )
-            break;
+    for( sym = sym->thread; SymIsEnumeration( sym ); sym = sym->thread ) {
         VbufRewind( &buffer );
         VbufConcStr( &buffer, "    " );
         VbufConcStr( &buffer, NameStr( sym->name->name ) );

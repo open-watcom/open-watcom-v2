@@ -732,11 +732,9 @@ static dw_handle dwarfEnum( TYPE type, DC_CONTROL control )
         type_update( type, TF2_DWARF_DEF, dh );
         DWHandleSet( Client, dh );
         dh = DWBeginEnumeration( Client, CgTypeSize( type->of ), NameStr( SimpleTypeName( type ) ), 0, 0 );
-        sym = type->u.t.sym->thread;
-        while( SymIsEnumeration( sym ) ) {
+        for( sym = type->u.t.sym->thread; SymIsEnumeration( sym ); sym = sym->thread ) {
             // fixme: enums need to be in reverse order
             DWAddConstant( Client, sym->u.sval, NameStr( sym->name->name ) );
-            sym = sym->thread;
         }
         DWEndEnumeration( Client );
     }
@@ -770,14 +768,14 @@ static dw_handle dwarfTypedef( TYPE type, DC_CONTROL control )
         if( (of_type == type->of)
          && (of_type->u.c.info->unnamed)
          && (sym->name->containing == of_type->u.c.scope->enclosing) ) {
-         // typedef struct { ... } foo
+            // typedef struct { ... } foo
             of_hdl = dwarfClass( of_type, DC_DEFINE );
         } else {
             of_type = EnumType( type->of );
             if( (of_type == type->of)
              && (of_type->flag & TF1_UNNAMED)
              && (sym->name->containing == of_type->u.t.scope) ) {
-             // typedef enum { ... } foo
+                // typedef enum { ... } foo
                 of_hdl = dwarfEnum( of_type, DC_DEFINE );
             } else {
                 of_hdl = dwarfType( type->of, DC_DEFAULT );

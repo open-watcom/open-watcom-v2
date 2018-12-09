@@ -35,12 +35,12 @@
 #define NAME_HASH           (0x1000)
 
 /*
-  All internal names start with NAME_OPERATOR_OR_DUMMY_PREFIX1 and all
+  All internal names start with NAME_INTERNAL_PREFIX1 and all
   counter generated names have the extra NAME_DUMMY_PREFIX2 as a prefix
 */
-#define NAME_OPERATOR_OR_DUMMY_PREFIX1  '.'
-#define NAME_DUMMY_PREFIX2              '#'
-#define NAME_OPERATOR_PREFIX2           '@'
+#define NAME_INTERNAL_PREFIX1       '.'
+#define NAME_DUMMY_PREFIX2          '#'
+#define NAME_OPERATOR_PREFIX2       '@'
 
 #define NamePCHRead()       NameMapIndex( PCHSetUInt( PCHReadUInt() ) )
 #define NamePCHWrite(x)     PCHWriteUInt( PCHGetUInt( NameGetIndex(x) ) )

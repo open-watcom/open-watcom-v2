@@ -495,7 +495,8 @@ static int front_end(           // FRONT-END PROCESSING
         exit_status = makeExitStatus( WPP_FATAL );
     }
 #if defined( __WATCOMC__ )
-    DbgStmt( if( DEBUG_PRESENT_NAME ) __trap() );
+    DbgStmt( if( DEBUG_PRESENT_NAME ) \
+                 __trap() );
 #endif
     return( exit_status );
 }

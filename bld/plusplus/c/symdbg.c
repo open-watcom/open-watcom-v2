@@ -828,10 +828,8 @@ dbg_type SymbolicDebugType( TYPE type, SD_CONTROL control )
         SYMBOL      sym;
 
         de = DBBegEnum( CgTypeOutput( type ) );
-        sym = base->u.t.sym->thread;
-        while( SymIsEnumeration( sym ) ) {
+        for( sym = base->u.t.sym->thread; SymIsEnumeration( sym ); sym = sym->thread ) {
             DBAddConst( de, NameStr( sym->name->name ), sym->u.sval );
-            sym = sym->thread;
         }
         dt = DBEndEnum( de );
         name = SimpleTypeName( base );

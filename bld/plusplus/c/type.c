@@ -7393,7 +7393,7 @@ bool TypeIsAnonymousEnum( TYPE type )
 /***********************************/
 {
     TypeStripTdMod( type );
-    if( type->id == TYP_ENUM && ( type->flag & TF1_UNNAMED ) != 0 ) {
+    if( type->id == TYP_ENUM && (type->flag & TF1_UNNAMED) ) {
         return( true );
     }
     return( false );

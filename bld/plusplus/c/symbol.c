@@ -465,7 +465,7 @@ bool SymIsTemporary(            // DETERMINE IF INTERNAL SYMBOL
     } else if( SymIsAnError( sym ) ) {
         ok = true;
     } else {
-        ok = ( NameStr( sym->name->name )[0] == NAME_OPERATOR_OR_DUMMY_PREFIX1 );
+        ok = ( NameStr( sym->name->name )[0] == NAME_INTERNAL_PREFIX1 );
     }
     return( ok );
 }
@@ -481,7 +481,7 @@ bool SymIsGenedFunc(            // DETERMINE IF SYMBOL IS A GENERATED FUNC.
     } else if( SymIsAnError( sym ) ) {
         ok = true;
     } else {
-        ok = ( NameStr( sym->name->name )[0] == NAME_OPERATOR_OR_DUMMY_PREFIX1 );
+        ok = ( NameStr( sym->name->name )[0] == NAME_INTERNAL_PREFIX1 );
     }
     return( ok );
 }
@@ -792,7 +792,7 @@ bool SymIsModuleDtorable(       // TEST IF SYMBOL IS MODULE-DTORABLE
             (3) function static variables
     */
     symGetScope( sym, scope );
-    if( ( NameStr( sym->name->name )[0] != NAME_OPERATOR_OR_DUMMY_PREFIX1 ) && ( ScopeId( scope ) == SCOPE_FILE ) ) {
+    if( ( NameStr( sym->name->name )[0] != NAME_INTERNAL_PREFIX1 ) && ( ScopeId( scope ) == SCOPE_FILE ) ) {
         ok = true;
     } else {
         ok = ( sym->id == SC_STATIC );
