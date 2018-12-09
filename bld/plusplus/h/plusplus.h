@@ -92,7 +92,7 @@ typedef const char          *NAME;      // name pointer
 #define NameStr(x)          (x)
 #else
 typedef const struct idname *NAME;      // name pointer
-#define NameStr(x)          (((x) == NULL) ? (x) : (x)->name)
+#define NameStr(x)          (((x) == NULL) ? NULL : (x)->name)
 #endif
 
 #define VAL64(x)            (x.u._64[0])
