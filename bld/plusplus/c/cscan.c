@@ -30,9 +30,7 @@
 
 
 #include "plusplus.h"
-
 #include <assert.h>
-
 #include "preproc.h"
 #include "stats.h"
 #include "scan.h"
@@ -42,6 +40,7 @@
 #include "name.h"
 #include "context.h"
 #include "unicode.h"
+
 
 #if defined(__DOS__) || defined(__OS2__) || defined(__NT__)
     #define SYS_EOF_CHAR    0x1A
