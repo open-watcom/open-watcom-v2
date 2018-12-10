@@ -776,8 +776,8 @@ extern DWORD    AllocAlias16( void * );
 extern DWORD    AllocHugeAlias16( void *, DWORD );
 extern void     FreeAlias16( DWORD );
 extern void     FreeHugeAlias16( DWORD, DWORD );
-#pragma aux FreeAlias16 modify [fs gs]
-#pragma aux FreeHugeAlias16 modify [fs gs]
+#pragma aux FreeAlias16 __modify [__fs __gs]
+#pragma aux FreeHugeAlias16 __modify [__fs __gs]
 
 void            *MapAliasToFlat( DWORD alias );
 
