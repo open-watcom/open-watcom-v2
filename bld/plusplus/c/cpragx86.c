@@ -474,13 +474,11 @@ typedef enum
 } fix_words;
 
 
-static fix_words FixupKeyword(
-    void )
+static fix_words FixupKeyword( void )
 {
     fix_words retn;             // - return
 
-    if( CurToken == T_FLOAT ) {
-        NextToken();
+    if( PragRecog( "float" ) ) {
         retn = FIXWORD_FLOAT;
     } else if( PragRecog( "seg" ) ) {
         retn = FIXWORD_SEGMENT;

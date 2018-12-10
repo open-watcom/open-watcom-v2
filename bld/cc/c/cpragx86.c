@@ -229,14 +229,20 @@ typedef enum {
 static fix_words FixupKeyword( void )
 /**********************************/
 {
-    if( CurToken == T_FLOAT ) {
-        NextToken();
-        return( FIXWORD_FLOAT );
+    fix_words retn;             // - return
+
+    if( PragRecog( "float" ) ) {
+        retn = FIXWORD_FLOAT;
+    } else if( PragRecog( "seg" ) ) {
+        retn = FIXWORD_SEGMENT;
+    } else if( PragRecog( "offset" ) ) {
+        retn = FIXWORD_OFFSET;
+    } else if( PragRecog( "reloff" ) ) {
+        retn = FIXWORD_RELOFF;
+    } else {
+        retn = FIXWORD_NONE;
     }
-    if( PragRecog( "seg" ) )    return( FIXWORD_SEGMENT );
-    if( PragRecog( "offset" ) ) return( FIXWORD_OFFSET );
-    if( PragRecog( "reloff" ) ) return( FIXWORD_RELOFF );
-    return( FIXWORD_NONE );
+    return( retn );
 }
 
 
