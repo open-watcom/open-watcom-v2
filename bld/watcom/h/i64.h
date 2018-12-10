@@ -82,53 +82,53 @@ int  U64Cnv8( unsigned_64 *res, char c );
 int  U64Cnv16( unsigned_64 *res, char c );
 #if defined(__386__) && defined( __WATCOMC__ )
 
-#pragma aux U64Cnv10 = \
-    "mov ecx,4[esi]" \
-    "xor edx,edx" \
-    "mov ebx,[esi]" \
-    "shld edx,ecx,3" \
-    "shld ecx,ebx,3" \
-    "shl ebx,3" \
-    "shl dword ptr [esi],1" \
-    "rcl dword ptr 4[esi],1" \
-    "rcl edx,1" \
-    "add ebx,eax" \
-    "adc ecx,0" \
-    "adc edx,0" \
-    "add [esi],ebx" \
-    "adc 4[esi],ecx" \
-    "adc edx,0" \
-    parm caller [esi] [eax] \
-    value [edx] \
-    modify exact [ebx ecx edx];
+#pragma aux U64Cnv10 \
+    __parm __caller [__esi] [__eax] = \
+        "mov  ecx,4[esi]" \
+        "xor  edx,edx" \
+        "mov  ebx,[esi]" \
+        "shld edx,ecx,3" \
+        "shld ecx,ebx,3" \
+        "shl  ebx,3" \
+        "shl  dword ptr [esi],1" \
+        "rcl  dword ptr 4[esi],1" \
+        "rcl  edx,1" \
+        "add  ebx,eax" \
+        "adc  ecx,0" \
+        "adc  edx,0" \
+        "add  [esi],ebx" \
+        "adc  4[esi],ecx" \
+        "adc  edx,0" \
+    __value [__edx] \
+    __modify __exact [__ebx __ecx __edx]
 
-#pragma aux U64Cnv8 = \
-    "mov ecx,4[esi]" \
-    "xor edx,edx" \
-    "mov ebx,[esi]" \
-    "shld edx,ecx,3" \
-    "shld ecx,ebx,3" \
-    "shl ebx,3" \
-    "mov 4[esi],ecx" \
-    "or ebx,eax" \
-    "mov [esi],ebx" \
-    parm caller [esi] [eax] \
-    value [edx] \
-    modify exact [ebx ecx edx];
+#pragma aux U64Cnv8 \
+    __parm __caller [__esi] [__eax] = \
+        "mov  ecx,4[esi]" \
+        "xor  edx,edx" \
+        "mov  ebx,[esi]" \
+        "shld edx,ecx,3" \
+        "shld ecx,ebx,3" \
+        "shl  ebx,3" \
+        "mov  4[esi],ecx" \
+        "or   ebx,eax" \
+        "mov  [esi],ebx" \
+    __value [__edx] \
+    __modify __exact [__ebx __ecx __edx]
 
-#pragma aux U64Cnv16 = \
-    "mov ecx,4[esi]" \
-    "xor edx,edx" \
-    "mov ebx,[esi]" \
-    "shld edx,ecx,4" \
-    "shld ecx,ebx,4" \
-    "shl ebx,4" \
-    "mov 4[esi],ecx" \
-    "or ebx,eax" \
-    "mov [esi],ebx" \
-    parm caller [esi] [eax] \
-    value [edx] \
-    modify exact [ebx ecx edx];
+#pragma aux U64Cnv16 \
+    __parm __caller [__esi] [__eax] = \
+        "mov  ecx,4[esi]" \
+        "xor  edx,edx" \
+        "mov  ebx,[esi]" \
+        "shld edx,ecx,4" \
+        "shld ecx,ebx,4" \
+        "shl  ebx,4" \
+        "mov  4[esi],ecx" \
+        "or   ebx,eax" \
+        "mov  [esi],ebx" \
+    __value [__edx] \
+    __modify __exact [__ebx __ecx __edx]
 
 #else
 #define _U64_C_ROUTINES

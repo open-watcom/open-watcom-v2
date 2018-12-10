@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-#if defined(__WATCOMC__) && defined(__386__) && !defined(NDEBUG)
+#if defined( __WATCOMC__ ) && defined( __386__ ) && !defined( NDEBUG )
 
 #define WATCOM_DEBUG_SYMBOLS
 
@@ -40,19 +40,20 @@ extern char volatile __WD_Present;
 /* Macro to enter the debugger and pass a message */
 
 void EnterDebuggerWithMessage( const char __far * );
-#pragma aux EnterDebuggerWithMessage = \
+#pragma aux EnterDebuggerWithMessage \
+    __parm __caller [] = \
         "int 3" \
         "jmp short L1" \
         'W' 'V' 'I' 'D' 'E' 'O' \
-        "L1:" \
-    __parm __caller []
+        "L1:"
 
 /* Inline assembler to get DS selector */
 
 unsigned short GetCS(void);
-#pragma aux GetCS = \
+#pragma aux GetCS \
+     __parm __caller [] = \
         "mov ax,cs" \
-     __parm __caller []
+     __value [__ax]
 
 /* Messages to load debug symbols */
 
@@ -70,26 +71,27 @@ Notify the Open Watcom debugger of module load events. WD will attempt
 to load symbolic debugging information for the module much like it would for
 OS loaded DLLs.
 ****************************************************************************/
-static void NotifyWDLoad(
-    char *modname,
-    unsigned long offset)
+static void NotifyWDLoad( char *modname, unsigned long offset )
 {
-    char buf[_MAX_PATH + sizeof(DEBUGGER_LOADMODULE_COMMAND) + 2+4+1+8+1+1];
-    sprintf(buf, DEBUGGER_LOADMODULE_FORMAT, GetCS(), offset, modname );
-    if (__WD_Present)
-        EnterDebuggerWithMessage(buf);
+    char buf[_MAX_PATH + sizeof( DEBUGGER_LOADMODULE_COMMAND ) + 2 + 4 + 1 + 8 + 1 + 1];
+
+    sprintf( buf, DEBUGGER_LOADMODULE_FORMAT, GetCS(), offset, modname );
+    if( __WD_Present ) {
+        EnterDebuggerWithMessage( buf );
+    }
 }
 
 /****************************************************************************
 DESCRIPTION:
 Notify the Open Watcom debugger of module unload events.
 ****************************************************************************/
-static void NotifyWDUnload(
-    char *modname)
+static void NotifyWDUnload( char *modname )
 {
-    char buf[_MAX_PATH + sizeof(DEBUGGER_UNLOADMODULE_COMMAND) + 1];
-    sprintf(buf, DEBUGGER_UNLOADMODULE_FORMAT, modname);
-    if (__WD_Present)
-        EnterDebuggerWithMessage(buf);
+    char buf[_MAX_PATH + sizeof( DEBUGGER_UNLOADMODULE_COMMAND ) + 1];
+
+    sprintf( buf, DEBUGGER_UNLOADMODULE_FORMAT, modname );
+    if( __WD_Present ) {
+        EnterDebuggerWithMessage( buf );
+    }
 }
 #endif
