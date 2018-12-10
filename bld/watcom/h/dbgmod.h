@@ -40,17 +40,19 @@ extern char volatile __WD_Present;
 /* Macro to enter the debugger and pass a message */
 
 void EnterDebuggerWithMessage( const char __far * );
-#pragma aux EnterDebuggerWithMessage parm caller [] = \
+#pragma aux EnterDebuggerWithMessage = \
         "int 3" \
         "jmp short L1" \
         'W' 'V' 'I' 'D' 'E' 'O' \
-        "L1:"
+        "L1:" \
+    __parm __caller []
 
 /* Inline assembler to get DS selector */
 
 unsigned short GetCS(void);
-#pragma aux GetCS parm caller [] = \
-        "mov ax,cs"
+#pragma aux GetCS = \
+        "mov ax,cs" \
+     __parm __caller []
 
 /* Messages to load debug symbols */
 

@@ -62,6 +62,6 @@ extern int cpu_id( void );
         "and  eax,0Fh"      \
     "done:"                 \
         "popfd"             \
-    parm                    \
-    value [eax]             \
-    modify exact [eax ebx edx]
+    __parm []               \
+    __value [__eax]         \
+    __modify __exact [__eax __ebx __edx]

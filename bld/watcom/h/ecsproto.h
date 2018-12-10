@@ -30,8 +30,10 @@
 ****************************************************************************/
 
 
-#pragma aux fortran "*" parm caller []\
-   value struct float struct routine [ax]  modify [ax bx cx dx es si di];
+#pragma aux fortran "*" \
+    __parm __caller [] \
+    __value __struct __float __struct __routine [__ax] \
+    __modify [__ax __bx __cx __dx __es __si __di]
 
 #pragma aux (fortran) OS386_Get_Version;
 #pragma aux (fortran) OS386_Get_Protected_Machine;

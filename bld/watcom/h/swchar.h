@@ -40,7 +40,7 @@ extern unsigned char    _dos_switch_char( void );
     "mov ax,3700h"  \
     "int 21h"       \
     "mov al,dl"     \
-    modify [dx];
+    __modify [__dx]
 
 #elif defined( __UNIX__ )
     #define _dos_switch_char() '-'

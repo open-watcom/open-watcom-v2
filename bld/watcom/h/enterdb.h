@@ -108,7 +108,8 @@ _WCRTDATA extern char volatile DEBUG_BREAK_ON_CATCH_NAME;
     #pragma aux EnterDebugger = "int 3"
 
     extern void EnterDebuggerWithMessage( const char __far * );
-    #pragma aux EnterDebuggerWithMessage parm caller [] = \
+    #pragma aux EnterDebuggerWithMessage \
+        __parm __caller [] = \
             "int 3" \
             "jmp short L1" \
             'W' 'V' 'I' 'D' 'E' 'O' \
