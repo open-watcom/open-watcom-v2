@@ -544,7 +544,7 @@ _RMSegStart:
     DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
     DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
     DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 41H, 41H
-    DB	01FFH DUP(41H,41H,41H,41H,41H,41H,41H,41H)
+    DB	1ffH DUP(41H,41H,41H,41H,41H,41H,41H,41H)
     DB	41H, 41H, 41H, 41H, 41H, 41H
 restore_state:
     push        ax

@@ -233,7 +233,7 @@ L$20:
     int         21H
 _TEXT		ENDS
 _data		SEGMENT	PARA PUBLIC USE16 'data'
-    DB	03FH DUP(0,0,0,0,0,0,0,0)
+    DB	3fH DUP(0,0,0,0,0,0,0,0)
     DB	0, 0, 0, 0, 0, 0, 0, 0
 L$21:
     DB	0
