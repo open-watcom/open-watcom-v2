@@ -113,7 +113,7 @@ static label_entry handleLabels( const char *sec_name, dis_sec_offset offset, di
                     BufferConcatChar( ' ' );
                     BufferConcat( sec_name );
                     BufferConcat( " + " );
-                    BufferHexU32( 4, routineBase );
+                    BufferHex4( routineBase );
                     BufferConcatNL();
                     BufferConcatNL();
                     routineBase = offset;
@@ -121,20 +121,16 @@ static label_entry handleLabels( const char *sec_name, dis_sec_offset offset, di
             }
             /* fall through */
         case LTYP_SECTION:
-            if( (DFormat & DFF_ASM) == 0 ) {
-                PrintLinePrefixAddress( offset, is32bit );
-                BufferAlignToTab( PREFIX_SIZE_TABS );
-            }
-            BufferQuoteName( l_entry->label.name );
-            BufferConcatChar( ':' );
-            BufferConcatNL();
-            break;
         case LTYP_UNNAMED:
             if( (DFormat & DFF_ASM) == 0 ) {
-                PrintLinePrefixAddress( offset, is32bit );
+                BufferLinePrefixAddress( offset, is32bit );
                 BufferAlignToTab( PREFIX_SIZE_TABS );
             }
-            BufferLabelNum( l_entry->label.number );
+            if( l_entry->type == LTYP_UNNAMED ) {
+                BufferLabelNum( l_entry->label.number );
+            } else {
+                BufferQuoteName( l_entry->label.name );
+            }
             BufferConcatChar( ':' );
             BufferConcatNL();
             break;
@@ -757,8 +753,8 @@ num_errors DoPass2( section_ptr section, unsigned_8 *contents, dis_sec_size size
                     break;
                 }
             }
-            PrintLinePrefixAddress( data.loop, is32bit );
-            PrintLinePrefixData( contents, data.loop, size, DisInsSizeInc( &DHnd ), decoded.size );
+            BufferLinePrefixAddress( data.loop, is32bit );
+            BufferLinePrefixData( contents, data.loop, size, DisInsSizeInc( &DHnd ), decoded.size );
             BufferAlignToTab( PREFIX_SIZE_TABS );
         }
         BufferConcatChar( '\t' );
@@ -790,7 +786,7 @@ num_errors DoPass2( section_ptr section, unsigned_8 *contents, dis_sec_size size
         BufferConcatChar( ' ' );
         BufferConcat( section->name );
         BufferConcat( " + " );
-        BufferHexU32( 4, routineBase );
+        BufferHex4( routineBase );
         BufferConcatNL();
         BufferConcatNL();
         BufferPrint();

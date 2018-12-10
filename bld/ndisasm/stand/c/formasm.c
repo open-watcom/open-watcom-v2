@@ -233,9 +233,8 @@ static size_t tryDUP( unsigned_8 *bytes, size_t i, size_t size )
     if( dup < MIN_DUP_LINES )
         return( 0 );
 
-    BufferConcatChar( '0' );
     BufferHexU32( 0, dup );
-    BufferConcat( "H DUP(" );
+    BufferConcat( " DUP(" );
     value.u._32[I64HI32] = 0;
     for( dup = 0; dup < 7; dup++ ) {
         value.u._32[I64LO32] = bytes[i + dup];
@@ -562,49 +561,25 @@ static label_entry dumpAsmLabel( label_entry l_entry, section_ptr section,
                 break;
             /* fall through */
         case LTYP_UNNAMED:
-            if( raw ) {
-                strncpy( buffer, (char *)contents + curr_pos, sizeof( unsigned_32 ) );
+            if( (DFormat & DFF_ASM) == 0 ) {
+                BufferConcat( "\t     " );
+                BufferHexU32( 4, curr_pos );
+                BufferConcatChar( '\t' );
             }
             if( l_entry->type == LTYP_UNNAMED ) {
-                BufferConcatChar( '\t' );
-                if( (DFormat & DFF_ASM) == 0 ) {
-                    BufferConcat( "     " );
-                    BufferHexU32( 4, curr_pos );
-                    BufferConcatChar( '\t' );
-                    BufferLabelNum( l_entry->label.number );
-                    BufferConcatChar( ':' );
-                    if( raw ) {
-                        printRawAndAddress( buffer, curr_pos );
-                    }
-                } else {
-                    BufferLabelNum( l_entry->label.number );
-                    if( l_entry->offset != curr_pos ) {
-                        BufferConcat( " equ $-" );
-                        BufferDecimal( (int)( curr_pos - l_entry->offset ) );
-                    } else {
-                        BufferConcatChar( ':' );
-                    }
-                }
+                BufferLabelNum( l_entry->label.number );
             } else {
-                if( (DFormat & DFF_ASM) == 0 ) {
-                    BufferConcatChar( '\t' );
-                    BufferConcat( "     " );
-                    BufferHexU32( 4, curr_pos );
-                    BufferConcatChar( '\t' );
-                    BufferQuoteName( l_entry->label.name );
-                    BufferConcatChar( ':' );
-                    if( raw ) {
-                        printRawAndAddress( buffer, curr_pos );
-                    }
-                } else {
-                    BufferQuoteName( l_entry->label.name );
-                    if( l_entry->offset != curr_pos ) {
-                        BufferConcat( " equ $-" );
-                        BufferDecimal( (int)( curr_pos - l_entry->offset ) );
-                    } else {
-                        BufferConcatChar( ':' );
-                    }
-                }
+                BufferQuoteName( l_entry->label.name );
+            }
+            if( (DFormat & DFF_ASM) && l_entry->offset != curr_pos ) {
+                BufferConcat( " equ $-" );
+                BufferDecimal( (int)( curr_pos - l_entry->offset ) );
+            } else {
+                BufferConcatChar( ':' );
+            }
+            if( (DFormat & DFF_ASM) == 0 && raw ) {
+                strncpy( buffer, (char *)contents + curr_pos, sizeof( unsigned_32 ) );
+                printRawAndAddress( buffer, curr_pos );
             }
             BufferConcatNL();
             BufferPrint();
@@ -767,13 +742,14 @@ static return_val bssUnixASMSection( section_ptr section, dis_sec_size size, lab
         }
         switch( prev_entry->type ) {
         case LTYP_UNNAMED:
-            BufferConcat( prefix );
-            BufferLabelNum( prev_entry->label.number );
-            break;
         case LTYP_SECTION:
         case LTYP_NAMED:
             BufferConcat( prefix );
-            BufferQuoteName( prev_entry->label.name );
+            if( prev_entry->type == LTYP_UNNAMED ) {
+                BufferLabelNum( prev_entry->label.number );
+            } else {
+                BufferQuoteName( prev_entry->label.name );
+            }
             break;
         default:
             break;
@@ -798,13 +774,14 @@ static return_val bssUnixASMSection( section_ptr section, dis_sec_size size, lab
         }
         switch( prev_entry->type ) {
         case LTYP_UNNAMED:
-            BufferConcat( prefix );
-            BufferLabelNum( prev_entry->label.number );
-            break;
         case LTYP_SECTION:
         case LTYP_NAMED:
             BufferConcat( prefix );
-            BufferQuoteName( prev_entry->label.name );
+            if( prev_entry->type == LTYP_UNNAMED ) {
+                BufferLabelNum( prev_entry->label.number );
+            } else {
+                BufferQuoteName( prev_entry->label.name );
+            }
             break;
         default:
             break;

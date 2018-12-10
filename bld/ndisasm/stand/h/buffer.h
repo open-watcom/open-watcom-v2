@@ -40,12 +40,17 @@ extern void             BufferConcatChar( char );
 extern void             BufferConcatNL( void );
 extern void             BufferHex( unsigned prec, dis_value value );
 extern void             BufferHexU32( unsigned prec, uint_32 value );
+extern void             BufferHex2( unsigned char value );
+extern void             BufferHex4( unsigned short value );
+extern void             BufferHex8( uint_32 value );
 extern void             BufferDecimal( long value );
 extern void             BufferUnsigned( unsigned long value );
 extern void             BufferPrint( void );
 extern size_t           BufferMsg( int );
 extern void             BufferAlignToTab( unsigned );
 extern void             BufferLabelNum( uint_32 value );
+extern void             BufferLinePrefixAddress( dis_sec_offset, bool );
+extern void             BufferLinePrefixData( unsigned_8 *, dis_sec_offset, dis_sec_offset, unsigned, unsigned );
 extern char             *FmtHexNum( char *buff, unsigned prec, dis_value value );
 extern char             *FmtLabelNum( char *buff, uint_32 value );
 

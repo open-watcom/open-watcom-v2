@@ -293,7 +293,7 @@ static void printMasmHeader( section_ptr section )
                 BufferConcat( getCombine( combine ) );
             } else {
                 BufferConcat( " at " );
-                BufferHexU32( 8, (unsigned)frame << 4 );
+                BufferHexU32( 8, frame << 4 );
             }
             BufferConcatChar( ' ' );
             BufferConcat( getUse( flags ) );
@@ -377,7 +377,7 @@ static void printMasmHeader( section_ptr section )
             BufferConcat( getUse( flags ) );
         }
         BufferConcatChar( ' ' );
-        BufferHexU32( 8, size );
+        BufferHex8( size );
         BufferConcat( " bytes" );
     }
     BufferConcatNL();
@@ -429,52 +429,6 @@ void PrintTail( section_ptr section )
         BufferConcat( "\t\tENDS" );
         BufferConcatNL();
         BufferPrint();
-    }
-}
-
-
-void PrintLinePrefixAddress( dis_sec_offset off, bool is32bit )
-{
-    if( is32bit ) {
-        BufferHexU32( 8, off );
-    } else {
-        BufferHexU32( 4, off );
-    }
-}
-
-
-void PrintLinePrefixData( unsigned_8 *data, dis_sec_offset off, dis_sec_offset total, unsigned item_size, unsigned len )
-{
-    unsigned    done;
-    union ptr {
-        unsigned_8      u8;
-        unsigned_16     u16;
-        unsigned_32     u32;
-    }           *p;
-
-    p = (union ptr *)( data + off );
-    total -= off;
-    BufferConcatChar( ' ' );
-    for( done = 0; done < len; done += item_size ) {
-        BufferConcatChar( ' ' );
-        if( done < total ) {
-            if( item_size == 1 ) {
-                BufferHexU32( 2, p->u8 );
-            } else if( item_size == 2 ) {
-                BufferHexU32( 4, p->u16 );
-            } else if( item_size == 4 ) {
-                BufferHexU32( 8, p->u32 );
-            }
-            p = (union ptr *)( (char *)p + item_size );
-        } else {
-            if( item_size == 1 ) {
-                BufferConcat( "  " );
-            } else if( item_size == 2 ) {
-                BufferConcat( "    " );
-            } else if( item_size == 4 ) {
-                BufferConcat( "        " );
-            }
-        }
     }
 }
 
@@ -547,27 +501,20 @@ static label_entry dumpLabel( label_entry l_entry, section_ptr section,
         switch( l_entry->type ){
         case LTYP_ABSOLUTE:
             break;
-        case LTYP_UNNAMED:
-            PrintLinePrefixAddress( loop, is32bit );
-            BufferAlignToTab( PREFIX_SIZE_TABS );
-            BufferLabelNum( l_entry->label.number );
-            if( loop != l_entry->offset ) {
-                BufferConcat( " equ $-" );
-                BufferDecimal( (int)( loop - l_entry->offset ) );
-            } else {
-                BufferConcatChar( ':' );
-            }
-            BufferConcatNL();
-            break;
         case LTYP_SECTION:
         case LTYP_NAMED:
             if( strcmp( l_entry->label.name, section->name ) == 0 )
                 break;
-            /* fall down */
+            /* fall through */
+        case LTYP_UNNAMED:
         default:
-            PrintLinePrefixAddress( loop, is32bit );
+            BufferLinePrefixAddress( loop, is32bit );
             BufferAlignToTab( PREFIX_SIZE_TABS );
-            BufferQuoteName( l_entry->label.name );
+            if( l_entry->type == LTYP_UNNAMED ) {
+                BufferLabelNum( l_entry->label.number );
+            } else {
+                BufferQuoteName( l_entry->label.name );
+            }
             if( loop != l_entry->offset ) {
                 BufferConcat( " equ $-" );
                 BufferDecimal( (int)( loop - l_entry->offset ) );
@@ -660,8 +607,8 @@ void DumpDataFromSection( unsigned_8 *contents, dis_sec_offset start,
 
         /* This is a bit fake.  We want to print a full 16 columns,
            but we only want the amount of data specified, up to 16. */
-        PrintLinePrefixAddress( loop, is32bit );
-        PrintLinePrefixData( contents, loop, loop + amount, 1, 16 );
+        BufferLinePrefixAddress( loop, is32bit );
+        BufferLinePrefixData( contents, loop, loop + amount, 1, 16 );
         BufferConcatChar( ' ' );
         if( r_entry != NULL && r_entry->offset == loop ) {
             HandleRefInData( r_entry, contents + loop, true );
@@ -763,21 +710,19 @@ static void bssSection( section_ptr section, dis_sec_size size, unsigned pass )
 
     for( l_entry = sec_label_list->first; l_entry != NULL; l_entry = l_entry->next ) {
         switch( l_entry->type ) {
-        case LTYP_UNNAMED:
-            PrintLinePrefixAddress( l_entry->offset, is32bit );
-            BufferAlignToTab( PREFIX_SIZE_TABS );
-            BufferLabelNum( l_entry->label.number );
-            BufferConcatChar( ':' );
-            BufferConcatNL();
-            break;
         case LTYP_SECTION:
             if( strcmp( l_entry->label.name, section->name ) == 0 )
                 break;
-            /* Fall through */
+            /* fall through */
+        case LTYP_UNNAMED:
         case LTYP_NAMED:
-            PrintLinePrefixAddress( l_entry->offset, is32bit );
+            BufferLinePrefixAddress( l_entry->offset, is32bit );
             BufferAlignToTab( PREFIX_SIZE_TABS );
-            BufferQuoteName( l_entry->label.name );
+            if( l_entry->type == LTYP_UNNAMED ) {
+                BufferLabelNum( l_entry->label.number );
+            } else {
+                BufferQuoteName( l_entry->label.name );
+            }
             BufferConcatChar( ':' );
             BufferConcatNL();
             break;

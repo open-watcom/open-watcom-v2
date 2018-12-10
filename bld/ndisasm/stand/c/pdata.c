@@ -181,7 +181,7 @@ return_val DumpPDataSection( section_ptr section, unsigned_8 *contents, dis_sec_
             BufferHexU32( 4, loop );
             BufferConcat( "\t\t" );
         } else {
-            PrintLinePrefixAddress( loop, is32bit );
+            BufferLinePrefixAddress( loop, is32bit );
             BufferAlignToTab( PREFIX_SIZE_TABS );
             BufferConcat( CommentString );
             BufferConcatChar( ' ' );

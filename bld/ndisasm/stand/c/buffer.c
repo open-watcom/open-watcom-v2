@@ -207,6 +207,25 @@ void BufferHexU32( unsigned prec, uint_32 value )
     BufferConcat( IntermedBuffer );
 }
 
+void BufferHex2( unsigned char value )
+{
+    sprintf( IntermedBuffer, "%02X", value );
+    BufferConcat( IntermedBuffer );
+}
+
+void BufferHex4( unsigned short value )
+{
+    sprintf( IntermedBuffer, "%04X", value );
+    BufferConcat( IntermedBuffer );
+}
+
+void BufferHex8( uint_32 value )
+{
+    sprintf( IntermedBuffer, "%08X", value );
+    BufferConcat( IntermedBuffer );
+}
+
+
 void BufferDecimal( long value )
 {
     sprintf( IntermedBuffer, "%ld", value );
@@ -239,4 +258,48 @@ void BufferLabelNum( uint_32 value )
 {
     FmtLabelNum( IntermedBuffer, value );
     BufferConcat( IntermedBuffer );
+}
+
+void BufferLinePrefixAddress( dis_sec_offset off, bool is32bit )
+{
+    if( is32bit ) {
+        BufferHex8( off );
+    } else {
+        BufferHex4( off );
+    }
+}
+
+void BufferLinePrefixData( unsigned_8 *data, dis_sec_offset off, dis_sec_offset total, unsigned item_size, unsigned len )
+{
+    unsigned    done;
+    union ptr {
+        unsigned_8      u8;
+        unsigned_16     u16;
+        unsigned_32     u32;
+    }           *p;
+
+    p = (union ptr *)( data + off );
+    total -= off;
+    BufferConcatChar( ' ' );
+    for( done = 0; done < len; done += item_size ) {
+        BufferConcatChar( ' ' );
+        if( done < total ) {
+            if( item_size == 1 ) {
+                BufferHex2( p->u8 );
+            } else if( item_size == 2 ) {
+                BufferHex4( p->u16 );
+            } else if( item_size == 4 ) {
+                BufferHex8( p->u32 );
+            }
+            p = (union ptr *)( (char *)p + item_size );
+        } else {
+            if( item_size == 1 ) {
+                BufferConcat( "  " );
+            } else if( item_size == 2 ) {
+                BufferConcat( "    " );
+            } else if( item_size == 4 ) {
+                BufferConcat( "        " );
+            }
+        }
+    }
 }
