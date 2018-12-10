@@ -45,21 +45,21 @@ extern  unsigned    __fstsw( void );
                 ".387"              \
                 "xor eax,eax"       \
                 "fnstsw ax"         \
-                value [eax];
+    __value [__eax];
 #else
 #pragma aux __fclex =               \
                 ".8087"             \
-                float "fclex";
+        __float "fclex"
 /* On the 287, we could use the more sensible fnstsw ax variant. */
 /* On the 8087, do it the hard way */
 #pragma aux __fstsw =               \
                 ".8087"             \
                 "push bx"           \
                 "mov bx,sp"         \
-                float "fstsw [bx]"  \
-                float "fnop"        \
+        __float "fstsw [bx]"        \
+        __float "fnop"              \
                 "pop bx"            \
-                value [bx];
+    __value [__bx];
 #endif
 
 
