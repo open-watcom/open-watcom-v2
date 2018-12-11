@@ -381,48 +381,48 @@ syscall_res sys_call0( u_long func );
 #pragma aux sys_call0 =                         \
     "syscall"                                   \
     "move $v1,$a3"                              \
-    parm [$v0]                                  \
-    value [$v1 $v0];
+    __parm [$v0] \
+    __value [$v1 $v0];
 
 syscall_res sys_call1( u_long func, u_long r_4 );
 #pragma aux sys_call1 =                         \
     "syscall"                                   \
     "move $v1,$a3"                              \
-    parm [$v0] [$a0]                            \
-    value [$v1 $v0];
+    __parm [$v0] [$a0] \
+    __value [$v1 $v0];
 
 void sys_call1n( u_long func, u_long r_4 );
 #pragma aux sys_call1n =                        \
     "syscall"                                   \
-    parm [$v0] [$a0];
+    __parm [$v0] [$a0];
 
 syscall_res sys_call2( u_long func, u_long r_4, u_long r_5 );
 #pragma aux sys_call2 =                         \
     "syscall"                                   \
     "move $v1,$a3"                              \
-    parm [$v0] [$a0] [$a1]                      \
-    value [$v1 $v0];
+    __parm [$v0] [$a0] [$a1] \
+    __value [$v1 $v0];
 
 syscall_res sys_call3( u_long func, u_long r_4, u_long r_5, u_long r_6 );
 #pragma aux sys_call3 =                         \
     "syscall"                                   \
     "move $v1,$a3"                              \
-    parm [$v0] [$a0] [$a1] [$a2]                \
-    value [$v1 $v0];
+    __parm [$v0] [$a0] [$a1] [$a2] \
+    __value [$v1 $v0];
 
 syscall_res sys_call4( u_long func, u_long r_4, u_long r_5, u_long r_6, u_long r_7 );
 #pragma aux sys_call4 =                         \
     "syscall"                                   \
     "move $v1,$a3"                              \
-    parm [$v0] [$a0] [$a1] [$a2] [$a3]          \
-    value [$v1 $v0];
+    __parm [$v0] [$a0] [$a1] [$a2] [$a3] \
+    __value [$v1 $v0];
 
 syscall_res sys_call5( u_long func, u_long r_4, u_long r_5, u_long r_6, u_long r_7, u_long arg5 );
 #pragma aux sys_call5 =                         \
     "syscall"                                   \
     "move $v1,$a3"                              \
-    parm [$v0] [$a0] [$a1] [$a2] [$a3]          \
-    value [$v1 $v0];
+    __parm [$v0] [$a0] [$a1] [$a2] [$a3] \
+    __value [$v1 $v0];
 
 #define _sys_exit(rc)       sys_call1n(SYS_exit, rc)
 #define _sys_exit_group(rc) sys_call1n(SYS_exit_group, rc)

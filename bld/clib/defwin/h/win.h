@@ -48,7 +48,7 @@
 #ifdef __OS2__
 typedef int         HANDLE;
 extern  unsigned    __WinSetWindowPos(unsigned);
-#pragma aux __WinSetWindowPos = parm [eax] modify [ebx]
+#pragma aux __WinSetWindowPos __parm [__eax] __modify [__ebx]
 #define WinSetWindowPos(a1,a2,a3,a4,a5,a6,a7)           \
         __WinSetWindowPos(WinSetWindowPos(a1,a2,a3,a4,a5,a6,a7))
 #endif

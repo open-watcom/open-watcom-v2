@@ -33,11 +33,11 @@
 
 extern void     __qnx_exit( int __status );
 #if defined( _M_I86 )
-    #pragma aux __qnx_exit aborts parm caller [ax]
+    #pragma aux __qnx_exit __aborts __parm __caller [__ax]
 #elif defined( _M_IX86 )
-    #pragma aux __qnx_exit aborts parm caller [eax]
+    #pragma aux __qnx_exit __aborts __parm __caller [__eax]
 #else
-    #pragma aux __qnx_exit aborts
+    #pragma aux __qnx_exit __aborts
 #endif
 
 extern void     __sigstub();

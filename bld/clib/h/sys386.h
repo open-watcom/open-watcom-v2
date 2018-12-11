@@ -359,45 +359,46 @@ typedef unsigned long       syscall_res;
  */
 
 syscall_res sys_call0( u_long func );
-#pragma aux sys_call0 =                         \
-    "int    0x80"                               \
-    parm [eax]                                  \
-    value [eax];
+#pragma aux sys_call0 = \
+        "int    0x80"   \
+    __parm [eax] \
+    __value [eax]
 
 syscall_res sys_call1( u_long func, u_long r_ebx );
-#pragma aux sys_call1 =                         \
-    "int    0x80"                               \
-    parm [eax] [ebx]                            \
-    value [eax];
+#pragma aux sys_call1 = \
+        "int    0x80"   \
+    __parm [__eax] [__ebx] \
+    __value [__eax]
 
 void sys_call1n( u_long func, u_long r_ebx );
-#pragma aux sys_call1n =                        \
-    "int    0x80"                               \
-    parm [eax] [ebx] aborts;
+#pragma aux sys_call1n =    \
+        "int    0x80"       \
+    __parm [__eax] [__ebx] \
+    __aborts
 
 syscall_res sys_call2( u_long func, u_long r_ebx, u_long r_ecx );
-#pragma aux sys_call2 =                         \
-    "int    0x80"                               \
-    parm [eax] [ebx] [ecx]                      \
-    value [eax];
+#pragma aux sys_call2 = \
+        "int    0x80"   \
+    __parm [__eax] [__ebx] [__ecx] \
+    __value [__eax]
 
 syscall_res sys_call3( u_long func, u_long r_ebx, u_long r_ecx, u_long r_edx );
-#pragma aux sys_call3 =                         \
-    "int    0x80"                               \
-    parm [eax] [ebx] [ecx] [edx]                \
-    value [eax];
+#pragma aux sys_call3 = \
+        "int    0x80"   \
+    __parm [__eax] [__ebx] [__ecx] [__edx] \
+    __value [__eax]
 
 syscall_res sys_call4( u_long func, u_long r_ebx, u_long r_ecx, u_long r_edx, u_long r_esi );
-#pragma aux sys_call4 =                         \
-    "int    0x80"                               \
-    parm [eax] [ebx] [ecx] [edx] [esi]          \
-    value [eax];
+#pragma aux sys_call4 = \
+        "int    0x80"   \
+    __parm [__eax] [__ebx] [__ecx] [__edx] [__esi] \
+    __value [__eax]
 
 syscall_res sys_call5( u_long func, u_long r_ebx, u_long r_ecx, u_long r_edx, u_long r_esi, u_long r_edi );
-#pragma aux sys_call5 =                         \
-    "int    0x80"                               \
-    parm [eax] [ebx] [ecx] [edx] [esi] [edi]    \
-    value [eax];
+#pragma aux sys_call5 = \
+        "int    0x80"   \
+    __parm [__eax] [__ebx] [__ecx] [__edx] [__esi] [__edi] \
+    __value [__eax]
 
 #define _sys_exit_group(rc) sys_call1n(SYS_exit_group, rc)
 #define _sys_exit(rc)       sys_call1n(SYS_exit, rc)

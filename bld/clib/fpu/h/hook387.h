@@ -31,7 +31,7 @@
 
 
 extern char __hook387( D16INFO __far *_d16infop );
-#pragma aux __hook387 "*" parm caller [DX EAX];
+#pragma aux __hook387 "*" __parm __caller [__dx __eax];
 
 extern char __unhook387( D16INFO __far *_d16infop );
-#pragma aux __unhook387 "*" parm caller [DX EAX];
+#pragma aux __unhook387 "*" __parm __caller [__dx __eax];
