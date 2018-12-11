@@ -61,12 +61,11 @@
 #  error 'You must be using a compiler that supports __int64'
 #endif
 
-unsigned __int64 P5Timer_ReadTSC();
-#pragma aux     P5Timer_ReadTSC =   \
-        ".586"                      \
-        "rdtsc"                     \
-        value [eax edx];
-
+unsigned __int64 P5Timer_ReadTSC( void );
+#pragma aux P5Timer_ReadTSC =   \
+        ".586"                  \
+        "rdtsc"                 \
+    __value [__eax __edx]
 
 
 typedef unsigned __int64 p5time_t;
