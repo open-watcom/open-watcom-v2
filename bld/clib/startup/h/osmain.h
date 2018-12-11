@@ -33,13 +33,13 @@
 
   #if defined( _M_I86 )
     extern int _OS2Main( char _WCI86FAR *stklow, char _WCI86FAR *stktop, unsigned envseg, unsigned cmdoff );
-    #pragma aux _OS2Main "_*" parm caller [ dx ax ] [ cx bx ]
+    #pragma aux _OS2Main "_*" __parm __caller [__dx __ax] [__cx __bx]
   #else
     extern void __OS2Main( unsigned hmod, unsigned reserved, char *env, char *cmd );
     extern void __wOS2Main( unsigned hmod, unsigned reserved, char *env, char *cmd );
     #if defined(_M_IX86)
-      #pragma aux __wOS2Main "*" parm caller []
-      #pragma aux __OS2Main "*" parm caller []
+      #pragma aux __wOS2Main "*" __parm __caller []
+      #pragma aux __OS2Main "*" __parm __caller []
     #endif
   #endif
 

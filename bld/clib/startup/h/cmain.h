@@ -37,10 +37,10 @@
         struct _proc_spawn __near       *cmd,       /* [di] pointer to spawn msg   */
         unsigned short                  stk_bot,    /* [dx] bottom of stack        */
         pid_t                           pid );      /* [ax] process id             */
-    #pragma aux _CMain "_*" parm [bx] [cx] [di] [dx] [ax];
+    #pragma aux _CMain "_*" __parm [__bx] [__cx] [__di] [__dx] [__ax]
   #else
     extern void _CMain( int argc, char **argv, char **arge );
-    #pragma aux _CMain "_*" parm [eax] [edx] [ebx];
+    #pragma aux _CMain "_*" __parm [__eax] [__edx] [__ebx]
   #endif
 #else
   #if defined( _M_I86 )
