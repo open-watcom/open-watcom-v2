@@ -34,10 +34,10 @@ extern  int _dosret0( int ax, int carry );
 
 #if defined( _M_IX86 ) && defined( __WATCOMC__ )
 #if defined( _M_I86 )
-#pragma aux _dosretax "_*" parm [ax] [dx];
-#pragma aux _dosret0 "_*" parm [ax] [dx];
+#pragma aux _dosretax "_*" __parm [__ax] [__dx]
+#pragma aux _dosret0 "_*" __parm [__ax] [__dx]
 #else
-#pragma aux _dosretax "_*" parm [eax] [edx];
-#pragma aux _dosret0 "_*" parm [eax] [edx];
+#pragma aux _dosretax "_*" __parm [__eax] [__edx]
+#pragma aux _dosret0 "_*" __parm [__eax] [__edx]
 #endif
 #endif

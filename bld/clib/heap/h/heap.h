@@ -207,11 +207,11 @@ extern  void_bptr       __MemAllocator( unsigned __size, heap_bptr __heap );
 extern  void            __MemFree( void_bptr __cstg, heap_bptr __heap );
 #endif
 #if defined( _M_I86 )
-  #pragma aux __MemAllocator "*" parm [ax] [dx] [bx]
-  #pragma aux __MemFree      "*" parm [ax] [dx] [bx]
+  #pragma aux __MemAllocator "*" __parm [__ax] [__dx] [__bx]
+  #pragma aux __MemFree      "*" __parm [__ax] [__dx] [__bx]
 #elif defined( _M_IX86 )
-  #pragma aux __MemAllocator "*" parm [eax] [edx]
-  #pragma aux __MemFree      "*" parm [eax] [edx]
+  #pragma aux __MemAllocator "*" __parm [__eax] [__edx]
+  #pragma aux __MemFree      "*" __parm [__eax] [__edx]
 #endif
 
 #if defined( _M_I86 )
