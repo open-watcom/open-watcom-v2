@@ -36,54 +36,54 @@
 #if defined(_M_IX86)
     #if !defined(__WINDOWS__) && !(defined(__RDOSDEV__) && defined(__SW_ZDP))
         #if defined(__BIG_DATA__)
-            #define __DS        __ds
+            #define REG_DS      __ds
         #endif
     #endif
 
     #if !defined(__FLAT__)
-        #define __ES            __es
+        #define REG_ES          __es
     #endif
 
     #if defined(__386__)
         #if defined(__WINDOWS__) || !defined(__FLAT__)
-            #define __FS        __fs
+            #define REG_FS      __fs
         #endif
 
-        #define __GS            __gs
+        #define REG_GS          __gs
         #if defined(__SW_3S)
-            #define __AX        __eax
-            #define __BX        __ebx
-            #define __CX        __ecx
-            #define __DX        __edx
+            #define REG_AX      __eax
+            #define REG_BX      __ebx
+            #define REG_CX      __ecx
+            #define REG_DX      __edx
         #endif
     #endif
 
-    #ifndef __AX
-        #define __AX
+    #ifndef REG_AX
+        #define REG_AX
     #endif
-    #ifndef __BX
-        #define __BX
+    #ifndef REG_BX
+        #define REG_BX
     #endif
-    #ifndef __CX
-        #define __CX
+    #ifndef REG_CX
+        #define REG_CX
     #endif
-    #ifndef __DX
-        #define __DX
+    #ifndef REG_DX
+        #define REG_DX
     #endif
-    #ifndef __DS
-        #define __DS
+    #ifndef REG_DS
+        #define REG_DS
     #endif
-    #ifndef __ES
-        #define __ES
+    #ifndef REG_ES
+        #define REG_ES
     #endif
-    #ifndef __FS
-        #define __FS
+    #ifndef REG_FS
+        #define REG_FS
     #endif
-    #ifndef __GS
-        #define __GS
+    #ifndef REG_GS
+        #define REG_GS
     #endif
 
-    #pragma aux __outside_CLIB modify [__AX __BX __CX __DX __DS __ES __FS __GS];
+    #pragma aux __outside_CLIB modify [REG_AX REG_BX REG_CX REG_DX REG_DS REG_ES REG_FS REG_GS]
     /*
         use as follows:
 
@@ -92,14 +92,14 @@
 
     */
 
-    #undef __AX
-    #undef __BX
-    #undef __CX
-    #undef __DX
-    #undef __DS
-    #undef __ES
-    #undef __FS
-    #undef __GS
+    #undef REG_AX
+    #undef REG_BX
+    #undef REG_CX
+    #undef REG_DX
+    #undef REG_DS
+    #undef REG_ES
+    #undef REG_FS
+    #undef REG_GS
 #endif
 
 #endif

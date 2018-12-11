@@ -40,7 +40,7 @@
 #if defined(_M_IX86)
   extern unsigned _WCNEAR __chipbug;
   extern double __fdiv_chk( double n, double d );
-  #pragma aux __fdiv_chk "*" parm [8087] value [8087]
+  #pragma aux __fdiv_chk "*" __parm [__8087] __value [__8087]
 
   #if defined( __SW_FPC ) || (__WATCOMC__ >= 1000)
     #define PDIV( n, d )        ((n)/(d))

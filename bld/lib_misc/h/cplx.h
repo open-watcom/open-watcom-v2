@@ -140,15 +140,15 @@ _WMRTLINK extern xcomplex   _IF_C32PowI( extended a, extended b, intstar4 i );
 #define TANH( x )      tanh( x )
 
 #if defined( __386__ )
-  #pragma aux rt_rtn parm routine [eax ebx ecx edx 8087];
+  #pragma aux rt_rtn __parm __routine [__eax __ebx __ecx __edx __8087]
   #if defined( __SW_3S )
     #if defined( __FLAT__ )
-      #pragma aux (rt_rtn) rt_rtn modify [8087 gs];
+      #pragma aux (rt_rtn) rt_rtn __modify [__8087 __gs]
     #else
-      #pragma aux (rt_rtn) rt_rtn modify [8087 es gs];
+      #pragma aux (rt_rtn) rt_rtn __modify [__8087 __es __gs]
     #endif
     #if defined( __FPI__ )
-      #pragma aux (rt_rtn) flt_rt_rtn value [8087];
+      #pragma aux (rt_rtn) flt_rt_rtn __value [__8087]
     #else
       #pragma aux (rt_rtn) flt_rt_rtn;
     #endif
@@ -156,7 +156,7 @@ _WMRTLINK extern xcomplex   _IF_C32PowI( extended a, extended b, intstar4 i );
     #pragma aux (rt_rtn) flt_rt_rtn;
   #endif
 #elif defined( _M_I86 )
-  #pragma aux rt_rtn parm [ax bx cx dx 8087];
+  #pragma aux rt_rtn __parm [__ax __bx __cx __dx __8087]
   #pragma aux (rt_rtn) flt_rt_rtn;
 #endif
 
