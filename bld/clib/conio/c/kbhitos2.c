@@ -36,14 +36,17 @@
 #define INCL_16
 #define INCL_SUB
 #include <wos2.h>
+#include "dosfuncx.h"
 #include "rtdata.h"
 #include "defwin.h"
 
+
 #if defined(__OS2_286__)
-    extern  signed char _os_kbhit( void );
-    #pragma aux  _os_kbhit = "mov ah,0bh"   \
-                             "int 21h"      \
-                             value [al];
+    extern unsigned char    _dos( unsigned char );
+    #pragma aux _dos = \
+            "int 21h"      \
+        __parm caller   [__ah] \
+        __value         [__al]
 #endif
 
 _WCRTLINK int kbhit( void )
@@ -55,13 +58,13 @@ _WCRTLINK int kbhit( void )
 #ifdef DEFAULT_WINDOWING
     if( _WindowsKbhit != NULL ) {   // Default windowing
         LPWDATA     res;
-        res = _WindowsIsWindowedHandle( (int) STDIN_FILENO );
+        res = _WindowsIsWindowedHandle( (int)STDIN_FILENO );
         return( _WindowsKbhit( res ) );
     }
 #endif
 #if defined(__OS2_286__)
     if( _RWD_osmode == DOS_MODE ) {
-        return( _os_kbhit() );
+        return( _dos( DOS_INPUT_STATUS ) != 0 );
     }
     KbdPeek( &info, 0 );
     return( ( info.fbStatus & 0xe0 ) != 0 );
