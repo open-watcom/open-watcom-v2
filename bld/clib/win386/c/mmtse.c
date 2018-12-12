@@ -35,7 +35,7 @@
 #include "cover.h"
 
 #define GetTimerCallBack        WINFUNCTION253ADDR
-#pragma aux     WINFUNCTION253ADDR      "*"
+#pragma aux WINFUNCTION253ADDR "*"
 
 extern LPTIMECALLBACK (__far *GetTimerCallBack)();
 static LPTIMECALLBACK   CallBackFunc;
@@ -44,7 +44,7 @@ extern  void __InvokeCallBack();
 #pragma aux  __InvokeCallBack = \
         "and    esp,0000FFFFh"  \
         "jmp    eax"            \
-        parm [eax];
+    __parm [__eax]
 
 void __TimerCallBack()
 {

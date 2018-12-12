@@ -79,7 +79,7 @@ int wctomb( char *s, wchar_t wc )
                         wc >>= 6;
                     } while( --dst != s );
                     mask = 0x7F >> ++rv;
-                    *dst = wc & mask | ( ~mask << 1 );
+                    *dst = ( wc & mask ) | ( ~mask << 1 );
                     return( rv );
                 }
                 return( -1 );

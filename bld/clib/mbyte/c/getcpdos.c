@@ -39,6 +39,7 @@
     #include "extender.h"
 #endif
 #include "getcpdos.h"
+#include "dointr.h"
 
 
 /* new code using DOS fn 0x6601 */
@@ -47,10 +48,12 @@ extern unsigned short _dos_get_code_page( void );
 #pragma aux _dos_get_code_page = \
         "mov ax,6601h"  \
         "int 21h"       \
-        "jnc L1"        \
+        "jnc short L1"  \
         "xor bx,bx"     \
     "L1:"               \
-    value [bx] modify [ax dx];
+    __parm      [] \
+    __value     [__bx] \
+    __modify    [__ax __dx]
 #endif
 
 unsigned short dos_get_code_page( void )
@@ -67,7 +70,7 @@ unsigned short dos_get_code_page( void )
 
         memset( &regs, 0, sizeof( regs ) );
         regs.w.ax = 0x6601;                         /* get extended country info */
-        intr( 0x21, &regs );
+        _DoINTR( 0x21, &regs, 0 );
         if( (regs.w.flags & 1) == 0 ) {
             codepage = regs.w.bx;                   /* return active code page */
         }
@@ -126,14 +129,15 @@ extern unsigned short _dos_get_code_page( void );
         "pop es"        /* buffer segment */ \
         "int 21h"       /* call DOS */ \
         "mov ax,[bp-8+5]" /* code page */ \
-        "jnc NoError"   \
+        "jnc short NoError" \
         "xor ax,ax"     \
-        "NoError:"      \
+    "NoError:"      \
         "mov sp,bp"     \
         "pop bp"        \
         "pop ds"        \
-        value           [ax] \
-        modify          [ax bx cx dx di es];
+    __parm      [] \
+    __value     [__ax] \
+    __modify    [__ax __bx __cx __dx __di __es]
 #endif
 unsigned short dos_get_code_page( void )
 {

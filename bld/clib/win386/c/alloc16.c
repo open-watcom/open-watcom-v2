@@ -37,10 +37,12 @@
 
 extern void ClearFS_GS( void );
 #pragma aux ClearFS_GS = \
-    "xor eax,eax"   \
-    "mov fs,eax"    \
-    "mov gs,eax"    \
-    modify [eax];
+        "xor eax,eax"   \
+        "mov fs,eax"    \
+        "mov gs,eax"    \
+    __parm              [] \
+    __value             \
+    __modify __exact    [__eax __fs __gs]
 
 DWORD AllocAlias16( void *offset )
 {

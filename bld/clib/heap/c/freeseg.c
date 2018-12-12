@@ -76,37 +76,34 @@ static int DoFreeSeg( __segment seg )
 extern int tricky_free_seg( int, int );
 #if defined(__OS2__) && defined(__BIG_DATA__)
 #pragma aux tricky_free_seg = \
-        "mov    cx,es"          \
-        "cmp    cx,ax"          \
-        "jl     L1"             \
-        "cmp    cx,bx"          \
-        "jg     L1"             \
-        "xor    cx,cx"          \
-        "L1:"                   \
-        "mov    dx,ds"          \
-        "cmp    dx,ax"          \
-        "jl     L2"             \
-        "cmp    dx,bx"          \
-        "jg     L2"             \
-        "xor    dx,dx"          \
-        "L2:"                   \
-        "call   DoFreeSeg"      \
-        "mov    es,cx"          \
-        "mov    ds,dx"          \
+        "mov    cx,es"      \
+        "cmp    cx,ax"      \
+        "jl short L1"       \
+        "cmp    cx,bx"      \
+        "jg short L1"       \
+        "xor    cx,cx"      \
+    "L1: mov    dx,ds"      \
+        "cmp    dx,ax"      \
+        "jl short L2"       \
+        "cmp    dx,bx"      \
+        "jg short L2"       \
+        "xor    dx,dx"      \
+    "L2: call DoFreeSeg"    \
+        "mov    es,cx"      \
+        "mov    ds,dx"      \
     __parm      [__ax] [__bx] \
     __value     [__ax] \
     __modify    [__cx __dx __ds __es]
 #else
 #pragma aux tricky_free_seg = \
-        "mov    cx,es"          \
-        "cmp    cx,ax"          \
-        "jl     L1"             \
-        "cmp    cx,bx"          \
-        "jg     L1"             \
-        "xor    cx,cx"          \
-        "L1:"                   \
-        "call   DoFreeSeg"      \
-        "mov    es,cx"          \
+        "mov    cx,es"      \
+        "cmp    cx,ax"      \
+        "jl short L1"       \
+        "cmp    cx,bx"      \
+        "jg short L1"       \
+        "xor    cx,cx"      \
+    "L1: call DoFreeSeg"    \
+        "mov    es,cx"      \
     __parm      [__ax] [__bx] \
     __value     [__ax] \
     __modify    [__cx __es]

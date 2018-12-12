@@ -67,21 +67,21 @@ extern unsigned short __dos87emucall;
 
 extern void __init_80x87( void );
 #if defined( __DOS_086__ )
-#pragma aux __init_80x87 "*" =      \
+#pragma aux __init_80x87 "*" = \
         "cmp    __dos87real,0"      \
-        "jz     l1"                 \
+        "jz short L1"               \
         "finit"                     \
         "fldcw  __8087cw"           \
-"l1:     cmp    __dos87emucall,0"   \
-        "jz     l2"                 \
+    "L1: cmp    __dos87emucall,0"   \
+        "jz short L2"               \
         "mov    ax,1"               \
         "call   __dos87emucall"     \
-"l2:" ;
+    "L2:"
 #else
-#pragma aux __init_80x87 "*" =      \
+#pragma aux __init_80x87 "*" = \
         "fninit"                    \
         "fwait"                     \
-        "fldcw  __8087cw" ;
+        "fldcw  __8087cw"
 #endif
 
 /* 0 => no x87; 1 => 8087; 2 => 80287; 3 => 80387 */
@@ -183,12 +183,13 @@ void __init_8087( void )
 
 extern unsigned char _bin_to_ascii_offs( unsigned char c );
 #pragma aux _bin_to_ascii_offs = \
-    "and  al,0Fh" \
-    "cmp  al,9" \
-    "jbe short L1" \
-    "add  al,7" \
-    "L1:" \
-    parm routine [al] value [al];
+        "and  al,0Fh"   \
+        "cmp  al,9"     \
+        "jbe short L1"  \
+        "add  al,7"     \
+    "L1:"               \
+    __parm __routine [__al] \
+    __value [__al]
 
 static void _WCI86FAR __default_sigfpe_handler( int fpe_sig )
 {
@@ -262,14 +263,15 @@ void __chk8087( void )
 #elif defined( __NETWARE__ )
 
 extern short __87present( void );
-#pragma aux __87present =       \
-    "smsw  ax           ",      \
-    "test  ax, 4        ",      \
-    "jne   no_emu       ",      \
-    "xor   ax, ax       ",      \
-    "no_emu:            ",      \
-    "mov   ax, 1        "       \
-value [ ax ];
+#pragma aux __87present = \
+        "smsw  ax"          \
+        "test  ax,4"        \
+        "jne short no_emu"  \
+        "xor   ax,ax"       \
+    "no_emu:"               \
+        "mov   ax,1"        \
+    __parm      [] \
+    __value     [__ax]
 
 extern void __chk8087( void )
 /*****************************/

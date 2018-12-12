@@ -35,16 +35,16 @@
 #include "cover.h"
 
 #define GetWaveInCallBack       WINFUNCTION255ADDR
-#pragma aux     WINFUNCTION255ADDR      "*"
+#pragma aux WINFUNCTION255ADDR "*"
 
 extern DWORD    (__far *GetWaveInCallBack)();
 static DWORD    CallBackFunc;
 
-extern  void __InvokeCallBack();
-#pragma aux  __InvokeCallBack = \
+extern void __InvokeCallBack();
+#pragma aux __InvokeCallBack = \
         "and    esp,0000FFFFh"  \
         "jmp    eax"            \
-        parm [eax];
+    __parm [__eax]
 
 void __WaveInCallBack()
 {

@@ -82,16 +82,17 @@ extern unsigned short __far *_dos_get_dbcs_lead_table( void );
         "mov ah,63h"    \
         "int 21h"       \
         "mov di,ds"     \
-        "jc L1"         \
+        "jc short L1"   \
         "test al,al"    \
-        "jnz L1"        \
+        "jnz short L1"  \
         "test di,di"    \
-        "jnz L2"        \
+        "jnz short L2"  \
     "L1: xor di,di"     \
         "xor si,si"     \
     "L2: pop ds"        \
         "pop bp"        \
-    value [di si] modify [ax bx cx dx];
+    __value     [__di __si] \
+    __modify    [__ax __bx __cx __dx]
 #endif
 
 unsigned short __far *dos_get_dbcs_lead_table( void )
