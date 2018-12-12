@@ -38,15 +38,15 @@ extern  int     DoBDosCall( unsigned ax, unsigned dx );
 #if defined(__386__)
     #pragma aux DoBDosCall =    \
             _INT_21             \
-        parm caller     [eax] [edx] \
-        value           [eax]       \
-        modify exact    [eax ebx ecx edx esi edi]
+        __parm __caller     [__eax] [__edx] \
+        __value             [__eax] \
+        __modify __exact    [__eax __ebx __ecx __edx __esi __edi]
 #else
     #pragma aux DoBDosCall =    \
             "int 21h"           \
-        parm caller     [ax] [dx]   \
-        value           [ax]        \
-        modify exact    [ax bx cx dx si di]
+        __parm __caller     [__ax] [__dx] \
+        __value             [__ax] \
+        __modify __exact    [__ax __bx __cx __dx __si __di]
 #endif
 
 

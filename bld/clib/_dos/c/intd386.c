@@ -37,8 +37,8 @@
 
 #if !defined(__WINDOWS_386__)
 
-extern  int                     DoDosCall( void *in, void *out );
-#pragma aux                     DoDosCall = \
+extern int      DoDosCall( void *in, void *out );
+#pragma aux DoDosCall = \
         "push ebp"      \
         "push edx"      \
         "mov eax,[edi]" \
@@ -59,9 +59,9 @@ extern  int                     DoDosCall( void *in, void *out );
         "mov 20[edi],ebp"\
         "sbb eax,eax"   \
         "pop ebp"       \
-        parm caller     [edi] [edx] \
-        value           [eax] \
-        modify          [ebx ecx edx esi edi];
+    __parm __caller [__edi] [__edx] \
+    __value         [__eax] \
+    __modify        [__ebx __ecx __edx __esi __edi]
 
 #else
 #include <stddef.h>

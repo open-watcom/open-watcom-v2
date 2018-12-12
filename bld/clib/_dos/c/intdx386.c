@@ -36,8 +36,8 @@
 
 #if !defined(__WINDOWS_386__)
 
-extern  int                     DoDosxCall( void *in, void *out, void *sr );
-#pragma aux                     DoDosxCall = \
+extern int      DoDosxCall( void *in, void *out, void *sr );
+#pragma aux DoDosxCall = \
         0x55            /* push ebp        -----. */\
         0x06            /* push es         ----.| */\
         0x53            /* push ebx        ---.|| */\
@@ -76,9 +76,9 @@ extern  int                     DoDosxCall( void *in, void *out, void *sr );
         0x1b 0xc0       /* sbb eax,eax         || */\
         0x07            /* pop es  ------------'| */\
         0x5d            /* pop ebp -------------' */\
-        parm caller     [edi] [edx] [ebx] \
-        value           [eax] \
-        modify          [ebx ecx edx esi edi];
+    __parm __caller [__edi] [__edx] [__ebx] \
+    __value         [__eax] \
+    __modify        [__ebx __ecx __edx __esi __edi]
 #else
 #include <stddef.h>
 #include "clibxw32.h"

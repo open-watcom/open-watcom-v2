@@ -34,11 +34,11 @@
 #include "tinyio.h"
 
 
-_WCNORETURN extern  void    _keep( unsigned, unsigned );
-#pragma aux     _keep = \
-    _MOV_AH DOS_TERM_STAY_RESID \
-    "int 21h"           \
-    parm [ax] [dx];
+_WCNORETURN extern void _keep( unsigned, unsigned );
+#pragma aux _keep = \
+        _MOV_AH DOS_TERM_STAY_RESID \
+        "int 21h"   \
+    __parm [__ax] [__dx]
 
 _WCRTLINK _WCNORETURN void _dos_keep( unsigned retcode, unsigned memsize )
 {

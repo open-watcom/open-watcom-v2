@@ -36,7 +36,7 @@
 
 extern  short           DoDosCall( void *in, void *out );
 #if !defined(__BIG_DATA__)
-#pragma aux             DoDosCall = \
+#pragma aux DoDosCall = \
         0x06            /* push es      */ \
         0x55            /* push bp      */ \
         0x52            /* push dx      */ \
@@ -59,11 +59,11 @@ extern  short           DoDosCall( void *in, void *out );
         0x1b 0xc0       /* sbb ax,ax (sets ax!=0 if carry set) */ \
         0x5d            /* pop bp */ \
         0x07            /* pop es */ \
-        parm caller     [di] [dx] \
-        value           [ax] \
-        modify          [bx cx dx si di];
+    __parm __caller [__di] [__dx] \
+    __value         [__ax] \
+    __modify        [__bx __cx __dx __si __di]
 #else
-#pragma aux             DoDosCall =                           \
+#pragma aux DoDosCall = \
         0x1e           /* push ds */                            \
         0x06           /* push es         */                    \
         0x55           /* push bp         */                    \
@@ -90,9 +90,9 @@ extern  short           DoDosCall( void *in, void *out );
         0x07           /* pop es          */                    \
         0x1f           /* pop ds */                             \
         0x19 0xc0      /* sbb ax, ax      */                    \
-        parm caller [ si dx ] [ bx cx ]                         \
-        value[ ax ]                                             \
-        modify [ ax dx di ];
+    __parm __caller [__si __dx] [__bx __cx] \
+    __value         [__ax] \
+    __modify        [__ax __dx __di]
 #endif
 
 _WCRTLINK int intdos( union REGS *inregs, union REGS *outregs )

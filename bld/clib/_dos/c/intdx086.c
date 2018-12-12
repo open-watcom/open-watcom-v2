@@ -36,7 +36,7 @@
 
 extern  short           DoDosxCall( void *in, void *out, void *sr );
 #if !defined(__BIG_DATA__)
-#pragma aux             DoDosxCall =               \
+#pragma aux DoDosxCall = \
         0x55            /* push bp        -----. */\
         0x06            /* push es        ----.| */\
         0x53            /* push bx        ---.|| */\
@@ -73,11 +73,11 @@ extern  short           DoDosxCall( void *in, void *out, void *sr );
         0x1b 0xc0       /* sbb ax,ax          || */\
         0x07            /* pop es ------------'| */\
         0x5d            /* pop bp -------------' */\
-        parm caller     [di] [dx] [bx] \
-        value           [ax] \
-        modify          [bx cx dx si di];
+    __parm __caller [__di] [__dx] [__bx] \
+    __value         [__ax] \
+    __modify        [__bx __cx __dx __si __di]
 #else
-#pragma aux             DoDosxCall =                 \
+#pragma aux DoDosxCall = \
         0x1e            /* push ds */                \
         0x8e 0xdf       /* mov ds,di */              \
         0x55            /* push bp         */        \
@@ -119,9 +119,9 @@ extern  short           DoDosxCall( void *in, void *out, void *sr );
         0x5b            /* pop bx          */        \
         0x5d            /* pop bp          */        \
         0x1f            /* pop ds */                 \
-        parm caller [ si cx ] [ ax dx ] [ bx di ]    \
-        value [ ax ]                                 \
-        modify [ di es ];
+    __parm __caller [__si __cx] [__ax __dx] [__bx __di] \
+    __value         [__ax] \
+    __modify        [__di __es]
 #endif
 
 _WCRTLINK int intdosx( union REGS *inregs, union REGS *outregs, struct SREGS *segregs )

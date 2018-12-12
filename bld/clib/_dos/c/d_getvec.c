@@ -40,19 +40,22 @@
   #else
     #include "extender.h"
     extern  void (__interrupt _WCFAR *_getvect( unsigned ax, unsigned char cl ))();
-    #pragma aux  _getvect =     \
-            "push es"           \
-            "int 21h"           \
-            "mov dx,es"         \
-            "pop es"            \
-            parm [ax] [cl] value [dx ebx] modify [edx];
+    #pragma aux _getvect = \
+            "push es"       \
+            "int 21h"       \
+            "mov dx,es"     \
+            "pop es"        \
+        __parm      [__ax] [__cl] \
+        __value     [__dx __ebx] \
+        __modify    [__edx]
   #endif
 #else
     extern  void (__interrupt _WCFAR *_getvect( unsigned ax ))();
-    #pragma aux  _getvect = \
-        "mov ah,35h"        \
-        "int 21h"           \
-        parm [ax] value [es bx];
+    #pragma aux _getvect = \
+            "mov ah,35h"    \
+            "int 21h"       \
+        __parm      [__ax] \
+        __value     [__es __bx]
 #endif
 
 _WCRTLINK void (__interrupt _WCFAR *_dos_getvect( unsigned intnum ))()

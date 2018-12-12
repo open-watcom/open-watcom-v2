@@ -41,9 +41,9 @@
 #if defined( _M_I86 )
   typedef unsigned              mem_id;
   #if defined(__BIG_DATA__)
-    #define MODIFIES ds es
+    #define MODIFIES __ds __es
   #else
-    #define MODIFIES es
+    #define MODIFIES __es
   #endif
 #elif defined( _M_IX86 ) || defined( __PPC__ )
   typedef void                  *mem_id;
@@ -83,7 +83,7 @@ _WCRTLINK unsigned _dos_allocmem( unsigned num_of_paras, mem_id *p_mem )
 
 #if defined( _M_I86 )
   extern unsigned __FreeSeg( mem_id );
-  #pragma aux _dos_freemem modify [MODIFIES]
+  #pragma aux _dos_freemem __modify [MODIFIES]
 #endif
 _WCRTLINK unsigned _dos_freemem( mem_id mem )
 {

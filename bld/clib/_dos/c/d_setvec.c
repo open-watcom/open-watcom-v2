@@ -40,33 +40,33 @@
   #else
     #include "extender.h"
     extern  void pharlap_setvect( unsigned, void (__interrupt _WCFAR *)());
-    #pragma aux  pharlap_setvect = \
-        "push ds"           \
-        "mov ds,ecx"        \
-        "mov cl,al"         \
-        "mov ax,2504h"      \
-        "int 21h"           \
-        "pop ds"            \
-        parm caller [al] [cx edx];
+    #pragma aux pharlap_setvect = \
+            "push ds"           \
+            "mov ds,ecx"        \
+            "mov cl,al"         \
+            "mov ax,2504h"      \
+            "int 21h"           \
+            "pop ds"            \
+        __parm __caller [__al] [__cx __edx]
 
     extern  void dos4g_setvect( unsigned, void (__interrupt _WCFAR *)());
-    #pragma aux  dos4g_setvect = \
-        "push ds"           \
-        "mov ds,ecx"        \
-        "mov ah,25h"        \
-        "int 21h"           \
-        "pop ds"            \
-        parm caller [al] [cx edx];
+    #pragma aux dos4g_setvect = \
+            "push ds"           \
+            "mov ds,ecx"        \
+            "mov ah,25h"        \
+            "int 21h"           \
+            "pop ds"            \
+        __parm __caller [__al] [__cx __edx]
     #endif
 #else
     extern  void _setvect( unsigned, void (__interrupt _WCFAR *)());
-    #pragma aux  _setvect = \
-        "push ds"           \
-        "mov ds,cx"         \
-        "mov ah,25h"        \
-        "int 21h"           \
-        "pop ds"            \
-        parm caller [ax] [cx dx];
+    #pragma aux _setvect = \
+            "push ds"           \
+            "mov ds,cx"         \
+            "mov ah,25h"        \
+            "int 21h"           \
+            "pop ds"            \
+        __parm __caller [__ax] [__cx __dx]
 #endif
 
 _WCRTLINK void _dos_setvect( unsigned intnum, void (__interrupt _WCFAR *func)() )
