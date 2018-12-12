@@ -35,6 +35,7 @@
 #define DOS_OUTPUT_CHAR             0x06
 #define DOS_GET_CHAR_NO_ECHO_CHECK  0x08
 #define DOS_BUFF_INPUT              0x0A
+#define DOS_INPUT_STATUS            0x0B
 #define DOS_SET_DRIVE               0x0E
 #define DOS_DELETE_FCB              0x13
 #define DOS_CREATE_PSP              0x26
