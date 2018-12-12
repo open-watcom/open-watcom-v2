@@ -40,25 +40,25 @@
   #ifdef __BIG_DATA__
     #define INIT_VALUE
     #define SAVE_VALUE  "mov es:[bx],cx"
-    #define AUX_INFO    \
-        parm caller     [dx ax] [es bx] \
-        value           [ax] \
-        modify exact    [ax cx dx]
+    #define AUX_INFO \
+        __parm __caller     [__dx __ax] [__es __bx] \
+        __value             [__ax] \
+        __modify __exact    [__ax __cx __dx]
   #else
     #define INIT_VALUE
     #define SAVE_VALUE  "mov [bx],cx"
-    #define AUX_INFO    \
-        parm caller     [dx] [bx] \
-        value           [ax] \
-        modify exact    [ax cx]
+    #define AUX_INFO \
+        __parm __caller     [__dx] [__bx] \
+        __value             [__ax] \
+        __modify __exact    [__ax __cx]
   #endif
 #else
     #define INIT_VALUE  "xor ecx,ecx"
     #define SAVE_VALUE  "mov [ebx],ecx"
-    #define AUX_INFO    \
-        parm caller     [edx] [ebx] \
-        value           [eax] \
-        modify exact    [eax ecx]
+    #define AUX_INFO \
+        __parm __caller     [__edx] [__ebx] \
+        __value             [__eax] \
+        __modify __exact    [__eax __ecx]
 #endif
 
 extern unsigned __dos_getfileattr_sfn( const char *path, unsigned *attrib );

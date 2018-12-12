@@ -40,21 +40,21 @@
 
 #ifdef _M_I86
   #ifdef __BIG_DATA__
-    #define AUX_INFO    \
-        parm caller     [dx ax] [es di] \
-        value           [ax] \
-        modify exact    [ax dx]
+    #define AUX_INFO \
+        __parm __caller     [__dx __ax] [__es __di] \
+        __value             [__ax] \
+        __modify __exact    [__ax __dx]
   #else
-    #define AUX_INFO    \
-        parm caller     [dx] [di] \
-        value           [ax] \
-        modify exact    [ax]
+    #define AUX_INFO \
+        __parm __caller     [__dx] [__di] \
+        __value             [__ax] \
+        __modify __exact    [__ax]
   #endif
 #else
-    #define AUX_INFO    \
-        parm caller     [edx] [edi] \
-        value           [eax] \
-        modify exact    [eax]
+    #define AUX_INFO \
+        __parm __caller     [__edx] [__edi] \
+        __value             [__eax] \
+        __modify __exact    [__eax]
 #endif
 
 extern unsigned __rename_sfn( const char *old, const char *new );
@@ -125,4 +125,3 @@ _WCRTLINK int __F_NAME(rename,_wrename)( const CHAR_TYPE *old, const CHAR_TYPE *
     return( __rename_sfn( old, new ) );
 #endif
 }
-

@@ -39,21 +39,21 @@
 
 #ifdef _M_I86
   #ifdef __BIG_DATA__
-    #define AUX_INFO    \
-        parm caller     [si ax] [dl] \
-        value           [ax] \
-        modify exact    [ax si]
+    #define AUX_INFO \
+        __parm __caller     [__si __ax] [__dl] \
+        __value             [__ax] \
+        __modify __exact    [__ax __si]
   #else
-    #define AUX_INFO    \
-        parm caller     [si] [dl] \
-        value           [ax] \
-        modify exact    [ax]
+    #define AUX_INFO \
+        __parm __caller     [__si] [__dl] \
+        __value             [__ax] \
+        __modify __exact    [__ax]
   #endif
 #else
-    #define AUX_INFO    \
-        parm caller     [esi] [dl] \
-        value           [eax] \
-        modify exact    [eax]
+    #define AUX_INFO \
+        __parm __caller     [__esi] [__dl] \
+        __value             [__eax] \
+        __modify __exact    [__eax]
 #endif
 
 extern unsigned __getdcwd_sfn( char *buff, unsigned char drv );

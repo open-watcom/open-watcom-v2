@@ -62,9 +62,9 @@ typedef int WORD;
 #if defined( __386__ )
     /* this is intended for 386 only... */
     #define AUX_INFO \
-        parm caller     [esi] [edi] [ecx] \
-        value           \
-        modify exact    [eax ecx edx edi esi]
+        __parm __caller     [__esi] [__edi] [__ecx] \
+        __value             \
+        __modify __exact    [__eax __ecx __edx __edi __esi]
 
     void inline_swap( char *p, char *q, size_t size );
     #pragma aux inline_swap =   \
@@ -99,9 +99,9 @@ typedef int WORD;
 
 #elif defined( _M_I86 ) && defined( __BIG_DATA__ )
     #define AUX_INFO \
-        parm caller     [dx si] [es di] [cx] \
-        value           \
-        modify exact    [ax cx di si]
+        __parm __caller     [__dx __si] [__es __di] [__cx] \
+        __value             \
+        __modify __exact    [__ax __cx __di __si]
 
     void inline_swap( char _WCFAR *p, char _WCFAR *q, size_t size );
     #pragma aux inline_swap =   \
@@ -132,9 +132,9 @@ typedef int WORD;
 #elif defined( _M_I86 ) && defined( __SMALL_DATA__ )
     /* we'll ask for char __far *q to save us writing code to load es */
     #define AUX_INFO \
-        parm caller     [si] [es di] [cx] \
-        value           \
-        modify exact    [ax cx di si]
+        __parm __caller     [__si] [__es __di] [__cx] \
+        __value             \
+        __modify __exact    [__ax __cx __di __si]
 
     void inline_swap( char *p, char _WCFAR *q, size_t size );
     #pragma aux inline_swap =   \

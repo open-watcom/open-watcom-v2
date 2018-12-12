@@ -40,27 +40,27 @@
     #define INIT_VALUE
     #define SAVE_VALUE  "mov es:[bx],ax"
     #define RETURN_CY   "sbb ax,ax"
-    #define AUX_INFO    \
-        parm caller     [dx ax] [cx] [es bx] \
-        value           [ax] \
-        modify exact    [ax dx]
+    #define AUX_INFO \
+        __parm __caller     [__dx __ax] [__cx] [__es __bx] \
+        __value             [__ax] \
+        __modify __exact    [__ax __dx]
   #else
     #define INIT_VALUE
     #define SAVE_VALUE  "mov [bx],ax"
     #define RETURN_CY   "sbb ax,ax"
-    #define AUX_INFO    \
-        parm caller     [dx] [cx] [bx] \
-        value           [ax] \
-        modify exact    [ax dx]
+    #define AUX_INFO \
+        __parm __caller     [__dx] [__cx] [__bx] \
+        __value             [__ax] \
+        __modify __exact    [__ax __dx]
   #endif
 #else
     #define INIT_VALUE  "xor eax,eax"
     #define SAVE_VALUE  "mov [ebx],eax"
     #define RETURN_CY   "sbb eax,eax"
-    #define AUX_INFO    \
-        parm caller     [edx] [ecx] [ebx] \
-        value           [eax] \
-        modify exact    [eax edx]
+    #define AUX_INFO \
+        __parm __caller     [__edx] [__ecx] [__ebx] \
+        __value             [__eax] \
+        __modify __exact    [__eax __edx]
 #endif
 
 #define __DOS_OPEN_SFN      \

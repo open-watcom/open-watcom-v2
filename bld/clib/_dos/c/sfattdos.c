@@ -37,21 +37,21 @@
 
 #ifdef _M_I86
   #ifdef __BIG_DATA__
-    #define AUX_INFO    \
-        parm caller     [dx ax] [cx] \
-        value           [ax] \
-        modify exact    [ax dx]
+    #define AUX_INFO \
+        __parm __caller     [__dx __ax] [__cx] \
+        __value             [__ax] \
+        __modify __exact    [__ax __dx]
   #else
-    #define AUX_INFO    \
-        parm caller     [dx] [cx] \
-        value           [ax] \
-        modify exact    [ax]
+    #define AUX_INFO \
+        __parm __caller     [__dx] [__cx] \
+        __value             [__ax] \
+        __modify __exact    [__ax]
   #endif
 #else
-    #define AUX_INFO    \
-        parm caller     [edx] [ecx] \
-        value           [eax] \
-        modify exact    [eax]
+    #define AUX_INFO \
+        __parm __caller     [__edx] [__ecx] \
+        __value             [__eax] \
+        __modify __exact    [__eax]
 #endif
 
 extern unsigned __dos_setfileattr_sfn( const char *path, unsigned attrib );

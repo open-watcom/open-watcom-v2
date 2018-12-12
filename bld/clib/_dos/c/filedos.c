@@ -35,15 +35,15 @@
 #include "tinyio.h"
 
 #ifdef _M_I86
-    #define AUX_INFO    \
-        parm caller     [bx] \
-        value           [ax] \
-        modify exact    [ax]
+    #define AUX_INFO \
+        __parm __caller     [__bx] \
+        __value             [__ax] \
+        __modify __exact    [__ax]
 #else
-    #define AUX_INFO    \
-        parm caller     [ebx] \
-        value           [eax] \
-        modify exact    [eax]
+    #define AUX_INFO \
+        __parm __caller     [__ebx] \
+        __value             [__eax] \
+        __modify __exact    [__eax]
 #endif
 
 extern unsigned __doserror_( unsigned );

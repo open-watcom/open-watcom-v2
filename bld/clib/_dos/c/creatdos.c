@@ -39,24 +39,24 @@
     #define INIT_VALUE
   #ifdef __BIG_DATA__
     #define SAVE_VALUE  "mov es:[bx],ax"
-    #define AUX_INFO    \
-        parm caller     [dx ax] [cx] [es bx] \
-        value           [ax] \
-        modify exact    [ax dx]
+    #define AUX_INFO \
+        __parm __caller     [__dx __ax] [__cx] [__es __bx] \
+        __value             [__ax] \
+        __modify __exact    [__ax __dx]
   #else
     #define SAVE_VALUE  "mov [bx],ax"
-    #define AUX_INFO    \
-        parm caller     [dx] [cx] [bx] \
-        value           [ax] \
-        modify exact    [ax]
+    #define AUX_INFO \
+        __parm __caller     [__dx] [__cx] [__bx] \
+        __value             [__ax] \
+        __modify __exact    [__ax]
   #endif
 #else
     #define INIT_VALUE  "xor eax,eax"
     #define SAVE_VALUE  "mov [ebx],eax"
-    #define AUX_INFO    \
-        parm caller     [edx] [ecx] [ebx] \
-        value           [eax] \
-        modify exact    [eax]
+    #define AUX_INFO \
+        __parm __caller     [__edx] [__ecx] [__ebx] \
+        __value             [__eax] \
+        __modify __exact    [__eax]
 #endif
 
 extern unsigned __dos_create_sfn( const char *name, unsigned attrib, int *handle );
