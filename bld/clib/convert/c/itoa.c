@@ -42,37 +42,37 @@ typedef unsigned __based(__segname("_STACK")) *uint_stk_ptr;
 #if defined(__WATCOMC__)
 unsigned __udiv( unsigned, uint_stk_ptr );
 #if defined(__386__) && defined(__SMALL_DATA__)
-    #pragma aux __udiv =                \
+    #pragma aux __udiv = \
             "xor    edx,edx"            \
             "div    dword ptr [ebx]"    \
             "mov    [ebx],eax"          \
-        parm caller     [eax] [ebx] \
-        value           [edx] \
-        modify exact    [eax edx]
+        __parm __caller     [__eax] [__ebx] \
+        __value             [__edx] \
+        __modify __exact    [__eax __edx]
 #elif defined( __386__ ) && defined(__BIG_DATA__)
-    #pragma aux __udiv =                \
+    #pragma aux __udiv = \
             "xor    edx,edx"            \
             "div    dword ptr ss:[ebx]" \
             "mov    ss:[ebx],eax"       \
-        parm caller     [eax] [ebx] \
-        value           [edx] \
-        modify exact    [eax edx]
+        __parm __caller     [__eax] [__ebx] \
+        __value             [__edx] \
+        __modify __exact    [__eax __edx]
 #elif defined( _M_I86 ) && defined(__BIG_DATA__)
-    #pragma aux __udiv =                \
+    #pragma aux __udiv = \
             "xor    dx,dx"              \
             "div    word ptr ss:[bx]"   \
             "mov    ss:[bx],ax"         \
-        parm caller     [ax] [bx] \
-        value           [dx] \
-        modify exact    [ax dx]
+        __parm __caller     [__ax] [__bx] \
+        __value             [__dx] \
+        __modify __exact    [__ax __dx]
 #elif defined( _M_I86 ) && defined(__SMALL_DATA__)
-    #pragma aux __udiv =                \
+    #pragma aux __udiv = \
             "xor    dx,dx"              \
             "div    word ptr [bx]"      \
             "mov    [bx],ax"            \
-        parm caller     [ax] [bx] \
-        value           [dx] \
-        modify exact    [ax dx]
+        __parm __caller     [__ax] [__bx] \
+        __value             [__dx] \
+        __modify __exact    [__ax __dx]
 #endif
 #endif /* __WATCOMC__ */
 

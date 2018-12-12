@@ -44,7 +44,7 @@ typedef unsigned __based(__segname("_STACK")) *uint_stk_ptr;
 #if defined( _M_IX86 )
 unsigned long long __ulldiv( unsigned long long, uint_stk_ptr );
 #if defined(__386__) && defined(__SMALL_DATA__)
-    #pragma aux __ulldiv =              \
+    #pragma aux __ulldiv = \
             "xor    ecx,ecx"            /* set high word of quotient to 0 */ \
             "cmp    edx,dword ptr[ebx]" /* if quotient will be >= 4G */ \
             "jb short less4g"           /* then */ \
@@ -56,8 +56,8 @@ unsigned long long __ulldiv( unsigned long long, uint_stk_ptr );
         "less4g:"                       \
             "div    dword ptr[ebx]"     /* calculate low part */ \
             "mov    [ebx],edx"          /* store remainder */ \
-        parm    [eax edx] [ebx] \
-        value   [eax ecx]
+        __parm  [__eax __edx] [__ebx] \
+        __value [__eax __ecx]
 #elif defined( __386__ )  && defined(__BIG_DATA__)
     #pragma aux __ulldiv = \
             "xor    ecx,ecx"            /* set high word of quotient to 0 */ \
@@ -71,8 +71,8 @@ unsigned long long __ulldiv( unsigned long long, uint_stk_ptr );
         "less4g:"                       \
             "div    dword ptr ss:[ebx]" /* calculate low part */ \
             "mov    ss:[ebx],edx"       /* store remainder */ \
-        parm    [eax edx] [ebx] \
-        value   [eax ecx]
+        __parm  [__eax __edx] [__ebx] \
+        __value [__eax __ecx]
 #elif defined( _M_I86 )  && defined(__BIG_DATA__)
     #pragma aux __ulldiv = \
             "mov    di,dx"              /* initial dividend = ax:bx:cx:dx(di); save dx */ \
@@ -127,9 +127,9 @@ unsigned long long __ulldiv( unsigned long long, uint_stk_ptr );
             "xor    dx,dx"              /* zero high part */ \
             "jmp short div3"            /* do two divisions */ \
         "end_div:"                      \
-        parm    [ax bx cx dx] [si] \
-        value   [ax bx cx dx] \
-        modify  [di]
+        __parm      [__ax __bx __cx __dx] [__si] \
+        __value     [__ax __bx __cx __dx] \
+        __modify    [__di]
 #elif defined( _M_I86 ) && defined(__SMALL_DATA__)
     #pragma aux __ulldiv = \
             "mov    di,dx"              /* initial dividend = ax:bx:cx:dx(di); save dx */ \
@@ -184,9 +184,9 @@ unsigned long long __ulldiv( unsigned long long, uint_stk_ptr );
             "xor    dx,dx"              /* zero high part */ \
             "jmp short div3"            /* do two divisions */ \
         "end_div:"                      \
-        parm    [ax bx cx dx] [si] \
-        value   [ax bx cx dx] \
-        modify  [di]
+        __parm      [__ax __bx __cx __dx] [__si] \
+        __value     [__ax __bx __cx __dx] \
+        __modify    [__di]
 #endif
 #endif
 

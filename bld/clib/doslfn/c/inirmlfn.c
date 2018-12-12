@@ -52,18 +52,18 @@ extern unsigned __alloc_dos_tb( unsigned short size, unsigned short *segm );
         "jmp short L2"      \
     "L1: xor    eax,eax"    \
     "L2:"                   \
-    parm caller     [bx] [ecx] \
-    value           [eax] \
-    modify exact    [eax bx dx]
+    __parm __caller     [__bx] [__ecx] \
+    __value             [__eax] \
+    __modify __exact    [__eax __bx __dx]
 
 extern unsigned __free_dos_tb( unsigned short );
 #pragma aux __free_dos_tb = \
         "mov    ax,101h"    \
         "int 31h"           \
         "sbb    eax,eax"    \
-    parm caller     [dx] \
-    value           [eax] \
-    modify exact    [eax]
+    __parm __caller     [__dx] \
+    __value             [__eax] \
+    __modify __exact    [__eax]
 
 char                    * const __lfn_rm_tb_linear = 0;
 unsigned short          const __lfn_rm_tb_segment = 0;

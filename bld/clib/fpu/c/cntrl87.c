@@ -50,7 +50,7 @@ void __win87em_fldcw( unsigned int );
         "mov    bx, 4h"                                 \
         "call   far ptr _fpmath"                        \
         "pop    bx"                                     \
-        parm [ax]
+    __parm [__ax]
 
 unsigned int __win87em_fstcw( void );
 #pragma aux __win87em_fstcw = \
@@ -58,7 +58,7 @@ unsigned int __win87em_fstcw( void );
         "mov    bx, 5h"                                 \
         "call   far ptr _fpmath"                        \
         "pop    bx"                                     \
-        value [ax]
+    __value [__ax]
 
 #elif defined( __DOS_086__ )
 
@@ -72,35 +72,35 @@ void _WCI86NEAR __dos_emu_fldcw( cwp );
 #pragma aux __dos_emu_fldcw "*" = \
         "mov    ax,3" \
         "call   __dos87emucall" \
-        parm [bx];
+    __parm [__bx]
 
 void _WCI86NEAR __dos_emu_fstcw( cwp );
 #pragma aux __dos_emu_fstcw "*" = \
         "mov    ax,4" \
         "call   __dos87emucall" \
-        parm [bx];
+    __parm [__bx]
 
 #endif
 
 #if defined(__386__)
 #pragma aux __fstcw =       \
         "fstcw ss:[ecx]"    \
-        parm caller [ecx];
+    __parm __caller [__ecx]
 #pragma aux __fldcw =       \
         "fldcw ss:[ecx]"    \
-        parm caller [ecx];
+    __parm __caller [__ecx]
 #else
 #pragma aux __fstcw =   \
         "xchg ax,bp"    \
         "fstcw [bp]"    \
         "fwait"         \
         "xchg ax,bp"    \
-        parm caller [ax];
+    __parm __caller [__ax]
 #pragma aux __fldcw =   \
         "xchg ax,bp"    \
         "fldcw [bp]"    \
         "xchg ax,bp"    \
-        parm caller [ax];
+    __parm __caller [__ax]
 #endif
 
 _WCRTLINK unsigned _control87( unsigned new, unsigned mask )
