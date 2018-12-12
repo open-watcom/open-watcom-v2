@@ -1191,16 +1191,16 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
         "mov    ax,bx"   /* linear address returned in BX:CX */ \
         "shl    eax,16" \
         "mov    ax,cx"  \
-        "mov    [__eax],di"  /* store handle in block */ \
-        "mov    2[__eax],si" /* ... */ \
+        "mov    [eax],di"  /* store handle in block */ \
+        "mov    2[eax],si" /* ... */ \
     "finish:"           \
     __parm __caller     [__bx] [__cx] \
     __value             [__eax] \
     __modify __exact    [__eax __ebx __ecx __esi __edi]
 
 #pragma aux _TinyDPMIRealloc = \
-        "mov    di,[__eax]"  /* get memory block handle */\
-        "mov    si,2[__eax]" /* ... */\
+        "mov    di,[eax]"  /* get memory block handle */\
+        "mov    si,2[eax]" /* ... */\
         "mov    ax,503h" \
         _INT_31         \
         "sbb    eax,eax"   /* eax=-1 if alloc failed */ \
@@ -1209,8 +1209,8 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
         "mov    ax,bx"     /* linear address returned in BX:CX */ \
         "shl    eax,16" \
         "mov    ax,cx"  \
-        "mov    [__eax],di"  /* store new handle in block */ \
-        "mov    2[__eax],si" /* ... */ \
+        "mov    [eax],di"  /* store new handle in block */ \
+        "mov    2[eax],si" /* ... */ \
     "finish:"           \
     __parm __caller     [__eax] [__bx] [__cx] \
     __value             [__eax] \
