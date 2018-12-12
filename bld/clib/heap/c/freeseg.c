@@ -54,6 +54,25 @@
 
 #if defined(__WINDOWS__) || defined(__OS2__)
 
+static int DoFreeSeg( __segment seg )
+{
+  #if defined(__WINDOWS__)
+    HANDLE hmem;
+
+    hmem = (HANDLE)GlobalHandle( seg );
+    if( hmem == NULL ) {
+        return( -1 );
+    }
+    GlobalUnlock( hmem );
+    if( GlobalFree( hmem ) == hmem ) {
+        return( -1 );
+    }
+    return( 0 );
+  #else
+    return( DosFreeSeg( seg ) );
+  #endif
+}
+
 extern int tricky_free_seg( int, int );
 #if defined(__OS2__) && defined(__BIG_DATA__)
 #pragma aux tricky_free_seg = \
@@ -92,25 +111,6 @@ extern int tricky_free_seg( int, int );
     __value     [__ax] \
     __modify    [__cx __es]
 #endif
-
-static int DoFreeSeg( __segment seg )
-{
-  #if defined(__WINDOWS__)
-    HANDLE hmem;
-
-    hmem = (HANDLE)GlobalHandle( seg );
-    if( hmem == NULL ) {
-        return( -1 );
-    }
-    GlobalUnlock( hmem );
-    if( GlobalFree( hmem ) == hmem ) {
-        return( -1 );
-    }
-    return( 0 );
-  #else
-    return( DosFreeSeg( seg ) );
-  #endif
-}
 
 static int __DoFreeSeg( __segment first )
 {
