@@ -244,13 +244,13 @@ void    PrefixInsRenum( instruction *ins, instruction *pref, bool renum )
             for( info = ConflictInfo; info->conf != NULL; ++info ) {
                 if( info->flags & CB_FOR_INS1 ) {
                     conf = info->conf;
-                    if( (info->flags & CB_FOR_INS2) == 0 ) {
-                        if( conf->ins_range.last == ins ) {
-                            conf->ins_range.last = pref;
-                        }
-                    }
                     if( conf->ins_range.first == ins ) {
                         conf->ins_range.first = pref;
+                    }
+                    if( info->flags & CB_FOR_INS2 )
+                        continue;
+                    if( conf->ins_range.last == ins ) {
+                        conf->ins_range.last = pref;
                     }
                 }
             }
@@ -312,26 +312,26 @@ void    SuffixIns( instruction *ins, instruction *suff )
     RenumFrom( ins );
     if( HaveLiveInfo ) {
 
-/*      move the first/last pointers of any relevant conflict nodes */
+        /* move the first/last pointers of any relevant conflict nodes */
 
         if( ins->head.opcode != OP_BLOCK ) {
             MakeConflictInfo( ins, suff );
             for( info = ConflictInfo; info->conf != NULL; ++info ) {
                 if( info->flags & CB_FOR_INS2 ) {
                     conf = info->conf;
-                    if( (info->flags & CB_FOR_INS1) == 0 ) {
-                        if( conf->ins_range.first == ins ) {
-                            conf->ins_range.first = suff;
-                        }
-                    }
                     if( conf->ins_range.last == ins ) {
                         conf->ins_range.last = suff;
+                    }
+                    if( info->flags & CB_FOR_INS1 )
+                        continue;
+                    if( conf->ins_range.first == ins ) {
+                        conf->ins_range.first = suff;
                     }
                 }
             }
         }
 
-    /*   Set up the state for both instructions*/
+        /* Set up the state for both instructions */
 
         ins->head.state = INS_NEEDS_WORK;
         suff->head.state = INS_NEEDS_WORK;
