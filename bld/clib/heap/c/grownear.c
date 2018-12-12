@@ -69,12 +69,14 @@
 
 #if defined( __DOS_EXT__ )
 extern  int SegmentLimit( void );
-#pragma aux SegmentLimit =  \
+#pragma aux SegmentLimit = \
         "xor    eax,eax"    \
         "mov    ax,ds"      \
         "lsl    eax,ax"     \
         "inc    eax"        \
-    value [eax] modify exact [eax]
+    __parm              [] \
+    __value             [__eax] \
+    __modify __exact    [__eax]
 #endif
 
 static freelist_nptr __LinkUpNewNHeap( heapblk_nptr heap )

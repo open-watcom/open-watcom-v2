@@ -45,7 +45,9 @@
 extern void _mymemcpy( void_fptr, void_nptr, size_t );
 #pragma aux _mymemcpy = \
         memcpy_i86      \
-    parm caller [es di] [si] [cx] modify exact [si di cx]
+    __parm __caller     [es di] [si] [cx] \
+    __value             \
+    __modify __exact    [si di cx]
 #else
 // big data models
 extern void _mymemcpy( void_fptr, void_fptr, size_t );
@@ -54,7 +56,9 @@ extern void _mymemcpy( void_fptr, void_fptr, size_t );
         "mov ds,dx"     \
         memcpy_i86      \
         "pop ds"        \
-    parm caller [es di] [dx si] [cx] modify exact [si di cx]
+    __parm __caller     [es di] [dx si] [cx] \
+    __value             \
+    __modify __exact    [si di cx]
 #endif
 #elif defined( _M_IX86 )
 // 32-bit Intel
@@ -63,13 +67,17 @@ extern void _mymemcpy( void_fptr, void_fptr, size_t );
 extern void _mymemcpy( void_nptr, void_nptr, size_t );
 #pragma aux _mymemcpy = \
         memcpy_386      \
-    parm caller [edi] [esi] [ecx] modify exact [esi edi ecx]
+    __parm __caller     [edi] [esi] [ecx] \
+    __value             \
+    __modify __exact    [esi edi ecx]
 #elif defined(__SMALL_DATA__)
 // small data models
 extern void _mymemcpy( void_fptr, void_nptr, size_t );
 #pragma aux _mymemcpy = \
         memcpy_386      \
-    parm caller [es edi] [esi] [ecx] modify exact [esi edi ecx]
+    __parm __caller     [es edi] [esi] [ecx] \
+    __value             \
+    __modify __exact    [esi edi ecx]
 #else
 // big data models
 extern void _mymemcpy( void_fptr, void_fptr, size_t );
@@ -78,7 +86,9 @@ extern void _mymemcpy( void_fptr, void_fptr, size_t );
         "mov ds,edx"    \
         memcpy_386      \
         "pop ds"        \
-    parm caller [es edi] [dx esi] [ecx] value [esi] modify exact [esi edi ecx]
+    __parm __caller     [es edi] [dx esi] [ecx] \
+    __value             \
+    __modify __exact    [esi edi ecx]
 #endif
 #else
 // non-Intel targets

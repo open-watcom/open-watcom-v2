@@ -40,24 +40,30 @@
 
 #if defined( _M_I86 )
 // 16-bit Intel all models
-extern  void    _mymemset(void_fptr,unsigned,unsigned);
-#pragma aux     _mymemset =     \
+extern void     _mymemset( void_fptr, unsigned, unsigned );
+#pragma aux _mymemset = \
         memset_i86              \
-    parm caller [es di] [ax] [cx] modify exact [ax di cx]
+    __parm __caller     [__es __di] [__ax] [__cx] \
+    __value             \
+    __modify __exact    [__ax __di __cx]
 #elif defined( _M_IX86 )
 // 32-bit Intel
 #if defined( __FLAT__ )
 // flat model
-extern  void    _mymemset(void_nptr,unsigned,unsigned);
-#pragma aux     _mymemset =     \
+extern void     _mymemset( void_nptr, unsigned, unsigned );
+#pragma aux _mymemset = \
         memset_386              \
-    parm caller [edi] [eax] [ecx] modify exact [ax edi ecx]
+    __parm __caller     [__edi] [__eax] [__ecx] \
+    __value             \
+    __modify __exact    [__ax __edi __ecx]
 #else
 // all segmented models
-extern  void    _mymemset(void_fptr,unsigned,unsigned);
-#pragma aux     _mymemset =     \
+extern void     _mymemset( void_fptr, unsigned, unsigned );
+#pragma aux _mymemset = \
         memset_386              \
-    parm caller [es edi] [eax] [ecx] modify exact [ax edi ecx]
+    __parm __caller     [__es __edi] [__eax] [__ecx] \
+    __value             \
+    __modify __exact    [__ax __edi __ecx]
 #endif
 #else
 // 32-bit non-Intel targets

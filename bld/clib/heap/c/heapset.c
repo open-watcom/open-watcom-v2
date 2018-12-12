@@ -39,10 +39,12 @@
 #include "heapacc.h"
 
 
-extern  void    _mymemset(void_fptr,unsigned,unsigned);
-#pragma aux     _mymemset = \
-        memset_i86          \
-    parm caller [es di] [ax] [cx] modify exact [ax di cx]
+extern void     _mymemset( void_fptr, unsigned, unsigned );
+#pragma aux _mymemset = \
+        memset_i86      \
+    __parm __caller     [__es __di] [__ax] [__cx] \
+    __value             \
+    __modify __exact    [__ax __di __cx]
 
 int __HeapSet( __segment seg, unsigned int fill )
 {
