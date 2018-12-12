@@ -38,7 +38,7 @@
 extern void __int7( void );
 #pragma aux __int7 "*";
 
-extern unsignd short gorealmode( void );
+extern unsigned short gorealmode( void );
 #pragma aux gorealmode = \
         "mov ah,30h" \
         "int 21h" \
