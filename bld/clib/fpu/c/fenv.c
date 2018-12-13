@@ -55,6 +55,7 @@ extern void fenv_load( const fenv_t *env );
 #pragma aux fenv_load = \
         "fldenv     [eax]"  \
     __parm                      [__eax] \
+    __value                     \
     __modify __exact __nomemory []
 
 /* Store floating-point environment from hardware to memory */
@@ -62,6 +63,7 @@ extern void fenv_store( fenv_t *env );
 #pragma aux fenv_store = \
         "fstenv     [eax]"  \
     __parm              [__eax] \
+    __value             \
     __modify __exact    []
 
 /* Load floating-point control word from memory to hardware */
@@ -69,6 +71,7 @@ extern void fpcw_load( const uint16_t *control );
 #pragma aux fpcw_load = \
         "fldcw      [eax]"  \
     __parm                      [__eax] \
+    __value                     \
     __modify __exact __nomemory []
 
 /* Store floating-point control word from hardware to memory */
@@ -76,6 +79,7 @@ extern void fpcw_store( uint16_t *control );
 #pragma aux fpcw_store = \
         "fnstcw     [eax]"  \
     __parm              [__eax] \
+    __value             \
     __modify __exact    []
 
 /* Store floating-point status word from hardware to memory */
@@ -83,6 +87,7 @@ extern void fpsw_store( uint16_t *status );
 #pragma aux fpsw_store = \
         "fnstsw     [eax]"  \
     __parm              [__eax] \
+    __value             \
     __modify __exact    []
 
 #else
@@ -109,6 +114,7 @@ extern void fenv_load( const fenv_t *env );
 #pragma aux fenv_load = \
         "fldenv     [di]"   \
     __parm                      [DATA_SEG __di]  \
+    __value                     \
     __modify __exact __nomemory [];
 
 /* Store floating-point environment from hardware to memory */
@@ -116,6 +122,7 @@ extern void fenv_store( fenv_t *env );
 #pragma aux fenv_store = \
         "fstenv     [di]"   \
     __parm              [DATA_SEG __di] \
+    __value             \
     __modify __exact    [];
 
 /* Load floating-point control word from memory to hardware */
@@ -123,6 +130,7 @@ extern void fpcw_load( const uint16_t *control );
 #pragma aux fpcw_load = \
         "fldcw      [di]"   \
     __parm                      [DATA_SEG __di] \
+    __value                     \
     __modify __exact __nomemory []
 
 /* Store floating-point control word from hardware to memory */
@@ -130,6 +138,7 @@ extern void fpcw_store( uint16_t *control );
 #pragma aux fpcw_store = \
         "fnstcw     [di]"       \
     __parm              [DATA_SEG __di] \
+    __value             \
     __modify __exact    []
 
 /* Store floating-point status word from hardware to memory */
@@ -137,6 +146,7 @@ extern void fpsw_store( uint16_t *status );
 #pragma aux fpsw_store = \
         "fnstsw     [di]"   \
     __parm              [DATA_SEG __di] \
+    __value             \
     __modify __exact    []
 
 #endif
@@ -145,6 +155,8 @@ extern void fpsw_store( uint16_t *status );
 extern void fwait( void );
 #pragma aux fwait = \
         "fwait"     \
+    parm                        [] \
+    __value                     \
     __modify __exact __nomemory []
 
 
