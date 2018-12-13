@@ -84,14 +84,14 @@ void    (*_AccessTDList)(void)   = &__NullAccTDListRtn;
 void    (*_ReleaseTDList)(void)  = &__NullAccTDListRtn;
 
 #if defined(_M_IX86)
-extern  unsigned short  GetCS(void);
-#pragma aux GetCS modify exact [ax] value [ax] = "mov ax,cs";
-extern  unsigned short  GetFS(void);
-#pragma aux GetFS modify exact [ax] value [ax] = "mov ax,fs";
-extern  int     *GetTIDp(void);
-#pragma aux GetTIDp = "mov eax,fs:[12]" value [eax];
+extern  unsigned short  GetCS( void );
+#pragma aux GetCS = "mov ax,cs" __value [__ax] __modify __exact [__ax]
+extern  unsigned short  GetFS( void );
+#pragma aux GetFS = "mov ax,fs" __value [__ax] __modify __exact [__ax]
+extern  int     *GetTIDp( void );
+#pragma aux GetTIDp = "mov eax,fs:[12]" __value [__eax] __modify __exact [__eax]
 extern  unsigned GetThreadStack(void);
-#pragma aux GetThreadStack = "mov eax,fs:[4]" value [eax];
+#pragma aux GetThreadStack = "mov eax,fs:[4]" __value [__eax] __modify __exact [__eax]
 #endif
 
 unsigned __threadstack( void )
