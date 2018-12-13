@@ -68,9 +68,10 @@ dw_handle DWENTRY DWFundamental( dw_client cli, char const *name, unsigned fund_
     _Validate( fund_idx >= DW_FT_MIN && fund_idx < DW_FT_MAX );
     new_hdl = GetHandle( cli );
     abbrev = AB_BASE_TYPE;
-    if( name ) abbrev |= AB_NAME;
+    if( name != NULL )
+        abbrev |= AB_NAME;
     StartDIE( cli, abbrev );
-    if( name ) {
+    if( name != NULL ) {
         InfoString( cli, name );
     }
     Info8( cli, fund_idx );
@@ -128,7 +129,8 @@ void EmitAccessFlags( dw_client cli, uint access_flags )
 
 static void emitCommonTypeInfo( dw_client cli, abbrev_code abbrev, const char *name, uint access_flags )
 {
-    if( name ) abbrev |= AB_NAME;
+    if( name != NULL )
+        abbrev |= AB_NAME;
     StartDIE( cli, abbrev );
     EmitAccessFlags( cli, access_flags );
     if( name != NULL ) {
@@ -207,11 +209,13 @@ dw_handle DWENTRY DWBasedPointer( dw_client cli, dw_handle base_type, dw_loc_han
     _Validate( base_type != 0 );
     new_hdl = GetHandle( cli );
     abbrev = AB_POINTER_TYPE;
-    if( seg ) abbrev |= AB_SEGMENT;
-    if( flags ) abbrev |= AB_ADDRESS_CLASS;
+    if( seg )
+        abbrev |= AB_SEGMENT;
+    if( flags )
+        abbrev |= AB_ADDRESS_CLASS;
     StartDIE( cli, abbrev );
     if( seg ) {
-        InfoEmitLocExpr( cli, sizeof( uint_8), seg );
+        InfoEmitLocExpr( cli, sizeof( uint_8 ), seg );
     }
     WriteAddressClass( cli, flags );
     InfoHandleWriteOffset( cli, base_type );
@@ -364,9 +368,9 @@ dw_handle DWENTRY DWAddInheritance( dw_client cli, dw_handle ancestor_hdl, dw_lo
     EmitAccessFlags( cli, flags );
     /* AT_location */
     if( loc ) {
-        InfoEmitLocExpr( cli, sizeof( uint_8), loc );
-    }else{
-        InfoEmitLocExprNull( cli, sizeof( uint_8) );
+        InfoEmitLocExpr( cli, sizeof( uint_8 ), loc );
+    } else {
+        InfoEmitLocExprNull( cli, sizeof( uint_8 ) );
     }
     /* AT_virtual */
     if( flags & DW_FLAG_VIRTUAL ) {
@@ -413,9 +417,9 @@ dw_handle DWENTRY DWAddField( dw_client cli, dw_handle field_hdl, dw_loc_handle 
     InfoString( cli, name );
     /* AT_data_member_location */
     if( loc ) {
-        InfoEmitLocExpr( cli, sizeof( uint_8), loc );
-    }else{
-        InfoEmitLocExprNull( cli, sizeof( uint_8) );
+        InfoEmitLocExpr( cli, sizeof( uint_8 ), loc );
+    } else {
+        InfoEmitLocExprNull( cli, sizeof( uint_8 ) );
     }
     /* AT_type */
     EmitTypeRef( cli, field_hdl );
@@ -432,7 +436,8 @@ dw_handle DWENTRY DWAddBitField( dw_client cli, dw_handle field_hdl, dw_loc_hand
     _Validate( field_hdl );
     new_hdl = LabelNewHandle( cli );
     abbrev = AB_BITFIELD;
-    if( byte_size ) abbrev |= AB_BYTE_SIZE;
+    if( byte_size )
+        abbrev |= AB_BYTE_SIZE;
     StartDIE( cli, abbrev );
     /* AT_accessibility */
     EmitAccessFlags( cli, flags );
@@ -453,9 +458,9 @@ dw_handle DWENTRY DWAddBitField( dw_client cli, dw_handle field_hdl, dw_loc_hand
     InfoString( cli, name );
     /* AT_data_member_location */
     if( loc ) {
-        InfoEmitLocExpr( cli, sizeof( uint_8), loc );
-    }else{
-        InfoEmitLocExprNull( cli, sizeof( uint_8) );
+        InfoEmitLocExpr( cli, sizeof( uint_8 ), loc );
+    } else {
+        InfoEmitLocExprNull( cli, sizeof( uint_8 ) );
     }
     /* AT_type  */
     EmitTypeRef( cli, field_hdl );
@@ -514,9 +519,9 @@ dw_handle DWENTRY DWBeginSubroutineType( dw_client cli, dw_handle return_type, c
     _Validate( return_type != 0 );
     new_hdl = GetHandle( cli );
     abbrev = AB_SUBROUTINE_TYPE | AB_SIBLING;
-    if( flags & DW_PTR_TYPE_MASK ) abbrev |= AB_ADDRESS_CLASS;
-    emitCommonTypeInfo( cli, abbrev,
-                        name, flags );
+    if( flags & DW_PTR_TYPE_MASK )
+        abbrev |= AB_ADDRESS_CLASS;
+    emitCommonTypeInfo( cli, abbrev, name, flags );
     if( abbrev & AB_ADDRESS_CLASS ) {
         WriteAddressClass( cli, flags );
     }
@@ -541,10 +546,11 @@ dw_handle DWENTRY DWAddParmToSubroutineType( dw_client cli, dw_handle parm_type,
     _Validate( parm_type != 0 );
     new_hdl = LabelNewHandle( cli );
     abbrev = AB_FORMAL_PARM_TYPE;
-    if( name ) abbrev |= AB_NAME;
+    if( name != NULL )
+        abbrev |= AB_NAME;
     StartDIE( cli, abbrev );
     /* AT_name */
-    if( name ) {
+    if( name != NULL ) {
         InfoString( cli, name );
     }
     EmitTypeRef( cli, parm_type );
@@ -579,7 +585,8 @@ dw_handle DWENTRY DWString( dw_client cli, dw_loc_handle string_length, dw_size_
 
     new_hdl = GetHandle( cli );
     abbrev = string_length ? AB_STRING_WITH_LOC : AB_STRING;
-    if( byte_size ) abbrev |= AB_BYTE_SIZE;
+    if( byte_size )
+        abbrev |= AB_BYTE_SIZE;
     emitCommonTypeInfo( cli, abbrev, name, flags );
     /* AT_byte_size */
     if( byte_size ) {
@@ -587,7 +594,7 @@ dw_handle DWENTRY DWString( dw_client cli, dw_loc_handle string_length, dw_size_
     }
     /* AT_string_length */
     if( string_length ) {
-        InfoEmitLocExpr( cli, sizeof( uint_8), string_length );
+        InfoEmitLocExpr( cli, sizeof( uint_8 ), string_length );
     }
     EndDIE( cli );
     return( new_hdl );
@@ -601,11 +608,13 @@ dw_handle DWENTRY DWMemberPointer( dw_client cli, dw_handle struct_type, dw_loc_
 
     new_hdl = LabelNewHandle( cli );
     abbrev = AB_MEMBER_POINTER;
-    if( name ) abbrev |= AB_NAME;
-    if( flags & DW_PTR_TYPE_MASK ) abbrev |= AB_ADDRESS_CLASS;
+    if( name != NULL )
+        abbrev |= AB_NAME;
+    if( flags & DW_PTR_TYPE_MASK )
+        abbrev |= AB_ADDRESS_CLASS;
     StartDIE( cli, abbrev );
     /* AT_name */
-    if( name ) {
+    if( name != NULL ) {
         InfoString( cli, name );
     }
     WriteAddressClass( cli, flags );
@@ -614,7 +623,7 @@ dw_handle DWENTRY DWMemberPointer( dw_client cli, dw_handle struct_type, dw_loc_
     /* AT_containing_type */
     InfoHandleReference( cli, struct_type );
     /* AT_use_location */
-    InfoEmitLocExpr( cli, sizeof( uint_16), loc );
+    InfoEmitLocExpr( cli, sizeof( uint_16 ), loc );
     EndDIE( cli );
     return( new_hdl );
 }
@@ -626,9 +635,10 @@ dw_handle DWENTRY DWBeginNameSpace( dw_client cli, const char *name )
 
     new_hdl = LabelNewHandle( cli );
     abbrev = AB_NAMESPACE | AB_SIBLING | AB_START_REF;
-    if( name ) abbrev |= AB_NAME;
+    if( name != NULL )
+        abbrev |= AB_NAME;
     StartDIE( cli, abbrev );
-    if( name ) {
+    if( name != NULL ) {
     /* AT_name */
         InfoString( cli, name );
     }
