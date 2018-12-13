@@ -171,8 +171,10 @@
 !inject wrlang.obj   d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
 
 !include ../../../../objlist.mif
-mbinit_postopts=-os
 
+getcpdos_opts = -I"$(clib_dir)/intel/h"
+
+mbinit_postopts=-os
 # WORKAROUND: The _fxxx functions for flat model targets are essentially
 # useless, but they must be removed completely (not just some modules)
 fmbtowc_postopts = -wcd310
