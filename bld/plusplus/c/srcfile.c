@@ -282,9 +282,11 @@ static SRCFILE srcFileGetUnique(// FIND SOURCE FILE IN UNIQUE LIST
     SRCFILE srch;               // - searched source file
 
 /* Do a string sensitive compare -- it's safer. */
-    for( srch = srcFilesUnique
-       ; ( srch != NULL ) && ( 0 != strcmp( srch->name, name ) )
-       ; srch = srch->unique );
+    for( srch = srcFilesUnique; srch != NULL; srch = srch->unique ) {
+       if( strcmp( srch->name, name ) == 0 ) {
+           break;
+       }
+    }
     return( srch );
 }
 
