@@ -73,6 +73,7 @@
 #define PREFIX_EMBEDDED         '?'
 #define MEMBER_POINTER          'M'
 #define UNDERSCORE              '_'
+#define INTERNAL_PREFIX         '.'
 #define PERIOD                  '.'
 #define SCOPE_PREFIX            ':'
 #define TEMPLATE_PREFIX         ':'
@@ -1741,7 +1742,7 @@ static mangled_type checkInternal( char const *p, size_t len )
 {
     mangled_type    type;
 
-    if( p[0] == '.' ) {
+    if( p[0] == INTERNAL_PREFIX ) {
         len--;
         type = __MANGLED_INTERNAL;
     } else if( p[0] == OPNAME_PREFIX && mytoupper( p[1] ) == WAT_FUN_PREFIX ) {
