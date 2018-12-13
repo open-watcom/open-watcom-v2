@@ -596,7 +596,8 @@ PTREE MakeNodeSymbol(           // MAKE PT_SYMBOL NODE FROM SYMBOL
 {
     sym = SymMarkRefed( sym );
     if( NULL != StructType( sym->sym_type ) ) {
-        sym->flag |= PTF_MEMORY_EXACT;
+//        sym->flag |= PTF_MEMORY_EXACT;
+        sym->flag |= SF_ADDR_TAKEN;
     }
     return( NodeSymbolNoRef( NULL, sym, NULL ) );
 }
