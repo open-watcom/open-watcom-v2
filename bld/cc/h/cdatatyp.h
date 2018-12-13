@@ -28,7 +28,7 @@
 *
 ****************************************************************************/
 
-/* it is used in definition for 
+/* it is used in definition for
     CGDataType[] table in  cgen.c
     AsmDataType[] table in cpragx86.c
     CTypenames[] table in  cdump.c
