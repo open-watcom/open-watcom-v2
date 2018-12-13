@@ -35,7 +35,7 @@
 
 /* Simple wrapper around Intel CMPXCHG */
 static unsigned cmpxchg( volatile int *i, int j, int k );
-#pragma aux cmpxchg =               \
+#pragma aux cmpxchg = \
         "lock cmpxchg [edx],ecx"    \
         "jnz short noxchg"          \
         "mov    eax,1"              \
@@ -43,23 +43,23 @@ static unsigned cmpxchg( volatile int *i, int j, int k );
     "noxchg:"                       \
         "mov    eax,0"              \
     "donexchg:"                     \
-    parm caller     [edx] [eax] [ecx] \
-    value           [eax] \
-    modify exact    [eax]
+    __parm __caller     [__edx] [__eax] [__ecx] \
+    __value             [__eax] \
+    __modify __exact    [__eax]
 
 static void increment( volatile int *i );
 #pragma aux increment = \
         "lock inc dword ptr [eax]" \
-    parm caller     [eax] \
-    value           \
-    modify exact
+    __parm __caller     [__eax] \
+    __value             \
+    __modify __exact    []
 
 static void decrement( volatile int *i );
 #pragma aux decrement = \
         "lock dec dword ptr [eax]" \
-    parm caller     [eax] \
-    value           \
-    modify exact
+    __parm __caller     [__eax] \
+    __value             \
+    __modify __exact    []
 
 #endif
 

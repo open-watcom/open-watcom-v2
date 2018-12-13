@@ -43,10 +43,10 @@ unsigned long   __ibm_biosint_get_ticks( void );
         "int 1ah"                   \
         "shl    ecx,16"             \
         "mov    cx,dx"              \
-    parm caller     \
-    value           [ecx] \
-    modify exact    [eax ecx edx] \
-    nomemory
+    __parm __caller             [] \
+    __value                     [__ecx] \
+    __modify __exact __nomemory [__eax __ecx __edx] \
+
 
 static unsigned long __ibm_bios_get_ticks( void )
 {

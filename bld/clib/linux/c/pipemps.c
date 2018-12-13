@@ -40,16 +40,16 @@
  */
 
 syscall_res sys_pipe( u_long func, u_long r_4 );
-#pragma aux sys_pipe =                          \
-    "move   $s0,$a0"                            \
-    "syscall"                                   \
-    "bnez   $a3, L1"                            \
-    "sw     $v0,0($s0)"                         \
-    "sw     $v1,4($s0)"                         \
-    "move   $v0,$zero"                          \
-"L1: move   $v1,$a3"                            \
-    parm [$v0] [$a0]                            \
-    value [$v1 $v0];
+#pragma aux sys_pipe =          \
+        "move   $s0,$a0"        \
+        "syscall"               \
+        "bnez   $a3, L1"        \
+        "sw     $v0,0($s0)"     \
+        "sw     $v1,4($s0)"     \
+        "move   $v0,$zero"      \
+    "L1: move   $v1,$a3"        \
+    __parm  [$v0] [$a0] \
+    __value [$v1 $v0]
 
 _WCRTLINK int pipe( int __fildes[2] )
 {

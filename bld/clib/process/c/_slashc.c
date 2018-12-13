@@ -40,9 +40,9 @@ extern  char    _DOS_Switch_Char( void );
 #pragma aux _DOS_Switch_Char = \
         "mov    ax,3700h"   \
         "int 21h"           \
-    parm caller     \
-    value           [dl] \
-    modify exact    [ax dl]
+    __parm __caller     [] \
+    __value             [__dl] \
+    __modify __exact    [__ax __dl]
 #endif
 
 

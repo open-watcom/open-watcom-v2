@@ -88,7 +88,7 @@
 
 #if defined( __DOS__ )
 extern int  __dospawn( int mode, char SPVE_NEAR *pgmname, char SPVE_NEAR *cmdline, ENV_ARG env );
-#pragma aux __dospawn "_*" parm caller [];
+#pragma aux __dospawn "_*" __parm __caller [];
 #endif
 
 /* P_OVERLAY macro expands to a variable, not a constant! */

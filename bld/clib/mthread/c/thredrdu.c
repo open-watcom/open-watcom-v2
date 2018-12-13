@@ -57,7 +57,9 @@ typedef struct thread_args {
     int         tid;
 } thread_args;
 
-#pragma aux begin_thread_helper "*" parm [esi] modify [eax ebx ecx edx esi edi];
+#pragma aux begin_thread_helper "*" \
+    __parm      [__esi] \
+    __modify    [__eax __ebx __ecx __edx __esi __edi]
 
 static void begin_thread_helper( void *param )
 /********************************************************/

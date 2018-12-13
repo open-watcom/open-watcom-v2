@@ -39,9 +39,9 @@ extern div_t   __div( int, int );
 #pragma aux __div = \
         "cwd"       \
         "idiv cx"   \
-    parm            [ax] [cx] \
-    value           [dx ax] \
-    modify exact    [ax dx]
+    __parm              [__ax] [__cx] \
+    __value             [__dx __ax] \
+    __modify __exact    [__ax __dx]
 #endif
 
 

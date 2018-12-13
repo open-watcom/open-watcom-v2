@@ -45,9 +45,9 @@
 extern void _mymemcpy( void_fptr, void_nptr, size_t );
 #pragma aux _mymemcpy = \
         memcpy_i86      \
-    __parm __caller     [es di] [si] [cx] \
+    __parm __caller     [__es __di] [__si] [__cx] \
     __value             \
-    __modify __exact    [si di cx]
+    __modify __exact    [__si __di __cx]
 #else
 // big data models
 extern void _mymemcpy( void_fptr, void_fptr, size_t );
@@ -56,9 +56,9 @@ extern void _mymemcpy( void_fptr, void_fptr, size_t );
         "mov ds,dx"     \
         memcpy_i86      \
         "pop ds"        \
-    __parm __caller     [es di] [dx si] [cx] \
+    __parm __caller     [__es __di] [__dx __si] [__cx] \
     __value             \
-    __modify __exact    [si di cx]
+    __modify __exact    [__si __di __cx]
 #endif
 #elif defined( _M_IX86 )
 // 32-bit Intel
@@ -67,17 +67,17 @@ extern void _mymemcpy( void_fptr, void_fptr, size_t );
 extern void _mymemcpy( void_nptr, void_nptr, size_t );
 #pragma aux _mymemcpy = \
         memcpy_386      \
-    __parm __caller     [edi] [esi] [ecx] \
+    __parm __caller     [__edi] [__esi] [__ecx] \
     __value             \
-    __modify __exact    [esi edi ecx]
+    __modify __exact    [__esi __edi __ecx]
 #elif defined(__SMALL_DATA__)
 // small data models
 extern void _mymemcpy( void_fptr, void_nptr, size_t );
 #pragma aux _mymemcpy = \
         memcpy_386      \
-    __parm __caller     [es edi] [esi] [ecx] \
+    __parm __caller     [__es __edi] [__esi] [__ecx] \
     __value             \
-    __modify __exact    [esi edi ecx]
+    __modify __exact    [__esi __edi __ecx]
 #else
 // big data models
 extern void _mymemcpy( void_fptr, void_fptr, size_t );
@@ -86,9 +86,9 @@ extern void _mymemcpy( void_fptr, void_fptr, size_t );
         "mov ds,edx"    \
         memcpy_386      \
         "pop ds"        \
-    __parm __caller     [es edi] [dx esi] [ecx] \
+    __parm __caller     [__es __edi] [__dx __esi] [__ecx] \
     __value             \
-    __modify __exact    [esi edi ecx]
+    __modify __exact    [__esi __edi __ecx]
 #endif
 #else
 // non-Intel targets

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 2016 Open Watcom Contributors. 
+*    Portions Copyright (c) 2016 Open Watcom Contributors.
 *    All Rights Reserved.
 *
 *  ========================================================================
@@ -44,7 +44,7 @@
 
 extern unsigned is386( void );
 /* Try and flip the AC bit in EFlags */
-#pragma aux is386 =             \
+#pragma aux is386 = \
         ".586"                  \
         "mov    dx,sp"          \
         "and    sp,0xfffc"      \
@@ -61,7 +61,8 @@ extern unsigned is386( void );
         "shr    eax,18"         \
         "and    eax,1"          \
         "mov    sp,dx"          \
-        value [eax] modify [ebx edx]
+    __value     [__eax] \
+    __modify    [__ebx __edx]
 
 static int  __cmpxchg = 0;
 
@@ -75,13 +76,13 @@ _WCRTLINK int sem_init( sem_t *sem, int pshared, unsigned int value )
         _RWD_errno = EINVAL;
         return( -1 );
     }
-    
+
     // Debugging...
     if( pshared != 0 ) {
         _RWD_errno = ENOSYS;
         return( -1 );
     }
-    
+
     sem->value = value;
     sem->futex = 1;
     return( 0 );

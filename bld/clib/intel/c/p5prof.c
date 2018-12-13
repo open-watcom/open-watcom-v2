@@ -40,9 +40,9 @@
 
 extern  void _Bin2String(short int _WCNEAR *, char _WCNEAR *, int);
 #if defined(__386__)
- #pragma aux _Bin2String     "_*" parm routine [eax] [edx] [ebx];
+ #pragma aux _Bin2String "_*" __parm __routine [__eax] [__edx] [__ebx]
 #elif defined( _M_I86 )
- #pragma aux _Bin2String     "_*" parm routine [ax] [dx] [bx];
+ #pragma aux _Bin2String "_*" __parm __routine [__ax] [__dx] [__bx]
 #else
  #error unsupported platform
 #endif
@@ -61,7 +61,8 @@ extern  void    _RDTSC( union tsc * );
         "rdtsc" \
         "mov    [ebx],eax" \
         "mov    4[ebx],edx" \
-        parm [ebx] modify [eax edx];
+    __parm      [__ebx] \
+    __modify    [__eax __edx]
 
 extern  void    *_Start_TI;
 extern  void    *_End_TI;
@@ -170,7 +171,7 @@ static void p5_profile_fini( void )
 }
 
 #if defined(_M_IX86)
- #pragma aux __p5_profile "*";
+ #pragma aux __p5_profile "*"
 #endif
 AXI(              p5_profile_init, INIT_PRIORITY_LIBRARY + 1 )
 YI( __p5_profile, p5_profile_fini, INIT_PRIORITY_LIBRARY + 1 )

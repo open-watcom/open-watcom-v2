@@ -50,14 +50,14 @@ extern void  *GetFromSS( long *esp );
 
 #pragma aux GetFromFS = \
         "mov eax,fs:[eax]" \
-    __parm [__eax] \
+    __parm  [__eax] \
     __value [__eax]
 
 #pragma aux PutToFS = \
-        "mov fs:[edx], eax" \
+        "mov fs:[edx],eax" \
     __parm [__eax] [__edx]
 
 #pragma aux GetFromSS = \
         "mov eax,ss:[eax]" \
-    __parm [__eax] \
+    __parm  [__eax] \
     __value [__eax]

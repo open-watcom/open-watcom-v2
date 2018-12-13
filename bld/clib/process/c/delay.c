@@ -66,18 +66,18 @@
             "mov    eax,edx"    \
             "sal    eax,16"     \
             "or     ax,cx"      \
-        parm caller     \
-        value           [eax] \
-        modify exact    [eax ecx edx]
+        __parm __caller     [] \
+        __value             [__eax] \
+        __modify __exact    [__eax __ecx __edx]
 #else
     extern unsigned long GetDosTime( void );
     #pragma aux GetDosTime =    \
             "mov    ah,2ch"     \
             "int 21h"           \
             "mov    ax,cx"      \
-        parm caller     \
-        value           [dx ax] \
-        modify exact    [ax cx dx]
+        __parm __caller     [] \
+        __value             [__dx __ax] \
+        __modify __exact    [__ax __cx __dx]
 #endif
 
 

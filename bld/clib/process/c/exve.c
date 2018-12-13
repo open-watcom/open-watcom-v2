@@ -81,14 +81,16 @@ typedef struct a_blk {
 #define DOS2SIZE        0x281   /* paragraphs to reserve for DOS 2.X */
 
 extern unsigned doslowblock( void );
-#pragma aux doslowblock =\
-    _MOV_AH DOS_GET_LIST_OF_LIST \
-    "int 21h"           \
-    "dec bx"            \
-    "dec bx"            \
-    "mov ax, es:[bx]"   \
-    "inc ax"            \
-    modify [bx es] nomemory;
+#pragma aux doslowblock = \
+        _MOV_AH DOS_GET_LIST_OF_LIST \
+        "int 21h"           \
+        "dec bx"            \
+        "dec bx"            \
+        "mov ax, es:[bx]"   \
+        "inc ax"            \
+    __parm              [] \
+    __value             [__ax] \
+    __modify __nomemory [__bx __es]
 
 extern execveaddr_type      __Exec_addr;
 extern void _WCFAR __cdecl  _doexec( char _WCI86NEAR *, char _WCI86NEAR *, int, unsigned, unsigned, unsigned, unsigned );

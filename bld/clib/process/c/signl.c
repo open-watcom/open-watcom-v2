@@ -49,11 +49,11 @@ extern void __far _fpmath( void );
 
 unsigned int win87em_get_sw( void );
 #pragma aux win87em_get_sw = \
-    "push   bx"                                     \
-    "mov    bx, 8h"                                 \
-    "call   far ptr _fpmath"                        \
-    "pop    bx"                                     \
-    value [ax];
+        "push   bx"                                     \
+        "mov    bx, 8h"                                 \
+        "call   far ptr _fpmath"                        \
+        "pop    bx"                                     \
+    __value [__ax]
 
 #endif
 

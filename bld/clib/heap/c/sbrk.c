@@ -52,40 +52,40 @@
 #ifdef _M_I86
 
 extern  unsigned short SS_Reg( void );
-#pragma aux SS_Reg =    \
+#pragma aux SS_Reg = \
         "mov ax,ss"     \
-    parm caller     \
-    value           [ax] \
-    modify exact    [ax]
+    __parm __caller     [] \
+    __value             [__ax] \
+    __modify __exact    [__ax]
 
 #else
 
 extern  unsigned short  GetDS( void );
-#pragma aux GetDS =     \
+#pragma aux GetDS = \
         "mov    ax,ds"  \
-    parm caller     \
-    value           [ax] \
-    modify exact    [ax]
+    __parm __caller     [] \
+    __value             [__ax] \
+    __modify __exact    [__ax]
 
 extern  int SegInfo( unsigned short selector );
-#pragma aux SegInfo =       \
+#pragma aux SegInfo = \
         "mov    ah,0edH"    \
         "int 21h"           \
         "shl    eax,31"     \
         "mov    ax,di"      \
-    parm caller     [ebx] \
-    value           [edi] \
-    modify exact    [eax ecx edx esi ebx edi]
+    __parm __caller     [__ebx] \
+    __value             [__edi] \
+    __modify __exact    [__eax __ecx __edx __esi __ebx __edi]
 
 extern  int SegmentLimit( void );
-#pragma aux SegmentLimit =  \
+#pragma aux SegmentLimit = \
         "xor    eax,eax"    \
         "mov    ax,ds"      \
         "lsl    eax,ax"     \
         "inc    eax"        \
-    parm caller     \
-    value           [eax] \
-    modify exact    [eax]
+    __parm __caller     [] \
+    __value             [__eax] \
+    __modify __exact    [__eax]
 
 #endif
 

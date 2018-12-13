@@ -52,9 +52,9 @@ typedef struct thread_args {
 } thread_args;
 
 #pragma aux begin_thread_helper "*" \
-                  parm caller [gs ebx] \
-                  value struct routine [eax] \
-                  modify [eax ebx ecx edx esi edi]
+    __parm __caller             [__gs __ebx] \
+    __value __struct __routine  [__eax] \
+    __modify                    [__eax __ebx __ecx __edx __esi __edi]
 
 static void __far begin_thread_helper( void *param )
 /********************************************************/

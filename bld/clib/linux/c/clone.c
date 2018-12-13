@@ -52,7 +52,7 @@
  * function exit properly cleanup stack.
  */
 
-#pragma aux __callfn parm routine [];
+#pragma aux __callfn __parm __routine [];
 
 static void __callfn( int (*__fn)(void *), void *args, void *tls )
 {

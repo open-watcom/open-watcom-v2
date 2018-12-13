@@ -121,7 +121,7 @@ _WCRTLINK __int64 __P5_overhead( void )
 }
 
 extern __int64 rdtsc( void );
-#pragma aux rdtsc = "rdtsc" value [ edx eax ];
+#pragma aux rdtsc = "rdtsc" __value [__edx __eax]
 
 #ifndef __SW_OF
     #error "Must be compiled with /of to find return address"
@@ -129,34 +129,38 @@ extern __int64 rdtsc( void );
 
 extern reg_32 findLongJmpReturn( void );
 #pragma aux findLongJmpReturn = \
-    "mov eax,[ebp]" \
-    "mov eax,8[eax]" \
-    value [ eax ] modify [ esp ];
+        "mov eax,[ebp]" \
+        "mov eax,8[eax]" \
+    __value     [__eax] \
+    __modify    [__esp]
 
 extern reg_32 findReturn( void );
 #pragma aux findReturn = \
-    "mov eax,+4[ebp]" \
-    value [ eax ] modify [ eax ];
+        "mov eax,+4[ebp]" \
+    __value     [__eax] \
+    __modify    [__eax]
 
 extern reg_32 findStack( void );
 #pragma aux findStack = \
-    "lea eax,+12[ebp]" \
-    value [ eax ] modify [ eax ];
+        "lea eax,+12[ebp]" \
+    __value     [__eax] \
+    __modify    [__eax]
 
 extern reg_32 findSecondReturn( void );
 #pragma aux findSecondReturn = \
-    "mov eax,+12[ebp]" \
-    value [ eax ] modify [ eax ];
+        "mov eax,+12[ebp]" \
+    __value     [__eax] \
+    __modify    [__eax]
 
 extern void push_eax( void );
 #pragma aux push_eax = \
-    "push eax" \
-    modify [ esp ];
+        "push eax" \
+    __modify [__esp]
 
 extern void pop_eax( void );
 #pragma aux pop_eax = \
-    "pop eax" \
-    modify [ esp ];
+        "pop eax" \
+    __modify [__esp]
 
 #define DIRECT_CALL_INDICATOR   (unsigned short)0xc4f7  // test esp,offset(info)
 #define INDIRECT_CALL_INDICATOR (unsigned short)0xc5f7  // test ebp,offset(info)

@@ -37,9 +37,17 @@
 extern unsigned int __rotr( unsigned int value, unsigned int shift );
 
 #if defined(__386__)
-#pragma aux __rotr = "ror eax,cl" parm [eax] [ecx] value [eax] modify [ecx];
+#pragma aux __rotr = \
+        "ror eax,cl" \
+    __parm      [__eax] [__ecx] \
+    __value     [__eax] \
+    __modify    [__ecx]
 #elif defined( _M_I86 )
-#pragma aux __rotr = "ror ax,cl" parm [ax] [cx] value [ax] modify [cx];
+#pragma aux __rotr = \
+        "ror ax,cl" \
+    __parm      [__ax] [__cx] \
+    __value     [__ax] \
+    __modify    [__cx]
 #endif
 
 _WCRTLINK unsigned int _rotr( unsigned int value, unsigned int shift )
