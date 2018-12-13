@@ -117,7 +117,7 @@ extern unsigned __dos_find_close_dta( struct find_t *fdta );
             _MOV_AH DOS_FIND_FIRST \
             _INT_21             \
             "call __doserror_"  \
-        __parm __caller     [__edx] [ecx] [ebx] \
+        __parm __caller     [__edx] [__ecx] [__ebx] \
         __value             [__eax] \
         __modify __exact    [__eax]
 
