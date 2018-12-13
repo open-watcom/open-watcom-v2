@@ -93,8 +93,8 @@ extern "C" {
 #endif
 
 #pragma aux __DS =  \
-    "mov ax, ds"    \
-    value [ ax ];
+        "mov ax,ds" \
+    __value [__ax]
 
 /*****************************************************************************
 //  Multi-thread barriers. See mthread\c\mthread.c

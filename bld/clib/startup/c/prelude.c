@@ -59,15 +59,15 @@
 
 #if !defined(_THIN_LIB)
 extern unsigned __SP( void );
-#pragma aux __SP =      \
-    "mov eax, esp"      \
-    value [ eax ];
+#pragma aux __SP = \
+        "mov eax,esp"   \
+    __value [__eax]
 #endif
 
 extern unsigned short __DS( void );
-#pragma aux __DS =      \
-    "mov ax, ds"        \
-    value [ ax ];
+#pragma aux __DS = \
+        "mov ax,ds" \
+    __value [__ax]
 
 #if defined (_THIN_LIB)
     extern int      __init_environment( void *reserved );

@@ -64,7 +64,7 @@ static void fini( void )
 #else
 
 extern short __get_ds( void );
-#pragma aux __get_ds = "mov ax,ds" value[ax];
+#pragma aux __get_ds = "mov ax,ds" __value [__ax] __modify __exact [__ax]
 
 static void init( void )
 {
