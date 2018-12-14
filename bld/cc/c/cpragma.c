@@ -51,7 +51,7 @@ struct enums_info {
 } *EnumInfo;
 
 
-// local variables
+/* local variables */
 static struct toggle ToggleNames[] = {
     #define TOGDEF( a, b ) {  #a, b },
     #include "togdef.h"
@@ -61,6 +61,7 @@ static struct toggle ToggleNames[] = {
 
 
 void CPragmaInit( void )
+/**********************/
 {
     TextSegList = NULL;
     PackInfo = NULL;
@@ -181,30 +182,30 @@ static void advanceToken( void )
 bool GetPragAuxAliasInfo( void )
 /******************************/
 {
-    if( CurToken != T_LEFT_PAREN )          // #pragma aux symbol .....
+    if( CurToken != T_LEFT_PAREN )          /* #pragma aux symbol ..... */
         return( IS_ID_OR_KEYWORD( CurToken ) );
     NextToken();
-    if( !IS_ID_OR_KEYWORD( CurToken ) )     // error
+    if( !IS_ID_OR_KEYWORD( CurToken ) )     /* error */
         return( false );
     LookAhead();
-    if( LAToken == T_RIGHT_PAREN ) {        // #pragma aux (alias) symbol .....
+    if( LAToken == T_RIGHT_PAREN ) {        /* #pragma aux (alias) symbol ..... */
         CurrAlias = SearchPragAuxAlias( SavedId );
         advanceToken();
         NextToken();
         return( IS_ID_OR_KEYWORD( CurToken ) );
-    } else if( LAToken == T_COMMA ) {       // #pragma aux (symbol, alias)
+    } else if( LAToken == T_COMMA ) {       /* #pragma aux (symbol, alias) */
         HashValue = SavedHash;
         SetCurrInfo( SavedId );
         advanceToken();
         NextToken();
         if( !IS_ID_OR_KEYWORD( CurToken ) )
-            return( false );                // error
+            return( false );                /* error */
         GetPragAuxAlias();
         PragEnding();
-        return( false );    /* process no more! */
-    } else {                                // error
+        return( false );                    /* process no more! */
+    } else {                                /* error */
         advanceToken();
-        return( false );    /* shut up the compiler */
+        return( false );                    /* shut up the compiler */
     }
 }
 
@@ -332,7 +333,7 @@ void XferPragInfo( const char *from, const char *to )
 
 
 static void CopyLinkage( void )
-/****************************/
+/*****************************/
 {
 #if _CPU == 370
     linkage_regs *regs;
@@ -351,7 +352,7 @@ static void CopyLinkage( void )
 
 
 static void CopyParms( void )
-/**************************/
+/***************************/
 {
     size_t      size;
     hw_reg_set  *regs;
@@ -370,12 +371,12 @@ static void CopyParms( void )
 }
 
 static void CopyCode( void )
-/*************************/
+/**************************/
 {
     byte_seq    *code;
     unsigned    size;
 
-//TODO deal with reloc list
+// TODO deal with reloc list
     if( CurrInfo->code == NULL )
         return;
     if( CurrInfo->code != CurrAlias->code )
@@ -387,7 +388,7 @@ static void CopyCode( void )
 }
 
 static void CopyObjName( void )
-/****************************/
+/*****************************/
 {
     if( CurrInfo->objname == NULL )
         return;
@@ -398,7 +399,7 @@ static void CopyObjName( void )
 
 #if _CPU == _AXP
 static void CopyExceptRtn( void )
-/******************************/
+/*******************************/
 {
     if( CurrInfo->except_rtn == NULL )
         return;
@@ -502,18 +503,18 @@ int PragRegNumIndex( const char *str, int max_reg )
 {
     int             index;
 
-    // decode regular register index
+    /* decode regular register index */
     if( isdigit( (unsigned char)*str ) ) {
         index = atoi( str );
         if( index < max_reg ) {
             if( str[1] == '\0' ) {
-                //  0....9
+                /* 0....9 */
                 if(( index > 0 )
                   || ( index == 0 ) && ( str[0] == '0' )) {
                     return( index );
                 }
             } else if( str[2] == '\0' ) {
-                // 10....max_reg-1
+                /* 10....max_reg-1 */
                 if( index > 9 ) {
                     return( index );
                 }
@@ -568,6 +569,12 @@ hw_reg_set *PragManyRegSets( void )
     return( sets );
 }
 
+/*******************************************************
+ *
+ *  #pragma .... processing
+ *
+ *******************************************************/
+
 bool SetToggleFlag( char const *name, int const value )
 /*****************************************************/
 {
@@ -592,8 +599,13 @@ bool SetToggleFlag( char const *name, int const value )
     return( ret );
 }
 
+/* forms:
+ *
+ *      #pragma on (<toggle name>)
+ *      #pragma off (<toggle name>)
+ */
 static void pragFlag( int value )
-/******************************/
+/*******************************/
 {
     PPCTL_ENABLE_MACROS();
     NextToken();
@@ -650,8 +662,13 @@ static void GetLibraryNames( void )
     }
 }
 
+/* forms:
+ *
+ *      #pragma library
+ *      #pragma library (<libraries name list>)
+ */
 static void pragLibs( void )
-/*************************/
+/**************************/
 {
     PPCTL_ENABLE_MACROS();
     NextToken();
@@ -665,6 +682,10 @@ static void pragLibs( void )
     PPCTL_DISABLE_MACROS();
 }
 
+/* forms:
+ *
+ *      #pragma comment ( comment_type [, "comment_string"] )
+ */
 static void pragComment( void )
 /*****************************/
 {
@@ -729,6 +750,13 @@ static void getPackArgs( void )
     }
 }
 
+/* forms:
+ *
+ *      #pragma pack ( n )
+ *      #pragma pack ( push )
+ *      #pragma pack ( pop )
+ *      #pragma pack ( push, n )
+ */
 static void pragPack( void )
 /**************************/
 {
@@ -789,6 +817,10 @@ textsegment *LkSegName( const char *segname, const char *classname )
     return( NewTextSeg( segname, "", classname ) );
 }
 
+/* forms:
+ *
+ *      #pragma alloc_text ( seg_name, fn [, fn] )
+ */
 static void pragAllocText( void )
 /*******************************/
 {
@@ -854,13 +886,13 @@ void EnableDisableMessage( int enable, unsigned msg_num )
     }
 }
 
-// forms:
-//
-//    #pragma enable_message( messageNo )
-//    #pragma disable_message( messageNo )
-//
-// dis- enable display of selected message number
-//
+/* forms:
+ *
+ *    #pragma enable_message( messageNo )
+ *    #pragma disable_message( messageNo )
+ *
+ * disable/enable display of selected message number
+ */
 static void pragEnableDisableMessage( int enable )
 /************************************************/
 {
@@ -881,14 +913,14 @@ static void pragEnableDisableMessage( int enable )
 }
 
 
-// forms:
-//
-// #pragma message ("one or more " "long message " "strings")
-//
-// output these strings to stdout
-// this output is _not_ dependent on setting
-// of #pragma enable_message or disable_message.
-//
+/* form:
+ *
+ * #pragma message ("one or more " "long message " "strings")
+ *
+ * output these strings to stdout
+ * this output is _not_ dependent on setting
+ * of #pragma enable_message or disable_message.
+ */
 static void pragMessage( void )
 /*****************************/
 {
@@ -904,21 +936,6 @@ static void pragMessage( void )
     PPCTL_DISABLE_MACROS();
 }
 
-// forms: (1) #pragma enum int
-//        (2) #pragma enum minimum
-//        (3) #pragma enum original
-//        (4) #pragma enum pop
-//
-// The pragma affects the underlying storage-definition for subsequent
-// enum declarations.
-//
-// (1) make int the underlying storage definition (same as -ei)
-// (2) minimize the underlying storage definition (same as no -ei)
-// (3) reset back to result of command-line parsing
-// (4) restore previous value
-//
-// 1-3 all push previous value before affecting value
-//
 static void PushEnum( void )
 /**************************/
 {
@@ -930,8 +947,9 @@ static void PushEnum( void )
     EnumInfo = ei;
 }
 
-static void PopEnum( void ) {
-/*********************/
+static void PopEnum( void )
+/*************************/
+{
     struct enums_info *ei;
 
     ei = EnumInfo;
@@ -942,10 +960,23 @@ static void PopEnum( void ) {
     }
 }
 
-// forms:
-//
-// #pragma enum PARSING
-//
+/* forms:
+ *
+ * (1) #pragma enum int
+ * (2) #pragma enum minimum
+ * (3) #pragma enum original
+ * (4) #pragma enum pop
+ *
+ * The pragma affects the underlying storage-definition for subsequent
+ * enum declarations.
+ *
+ * (1) make int the underlying storage definition (same as -ei)
+ * (2) minimize the underlying storage definition (same as no -ei)
+ * (3) reset back to result of command-line parsing
+ * (4) restore previous value
+ *
+ * 1-3 all push previous value before affecting value
+ */
 static void pragEnum( void )
 /**************************/
 {
@@ -966,6 +997,10 @@ static void pragEnum( void )
     PPCTL_DISABLE_MACROS();
 }
 
+/* forms:
+ *
+ * #pragma intrinsic ( fn [, fn] )
+ */
 static void pragIntrinsic( int intrinsic )
 /****************************************/
 {
@@ -995,6 +1030,10 @@ static void pragIntrinsic( int intrinsic )
     PPCTL_DISABLE_MACROS();
 }
 
+/* forms:
+ *
+ * #pragma code_seg ( seg_name [, class_name] )
+ */
 static void pragCodeSeg( void )
 /*****************************/
 {
@@ -1033,6 +1072,10 @@ static void pragCodeSeg( void )
     PPCTL_DISABLE_MACROS();
 }
 
+/* forms:
+ *
+ * #pragma data_seg ( seg_name [, class_name] )
+ */
 static void pragDataSeg( void )
 /*****************************/
 {
@@ -1066,6 +1109,10 @@ static void pragDataSeg( void )
     PPCTL_DISABLE_MACROS();
 }
 
+/* forms:
+ *
+ * #pragma unroll ( n )
+ */
 static void pragUnroll( void )
 /****************************/
 {
@@ -1086,13 +1133,15 @@ static void pragUnroll( void )
     PPCTL_DISABLE_MACROS();
 }
 
-// forms: (1) #pragma read_only_file
-//        (2) #pragma read_only_file "file"*
-//
-// (1) causes current file to be marked read-only
-// (2) causes indicated file to be marked read-only
-//      - file must have started inclusion (may have completed)
-//
+/* forms:
+ *
+ * (1) #pragma read_only_file
+ * (2) #pragma read_only_file "file"*
+ *
+ * (1) causes current file to be marked read-only
+ * (2) causes indicated file to be marked read-only
+ *      - file must have started inclusion (may have completed)
+ */
 static void pragReadOnlyFile( void )
 /**********************************/
 {
@@ -1113,12 +1162,12 @@ static void pragReadOnlyFile( void )
 }
 
 
-// forms:
-//
-//  #pragma read_only_directory "directory"*
-//
-// (1) causes all files within directory to be marked read-only
-//
+/* forms:
+ *
+ *  #pragma read_only_directory "directory"*
+ *
+ * (1) causes all files within directory to be marked read-only
+ */
 static void pragReadOnlyDir( void )
 /*********************************/
 {
@@ -1134,12 +1183,14 @@ static void pragReadOnlyDir( void )
     PPCTL_DISABLE_MACROS();
 }
 
-// forms: (1) #pragma include_alias( "alias_name", "real_name" )
-//        (2) #pragma include_alias( <alias_name>, <real_name> )
-//
-// causes include directives referencing alias_name to be refer
-// to real_name instead
-//
+/* forms:
+ *
+ * (1) #pragma include_alias ( "alias_name", "real_name" )
+ * (2) #pragma include_alias ( <alias_name>, <real_name> )
+ *
+ * causes include directives referencing alias_name to be refer
+ * to real_name instead
+ */
 static void pragIncludeAlias( void )
 /**********************************/
 {
@@ -1188,10 +1239,12 @@ static void pragIncludeAlias( void )
     PPCTL_DISABLE_MACROS();
 }
 
-// forms: #pragma once
-//
-// (1) include file once
-//
+/* forms:
+ *
+ * #pragma once
+ *
+ * include file once
+ */
 static void pragOnce( void )
 /**************************/
 {
@@ -1210,10 +1263,10 @@ static void OptionPragSTDC( void )
     }
 }
 
-// forms:
-//
-// #pragma STDC (FP_CONTRACT|FENV_ACCESS|CX_LIMITED_RANGE) (ON|OFF|DEFAULT)
-//
+/* forms:
+ *
+ * #pragma STDC (FP_CONTRACT|FENV_ACCESS|CX_LIMITED_RANGE) (ON|OFF|DEFAULT)
+ */
 static void pragSTDC( void )
 /**************************/
 {
@@ -1278,11 +1331,11 @@ static void parseExtRef ( void )
     }
 }
 
-// forms:
-//
-// #pragma extref ( symbolid [, ...] )
-// #pragma extref ( "symbolname" [, ...] )
-//
+/* forms:
+ *
+ * #pragma extref ( symbolid [, ...] )
+ * #pragma extref ( "symbolname" [, ...] )
+ */
 static void pragExtRef( void )
 /****************************/
 {
@@ -1304,14 +1357,14 @@ static void pragExtRef( void )
     PPCTL_DISABLE_MACROS();
 }
 
-// forms:
-//
-// #pragma alias(id1/"name1", id2/"name2")
-//
-// Causes linker to replace references to id1/name1 with references
-// to id2/name2. Both the alias and the substituted symbol may be defined
-// either as a string name or an id of existing symbol.
-//
+/* forms:
+ *
+ * #pragma alias(id1/"name1", id2/"name2")
+ *
+ * Causes linker to replace references to id1/name1 with references
+ * to id2/name2. Both the alias and the substituted symbol may be defined
+ * either as a string name or an id of existing symbol.
+ */
 static void pragAlias( void )
 /***************************/
 {
@@ -1393,10 +1446,8 @@ void CPragma( void )
         if( CurToken != T_NULL ) {
             CppPrtToken();
             PPCTL_ENABLE_MACROS();
-            GetNextToken();
-            for( ; CurToken != T_NULL; ) {
+            for( GetNextToken(); CurToken != T_NULL; GetNextToken() ) {
                 CppPrtToken();
-                GetNextToken();
             }
             PPCTL_DISABLE_MACROS();
         }
