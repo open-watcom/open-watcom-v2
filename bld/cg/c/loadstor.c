@@ -164,7 +164,7 @@ static  void    PropagateLoadStoreBits( block *start, global_bit_set *id )
     block_edge          *edge;
     block               *blk;
 
-    for( ;; ) {
+    do {
         change = false;
         for( blk = start; blk != NULL; blk = blk->next_block ) {
             blk_dat = blk->dataflow;
@@ -188,10 +188,7 @@ static  void    PropagateLoadStoreBits( block *start, global_bit_set *id )
                 }
             }
         }
-        if( !change ) {
-            break;
-        }
-    }
+    } while( change );
 }
 
 

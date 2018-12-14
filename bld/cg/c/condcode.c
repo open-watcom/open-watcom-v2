@@ -335,16 +335,13 @@ static  void    FlowConditions( void )
     bool        change;
 
     zero = AllocIntConst( 0 );
-    change = true;
-    for( ;; ) {
+    do {
+        change = false;
         for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
             GatherSources( blk );
             change |= Traverse( blk, zero );
         }
-        if( !change )
-            break;
-        change = false;
-    }
+    } while( change );
 }
 
 

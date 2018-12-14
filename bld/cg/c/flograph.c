@@ -430,7 +430,7 @@ static  void    NestingDepth( void )
                 }
             }
         }
-        for( ;; ) {
+        do {
             change = false;
             for( blk = BlockList; blk != NULL; blk = blk->prev_block ) {
                 if( blk->next_block == NULL ) {
@@ -452,10 +452,7 @@ static  void    NestingDepth( void )
                     }
                 }
             }
-            if( !change ) {
-                break;
-            }
-        }
+        } while( change );
     }
 
 /*   Restore 'next_block' */

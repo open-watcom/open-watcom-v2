@@ -333,7 +333,7 @@ static  void    TreeBits( block *root )
 
     next_bit = 1;
     _BLKBITS( root ) = next_bit;
-    for( change = true; change; ) {
+    do {
         change = false;
         for( blk = root->u.partition; blk != root; blk = blk->u.partition ) {
             daddy = blk->input_edges->source;
@@ -348,7 +348,7 @@ static  void    TreeBits( block *root )
         if( next_bit == 0 ) {
             break;
         }
-    }
+    } while( change );
 
     /* rip off any blocks in the partition without bits*/
     /* and propagate the bits through the instructions*/

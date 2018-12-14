@@ -2066,7 +2066,7 @@ static  bool    PathFrom( instruction *frum, instruction *to,
     instruction *ins;
 
     LabelDown( frum, avoiding, go_around );
-    for(;;) {
+    do {
         change = false;
         for( blk = Loop; blk != NULL; blk = blk->u.loop ) {
             if( _IsBlkVisited( blk ) ) {
@@ -2075,10 +2075,7 @@ static  bool    PathFrom( instruction *frum, instruction *to,
                 LabelDown( blk->ins.hd.next, avoiding, go_around );
             }
         }
-        if( !change ) {
-            break;
-        }
-    }
+    } while( change );
     if( to->ins_flags & INS_VISITED ) {
         foundpath = true;
     } else {

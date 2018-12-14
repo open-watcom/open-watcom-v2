@@ -70,7 +70,7 @@ static  void    MarkReachableBlocks( void )
     bool        change;
     block_num   i;
 
-    for( change = true; change; ) {
+    do {
         change = false;
         for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
             if( _IsBlkVisited( blk ) || _IsBlkAttr( blk, BLK_BIG_LABEL | BLK_SELECT ) ) {
@@ -84,7 +84,7 @@ static  void    MarkReachableBlocks( void )
                 }
             }
         }
-    }
+    } while( change );
 }
 
 
@@ -367,7 +367,8 @@ static  bool    DoBlockTrim( void )
     bool        any_change;
     block_num   blk_id;
 
-    for( any_change = false, change = true; change; ) {
+    any_change = false;
+    do {
         change = false;
         MarkReachableBlocks();
         for( blk = HeadBlock->next_block; blk != NULL; blk = next ) {
@@ -407,7 +408,7 @@ static  bool    DoBlockTrim( void )
             BlocksUnTrimmed = false;
             any_change = true;
         }
-    }
+    } while( change );
     blk_id = 1;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         blk->id = blk_id++;
