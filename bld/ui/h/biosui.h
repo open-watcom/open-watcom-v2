@@ -254,6 +254,7 @@ extern unsigned char BIOSGetRows( void );
     __value     [__dl] \
     __modify    [__ax __bh __cx]
 #else
+#pragma aux BIOSGetRows = \
         "push   ebp"        \
         "push   es"         \
         "mov    ax,1130h"   \
