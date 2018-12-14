@@ -40,19 +40,19 @@
 #elif defined(__PPC__)
 // do nothing
 #elif defined(__386__)
-    #pragma aux if_rtn parm [EAX EBX ECX EDX 8087];
+    #pragma aux if_rtn __parm [__eax __ebx __ecx __edx __8087];
     #if defined(__SW_3S)
         #ifdef __FLAT__
-            #pragma aux (if_rtn) if_rtn modify [ GS ];
+            #pragma aux (if_rtn) if_rtn __modify [__gs];
         #else
-            #pragma aux (if_rtn) if_rtn modify [ GS FS ES ];
+            #pragma aux (if_rtn) if_rtn __modify [__gs __fs __es];
         #endif
         #if defined(__FPI__)
-            #pragma aux (if_rtn) if_rtn value [8087];
+            #pragma aux (if_rtn) if_rtn __value [__8087];
         #endif
     #endif
 #else
-    #pragma aux if_rtn parm [AX BX CX DX 8087];
+    #pragma aux if_rtn __parm [__ax __bx __cx __dx __8087];
 #endif
 
 _WMRTLINK extern float _IF_acos( float );
@@ -141,7 +141,7 @@ _WMRTLINK extern double _IF_dpowi( double, long );
   #pragma aux __atanh "IF@DATANH";
   #pragma aux __log2 "IF@DLOG2";
 #if defined(__386__)
-  #pragma aux (if_rtn) _IF_ipow "IF@IPOW" value [EAX];
+  #pragma aux (if_rtn) _IF_ipow "IF@IPOW" __value [__eax];
 #elif defined( _M_I86 )
   #pragma aux (if_rtn) _IF_ipow "IF@IPOW";
 #endif

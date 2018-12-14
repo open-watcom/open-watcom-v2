@@ -36,25 +36,25 @@
 
 #if defined( _M_IX86 )
   #if defined( __386__ )
-    #pragma aux if_rtn "IF@*" parm routine [EAX EBX ECX EDX 8087];
-    #pragma aux if_va  "IF@*" parm caller [];
+    #pragma aux if_rtn "IF@*" __parm __routine [__eax __ebx __ecx __edx __8087];
+    #pragma aux if_va  "IF@*" __parm __caller [];
     #pragma aux xf_rtn "IF@*";
     #if defined( __SW_3S )
       #if defined( __FLAT__ )
-        #pragma aux (if_rtn) if_rtn modify [8087 gs];
-        #pragma aux (if_va)  if_va  modify [8087 gs];
-        #pragma aux (xf_rtn) xf_rtn modify [8087 gs];
+        #pragma aux (if_rtn) if_rtn __modify [__8087 __gs];
+        #pragma aux (if_va)  if_va  __modify [__8087 __gs];
+        #pragma aux (xf_rtn) xf_rtn __modify [__8087 __gs];
       #else
-        #pragma aux (if_rtn) if_rtn modify [8087 es fs gs];
-        #pragma aux (if_va)  if_va  modify [8087 es fs gs];
-        #pragma aux (xf_rtn) xf_rtn modify [8087 es fs gs];
+        #pragma aux (if_rtn) if_rtn __modify [__8087 __es __fs __gs];
+        #pragma aux (if_va)  if_va  __modify [__8087 __es __fs __gs];
+        #pragma aux (xf_rtn) xf_rtn __modify [__8087 __es __fs __gs];
       #endif
       #if defined( __FPI__ )
         // When compiling "/3s", by default, functions that return floating-point
         // values do NOT return them using the 80x87 so we must explicitly say
         // they do.
-        #pragma aux (if_rtn) flt_if_rtn value [8087];
-        #pragma aux (if_va) flt_if_va value [8087];
+        #pragma aux (if_rtn) flt_if_rtn __value [__8087];
+        #pragma aux (if_va) flt_if_va __value [__8087];
       #else
         #pragma aux (if_rtn) flt_if_rtn;
         #pragma aux (if_va) flt_if_va;
@@ -64,8 +64,8 @@
       #pragma aux (if_va) flt_if_va;
     #endif
   #else
-    #pragma aux if_rtn "IF@*" parm [AX BX CX DX 8087];
-    #pragma aux if_va "IF@*" parm caller [];
+    #pragma aux if_rtn "IF@*" __parm [__ax __bx __cx __dx __8087];
+    #pragma aux if_va "IF@*" __parm __caller [];
     #pragma aux xf_rtn "IF@*";
     #pragma aux (if_rtn) flt_if_rtn;
     #pragma aux (if_va) flt_if_va;

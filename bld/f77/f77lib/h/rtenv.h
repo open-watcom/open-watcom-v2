@@ -36,21 +36,21 @@
     #endif
 
   #if defined( __386__ )
-    #pragma aux rt_rtn "RT@*" parm routine [eax ebx ecx edx 8087];
-    #pragma aux co_rtn "RT@*" parm routine [eax ebx ecx edx 8087];
-    #pragma aux va_rtn "RT@*" parm caller [];
+    #pragma aux rt_rtn "RT@*" __parm __routine [__eax __ebx __ecx __edx __8087];
+    #pragma aux co_rtn "RT@*" __parm __routine [__eax __ebx __ecx __edx __8087];
+    #pragma aux va_rtn "RT@*" __parm __caller [];
     #if defined( __SW_3S )
       #if defined( __FLAT__ )
-        #pragma aux (rt_rtn) rt_rtn modify [8087 gs];
-        #pragma aux (co_rtn) co_rtn modify [8087 gs];
-        #pragma aux (va_rtn) va_rtn modify [8087 gs];
+        #pragma aux (rt_rtn) rt_rtn __modify [__8087 __gs];
+        #pragma aux (co_rtn) co_rtn __modify [__8087 __gs];
+        #pragma aux (va_rtn) va_rtn __modify [__8087 __gs];
       #else
-        #pragma aux (rt_rtn) rt_rtn modify [8087 es fs gs];
-        #pragma aux (co_rtn) co_rtn modify [8087 es fs gs];
-        #pragma aux (va_rtn) va_rtn modify [8087 es fs gs];
+        #pragma aux (rt_rtn) rt_rtn __modify [__8087 __es __fs __gs];
+        #pragma aux (co_rtn) co_rtn __modify [__8087 __es __fs __gs];
+        #pragma aux (va_rtn) va_rtn __modify [__8087 __es __fs __gs];
       #endif
       #if defined( __FPI__ )
-        #pragma aux (rt_rtn) flt_rt_rtn value [8087];
+        #pragma aux (rt_rtn) flt_rt_rtn __value [__8087];
       #else
         #pragma aux (rt_rtn) flt_rt_rtn;
       #endif
@@ -58,9 +58,9 @@
       #pragma aux (rt_rtn) flt_rt_rtn;
     #endif
   #else
-    #pragma aux rt_rtn "RT@*" parm [ax bx cx dx 8087];
-    #pragma aux co_rtn "RT@*" parm [ax bx cx dx 8087];
-    #pragma aux va_rtn "RT@*" parm caller [];
+    #pragma aux rt_rtn "RT@*" __parm [__ax __bx __cx __dx __8087];
+    #pragma aux co_rtn "RT@*" __parm [__ax __bx __cx __dx __8087];
+    #pragma aux va_rtn "RT@*" __parm __caller [];
     #pragma aux (rt_rtn) flt_rt_rtn;
   #endif
 
