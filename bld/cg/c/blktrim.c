@@ -367,6 +367,7 @@ static  bool    DoBlockTrim( void )
     bool        any_change;
     block_num   blk_id;
 
+    _MarkBlkAllUnVisited();
     any_change = false;
     do {
         change = false;
