@@ -326,6 +326,7 @@ typedef enum {
                           | TF1_NAKED
                           | TF1_ABORTS
                           | TF1_NORETURN
+                          | TF1_FARSS
                           | TF1_PURE
                           | TF1_EXPLICIT
                           ),
