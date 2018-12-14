@@ -2630,7 +2630,7 @@ PTREE DoDeclSpec( DECL_SPEC *dspec )
     return( PTreeType( declSpecType( dspec ) ) );
 }
 
-static TYPE removeModifiers( TYPE start, TYPE end )
+static TYPE duplicateModifiers( TYPE start, TYPE end )
 {
     TYPE mod_list;
     TYPE mod_type;
@@ -2669,7 +2669,7 @@ static TYPE changeToPointer( TYPE type, TYPE array_type )
     // making 'near -> [] -> int' into '* -> near -> int' work properly
     // (the effect on 'const' and 'volatile' is still open so we may have
     // to split the modifiers into memory model and cv-qualifier types)
-    mod_list = removeModifiers( type, array_type );
+    mod_list = duplicateModifiers( type, array_type );
     base_type = array_type->of;
     base_type = replaceModifiers( mod_list, base_type );
     ptr_type = MakePointerType( TF1_NULL, STY_NULL );
@@ -2683,7 +2683,7 @@ static TYPE dupArray( TYPE type, TYPE ref_type, target_size_t size, type_flag fl
     TYPE array_type;
     TYPE mod_list;
 
-    mod_list = removeModifiers( type, ref_type );
+    mod_list = duplicateModifiers( type, ref_type );
     base_type = ref_type->of;
     array_type = MakeArrayType( size );
     array_type->flag |= flag;
@@ -2725,7 +2725,7 @@ TYPE AddNonFunctionPragma( TYPE mod_type, TYPE base_type )
 
     type = base_type;
     TypeStripTdMod( type );
-    mod_list = removeModifiers( base_type, type );
+    mod_list = duplicateModifiers( base_type, type );
     type = replaceModifiers( mod_list, type );
     return( MakeTypeOf( mod_type, type ) );
 }
@@ -2778,7 +2778,7 @@ TYPE RemoveFunctionPragma( TYPE type )
     TYPE mod_list;
 
     fn_type = FunctionDeclarationType( type );
-    mod_list = removeModifiers( type, fn_type );
+    mod_list = duplicateModifiers( type, fn_type );
     new_fn_type = dupFunction( fn_type, DF_REUSE_ARGLIST );
     new_fn_type->u.f.pragma = NULL;
     new_fn_type = CheckDupType( new_fn_type );
@@ -2808,7 +2808,7 @@ static TYPE adjustFullFunctionType( TYPE type
             return( type );
         }
     }
-    mod_list = removeModifiers( type, fn_type );
+    mod_list = duplicateModifiers( type, fn_type );
     new_fn_type = dupFunction( fn_type, DF_REUSE_ARGLIST );
     new_fn_type->flag = new_flags;
     if( new_ret != NULL ) {
@@ -3559,7 +3559,7 @@ static TYPE massageFunctionTypeInDSpec( TYPE *dspec_type, TYPE list )
     if( fn_type == NULL ) {
         return( list );
     }
-    mod_list = removeModifiers( base_type, fn_type );
+    mod_list = duplicateModifiers( base_type, fn_type );
     while( mod_list != NULL ) {
         mod_type = mod_list;
         mod_list = mod_list->of;
@@ -3590,7 +3590,7 @@ static TYPE make16BitEquivalent( TYPE type )
         type = GetBasicType( TYP_USHORT );
         break;
     case TYP_POINTER:
-        mod_list = removeModifiers( type, check );
+        mod_list = duplicateModifiers( type, check );
         type = MakeModifiedType( check->of, TF1_SET_FAR16 );
         type = MakePointerTo( type );
         type = replaceModifiers( mod_list, type );
@@ -5696,7 +5696,7 @@ static TYPE functionReduce( TYPE type, unsigned num_args )
     /* 'type' is {TYP_MODIFIER}*TYP_FUNCTION (checked by SymIsFunction) */
     fn_type = type;
     TypeStripTdMod( fn_type );
-    mod_list = removeModifiers( type, fn_type );
+    mod_list = duplicateModifiers( type, fn_type );
     old_args = fn_type->u.f.args;
     args = AllocArgListPerm( num_args );
     args->except_spec = old_args->except_spec;
@@ -6891,7 +6891,7 @@ TYPE TypePointedAtReplace( TYPE ptr_type, TYPE new_base )
     TypeStripTdMod( ptr_type );
     old_base = ptr_type->of;
     TypeStripTdMod( old_base );
-    mod_list = removeModifiers( ptr_type->of, old_base );
+    mod_list = duplicateModifiers( ptr_type->of, old_base );
     new_base = replaceModifiers( mod_list, new_base );
     return( MakePointerTo( new_base ) );
 }
