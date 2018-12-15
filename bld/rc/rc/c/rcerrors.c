@@ -145,7 +145,7 @@ static void RcMsgV( unsigned errornum, OutputSeverity sev, va_list arglist )
         if( currfile != NULL ) {
             errinfo.flags |= OUTFLAG_FILE | OUTFLAG_LINE;
             errinfo.file = currfile->Filename;
-            errinfo.lineno = currfile->LineNum;
+            errinfo.lineno = currfile->LineNo;
         }
         sprintf( errBuffer, "%s", rcStrBuf );
         break;

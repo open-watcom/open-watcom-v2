@@ -36,7 +36,6 @@
 #ifndef __UNIX__
     #include <process.h>
 #endif
-#include "wio.h"
 #include "global.h"
 #include "rcerrors.h"
 #include "preproc.h"
@@ -801,7 +800,7 @@ static int GetLogChar( FileStack * stack )
     newchar = (unsigned char)*(stack->NextChar);
     assert( newchar > 0 );
     if( newchar == '\n' ) {
-        stack->Current->Logical.LineNum++;
+        stack->Current->Logical.LineNo++;
     }
 
     stack->NextChar++;
@@ -891,14 +890,14 @@ extern void RcIoSetIsCOrHFlag( void )
     }
 } /* RcIoSetIsCOrHFlag */
 
-extern void RcIoSetLogicalFileInfo( int linenum, const char * filename )
-/**********************************************************************/
+extern void RcIoSetLogicalFileInfo( unsigned lineno, const char * filename )
+/**************************************************************************/
 {
     LogicalFileInfo *   log;
 
     if( !IsEmptyFileStack( InStack ) ) {
         log = &(InStack.Current->Logical);
-        log->LineNum = linenum;
+        log->LineNo = lineno;
         if( filename != NULL ) {
             if( log->Filename == NULL ) {
                 log->Filename = RESALLOC( strlen( filename ) + 1 );

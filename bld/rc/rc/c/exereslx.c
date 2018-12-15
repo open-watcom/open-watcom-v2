@@ -168,7 +168,7 @@ RcStatus WriteLXResourceObjects( ExeFileInfo *exe, ResFileInfo *info )
 
     dir = &exe->u.LXInfo.Res;
 
-    obj_index  = -1;
+    obj_index  = (uint_32)-1;
     page_index = exe->u.LXInfo.FirstResPage;
     page_shift = exe->u.LXInfo.OS2Head.l.page_shift;
 

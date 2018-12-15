@@ -56,7 +56,7 @@ FullHelpEntryOS2 SemOS2MakeHelpItem( unsigned long winId, unsigned long subId,
 
     entry.entry.WindowId   = winId;
     entry.entry.SubtableId = subId;
-    entry.entry.Dummy      = -1;
+    entry.entry.Dummy      = (uint_16)-1;
     entry.entry.ExtendedId = extId;
     entry.prev = entry.next = NULL;
 

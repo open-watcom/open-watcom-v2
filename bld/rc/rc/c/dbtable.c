@@ -145,7 +145,7 @@ static uint_16 lookUpDBChar( uint_16 ch ) {
             return( charInfo.entries[index] );
         }
     }
-    return( -1 );
+    return( (uint_16)-1 );
 }
 
 const char *GetLeadBytes( void ) {

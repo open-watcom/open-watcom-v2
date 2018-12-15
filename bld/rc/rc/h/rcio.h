@@ -66,7 +66,7 @@ typedef struct RcResFileID {
 /**** Text file input ****/
 typedef struct LogicalFileInfo {
     char                    *Filename;
-    int                     LineNum;
+    unsigned                LineNo;
     bool                    IsCOrHFile;
 } LogicalFileInfo;
 
@@ -83,7 +83,7 @@ extern void         RcIoOverrideIsCOrHFlag( void );
 extern void         RcIoSetIsCOrHFlag( void );
 extern const LogicalFileInfo *RcIoGetLogicalFileInfo( void );
 extern bool         RcIoIsCOrHFile( void );
-extern void         RcIoSetLogicalFileInfo( int linenum, const char *filename );
+extern void         RcIoSetLogicalFileInfo( unsigned lineno, const char *filename );
 extern FILE         *RcIoOpenInput( const char *filename, bool text_mode );
 extern int          RcFindSourceFile( const char *name, char *fullpath );
 extern const char   *RcGetEnv( const char *name );

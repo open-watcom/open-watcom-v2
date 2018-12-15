@@ -90,7 +90,7 @@ static int copyObjectAndPageTable( ExeFileInfo *old, ExeFileInfo *new )
     int             old_num_objects;
     int             page_index;
     int             old_num_pages;
-    int             i;
+    uint_32         i;
 
     old_obj  = old->u.LXInfo.Objects;
     old_page = old->u.LXInfo.Pages;
