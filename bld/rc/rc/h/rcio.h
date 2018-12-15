@@ -63,19 +63,13 @@ typedef struct RcResFileID {
     FullFontDir             *FontDir;
 } RcResFileID;
 
-/**** Text file input ****/
-typedef struct LogicalFileInfo {
-    char                    *Filename;
-    unsigned                LineNo;
-    bool                    IsCOrHFile;
-} LogicalFileInfo;
-
 extern bool         RcPass1IoInit( void );
 extern void         RcPass1IoShutdown( void );
 extern bool         RcPass2IoInit( void );
 extern void         RcPass2IoShutdown( bool noerror );
 extern int          RcIoGetChar( void );
-extern const LogicalFileInfo *RcIoGetLogicalFileInfo( void );
+extern const char   *RcIoGetLogicalFileName( void );
+extern unsigned     RcIoGetLogicalFileLineNo( void );
 extern bool         RcIoIsCOrHFile( void );
 extern void         RcIoSetLogicalFileInfo( unsigned lineno, const char *filename );
 extern FILE         *RcIoOpenInput( const char *filename, bool text_mode );

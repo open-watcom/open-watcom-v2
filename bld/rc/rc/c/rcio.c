@@ -68,6 +68,12 @@ typedef struct PhysFileInfo {
                                 /* is not the current file */
 } PhysFileInfo;
 
+typedef struct LogicalFileInfo {
+    char                    *Filename;
+    unsigned                LineNo;
+    bool                    IsCOrHFile;
+} LogicalFileInfo;
+
 typedef struct FileStackEntry {
     LogicalFileInfo     Logical;
     PhysFileInfo        Physical;
@@ -166,7 +172,7 @@ static void SetPhysFileOffset( FileStack * stack )
     if( !IsEmptyFileStack( *stack ) ) {
         phys = &(stack->Current->Physical);
         charsinbuff = stack->BufferSize - ( stack->NextChar - stack->Buffer );
-        phys->Offset = ftell( phys->fp ) - charsinbuff;
+        phys->Offset = (unsigned long)( ftell( phys->fp ) - charsinbuff );
     }
 } /* SetPhysFileOffset */
 
@@ -277,21 +283,31 @@ static bool RcIoPushTextInputFile( const char * filename )
     return( error );
 } /* RcIoPushTextInputFile */
 
-const LogicalFileInfo * RcIoGetLogicalFileInfo( void )
-/****************************************************/
+const char *RcIoGetLogicalFileName( void )
+/****************************************/
 {
     if( IsEmptyFileStack( InStack ) ) {
         return( NULL );
     } else {
-        return( &(InStack.Current->Logical) );
+        return( InStack.Current->Logical.Filename );
     }
-} /* RcIoGetLogicalFileInfo */
+} /* RcIoGetLogicalFileName */
+
+unsigned RcIoGetLogicalFileLineNo( void )
+/***************************************/
+{
+    if( IsEmptyFileStack( InStack ) ) {
+        return( 0 );
+    } else {
+        return( InStack.Current->Logical.LineNo );
+    }
+} /* RcIoGetLogicalFileLineNo */
 
 static void RcIoSetIsCOrHFlag( void )
 /***********************************/
 {
-    LogicalFileInfo *   log;
-    char                ext[_MAX_EXT];
+    LogicalFileInfo *log;
+    char            ext[_MAX_EXT];
 
     if( !IsEmptyFileStack( InStack ) ) {
         log = &(InStack.Current->Logical);
