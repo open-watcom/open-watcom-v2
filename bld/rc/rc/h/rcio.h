@@ -74,18 +74,13 @@ extern bool         RcPass1IoInit( void );
 extern void         RcPass1IoShutdown( void );
 extern bool         RcPass2IoInit( void );
 extern void         RcPass2IoShutdown( bool noerror );
-extern void         RcIoTextInputInit( void );
-extern bool         RcIoTextInputShutdown( void );
-extern bool         RcIoPushTextInputFile( const char *filename );
-extern bool         RcIoPopTextInputFile( void );
 extern int          RcIoGetChar( void );
-extern void         RcIoOverrideIsCOrHFlag( void );
-extern void         RcIoSetIsCOrHFlag( void );
 extern const LogicalFileInfo *RcIoGetLogicalFileInfo( void );
 extern bool         RcIoIsCOrHFile( void );
 extern void         RcIoSetLogicalFileInfo( unsigned lineno, const char *filename );
 extern FILE         *RcIoOpenInput( const char *filename, bool text_mode );
 extern int          RcFindSourceFile( const char *name, char *fullpath );
 extern const char   *RcGetEnv( const char *name );
+extern void         RcIoInitStatics( void );
 
 #endif
