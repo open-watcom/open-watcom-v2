@@ -100,115 +100,108 @@ static FileStack    InStack;
 /* All other routines (except TextInputInit and TextInputShutdown) operate */
 /* on the current file which is the one at the top of the stack */
 
-static void FreeLogicalFilename( void )
-/*************************************/
-{
-    RESFREE( InStack.Current->loc.Filename );
-    InStack.Current->loc.Filename = NULL;
-}
-
-static void FreePhysicalFilename( void )
+static void freeCurrentFileNames( void )
 /**************************************/
 {
+    RESFREE( InStack.Current->loc.Filename );
     RESFREE( InStack.Current->Filename );
+    InStack.Current->loc.Filename = NULL;
     InStack.Current->Filename = NULL;
 }
 
-static void ClosePhysicalFile( FileStackEntry *file )
-/***************************************************/
+static void saveCurrentFileOffset( void )
+/***************************************/
+{
+    size_t          charsinbuff;
+
+    if( !IsEmptyFileStack( InStack ) ) {
+        charsinbuff = InStack.BufferSize - ( InStack.NextChar - InStack.Buffer );
+        InStack.Current->Offset = (unsigned long)( ftell( InStack.Current->fp ) - charsinbuff );
+    }
+} /* saveCurrentFileOffset */
+
+static void closeFile( FileStackEntry *file )
+/*******************************************/
 {
     if( file->IsOpen ) {
         fclose( file->fp );
         file->IsOpen = false;
     }
-} /* ClosePhysicalFile */
+} /* closeFile */
 
-static bool OpenPhysicalFile( FileStackEntry *file )
-/**************************************************/
+static bool openCurrentFile( void )
+/*********************************/
 {
-    if( !file->IsOpen ) {
-        file->fp = RcIoOpenInput( file->Filename, true );
-        if( file->fp == NULL ) {
-            RcError( ERR_CANT_OPEN_FILE, file->Filename, strerror( errno ) );
+    if( !InStack.Current->IsOpen ) {
+        InStack.Current->fp = RcIoOpenInput( InStack.Current->Filename, true );
+        if( InStack.Current->fp == NULL ) {
+            RcError( ERR_CANT_OPEN_FILE, InStack.Current->Filename, strerror( errno ) );
             return( true );
         }
-        file->IsOpen = true;
-        if( fseek( file->fp, file->Offset, SEEK_SET ) == -1 ) {
-            RcError( ERR_READING_FILE, file->Filename, strerror( errno ) );
+        InStack.Current->IsOpen = true;
+        if( fseek( InStack.Current->fp, InStack.Current->Offset, SEEK_SET ) == -1 ) {
+            RcError( ERR_READING_FILE, InStack.Current->Filename, strerror( errno ) );
             return( true );
         }
     }
 
     return( false );
-} /* OpenPhysicalFile */
+} /* openCurrentFile */
 
-static bool OpenNewPhysicalFile( FileStackEntry *file, const char *filename )
-/***************************************************************************/
+static bool openNewFile( const char *filename )
+/*********************************************/
 {
-    file->Filename = RESALLOC( strlen( filename ) + 1 );
-    strcpy( file->Filename, filename );
-    file->IsOpen = false;
-    file->Offset = 0;
+    InStack.Current->Filename = RESALLOC( strlen( filename ) + 1 );
+    strcpy( InStack.Current->Filename, filename );
+    InStack.Current->IsOpen = false;
+    InStack.Current->Offset = 0;
 
-    return( OpenPhysicalFile( file ) );
-} /* OpenNewPhysicalFile */
+    /* set up the logical file info */
+    RcIoSetCurrentFileInfo( 1, filename );
 
-static void SetPhysFileOffset( FileStack * stack )
-/************************************************/
+    return( openCurrentFile() );
+} /* openNewFile */
+
+static bool readCurrentFileBuffer( void )
+/***************************************/
 {
-    FileStackEntry  *file;
-    size_t          charsinbuff;
-
-    if( !IsEmptyFileStack( *stack ) ) {
-        file = stack->Current;
-        charsinbuff = stack->BufferSize - ( stack->NextChar - stack->Buffer );
-        file->Offset = (unsigned long)( ftell( file->fp ) - charsinbuff );
-    }
-} /* SetPhysFileOffset */
-
-static bool ReadBuffer( FileStack * stack )
-/*****************************************/
-{
-    FileStackEntry  *file;
     size_t          numread;
     bool            error;
     int             inchar;
 
-    file = stack->Current;
-    if( !file->IsOpen ) {
-        error = OpenPhysicalFile( file );
+    if( !InStack.Current->IsOpen ) {
+        error = openCurrentFile();
         if( error ) {
             return( true );
         }
     }
     if( CmdLineParms.NoPreprocess ) {
-        numread = fread( stack->Buffer, 1, stack->BufferSize, file->fp );
+        numread = fread( InStack.Buffer, 1, InStack.BufferSize, InStack.Current->fp );
     } else {
-        for( numread = 0; numread < stack->BufferSize; numread++ ) {
+        for( numread = 0; numread < InStack.BufferSize; numread++ ) {
             inchar = PP_Char();
             if( inchar == EOF ) {
                 break;
             }
-            *( stack->Buffer + numread ) = (char)inchar;
+            *( InStack.Buffer + numread ) = (char)inchar;
         }
     }
-    stack->NextChar = stack->Buffer;
-    stack->EofChar = stack->Buffer + numread;   /* may be past end of buffer */
+    InStack.NextChar = InStack.Buffer;
+    InStack.EofChar = InStack.Buffer + numread;   /* may be past end of buffer */
 
     return( false );
-} /* ReadBuffer */
+} /* readCurrentFileBuffer */
 
 static bool RcIoPopTextInputFile( void )
 /**************************************/
 {
-    ClosePhysicalFile( InStack.Current );
-    FreeLogicalFilename();
-    FreePhysicalFilename();
+    closeFile( InStack.Current );
+    freeCurrentFileNames();
     InStack.Current--;
     if( IsEmptyFileStack( InStack ) ) {
         return( true );
     } else {
-        ReadBuffer( &(InStack) );
+        readCurrentFileBuffer();
         return( false );
     }
 } /* RcIoPopTextInputFile */
@@ -234,7 +227,6 @@ static bool RcIoTextInputShutdown( void )
             while( !IsEmptyFileStack( InStack ) ) {
                 RcIoPopTextInputFile();
             }
-            // return( true );
         }
     }
     return( true );
@@ -250,21 +242,17 @@ static bool RcIoPushTextInputFile( const char *filename )
         return( true );
     }
 
-    SetPhysFileOffset( &(InStack) );
+    saveCurrentFileOffset();
 
     InStack.Current++;
 
-    /* set up the logical file info */
-    RcIoSetCurrentFileInfo( 1, filename );
-
-    /* set up the physical file info */
-    error = OpenNewPhysicalFile( InStack.Current, filename );
+    /* open file and set up the file info */
+    error = openNewFile( filename );
     if( error ) {
-        FreeLogicalFilename();
-        FreePhysicalFilename();
+        freeCurrentFileNames();
         InStack.Current--;
     } else {
-        error = ReadBuffer( &(InStack) );
+        error = readCurrentFileBuffer();
     }
 
     return( error );
@@ -344,18 +332,18 @@ bool RcIoIsCOrHFile( void )
     }
 } /* RcIoIsCOrHFile */
 
-static int GetLogChar( FileStack *stack )
-/***************************************/
+static int GetLogChar( void )
+/***************************/
 {
     int     newchar;
 
-    newchar = (unsigned char)*(stack->NextChar);
+    newchar = *(unsigned char *)InStack.NextChar;
     assert( newchar > 0 );
     if( newchar == '\n' ) {
-        stack->Current->loc.LineNo++;
+        InStack.Current->loc.LineNo++;
     }
 
-    stack->NextChar++;
+    InStack.NextChar++;
     return( newchar );
 } /* GetLogChar */
 
@@ -373,9 +361,9 @@ int RcIoGetChar( void )
         /* we have reached the end of the buffer */
         if( InStack.NextChar >= InStack.Buffer + InStack.BufferSize ) {
             /* try to read next buffer */
-            error = ReadBuffer( &(InStack) );
+            error = readCurrentFileBuffer();
             if( error ) {
-                /* this error is reported in ReadBuffer so just terminate */
+                /* this error is reported in readCurrentFileBuffer so just terminate */
                 RcFatalError( ERR_NO_MSG );
             }
         }
@@ -383,23 +371,21 @@ int RcIoGetChar( void )
             /* this is a real EOF */
             /* unstack one file */
             isempty = RcIoPopTextInputFile();
-            if( isempty ) {
+            if( isempty )
                 return( EOF );
+            /* if we are still at the EOF char, there has been an error */
+            if( InStack.NextChar >= InStack.EofChar ) {
+                /* this error is reported in readCurrentFileBuffer so just terminate */
+                RcFatalError( ERR_NO_MSG );
             } else {
-                /* if we are still at the EOF char, there has been an error */
-                if( InStack.NextChar >= InStack.EofChar ) {
-                    /* this error is reported in ReadBuffer so just terminate */
-                    RcFatalError( ERR_NO_MSG );
-                } else {
-                    /* return \n which will end the current token properly */
-                    /* if it it is not a string and end it with a runaway */
-                    /* string error for strings */
-                    return( '\n' );
-                }
+                /* return \n which will end the current token properly */
+                /* if it it is not a string and end it with a runaway */
+                /* string error for strings */
+                return( '\n' );
             }
         }
     }
-    return( GetLogChar( &InStack ) );
+    return( GetLogChar() );
 } /* RcIoGetChar */
 
 /*
@@ -419,21 +405,19 @@ FILE *RcIoOpenInput( const char *filename, bool text_mode )
         fp = ResOpenFileRO( filename );
     }
     no_handles_available = ( fp == NULL && errno == EMFILE );
-    if( no_handles_available ) {
-        /* set currfile to be the first (not before first) entry */
-        /* close open files except the current input file until able to open */
-        /* don't close the current file because Offset isn't set */
-        for( currfile = InStack.Stack + 1; currfile < InStack.Current && no_handles_available; ++currfile ) {
-            if( currfile->IsOpen ) {
-                ClosePhysicalFile( currfile );
-                if( text_mode ) {
-                    fp = fopen( filename, "rt" );
-                } else {
-                    fp = ResOpenFileRO( filename );
-                }
-                no_handles_available = ( fp == NULL && errno == EMFILE );
+    /* set currfile to be the first (not before first) entry */
+    /* close open files except the current input file until able to open */
+    /* don't close the current file because Offset isn't set */
+    for( currfile = InStack.Stack + 1; no_handles_available && currfile < InStack.Current; ++currfile ) {
+        if( currfile->IsOpen ) {
+            closeFile( currfile );
+            if( text_mode ) {
+                fp = fopen( filename, "rt" );
+            } else {
+                fp = ResOpenFileRO( filename );
             }
-       }
+            no_handles_available = ( fp == NULL && errno == EMFILE );
+        }
     }
     return( fp );
 
