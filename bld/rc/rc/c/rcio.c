@@ -60,23 +60,17 @@
 
 #define MAX_INCLUDE_DEPTH   16
 
-typedef struct PhysFileInfo {
-    char            *Filename;
-    bool            IsOpen;
-    FILE            *fp;
-    unsigned long   Offset;     /* offset in file to read from next time if this */
-                                /* is not the current file */
-} PhysFileInfo;
-
-typedef struct LogicalFileInfo {
-    char                    *Filename;
-    unsigned                LineNo;
-    bool                    IsCOrHFile;
-} LogicalFileInfo;
-
 typedef struct FileStackEntry {
-    LogicalFileInfo     Logical;
-    PhysFileInfo        Physical;
+    struct {
+        char                *Filename;
+        unsigned            LineNo;
+        bool                IsCOrHFile;
+    }                   loc;
+    char                *Filename;
+    bool                IsOpen;
+    FILE                *fp;
+    unsigned long       Offset;     /* offset in file to read from next time if this */
+                                    /* is not the current file */
 } FileStackEntry;
 
 typedef struct FileStack {
@@ -107,44 +101,40 @@ static FileStack    InStack;
 /* on the current file which is the one at the top of the stack */
 
 static void FreeLogicalFilename( void )
+/*************************************/
 {
-    LogicalFileInfo     *log;
-
-    log = &(InStack.Current->Logical);
-    RESFREE( log->Filename );
-    log->Filename = NULL;
+    RESFREE( InStack.Current->loc.Filename );
+    InStack.Current->loc.Filename = NULL;
 }
 
 static void FreePhysicalFilename( void )
+/**************************************/
 {
-    PhysFileInfo    *phys;
-
-    phys = &(InStack.Current->Physical);
-    RESFREE( phys->Filename );
-    phys->Filename = NULL;
+    RESFREE( InStack.Current->Filename );
+    InStack.Current->Filename = NULL;
 }
 
-static void ClosePhysicalFile( PhysFileInfo * phys )
-/**************************************************/
+static void ClosePhysicalFile( FileStackEntry *file )
+/***************************************************/
 {
-    if( phys->IsOpen ) {
-        fclose( phys->fp );
-        phys->IsOpen = false;
+    if( file->IsOpen ) {
+        fclose( file->fp );
+        file->IsOpen = false;
     }
 } /* ClosePhysicalFile */
 
-static bool OpenPhysicalFile( PhysFileInfo *phys )
-/************************************************/
+static bool OpenPhysicalFile( FileStackEntry *file )
+/**************************************************/
 {
-    if( !phys->IsOpen ) {
-        phys->fp = RcIoOpenInput( phys->Filename, true );
-        if( phys->fp == NULL ) {
-            RcError( ERR_CANT_OPEN_FILE, phys->Filename, strerror( errno ) );
+    if( !file->IsOpen ) {
+        file->fp = RcIoOpenInput( file->Filename, true );
+        if( file->fp == NULL ) {
+            RcError( ERR_CANT_OPEN_FILE, file->Filename, strerror( errno ) );
             return( true );
         }
-        phys->IsOpen = true;
-        if( fseek( phys->fp, phys->Offset, SEEK_SET ) == -1 ) {
-            RcError( ERR_READING_FILE, phys->Filename, strerror( errno ) );
+        file->IsOpen = true;
+        if( fseek( file->fp, file->Offset, SEEK_SET ) == -1 ) {
+            RcError( ERR_READING_FILE, file->Filename, strerror( errno ) );
             return( true );
         }
     }
@@ -152,47 +142,47 @@ static bool OpenPhysicalFile( PhysFileInfo *phys )
     return( false );
 } /* OpenPhysicalFile */
 
-static bool OpenNewPhysicalFile( PhysFileInfo *phys, const char *filename )
-/*************************************************************************/
+static bool OpenNewPhysicalFile( FileStackEntry *file, const char *filename )
+/***************************************************************************/
 {
-    phys->Filename = RESALLOC( strlen( filename ) + 1 );
-    strcpy( phys->Filename, filename );
-    phys->IsOpen = false;
-    phys->Offset = 0;
+    file->Filename = RESALLOC( strlen( filename ) + 1 );
+    strcpy( file->Filename, filename );
+    file->IsOpen = false;
+    file->Offset = 0;
 
-    return( OpenPhysicalFile( phys ) );
+    return( OpenPhysicalFile( file ) );
 } /* OpenNewPhysicalFile */
 
 static void SetPhysFileOffset( FileStack * stack )
 /************************************************/
 {
-    PhysFileInfo    *phys;
+    FileStackEntry  *file;
     size_t          charsinbuff;
 
     if( !IsEmptyFileStack( *stack ) ) {
-        phys = &(stack->Current->Physical);
+        file = stack->Current;
         charsinbuff = stack->BufferSize - ( stack->NextChar - stack->Buffer );
-        phys->Offset = (unsigned long)( ftell( phys->fp ) - charsinbuff );
+        file->Offset = (unsigned long)( ftell( file->fp ) - charsinbuff );
     }
 } /* SetPhysFileOffset */
 
 static bool ReadBuffer( FileStack * stack )
 /*****************************************/
 {
-    PhysFileInfo    *phys;
+    FileStackEntry  *file;
     size_t          numread;
     bool            error;
     int             inchar;
 
-    phys = &(stack->Current->Physical);
-    if( !phys->IsOpen ) {
-        error = OpenPhysicalFile( phys );
+    file = stack->Current;
+    if( !file->IsOpen ) {
+        error = OpenPhysicalFile( file );
         if( error ) {
             return( true );
         }
     }
     if( CmdLineParms.NoPreprocess ) {
-        numread = fread( stack->Buffer, 1, stack->BufferSize, phys->fp );
+        numread = fread( stack->Buffer, 1, stack->BufferSize, file->fp );
     } else {
         for( numread = 0; numread < stack->BufferSize; numread++ ) {
             inchar = PP_Char();
@@ -211,10 +201,7 @@ static bool ReadBuffer( FileStack * stack )
 static bool RcIoPopTextInputFile( void )
 /**************************************/
 {
-    PhysFileInfo *  phys;
-
-    phys = &(InStack.Current->Physical);
-    ClosePhysicalFile( phys );
+    ClosePhysicalFile( InStack.Current );
     FreeLogicalFilename();
     FreePhysicalFilename();
     InStack.Current--;
@@ -253,8 +240,8 @@ static bool RcIoTextInputShutdown( void )
     return( true );
 } /* RcIoTextInputShutdown */
 
-static bool RcIoPushTextInputFile( const char * filename )
-/********************************************************/
+static bool RcIoPushTextInputFile( const char *filename )
+/*******************************************************/
 {
     bool                error;
 
@@ -268,10 +255,10 @@ static bool RcIoPushTextInputFile( const char * filename )
     InStack.Current++;
 
     /* set up the logical file info */
-    RcIoSetLogicalFileInfo( 1, filename );
+    RcIoSetCurrentFileInfo( 1, filename );
 
     /* set up the physical file info */
-    error = OpenNewPhysicalFile( &(InStack.Current->Physical), filename );
+    error = OpenNewPhysicalFile( InStack.Current, filename );
     if( error ) {
         FreeLogicalFilename();
         FreePhysicalFilename();
@@ -283,66 +270,68 @@ static bool RcIoPushTextInputFile( const char * filename )
     return( error );
 } /* RcIoPushTextInputFile */
 
-const char *RcIoGetLogicalFileName( void )
+const char *RcIoGetCurrentFileName( void )
 /****************************************/
 {
     if( IsEmptyFileStack( InStack ) ) {
         return( NULL );
     } else {
-        return( InStack.Current->Logical.Filename );
+        return( InStack.Current->loc.Filename );
     }
-} /* RcIoGetLogicalFileName */
+} /* RcIoGetCurrentFileName */
 
-unsigned RcIoGetLogicalFileLineNo( void )
+unsigned RcIoGetCurrentFileLineNo( void )
 /***************************************/
 {
     if( IsEmptyFileStack( InStack ) ) {
         return( 0 );
     } else {
-        return( InStack.Current->Logical.LineNo );
+        return( InStack.Current->loc.LineNo );
     }
-} /* RcIoGetLogicalFileLineNo */
+} /* RcIoGetCurrentFileLineNo */
 
-static void RcIoSetIsCOrHFlag( void )
-/***********************************/
+static bool checkCurrentFileType( void )
+/**************************************/
 {
-    LogicalFileInfo *log;
-    char            ext[_MAX_EXT];
+    char        ext[_MAX_EXT];
+    bool        isCOrH;
 
-    if( !IsEmptyFileStack( InStack ) ) {
-        log = &(InStack.Current->Logical);
-        _splitpath( log->Filename, NULL, NULL, NULL, ext );
-        /* if this is a c or h file ext will be '.', '[ch]', '\0' */
-        if( ( ext[1] == 'c' || ext[1] == 'h' || ext[1] == 'C' || ext[1] == 'H' ) && ext[2] == '\0' ) {
-            /* if the logical file is a c or h file */
-            log->IsCOrHFile = true;
-        } else {
-            log->IsCOrHFile = false;
+    isCOrH = false;
+    _splitpath( InStack.Current->loc.Filename, NULL, NULL, NULL, ext );
+    /* if this is a c or h file ext will be '.', '[ch]', '\0' */
+    if( ext[0] == '.' && ext[1] != '\0' && ext[2] == '\0' ) {
+        switch( ext[1] ) {
+        case 'c':
+        case 'C':
+        case 'h':
+        case 'H':
+            isCOrH = true;
+            break;
         }
     }
-} /* RcIoSetIsCOrHFlag */
+    return( isCOrH );
 
-void RcIoSetLogicalFileInfo( unsigned lineno, const char * filename )
-/*******************************************************************/
+} /* checkCurrentFileType */
+
+void RcIoSetCurrentFileInfo( unsigned lineno, const char *filename )
+/******************************************************************/
 {
-    LogicalFileInfo *   log;
-
     if( !IsEmptyFileStack( InStack ) ) {
-        log = &(InStack.Current->Logical);
-        log->LineNo = lineno;
+        InStack.Current->loc.LineNo = lineno;
         if( filename != NULL ) {
-            if( log->Filename == NULL ) {
-                log->Filename = RESALLOC( strlen( filename ) + 1 );
-                strcpy( log->Filename, filename );
-            } else if( strcmp( log->Filename, filename ) != 0 ) {
-                RESFREE( log->Filename );
-                log->Filename = RESALLOC( strlen( filename ) + 1 );
-                strcpy( log->Filename, filename );
+            if( InStack.Current->loc.Filename == NULL ) {
+                InStack.Current->loc.Filename = RESALLOC( strlen( filename ) + 1 );
+                strcpy( InStack.Current->loc.Filename, filename );
+                InStack.Current->loc.IsCOrHFile = checkCurrentFileType();
+            } else if( strcmp( InStack.Current->loc.Filename, filename ) != 0 ) {
+                RESFREE( InStack.Current->loc.Filename );
+                InStack.Current->loc.Filename = RESALLOC( strlen( filename ) + 1 );
+                strcpy( InStack.Current->loc.Filename, filename );
+                InStack.Current->loc.IsCOrHFile = checkCurrentFileType();
             }
-            RcIoSetIsCOrHFlag();
         }
     }
-} /* RcIoSetLogicalFileInfo */
+} /* RcIoSetCurrentFileInfo */
 
 bool RcIoIsCOrHFile( void )
 /*************************/
@@ -351,19 +340,19 @@ bool RcIoIsCOrHFile( void )
     if( IsEmptyFileStack( InStack ) ) {
         return( false );
     } else {
-        return( InStack.Current->Logical.IsCOrHFile );
+        return( InStack.Current->loc.IsCOrHFile );
     }
 } /* RcIoIsCOrHFile */
 
-static int GetLogChar( FileStack * stack )
-/****************************************/
+static int GetLogChar( FileStack *stack )
+/***************************************/
 {
     int     newchar;
 
     newchar = (unsigned char)*(stack->NextChar);
     assert( newchar > 0 );
     if( newchar == '\n' ) {
-        stack->Current->Logical.LineNo++;
+        stack->Current->loc.LineNo++;
     }
 
     stack->NextChar++;
@@ -435,8 +424,8 @@ FILE *RcIoOpenInput( const char *filename, bool text_mode )
         /* close open files except the current input file until able to open */
         /* don't close the current file because Offset isn't set */
         for( currfile = InStack.Stack + 1; currfile < InStack.Current && no_handles_available; ++currfile ) {
-            if( currfile->Physical.IsOpen ) {
-                ClosePhysicalFile( &(currfile->Physical) );
+            if( currfile->IsOpen ) {
+                ClosePhysicalFile( currfile );
                 if( text_mode ) {
                     fp = fopen( filename, "rt" );
                 } else {

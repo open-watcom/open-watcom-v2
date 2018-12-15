@@ -140,10 +140,10 @@ static void RcMsgV( unsigned errornum, OutputSeverity sev, va_list arglist )
     default:
         GetRcMsg( errornum, errBuffer, sizeof( errBuffer ) );
         vsprintf( rcStrBuf, errBuffer, arglist );
-        errinfo.file = RcIoGetLogicalFileName();
+        errinfo.file = RcIoGetCurrentFileName();
         if( errinfo.file != NULL )
             errinfo.flags |= OUTFLAG_FILE;
-        errinfo.lineno = RcIoGetLogicalFileLineNo();
+        errinfo.lineno = RcIoGetCurrentFileLineNo();
         if( errinfo.lineno != 0 )
             errinfo.flags |= OUTFLAG_LINE;
         sprintf( errBuffer, "%s", rcStrBuf );
