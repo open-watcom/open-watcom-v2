@@ -283,8 +283,8 @@ static int RCMainLine( const char *opts, int argc, char **argv )
     rc = 1;
     curBufPos = formatBuffer;
     RcMemInit();
+    InitGlobs();
     if( InitRcMsgs() ) {
-        InitGlobs();
         rc = setjmp( jmpbuf_RCFatalError );
         if( rc == 0 ) {
             if( opts != NULL ) {
@@ -330,10 +330,10 @@ static int RCMainLine( const char *opts, int argc, char **argv )
                 RcMemFree( cmdbuf );
             }
         }
-        FiniGlobs();
     }
     flushPrintf();
     FiniRcMsgs();
+    FiniGlobs();
     RcMemShutdown();
     return( rc );
 }
