@@ -62,13 +62,14 @@ include struct.inc
           _guess                        ; - guess: some bytes left to do
             and   ECX,3                 ; - - calculate number of bytes left
             _quif e                     ; - - quit if done
-            mov   [EAX],DL              ; - - store a byte
+            mov   [EAX],DL              ; - - store 1-st byte of EDX
             dec   ECX                   ; - - decrement length
             _quif e                     ; - - quit if done
-            mov   1[EAX],DH             ; - - store a byte
+            mov   1[EAX],DH             ; - - store 2-nd byte of EDX
             dec   ECX                   ; - - decrement length
             _quif e                     ; - - quit if done
-            mov   2[EAX],DL             ; - - store a byte
+            ror   EDX,8                 ; - - shift to get 3-rd byte of EDX
+            mov   2[EAX],DH             ; - - store 3-rd byte of EDX
           _endguess                     ; - endguess
         _endif                          ; endif
         ret                             ; return
