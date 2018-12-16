@@ -34,6 +34,7 @@
 #include <ctype.h>
 #include <string.h>
 
+
 #if defined(__WIDECHAR__)
 extern size_t wcslen( const CHAR_TYPE * );
 #endif
@@ -63,69 +64,73 @@ extern size_t wcslen( const CHAR_TYPE * );
 *****************************************************************************
 */
 
-extern void fast_rev( char *, char _WCFAR * );
-
 #if defined(__SMALL_DATA__)
-#pragma aux     fast_rev = \
-        0xb9 0xff 0xff  /* mov cx,ffff */\
-        0x30 0xc0       /* xor al,al */\
-        0xf2 0xae       /* repne scasb */\
-        0xf7 0xd1       /* not cx */\
-        0x49            /* dec cx */\
-        0xfd            /* std */\
-        0x83 0xef 0x03  /* sub di,3 */\
-        0xd1 0xe9       /* shr cx,1 */\
-        0xd1 0xe9       /* shr cx,1 */\
-        0xe3 0x0d       /* jcxz L2 */\
-        0x8b 0x05       /* L1:mov ax,[di] */\
-        0x86 0xe0       /* xchg ah,al */\
-        0x87 0x04       /* xchg ax,[si] */\
-        0x86 0xe0       /* xchg ah,al */\
-        0xab            /* stosw */\
-        0x46            /* inc si */\
-        0x46            /* inc si */\
-        0xe2 0xf3       /* loop L1 */\
-        0x73 0x07       /* L2:jnc L3 */\
-        0x47            /* inc di */\
-        0x8a 0x05       /* mov al,[di] */\
-        0x86 0x04       /* xchg al,[si] */\
-        0x88 0x05       /* mov [di],al */\
-        0xfc            /* L3:cld */\
-        parm caller     [si] [es di] \
-        value           [ax] \
-        modify          [si cx ax di];
+
+extern void fast_rev( char *, char _WCFAR * );
+#pragma aux fast_rev = \
+        "mov  cx,-1"    \
+        "xor  al,al"    \
+        "repne scasb"   \
+        "not  cx"       \
+        "dec  cx"       \
+        "std"           \
+        "sub  di,3"     \
+        "shr  cx,1"     \
+        "shr  cx,1"     \
+        "jcxz short L2" \
+    "L1: mov  ax,[di]"  \
+        "xchg ah,al"    \
+        "xchg ax,[si]"  \
+        "xchg ah,al"    \
+        "stosw"         \
+        "inc  si"       \
+        "inc  si"       \
+        "loop short L1" \
+    "L2: jnc short L3"  \
+        "inc  di"       \
+        "mov  al,[di]"  \
+        "xchg al,[si]"  \
+        "mov  [di],al"  \
+    "L3: cld"           \
+    __parm __caller [__si] [__es __di] \
+    __value         [__ax] \
+    __modify        [__si __cx __ax __di]
+
 #else
-#pragma aux     fast_rev = \
-        0x1e            /* push ds */ \
-        0x8e 0xda       /* mov ds,dx */ \
-        0xb9 0xff 0xff  /* mov cx,ffff */\
-        0x30 0xc0       /* xor al,al */\
-        0xf2 0xae       /* repne scasb */\
-        0xf7 0xd1       /* not cx */\
-        0x49            /* dec cx */\
-        0xfd            /* std */\
-        0x83 0xef 0x03  /* sub di,3 */\
-        0xd1 0xe9       /* shr cx,1 */\
-        0xd1 0xe9       /* shr cx,1 */\
-        0xe3 0x0d       /* jcxz L2 */\
-        0x8b 0x05       /* L1:mov ax,[di] */\
-        0x86 0xe0       /* xchg ah,al */\
-        0x87 0x04       /* xchg ax,[si] */\
-        0x86 0xe0       /* xchg ah,al */\
-        0xab            /* stosw */\
-        0x46            /* inc si */\
-        0x46            /* inc si */\
-        0xe2 0xf3       /* loop L1 */\
-        0x73 0x07       /* L2:jnc L3 */\
-        0x47            /* inc di */\
-        0x8a 0x05       /* mov al,[di] */\
-        0x86 0x04       /* xchg al,[si] */\
-        0x88 0x05       /* mov [di],al */\
-        0xfc            /* L3:cld */\
-        0x1f            /* pop ds */ \
-        parm caller     [dx si] [es di] \
-        value           [ax] \
-        modify          [si cx ax di];
+
+extern void fast_rev( char *, char _WCFAR * );
+#pragma aux fast_rev = \
+        "push ds"       \
+        "mov  ds,dx"    \
+        "mov  cx,-1"    \
+        "xor  al,al"    \
+        "repne scasb"   \
+        "not  cx"       \
+        "dec  cx"       \
+        "std"           \
+        "sub  di,3"     \
+        "shr  cx,1"     \
+        "shr  cx,1"     \
+        "jcxz short L2" \
+    "L1: mov  ax,[di]"  \
+        "xchg ah,al"    \
+        "xchg ax,[si]"  \
+        "xchg ah,al"    \
+        "stosw"         \
+        "inc  si"       \
+        "inc  si"       \
+        "loop short L1" \
+    "L2: jnc short L3"  \
+        "inc  di"       \
+        "mov  al,[di]"  \
+        "xchg al,[si]"  \
+        "mov  [di],al"  \
+    "L3: cld"           \
+        "pop  ds"       \
+    __parm __caller [__dx __si] [__es __di] \
+    __value         [__ax] \
+    __modify        [__si __cx __ax __di]
+
 #endif
 
 #endif
@@ -134,7 +139,7 @@ extern void fast_rev( char *, char _WCFAR * );
 _WCRTLINK CHAR_TYPE *__F_NAME(strrev,_wcsrev)( CHAR_TYPE *str ) /* reverse characters in string */
 {
 #if  defined( _M_I86 ) && !defined(__WIDECHAR__)
-    fast_rev( str, (char _WCFAR *) str );
+    fast_rev( str, (char _WCFAR *)str );
     return( str );
 #else
     CHAR_TYPE       *p1;

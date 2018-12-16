@@ -37,44 +37,48 @@
 
 #if defined( _M_I86 ) && !defined(__WIDECHAR__)
 
-extern int _fast_strncmp( const char *, const char _WCFAR *, size_t );
-
 #if defined(__SMALL_DATA__)
-#pragma aux    _fast_strncmp = \
-        0x89 0xfa       /* mov dx,di */ \
-        0x30 0xc0       /* xor al,al */ \
-        0xf2 0xae       /* repne scasb */ \
-        0x89 0xf9       /* mov cx,di */ \
-        0x89 0xd7       /* mov di,dx */ \
-        0x29 0xf9       /* sub cx,di */ \
-        0xf3 0xa6       /* repe cmpsb */ \
-        0x74 0x05       /* je L1 */ \
-        0x19 0xc9       /* sbb cx,cx */ \
-        0x83 0xd9 0xff  /* sbb cx,ffffh */ \
-                        /* L1: */ \
-        parm caller [si] [es di] [cx] \
-        value [cx] \
-        modify exact [dx ax di cx si];
+
+extern int _fast_strncmp( const char *, const char _WCFAR *, size_t );
+#pragma aux _fast_strncmp = \
+        "mov  dx,di"    \
+        "xor  al,al"    \
+        "repne scasb"   \
+        "mov  cx,di"    \
+        "mov  di,dx"    \
+        "sub  cx,di"    \
+        "repe cmpsb"    \
+        "je short L1"   \
+        "sbb  cx,cx"    \
+        "sbb  cx,-1"    \
+    "L1:"               \
+    __parm __caller     [__si] [__es __di] [__cx] \
+    __value             [__cx] \
+    __modify __exact    [__dx __ax __di __cx __si]
+
 #else
-#pragma aux    _fast_strncmp = \
-        0x1e            /* push ds */ \
-        0x8e 0xda       /* mov ds,dx */ \
-        0x89 0xfa       /* mov dx,di */ \
-        0x30 0xc0       /* xor al,al */ \
-        0xf2 0xae       /* repne scasb */ \
-        0x89 0xf9       /* mov cx,di */ \
-        0x89 0xd7       /* mov di,dx */ \
-        0x29 0xf9       /* sub cx,di */ \
-        0xf3 0xa6       /* repe cmpsb */ \
-        0x74 0x05       /* je L1 */ \
-        0x19 0xc9       /* sbb cx,cx */ \
-        0x83 0xd9 0xff  /* sbb cx,ffffh */ \
-                        /* L1: */ \
-        0x1f            /* pop ds */ \
-        parm caller [dx si] [es di] [cx] \
-        value [cx] \
-        modify exact [dx ax di cx si];
+
+extern int _fast_strncmp( const char *, const char _WCFAR *, size_t );
+#pragma aux _fast_strncmp = \
+        "push ds"       \
+        "mov  ds,dx"    \
+        "mov  dx,di"    \
+        "xor  al,al"    \
+        "repne scasb"   \
+        "mov  cx,di"    \
+        "mov  di,dx"    \
+        "sub  cx,di"    \
+        "repe cmpsb"    \
+        "je short L1"   \
+        "sbb  cx,cx"    \
+        "sbb  cx,-1"    \
+    "L1: pop  ds"       \
+    __parm __caller     [__dx __si] [__es __di] [__cx] \
+    __value             [__cx] \
+    __modify __exact    [__dx __ax __di __cx __si]
+
 #endif
+
 #endif
 
 /* return <0 if s<t, 0 if s==t, >0 if s>t */

@@ -33,23 +33,23 @@
 #include <stddef.h>
 #include <string.h>
 
+
 #ifdef _M_I86
 #include <i86.h>
 
-extern  int     i86_memeq( const char _WCFAR *, const char _WCFAR *, int );
-
 #define _ZFLAG          (INTR_ZF<<8)
 
-#pragma aux     i86_memeq = \
-        0x1e            /* push ds */\
-        0x96            /* xchg si,ax */\
-        0x8e 0xd8       /* mov ds,ax  */\
-        0xf3 0xa6       /* rep cmpsb */\
-        0x9f            /* lahf */\
-        0x1f            /* pop ds */\
-        parm caller     [si ax] [es di] [cx]\
-        value           [ax] \
-        modify exact    [si di cx ax];
+extern int  i86_memeq( const char _WCFAR *, const char _WCFAR *, int );
+#pragma aux i86_memeq = \
+        "push ds"       \
+        "xchg si,ax"    \
+        "mov  ds,ax"    \
+        "repe cmpsb"     \
+        "lahf"          \
+        "pop  ds"       \
+    __parm __caller     [__si __ax] [__es __di] [__cx] \
+    __value             [__ax] \
+    __modify __exact    [__si __di __cx __ax]
 
 #define memeq( p1, p2, len )    ( i86_memeq((p1),(p2),(len)) & _ZFLAG )
 

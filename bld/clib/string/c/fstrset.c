@@ -32,31 +32,32 @@
 #include "variety.h"
 #include <string.h>
 
+
 #ifdef _M_I86
 
 extern char _WCFAR *fast_strset( char _WCFAR *, char );
-
 #pragma aux fast_strset = \
-        0x1e            /* push ds */\
-        0x56            /* push si */\
-        0x50            /* push ax */\
-        0x8e 0xda       /* mov ds,dx */\
-        0x89 0xc6       /* mov si,ax */\
-        0x88 0xdf       /* mov bh,bl */\
-        0xad            /* L1:lodsw */\
-        0x84 0xc0       /* test al,al */\
-        0x74 0x0c       /* je L3 */\
-        0x84 0xe4       /* test ah,ah */\
-        0x74 0x05       /* je L2 */\
-        0x89 0x5c 0xfe  /* mov -2[si],bx */\
-        0xeb 0xf2       /* jmp L1 */\
-        0x88 0x5c 0xfe  /* L2:mov -2[si],bl */\
-        0x58            /* L3:pop ax */\
-        0x5e            /* pop si */\
-        0x1f            /* pop ds */\
-        parm caller     [dx ax] [bl] \
-        value           [dx ax] \
-        modify exact    [bh];
+        "push ds"           \
+        "push si"           \
+        "push ax"           \
+        "mov  ds,dx"        \
+        "mov  si,ax"        \
+        "mov  bh,bl"        \
+    "L1: lodsw"             \
+        "test al,al"        \
+        "je short L3"       \
+        "test ah,ah"        \
+        "je short L2"       \
+        "mov  -2[si],bx"    \
+        "jmp short L1"      \
+    "L2: mov  -2[si],bl"    \
+    "L3: pop  ax"           \
+        "pop  si"           \
+        "pop  ds"           \
+    __parm __caller     [__dx __ax] [__bl] \
+    __value             [__dx __ax] \
+    __modify __exact    [__bh]
+
 #endif
 
 _WCRTLINK char _WCFAR *_fstrset( char _WCFAR *s, int c )
