@@ -34,40 +34,9 @@
 #include <stddef.h>
 #include <string.h>
 
-#if defined(__386__)
 
-#if defined(__FLAT__)
-extern  void    movefwd( char _WCFAR *dst, const char _WCFAR *src, unsigned len);
-#pragma aux     movefwd =  \
-        0x06            /* push es */\
-        0x8e 0xc2       /* mov es,dx */\
-        0x1e            /* push ds */\
-        0x96            /* xchg esi,eax */\
-        0x8e 0xd8       /* mov ds,ax */\
-        0xd1 0xe9       /* shr cx,1 */\
-        0x66 0xf3 0xa5  /* rep movsw */\
-        0x11 0xc9       /* adc cx,cx */\
-        0xf3 0xa4       /* rep movsb */\
-        0x1f            /* pop ds */\
-        0x07            /* pop es */\
-        parm [dx edi] [si eax] [ecx] \
-        modify exact [edi esi ecx eax];
-#else
-extern  void    movefwd( char _WCFAR *dst, const char _WCFAR *src, unsigned len);
-#pragma aux     movefwd =  \
-        0x1e            /* push ds */\
-        0x96            /* xchg esi,eax */\
-        0x8e 0xd8       /* mov ds,ax */\
-        0xd1 0xe9       /* shr cx,1 */\
-        0x66 0xf3 0xa5  /* rep movsw */\
-        0x11 0xc9       /* adc cx,cx */\
-        0xf3 0xa4       /* rep movsb */\
-        0x1f            /* pop ds */\
-        parm [es edi] [si eax] [ecx] \
-        modify exact [edi esi ecx eax];
-#endif
+#if defined( _M_I86 )
 
-#elif defined( _M_I86 )
 #if defined(__SMALL_DATA__)
 extern  void    movebwd( char _WCFAR *dst, const char _WCFAR *src, unsigned len);
 #pragma aux     movebwd =  \
@@ -133,8 +102,44 @@ extern  void    movefwd( char _WCFAR *dst, const char _WCFAR *src, unsigned len)
         parm [es di] [si ax] [cx] \
         modify exact [di si cx ax];
 #endif
+
+#elif defined( __386__ )
+
+#if defined(__FLAT__)
+extern  void    movefwd( char _WCFAR *dst, const char _WCFAR *src, unsigned len);
+#pragma aux     movefwd =  \
+        0x06            /* push es */\
+        0x8e 0xc2       /* mov es,dx */\
+        0x1e            /* push ds */\
+        0x96            /* xchg esi,eax */\
+        0x8e 0xd8       /* mov ds,ax */\
+        0xd1 0xe9       /* shr cx,1 */\
+        0x66 0xf3 0xa5  /* rep movsw */\
+        0x11 0xc9       /* adc cx,cx */\
+        0xf3 0xa4       /* rep movsb */\
+        0x1f            /* pop ds */\
+        0x07            /* pop es */\
+        parm [dx edi] [si eax] [ecx] \
+        modify exact [edi esi ecx eax];
 #else
+extern  void    movefwd( char _WCFAR *dst, const char _WCFAR *src, unsigned len);
+#pragma aux     movefwd =  \
+        0x1e            /* push ds */\
+        0x96            /* xchg esi,eax */\
+        0x8e 0xd8       /* mov ds,ax */\
+        0xd1 0xe9       /* shr cx,1 */\
+        0x66 0xf3 0xa5  /* rep movsw */\
+        0x11 0xc9       /* adc cx,cx */\
+        0xf3 0xa4       /* rep movsb */\
+        0x1f            /* pop ds */\
+        parm [es edi] [si eax] [ecx] \
+        modify exact [edi esi ecx eax];
+#endif
+
+#else
+
 #error platform not supported
+
 #endif
 
 
