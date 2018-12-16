@@ -38,102 +38,116 @@
 #if defined( _M_I86 )
 
 #if defined(__SMALL_DATA__)
-extern  void    movebwd( char _WCFAR *dst, const char _WCFAR *src, unsigned len);
-#pragma aux     movebwd =  \
-        0xfd            /* std */\
-        0x1e            /* push ds */\
-        0x96            /* xchg si,ax */\
-        0x8e 0xd8       /* mov ds,ax */\
-        0x4e            /* dec si */\
-        0x4f            /* dec di */\
-        0xd1 0xe9       /* shr cx,1 */\
-        0xf3 0xa5       /* rep movsw */\
-        0x11 0xc9       /* adc cx,cx */\
-        0x46            /* inc si */\
-        0x47            /* inc di */\
-        0xf3 0xa4       /* rep movsb */\
-        0xfc            /* cld */\
-        0x1f            /* pop ds */\
-        parm [es di] [si ax] [cx] \
-        modify exact [di si cx ax];
 
-extern  void    movefwd( char _WCFAR *dst, const char _WCFAR *src, unsigned len);
-#pragma aux     movefwd =  \
-        0x1e            /* push ds */\
-        0x96            /* xchg si,ax */\
-        0x8e 0xd8       /* mov ds,ax */\
-        0xd1 0xe9       /* shr cx,1 */\
-        0xf3 0xa5       /* rep movsw */\
-        0x11 0xc9       /* adc cx,cx */\
-        0xf3 0xa4       /* rep movsb */\
-        0x1f            /* pop ds */\
-        parm [es di] [si ax] [cx] \
-        modify exact [di si cx ax];
+extern void     movebwd( char _WCFAR *dst, const char _WCFAR *src, size_t len);
+#pragma aux movebwd = \
+        "std"           \
+        "push ds"       \
+        "xchg si,ax"    \
+        "mov  ds,ax"    \
+        "dec  si"       \
+        "dec  di"       \
+        "shr  cx,1"     \
+        "rep  movsw"    \
+        "adc  cx,cx"    \
+        "inc  si"       \
+        "inc  di"       \
+        "rep  movsb"    \
+        "pop  ds"       \
+        "cld"           \
+    __parm              [__es __di] [__si __ax] [__cx] \
+    __value             \
+    __modify __exact    [__di __si __cx __ax]
+
+extern void     movefwd( char _WCFAR *dst, const char _WCFAR *src, size_t len);
+#pragma aux movefwd = \
+        "push ds"       \
+        "xchg si,ax"    \
+        "mov  ds,ax"    \
+        "shr  cx,1"     \
+        "rep  movsw"    \
+        "adc  cx,cx"    \
+        "rep  movsb"    \
+        "pop  ds"       \
+    __parm              [__es __di] [__si __ax] [__cx] \
+    __value             \
+    __modify __exact    [__di __si __cx __ax]
+
 #else
-extern  void    movebwd( char _WCFAR *dst, const char _WCFAR *src, unsigned len);
-#pragma aux     movebwd =  \
-        0xfd            /* std */\
-        0x1e            /* push ds */\
-        0x96            /* xchg si,ax */\
-        0x8e 0xd8       /* mov ds,ax */\
-        0x4e            /* dec si */\
-        0x4f            /* dec di */\
-        0xd1 0xe9       /* shr cx,1 */\
-        0xf3 0xa5       /* rep movsw */\
-        0x11 0xc9       /* adc cx,cx */\
-        0x46            /* inc si */\
-        0x47            /* inc di */\
-        0xf3 0xa4       /* rep movsb */\
-        0xfc            /* cld */\
-        0x1f            /* pop ds */\
-        parm [es di] [si ax] [cx] \
-        modify exact [di si cx ax];
 
-extern  void    movefwd( char _WCFAR *dst, const char _WCFAR *src, unsigned len);
-#pragma aux     movefwd =  \
-        0x1e            /* push ds */\
-        0x96            /* xchg si,ax */\
-        0x8e 0xd8       /* mov ds,ax */\
-        0xd1 0xe9       /* shr cx,1 */\
-        0xf3 0xa5       /* rep movsw */\
-        0x11 0xc9       /* adc cx,cx */\
-        0xf3 0xa4       /* rep movsb */\
-        0x1f            /* pop ds */\
-        parm [es di] [si ax] [cx] \
-        modify exact [di si cx ax];
+extern  void    movebwd( char _WCFAR *dst, const char _WCFAR *src, size_t len);
+#pragma aux     movebwd =  \
+        "std"           \
+        "push ds"       \
+        "xchg si,ax"    \
+        "mov  ds,ax"    \
+        "dec  si"       \
+        "dec  di"       \
+        "shr  cx,1"     \
+        "rep  movsw"    \
+        "adc  cx,cx"    \
+        "inc  si"       \
+        "inc  di"       \
+        "rep  movsb"    \
+        "pop  ds"       \
+        "cld"           \
+    __parm              [__es __di] [__si __ax] [__cx] \
+    __value             \
+    __modify __exact    [__di __si __cx __ax]
+
+extern void     movefwd( char _WCFAR *dst, const char _WCFAR *src, size_t len);
+#pragma aux movefwd = \
+        "push ds"       \
+        "xchg si,ax"    \
+        "mov  ds,ax"    \
+        "shr  cx,1"     \
+        "rep  movsw"    \
+        "adc  cx,cx"    \
+        "rep  movsb"    \
+        "pop  ds"       \
+    __parm              [__es __di] [__si __ax] [__cx] \
+    __value             \
+    __modify __exact    [__di __si __cx __ax]
+
 #endif
 
 #elif defined( __386__ )
 
 #if defined(__FLAT__)
-extern  void    movefwd( char _WCFAR *dst, const char _WCFAR *src, unsigned len);
-#pragma aux     movefwd =  \
-        0x06            /* push es */\
-        0x8e 0xc2       /* mov es,dx */\
-        0x1e            /* push ds */\
-        0x96            /* xchg esi,eax */\
-        0x8e 0xd8       /* mov ds,ax */\
-        0xd1 0xe9       /* shr cx,1 */\
-        0x66 0xf3 0xa5  /* rep movsw */\
-        0x11 0xc9       /* adc cx,cx */\
-        0xf3 0xa4       /* rep movsb */\
-        0x1f            /* pop ds */\
-        0x07            /* pop es */\
-        parm [dx edi] [si eax] [ecx] \
-        modify exact [edi esi ecx eax];
+
+extern void     movefwd( char _WCFAR *dst, const char _WCFAR *src, size_t len);
+#pragma aux movefwd = \
+        "push es"       \
+        "mov  es,edx"   \
+        "push ds"       \
+        "xchg esi,eax"  \
+        "mov  ds,eax"   \
+        "shr  ecx,1"    \
+        "rep  movsw"    \
+        "adc  ecx,ecx"  \
+        "rep  movsb"    \
+        "pop  ds"       \
+        "pop  es"       \
+    __parm              [__dx __edi] [__si __eax] [__ecx] \
+    __value             \
+    __modify __exact    [__eax __ecx __edi __esi]
+
 #else
-extern  void    movefwd( char _WCFAR *dst, const char _WCFAR *src, unsigned len);
-#pragma aux     movefwd =  \
-        0x1e            /* push ds */\
-        0x96            /* xchg esi,eax */\
-        0x8e 0xd8       /* mov ds,ax */\
-        0xd1 0xe9       /* shr cx,1 */\
-        0x66 0xf3 0xa5  /* rep movsw */\
-        0x11 0xc9       /* adc cx,cx */\
-        0xf3 0xa4       /* rep movsb */\
-        0x1f            /* pop ds */\
-        parm [es edi] [si eax] [ecx] \
-        modify exact [edi esi ecx eax];
+
+extern void     movefwd( char _WCFAR *dst, const char _WCFAR *src, size_t len);
+#pragma aux movefwd = \
+        "push ds"       \
+        "xchg esi,eax"  \
+        "mov  ds,eax"   \
+        "shr  ecx,1"    \
+        "rep  movsw"    \
+        "adc  ecx,ecx"  \
+        "rep  movsb"    \
+        "pop  ds"       \
+    __parm              [__es __edi] [__si __eax] [__ecx] \
+    __value             \
+    __modify __exact    [__eax __ecx __edi __esi]
+
 #endif
 
 #else
@@ -144,28 +158,28 @@ extern  void    movefwd( char _WCFAR *dst, const char _WCFAR *src, unsigned len)
 
 
 _WCRTLINK void _WCFAR *_fmemmove( void _WCFAR *t, const void _WCFAR *f, size_t len )
-    {
-        char _WCFAR *to = t;
-        const char _WCFAR *from = f;
-        if( from == to ) {
-            return( to );
-        }
-        if( from < to  &&  from + len > to ) {  /* if buffers are overlapped*/
-#if defined(__HUGE__) || defined(__386__)
-            to += len;
-            from += len;
-            while( len != 0 ) {
-                to--;
-                from--;
-                *to = *from;
-                len--;
-            }
-#else
-            movebwd(( to + len ) - 1, ( from + len ) - 1, len );
-#endif
-        } else {
-            movefwd( to, from, len );
-        }
+{
+    char _WCFAR *to = t;
+    const char _WCFAR *from = f;
+    if( from == to ) {
         return( to );
     }
+    if( from < to  &&  from + len > to ) {  /* if buffers are overlapped*/
+#if defined(__HUGE__) || defined(__386__)
+        to += len;
+        from += len;
+        while( len != 0 ) {
+            to--;
+            from--;
+            *to = *from;
+            len--;
+        }
+#else
+        movebwd(( to + len ) - 1, ( from + len ) - 1, len );
+#endif
+    } else {
+        movefwd( to, from, len );
+    }
+    return( to );
+}
 

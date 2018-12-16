@@ -37,31 +37,32 @@
 
 
 #if defined(__386__)
-extern  void    __STOSB( void *, int, unsigned );
-#pragma aux     __STOSB "*" parm [eax] [edx] [ecx];
+extern void __STOSB( void *, int, unsigned );
+#pragma aux __STOSB "*" __parm [__eax] [__edx] [__ecx]
 
-extern  void    *__set386( void *, int, unsigned );
-#pragma aux     __set386 =  \
-        "push   EAX"            /* save return value*/\
-        "mov    DH,DL"          /* duplicate byte value thru EDX */\
-        "shl    EDX,8"          /* ... */\
-        "mov    DL,DH"          /* ... */\
-        "shl    EDX,8"          /* ... */\
-        "mov    DL,DH"          /* ... */\
-        "call   __STOSB"        /* do store */\
-        "pop    EAX"            /* restore return value*/\
-        parm [eax] [edx] [ecx] \
-        value [eax];
+extern void *__set386( void *, int, unsigned );
+#pragma aux __set386 = \
+        "push   eax"    /* save return value*/ \
+        "mov    dh,dl"  /* duplicate byte value thru edx */ \
+        "shl    edx,8"  /* ... */ \
+        "mov    dl,dh"  /* ... */ \
+        "shl    edx,8"  /* ... */ \
+        "mov    dl,dh"  /* ... */ \
+        "call __STOSB"  /* do store */ \
+        "pop    eax"    /* restore return value*/ \
+    __parm              [__eax] [__edx] [__ecx] \
+    __value             [__eax] \
+    __modify __exact    [__ecx __edx]
 #endif
 
 _WCRTLINK VOID_WC_TYPE *__F_NAME(memset,wmemset)( VOID_WC_TYPE *dst, INT_WC_TYPE c, size_t len )
 {
 #if defined(__INLINE_FUNCTIONS__) && !defined(__WIDECHAR__) && defined(_M_IX86)
-    #if defined(__386__) && defined(__SMALL_DATA__)
-        return( __set386( dst, c, len ) );
-    #else
-        return( _inline_memset( dst, c, len ) );
-    #endif
+  #if defined(__386__) && defined(__SMALL_DATA__)
+    return( __set386( dst, c, len ) );
+  #else
+    return( _inline_memset( dst, c, len ) );
+  #endif
 #else
     CHAR_TYPE   *p;
 
