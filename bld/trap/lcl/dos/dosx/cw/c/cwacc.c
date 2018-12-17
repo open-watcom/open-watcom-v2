@@ -136,7 +136,7 @@ typedef struct mod_t {
 typedef struct hbrk_t {
     unsigned_32     address;
     unsigned_16     handle;
-    char            type;
+    unsigned_8      type;
     unsigned_8      size;
     unsigned        inuse     :1;
     unsigned        installed :1;
