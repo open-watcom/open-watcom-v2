@@ -39,31 +39,31 @@ extern void             Out_d( unsigned_16 port, unsigned_32 value );
 
 #pragma aux In_b =      \
         "in     al,dx"  \
-        parm    routine [ dx ] value [ al ];
+    __parm __routine [__dx] __value [__al]
 
 #pragma aux Out_b =     \
         "out    dx,al"  \
-        parm    routine [ dx ] [ al ];
+    __parm __routine [__dx] [__al]
 
 
 #pragma aux In_w =      \
         "in     ax,dx"  \
-        parm    routine [ dx ] value [ ax ];
+    __parm __routine [__dx] __value [__ax]
 
 #pragma aux Out_w =     \
         "out    dx,ax"  \
-        parm    routine [ dx ] [ ax ];
+    __parm __routine [__dx] [__ax]
 
 
 #if defined(__386__)
 
 #pragma aux In_d =      \
         "in     eax,dx" \
-        parm    routine [ dx ] value [ eax ];
+    __parm __routine [__dx] __value [__eax]
 
 #pragma aux Out_d =     \
         "out    dx,eax" \
-        parm    routine [ dx ] [ eax ];
+    __parm __routine [__dx] [__eax]
 
 #else
 
@@ -72,7 +72,7 @@ extern void             Out_d( unsigned_16 port, unsigned_32 value );
         "in     eax,dx" \
         "mov    edx,eax"\
         "shr    edx,16" \
-        parm    routine [ dx ] value [ dx ax ];
+    __parm __routine [__dx] __value [__dx __ax]
 
 #pragma aux Out_d =     \
         ".386p"         \
@@ -80,6 +80,6 @@ extern void             Out_d( unsigned_16 port, unsigned_32 value );
         "mov    ax,cx"  \
         "ror    eax,16" \
         "out    dx,eax" \
-        parm    routine [ dx ] [ cx ax ];
+    __parm __routine [__dx] [__cx __ax]
 
 #endif

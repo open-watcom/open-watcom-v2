@@ -34,19 +34,18 @@
 #include "trpcomm.h"
 
 extern int GtKey( void );
+#pragma aux GtKey = \
+        "xor  ah,ah"    \
+        "int 16h"       \
+    __parm __caller [__ax]
+
 extern unsigned KeyWaiting( void );
-
-#pragma aux GtKey =             \
-    "xor AH,AH"                 \
-    "int 16h"                   \
-    parm caller [ax];
-
-#pragma aux KeyWaiting =        \
-    "mov AH,01h"                \
-    "int 16h"                   \
-    "lahf"                      \
-    "and AX,4000h"              \
-    parm caller [ax];
+#pragma aux KeyWaiting = \
+        "mov  ah,1"     \
+        "int 16h"       \
+        "lahf"          \
+        "and  ax,4000h" \
+    __parm __caller [__ax]
 
 
 trap_retval ReqRead_user_keyboard( void )
@@ -63,10 +62,8 @@ trap_retval ReqRead_user_keyboard( void )
 
         cur_time = MK_FP( 0x40, 0x6c ); /* set up pointer to the BIOS clock */
         end_time = *cur_time + ( acc->wait * 18 );
-        for( ;; ) {
-            if( KeyWaiting() == 0 ) {
-                break;
-            } else  if( end_time <= *cur_time ) {
+        while( KeyWaiting() ) {
+            if( end_time <= *cur_time ) {
                 return( sizeof( *ret ) );
             }
         }

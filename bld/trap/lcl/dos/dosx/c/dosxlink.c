@@ -81,9 +81,11 @@
   #if defined(CAUSEWAY)
     extern unsigned short   GetZeroSel( void );
     #pragma aux GetZeroSel = \
-        "mov ax,0ff00h" \
-        "int 31h" \
-        modify [bx ecx dx edi esi es] value [ax];
+            "mov ax,0ff00h" \
+            "int 31h"       \
+        __parm      [] \
+        __value     [__ax] \
+        __modify    [__bx __ecx __dx __edi __esi __es]
   #endif
 
 #else
@@ -135,10 +137,12 @@
 
     extern void doskludge( void );
     #pragma aux doskludge = \
-        "mov  ax,2a00h" \
-        "sub  sp,50h" \
-        "int  21h" \
-        parm caller [ax] modify [sp cx dx];
+            "mov  ax,2a00h" \
+            "sub  sp,50h" \
+            "int  21h" \
+        __parm __caller [__ax] \
+        __value         \
+        __modify        [__cx __dx __sp]
 
 #endif
 

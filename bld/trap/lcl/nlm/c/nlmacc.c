@@ -505,7 +505,7 @@ void DumpRegs( msb *m, char *str )
 #endif
 
 static void BigKludge( msb *m );
-#pragma aux BigKludge parm [esi];
+#pragma aux BigKludge __parm [__esi]
 
 static LONG DebugEntry( StackFrame *frame )
 {

@@ -51,12 +51,13 @@ extern  void    LoadThisDLL( void );
 extern  void    EndLoadThisDLL( void );
 
 extern  void __far *Automagic( unsigned short );
-#pragma aux     Automagic = 0x29 0xc4 /* sub sp,ax */\
-                            0x89 0xe0 /* mov ax,sp */\
-                            0x8c 0xd2 /* mov dx,ss */\
-                            parm caller [ax] \
-                            value [ax dx] \
-                            modify [sp];
+#pragma aux Automagic = \
+        "sub  sp,ax"    \
+        "mov  ax,sp"    \
+        "mov  dx,ss"    \
+    __parm __caller [__ax] \
+    __value         [__ax __dx] \
+    __modify        [__sp]
 
 typedef struct {
         USHORT  phmod[2];               /* offset-segment */
@@ -124,14 +125,14 @@ extern USHORT           FlatCS,FlatDS;
 
 bool CausePgmToLoadThisDLL( ULONG startLinear );
 long TaskExecute( excfn rtn );
-#pragma aux DoOpen parm [ dx ax ] [ bx ] [ cx ];
-void DoOpen( char __far *name, int mode, int flags );
-#pragma aux DoClose parm [ ax ];
-static void DoClose( HFILE hdl );
-#pragma aux DoDupFile parm [ ax ] [ dx ];
-void DoDupFile( HFILE old, HFILE new );
-#pragma aux DoWritePgmScrn parm [dx ax] [ bx ];
-void DoWritePgmScrn( char __far *buff, USHORT len );
+extern void DoOpen( char __far *name, int mode, int flags );
+#pragma aux DoOpen __parm [__dx __ax] [__bx] [__cx]
+extern void DoClose( HFILE hdl );
+#pragma aux DoClose __parm [__ax]
+extern void DoDupFile( HFILE old, HFILE new );
+#pragma aux DoDupFile __parm [__ax] [__dx]
+extern void DoWritePgmScrn( char __far *buff, USHORT len );
+#pragma aux DoWritePgmScrn __parm [__dx __ax] [__bx]
 bool TaskReadWord( USHORT seg, ULONG off, USHORT __far *data );
 bool TaskWriteWord( USHORT seg, ULONG off, USHORT data );
 void TaskPrint( byte __far *data, unsigned len );

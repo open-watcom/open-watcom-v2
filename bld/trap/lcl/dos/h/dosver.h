@@ -29,11 +29,12 @@
 ****************************************************************************/
 
 
-#pragma aux __MajorV = 0xB4 0x30 /* mov ah,30H */ \
-                     0xCD 0x21 /* int   21H */ \
-                     value [ al ] \
-                     modify [bx cx];
-
 extern char __MajorV( void );
+#pragma aux __MajorV = \
+        "mov  ah,30h"   \
+        "int 21h"       \
+    __parm      [] \
+    __value     [__al] \
+    __modify    [__bx __cx]
 
 #define IsDOS3 ( __MajorV() >= 3 )

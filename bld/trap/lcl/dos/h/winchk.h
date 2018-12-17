@@ -30,37 +30,43 @@
 
 
 extern byte EnhancedWinCheck( void );
-#pragma aux EnhancedWinCheck =     \
-        "mov    ax, 1600H"         \
-        "int    2fH"               \
-        value [al];
+#pragma aux EnhancedWinCheck = \
+        "mov  ax,1600h" \
+        "int 2fh"       \
+    __parm      [] \
+    __value     [__al] \
+    __modify    [__ah]
 
 extern unsigned DPMIVersion( void );
-#pragma aux DPMIVersion =          \
-        "       mov     ax,1687h"  \
-        "       int     2fh"       \
-        "       test    ax,ax"     \
-        "       je      l1"        \
-        "       xor     dx,dx"     \
-        "l1:    "                  \
-        value [dx] modify [ ax bx cx dx si es di ]
+#pragma aux DPMIVersion = \
+        "mov  ax,1687h" \
+        "int 2fh"       \
+        "test ax,ax"    \
+        "je short L1"   \
+        "xor  dx,dx"    \
+    "L1:"               \
+    __parm      [] \
+    __value     [__dx] \
+    __modify    [__ax __bx __cx __dx __si __es __di]
 
 const char DOSEMUString[] = "$DOSEMU$";
 
 extern int DOSEMUCheck( void );
-#pragma aux DOSEMUCheck =          \
-        "       push   ds"         \
-        "       mov    ax, 0f000h" \
-        "       mov    es, ax"     \
-        "       mov    di, 0ffe0h" \
-        "       mov    ax, seg DOSEMUString" \
-        "       mov    ds, ax"     \
-        "       mov    si, offset DOSEMUString" \
-        "       mov    cx, 4"      \
-        "       cld"               \
-        "       repe   cmpsw"      \
-        "       mov    ax, 0"      \
-        "       jne    l1"         \
-        "       inc    ax"         \
-        "l1:    pop    ds" \
-        value [ax] modify [ bx cx dx si es di ]
+#pragma aux DOSEMUCheck = \
+        "push ds"           \
+        "mov  ax,0f000h"    \
+        "mov  es,ax"        \
+        "mov  di,0ffe0h"    \
+        "mov  ax,seg DOSEMUString" \
+        "mov  ds,ax"        \
+        "mov  si,offset DOSEMUString" \
+        "mov  cx,4"         \
+        "cld"               \
+        "repe cmpsw"        \
+        "mov  ax,0"         \
+        "jne short L1"      \
+        "inc  ax"           \
+    "L1: pop  ds"           \
+    __parm      [] \
+    __value     [__ax] \
+    __modify    [__bx __cx __dx __si __es __di]

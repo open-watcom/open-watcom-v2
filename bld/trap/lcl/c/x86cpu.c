@@ -35,55 +35,61 @@
 
 #ifdef __WATCOMC__
 
-#if !defined(__386__)
+#if defined( _M_I86 )
     #define     Is8086()        (!IsNot8086())
     extern unsigned short IsNot8086( void );
     /* shr ax,33 will produce 0 on 8086, 0xefff on everything else */
-    #pragma aux IsNot8086 =     \
-            "mov        ax,0xffff"      \
-            "mov        cl,33"          \
-            "shr        ax,cl"          \
-            value [ax] modify [cl]
+    #pragma aux IsNot8086 = \
+            "mov  ax,-1"    \
+            "mov  cl,33"    \
+            "shr  ax,cl"    \
+        __parm      [] \
+        __value     [__ax] \
+        __modify    [__cl]
 
     extern unsigned short Is186( void );
     /* push sp on a 86/186 pushes value after increment */
-    #pragma aux Is186 =         \
-            "push       sp"             \
-            "pop        ax"             \
-            "sub        ax,sp"          \
-            value [ax]
+    #pragma aux Is186 = \
+            "push       sp"     \
+            "pop        ax"     \
+            "sub        ax,sp"  \
+        __parm      [] \
+        __value     [__ax] \
+        __modify    [__ax]
 
-    #define     Is286()         (!IsNot286())
+    #define Is286()     (!IsNot286())
     extern unsigned short IsNot286( void );
     /* 286 won't let you turn on top bits in flags regs */
     /* NOTE: this doesn't work in protect mode */
-    #pragma aux IsNot286 =              \
-            "pushf"                     \
-            "mov        ax,0xf000"      \
-            "push       ax"             \
-            "popf"                      \
-            "pushf"                     \
-            "pop        ax"             \
-            "popf"                      \
-            "and        ax,0xf000"      \
-            value [ax]
+    #pragma aux IsNot286 = \
+            "pushf"             \
+            "mov  ax,0f000H"    \
+            "push ax"           \
+            "popf"              \
+            "pushf"             \
+            "pop  ax"           \
+            "popf"              \
+            "and  ax,0f000H"    \
+        __parm      [] \
+        __value     [__ax] \
+        __modify    [__ax]
 #endif
 
-#if defined(__386__)
-    #define AX  eax
-    #define BX  ebx
-    #define CX  ecx
-    #define DX  edx
+#if defined( _M_I86 )
+    #define REG_XAX  __ax
+    #define REG_XBX  __bx
+    #define REG_XCX  __cx
+    #define REG_XDX  __dx
 #else
-    #define AX  ax
-    #define BX  bx
-    #define CX  cx
-    #define DX  dx
+    #define REG_XAX  __eax
+    #define REG_XBX  __ebx
+    #define REG_XCX  __ecx
+    #define REG_XDX  __edx
 #endif
 
 extern unsigned Is386( void );
 /* Try and flip the AC bit in EFlags */
-#pragma aux Is386 =             \
+#pragma aux Is386 = \
         ".586"                  \
         "mov    dx,sp"          \
         "and    sp,0xfffc"      \
@@ -100,11 +106,11 @@ extern unsigned Is386( void );
         "shr    eax,18"         \
         "and    eax,1"          \
         "mov    sp,dx"          \
-        value [AX] modify [BX DX]
+    __value [REG_XAX] __modify [REG_XBX REG_XDX]
 
 extern unsigned Is486( void );
 /* Try and flip the ID bit in EFlags */
-#pragma aux Is486 =             \
+#pragma aux Is486 = \
         ".586"                  \
         "pushfd"                \
         "pushfd"                \
@@ -118,7 +124,7 @@ extern unsigned Is486( void );
         "xor    eax,ebx"        \
         "shr    eax,21"         \
         "and    eax,1"          \
-        value [AX] modify [BX]
+    __value [REG_XAX] __modify [REG_XBX]
 
 //
 // Intel
@@ -128,7 +134,7 @@ extern unsigned Is486( void );
 // AMD CPUID Enhanced function
 // CPUID EDX bit 31 - 3DNow! instructions -> MMX registers
 extern unsigned CPUId( void );
-#pragma aux CPUId =             \
+#pragma aux CPUId = \
         ".586"                  \
         "mov    eax,1"          \
         "cpuid"                 \
@@ -153,15 +159,15 @@ extern unsigned CPUId( void );
         "push   eax"            \
 "no_amd_3dnow:"                 \
         "pop    eax"            \
-        value [AX] modify [BX CX DX]
+    __value [REG_XAX] __modify [REG_XBX REG_XCX REG_XDX]
 
 unsigned_8 X86CPUType( void )
 {
-    #if !defined(__386__)
-        if( Is8086() ) return( X86_86 );
-        if( Is186() ) return( X86_186 );
-        if( Is286() ) return( X86_286 );
-    #endif
+#if defined( _M_I86 )
+    if( Is8086() ) return( X86_86 );
+    if( Is186() ) return( X86_186 );
+    if( Is286() ) return( X86_286 );
+#endif
     if( Is386() ) return( X86_386 );
     if( Is486() ) return( X86_486 );
     return( CPUId() );

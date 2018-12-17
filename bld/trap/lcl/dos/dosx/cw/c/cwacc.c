@@ -151,62 +151,78 @@ typedef struct watch_point {
 
 void dos_print( char *s );
 #pragma aux dos_print = \
-    "mov  ah,9" \
-    "int  21h" \
-    parm [edx];
+        "mov  ah,9" \
+        "int  21h" \
+    __parm      [__edx] \
+    __value     \
+    __modify    [__ax]
 
 extern unsigned_32 GetSelBase( unsigned_16 );
 #pragma aux GetSelBase = \
-    "mov  ax,0FF08h" /* GetSelDet32 */ \
-    "int  31h" \
-    parm [bx] modify [eax ebx ecx] value [edx];
+        "mov  ax,0FF08h" /* GetSelDet32 */ \
+        "int  31h" \
+    __parm      [__bx] \
+    __value     [__edx] \
+    __modify    [__ax __ebx __ecx]
 
 extern int RelSel( unsigned_16 );
 #pragma aux RelSel = \
-    "mov  ax,0FF04h" /* RelSel */ \
-    "int  31h" \
-    "sbb  eax,eax" \
-    parm [bx] value [eax];
+        "mov  ax,0FF04h" /* RelSel */ \
+        "int  31h" \
+        "sbb  eax,eax" \
+    __parm      [__bx] \
+    __value     [__eax]
 
 extern int IsSel32bit( unsigned_16 );
 #pragma aux IsSel32bit = \
-    "movzx eax,ax" \
-    "lar   eax,eax" \
-    "and   eax,400000h" \
-    parm [ax] value [eax];
+        "movzx eax,ax" \
+        "lar   eax,eax" \
+        "and   eax,400000h" \
+    __parm  [__ax] \
+    __value [__eax]
 
 extern void *malloc( unsigned );
 #pragma aux malloc = \
-    "mov   ax,0ff11h" \
-    "int   31h" \
-    parm [ecx] value [esi];
+        "mov   ax,0ff11h" \
+        "int   31h" \
+    __parm      [__ecx] \
+    __value     [__esi] \
+    __modify    [__ax]
 
 extern void *realloc( void *, unsigned );
 #pragma aux realloc = \
-    "mov   ax,0ff13h" \
-    "int   31h" \
-    parm [esi] [ecx] value [esi];
+        "mov   ax,0ff13h" \
+        "int   31h" \
+    __parm      [__esi] [__ecx] \
+    __value     [__esi] \
+    __modify    [__ax]
 
 extern void free( void * );
 #pragma aux free = \
-    "mov   ax,0ff15h" \
-    "int   31h" \
-    parm [esi];
+        "mov   ax,0ff15h" \
+        "int   31h" \
+    __parm      [__esi] \
+    __value     \
+    __modify    [__ax]
 
 extern unsigned short GetPSP( void );
 #pragma aux GetPSP = \
-    "mov  ah,62h" \
-    "int  21h" \
-    modify [ax] value [bx];
+        "mov  ah,62h" \
+        "int  21h" \
+    __parm      [] \
+    __value     [__bx] \
+    __modify    [__ax]
 
 extern int GetExecCount( unsigned_32 * );
 #pragma aux GetExecCount = \
-    "push  es" \
-    "les   bx,[eax]" \
-    "cmp   byte ptr es:[bx],1" \
-    "sbb   eax,eax" \
-    "pop   es" \
-    parm [eax] modify [ebx];
+        "push  es" \
+        "les   bx,[eax]" \
+        "cmp   byte ptr es:[bx],1" \
+        "sbb   eax,eax" \
+        "pop   es" \
+    __parm      [__eax] \
+    __value     [__eax] \
+    __modify    [__bx]
 
 extern unsigned     MemoryCheck( unsigned_32, unsigned, unsigned );
 extern unsigned     MemoryRead( unsigned_32, unsigned, void *, unsigned );
@@ -242,7 +258,7 @@ void dos_printf( const char *format, ... )
     va_start( args, format );
     vsnprintf( dbg_buf, sizeof( dbg_buf ), format, args );
     // Convert to DOS string
-    dbg_buf[ strlen( dbg_buf ) ] = '\$';
+    dbg_buf[strlen( dbg_buf )] = '\$';
     dos_print( dbg_buf );
     va_end( args );
 }
@@ -299,7 +315,7 @@ int IsHardBreak( void )
 
     for( i = 0; i < 4; ++i ) {
         if( HBRKTable[i].inuse && HBRKTable[i].installed ) {
-            if( _DPMITestWatch( HBRKTable[i].handle ) ) {
+            if( _DPMITestWatch( HBRKTable[i].handle ) > 0 ) {
                 return( true );
             }
         }
@@ -441,12 +457,12 @@ static void RemoveModHandle( epsp_t *epsp )
     int     i;
 
     for( i = 0; i < NumModHandles; ++i ) {
-        if( ModHandles[ i ].epsp == epsp ) {
-            ModHandles[ i ].loaded = false;
-            if( ModHandles[ i ].SegCount ) {
-                free( ModHandles[ i ].ObjInfo );
-                ModHandles[ i ].ObjInfo = NULL;
-                ModHandles[ i ].SegCount = 0;
+        if( ModHandles[i].epsp == epsp ) {
+            ModHandles[i].loaded = false;
+            if( ModHandles[i].SegCount ) {
+                free( ModHandles[i].ObjInfo );
+                ModHandles[i].ObjInfo = NULL;
+                ModHandles[i].SegCount = 0;
             }
             break;
         }
@@ -459,11 +475,11 @@ static void FreeModsInfo( void )
     int     i;
 
     for( i = 0; i < NumModHandles; ++i ) {
-        if( ModHandles[ i ].loaded ) {
-            if( ModHandles[ i ].SegCount ) {
-                free( ModHandles[ i ].ObjInfo );
-                ModHandles[ i ].ObjInfo = NULL;
-                ModHandles[ i ].SegCount = 0;
+        if( ModHandles[i].loaded ) {
+            if( ModHandles[i].SegCount ) {
+                free( ModHandles[i].ObjInfo );
+                ModHandles[i].ObjInfo = NULL;
+                ModHandles[i].SegCount = 0;
             }
         }
     }
@@ -585,7 +601,7 @@ trap_retval ReqChecksum_mem( void )
     while( len >= sizeof( buffer ) ) {
         read = ReadMemory( &acc->in_addr, buffer, sizeof( buffer ) );
         for( i = 0; i < read; ++i ) {
-            ret->result += buffer[ i ];
+            ret->result += buffer[i];
         }
         if( read != sizeof( buffer ) )
             return( sizeof( *ret ) );
@@ -595,7 +611,7 @@ trap_retval ReqChecksum_mem( void )
     if( len != 0 ) {
         read = ReadMemory( &acc->in_addr, buffer, len );
         for( i = 0; i < read; ++i ) {
-            ret->result += buffer[ i ];
+            ret->result += buffer[i];
         }
     }
     return( sizeof( ret ) );
@@ -941,7 +957,7 @@ trap_retval ReqGet_err_text( void )
     acc = GetInPtr( 0 );
     err_txt = GetOutPtr( 0 );
     if( acc->err < ERR_LAST ) {
-        strcpy( err_txt, DosErrMsgs[ acc->err ] );
+        strcpy( err_txt, DosErrMsgs[acc->err] );
         _DBG( "After strcpy\r\n" );
     } else {
         _DBG( "After acc->error_code > MAX_ERR_CODE" );

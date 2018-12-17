@@ -62,13 +62,14 @@ extern unsigned short __pascal __far Dos16SelToFlat();
 
 extern long CallDosSelToFlat( long );
 #pragma aux CallDosSelToFlat = \
- 0x66 0x92                              /* xchg    eax,edx */ \
- 0x66 0xc1 0xe0 0x10                    /* shl     eax,10H */ \
- 0x92                                   /* xchg    ax,dx */ \
- 0x9a offset Dos16SelToFlat seg Dos16SelToFlat /* call ... */ \
- 0x66 0x8b 0xd0                         /* mov     edx,eax */ \
- 0x66 0xc1 0xea 0x10                    /* shr     edx,10H */ \
- parm[dx ax] value [dx ax];
+        "xchg eax,edx"  \
+        "shl  eax,16"   \
+        "xchg ax,dx"    \
+        "call far ptr Dos16SelToFlat" \
+        "mov  edx,eax"  \
+        "shr  edx,16"   \
+    __parm  [__dx __ax] \
+    __value [__dx __ax]
 
 ULONG MakeLocalPtrFlat( void __far *ptr );
 
@@ -78,7 +79,9 @@ static ULONG    _retaddr;
 extern void __far *DoReturn();
 
 extern USHORT   DoCall( void __far *, ULONG, ULONG );
-#pragma aux DoCall parm [dx ax] [cx bx] [di si] modify [ax bx cx dx si di es];
+#pragma aux DoCall \
+    __parm      [__dx __ax] [__cx __bx] [__di __si] \
+    __modify    [__ax __bx __cx __dx __si __di __es]
 
 #define LOCATOR     "OS2V2HLP.EXE"
 

@@ -160,13 +160,13 @@ OvlTrap_:                       ; Overlay state change trap
 
 
 w386_e: mov     byte ptr CS:TrapType,al                 ; set trap type
-        .386
+        .386p
         pop     eax                                     ; restore ax
         jmp     short DebugTask                         ; enter debugger
 
 TraceTrap386:
         push    eax                                     ; save ax
-        db      00FH,021H,0F0H                          ; mov eax,dr6
+        mov     eax,dr6                                 ; check dr6 register
         test    ax,04000H                               ; if trace trap
         je      w386_1                                  ; then
         mov     al,TRAP_TRACE_POINT                     ; - indicate trace trap
@@ -429,9 +429,9 @@ WatchRestart:                   ; restart a watch point after a soft int
         jmp     short WatchTrap ; go do rest of watch point
 
 WatchTrap386:                   ; we have a watchpoint trap
-        .386
+        .386p
         push    EAX             ; save AX
-        db      00FH,021H,0F0H  ; mov eax,dr6
+        mov     eax,dr6         ; check dr6 register
         test    ax,0A00FH       ; check if exception or break
         pop     EAX             ; restore AX
         .8086

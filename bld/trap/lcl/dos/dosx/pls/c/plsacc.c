@@ -681,8 +681,14 @@ trap_retval ReqProg_load( void )
     return( sizeof( *ret ) );
 }
 
-#pragma aux finit = ".387" "finit" "wait"
 extern void finit( void );
+#pragma aux finit = \
+        ".387"  \
+        "finit" \
+        "wait"  \
+    __param     [] \
+    __value     \
+    __modify    []
 
 trap_retval ReqProg_kill( void )
 {

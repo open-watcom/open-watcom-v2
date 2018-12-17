@@ -38,13 +38,13 @@ extern unsigned GetDS( void );
 extern unsigned GetCS( void );
 extern unsigned GetSS( void );
 #if defined( _M_I86 )
-#pragma aux GetDS = "mov ax,ds" value [ax];
-#pragma aux GetCS = "mov ax,cs" value [ax];
-#pragma aux GetSS = "mov ax,ss" value [ax];
+#pragma aux GetDS = "mov ax,ds" __value [__ax]
+#pragma aux GetCS = "mov ax,cs" __value [__ax]
+#pragma aux GetSS = "mov ax,ss" __value [__ax]
 #else
-#pragma aux GetDS = "mov eax,ds" value [eax];
-#pragma aux GetCS = "mov eax,cs" value [eax];
-#pragma aux GetSS = "mov eax,ss" value [eax];
+#pragma aux GetDS = "mov eax,ds" __value [__eax]
+#pragma aux GetCS = "mov eax,cs" __value [__eax]
+#pragma aux GetSS = "mov eax,ss" __value [__eax]
 #endif
 
 extern void BreakPoint( void );
@@ -52,9 +52,9 @@ extern void BreakPoint( void );
 
 extern void BreakPointParm( unsigned long );
 #if defined( _M_I86 )
-#pragma aux BreakPointParm = BRKPOINT parm [dx ax] aborts;
+#pragma aux BreakPointParm = BRKPOINT __parm [__dx __ax] __aborts
 #else
-#pragma aux BreakPointParm = BRKPOINT parm [eax] aborts;
+#pragma aux BreakPointParm = BRKPOINT __parm [__eax] __aborts
 #endif
 
 typedef unsigned char   opcode_type;

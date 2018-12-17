@@ -33,11 +33,11 @@
 
 #ifdef __WATCOMC__
 
-#pragma aux GetMSW = \
-        ".286p"       \
-        "smsw ax"    \
-        value [ax];
 extern unsigned short GetMSW( void );
+#pragma aux GetMSW = \
+        ".286p"     \
+        "smsw ax"   \
+    __value [__ax]
 
 #define MSW_EM       0x04
 

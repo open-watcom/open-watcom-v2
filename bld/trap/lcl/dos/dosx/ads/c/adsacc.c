@@ -797,12 +797,13 @@ trap_retval ReqGet_next_alias( void )
 }
 
 #if 0
-extern int GtKey();
-
+extern int GtKey( void );
 #pragma aux GtKey = \
-    "xor    ah,ah"  \
-    "int    16"     \
-modify [ax];
+        "xor  ah,ah"    \
+        "int 16h"       \
+    __parm      [] \
+    __value     [__ax] \
+    __modify    [__ax]
 
 
 static unsigned_16 AccReadUserKey()

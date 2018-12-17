@@ -44,22 +44,25 @@
 #define FP2HANDLE(fp)    ((int)((unsigned long)(fp) - 1))
 
 extern int KeyPress_pragma( void );
-extern int KeyGet_pragma( void );
-
 #pragma aux KeyPress_pragma =   \
-    "mov    ah,1"               \
-    "int    16h"                \
-    "jnz    l1"                 \
-    "xor    ax,ax"              \
-    "jmp    l2"                 \
-    "l1:mov ax,1"               \
-    "l2:"                       \
-    modify [ax];
+        "mov  ah,1"     \
+        "int 16h"       \
+        "jnz short L1"  \
+        "xor  ax,ax"    \
+        "jmp short L2"  \
+    "L1: mov  ax,1"     \
+    "L2:"               \
+    __parm      [] \
+    __value     [__ax] \
+    __modify    [__ax]
 
-#pragma aux KeyGet_pragma =     \
-    "xor    ah,ah"              \
-    "int    16h"                \
-    modify [ax];
+extern int KeyGet_pragma( void );
+#pragma aux KeyGet_pragma = \
+        "xor    ah,ah"  \
+        "int    16h"    \
+    __parm      [] \
+    __value     [__ax] \
+    __modify    [__ax]
 
 
 void Output( const char *str )

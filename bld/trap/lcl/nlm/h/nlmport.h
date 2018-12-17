@@ -30,50 +30,46 @@
 ****************************************************************************/
 
 
-#pragma aux in_b =                                              \
-0xec                    /* in   al,dx                           */      \
-        parm    routine [ dx ];
+#define inp(x)      in_b(x)
+#define outp(x,y)   out_b(x,y)
 
+extern byte     in_b(word);
+#pragma aux in_b = \
+        "in   al,dx"    \
+    __parm __routine    [__dx] \
+    __value             [__al]
 
-#pragma aux in_w =                                              \
-0x66 0xed               /* in   ax,dx                           */      \
-        parm    routine [ dx ];
+extern word     in_w(word);
+#pragma aux in_w = \
+        "in   ax,dx"    \
+    __parm __routine    [__dx] \
+    __value             [__ax]
 
+extern dword    in_d(word);
+#pragma aux in_d = \
+        "in   eax,dx"   \
+    __parm __routine    [__dx] \
+    __value             [__eax]
 
-#pragma aux in_d =                                              \
-0x66 0xed               /* in   eax,dx                          */      \
-        parm    routine [ dx ];
+extern void     out_b(word,byte);
+#pragma aux out_b = \
+        "out  dx,al"    \
+    __parm __routine    [__dx] [__al]
 
+extern void     out_w(word,word);
+#pragma aux out_w = \
+        "out  dx,ax"    \
+    __parm __routine    [__dx] [__ax]
 
-#pragma aux out_b =                                             \
-0xee                    /* out  dx,al                           */      \
-        parm    routine [ dx ] [ ax ];
+extern void     out_d(word,dword);
+#pragma aux out_d = \
+        "out  dx,eax"   \
+    __parm __routine    [__dx] [__eax]
 
-
-#pragma aux out_w =                                             \
-0x66 0xef               /* out  dx,ax                           */      \
-        parm    routine [ dx ] [ ax ];
-
-#pragma aux out_d =                                             \
-0xef                    /* out  dx,eax                          */      \
-        parm    routine [ dx ] [ eax ];
-
+extern void     _enable(void);
 #pragma aux _enable = \
-0xfb;                   /* sti */
+        "sti"
 
+extern void     _disable(void);
 #pragma aux _disable = \
-0xfa;                   /* cli */
-
-
-extern byte in_b(word);
-extern word  in_w(word);
-extern dword  in_d(word);
-extern void out_b(word,byte);
-extern void out_w(word,word);
-extern void out_d(word,dword);
-
-#define inp(x) in_b(x)
-#define outp(x,y) out_b(x,y)
-
-extern void _enable(void);
-extern void _disable(void);
+        "cli"

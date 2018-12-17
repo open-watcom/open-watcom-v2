@@ -239,15 +239,16 @@ trap_retval ReqMap_addr( void )
     return( sizeof( *ret ) );
 }
 
-#pragma aux GetLAR =  \
-    0x66 0x33 0xD2              /*  xor     edx,edx */  \
-    0x8B 0xD0                   /*  mov     dx,ax   */  \
-    0x66 0x0F 0x02 0xC2         /*  lar     eax,edx */  \
-    0x66 0x8B 0xD0              /*  mov     edx,eax */  \
-    0x66 0xC1 0xEA 0x10         /*  shr     edx,16  */  \
-    parm caller [ax] value [dx ax];
-
 extern unsigned long GetLAR( unsigned );
+#pragma aux GetLAR = \
+        ".386p"         \
+        "xor  edx,edx"  \
+        "mov  dx,ax"    \
+        "lar  eax,edx"  \
+        "mov  edx,eax"  \
+        "shr  edx,16"   \
+    __parm __caller [__ax] \
+    __value         [__dx __ax]
 
 trap_retval ReqMachine_data( void )
 {
@@ -711,11 +712,11 @@ static bool SetDebugRegs( void )
                 break;
             wp->handle = rc;
             if( wp->dregs == 2 ) {
-                rc = DPMISetWatch( wp->linear+4, wp->len, DPMI_WATCH_WRITE );
+                rc = DPMISetWatch( wp->linear + 4, wp->len, DPMI_WATCH_WRITE );
                 _DBG_Write( "OK 2 = " );
                 _DBG_Write16( rc >= 0 );
                 _DBG_NewLine();
-                if( rc <= 0 )
+                if( rc < 0 )
                     break;
                 wp->handle2 = rc;
             }
@@ -735,7 +736,7 @@ static bool SetDebugRegs( void )
             dr7 |= SetDRn( dr, wp->linear, DRLen( wp->len ) | DR7_BWR );
             ++dr;
             if( wp->dregs == 2 ) {
-                dr7 |= SetDRn( dr, wp->linear+4, DRLen( wp->len ) | DR7_BWR );
+                dr7 |= SetDRn( dr, wp->linear + 4, DRLen( wp->len ) | DR7_BWR );
                 ++dr;
             }
         }

@@ -38,11 +38,6 @@
 #include "di386cli.h"
 
 
-void PushAll( void );
-void PopAll( void );
-#pragma aux PushAll = 0x60;
-#pragma aux PopAll = 0x61 modify[dx ax];
-
 /*
  * ReadMem - read some memory, using toolhelp or wdebug.386
  */
