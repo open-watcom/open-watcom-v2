@@ -49,3 +49,8 @@ _WCRTLINK void intr( int no, union REGPACK *r )
 {
     _clib_intr( no, r );
 }
+
+_WCRTLINK void intrf( int no, union REGPACK *r )
+{
+    _clib_intrf( no, r );
+}

@@ -120,6 +120,11 @@ void _fintr( int intno, union REGPACK __far *regs )
     _DoINTR( intno, regs, 0 );
 }
 
+void _fintrf( int intno, union REGPACK __far *regs )
+{
+    _DoINTR( intno, regs, regs->w.flags );
+}
+
 int _fintdos( union REGS __far *inregs, union REGS __far *outregs )
 {
     int             status;
