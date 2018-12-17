@@ -53,7 +53,7 @@ extern int _fast_strncmp( const char _WCFAR *, const char _WCFAR *, size_t );
     "L1: pop  ds"       \
     __parm __caller     [__si __ax] [__es __di] [__cx] \
     __value             [__cx] \
-    __modify __exact    [__dx __ax __di __cx __si]
+    __modify __exact    [__ax __cx __dx __di __si]
 
 #endif
 

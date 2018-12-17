@@ -193,7 +193,7 @@ _WCRTLINK void *memmove( void *toStart, const void *fromStart, size_t len )
     if( from == to ) {
         return( to );
     }
-    if( from < to  &&  from + len > to ) {  /* if buffers are overlapped*/
+    if( from < to  &&  from + len > to ) {  /* if buffers are overlapped */
 #if defined( __HUGE__ ) || !defined( HAVE_MOVEFWBW )
         to += len;
         from += len;

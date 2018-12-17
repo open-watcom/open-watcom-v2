@@ -81,6 +81,7 @@ extern char *_fast_strncat( char _WCFAR *, const char *, size_t );
     __parm __caller     [__es __di] [__cx __si] [__dx] \
     __value             [__es __ax] \
     __modify __exact    [__ax __cx __si __di]
+
 #endif
 
 #endif

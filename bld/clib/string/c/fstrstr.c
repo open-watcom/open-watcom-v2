@@ -32,14 +32,14 @@
 #include "variety.h"
 #include <stddef.h>
 #include <string.h>
+#ifdef _M_I86
+    #include <i86.h>
+#endif
 
 
 #ifdef _M_I86
-#include <i86.h>
 
-#define _ZFLAG          (INTR_ZF<<8)
-
-extern int  i86_memeq( const char _WCFAR *, const char _WCFAR *, int );
+extern unsigned char i86_memeq( const char _WCFAR *, const char _WCFAR *, int );
 #pragma aux i86_memeq = \
         "push ds"       \
         "xchg si,ax"    \
@@ -48,10 +48,10 @@ extern int  i86_memeq( const char _WCFAR *, const char _WCFAR *, int );
         "lahf"          \
         "pop  ds"       \
     __parm __caller     [__si __ax] [__es __di] [__cx] \
-    __value             [__ax] \
-    __modify __exact    [__si __di __cx __ax]
+    __value             [__ah] \
+    __modify __exact    [__ax __cx __di __si]
 
-#define memeq( p1, p2, len )    ( i86_memeq((p1),(p2),(len)) & _ZFLAG )
+#define memeq( p1, p2, len )    ( (i86_memeq((p1),(p2),(len)) & INTR_ZF) != 0 )
 
 #else
 

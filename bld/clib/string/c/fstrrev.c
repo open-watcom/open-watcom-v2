@@ -91,6 +91,7 @@ extern void fast_rev( char _WCFAR * );
     "L3: cld"           \
         "pop  ds"       \
     __parm __caller [__cx __di] \
+    __value         \
     __modify        [__si __cx __ax __di __es]
 
 #endif

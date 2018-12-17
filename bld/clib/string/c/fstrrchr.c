@@ -54,6 +54,7 @@ extern char _WCFAR *_fast_strrchr( const char _WCFAR *, char );
     __parm __caller     [__es __di] [__bl] \
     __value             [__es __cx] \
     __modify __exact    [__es __cx __ax __di]
+
 #endif
 
 /* Locate the last occurrence of c in the string pointed to by s.

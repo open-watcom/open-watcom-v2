@@ -40,21 +40,19 @@
 
 #if defined( _M_I86 ) && !defined( __WIDECHAR__ )
 
-#define _ZFLAG          (INTR_ZF<<8)
-
 #if defined(__SMALL_DATA__)
 
-extern int  i86_memeq( const char *, const char _WCFAR *, int );
+extern unsigned char    i86_memeq( const char *, const char _WCFAR *, int );
 #pragma aux i86_memeq = \
         "repe cmpsb"    \
         "lahf"          \
     __parm __caller     [__si] [__es __di] [__cx] \
-    __value             [__ax] \
+    __value             [__ah] \
     __modify __exact    [__si __di __cx __ax]
 
 #else
 
-extern int  i86_memeq( const char *, const char _WCFAR *, int );
+extern unsigned char    i86_memeq( const char *, const char _WCFAR *, int );
 #pragma aux i86_memeq = \
         "push ds"       \
         "mov  ds,dx"    \
@@ -62,12 +60,12 @@ extern int  i86_memeq( const char *, const char _WCFAR *, int );
         "lahf"          \
         "pop  ds"       \
     __parm __caller     [__dx __si] [__es __di] [__cx] \
-    __value             [__ax] \
+    __value             [__ah] \
     __modify __exact    [__si __di __cx __ax]
 
 #endif
 
-#define memeq( p1, p2, len )    ( i86_memeq((p1),(p2),(len)) & _ZFLAG )
+#define memeq( p1, p2, len )    ( (i86_memeq((p1),(p2),(len)) & INTR_ZF) != 0 )
 
 #else
 

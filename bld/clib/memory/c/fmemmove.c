@@ -175,7 +175,7 @@ _WCRTLINK void _WCFAR *_fmemmove( void _WCFAR *t, const void _WCFAR *f, size_t l
             len--;
         }
 #else
-        movebwd(( to + len ) - 1, ( from + len ) - 1, len );
+        movebwd( ( to + len ) - 1, ( from + len ) - 1, len );
 #endif
     } else {
         movefwd( to, from, len );

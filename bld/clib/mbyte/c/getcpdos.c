@@ -121,9 +121,9 @@ extern unsigned short _dos_get_code_page( void );
         "xor ax,ax"     \
         "mov ds,ax"     \
         "mov ax,6501h"  /* get international info */ \
-        "mov bx,0ffffh" /* global code page */ \
+        "mov bx,-1"     /* global code page */ \
         "mov cx,0007h"  /* buffer size */ \
-        "mov dx,0ffffh" /* current country */ \
+        "mov dx,-1"     /* current country */ \
         "lea di,[bp-8]" /* buffer offset */ \
         "push ss"       \
         "pop es"        /* buffer segment */ \

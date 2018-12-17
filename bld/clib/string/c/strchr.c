@@ -66,9 +66,9 @@ extern  char * _scan1();
     "L3: dec  si"       \
     "L4: dec  si"       \
     "L5:"               \
-    parm caller [si] [dl] \
-    value [si] \
-    modify [ax si]
+    __parm __caller [__si] [__dl] \
+    __value         [__si] \
+    __modify        [__ax __si]
 #else
 #pragma aux _scan1 = \
         "push ds"       \
@@ -98,9 +98,9 @@ extern  char * _scan1();
     "L3: dec  si"       \
     "L4: dec  si"       \
     "L5: pop  ds"       \
-    parm caller [cx si] [bl] \
-    value [dx si] \
-    modify [ax dx si]
+    __parm __caller [__cx __si] [__bl] \
+    __value         [__dx __si] \
+    __modify        [__ax __dx __si]
 #endif
 #endif
 

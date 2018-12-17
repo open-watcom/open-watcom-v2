@@ -37,21 +37,21 @@
 
 extern char _WCFAR *fast_strncpy( char _WCFAR *, const char _WCFAR *, size_t );
 #pragma aux fast_strncpy = \
-        "push ds"       \
-        "xchg si,ax"    \
-        "mov  ds,ax"    \
-        "push di"       \
-    "L1: lodsb"         \
-        "stosb"         \
-        "test al,al"    \
-        "loopne L1"     \
-        "xor  ax,ax"    \
-        "shr  cx,1"     \
-        "rep stosw"     \
-        "adc  cx,cx"    \
-        "rep stosb"     \
-        "pop  ax"       \
-        "pop  ds"       \
+        "push ds"           \
+        "xchg si,ax"        \
+        "mov  ds,ax"        \
+        "push di"           \
+    "L1: lodsb"             \
+        "stosb"             \
+        "test al,al"        \
+        "loopne short L1"   \
+        "xor  ax,ax"        \
+        "shr  cx,1"         \
+        "rep stosw"         \
+        "adc  cx,cx"        \
+        "rep stosb"         \
+        "pop  ax"           \
+        "pop  ds"           \
     __parm __caller     [__es __di] [__si __ax] [__cx] \
     __value             [__es __ax] \
     __modify __exact    [__ax __cx __si __di]

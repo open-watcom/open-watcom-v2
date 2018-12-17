@@ -48,7 +48,7 @@ extern char _WCFAR *_fast_strncat( char _WCFAR *, const char _WCFAR *, size_t );
     "L1: lodsb"             \
         "stosb"             \
         "test al,al"        \
-        "loopne L1"         \
+        "loopne short L1"   \
         "je short L2"       \
         "mov  es:[di],ah"   \
     "L2: pop  ax"           \
@@ -56,6 +56,7 @@ extern char _WCFAR *_fast_strncat( char _WCFAR *, const char _WCFAR *, size_t );
     __parm __caller     [__es __di] [__si __ax] [__dx] \
     __value             [__es __ax] \
     __modify __exact    [__ax __cx __si __di]
+
 #endif
 
 /* concatenate t to the end of dst */
