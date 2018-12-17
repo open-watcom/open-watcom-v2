@@ -82,7 +82,7 @@ void WindowAuxUpdate( window_id wid, int type, int data )
     w = WINDOW_FROM_ID( wid );
 
     switch( type ) {
-    case WIND_INFO_MIN_SLOT: w->min_slot = (char) data; break;
+    case WIND_INFO_MIN_SLOT: w->min_slot = (char)data; break;
     case WIND_INFO_TEXT_COLOR: w->text_color = data; break;
     case WIND_INFO_BACKGROUND_COLOR: w->background_color = data; break;
     case WIND_INFO_BORDER_COLOR1: w->border_color1 = data; break;

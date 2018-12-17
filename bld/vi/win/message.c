@@ -66,7 +66,7 @@ bool MessageBarInit( void )
     wc.hInstance = InstanceHandle;
     wc.hIcon = LoadIcon( (HINSTANCE)NULLHANDLE, IDI_APPLICATION );
     wc.hCursor = LoadCursor( (HINSTANCE)NULLHANDLE, IDC_ARROW );
-    wc.hbrBackground = (HBRUSH) COLOR_APPWORKSPACE;
+    wc.hbrBackground = (HBRUSH)COLOR_APPWORKSPACE;
     wc.lpszMenuName = NULL;
     wc.lpszClassName = ClassName;
     return( RegisterClass( &wc ) != 0 );
