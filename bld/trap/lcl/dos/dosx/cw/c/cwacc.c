@@ -189,7 +189,7 @@ extern void *realloc( void *, unsigned );
 
 extern void free( void * );
 #pragma aux free = \
-    "mov   ax,0ff11h" \
+    "mov   ax,0ff15h" \
     "int   31h" \
     parm [esi];
 
