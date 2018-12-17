@@ -39,29 +39,29 @@
 
 extern int      DoDosCall( void *in, void *out );
 #pragma aux DoDosCall = \
-        "push ebp"      \
-        "push edx"      \
-        "mov eax,[edi]" \
-        "mov ebx,4[edi]"\
-        "mov ecx,8[edi]"\
-        "mov edx,12[edi]"\
-        "mov esi,16[edi]"\
-        "mov edi,20[edi]"\
-        "clc"           \
-        _INT_21         \
-        "mov ebp,edi"   \
-        "pop edi"       \
-        "mov [edi],eax" \
-        "mov 4[edi],ebx"\
-        "mov 8[edi],ecx"\
-        "mov 12[edi],edx"\
-        "mov 16[edi],esi"\
-        "mov 20[edi],ebp"\
-        "sbb eax,eax"   \
-        "pop ebp"       \
+        "push ebp"          \
+        "push edx"          \
+        "mov  eax,[edi]"    \
+        "mov  ebx,4[edi]"   \
+        "mov  ecx,8[edi]"   \
+        "mov  edx,12[edi]"  \
+        "mov  esi,16[edi]"  \
+        "mov  edi,20[edi]"  \
+        "clc"               \
+        _INT_21             \
+        "mov  ebp,edi"      \
+        "pop  edi"          \
+        "mov  [edi],eax"    \
+        "mov  4[edi],ebx"   \
+        "mov  8[edi],ecx"   \
+        "mov  12[edi],edx"  \
+        "mov  16[edi],esi"  \
+        "mov  20[edi],ebp"  \
+        "sbb  eax,eax"      \
+        "pop  ebp"          \
     __parm __caller [__edi] [__edx] \
     __value         [__eax] \
-    __modify        [__ebx __ecx __edx __esi __edi]
+    __modify        [__ebx __ecx __edx __edi __esi]
 
 #else
 #include <stddef.h>

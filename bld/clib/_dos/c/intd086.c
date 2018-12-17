@@ -34,63 +34,63 @@
 #include <dos.h>
 #include "dosret.h"
 
-extern  short           DoDosCall( void *in, void *out );
+extern short    DoDosCall( void *in, void *out );
 #if !defined(__BIG_DATA__)
 #pragma aux DoDosCall = \
-        0x06            /* push es      */ \
-        0x55            /* push bp      */ \
-        0x52            /* push dx      */ \
-        0x8b 0x05       /* mov ax, [di] */ \
-        0x8b 0x5d 0x02  /* mov bx,2[di] */ \
-        0x8b 0x4d 0x04  /* mov cx,4[di] */ \
-        0x8b 0x55 0x06  /* mov dx,6[di] */ \
-        0x8b 0x75 0x08  /* mov si,8[di] */ \
-        0x8b 0x7d 0x0a  /* mov di,10[di] */ \
-        0xf8            /* clc          */ \
-        0xcd 0x21       /* int 021h     */ \
-        0x89 0xfd       /* mov bp,di    */ \
-        0x5f            /* pop di       */ \
-        0x89 0x05       /* mov  [di],ax */ \
-        0x89 0x5d 0x02  /* mov 2[di],bx */ \
-        0x89 0x4d 0x04  /* mov 4[di],cx */ \
-        0x89 0x55 0x06  /* mov 6[di],dx */ \
-        0x89 0x75 0x08  /* mov 8[di],si */ \
-        0x89 0x6d 0x0a  /* mov 10[di],bp */ \
-        0x1b 0xc0       /* sbb ax,ax (sets ax!=0 if carry set) */ \
-        0x5d            /* pop bp */ \
-        0x07            /* pop es */ \
+        "push es"           \
+        "push bp"           \
+        "push dx"           \
+        "mov  ax,0[di]"     \
+        "mov  bx,2[di]"     \
+        "mov  cx,4[di]"     \
+        "mov  dx,6[di]"     \
+        "mov  si,8[di]"     \
+        "mov  di,10[di]"    \
+        "clc"               \
+        "int 21h"           \
+        "mov  bp,di"        \
+        "pop  di"           \
+        "mov  0[di],ax"     \
+        "mov  2[di],bx"     \
+        "mov  4[di],cx"     \
+        "mov  6[di],dx"     \
+        "mov  8[di],si"     \
+        "mov  10[di],bp"    \
+        "sbb  ax,ax"        \
+        "pop  bp"           \
+        "pop  es"           \
     __parm __caller [__di] [__dx] \
     __value         [__ax] \
-    __modify        [__bx __cx __dx __si __di]
+    __modify        [__bx __cx __dx __di __si]
 #else
 #pragma aux DoDosCall = \
-        0x1e           /* push ds */                            \
-        0x06           /* push es         */                    \
-        0x55           /* push bp         */                    \
-        0x51           /* push cx         */                    \
-        0x8e 0xda      /* mov ds,dx */                          \
-        0x89 0xdd      /* mov bp, bx      */                    \
-        0x8b 0x44 0x00 /* mov ax, 0[ si ] */                    \
-        0x8b 0x5c 0x02 /* mov bx, 2[ si ] */                    \
-        0x8b 0x4c 0x04 /* mov cx, 4[ si ] */                    \
-        0x8b 0x54 0x06 /* mov dx, 6[ si ] */                    \
-        0x8b 0x7c 0x0a /* mov di, a[ si ] */                    \
-        0x8b 0x74 0x08 /* mov si, 8[ si ] */                    \
-        0xf8           /* clc             */                    \
-        0xcd 0x21      /* int 021h        */                    \
-        0x87 0xf5      /* xchg si, bp     */                    \
-        0x1f           /* pop ds          */                    \
-        0x89 0x44 0x00 /* mov 0[ si ], ax */                    \
-        0x89 0x5c 0x02 /* mov 2[ si ], bx */                    \
-        0x89 0x4c 0x04 /* mov 4[ si ], cx */                    \
-        0x89 0x54 0x06 /* mov 6[ si ], dx */                    \
-        0x89 0x6c 0x08 /* mov 8[ si ], bp */                    \
-        0x89 0x7c 0x0a /* mov a[ si ], di */                    \
-        0x5d           /* pop bp          */                    \
-        0x07           /* pop es          */                    \
-        0x1f           /* pop ds */                             \
-        0x19 0xc0      /* sbb ax, ax      */                    \
-    __parm __caller [__si __dx] [__bx __cx] \
+        "push ds"           \
+        "push es"           \
+        "push bp"           \
+        "push cx"           \
+        "mov  ds,dx"        \
+        "mov  bp,bx"        \
+        "mov  ax,0[si]"     \
+        "mov  bx,2[si]"     \
+        "mov  cx,4[si]"     \
+        "mov  dx,6[si]"     \
+        "mov  di,10[si]"    \
+        "mov  si,8[si]"     \
+        "clc"               \
+        "int 21h"           \
+        "xchg si,bp"        \
+        "pop  ds"           \
+        "mov  0[si],ax"     \
+        "mov  2[si],bx"     \
+        "mov  4[si],cx"     \
+        "mov  6[si],dx"     \
+        "mov  8[si],bp"     \
+        "mov  10[si],di"    \
+        "pop  bp"           \
+        "pop  es"           \
+        "pop  ds"           \
+        "sbb  ax,ax"        \
+    __parm __caller [__dx __si] [__cx __bx] \
     __value         [__ax] \
     __modify        [__ax __dx __di]
 #endif

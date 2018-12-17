@@ -34,91 +34,91 @@
 #include <dos.h>
 #include "dosret.h"
 
-extern  short           DoDosxCall( void *in, void *out, void *sr );
+extern short    DoDosxCall( void *in, void *out, void *sr );
 #if !defined(__BIG_DATA__)
 #pragma aux DoDosxCall = \
-        0x55            /* push bp        -----. */\
-        0x06            /* push es        ----.| */\
-        0x53            /* push bx        ---.|| */\
-        0x1e            /* push ds        --.||| */\
-        0x52            /* push dx        -.|||| */\
-        0x8e 0x07       /* mov es,[bx]     ||||| */\
-        0x8b 0x6f 0x06  /* mov bp,6[bx]    ||||| */\
-        0x8b 0x05       /* mov ax, [di]    ||||| */\
-        0x8b 0x5d 0x02  /* mov bx,2[di]    ||||| */\
-        0x8b 0x4d 0x04  /* mov cx,4[di]    ||||| */\
-        0x8b 0x55 0x06  /* mov dx,6[di]    ||||| */\
-        0x8b 0x75 0x08  /* mov si,8[di]    ||||| */\
-        0x8b 0x7d 0x0a  /* mov di,10[di]   ||||| */\
-        0x8e 0xdd       /* mov ds,bp       ||||| */\
-        0xf8            /* clc             ||||| */\
-        0xcd 0x21       /* int 021h        ||||| */\
-        0x1e            /* push ds      --.||||| */\
-        0x57            /* push di      -.|||||| */\
-        0x89 0xe5       /* mov bp,sp     ||||||| */\
-        0x8b 0x7e 0x04  /* mov di,4[bp]  ||||||| */\
-        0x8e 0x5e 0x06  /* mov ds,6[bp]  ||||||| */\
-        0x89 0x05       /* mov  [di],ax  ||||||| */\
-        0x89 0x5d 0x02  /* mov 2[di],bx  ||||||| */\
-        0x89 0x4d 0x04  /* mov 4[di],cx  ||||||| */\
-        0x89 0x55 0x06  /* mov 6[di],dx  ||||||| */\
-        0x89 0x75 0x08  /* mov 8[di],si  ||||||| */\
-        0x8f 0x45 0x0a  /* pop 10[di]   -'|||||| */\
-        0x58            /* pop ax (ds)  --'||||| */\
-        0x5b            /* pop bx       ---'|||| */\
-        0x5b            /* pop bx       ----'||| */\
-        0x5b            /* pop bx       -----'|| */\
-        0x89 0x47 0x06  /* mov 6[bx],ax       || */\
-        0x8c 0x07       /* mov [bx],es        || */\
-        0x1b 0xc0       /* sbb ax,ax          || */\
-        0x07            /* pop es ------------'| */\
-        0x5d            /* pop bp -------------' */\
+        "push bp"        /* ----------. */ \
+        "push es"        /* ---------.| */ \
+        "push bx"        /* --------.|| */ \
+        "push ds"        /* -------.||| */ \
+        "push dx"        /* ------.|||| */ \
+        "mov  es,[bx]"   /*       ||||| */ \
+        "mov  bp,6[bx]"  /*       ||||| */ \
+        "mov  ax,0[di]"  /*       ||||| */ \
+        "mov  bx,2[di]"  /*       ||||| */ \
+        "mov  cx,4[di]"  /*       ||||| */ \
+        "mov  dx,6[di]"  /*       ||||| */ \
+        "mov  si,8[di]"  /*       ||||| */ \
+        "mov  di,10[di]" /*       ||||| */ \
+        "mov  ds,bp"     /*       ||||| */ \
+        "clc"            /*       ||||| */ \
+        "int 21h"        /*       ||||| */ \
+        "push ds"        /* -----.||||| */ \
+        "push di"        /* ----.|||||| */ \
+        "mov  bp,sp"     /*     ||||||| */ \
+        "mov  di,4[bp]"  /*     ||||||| */ \
+        "mov  ds,6[bp]"  /*     ||||||| */ \
+        "mov  0[di],ax"  /*     ||||||| */ \
+        "mov  2[di],bx"  /*     ||||||| */ \
+        "mov  4[di],cx"  /*     ||||||| */ \
+        "mov  6[di],dx"  /*     ||||||| */ \
+        "mov  8[di],si"  /*     ||||||| */ \
+        "pop  10[di]"    /* ----'|||||| */ \
+        "pop  ax"        /*(ds) -'||||| */ \
+        "pop  bx"        /* ------'|||| */ \
+        "pop  bx"        /* -------'||| */ \
+        "pop  bx"        /* --------'|| */ \
+        "mov  6[bx],ax"  /*          || */ \
+        "mov  [bx],es"   /*          || */ \
+        "sbb  ax,ax"     /*          || */ \
+        "pop  es"        /* ---------'| */ \
+        "pop  bp"        /* ----------' */ \
     __parm __caller [__di] [__dx] [__bx] \
     __value         [__ax] \
     __modify        [__bx __cx __dx __si __di]
 #else
 #pragma aux DoDosxCall = \
-        0x1e            /* push ds */                \
-        0x8e 0xdf       /* mov ds,di */              \
-        0x55            /* push bp         */        \
-        0x8e 0x07       /* mov es, [ bx ]  */        \
-        0x8b 0x6f 0x06  /* mov bp, 6[ bx ] */        \
-        0x52            /* push dx         */        \
-        0x50            /* push ax         */        \
-        0x1e            /* push ds         */        \
-        0x53            /* push bx         */        \
-        0x8e 0xd9       /* mov ds, cx      */        \
-        0x8b 0x04       /* mov ax, [ si ]  */        \
-        0x8b 0x5c 0x02  /* mov bx, 2[ si ] */        \
-        0x8b 0x4c 0x04  /* mov cx, 4[ si ] */        \
-        0x8b 0x54 0x06  /* mov dx, 6[ si ] */        \
-        0x8b 0x7c 0x0a  /* mov di, a[ si ] */        \
-        0x8b 0x74 0x08  /* mov si, 8[ si ] */        \
-        0x8e 0xdd       /* mov ds, bp      */        \
-        0xf8            /* clc             */        \
-        0xcd 0x21       /* int 21          */        \
-        0x1e            /* push ds         */        \
-        0x56            /* push si         */        \
-        0x89 0xe5       /* mov bp, sp      */        \
-        0x8b 0x76 0x08  /* mov si, 8[ bp ] */        \
-        0x8e 0x5e 0x0a  /* mov ds, a[ bp ] */        \
-        0x5d            /* pop bp          */        \
-        0x89 0x04       /* mov [ si ], ax  */        \
-        0x89 0x5c 0x02  /* mov 2[ si ], bx */        \
-        0x89 0x4c 0x04  /* mov 4[ si ], cx */        \
-        0x89 0x54 0x06  /* mov 6[ si ], dx */        \
-        0x89 0x6c 0x08  /* mov 8[ si ], bp */        \
-        0x89 0x7c 0x0a  /* mov a[ si ], di */        \
-        0x19 0xc0       /* sbb ax, ax      */        \
-        0x5b            /* pop bx          */        \
-        0x5e            /* pop si          */        \
-        0x1f            /* pop ds          */        \
-        0x8c 0x04       /* mov [ si ], es  */        \
-        0x89 0x5c 0x06  /* mov 6[ si ], bx */        \
-        0x5b            /* pop bx          */        \
-        0x5b            /* pop bx          */        \
-        0x5d            /* pop bp          */        \
-        0x1f            /* pop ds */                 \
+        "push ds"           \
+        "mov  ds,di"        \
+        "push bp"           \
+        "mov  es,0[bx]"     \
+        "mov  bp,6[bx]"     \
+        "push dx"           \
+        "push ax"           \
+        "push ds"           \
+        "push bx"           \
+        "mov  ds,cx"        \
+        "mov  ax,0[si]"     \
+        "mov  bx,2[si]"     \
+        "mov  cx,4[si]"     \
+        "mov  dx,6[si]"     \
+        "mov  di,10[si]"    \
+        "mov  si,8[si]"     \
+        "mov  ds,bp"        \
+        "clc"               \
+        "int 21h"           \
+        "push ds"           \
+        "push si"           \
+        "mov  bp,sp"        \
+        "mov  si,8[bp]"     \
+        "mov  ds,10[bp]"    \
+        "pop  bp"           \
+        "mov  0[si],ax"     \
+        "mov  2[si],bx"     \
+        "mov  4[si],cx"     \
+        "mov  6[si],dx"     \
+        "mov  8[si],bp"     \
+        "mov  10[si],di"    \
+        "sbb  ax,ax"        \
+        "pop  bx"           \
+        "pop  si"           \
+        "pop  ds"           \
+        "mov  0[si],es"     \
+        "mov  6[si],bx"     \
+        "pop  bx"           \
+        "pop  bx"           \
+        "pop  bp"           \
+        "pop  ds"           \
     __parm __caller [__si __cx] [__ax __dx] [__bx __di] \
     __value         [__ax] \
     __modify        [__di __es]

@@ -60,8 +60,8 @@ typedef struct RdosParam
 int RdosCarryToBool();
 
 #pragma aux RdosCarryToBool = \
-    CarryToBool \
-    value [eax];
+        CarryToBool \
+    __value [__eax]
 
 void RdosBlitBase();
 
