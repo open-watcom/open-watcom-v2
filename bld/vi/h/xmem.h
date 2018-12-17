@@ -75,17 +75,21 @@ typedef struct {
 /* extd. mem pragmas */
 extern long _XtdGetSize( void );
 #pragma aux _XtdGetSize = \
-        0xf8         /* clc  ; ibm cache bug */ \
-        0xb4 0x88    /* mov ah, 87h */ \
-        0xcd 0x15    /* int 15h */ \
-        0x19 0xd2    /* sbb dx,dx  ; makes result negative if carry set */ \
-    parm caller [] value [ax dx];
+        "clc"  /* ibm cache bug */ \
+        "mov ah,88h" \
+        "int 15h"    \
+        "sbb dx,dx"  \
+    __parm caller       [] \
+    __value             [__dx __ax] \
+    __modify __exact    [__ax __dx]
 
 extern void _XtdMoveMemory( descriptor __far *, unsigned short );
 #pragma aux _XtdMoveMemory = \
-        0xb4 0x87    /* mov ah, 87h */ \
-        0xcd 0x15    /* int 15h */ \
-    parm caller [es si] [cx];
+        "mov ah,87h" \
+        "int 15h"    \
+    __parm __caller     [__es __si] [__cx] \
+    __value             \
+    __modify __exact    [__ah]
 
 /*
  * EMS defs
@@ -127,35 +131,45 @@ typedef struct {
 /* ems pragmas */
 extern unsigned char _EMSStatus( void );
 #pragma aux _EMSStatus = \
-        0xb4 0x40   /* mov ah, 40h   ;EMS status */ \
-        0xcd 0x67   /* int 67h */ \
-    parm value [ah] modify exact [ax];
+        "mov ah,40h"    \
+        "int 67h"       \
+    __parm              [] \
+    __value             [__ah] \
+    __modify __exact    [__ah]
 
 extern unsigned char _EMSGetPageFrame( unsigned short __far * );
 #pragma aux _EMSGetPageFrame = \
-        0xb4 0x41   /* mov ah, 41h   ;EMS get page frame */ \
-        0xcd 0x67   /* int 67h */ \
-        0x89 0x1d   /* mov [di], bx */ \
-    parm caller [ds di] value [ah] modify exact [ax bx];
+        "mov ah,41h"    \
+        "int 67h"       \
+        "mov [di],bx"   \
+    __parm __caller     [__ds __di] \
+    __value             [__ah] \
+    __modify __exact    [__ah __bx]
 
 extern unsigned char _EMSAllocateMemory( unsigned short num_pages, unsigned char __far * );
 #pragma aux _EMSAllocateMemory = \
-        0xb4 0x43   /* mov ah, 43h   ;alloc EMS */ \
-        0xcd 0x67   /* int 67h */ \
-        0x88 0x15   /* mov [di], dl */  \
-    parm caller [bx] [ds di] value [ah] modify exact [ax bx dx];
+        "mov ah,43h"    \
+        "int 67h"       \
+        "mov [di],dl"   \
+    __parm __caller     [__bx] [__ds __di] \
+    __value             [__ah] \
+    __modify __exact    [__ah __bx __dx]
 
-extern unsigned char _EMSMapMemory( unsigned char, unsigned char, unsigned char );
+extern unsigned char _EMSMapMemory( unsigned short, unsigned short, unsigned char );
 #pragma aux _EMSMapMemory = \
-        0xb4 0x44   /* mov ah, 44h   ;EMS map memory */ \
-        0xcd 0x67   /* int 67h */ \
-    parm caller [dx] [bx] [al] value [ah] modify exact [ax bx dx];
+        "mov ah,44h"    \
+        "int 67h"       \
+    __parm __caller     [__dx] [__bx] [__al] \
+    __value             [__ah] \
+    __modify __exact    [__ah]
 
-extern unsigned char _EMSReleaseMemory( unsigned char );
+extern unsigned char _EMSReleaseMemory( unsigned short );
 #pragma aux _EMSReleaseMemory = \
-        0xb4 0x45   /* mov ah, 45h   ;EMS release */ \
-        0xcd 0x67   /* int 67h */ \
-    parm caller [dx] value [ah] modify exact [ax dx];
+        "mov ah,45h"    \
+        "int 67h"       \
+    __parm __caller     [__dx] \
+    __value             [__ah] \
+    __modify __exact    [__ah]
 
 /*
  * XMS definitions
@@ -214,100 +228,129 @@ typedef struct {
 
 extern unsigned char _XMSInstalled( void );
 #pragma aux _XMSInstalled = \
-        0xb4 0x43       /* mov ah, 43h */ \
-        0xb0 0x00       /* mov al, 0h */ \
-        0xcd 0x2f       /* int 2fh */  \
-    parm caller [] value [al] modify exact [ax];
+        "mov ah,43h"        \
+        "mov al,0"          \
+        "int 2fh"           \
+    __parm              [] \
+    __value             [__al] \
+    __modify __exact    [__ax]
 
 extern void *_XMSControl( void );
-#pragma aux _XMSControl = \
-        0xb4 0x43       /* mov ah, 43h */\
-        0xb0 0x10       /* mov al, 10h */\
-        0xcd 0x2f       /* int 2fh */  \
-    parm caller [] value [es bx] modify exact [ax bx es];
+#pragma aux _XMSControl =   \
+        "mov ah,43h"        \
+        "mov al,10h"        \
+        "int 2fh"           \
+    __parm              [] \
+    __value             [__es __bx] \
+    __modify __exact    [__ax __bx __es]
 
 extern unsigned short _XMSVersion( void * __far * );
-#pragma aux _XMSVersion = \
-        0xb4 0x00       /* mov ah, 0h */ \
-        0xff 0x1c       /* call far [si] */ \
-    parm caller [ds si] value [ax] modify exact [ax bx dx];
+#pragma aux _XMSVersion =   \
+        "mov ah,0"          \
+        "call far ptr [si]" \
+    __parm __caller     [__ds __si] \
+    __value             [__ax] \
+    __modify __exact    [__ax __bx __dx]
 
 extern unsigned short _XMSRequestHMA( void * __far *, unsigned short amt );
 #pragma aux _XMSRequestHMA = \
-        0xb4 0x01       /* mov ah, 1h */ \
-        0xff 0x1c       /* call far [si] */ \
-    parm caller [ds si] [dx] value [ax] modify exact [ax bx dx];
+        "mov ah,1"          \
+        "call far ptr [si]" \
+    __parm __caller     [__ds __si] [__dx] \
+    __value             [__ax] \
+    __modify __exact    [__ax __bl __dx]
 
 extern unsigned short _XMSReleaseHMA( void * __far * );
 #pragma aux _XMSReleaseHMA = \
-        0xb4 0x02       /* mov ah, 2h */\
-        0xff 0x1c       /* call far [si] */ \
-    parm caller [ds si] value [ax] modify exact [ax bx];
+        "mov ah,2"          \
+        "call far ptr [si]" \
+    __parm __caller     [__ds __si] \
+    __value             [__ax] \
+    __modify __exact    [__ax __bl]
 
 extern unsigned short _XMSQuerySize( void * __far * );
 #pragma aux _XMSQuerySize = \
-        0xb4 0x08       /* mov ah, 8h */\
-        0xff 0x1c       /* call far [si] */ \
-    parm caller [ds si] value [dx] modify exact [ax bx dx];
+        "mov ah,8"          \
+        "call far ptr [si]" \
+    __parm __caller     [__ds __si] \
+    __value             [__dx] \
+    __modify __exact    [__ax __bl __dx]
 
 extern unsigned short _XMSAllocate( void * __far *, unsigned short amt, unsigned short __far * );
-#pragma aux _XMSAllocate = \
-        0xb4 0x09       /* mov ah, 9h */\
-        0xff 0x1c       /* call far [si] */ \
-        0x26 0x89 0x15  /* mov es:[di], dx  */ \
-    parm caller [ds si] [dx] [es di] value [ax] modify exact [ax bx dx];
+#pragma aux _XMSAllocate =  \
+        "mov ah,9"          \
+        "call far ptr [si]" \
+        "mov es:[di],dx"    \
+    __parm __caller     [__ds __si] [__dx] [__es __di] \
+    __value             [__ax] \
+    __modify __exact    [__ax __bl __dx]
 
 extern unsigned short _XMSFree( void * __far *, unsigned short );
-#pragma aux _XMSFree = \
-        0xb4 0x0a       /* mov ah, 0ah */ \
-        0xff 0x1c       /* call far [si] */ \
-    parm caller [ds si] [dx] value [ax] modify exact [ax bx dx];
+#pragma aux _XMSFree =      \
+        "mov ah,0ah"        \
+        "call far ptr [si]" \
+    __parm __caller     [__ds __si] [__dx] \
+    __value             [__ax] \
+    __modify __exact    [__ax __bl]
 
 extern unsigned short _XMSReallocate( void * __far *, unsigned short, unsigned short );
 #pragma aux _XMSReallocate = \
-        0xb4 0x0f       /* mov ah, 0fh */ \
-        0xff 0x1c       /* call far [si] */ \
-    parm caller [ds si] [dx] [bx] value [ax] modify exact [ax bx dx];
+        "mov ah,0fh"        \
+        "call far ptr [si]" \
+    __parm __caller     [__ds __si] [__dx] [__bx] \
+    __value             [__ax] \
+    __modify __exact    [__ax __bl]
 
 
 extern unsigned short _XMSMove( void * __far *, xms_move_descriptor __far * );
-#pragma aux _XMSMove = \
-        0xb4 0x0b       /* mov ah, 0bh */ \
-        0x26 0xff 0x1d  /* call far es:[di] */ \
-    parm caller [es di] [ds si] value [ax] \
-    modify exact [ax bx dx si ds ];
+#pragma aux _XMSMove =      \
+        "mov ah,0bh"        \
+        "call far ptr es:[di]" \
+    __parm __caller     [__es __di] [__ds __si] \
+    __value             [__ax] \
+    __modify __exact    [__ax __bl]
 
 extern unsigned short _XMSEnableA20( void * __far * );
 #pragma aux _XMSEnableA20 = \
-        0xb4 0x05       /* mov ah, 05h */ \
-        0xff 0x1c       /* call far [si] */ \
-    parm caller [ds si] value [ax] modify exact [ax bx dx];
+        "mov ah,5"          \
+        "call far ptr [si]" \
+    __parm __caller     [__ds __si] \
+    __value             [__ax] \
+    __modify __exact    [__ax __bl]
 
 extern unsigned short _XMSDisableA20( void * __far * );
 #pragma aux _XMSDisableA20 = \
-        0xb4 0x06       /* mov ah, 06h */ \
-        0xff 0x1c       /* call far [si] */ \
-    parm caller [ds si] value [ax] modify exact [ax bx dx];
+        "mov ah,6"          \
+        "call far ptr [si]" \
+    __parm __caller     [__ds __si] \
+    __value             [__ax] \
+    __modify __exact    [__ax __bl]
 
 extern unsigned char _XMSOK( void * __far * );
-#pragma aux _XMSOK = \
-        0xb4 0x08       /* mov ah, 08h */ \
-        0xff 0x1c       /* call far [si] */ \
-    parm caller [ds si] value [bl] modify exact [ax bx dx];
+#pragma aux _XMSOK =        \
+        "mov ah,8"          \
+        "call far ptr [si]" \
+    __parm __caller     [__ds __si] \
+    __value             [__bl] \
+    __modify __exact    [__ax __bl __dx]
 
 extern unsigned short _XMSQueryHandles( void * __far *, unsigned short, unsigned short __far * );
 #pragma aux _XMSQueryHandles = \
-        0xb4 0x0e       /* mov ah, 0eh */ \
-        0xff 0x1c       /* call far [si] */ \
-        0x26 0x89 0x15  /* mov es:[di], dx */ \
-    parm caller [ds si] [dx] [es di] value [ax] modify exact [ax bx dx];
+        "mov ah,0eh"        \
+        "call far ptr [si]" \
+        "mov es:[di],dx"    \
+    __parm __caller     [__ds __si] [__dx] [__es __di] \
+    __value             [__ax] \
+    __modify __exact    [__ax __bx __dx]
 
 extern void _XMSCopyWords( void __far *, void __far *, unsigned short );
 #pragma aux _XMSCopyWords = \
-        0x1e            /* push ds */ \
-        0x8e 0xda       /* mov ds,dx */ \
-        0xf3 0xa5       /* rep movsw */ \
-        0x1f            /* pop ds */ \
-    parm caller [dx si] [es di] [cx] modify exact [si di cx];
+        "push ds"           \
+        "mov  ds,dx"        \
+        "rep  movsw"        \
+        "pop  ds"           \
+    __parm __caller     [__dx __si] [__es __di] [__cx] \
+    __value             \
+    __modify __exact    [__si __di __cx]
 
 #endif

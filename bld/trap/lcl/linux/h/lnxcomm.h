@@ -269,43 +269,46 @@ struct link_map {
 /* Direct I/O port access functions */
 
 void outpb(u_long port,u_char val);
-#pragma aux outpb =                 \
-    "out    dx,al"                  \
-    parm [edx] [eax]                \
-    modify exact [];
+#pragma aux outpb = \
+        "out  dx,al"    \
+    __parm              [__edx] [__al] \
+    __value             \
+    __modify __exact    []
 
 void outpw(u_long port,u_short val);
-#pragma aux outpw =                 \
-    "out    dx,ax"                  \
-    parm [edx] [eax]                \
-    modify exact [];
+#pragma aux outpw = \
+        "out  dx,ax"    \
+    __parm              [__edx] [__ax] \
+    __value             \
+    __modify __exact    []
 
 void outpd(u_long port,u_long val);
-#pragma aux outpd =                 \
-    "out    dx,eax"                 \
-    parm [edx] [eax]                \
-    modify exact [];
+#pragma aux outpd = \
+        "out  dx,eax"   \
+    __parm              [__edx] [__eax] \
+    __value             \
+    __modify __exact    []
 
 u_char inpb(u_long port);
-#pragma aux inpb =                  \
-    "in     al,dx"                  \
-    parm [edx]                      \
-    value [al]                      \
-    modify exact [al];
+#pragma aux inpb = \
+        "in   al,dx"    \
+    __parm              [__edx] \
+    __value             [__al] \
+    __modify __exact    [__al]
 
 u_short inpw(u_long port);
-#pragma aux inpw =                  \
-    "in     ax,dx"                  \
-    parm [edx]                      \
-    value [ax]                      \
-    modify exact [ax];
+#pragma aux inpw = \
+        "in   ax,dx"    \
+    __parm              [__edx] \
+    __value             [__ax] \
+    __modify __exact    [__ax]
 
 u_long inpd(u_long port);
-#pragma aux inpd =                  \
-    "in     eax,dx"                 \
-    parm [edx]                      \
-    value [eax]                     \
-    modify exact [eax];
+#pragma aux inpd = \
+        "in   eax,dx"   \
+    __parm              [__edx] \
+    __value             [__eax] \
+    __modify __exact    [__eax]
 
 #endif
 

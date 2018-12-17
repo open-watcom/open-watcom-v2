@@ -124,15 +124,16 @@ static intr_state   IntrState = IS_NONE;
 
 extern void DoRawSwitchToRM( unsigned, unsigned, unsigned );
 #pragma aux DoRawSwitchToRM = \
-    "push   ebp" \
-    "mov    edx,eax" \
-    "mov    ecx,eax" \
-    "mov    esi,eax" \
-    "lea    ebp,-8[esp]" \
-    "call   pword ptr [RawPMtoRMSwitchAddr]" \
-    "pop    ebp" \
-    parm caller [eax] [ebx] [edi] \
-    modify exact [eax ebx ecx edx esi edi gs];
+        "push   ebp" \
+        "mov    edx,eax" \
+        "mov    ecx,eax" \
+        "mov    esi,eax" \
+        "lea    ebp,-8[esp]" \
+        "call   pword ptr [RawPMtoRMSwitchAddr]" \
+        "pop    ebp" \
+    __parm __caller     [__eax] [__ebx] [__edi] \
+    __value             \
+    __modify __exact    [__eax __ebx __ecx __edx __esi __edi __gs]
 
 extern void     BackFromRealMode( void );
 
@@ -145,19 +146,21 @@ extern void     BackFromRealMode( void );
 */
 extern void DoIntSwitchToRM( void );
 #pragma aux DoIntSwitchToRM = \
-    "pushad" \
-    "xor    ebp,ebp" \
-    "xor    ebx,ebx" \
-    "xor    esi,esi" \
-    "xor    edi,edi" \
-    "xor    ecx,ecx" \
-    "xor    edx,edx" \
-    "xor    eax,eax" \
-    "mov    ah,6" \
-    "mov    cx,0xffff" \
-    "int    1ah" \
-    "popad" \
-    modify exact [];
+        "pushad" \
+        "xor    ebp,ebp" \
+        "xor    ebx,ebx" \
+        "xor    esi,esi" \
+        "xor    edi,edi" \
+        "xor    ecx,ecx" \
+        "xor    edx,edx" \
+        "xor    eax,eax" \
+        "mov    ah,6" \
+        "mov    cx,0xffff" \
+        "int    1ah" \
+        "popad" \
+    __parm              [] \
+    __value             \
+    __modify __exact    []
 
 #define P1616NULL   0L
 

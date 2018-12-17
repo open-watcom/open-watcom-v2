@@ -201,42 +201,47 @@ extern _trmem_who  _trmem_whoami( void );
 #ifdef __WATCOMC__
 #if defined( _M_I86SM ) || defined( _M_I86CM )
     #pragma aux _trmem_guess_who = \
-        "mov ax,[bp+2]" \
-        parm caller [] value [ax] \
-        modify exact [ax];
+            "mov ax,[bp+2]"     \
+        __parm              [] \
+        __value             [__ax] \
+        __modify __exact    [__ax]
 
     #pragma aux _trmem_whoami = \
-        "call near ptr L1" \
-    "L1: pop  ax" \
-        parm caller [] value [ax] \
-        modify exact [ax];
+            "call near ptr L1"  \
+        "L1: pop  ax"           \
+        __parm              [] \
+        __value             [__ax] \
+        __modify __exact    [__ax]
 
 #elif defined( _M_I86LM ) || defined( _M_I86MM ) || defined( _M_I86HM )
     #pragma aux _trmem_guess_who = \
-        "mov dx,[bp+4]" \
-        "mov ax,[bp+2]" \
-        parm caller [] value [dx ax] \
-        modify exact [dx ax];
+            "mov dx,[bp+4]"     \
+            "mov ax,[bp+2]"     \
+        __parm              [] \
+        __value             [__dx __ax] \
+        __modify __exact    [__ax __dx]
 
     #pragma aux _trmem_whoami = \
-        "call near ptr L1" \
-    "L1: pop  ax" \
-        "mov  dx,cs" \
-        parm caller [] value [dx ax] \
-        modify exact [dx ax];
+            "call near ptr L1"  \
+        "L1: pop  ax"           \
+            "mov  dx,cs"        \
+        __parm              [] \
+        __value             [__dx __ax] \
+        __modify __exact    [__ax __dx]
 
 #elif defined( _M_IX86 )
     #pragma aux _trmem_guess_who = \
-        "mov eax,[ebp+4]" \
-        parm caller [] value [eax] \
-        modify exact [eax];
+            "mov eax,[ebp+4]"   \
+        __parm              [] \
+        __value             [__eax] \
+        __modify __exact    [__eax]
 
     #pragma aux _trmem_whoami = \
-        "call near ptr L1" \
-    "L1: pop  eax" \
-        parm caller [] value [eax] \
-        modify exact [eax];
-
+            "call near ptr L1"  \
+        "L1: pop  eax"          \
+        __parm              [] \
+        __value             [__eax] \
+        __modify __exact    [__eax]
 #endif
 #endif
 
