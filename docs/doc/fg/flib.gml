@@ -157,30 +157,34 @@ included in the
 environment variable so that the compiler can locate the include file.
 .endnote
 .*
-.section Subroutine FINTR
+.section Subroutine FINTR and FINTRF
 .*
 .np
 .ix 'assembler subprograms' 'subroutine FINTR'
 .ix 'utility subprograms' 'subroutine FINTR'
 .ix 'FINTR subroutine'
+.ix 'assembler subprograms' 'subroutine FINTRF'
+.ix 'utility subprograms' 'subroutine FINTRF'
+.ix 'FINTRF subroutine'
 The subroutine
 .id FINTR
-allows the user to execute any software interrupt from a
+and
+.id FINTRF
+allow the user to execute any software interrupt from a
 FORTRAN 77 program.
 .remark
-This subroutine is only supported by the DOS and Windows libraries.
+These subroutines are only supported by the DOS and Windows libraries.
 .eremark
 .np
 The subroutine
 .id FINTR
-requires two arguments.
+and
+.id FINTRF
+require two arguments.
 .autopoint
 .point
-The first argument is an interrupt number.
-The subroutine
-.id FINTR
-will generate the software interrupt given by the first argument.
-The type of this argument must be
+The first argument is an interrupt number. These subroutines will generate 
+the software interrupt given by the this argument. The type must be
 .id INTEGER.
 .point
 The second argument is an
@@ -190,11 +194,15 @@ array of ten elements.
 .np
 When
 .id FINTR
-is called, the array contains the values to be assigned to the
+and
+.id FINTRF
+are called, the array contains the values to be assigned to the
 registers prior to issuing the software interrupt.
 When control is returned from
-.id FINTR,
-it contains the values of the registers after the software interrupt
+.id FINTR
+or
+.id FINTRF
+, it contains the values of the registers after the software interrupt
 has completed.
 The registers are mapped onto the array
 .id REGS
@@ -228,6 +236,15 @@ REGS(8)           DS
 REGS(9)           ES
 REGS(10)       flags
 .millust end
+Difference between
+.id FINTR
+and
+.id FINTRF
+is that 
+.id FINTR
+reset CPU flags before generate the software interrupt, but
+.id FINTRF
+set it from REGS(10) element.
 .np
 The file :FNAME.dos&hxt:eFNAME., located in the
 :FNAME.&pathnamup.&pc.src&pc.fortran&pc.dos:eFNAME.
