@@ -59,6 +59,7 @@ RP_F    equ     18
         xdefp   _DoINTR_
 
         defp    _DoINTR_
+        pushf                           ; save CPU flags
         push    bp                      ; save regs
         push    ds                      ; ...
         push    cx                      ; save CX:BX pointer to REGPACK
@@ -84,6 +85,7 @@ RP_F    equ     18
         add     sp,4                    ; restore regs
         pop     ds                      ; ...
         pop     bp                      ; ...
+        popf                            ; restore CPU flags
         ret
         endproc _DoINTR_
 
