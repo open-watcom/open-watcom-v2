@@ -102,7 +102,7 @@ USHORT DKbdCharIn( KBDCHAR PASPTR *k )
             r.h.ah = 0x01;
         }
         intr( 0x16, &r );
-        if( !( r.x.flags & INTR_ZF ) )
+        if( (r.x.flags & INTR_ZF) == 0 )
             break;
         intr( 0x28, &r );
     }
@@ -271,9 +271,9 @@ USHORT DDosOpen( char PASPTR *name, USHORT PASPTR *hdl )
     r.x.ds = FP_SEG( name );
     r.h.al = 0;
     r.h.ah = 0x3d;
-    r.x.flags &= ~INTR_CF;
     intr( 0x21, &r );
-    if( r.x.flags & INTR_CF ) return( -1 );
+    if( r.x.flags & INTR_CF )
+        return( -1 );
     *hdl = r.x.ax;
     return( 0 );
 }
@@ -302,7 +302,6 @@ USHORT DosRead( USHORT hdl, char __far *buff, USHORT len, USHORT PASPTR *readlen
     r.x.dx = FP_OFF( buff );
     r.x.cx = len;
     r.h.ah = 0x3F;
-    r.x.flags &= ~INTR_CF;
     intr( 0x21, &r );
     if( r.x.flags & INTR_CF ) {
         *readlen = 0;
@@ -320,7 +319,6 @@ USHORT DosWrite( USHORT hdl, char __far *buff, USHORT len, USHORT PASPTR *writel
     r.x.dx = FP_OFF( buff );
     r.x.cx = len;
     r.h.ah = 0x40;
-    r.x.flags &= ~INTR_CF;
     intr( 0x21, &r );
     if( r.x.flags & INTR_CF ) {
         *writelen = 0;
@@ -396,15 +394,13 @@ USHORT DDosFindFirst( char PASPTR *spec, int attr, DIRINFO PASPTR *buf )
     r.x.di = FP_OFF( buf );
     r.x.es = FP_SEG( buf );
     r.x.cx = attr;
-    r.x.flags &= ~INTR_CF;
     intr( 0x21, &r );
-    if( ( r.x.flags & INTR_CF ) != 0 ) {
+    if( r.x.flags & INTR_CF ) {
         setdta( FP_SEG( buf ), FP_OFF( buf ) );
         r.x.dx = FP_OFF( spec );
         r.x.ds = FP_SEG( spec );
         r.x.cx = attr;
         r.h.ah = 0x4E;
-        r.x.flags &= ~INTR_CF;
         intr( 0x21, &r );
         resetdta();
         findHandle = 0;
@@ -423,18 +419,16 @@ USHORT DDosFindNext( DIRINFO PASPTR *buf )
         r.x.bx = findHandle;
         r.x.di = FP_OFF( buf );
         r.x.es = FP_SEG( buf );
-        r.x.flags &= ~INTR_CF;
         intr( 0x21, &r );
         memmove( buf->achName, ((WIN32_FIND_DATA*)buf)->cFileName, strlen( (char const *)( ((WIN32_FIND_DATA*)buf)->cFileName + 1 ) ) );
         buf->attrFile = ((WIN32_FIND_DATA*)buf)->dwFileAttributes;
     } else {
         setdta( FP_SEG( buf ), FP_OFF( buf ) );
         r.h.ah = 0x4F;
-        r.x.flags &= ~INTR_CF;
         intr( 0x21, &r );
         resetdta();
     }
-    return( ( r.x.flags & INTR_CF ) != 0 );
+    return( (r.x.flags & INTR_CF) != 0 );
 }
 
 USHORT DDosQCurDisk( USHORT PASPTR *drive )
@@ -461,9 +455,10 @@ USHORT DosQCurDir( int drive_num, char PASPTR *buff, int PASPTR *size )
     r.h.dl = drive_num;
     r.x.si = FP_OFF( buff );
     r.x.ds = FP_SEG( buff );
-    r.x.flags &= ~INTR_CF;
     intr( 0x21, &r );
-    if( ( r.x.flags & INTR_CF ) == 0 ) {
+    if( r.x.flags & INTR_CF ) {
+        return( 1 );
+    } else {
         length = 0;
         while( *buff != '\0' ) {
             ++length;
@@ -471,8 +466,6 @@ USHORT DosQCurDir( int drive_num, char PASPTR *buff, int PASPTR *size )
         }
         *size = length;
         return( 0 );
-    } else {
-        return( 1 );
     }
 }
 
@@ -490,9 +483,8 @@ USHORT DDosChDir( char PASPTR *dir )
     r.x.ax = 0x713B;
     r.x.ds = FP_SEG( buff );
     r.x.dx = FP_OFF( buff );
-    r.x.flags &= ~INTR_CF;
     intr( 0x21, &r );
-    if( ( r.x.flags & INTR_CF ) != 0 ) {
+    if( r.x.flags & INTR_CF ) {
         r.h.ah = 0x3B;
         r.x.ds = FP_SEG( dir );
         r.x.dx = FP_OFF( dir );
