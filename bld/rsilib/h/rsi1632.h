@@ -92,45 +92,50 @@ typedef struct tsf32_struct {
 
 extern int reset_intflag( void );
 #pragma aux reset_intflag = \
-    "pushf" \
-    "cli" \
-    "pop    ax" \
-    "mov    al,ah" \
-    "shr    ax,1" \
-    "and    ax,1" \
-    value [ax];
+        "pushf"         \
+        "cli"           \
+        "pop    ax"     \
+        "mov    al,ah"  \
+        "shr    ax,1"   \
+        "and    ax,1"   \
+    __parm      [] \
+    __value     [__ax] \
+    __modify    []
 
 extern void set_intflag( int );
 #pragma aux set_intflag = \
-    "or     ax,ax" \
-    "jz short L1" \
-    "sti" \
-    "jmp short L2" \
-"L1: cli" \
-"L2:" \
-    parm [ax];
+        "or     ax,ax"  \
+        "jz short L1"   \
+        "sti"           \
+        "jmp short L2"  \
+    "L1: cli"           \
+    "L2:"               \
+    __parm      [__ax] \
+    __value     \
+    __modify    []
 
 extern int is_validselector( SELECTOR sel );
 #pragma aux is_validselector = \
-    ".386p" \
-    "or     ax,ax" \
-    "jz short L1" \
-    "lar    ax,ax" \
-    "mov    ax,0" \
-    "jne short L1" \
-    "inc    ax" \
-"L1:" \
-    parm [ax] \
-    value [ax];
+        ".386p"         \
+        "or     ax,ax"  \
+        "jz short L1"   \
+        "lar    ax,ax"  \
+        "mov    ax,0"   \
+        "jne short L1"  \
+        "inc    ax"     \
+    "L1:"               \
+    __parm      [__ax] \
+    __value     [__ax] \
+    __modify    []
 
 extern int rsi_mem_strategy( int );
 #pragma aux rsi_mem_strategy = \
-    "mov    ax,0ffffh" \
-    "xor    dh,dh" \
-    "int 21h" \
-    parm [dl] \
-    value [ax] \
-    modify [dh];
+        "mov    ax,-1" \
+        "xor    dh,dh" \
+        "int 21h" \
+    __parm      [__dl] \
+    __value     [__ax] \
+    __modify    [__dh]
 
 extern int          rsi_rm_get_vector( int, void FarPtr FarPtr );
 extern int          rsi_rm_set_vector( int, void FarPtr );

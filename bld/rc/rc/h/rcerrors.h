@@ -45,7 +45,7 @@ enum {
 extern void RcWarning( unsigned errornum, ... );
 extern void RcError(unsigned int ,... );
 #if defined(__WATCOMC__)
-#pragma aux RcFatalError aborts;
+#pragma aux RcFatalError __aborts
 #endif
 extern void RcFatalError( unsigned int, ... );
 extern void ErrorInitStatics( void );

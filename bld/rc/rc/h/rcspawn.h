@@ -33,7 +33,7 @@
 
 extern int     RCSpawn( void (*fn)( void ) );
 #if defined(__WATCOMC__)
-#pragma aux RCSuicide aborts;
+#pragma aux RCSuicide __aborts
 #endif
 extern void    RCSuicide( int );
 
