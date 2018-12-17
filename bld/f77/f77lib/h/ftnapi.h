@@ -47,6 +47,7 @@ extern intstar4     __fortran FGETCMD( string PGM *args );
 extern intstar4     __fortran FGETENV( string PGM *env_var, string PGM *value );
 extern intstar4     __fortran FILESIZE( intstar4 *unit );
 extern void         __fortran FINTR( intstar4 *int_no, intstar4 *regs );
+extern void         __fortran FINTRF( intstar4 *int_no, intstar4 *regs );
 extern intstar4     __fortran FLUSHUNIT( intstar4 *unit );
 extern intstar4     __fortran FNEXTRECL( intstar4 *unit );
 extern intstar4     __fortran FSPAWN( string PGM *cmd, string PGM *args );
