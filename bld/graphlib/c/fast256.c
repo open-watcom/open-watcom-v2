@@ -212,7 +212,7 @@ extern short PharlapRMI( void __far *parms, short bx, short cx, short di );
         "mov  ax,2511h" \
         "int 21h"       \
         "pop  ds"       \
-    __parm ___caller    [__fs __edx] [__ebx] [__ecx] [__edi] \
+    __parm __caller     [__fs __edx] [__ebx] [__ecx] [__edi] \
     __value             [__ax] \
     __modify            []
 
