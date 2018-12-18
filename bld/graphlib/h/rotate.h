@@ -35,16 +35,7 @@ extern short        _wrol( short, short );
 extern char         _rotr_b( char, char );
 extern char         _rotl_b( char, char );
 
-#if defined ( __386__ )
-    #pragma aux         _wror = 0x66 0xd3 0xc8  /* ror  ax,cl   */ \
-                                parm caller [ax] [cx] value [ax];
-    #pragma aux         _wrol = 0x66 0xd3 0xc0  /* rol  ax,cl   */ \
-                                parm caller [ax] [cx] value [ax];
-    #pragma aux         _rotr_b = 0x66 0xd2 0xc8 /* ror al,cl   */ \
-                                parm caller [al] [cl] value [al];
-    #pragma aux         _rotl_b = 0x66 0xd2 0xc0 /* rol al,cl   */ \
-                                parm caller [al] [cl] value [al];
-#else
+#if defined( _M_I86 )
     #pragma aux         _wror = 0xd3 0xc8       /* ror  ax,cl   */ \
                                 parm caller [ax] [cx] value [ax];
     #pragma aux         _wrol = 0xd3 0xc0       /* rol  ax,cl   */ \
@@ -52,5 +43,14 @@ extern char         _rotl_b( char, char );
     #pragma aux         _rotr_b = 0xd2 0xc8     /* ror  al,cl   */ \
                                 parm caller [al] [cl] value [al];
     #pragma aux         _rotl_b = 0xd2 0xc0     /* rol  al,cl   */ \
+                                parm caller [al] [cl] value [al];
+#else
+    #pragma aux         _wror = 0x66 0xd3 0xc8  /* ror  ax,cl   */ \
+                                parm caller [ax] [cx] value [ax];
+    #pragma aux         _wrol = 0x66 0xd3 0xc0  /* rol  ax,cl   */ \
+                                parm caller [ax] [cx] value [ax];
+    #pragma aux         _rotr_b = 0x66 0xd2 0xc8 /* ror al,cl   */ \
+                                parm caller [al] [cl] value [al];
+    #pragma aux         _rotl_b = 0x66 0xd2 0xc0 /* rol al,cl   */ \
                                 parm caller [al] [cl] value [al];
 #endif

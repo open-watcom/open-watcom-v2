@@ -38,10 +38,10 @@
 
 #if defined( VERSION2 )
   #define _PGCHART_ALT_ENABLED  0
-#elif defined( __386__ )
-  #define _PGCHART_ALT_ENABLED  0       // not necessary for 32-bit
-#else
+#elif defined( _M_I86 )
   #define _PGCHART_ALT_ENABLED  1
+#else
+  #define _PGCHART_ALT_ENABLED  0       // not necessary for 32-bit
 #endif
 
 #if _PGCHART_ALT_ENABLED

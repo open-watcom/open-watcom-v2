@@ -58,7 +58,7 @@ void _L1GetPic( short x1, short y1, short x2, short y2,
     short               srcy;
 #else
     short               line_len;       /* length of each line in bytes     */
-  #if !defined( __386__ )
+  #if defined( _M_I86 )
     unsigned short      new_off;
   #endif
     char                *tmp;
@@ -121,7 +121,7 @@ void _L1GetPic( short x1, short y1, short x2, short y2,
     setup = dev_ptr->setup;
     for( ; y1 <= y2; ++y1 ) {               /* copy screen image to buffer  */
         ( *setup )( x1, y1, 0 );
-  #if !defined( __386__ )
+  #if defined( _M_I86 )
         // check whether the entire row will fit in the buffer
         new_off = FP_OFF( pic ) + line_len - 1;
         if( new_off < FP_OFF( pic ) ) {
@@ -144,7 +144,7 @@ void _L1GetPic( short x1, short y1, short x2, short y2,
   #endif
             ( *copy )( pic, _Screen.mem, dx, _Screen.bit_pos, 0 );
             pic += line_len;
-  #if !defined( __386__ )
+  #if defined( _M_I86 )
         }
   #endif
     }

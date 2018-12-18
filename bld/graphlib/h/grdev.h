@@ -31,13 +31,7 @@
 
 /* Assembly code device functions calling convention declarations */
 
-#if defined ( __386__ )
-    #pragma aux PUTDOT_FUNC  "*" parm caller [es edi] [eax] [ecx];
-    #pragma aux GETDOT_FUNC  "*" parm caller [es edi] [ecx];
-    #pragma aux FILL_FUNC    "*" parm caller [es edi] [eax] [ebx] [ecx] [edx];
-    #pragma aux COPY_FUNC    "*" parm caller [es edi] [esi eax] [ecx] [edx] [ebx];
-    #pragma aux SCAN_FUNC    "*" parm caller [es edi] [eax] [ebx] [ecx] [edx] [esi] value [bx];
-#else
+#if defined( _M_I86 )
   #if defined( VERSION2 )
     #pragma aux PUTDOT_FUNC  "*" far parm caller [es di] [dx ax] [cx];
     #pragma aux GETDOT_FUNC  "*" far parm caller [es di] [cx];
@@ -52,6 +46,12 @@
     #pragma aux COPY_FUNC    "*" parm caller [es di] [si ax] [cx] [dx] [bx];
     #pragma aux SCAN_FUNC    "*" parm caller [es di] [ax] [bx] [cx] [dx] [si] value [bx];
   #endif
+#else
+    #pragma aux PUTDOT_FUNC  "*" parm caller [es edi] [eax] [ecx];
+    #pragma aux GETDOT_FUNC  "*" parm caller [es edi] [ecx];
+    #pragma aux FILL_FUNC    "*" parm caller [es edi] [eax] [ebx] [ecx] [edx];
+    #pragma aux COPY_FUNC    "*" parm caller [es edi] [esi eax] [ecx] [edx] [ebx];
+    #pragma aux SCAN_FUNC    "*" parm caller [es edi] [eax] [ebx] [ecx] [edx] [esi] value [bx];
 #endif
 
 typedef grcolor __near getdot_fn( char __far *, int );

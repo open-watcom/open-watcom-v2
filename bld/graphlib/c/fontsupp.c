@@ -120,18 +120,18 @@ static short            _YVecDir = 0;
     static float            _YVecScale = 1;    // stroke fonts
 #endif
 
-#if defined( __386__ )
-    #define MemCpy( dst, src, len )     memcpy( dst, src, len )
-    #define MemSet( s, c, len )         memset( s, c, len )
-    #define StrCpy( dst, src )          strcpy( dst, src )
-    #define StrCmp( dst, src )          strcmp( dst, src )
-    #define StrLen( s )                 strlen( s )
-#else
+#if defined( _M_I86 )
     #define MemCpy( dst, src, len )     _fmemcpy( dst, src, len )
     #define MemSet( s, c, len )         _fmemset( s, c, len )
     #define StrCpy( dst, src )          _fstrcpy( dst, src )
     #define StrCmp( dst, src )          _fstrcmp( dst, src )
     #define StrLen( s )                 _fstrlen( s )
+#else
+    #define MemCpy( dst, src, len )     memcpy( dst, src, len )
+    #define MemSet( s, c, len )         memset( s, c, len )
+    #define StrCpy( dst, src )          strcpy( dst, src )
+    #define StrCmp( dst, src )          strcmp( dst, src )
+    #define StrLen( s )                 strlen( s )
 #endif
 
 #if defined( __QNX__ )
@@ -139,7 +139,7 @@ static short            _YVecDir = 0;
   #include <unistd.h>
   #include <fcntl.h>
   #include <malloc.h>
-  #if !defined( __386__ )
+  #if defined( _M_I86 )
     #include <sys/slib16.h>
   #endif
   #define tiny_ret_t                    int
@@ -154,10 +154,10 @@ static short            _YVecDir = 0;
   #define TinyClose( f )                close( f )
 #else
   #include "tinyio.h"
-  #if defined( __386__ )
-    #define MyTinyFarRead( h, b, l )    TinyRead( h, b, l )
-  #else
+  #if defined( _M_I86 )
     #define MyTinyFarRead( h, b, l )    TinyFarRead( h, b, l )
+  #else
+    #define MyTinyFarRead( h, b, l )    TinyRead( h, b, l )
   #endif
   #define FontSeekSet( f, o )           TinySeek( f, o, TIO_SEEK_START )
 #endif
@@ -167,17 +167,10 @@ static short            _YVecDir = 0;
 
 static void _WCI86FAR *Alloc( unsigned short size )
 //=================================================
-
 {
-#if defined( __QNX__ )
-  #if defined( __386__ )
-    return( malloc( size ) );
-  #else
+#if defined( _M_I86 )
+  #if defined( __QNX__ )
     return( MK_FP( qnx_segment_alloc( size ), 0 ) );
-  #endif
-#else
-  #if defined( __386__ )
-    return( malloc( size ) );
   #else
     tiny_ret_t          rc;
 
@@ -188,26 +181,23 @@ static void _WCI86FAR *Alloc( unsigned short size )
         return( MK_FP( TINY_INFO( rc ), 0 ) );
     }
   #endif
+#else
+    return( malloc( size ) );
 #endif
 }
 
 
 static void Free( void _WCI86FAR *p )
 //==============================
-
 {
-#if defined( __QNX__ )
-  #if defined( __386__ )
-    free( p );
-  #else
+#if defined( _M_I86 )
+  #if defined( __QNX__ )
     qnx_segment_free( FP_SEG( p ) );
-  #endif
-#else
-  #if defined( __386__ )
-    free( p );
   #else
     TinyFreeBlock( FP_SEG( p ) );
   #endif
+#else
+    free( p );
 #endif
 }
 
@@ -246,7 +236,6 @@ static short seek_and_read( tiny_handle_t handle, long offset,
 
 static short addfont( long offset, tiny_handle_t handle, char *font_file )
 //========================================================================
-
 {
     tiny_ret_t          rc;
     WINDOWS_FONT        w_font;
@@ -306,7 +295,6 @@ static short addfont( long offset, tiny_handle_t handle, char *font_file )
 
 static short readfontfile( char *font_file )
 //==========================================
-
 {
     char                sig;
     long                ne_offset;
@@ -377,13 +365,11 @@ static short readfontfile( char *font_file )
 
 static short GlyphWidth( FONT_ENTRY _WCI86FAR *curr )
 //==============================================
-
 // The format of the glyph table is as follows
 //   For _BITMAP fonts, there are two words: width, offset
 //   For _STROKE fonts, there are two words: offset, width
 //   Note: V3.0 _BITMAP fonts have a long offset, and
 //         fixed width _STROKE fonts do not include the width.
-
 {
     short               width;
 
@@ -406,44 +392,43 @@ static short GlyphWidth( FONT_ENTRY _WCI86FAR *curr )
 
 _WCRTLINK short _WCI86FAR _CGRAPH _registerfonts( char _WCI86FAR *font_path )
 //=======================================================
-
 {
 #if defined( __QNX__ )
-    DIR _WCI86FAR            *dirp;
-    struct dirent _WCI86FAR  *direntp;
+    DIR _WCI86FAR           *dirp;
+    struct dirent _WCI86FAR *direntp;
 #else
-    tiny_ret_t          rc;
-    tiny_find_t         fileinfo;
-    char _WCI86FAR           *p;
+    tiny_ret_t              rc;
+    tiny_find_t             fileinfo;
+    char _WCI86FAR          *p;
 #endif
-    short               count;
-    FONT_ENTRY _WCI86FAR     *curr;
-    short               len;
-    char                curr_file[ _MAX_PATH ];
+    short                   count;
+    FONT_ENTRY _WCI86FAR    *curr;
+    short                   len;
+    char                    curr_file[ _MAX_PATH ];
 
     _ErrorStatus = _GROK;
-    _unregisterfonts();     // free previous fonts, if any
+    _unregisterfonts();         // free previous fonts, if any
     StrCpy( curr_file, font_path );     // copy into near buffer
 #if defined( __QNX__ )
-    #if !defined( __386__ )     // shared library returns far pointers
-      #define _dir _dir __far
-    #endif
+  #if defined( _M_I86 )       // shared library returns far pointers
+    #define _dir _dir __far
+  #endif
     dirp = opendir( curr_file );
-    #if !defined( __386__ )
-      #undef _dir
-    #endif
+  #if defined( _M_I86 )
+    #undef _dir
+  #endif
     if( dirp == NULL ) {
         _ErrorStatus = _GRFONTFILENOTFOUND;
         return( -1 );   // No such file
     } else {
         for( ;; ) {
-            #if !defined( __386__ )
-              #define dirent dirent __far
-            #endif
+  #if defined( _M_I86 )
+            #define dirent dirent __far
+  #endif
             direntp = readdir( dirp );
-            #if !defined( __386__ )
-              #undef dirent
-            #endif
+  #if defined( _M_I86 )
+            #undef dirent
+  #endif
             if( direntp == NULL ) {
                 break;
             }
@@ -498,7 +483,6 @@ Entry1( _REGISTERFONTS, _registerfonts ) // alternate entry-point
 
 _WCRTLINK void _WCI86FAR _CGRAPH _unregisterfonts( void )
 //========================================
-
 {
     FONT_ENTRY _WCI86FAR     *curr;
     FONT_ENTRY _WCI86FAR     *next;
@@ -522,7 +506,6 @@ Entry1( _UNREGISTERFONTS, _unregisterfonts ) // alternate entry-point
 
 static short loadfont( FONT_ENTRY _WCI86FAR *curr, short height, short width )
 //=======================================================================
-
 {
     tiny_ret_t          rc;
     tiny_handle_t       handle;
@@ -666,7 +649,6 @@ This function tells if the current font is a stock font.*/
 
 _WCRTLINK short _WCI86FAR _CGRAPH _registerfonts( char _WCI86FAR *font_path )
 //=======================================================
-
 {
 // We don't load the fonts for windows
     _ErrorStatus = _GROK;
@@ -679,7 +661,6 @@ Entry1( _REGISTERFONTS, _registerfonts ) // alternate entry-point
 
 _WCRTLINK void _WCI86FAR _CGRAPH _unregisterfonts( void )
 //========================================
-
 {
 }
 
@@ -690,7 +671,6 @@ Entry1( _UNREGISTERFONTS, _unregisterfonts ) // alternate entry-point
 
 static char _WCI86FAR *getnumber( char _WCI86FAR *str, short *num )
 //=======================================================
-
 {
     short               val;
 
@@ -724,7 +704,6 @@ static PFONTMETRICS getfonts( WPI_PRES dc, PLONG fnts, char* facename )
 
 _WCRTLINK short _WCI86FAR _CGRAPH _setfont( char _WCI86FAR *opt )
 //===========================================
-
 {
     short               height;
     short               width;
@@ -949,7 +928,6 @@ Entry1( _SETFONT, _setfont ) // alternate entry-point
 #if !defined( _DEFAULT_WINDOWS )
 static short _charwidth( short ch )
 //================================
-
 {
     short               width;
     short               glyph_width;
@@ -978,7 +956,6 @@ static short _charwidth( short ch )
 
 _WCRTLINK short _WCI86FAR _CGRAPH _getfontinfo( struct _fontinfo _WCI86FAR *font )
 //============================================================
-
 {
 #if defined( _DEFAULT_WINDOWS )
     WPI_PRES            dc;
@@ -1027,9 +1004,7 @@ Entry1( _GETFONTINFO, _getfontinfo ) // alternate entry-point
 
 _WCRTLINK short _WCI86FAR _CGRAPH _getgtextextent( char _WCI86FAR *text )
 //============================================================
-
 /*  Calculates the width of 'text' in pixels.  */
-
 {
     int                 width;
 #if defined( _DEFAULT_WINDOWS )
@@ -1057,7 +1032,6 @@ Entry1( _GETGTEXTEXTENT, _getgtextextent ) // alternate entry-point
 
 _WCRTLINK struct xycoord _WCI86FAR _CGRAPH _getgtextvector( void )
 //=================================================
-
 {
     struct xycoord      temp;
 
@@ -1071,7 +1045,6 @@ Entry1( _GETGTEXTVECTOR, _getgtextvector ) // alternate entry-point
 
 _WCRTLINK struct xycoord _WCI86FAR _CGRAPH _setgtextvector( short x, short y )
 //=============================================================
-
 {
     struct xycoord      prev;
 
@@ -1115,7 +1088,6 @@ static int YVec2Degs( short YDir )
 
 static void _outdot( short x, short y )
 //=====================================
-
 {
     gr_device _FARD     *dev_ptr;
     putdot_fn           *putdot;
@@ -1133,7 +1105,6 @@ static void _outdot( short x, short y )
 
 char _WCI86FAR *_getbitmap( short ch, short _WCI86FAR *width )
 //=================================================
-
 {
     long                offset;
     short _WCI86FAR     *glyph;
@@ -1153,7 +1124,6 @@ char _WCI86FAR *_getbitmap( short ch, short _WCI86FAR *width )
 
 static struct xycoord _outbitchar( short x0, short y0, short ch )
 //==============================================================
-
 {
     short               x, y;
     short               width;
@@ -1195,7 +1165,6 @@ static struct xycoord _outbitchar( short x0, short y0, short ch )
 
 static struct xycoord _outstrokechar( float x0, float y0, short ch )
 //=================================================================
-
 {
     signed char         x, y;
     float               x1, y1;
@@ -1252,7 +1221,6 @@ static struct xycoord _outstrokechar( float x0, float y0, short ch )
 
 _WCRTLINK void _WCI86FAR _CGRAPH _outgtext( char _WCI86FAR *str )
 //===========================================
-
 {
 #if defined( _DEFAULT_WINDOWS )
     WPI_PRES            dc;

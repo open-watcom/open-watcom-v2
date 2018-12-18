@@ -37,12 +37,12 @@
 #include "svgadef.h"
 
 
-//#if defined ( __386__ )
-//    #define ID_SEG      0x0034
-//    #define ID_OFF      0xFFFFE
-//#else
+//#if defined ( _M_I86 )
 //    #define ID_SEG      0xFFFF
 //    #define ID_OFF      0x000E
+//#else
+//    #define ID_SEG      0x0034
+//    #define ID_OFF      0xFFFFE
 //#endif
 //#define ID_PCJR         0x0FD
 

@@ -34,11 +34,12 @@
 
 #if defined( VERSION2 )
   #define _GRAPH_ALT_ENABLED    0
-#elif defined( __386__ )
-  #define _GRAPH_ALT_ENABLED    0       // not necessary for 32-bit
-#else
+#elif defined( _M_I86 )
   #define _GRAPH_ALT_ENABLED    0       // disabled (currently WATFOR-77 doesn't have
-#endif                                  // enough memory to load the graphics library)
+                                        // enough memory to load the graphics library)
+#else
+  #define _GRAPH_ALT_ENABLED    0       // not necessary for 32-bit
+#endif
 
 #if _GRAPH_ALT_ENABLED
   #define Entry1( f1, f2 )      void f1( void ) { JMP ## f2(); }

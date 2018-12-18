@@ -82,7 +82,7 @@ void _RemapNum( long _WCI86FAR *colours, short num )
             return;
         }
     }
-#endif    
+#endif
     for( i = 0; i < num; ++i ) {
         PutPalette( i, colours[ i ] );
     }
@@ -173,7 +173,17 @@ static char             EGA_Intensity[] = {
 
 
 extern long             GetVGAPalette( short func, short reg );
-#if defined ( __386__ )
+#if defined( _M_I86 )
+    #pragma aux GetVGAPalette =         \
+        "push    bp"                    \
+        "int     10h"                   \
+        "pop     bp"                    \
+        "mov     ah,ch" /* (green) */   \
+        "mov     al,dh" /* (red)   */   \
+        "mov     dl,cl" /* (blue)  */   \
+        "xor     dh,dh"                                 \
+        parm caller [ax] [bx] value [ax dx] modify [cx];
+#else
     #pragma aux GetVGAPalette = \
         "push    ebp"       \
         "int     10H"       \
@@ -183,16 +193,6 @@ extern long             GetVGAPalette( short func, short reg );
         "shl     eax,08H"   \
         "mov     al,dh"     \
         parm caller [eax] [ebx] value [eax] modify [ecx edx];
-#else
-    #pragma aux GetVGAPalette =         \
-        "push    bp"                    \
-        "int     10h"                   \
-        "pop     bp"                    \
-        "mov     ah,ch" /* (green) */   \
-        "mov     al,dh" /* (red)   */   \
-        "mov     dl,cl" /* (blue)  */   \
-        "xor     dh,dh" 				\
-        parm caller [ax] [bx] value [ax dx] modify [cx];
 #endif
 
 

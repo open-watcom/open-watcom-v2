@@ -33,10 +33,10 @@
 #include "gdefn.h"
 
 
-#if defined( __386__ )
-    #define Copy( dst, src, len )   memcpy( dst, src, len )
-#else
+#if defined( _M_I86 )
     #define Copy( dst, src, len )   _fmemcpy( dst, src, len )
+#else
+    #define Copy( dst, src, len )   memcpy( dst, src, len )
 #endif
 
 

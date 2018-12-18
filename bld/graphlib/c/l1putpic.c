@@ -56,7 +56,7 @@ void _L1PutPic( short px, short py, short line_len,
     short               skip_down;      /* # of bytes before viewport       */
     short               bit_offset;     /* starting bit in buffer           */
     short               plane_len;      /* width of each plane in bytes     */
-#if !defined( __386__ )
+#if defined( _M_I86 )
     short               t;
     unsigned short      new_off;
 #endif
@@ -103,7 +103,7 @@ void _L1PutPic( short px, short py, short line_len,
     setup = dev_ptr->setup;
     for( ; y1 <= y2; ++y1 ) {               /* copy image buffer to screen  */
         ( *setup )( x1, y1, 0 );
-#if !defined( __386__ )
+#if defined( _M_I86 )
         // check whether the entire row will fit in the buffer
         new_off = FP_OFF( pic ) + line_len - 1;
         if( new_off < FP_OFF( pic ) ) {
@@ -126,7 +126,7 @@ void _L1PutPic( short px, short py, short line_len,
 #endif
             ( *copy )( _Screen.mem, pic, dx, ( _Screen.bit_pos << 8 ) + bit_offset, plane_len );
             pic += line_len;
-#if !defined( __386__ )
+#if defined( _M_I86 )
         }
 #endif
     }

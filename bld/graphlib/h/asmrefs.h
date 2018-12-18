@@ -259,7 +259,7 @@
 #pragma aux _coltbl "_*";
 #endif
 
-#if defined( _SUPERVGA ) && defined( VERSION2 )
+#if defined( VERSION2 ) && defined( _SUPERVGA )
 #pragma aux _VGABytesPerPixel "_*";
 #endif
 

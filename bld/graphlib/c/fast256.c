@@ -43,23 +43,22 @@ struct rgb {
 };
 
 
-#if defined( __QNX__ ) || !defined( __386__ )
+#if defined( _M_I86 ) || defined( __QNX__ )
 
-
-#if defined( __386__ )
-extern void             VideoIntDAC( short, short, short, void __far * );
-#pragma aux             VideoIntDAC = \
-                        "push    bp   ", \
-                        "int     10h  ", \
-                        "pop     bp   ", \
-                        parm caller [ax] [bx] [cx] [es edx];
-#else
+#if defined( _M_I86 )
 extern void             VideoIntDAC( short, short, short, void __far * );
 #pragma aux             VideoIntDAC = \
                         "push    bp   ", \
                         "int     10h  ", \
                         "pop     bp   ", \
                         parm caller [ax] [bx] [cx] [es dx];
+#else
+extern void             VideoIntDAC( short, short, short, void __far * );
+#pragma aux             VideoIntDAC = \
+                        "push    bp   ", \
+                        "int     10h  ", \
+                        "pop     bp   ", \
+                        parm caller [ax] [bx] [cx] [es edx];
 #endif
 
 

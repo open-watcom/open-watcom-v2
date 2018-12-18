@@ -31,7 +31,7 @@
 
 #include "gdefn.h"
 #include "gbios.h"
-#if defined( __386__ )
+#if !defined( _M_I86 )
 #include "extender.h"
 #include "rmalloc.h"
 #endif
@@ -55,7 +55,7 @@
 #include <sys/mman.h>
 #include <sys/seginfo.h>
 #include <sys/types.h>
-#if !defined( __386__ )
+#if defined( _M_I86 )
   #include <sys/slib16.h>
 #endif
 
@@ -174,7 +174,7 @@ void _InitSegments( void )
 #else           // normal 16 and 32 bit DOS
 
 
-#if !defined( __386__ )
+#if defined( _M_I86 )
 extern short  os_version( void );
 #pragma aux   os_version = \
         "push bx"       \
@@ -199,7 +199,7 @@ void _InitSegments( void )
     dbcs_pair __far     *s;
 
     _StackSeg = FP_SEG( &seg );         // point to stack segment
-#if defined( __386__ )
+#if !defined( _M_I86 )
     if( _IsRational() || _IsCodeBuilder() ) {
         seg = FP_SEG( &_BiosSeg );
     } else if( _IsFlashTek() ) {        // FlashTek
@@ -223,7 +223,7 @@ void _InitSegments( void )
 #endif
     // check for DBCS
     _IsDBCS = FALSE;
-#if !defined( __386__ )
+#if defined( _M_I86 )
     os_major = (unsigned char) os_version();
 #else
     os_major = _RMInterrupt( 0x21, 0x3000, 0x0, 0x0, 0x0, 0x0, 0x0 );

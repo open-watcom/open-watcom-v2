@@ -38,20 +38,21 @@
 #include "pgchart.gh"
 #include "pgstubs.h"
 
-#if defined ( __386__ )
-    #define _WCI86FAR
-    #define _HUGE
-    #define StringLen   strlen
-    #define StringCopy  strcpy
-    #define MemorySet   memset
-    #define MemoryCopy  memcpy
-#else
+
+#if defined( _M_I86 )
     #define _WCI86FAR    __far
     #define _HUGE   __huge
     #define StringLen   _fstrlen
     #define StringCopy  _fstrcpy
     #define MemorySet   _fmemset
     #define MemoryCopy  _fmemcpy
+#else
+    #define _WCI86FAR
+    #define _HUGE
+    #define StringLen   strlen
+    #define StringCopy  strcpy
+    #define MemorySet   memset
+    #define MemoryCopy  memcpy
 #endif
 
 #include "fpi.h"

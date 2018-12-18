@@ -111,25 +111,13 @@ vgapage_fn              _FARC *_SetVGAPage;         // function to set SVGA page
 short                   _VGAStride;                 // SuperVGA mode stride
 #endif
 
-#if defined( _SUPERVGA ) && defined( VERSION2 )
+#if defined( VERSION2 ) && defined( _SUPERVGA )
 unsigned short          _VGABytesPerPixel;          // SuperVGA num bytes per pixel
 #endif
 
 // segments of screen memory and BIOS and ROM BIOS data area
 
-#if defined ( __386__ )
-    unsigned short      _BiosSeg = 0x0034;          // seg of BIOS data area
-    unsigned short      _MonoSeg = 0x001C;          // seg of MONO screen
-    unsigned short      _CgaSeg  = 0x001C;          // seg of CGA screen
-    unsigned short      _EgaSeg  = 0x001C;          // seg of EGA/VGA screen
-    unsigned short      _RomSeg  = 0x0034;          // seg of ROM BIOS area
-    unsigned int        _BiosOff = 0x00000400;      // off of BIOS data area
-    unsigned int        _MonoOff = 0x00000000;      // off of MONO screen
-    unsigned int        _CgaOff  = 0x00000000;      // off of CGA screen
-    unsigned int        _EgaOff  = 0x00000000;      // off of EGA/VGA screen
-    unsigned int        _RomOff  = 0x000C0000;      // off of ROM BIOS area
-    unsigned short      _StackSeg;                  // seg of stack
-#else
+#if defined( _M_I86 )
     unsigned short      _BiosSeg = 0x0040;          // seg of BIOS data area
     unsigned short      _MonoSeg = 0xB000;          // seg of MONO screen
     unsigned short      _CgaSeg  = 0xB800;          // seg of CGA screen
@@ -140,6 +128,18 @@ unsigned short          _VGABytesPerPixel;          // SuperVGA num bytes per pi
     unsigned int        _CgaOff  = 0x0000;          // off of CGA screen
     unsigned int        _EgaOff  = 0x0000;          // off of EGA/VGA screen
     unsigned int        _RomOff  = 0x0000;          // off of ROM BIOS area
+    unsigned short      _StackSeg;                  // seg of stack
+#else
+    unsigned short      _BiosSeg = 0x0034;          // seg of BIOS data area
+    unsigned short      _MonoSeg = 0x001C;          // seg of MONO screen
+    unsigned short      _CgaSeg  = 0x001C;          // seg of CGA screen
+    unsigned short      _EgaSeg  = 0x001C;          // seg of EGA/VGA screen
+    unsigned short      _RomSeg  = 0x0034;          // seg of ROM BIOS area
+    unsigned int        _BiosOff = 0x00000400;      // off of BIOS data area
+    unsigned int        _MonoOff = 0x00000000;      // off of MONO screen
+    unsigned int        _CgaOff  = 0x00000000;      // off of CGA screen
+    unsigned int        _EgaOff  = 0x00000000;      // off of EGA/VGA screen
+    unsigned int        _RomOff  = 0x000C0000;      // off of ROM BIOS area
     unsigned short      _StackSeg;                  // seg of stack
 #endif
 

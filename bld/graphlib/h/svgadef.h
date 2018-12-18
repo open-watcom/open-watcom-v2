@@ -51,7 +51,7 @@ enum {
 };
 
 
-#if !defined ( __386__ )
+#if defined( _M_I86 )
 extern short            GetVESAInfo( short, short, void __far * );
 #pragma aux             GetVESAInfo = \
                         "push bp" \

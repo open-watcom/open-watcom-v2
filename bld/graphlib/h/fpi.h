@@ -56,10 +56,10 @@ long _WCI86FAR _CGRAPH           _imagesize_w_87( double, double, double, double
 
 // Only use eax if not using stack calling conventions
 #ifndef __STACK
-#if defined( __386__ )
-    #pragma aux fpi parm [eax];
-#else
+#if defined( _M_I86 )
     #pragma aux fpi parm [ax];
+#else
+    #pragma aux fpi parm [eax];
 #endif
 
 #pragma aux (fpi)  _arc_w_87;
