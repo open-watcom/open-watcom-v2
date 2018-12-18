@@ -270,7 +270,7 @@ static  int             BlockSearch( block *blk, instruction *ins, name *op, boo
                 parms.ins = curr;
                 parms.op = curr->result;
                 parms.forward = true;
-                if( SafeRecurseCG( (func_sr)DominatingDeref, &parms ) != NULL ) {
+                if( SafeRecurseCG( (func_sr)DominatingDeref, &parms ) == SR_RETURN( true ) ) {
                     return( BLOCK_DEREFS );
                 }
             }
@@ -307,12 +307,12 @@ static  void            *DominatingDeref( parm_struct *parms )
     result = BlockSearch( parms->blk, NextIns( parms->ins, parms->forward ), parms->op, parms->forward );
     switch( result ) {
     case BLOCK_DEREFS:
-        return( NOT_NULL );
+        return( SR_RETURN( true ) );
     case BLOCK_REDEFS:
-        return( NULL );
+        return( SR_RETURN( false ) );
     }
     if( LastBlock( parms->blk, parms->forward ) || (parms->op->v.usage & USE_IN_ANOTHER_BLOCK) == 0 )
-        return( NULL );
+        return( SR_RETURN( false ) );
     stk = InitStack();
     PushTargets( stk, parms->blk, parms->forward );
     for( dominated = true; dominated; ) {
@@ -345,7 +345,7 @@ static  void            *DominatingDeref( parm_struct *parms )
         _MarkBlkVisited( blk );
     }
     FiniStack( stk );
-    return( dominated ? NOT_NULL : NULL );
+    return( SR_RETURN( dominated ) );
 }
 
 static void     FloodDown( block *blk, block_class bits )
@@ -463,7 +463,7 @@ static  bool            NullProp( block *blk )
     parms.op = *ptr;
     parms.forward = true;
     _MarkBlkAllUnVisited();
-    if( DominatingDeref( &parms ) != NULL ) {
+    if( DominatingDeref( &parms ) == SR_RETURN( true ) ) {
         if( !EdgeHasSideEffect( blk, cmp, cmp->head.opcode == OP_CMP_NOT_EQUAL ) ) {
             // only nuke the edge if the code we are removing
             // does not have a side effect or if the dominators are before the compare
@@ -473,7 +473,7 @@ static  bool            NullProp( block *blk )
     }
     parms.forward = false;
     _MarkBlkAllUnVisited();
-    if( DominatingDeref( &parms ) != NULL ) {
+    if( DominatingDeref( &parms ) == SR_RETURN( true ) ) {
         KillCondBlk( blk, cmp, dest_idx );
         return( true );
     }

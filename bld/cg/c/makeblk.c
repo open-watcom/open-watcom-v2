@@ -360,14 +360,14 @@ static void *LinkReturns( void *arg )
     blk = FindBlockWithLbl( to_search );
 //    found = false;
     if( blk == NULL )
-        return( NULL );
+        return( SR_RETURN( false ) );
     if( _IsBlkVisited( blk ) )
-        return( NOT_NULL );
+        return( SR_RETURN( true ) );
     if( _IsBlkAttr( blk, BLK_LABEL_RETURN ) ) {
         for( i = blk->targets; i-- > 0; ) {
             if( blk->edge[i].destination.u.lbl == link_to ) {
                 /* kick out ... already linked */
-                return( NOT_NULL );
+                return( SR_RETURN( true ) );
             }
         }
         blk = ReGenBlock( blk, link_to );
@@ -376,23 +376,23 @@ static void *LinkReturns( void *arg )
         _MarkBlkVisited( blk );
         if( _IsBlkAttr( blk, BLK_CALL_LABEL ) ) {
             if( blk->next_block == NULL )
-                return( (void *)(pointer_int)false );
+                return( SR_RETURN( false ) );
             LinkReturnsParms[0] = link_to;
             LinkReturnsParms[1] = blk->next_block->label;
-            if( SafeRecurseCG( LinkReturns, NULL ) == NULL ) {
-                return( NULL );
+            if( SafeRecurseCG( LinkReturns, NULL ) == SR_RETURN( false ) ) {
+                return( SR_RETURN( false ) );
             }
         } else {
             for( i = blk->targets; i-- > 0; ) {
                 LinkReturnsParms[0] = link_to;
                 LinkReturnsParms[1] = blk->edge[i].destination.u.lbl;
-                if( SafeRecurseCG( LinkReturns, NULL ) == NULL ) {
-                    return( NULL );
+                if( SafeRecurseCG( LinkReturns, NULL ) == SR_RETURN( false ) ) {
+                    return( SR_RETURN( false ) );
                 }
             }
         }
     }
-    return( NOT_NULL );
+    return( SR_RETURN( true ) );
 }
 
 bool        FixReturns( void )
@@ -411,7 +411,7 @@ bool        FixReturns( void )
             _MarkBlkAttr( blk, BLK_RETURNED_TO );
             LinkReturnsParms[0] = blk->next_block->label;
             LinkReturnsParms[1] = blk->edge[0].destination.u.lbl;
-            if( !LinkReturns( NULL ) ) {
+            if( LinkReturns( NULL ) == SR_RETURN( false ) ) {
                 return( false );
             }
             for( other_blk = HeadBlock; other_blk != NULL; other_blk = other_blk->next_block ) {

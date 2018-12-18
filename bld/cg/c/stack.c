@@ -43,17 +43,17 @@
 #include "memmgt.h"
 
 
-extern char __near      *bp( void );
-#pragma aux bp = 0x89 0xe8 value [eax];
+extern char __near  *bp( void );
+#pragma aux bp = __value [__ebp]
 
-extern char __near      *sp( void );
-#pragma aux sp = value [esp];
+extern char __near  *sp( void );
+#pragma aux sp = __value [__esp]
 
-extern void             setsp( void __near * );
-#pragma aux setsp = 0x89 0xc4 parm [eax] modify [esp];
+extern void         setsp( void __near * );
+#pragma aux setsp = "mov esp,eax" __parm [__eax] __modify [__esp]
 
-extern void             setbp( void __near * );
-#pragma aux setbp = 0x89 0xc5 parm [eax];
+extern void         setbp( void __near * );
+#pragma aux setbp = "mov ebp,eax" __parm [__eax] __modify [__ebp]
 
 void    *SafeRecurseCG( func_sr rtn, void *arg )
 /**********************************************/
@@ -107,27 +107,32 @@ static uint_32  oldValue;
 const char *errString = "Stack hit!";
 
 extern void _stashit( void );
-#pragma aux _stashit modify exact [] = \
-        "push   eax" \
-        "mov    eax,oldValue" \
-        "mov    +8[esp],eax" \
-        "mov    eax,+12[esp]" \
-        "mov    oldValue,eax" \
-        "pop    eax";
+#pragma aux _stashit = \
+        "push   eax"            \
+        "mov    eax,oldValue"   \
+        "mov    +8[esp],eax"    \
+        "mov    eax,+12[esp]"   \
+        "mov    oldValue,eax"   \
+        "pop    eax"            \
+    __parm              [] \
+    __value             \
+    __modify __exact    []
 
 extern void _restoreit( void );
-#pragma aux _restoreit modify exact [] = \
+#pragma aux _restoreit = \
         "push   eax" \
-        "mov    eax,oldValue" \
-        "xor    eax,+12[esp]" \
-        "je     ok" \
-        "lea    eax,errString" \
-        "call   DumpString" \
-        "call   DumpNL" \
-        "ok:" \
-        "mov    eax,+8[esp]" \
-        "mov    oldValue,eax" \
-        "pop    eax";
+        "mov    eax,oldValue"   \
+        "xor    eax,+12[esp]"   \
+        "je     ok"             \
+        "lea    eax,errString"  \
+        "call   DumpString"     \
+        "call   DumpNL"         \
+    "ok: mov    eax,+8[esp]"    \
+        "mov    oldValue,eax"   \
+        "pop    eax"            \
+    __parm              [] \
+    __value             \
+    __modify __exact    []
 
 #pragma aux __PRO "*";
 #pragma aux __EPI "*";

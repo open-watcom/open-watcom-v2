@@ -29,14 +29,12 @@
 ****************************************************************************/
 
 
-#define NOT_NULL    ((void *)(pointer_int)true)
+#define SR_RETURN(x)    ((void *)(pointer_int)(x))
 
 typedef void    *(*func_sr)(void *);
 
-#if defined( __WATCOMC__ ) && defined( _M_IX86 ) && !defined( __NT__ )
-
-#pragma aux SafeRecurseCG parm caller [eax ebx ecx edx]; /* just to be sure! must not put any parametr on the stack */
-
-#endif
-
 extern  void    *SafeRecurseCG( func_sr rtn, void *arg );
+#if defined( __WATCOMC__ ) && defined( _M_IX86 ) && !defined( __NT__ )
+/* just to be sure! must not put any parametr on the stack */
+#pragma aux SafeRecurseCG __parm __caller [__eax __ebx __ecx __edx]
+#endif
