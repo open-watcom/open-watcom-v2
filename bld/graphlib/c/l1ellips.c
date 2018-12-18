@@ -37,12 +37,10 @@
 #define _is_odd( q )    ( ( q & 1 ) != 0 )
 #define _is_even( q )   ( ( q & 1 ) == 0 )
 
-
 #if defined( _DEFAULT_WINDOWS )
 
 extern float            sqrtf( float );
 #pragma aux             sqrtf "*_";
-
 
 static struct xycoord   Cal_Coord( float, float, float, float );
 
@@ -52,7 +50,6 @@ static struct line_entry    VectA;
 static struct line_entry    VectB;
 static struct ellipse_info  EllInfo;
 
-
 static void             FastPlot( short x, short y, short q );
 static void             SlowPlot( short x, short y, short q );
 static void             ArcPlot( short x, short y, short q );
@@ -61,8 +58,8 @@ static void             ArcFill( short x, short y, short q );
 static void             InitLineMasks( short x1, short y1, short x2, short y2 );
 static void             HollowArc( short x1, short y1, short x2, short y2, short a, short b );
 static void             FilledArc( short x1, short y1, short x2, short y2, short a, short b );
-#endif
 
+#endif
 
 void _L1Ellipse( short fill, short x1, short y1, short x2, short y2 )
 //===================================================================

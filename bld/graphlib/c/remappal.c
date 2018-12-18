@@ -172,27 +172,31 @@ static char             EGA_Intensity[] = {
 };
 
 
-extern long             GetVGAPalette( short func, short reg );
+extern long GetVGAPalette( short func, short reg );
 #if defined( _M_I86 )
-    #pragma aux GetVGAPalette =         \
-        "push    bp"                    \
-        "int     10h"                   \
-        "pop     bp"                    \
-        "mov     ah,ch" /* (green) */   \
-        "mov     al,dh" /* (red)   */   \
-        "mov     dl,cl" /* (blue)  */   \
-        "xor     dh,dh"                                 \
-        parm caller [ax] [bx] value [ax dx] modify [cx];
+    #pragma aux GetVGAPalette = \
+            "push bp"                   \
+            "int 10h"                   \
+            "pop  bp"                   \
+            "mov  ah,ch" /* (green) */  \
+            "mov  al,dh" /* (red)   */  \
+            "mov  dl,cl" /* (blue)  */  \
+            "xor  dh,dh"                \
+        __parm __caller [__ax] [__bx] \
+        __value         [__ax __dx] \
+        __modify        [__cx]
 #else
     #pragma aux GetVGAPalette = \
-        "push    ebp"       \
-        "int     10H"       \
-        "pop     ebp"       \
-        "xchg    cl,ch"     \
-        "movzx   eax,cx"    \
-        "shl     eax,08H"   \
-        "mov     al,dh"     \
-        parm caller [eax] [ebx] value [eax] modify [ecx edx];
+            "push ebp"      \
+            "int 10H"       \
+            "pop  ebp"      \
+            "xchg cl,ch"    \
+            "movzx eax,cx"  \
+            "shl  eax,08H"  \
+            "mov  al,dh"    \
+        __parm __caller [__eax] [__ebx] \
+        __value         [__eax] \
+        __modify        [__ecx __edx]
 #endif
 
 

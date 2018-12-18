@@ -65,25 +65,29 @@
 
 /* Video Interrupt Routines */
 
-extern short            VideoInt( short, short, short, short );
-extern short            VideoInt_bx( short, short, short, short );
-extern short            VideoInt_cx( short, short, short, short );
+extern short VideoInt( short, short, short, short );
+#pragma aux VideoInt = \
+        "push bp"   \
+        "int 10h"   \
+        "pop  bp"   \
+    __parm __caller [__ax] [__bx] [__cx] [__dx] \
+    __value         [__ax]
 
-#pragma aux             VideoInt = \
-                        "push    bp   ", \
-                        "int     10h  ", \
-                        "pop     bp   ", \
-                        parm caller [ax] [bx] [cx] [dx] value [ax];
-#pragma aux             VideoInt_bx = \
-                        "push    bp   ", \
-                        "int     10h  ", \
-                        "pop     bp   ", \
-                        parm caller [ax] [bx] [cx] [dx] value [bx];
-#pragma aux             VideoInt_cx = \
-                        "push    bp   ", \
-                        "int     10h  ", \
-                        "pop     bp   ", \
-                        parm caller [ax] [bx] [cx] [dx] value [cx];
+extern short VideoInt_bx( short, short, short, short );
+#pragma aux VideoInt_bx = \
+        "push bp"   \
+        "int 10h"   \
+        "pop  bp"   \
+    __parm __caller [__ax] [__bx] [__cx] [__dx] \
+    __value         [__bx]
+
+extern short VideoInt_cx( short, short, short, short );
+#pragma aux VideoInt_cx = \
+        "push bp"   \
+        "int 10h"   \
+        "pop  bp"   \
+    __parm __caller [__ax] [__bx] [__cx] [__dx] \
+    __value         [__cx]
 
 #define GetVideoMode()  ( VideoInt( _BIOS_GET_MODE, 0, 0, 0 ) & 0x7f )
 #define EGA_Memory()    ( VideoInt_bx( 0x1200, 0x0010, 0, 0 ) )

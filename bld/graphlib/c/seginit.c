@@ -175,8 +175,8 @@ void _InitSegments( void )
 
 
 #if defined( _M_I86 )
-extern short  os_version( void );
-#pragma aux   os_version = \
+extern short os_version( void );
+#pragma aux os_version = \
         "push bx"       \
         "push cx"       \
         "push dx"       \
@@ -185,7 +185,9 @@ extern short  os_version( void );
         "pop dx"        \
         "pop cx"        \
         "pop bx"        \
-        value           [ax];   /* al=major ah=minor */
+    __parm      [] \
+    __value     [__ax] \
+    __modify    []
 #endif
 
 

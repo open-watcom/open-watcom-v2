@@ -32,9 +32,9 @@
 
 extern unsigned         CurrSP( void );
 #if defined( _M_I86 )
-  #pragma aux CurrSP    = "mov ax,sp" value [ax];
+  #pragma aux CurrSP = "mov ax,sp" __value [__ax]
 #else
-  #pragma aux CurrSP    = "mov eax,esp" value [eax];
+  #pragma aux CurrSP = "mov eax,esp" __value [__eax]
 #endif
 
 

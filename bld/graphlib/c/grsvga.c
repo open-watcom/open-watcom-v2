@@ -39,7 +39,7 @@
 
 
 extern unsigned short   cs( void );
-#pragma aux cs = "mov ax,cs" value [ax] modify []
+#pragma aux cs = "mov ax,cs" __value [__ax] __modify []
 
 static short            _SuperVGAModes[ _SV_MAX-2 ][ 6 ] = {
 //                      100h    101h    102h    103h    104h    105h

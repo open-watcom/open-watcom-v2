@@ -37,7 +37,7 @@
 #include "svgadef.h"
 
 
-//#if defined ( _M_I86 )
+//#if defined( _M_I86 )
 //    #define ID_SEG      0xFFFF
 //    #define ID_OFF      0x000E
 //#else
@@ -59,10 +59,15 @@ static short            CheckMONO( void );
 static short            ChkCursorReg( short );
 static short            DCCEmulate( void );
 
-extern void             Idle( void );
-#pragma aux             Idle = 0xEB 0x00       /* jmp short *+2 */ \
-                               0xEB 0x00       /* jmp short *+2 */ \
-                               0xEB 0x00;      /* jmp short *+2 */
+extern void Idle( void );
+#pragma aux Idle = \
+        "jmp short L1"  \
+    "L1: jmp short L2"  \
+    "L2: jmp short L3"  \
+    "L3:"               \
+    __parm      [] \
+    __value     \
+    __modify    []
 
 
 short _SysMonType( void )

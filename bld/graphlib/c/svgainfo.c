@@ -40,17 +40,19 @@
 
 
 #if defined( __QNX__ )
-extern unsigned         LoadSegLimit( unsigned );
+extern unsigned LoadSegLimit( unsigned );
   #if defined( _M_I86 )
-    #pragma aux         LoadSegLimit = \
-                        ".286p" \
-                        "lsl  ax,dx" \
-                        parm caller [dx] value [ax];
+    #pragma aux LoadSegLimit = \
+            ".286p" \
+            "lsl  ax,dx" \
+        __parm __caller [__dx] \
+        __value         [__ax]
   #else
-    #pragma aux         LoadSegLimit = \
-                        ".386p" \
-                        "lsl eax,dx" \
-                        parm caller [edx] value [eax];
+    #pragma aux LoadSegLimit = \
+            ".386p" \
+            "lsl eax,dx" \
+        __parm __caller [__edx] \
+        __value         [__eax]
   #endif
 #endif
 

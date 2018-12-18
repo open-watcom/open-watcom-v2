@@ -30,12 +30,13 @@
 ****************************************************************************/
 
 
-extern short            GetCodePage( void );
-
-#pragma aux             GetCodePage = \
-                            0xb8 0x01 0x66    /* mov ax,6601h */ \
-                            0xcd 0x21         /* int 21 */ \
-                            parm caller value [bx] modify [dx];
+extern short GetCodePage( void );
+#pragma aux GetCodePage = \
+        "mov ax,6601h"  \
+        "int 21h"       \
+    __parm __caller [] \
+    __value         [__bx] \
+    __modify        [__ax __dx]
 
 
 // List of supported multi-lingual characters. Not all codepages

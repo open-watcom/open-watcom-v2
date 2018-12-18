@@ -44,19 +44,19 @@
 #endif
 
 #if defined( _M_I86 )
-    #if defined( VERSION2 )
-        #define MAXLEN      34
-    #else
-        #define MAXLEN      20
-    #endif
+  #if defined( VERSION2 )
+    #define MAXLEN      34
+  #else
+    #define MAXLEN      20
+  #endif
     #define LINERET     0xCB
 #else
     #define MAXLEN      25
-    #if defined( __QNX__ )
-        #define LINERET     0xCB  // QNX uses a segmented 32 bit model
-    #else
-        #define LINERET     0xC3
-    #endif
+  #if defined( __QNX__ )
+    #define LINERET     0xCB  // QNX uses a segmented 32 bit model
+  #else
+    #define LINERET     0xC3
+  #endif
 #endif
 
 /*  Specify calling convention for calling the 'compiled' line drawing routine.    */
@@ -64,12 +64,12 @@
 #if defined( _M_I86 )
   #if defined( VERSION2 )
     //last parm on the stack...
-    #pragma aux LINE_FUNC "*" far parm caller [es di] [si ax] [bx] [cx] [dx];
+    #pragma aux LINE_FUNC "*" __far __parm __caller [__es __di] [__si __ax] [__bx] [__cx] [__dx]
   #else
-    #pragma aux LINE_FUNC "*" far parm caller [es di] [ax] [bx] [cx] [dx] [si];
+    #pragma aux LINE_FUNC "*" __far __parm __caller [__es __di] [__ax] [__bx] [__cx] [__dx] [__si]
   #endif
 #else
-    #pragma aux LINE_FUNC "*" parm caller [es edi] [eax] [ebx] [ecx] [edx] [esi];
+    #pragma aux LINE_FUNC "*" __parm __caller [__es __edi] [__eax] [__ebx] [__ecx] [__edx] [__esi]
 #endif
 
 typedef void (FUNC_FAR line_fn)( char __far *, grcolor, int, int, int, int );
