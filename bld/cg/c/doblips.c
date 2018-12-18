@@ -42,10 +42,15 @@
 #define Version         "WATCOM Code Generator --------"
 
 #ifdef __DOS__
-extern  int             OSCall(void);
- #pragma aux OSCall = 0xb4 0x30 0xcd 0x21 value [eax] modify [eax ebx ecx];
+extern void     OSCall( void );
+#pragma aux OSCall = \
+        "mov  ah,30h"   \
+        "int 21h"       \
+    __parm      [] \
+    __value     \
+    __modify    [__eax __ebx __ecx]
 #else
- static void OSCall(void){}
+static void OSCall( void ){}
 #endif
 
 static uint             LastBlipCount;

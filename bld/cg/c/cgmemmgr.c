@@ -71,7 +71,6 @@ essentially no worst case performance scenario.
 #elif defined( __DOS__ )
     #include <i86.h>
     #include "tinyio.h"
-    #include "dosmem.h"
     #include "extender.h"
 #elif defined( __QNX__ )
     #include <sys/osinfo.h>
@@ -108,13 +107,17 @@ extern int _TinyDPMIGetFreeMemoryInformation( dpmi_mem * );
         "int 31h"      \
         "pop es"       \
         "sbb eax,eax"  \
-        parm[edi] value[eax];
+    __parm  [__edi] \
+    __value [__eax]
 
 extern char int2f( short );
-#pragma aux int2f parm [ax] value [al] = "int 2fh";
+#pragma aux int2f = \
+        "int 2fh"   \
+    __parm  [__ax] \
+    __value [__al]
 
-#pragma     aux     __psp "*";
-extern      short   __psp;
+extern short    __psp;
+#pragma aux __psp "*";
 
 #endif
 
