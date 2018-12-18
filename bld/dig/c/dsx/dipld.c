@@ -41,6 +41,7 @@
 #include "dbgmod.h"
 #include "digld.h"
 
+
 #define DIPSIG  0x00504944UL    // "DIP"
 
 void DIPSysUnload( dip_sys_handle *sys_hdl )
@@ -75,7 +76,7 @@ dip_status DIPSysLoad( const char *path, dip_client_routines *cli, dip_imp_routi
 #ifdef WATCOM_DEBUG_SYMBOLS
             /* Look for symbols in separate .sym files, not the .dip itself */
             strcpy( dip_name + strlen( dip_name ) - 4, ".sym" );
-            NotifyWDLoad( dip_name, (unsigned long)dip );
+            DebuggerLoadUserModule( dip_name, GetCS(), (unsigned long)dip );
 #endif
             init_func = (dip_init_func *)dip->init_rtn;
             if( init_func != NULL && (*imp = init_func( &ds, cli )) != NULL ) {
@@ -83,7 +84,7 @@ dip_status DIPSysLoad( const char *path, dip_client_routines *cli, dip_imp_routi
                 return( DS_OK );
             }
 #ifdef WATCOM_DEBUG_SYMBOLS
-            NotifyWDUnload( dip_name );
+            DebuggerUnloadUserModule( dip_name );
 #endif
 #ifdef __WATCOMC__
         }

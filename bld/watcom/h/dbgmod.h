@@ -33,19 +33,8 @@
 
 #define WATCOM_DEBUG_SYMBOLS
 
-/* Variable used to determine if the debugger is present */
-
-extern char volatile __WD_Present;
-
-/* Macro to enter the debugger and pass a message */
-
-void EnterDebuggerWithMessage( const char __far * );
-#pragma aux EnterDebuggerWithMessage \
-    __parm __caller [] = \
-        "int 3" \
-        "jmp short L1" \
-        'W' 'V' 'I' 'D' 'E' 'O' \
-        "L1:"
+#include "walloca.h"
+#include "enterdb.h"
 
 /* Inline assembler to get DS selector */
 
@@ -55,43 +44,5 @@ unsigned short GetCS(void);
         "mov ax,cs" \
      __value [__ax]
 
-/* Messages to load debug symbols */
 
-#define DEBUGGER_LOADMODULE_COMMAND "!LOADMODULE "
-#define DEBUGGER_LOADMODULE_FORMAT DEBUGGER_LOADMODULE_COMMAND "0x%4.4x:0x%8.8x,%s"
-
-/* Messages to unload debug symbols */
-
-#define DEBUGGER_UNLOADMODULE_COMMAND "!UNLOADMODULE "
-#define DEBUGGER_UNLOADMODULE_FORMAT DEBUGGER_UNLOADMODULE_COMMAND "%s"
-
-/****************************************************************************
-DESCRIPTION:
-Notify the Open Watcom debugger of module load events. WD will attempt
-to load symbolic debugging information for the module much like it would for
-OS loaded DLLs.
-****************************************************************************/
-static void NotifyWDLoad( char *modname, unsigned long offset )
-{
-    char buf[_MAX_PATH + sizeof( DEBUGGER_LOADMODULE_COMMAND ) + 2 + 4 + 1 + 8 + 1 + 1];
-
-    sprintf( buf, DEBUGGER_LOADMODULE_FORMAT, GetCS(), offset, modname );
-    if( __WD_Present ) {
-        EnterDebuggerWithMessage( buf );
-    }
-}
-
-/****************************************************************************
-DESCRIPTION:
-Notify the Open Watcom debugger of module unload events.
-****************************************************************************/
-static void NotifyWDUnload( char *modname )
-{
-    char buf[_MAX_PATH + sizeof( DEBUGGER_UNLOADMODULE_COMMAND ) + 1];
-
-    sprintf( buf, DEBUGGER_UNLOADMODULE_FORMAT, modname );
-    if( __WD_Present ) {
-        EnterDebuggerWithMessage( buf );
-    }
-}
 #endif
