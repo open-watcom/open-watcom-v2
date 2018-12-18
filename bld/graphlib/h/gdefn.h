@@ -80,16 +80,16 @@
 // to avoid segment relocations in the executable.
 // The assignment to _SetVGAPage provides the CS value at runtime.
 
-#if defined( __QNX__ ) || !defined( __386__ )
+#if defined( _M_I86 ) || defined( __QNX__ )
     #define _FARC       __far
 #else
     #define _FARC
 #endif
 
-#if defined ( __386__ )
-    #pragma aux VGAPAGE_FUNC "*" parm caller [eax];
-#else
+#if defined( _M_I86 )
     #pragma aux VGAPAGE_FUNC "*" parm caller [ax];
+#else
+    #pragma aux VGAPAGE_FUNC "*" parm caller [eax];
 #endif
 
 typedef void __pascal vgapage_fn( short );
