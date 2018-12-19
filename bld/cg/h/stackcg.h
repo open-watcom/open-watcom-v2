@@ -37,4 +37,6 @@ extern  void    *SafeRecurseCG( func_sr rtn, void *arg );
 #if defined( __WATCOMC__ ) && defined( _M_IX86 ) && !defined( __NT__ )
 /* just to be sure! must not put any parametr on the stack */
 #pragma aux SafeRecurseCG __parm __caller [__eax __ebx __ecx __edx]
+#else
+/* nothing special */
 #endif
