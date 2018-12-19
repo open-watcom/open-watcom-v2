@@ -1110,13 +1110,14 @@ static int compareString( void const *p1, void const *p2 )
 /*
  * getSetInfo - build string of values
  */
-static int getSetInfo( char ***vals, char ***list, int *longest )
+static int getSetInfo( char ***vals, char ***list, unsigned *longest )
 {
-    int         i, j;
+    unsigned    i;
+    unsigned    j;
     char        settokstr[TOK_MAX_LEN + 1];
     char        tmpstr[MAX_STR];
     set_data    **sdata;
-    int         tc, tc1, tc2;
+    unsigned    tc, tc1, tc2;
 
     tc1 = GetNumberOfTokens( SetVarTokens );
     tc2 = GetNumberOfTokens( SetFlagTokens );
@@ -1162,16 +1163,17 @@ vi_rc Set( const char *name )
 {
     char        fn[MAX_STR];
     vi_rc       rc = ERR_NO_ERR;
-    int         j, i;
+    int         i;
+    int         j;
     int         winflag;
     const char  *pfn;
 #ifndef VICOMP
 #ifndef __WIN__
     short       tmp;
-    int         tc;
+    unsigned    tc;
     char        **vals = NULL;
     char        **list;
-    int         longest;
+    unsigned    longest;
 #endif
 #endif
 

@@ -117,7 +117,7 @@ vi_rc FindTag( const char *tag )
 /*
  * PickATag - pick a tag
  */
-static int PickATag( int tag_count, char **tag_list, const char *tagname )
+static int PickATag( unsigned tag_count, char **tag_list, const char *tagname )
 {
     window_info wi;
     int         i;
@@ -164,7 +164,7 @@ static int PickATag( int tag_count, char **tag_list, const char *tagname )
  */
 static vi_rc selectTag( FILE *fp, const char *str, char *buff, char *fname )
 {
-    int         tag_count;
+    unsigned    tag_count;
     char        **tag_list;
     int         i;
     int         whichtag;

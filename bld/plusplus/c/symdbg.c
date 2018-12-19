@@ -44,7 +44,7 @@
 #include "vfun.h"
 #include "symdbg.h"
 #include "dbgsupp.h"
-#include "stacksr.h"
+#include "stackcpp.h"
 
 typedef struct fwd_info FWD_INFO;
 struct fwd_info {

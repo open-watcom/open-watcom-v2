@@ -35,12 +35,12 @@
 /*
  * tempFileSetup - set up a temp file with data in it
  */
-static void tempFileSetup( file **cfile, char *list[], int maxlist, size_t indent, bool makelower )
+static void tempFileSetup( file **cfile, char *list[], unsigned maxlist, size_t indent, bool makelower )
 {
-    int         j;
-    size_t      i;
-    size_t      k;
     size_t      boff;
+    size_t      i;
+    unsigned    j;
+    size_t      k;
     char        dd[FILENAME_MAX];
 
     /*
@@ -137,9 +137,9 @@ vi_rc SelectItem( selectitem *si )
 /*
  * SelectItemAndValue - select item from list and give it a value
  */
-vi_rc SelectItemAndValue( window_info *wi, char *title, char **list,
-                        int maxlist, vi_rc (*updatertn)( const char *, char *, int * ),
-                        size_t indent, char **vals, int valoff )
+vi_rc SelectItemAndValue( window_info *wi, char *title, char **list, unsigned maxlist,
+                        vi_rc (*updatertn)( const char *, char *, int * ),
+                        size_t indent, char **vals, unsigned valoff )
 {
 //    int                 j;
     file                *cfile;

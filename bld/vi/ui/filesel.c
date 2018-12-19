@@ -171,7 +171,7 @@ vi_rc SelectFileOpen( const char *dir, char **result_ptr, const char *mask, bool
  */
 static vi_rc displayGenericLines( file *f, linenum pagetop, int leftcol,
                                 linenum hilite, type_style *style, hilst *hilist,
-                                char **vals, int valoff )
+                                char **vals, unsigned valoff )
 {
     int         i, j, k, text_lines;
     linenum     cl = pagetop;

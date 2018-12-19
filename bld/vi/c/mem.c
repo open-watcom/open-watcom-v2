@@ -269,10 +269,10 @@ void MemFreePtr( void **ptr )
 /*
  * MemFreeList - free up memory
  */
-void MemFreeList( int count, char **ptr )
+void MemFreeList( unsigned count, char **ptr )
 {
     if( ptr != NULL ) {
-        int i;
+        unsigned    i;
         for( i = 0; i < count; i++ ) {
             MemFree( ptr[i] );
         }

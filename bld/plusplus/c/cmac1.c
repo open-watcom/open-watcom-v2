@@ -379,10 +379,12 @@ TOKEN SpecialMacro(             // EXECUTE A SPECIAL MACRO
         TokenLen = file_name_copy( Buffer, SrcFileNameCurrent() );
         return( T_STRING );
     case MACRO_DATE:
-        TokenLen = stxpcpy( Buffer, __Date ) - Buffer + 1;
+        strcpy( Buffer, __Date );
+        TokenLen = strlen( Buffer );
         return( T_STRING );
     case MACRO_TIME:
-        TokenLen = stxpcpy( Buffer, __Time ) - Buffer + 1;
+        strcpy( Buffer, __Time );
+        TokenLen = strlen( Buffer );
         return( T_STRING );
     case MACRO_FUNCTION:
     case MACRO_FUNC:

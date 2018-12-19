@@ -56,7 +56,7 @@ void AddNewLineAroundCurrent( const char *data, int copylen, insert_dir dir )
     /*
      * add the line
      */
-    InsertNewLine( CurrentLine, &CurrentFcb->lines, data, copylen,dir );
+    InsertNewLine( CurrentLine, &CurrentFcb->lines, data, copylen, dir );
     CurrentFcb->byte_cnt += copylen + 1;
     CurrentFcb->end_line += 1;
 

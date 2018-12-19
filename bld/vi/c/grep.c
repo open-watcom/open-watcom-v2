@@ -69,7 +69,7 @@ WINEXPORT INT_PTR CALLBACK GrepListDlgProc95( HWND dlg, UINT msg, WPARAM wparam,
 #define MAXBYTECNT  4096
 #define MAX_DISP    60
 
-static void fileGrep( const char *, char **, int *, window_id );
+static void fileGrep( const char *, char **, unsigned *, window_id );
 static vi_rc fSearch( const char *, char * );
 static vi_rc eSearch( const char *, char * );
 static vi_rc doGREP( const char * );
@@ -170,10 +170,10 @@ static vi_rc getFile( const char *fname )
     return( rc );
 }
 
-static int initList( window_id wid, const char *dirlist, char **list )
+static unsigned initList( window_id wid, const char *dirlist, char **list )
 {
     char        dir[MAX_STR];
-    int         clist;
+    unsigned    clist;
     size_t      len;
 
 #ifdef __WIN__
@@ -227,9 +227,10 @@ static int initList( window_id wid, const char *dirlist, char **list )
 
 #ifdef __WIN__
 
-static void getOneFile( HWND dlg, char **files, int *count, bool leave )
+static void getOneFile( HWND dlg, char **files, unsigned *count, bool leave )
 {
-    int         i, j;
+    int         i;
+    unsigned    j;
     HWND        list_box;
   #ifdef __NT__
     LVITEM      lvi;
@@ -245,8 +246,7 @@ static void getOneFile( HWND dlg, char **files, int *count, bool leave )
   #ifdef __NT__
     }
   #endif
-    if( i == -1 ) {
-    } else {
+    if( i != -1 ) {
         getFile( files[i] );
         if( leave ) {
             EndDialog( dlg, ERR_NO_ERR );
@@ -282,9 +282,9 @@ static void getOneFile( HWND dlg, char **files, int *count, bool leave )
     }
 }
 
-static void getAllFiles( HWND dlg, char **files, int *count )
+static void getAllFiles( HWND dlg, char **files, unsigned *count )
 {
-    int         i;
+    unsigned    i;
 
     for( i = 0; i < *count; i++ ) {
         getFile( files[i] );
@@ -296,7 +296,7 @@ static void getAllFiles( HWND dlg, char **files, int *count )
 WINEXPORT INT_PTR CALLBACK GrepListDlgProc( HWND dlg, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     static char         **fileList;
-    static int          fileCount;
+    static unsigned     fileCount;
     HWND                list_box;
     char                tmp[MAX_STR];
     WORD                cmd;
@@ -352,7 +352,7 @@ WINEXPORT INT_PTR CALLBACK GrepListDlgProc( HWND dlg, UINT msg, WPARAM wparam, L
 WINEXPORT INT_PTR CALLBACK GrepListDlgProc95( HWND dlg, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     static char         **fileList;
-    static int          fileCount;
+    static unsigned     fileCount;
     HWND                list_box;
     char                tmp[MAX_STR];
     WORD                cmd;
@@ -464,9 +464,9 @@ static const vi_key     editopts_evlist[] = {
  */
 static vi_rc doGREP( const char *dirlist )
 {
-    int         i;
-    int         clist;
-    int         n = 0;
+    unsigned    clist;
+    unsigned    i;
+    unsigned    n;
     window_id   wid;
     char        **list;
     window_info wi_disp, wi_opts;
@@ -518,6 +518,7 @@ static vi_rc doGREP( const char *dirlist )
                 /*
                  * process selections
                  */
+                n = 0;
                 for( ;; ) {
                     if( n > clist - 1 ) {
                         n = clist - 1;
@@ -538,14 +539,14 @@ static vi_rc doGREP( const char *dirlist )
                     si.event_wid = wid;
                     rc = SelectItem( &si );
                     n = si.num;
-                    if( rc != ERR_NO_ERR || n < 0 ) {
+                    if( rc != ERR_NO_ERR || si.num < 0 ) {
                         break;
                     }
                     if( si.event == VI_KEY( F3 ) ) {
                         s = 0;
                         e = clist - 1;
                     } else {
-                        s = e = n;
+                        s = e = si.num;
                     }
                     for( cnt = s; cnt <= e; cnt++ ) {
                         rc = getFile( list[cnt] );
@@ -557,8 +558,8 @@ static vi_rc doGREP( const char *dirlist )
                         si.event == VI_KEY( F1 ) || si.event == VI_KEY( F3 ) ) {
                         break;
                     }
-                    MemFree( list[n] );
-                    for( i = n; i < clist - 1; i++ ) {
+                    MemFree( list[si.num] );
+                    for( i = si.num; i < clist - 1; i++ ) {
                         list[i] = list[i + 1];
                     }
                     clist--;
@@ -587,7 +588,7 @@ static vi_rc doGREP( const char *dirlist )
 /*
  * fileGrep - search a single dir and build list of files
  */
-static void fileGrep( const char *dir, char **list, int *clist, window_id wid )
+static void fileGrep( const char *dir, char **list, unsigned *clist, window_id wid )
 {
     char        fn[FILENAME_MAX], data[FILENAME_MAX], ts[FILENAME_MAX];
     char        path[FILENAME_MAX];

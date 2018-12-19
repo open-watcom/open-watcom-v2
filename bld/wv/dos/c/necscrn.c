@@ -2,7 +2,6 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,9 +41,15 @@
 #include "tinyio.h"
 
 
-extern unsigned inp(unsigned __port);
-extern unsigned outp(unsigned __port, unsigned __value);
-extern void uisetcurrpage(int);
+#define VIDEO_BUFF_0            0xA000, 0
+#define VIDEO_BUFF_1            0xA200, 0
+
+#define SwapSegPtr( offs )      SwapSeg, offs
+
+extern unsigned         inp(unsigned __port);
+extern unsigned         outp(unsigned __port, unsigned __value);
+extern void             WndDirty(void);
+extern void             uisetcurrpage(int);
 
 flip_types              FlipMech;
 
@@ -164,11 +169,11 @@ void NecSysSetPage( int PgNum )
     if( FlipMech == FLIP_PAGE ) {
         if( PgNum == 0 ) {
             AllocSwapSeg();
-            movedata( 0xA000, 0, SwapSeg, 0, PageSize );
-            movedata( 0xA200, 0, SwapSeg, PageSize, PageSize );
+            movedata( VIDEO_BUFF_0, SwapSegPtr( 0 ), PageSize );
+            movedata( VIDEO_BUFF_1, SwapSegPtr( PageSize ), PageSize );
         } else {
-            movedata( SwapSeg, 0, 0xA000, 0, PageSize );
-            movedata( SwapSeg, PageSize, 0xA200, 0, PageSize );
+            movedata( SwapSegPtr( 0 ), VIDEO_BUFF_0, PageSize );
+            movedata( SwapSegPtr( PageSize ), VIDEO_BUFF_1, PageSize );
             DeallocSwapSeg();
         }
         SetPage( PgNum );
@@ -261,15 +266,14 @@ void InitScreen()
     if( vect == NULL || *vect == IRET )
         _SwitchOff( SW_USE_MOUSE );
 
-    PageSize =  ( UIData->height == 25 ) ? 4096 :
-                ( UIData->height * UIData->width * 2 + 256 );
+    PageSize =  ( UIData->height == 25 ) ? 4 * _1k : ( UIData->height * UIData->width * 2 + 256 );
 
     switch( FlipMech ) {
     case FLIP_SWAP:
         AllocSwapSeg();
         SaveBIOSSettings();
-        movedata( 0xA000, 0, SwapSeg, 0, PageSize );
-        movedata( 0xA200, 0, SwapSeg, PageSize, PageSize );
+        movedata( VIDEO_BUFF_0, SwapSegPtr( 0 ), PageSize );
+        movedata( VIDEO_BUFF_1, SwapSegPtr( PageSize ), PageSize );
         break;
     case FLIP_PAGE:
         SaveBIOSSettings();
@@ -332,8 +336,8 @@ bool DebugScreen()
     SaveBIOSSettings();
     switch( FlipMech ) {
     case FLIP_SWAP:
-        movedata( 0xA000, 0, SwapSeg, 0, PageSize );
-        movedata( 0xA200, 0, SwapSeg, PageSize, PageSize );
+        movedata( VIDEO_BUFF_0, SwapSegPtr( 0 ), PageSize );
+        movedata( VIDEO_BUFF_1, SwapSegPtr( PageSize ), PageSize );
         WndDirty( NULL );
         usr_vis = false;
         break;
@@ -375,8 +379,8 @@ bool UserScreen()
     uiswap();
     switch( FlipMech ) {
     case FLIP_SWAP:
-        movedata( SwapSeg, 0, 0xA000, 0, PageSize );
-        movedata( SwapSeg, PageSize, 0xA200, 0, PageSize );
+        movedata( SwapSegPtr( 0 ), VIDEO_BUFF_0, PageSize );
+        movedata( SwapSegPtr( PageSize ), VIDEO_BUFF_1, PageSize );
         dbg_vis = false;
         break;
     case FLIP_PAGE:

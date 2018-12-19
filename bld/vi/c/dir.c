@@ -161,7 +161,8 @@ static void addDirData( file *cfile, const char *str )
   */
 void FormatDirToFile( file *cfile, bool add_drives )
 {
-    int         i, j;
+    int         i;
+    int         j;
     int         lastdir = 0;
     char        str[MAX_STR];
     direct_ent  *de;

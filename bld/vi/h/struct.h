@@ -603,7 +603,7 @@ typedef struct {
     window_info         *wi;                // info describing window to create
     char                *title;             // title of window
     char                **list;             // lines to display
-    int                 maxlist;            // number of lines in list
+    unsigned            maxlist;            // number of lines in list
     char                *result;            // where to copy the data for the picked line
     int                 num;                // number of the picked line
     int                 *allowrl;           // allow cursor right/left (for menu bar)
@@ -622,7 +622,7 @@ typedef struct {
 typedef struct {
     file                *f;                     // file with data for lines
     char                **vals;                 // values associated with each line
-    int                 valoff;                 // offset to display values beside line data
+    unsigned            valoff;                 // offset to display values beside line data
     window_info         *wi;                    // info describing window to create
     linenum             sl;                     // selected line
     char                *title;                 // title of window
