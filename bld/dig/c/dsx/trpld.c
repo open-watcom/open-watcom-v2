@@ -171,7 +171,7 @@ static char sig_str[] = "RATIONAL DOS/4G";
 static char pkg_name[] = "D32_KERNEL";
 static char pkg_entry[] = "D32NullPtrCheck";
 
-#pragma aux extension_routine parm [eax] [edx] [ebx] value [eax];
+#pragma aux extension_routine __parm [__eax] [__edx] [__ebx] __value [__eax]
 static extension_routine __far *RSI_extensions;
 
 /* These are static because I'm not conversant with your inline asm

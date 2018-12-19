@@ -33,19 +33,23 @@
 #include "trpimp.h"
 #include "trpcomm.h"
 
-extern int GtKey( void );
+extern unsigned short GtKey( void );
 #pragma aux GtKey = \
         "xor  ah,ah"    \
         "int 16h"       \
-    __parm __caller [__ax]
+    __parm __caller [] \
+    __value         [__ax] \
+    __modify        []
 
-extern unsigned KeyWaiting( void );
+extern unsigned char KeyWaiting( void );
 #pragma aux KeyWaiting = \
         "mov  ah,1"     \
         "int 16h"       \
         "lahf"          \
-        "and  ax,4000h" \
-    __parm __caller [__ax]
+        "and  ah,40h"   \
+    __parm __caller [] \
+    __value         [__ah] \
+    __modify        [__al]
 
 
 trap_retval ReqRead_user_keyboard( void )

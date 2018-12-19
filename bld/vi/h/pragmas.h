@@ -48,10 +48,10 @@ extern unsigned char _BIOSKeyboardHit( char );
 extern int DoSpawn( void *, void * );
 extern int GetFcb( void *, void * );
 
-#pragma aux In61 = 0xe4 0x61 value [al];
-#pragma aux Out61 = 0xe6 0x61 parm [al];
-#pragma aux Out43 = 0xe6 0x43 parm [al];
-#pragma aux Out42 = 0xe6 0x42 parm [al];
+#pragma aux In61 = 0xe4 0x61 __value [__al]
+#pragma aux Out61 = 0xe6 0x61 __parm [__al]
+#pragma aux Out43 = 0xe6 0x43 __parm [__al]
+#pragma aux Out42 = 0xe6 0x42 __parm [__al]
 
 extern void JustAnInt28( void );
 #pragma aux JustAnInt28 = "int 28h";
@@ -62,154 +62,178 @@ extern void DosIdleCall( void );
 #pragma aux DosIdleCall = \
         "mov    ax,1680h" \
         "int    2fh"      \
-    modify [ax];
+    __modify    [__ax]
 
 
 #pragma aux DoSpawn = \
-        "push   ds" \
-        "push   es" \
-        "push   si" \
-        "push   di" \
-        "mov    ds, dx"  /*  exe segment */ \
-        "mov    dx, ax"  /*  exe offset */ \
-        "mov    es, cx"  /*  parm block segment (offset in bx already) */ \
-        "mov    ax, 4b00h"  /*  exec process */ \
-        "int    21h" \
-        "jc     rcisright" \
-        "mov    ax, 4d00h" \
-        "int    21h" \
-        "xor    ah, ah" \
-        "rcisright:" \
-        "pop    di" \
-        "pop    si" \
-        "pop    es" \
-        "pop    ds" \
-    parm [dx ax] [cx bx] value [ax];
+        "push ds"   \
+        "push es"   \
+        "push si"   \
+        "push di"   \
+        "mov  ds,dx"    /*  exe segment */ \
+        "mov  dx,ax"    /*  exe offset */ \
+        "mov  es,cx"    /*  parm block segment (offset in bx already) */ \
+        "mov  ax,4b00h" /*  exec process */ \
+        "int 21h"   \
+        "jc short rcisright" \
+        "mov  ax,4d00h" \
+        "int 21h"   \
+        "xor  ah,ah" \
+    "rcisright:"    \
+        "pop  di"   \
+        "pop  si"   \
+        "pop  es"   \
+        "pop  ds"   \
+    __parm      [__dx __ax] [__cx __bx] \
+    __value     [__ax] \
+    __modify    []
 
 #pragma aux GetFcb = \
-        "push   ds" \
-        "push   es" \
-        "push   si" \
-        "push   di" \
-        "mov    ds, dx" /*  exe segment */ \
-        "mov    si, ax" /*  exe offset */ \
-        "mov    es, cx" /*  parm block segment (offset in bx already) */ \
-        "mov    di, bx" \
-        "mov    ax, 2901h" /*  parse filename/get fcb */ \
-        "int    21h" \
-        "pop    di" \
-        "pop    si" \
-        "pop    es" \
-        "pop    ds" \
-    parm [dx ax] [cx bx] value [ax];
+        "push ds"   \
+        "push es"   \
+        "push si"   \
+        "push di"   \
+        "mov  ds,dx"    /*  exe segment */ \
+        "mov  si,ax"    /*  exe offset */ \
+        "mov  es,cx"    /*  parm block segment (offset in bx already) */ \
+        "mov  di,bx"    \
+        "mov  ax,2901h" /*  parse filename/get fcb */ \
+        "int 21h"   \
+        "pop  di"   \
+        "pop  si"   \
+        "pop  es"   \
+        "pop  ds"   \
+    __parm      [__dx __ax] [__cx __bx] \
+    __value     [__ax] \
+    __modify    []
 
 #ifndef __CURSES__
 
 #pragma aux _BIOSGetKeyboard = \
-        "int  16h" \
-    parm [ah] value [ax];
+        "int 16h"   \
+    __parm      [__ah] \
+    __value     [__ax]
 
 #pragma aux _BIOSKeyboardHit = \
-        "int  16h" \
-        "jz   L1" \
-        "mov  al, 1" \
-        "jmp  short L2" \
-    "L1: xor al, al"\
-    "L2:" \
-    parm [ah] value [al];
+        "int 16h"       \
+        "jz short L1"   \
+        "mov  al,1"     \
+        "jmp short L2"  \
+    "L1: xor  al,al"    \
+    "L2:"               \
+    __parm      [__ah] \
+    __value     [__al]
 
 #pragma aux BIOSGetCursor = \
-        "mov    ah,3"   \
-        "int    10h"    \
-    parm [bh] value [dx] modify [ax cx];
+        "mov  ah,3" \
+        "int 10h"   \
+    __parm      [__bh] \
+    __value     [__dx] \
+    __modify    [__ax __cx]
 
 #pragma aux BIOSSetCursor = \
-        "mov    ah,2"   \
-        "int    10h"    \
-    parm [bh] [dh] [dl] modify [ax];
+        "mov  ah,2" \
+        "int 10h"   \
+    __parm      [__bh] [__dh] [__dl] \
+    __modify    [__ax]
 
 #pragma aux BIOSNewCursor = \
-        "mov    ah,1"   \
-        "int    10h"    \
-    parm [ch] [cl] modify [ax cx];
+        "mov  ah,1" \
+        "int 10h"   \
+    __parm      [__ch] [__cl] \
+    __modify    [__ax __cx]
 
 #endif
 
 #if defined( _M_I86 )
 
 #pragma aux DosSetVect = \
-        "mov  ah, 25h" \
-        "int  21h" \
-    parm [al] [ds dx];
+        "mov  ah,25h"   \
+        "int 21h"       \
+    __parm      [__al] [__ds __dx] \
+    __value     \
+    __modify    [__ah]
 
 #pragma aux DosGetVect = \
-        "mov  ah, 35h" \
-        "int  21h" \
-        "mov  ax, bx" \
-        "mov  dx, es" \
-    parm [al] modify [es bx];
+        "mov  ah,35h"   \
+        "int 21h"       \
+        "mov  ax,bx"    \
+        "mov  dx,es"    \
+    __parm      [__al] \
+    __value     [__dx __ax] \
+    __modify    [__es __bx]
 
 #pragma aux DosMaxAlloc = \
-        "xor bx, bx" \
-        "dec bx" \
-        "mov ah, 48h" \
-        "int 21h" \
-    value [bx] modify [ax];
+        "xor  bx,bx"    \
+        "dec  bx"       \
+        "mov  ah,48h"   \
+        "int 21h"       \
+    __parm      [] \
+    __value     [__bx] \
+    __modify    [__ax]
 
 #pragma aux BIOSSetColorRegister = \
-        "mov    ax,1010h"   \
-        "int    10h"        \
-    parm [bx] [dh] [ch] [cl] modify [ax];
+        "mov  ax,1010h" \
+        "int 10h"       \
+    __parm      [__bx] [__dh] [__ch] [__cl] \
+    __modify    [__ax]
 
 #pragma aux BIOSGetColorPalette = \
-        "mov    ax,1009h"   \
-        "int    10h"        \
-    parm [es dx] modify [ax];
+        "mov  ax,1009h" \
+        "int 10h"       \
+    __parm      [__es __dx] \
+    __modify    [__ax]
 
 #pragma aux BIOSSetBlinkAttr = \
-        "mov    ax,1003h"   \
-        "mov    bl,1"       \
-        "int    10h"        \
-    modify [ax bx];
+        "mov  ax,1003h" \
+        "mov  bl,1"     \
+        "int 10h"       \
+    __modify    [__ax __bx]
 
 #pragma aux BIOSSetNoBlinkAttr = \
-        "mov    ax,1003h"   \
-        "xor    bl,bl"      \
-        "int    10h"        \
-    modify [ax bx];
+        "mov  ax,1003h" \
+        "xor  bl,bl"    \
+        "int 10h"       \
+    __modify    [__ax __bx]
 
 #pragma aux BIOSTestKeyboard = \
-        "mov    ax,012ffh"     \
-        "int    016h"          \
-    value[ax];
+        "mov  ax,12ffh" \
+        "int 16h"       \
+    __value     [__ax]
 
 #pragma aux BIOSGetRowCount = \
-        "mov    ax,1130h"   \
-        "xor    bh,bh"      \
-        "mov    dl,18h"     \
-        "push   bp" /* Bloodly BIOS scrams bp */ \
-        "int    10h"        \
-        "pop    bp"         \
-    value [dl] modify [ax bx cx dx es];
+        "mov  ax,1130h" \
+        "xor  bh,bh"    \
+        "mov  dl,18h"   \
+        "push bp" /* Bloodly BIOS scrams bp */ \
+        "int 10h"       \
+        "pop  bp"       \
+    __value     [__dl] \
+    __modify    [__ax __bx __cx __dx __es]
 
 #pragma aux BIOSGetVideoMode = \
         "mov    ah,0fh" \
         "int    10h"    \
-    value [bx ax] modify [bx];
+    __value     [__bx __ax] \
+    __modify    [__bx]
 
 #pragma aux BIOSGetColorRegister = \
         "mov    ax,1015h"   \
         "int    10h"        \
-    parm [bx] value [cx dx] modify [ax cx dx];
+    __parm      [__bx] \
+    __value     [__cx __dx] \
+    __modify    [__ax __cx __dx]
 
 #else
 
-#pragma aux DosMaxAlloc =   \
-        "xor    ebx,ebx"    \
-        "dec    ebx"        \
-        "mov    ah,48h"     \
-        "int    21h"        \
-    value [ebx] modify [eax];
+#pragma aux DosMaxAlloc = \
+        "xor  ebx,ebx"  \
+        "dec  ebx"      \
+        "mov  ah,48h"   \
+        "int 21h"       \
+    __parm      [] \
+    __value     [__ebx] \
+    __modify    [__eax]
 
 #pragma aux DosSetVect = \
         "push   ds"     \
@@ -218,7 +242,9 @@ extern void DosIdleCall( void );
         "mov    ah,25h" \
         "int    21h"    \
         "pop    ds"     \
-    parm [al] [fs edx];
+    __parm      [__al] [__fs __edx] \
+    __value     \
+    __modify    [__ah]
 
 #pragma aux DosGetVect =    \
         "push   es"         \
@@ -227,12 +253,15 @@ extern void DosIdleCall( void );
         "mov    eax,ebx"    \
         "mov    edx,es"     \
         "pop    es"         \
-    parm [al] value [dx eax] modify [ebx];
+    __parm      [__al] \
+    __value     [__dx __eax] \
+    __modify    [__ebx]
 
 #pragma aux BIOSSetColorRegister = \
         "mov    ax,1010h"   \
         "int    10h"        \
-    parm [bx] [dh] [ch] [cl] modify [ax];
+    __parm      [__bx] [__dh] [__ch] [__cl] \
+    __modify    [__ax]
 
 #pragma aux BIOSGetColorPalette = \
         "push   es"         \
@@ -240,24 +269,25 @@ extern void DosIdleCall( void );
         "mov    ax,1009h"   \
         "int    10h"        \
         "pop    es"         \
-    parm [ax dx] modify [ax];
+    __parm      [__ax __dx] \
+    __modify    [__ax]
 
 #pragma aux BIOSSetBlinkAttr = \
         "mov    ax,1003h"   \
         "mov    bl,1"       \
         "int    10h"        \
-    modify [ax bx];
+    __modify    [__ax __bx]
 
 #pragma aux BIOSSetNoBlinkAttr = \
         "mov    ax,1003h"   \
         "xor    bl,bl"      \
         "int    10h"        \
-    modify [ax bx];
+    __modify    [__ax __bx]
 
 #pragma aux BIOSTestKeyboard = \
         "mov    eax,12ffh"  \
         "int    16h"        \
-    value[eax];
+    __value     [__eax]
 
 #pragma aux BIOSGetRowCount = \
         "mov    ax,1130h"   \
@@ -268,14 +298,16 @@ extern void DosIdleCall( void );
         "int    10h"        \
         "pop    es"         \
         "pop    bp"         \
-    value [dl] modify [ax bx cx dx];
+    __value     [__dl] \
+    __modify    [__ax __bx __cx __dx]
 
 #pragma aux BIOSGetVideoMode = \
         "mov    ah,0fh"     \
         "int    10h"        \
         "shl    ebx,16"     \
         "mov    bx,ax"      \
-    value [ebx] modify [ax];
+    __value     [__ebx] \
+    __modify    [__ax]
 
 #pragma aux BIOSGetColorRegister = \
         "mov    ax,1015h"   \
@@ -283,7 +315,9 @@ extern void DosIdleCall( void );
         "mov    ax,cx"      \
         "shr    eax,16"     \
         "mov    ax,dx"      \
-    parm [bx] value [eax] modify [ax cx dx];
+    __parm      [__bx] \
+    __value     [__eax] \
+    __modify    [__ax __cx __dx]
 
 #endif
 

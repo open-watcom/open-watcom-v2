@@ -376,15 +376,17 @@ static drive_type getDriveType( char drv )
 #else
 extern short CheckRemovable( char );
 #pragma aux CheckRemovable = \
-        "mov    ax,04408h" \
-        "int    021h" \
-        "cmp    ax,0fh" \
-        "jne    ok" \
-        "xor    ax,ax" \
-        "jmp    done" \
-        "ok:    inc ax" \
-        "done:" \
-        parm [bl] value[ax];
+        "mov  ax,4408h"     \
+        "int 21h"           \
+        "cmp  ax,0fh"       \
+        "jne short ok"      \
+        "xor  ax,ax"        \
+        "jmp short done"    \
+    "ok: inc  ax"           \
+    "done:"                 \
+    __parm      [__bl] \
+    __value     [__ax] \
+    __modify    []
 
 static drive_type getDriveType( char drv )
 {

@@ -38,17 +38,19 @@
 #include "ifenv.h"
 
 #if defined( _M_IX86 )
-unsigned char           _crotl(unsigned char,char);
-#pragma aux _crotl =                                    \
-        0xD2 0xC0               /*      rol al, cl   */ \
-        parm [al] [cl]          /*                   */ \
-        value [al];
+unsigned char   _crotl(unsigned char,char);
+#pragma aux _crotl = \
+        "rol  al,cl"    \
+    __parm      [__al] [__cl] \
+    __value     [__al] \
+    __modify    []
 
-unsigned char           _crotr( unsigned char, char );
+unsigned char   _crotr( unsigned char, char );
 #pragma aux _crotr =                                    \
-        0xD2 0xC8               /*      ror al,cl    */ \
-        parm [al] [cl]          /*                   */ \
-        value [al];
+        "ror  al,cl"    \
+    __parm      [__al] [__cl] \
+    __value     [__al] \
+    __modify    []
 #else
 
 static unsigned_8 maskTable[8] = {      0x80,   // 1000 0000

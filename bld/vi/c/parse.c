@@ -219,23 +219,27 @@ char *GetNextWord( const char *buff, char *res, const char *ign )
 #if defined( __WATCOMC__ ) && defined( _M_IX86 )
 extern char toUpper( char );
 #pragma aux toUpper = \
-        "cmp    al, 061h" \
-        "jl     LL34" \
-        "cmp    al, 07ah" \
-        "jg     LL34" \
-        "sub    al, 0020H" \
-        "LL34:" \
-    parm [al] value[al];
+        "cmp  al,61h"   \
+        "jl short L1"   \
+        "cmp  al,7ah"   \
+        "jg short L1"   \
+        "sub  al,20h"   \
+    "L1:"               \
+    __parm      [__al] \
+    __value     [__al] \
+    __modify    []
 
 extern char toLower( char );
 #pragma aux toLower = \
-        "cmp    al, 041h" \
-        "jl     LL35" \
-        "cmp    al, 05ah" \
-        "jg     LL35" \
-        "add    al, 0020H" \
-        "LL35:" \
-    parm [al] value[al];
+        "cmp  al,41h"   \
+        "jl short L1"   \
+        "cmp  al,5ah"   \
+        "jg short L1"   \
+        "add  al,20h"   \
+    "L1:"               \
+    __parm      [__al] \
+    __value     [__al] \
+    __modify    []
 #else
 #define toUpper( x )    toupper( x )
 #define toLower( x )    tolower( x )

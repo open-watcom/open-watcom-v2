@@ -30,16 +30,21 @@
 ****************************************************************************/
 
 
-void TimeSlice( void );
+extern void TimeSlice( void );
 #pragma aux TimeSlice = \
-        "mov ax,01680h" \
-        "int 02fh";
+        "mov  ax,1680h" \
+        "int 2fh"       \
+    __parm      [] \
+    __value     \
+    __modify    [__ax]
 
-int GetVM( void );
+extern int GetVM( void );
 #pragma aux GetVM = \
-        "mov ax,01683h" \
-        "int 02fh" \
-        value [bx];
+        "mov  ax,1683h" \
+        "int 2fh"       \
+    __parm      [] \
+    __value     [__bx]
+    __modify    [__ax]
 
 //int CS( void );
 //#pragma aux CS = "mov ax,cs" value[ax];
@@ -49,10 +54,16 @@ int GetVM( void );
 
 extern void BeginCriticalSection( void );
 #pragma aux BeginCriticalSection = \
-        "mov ax,01681h" \
-        "int 02fh";
+        "mov  ax,1681h" \
+        "int 2fh"       \
+    __parm      [] \
+    __value     \
+    __modify    [__ax]
 
 extern void EndCriticalSection( void );
 #pragma aux EndCriticalSection = \
-        "mov ax,01682h" \
-        "int 02fh";
+        "mov  ax,1682h" \
+        "int 2fh"       \
+    __parm      [] \
+    __value     \
+    __modify    [__ax]

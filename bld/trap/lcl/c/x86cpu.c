@@ -76,15 +76,15 @@
 #endif
 
 #if defined( _M_I86 )
-    #define REG_XAX  __ax
-    #define REG_XBX  __bx
-    #define REG_XCX  __cx
-    #define REG_XDX  __dx
+    #define REG_xAX  __ax
+    #define REG_xBX  __bx
+    #define REG_xCX  __cx
+    #define REG_xDX  __dx
 #else
-    #define REG_XAX  __eax
-    #define REG_XBX  __ebx
-    #define REG_XCX  __ecx
-    #define REG_XDX  __edx
+    #define REG_xAX  __eax
+    #define REG_xBX  __ebx
+    #define REG_xCX  __ecx
+    #define REG_xDX  __edx
 #endif
 
 extern unsigned Is386( void );
@@ -106,7 +106,7 @@ extern unsigned Is386( void );
         "shr    eax,18"         \
         "and    eax,1"          \
         "mov    sp,dx"          \
-    __value [REG_XAX] __modify [REG_XBX REG_XDX]
+    __value [REG_xAX] __modify [REG_xBX REG_xDX]
 
 extern unsigned Is486( void );
 /* Try and flip the ID bit in EFlags */
@@ -124,7 +124,7 @@ extern unsigned Is486( void );
         "xor    eax,ebx"        \
         "shr    eax,21"         \
         "and    eax,1"          \
-    __value [REG_XAX] __modify [REG_XBX]
+    __value [REG_xAX] __modify [REG_xBX]
 
 //
 // Intel
@@ -159,7 +159,7 @@ extern unsigned CPUId( void );
         "push   eax"            \
 "no_amd_3dnow:"                 \
         "pop    eax"            \
-    __value [REG_XAX] __modify [REG_XBX REG_XCX REG_XDX]
+    __value [REG_xAX] __modify [REG_xBX REG_xCX REG_xDX]
 
 unsigned_8 X86CPUType( void )
 {

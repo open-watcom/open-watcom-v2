@@ -82,17 +82,21 @@ struct device {
 void __far *__first_pid( void );
 #ifdef _M_I86
 #pragma aux __first_pid = \
-        /* 0xb4 0x52    */ "mov ah,52h" \
-        /* 0xcd 0x21    */ "int 21h"  \
-                           "mov ax,es" \
-        value [ax bx];
+        "mov ah,52h"    \
+        "int 21h"       \
+        "mov ax,es"     \
+    __parm      [] \
+    __value     [__ax __bx] \
+    __modify    [__es]
 #else
 #pragma aux __first_pid = \
-                           "xor ebx,ebx" \
-        /* 0xb4 0x52    */ "mov ah,52h" \
-        /* 0xcd 0x21    */ "int 21h"  \
-                           "mov ax,es" \
-        value [ax ebx];
+        "xor ebx,ebx"   \
+        "mov ah,52h"    \
+        "int 21h"       \
+        "mov ax,es"     \
+    __parm      [] \
+    __value     [__ax __ebx] \
+    __modify    [__es]
 #endif
 
 static void do_dev( void )

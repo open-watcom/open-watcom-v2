@@ -31,6 +31,6 @@
 
 extern  void            CSuicide( void );
 #if defined( __WATCOMC__ )
-#pragma aux CSuicide aborts;
+#pragma aux CSuicide __aborts
 #endif
 extern  int             CSpawn(void (*)( void ));

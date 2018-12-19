@@ -72,25 +72,23 @@
 
 extern LP_PIXEL asmNonBlankEnd( LP_PIXEL, int, PIXEL );
 #ifdef _M_I86
-    #pragma aux asmNonBlankEnd =    \
+    #pragma aux asmNonBlankEnd = \
         "std"                       \
         "repe scasw"                \
-        "je L1"                     \
+        "je short L1"               \
         "inc di"                    \
-    "L1:"                           \
-        "cld"                       \
-    parm  [es di] [cx] [ax]         \
-    value [es di];
+    "L1: cld"                       \
+    __parm  [__es __di] [__cx] [__ax] \
+    __value [__es __di]
 #else
-    #pragma aux asmNonBlankEnd =    \
+    #pragma aux asmNonBlankEnd = \
         "std"                       \
         "repe scasw"                \
-        "je L1"                     \
+        "je short L1"               \
         "inc edi"                   \
-    "L1:"                           \
-        "cld"                       \
-    parm  [es edi] [ecx] [ax]       \
-    value [edi];
+    "L1: cld"                       \
+    __parm  [__es __edi] [__ecx] [__ax] \
+    __value [__edi]
 #endif
 
 bool    UserForcedTermRefresh = false;

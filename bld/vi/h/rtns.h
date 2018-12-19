@@ -402,7 +402,7 @@ vi_rc ToggleSSbar( void );
 
 /* fini.c */
 #ifdef __WATCOMC__
-#pragma aux Quit aborts;
+#pragma aux Quit __aborts
 #endif
 void    Quit( const char **, const char *, ... );
 void    ExitEditor( int );

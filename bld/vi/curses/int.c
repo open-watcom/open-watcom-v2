@@ -66,12 +66,12 @@ static char cTick1 = 18, cTick2 = 5;
 void __int24_handler( void );
 #if defined( _M_I86 )
 #pragma aux __int24_handler = \
-        "mov    al, 3" \
-        "iret" ;
+        "mov  al,3" \
+        "iret"
 #elif defined( _M_IX86 )
 #pragma aux __int24_handler = \
-        "mov    al, 3" \
-        "iretd" ;
+        "mov  al,3" \
+        "iretd"
 #endif
 
 static void _FAR_ HandleInt24( void )
@@ -258,15 +258,17 @@ static void newIntVect( int vect, void __far *rtn )
 
 extern void LockMemory( void __far *, long size );
 #pragma aux LockMemory = \
-        "push   es" \
-        "mov    ax, gs" \
-        "mov    es, ax" \
-        "mov    ax, 0252bh" \
-        "mov    bh, 5" \
-        "mov    bl, 1" \
-        "int    21h" \
-        "pop    es" \
-    parm [gs ecx] [edx];
+        "push es"       \
+        "mov  ax,gs"    \
+        "mov  es,ax"    \
+        "mov  ax,252bh" \
+        "mov  bh,5"     \
+        "mov  bl,1"     \
+        "int 21h"       \
+        "pop  es"       \
+    __parm      [__gs __ecx] [__edx] \
+    __value     \
+    __modify    [__bx]
 
 /*
  * setStupid1c - don't set timer tick interrupt in DOS boxes!!?!?!

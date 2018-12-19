@@ -31,14 +31,9 @@
 
 typedef void *(*func_sr)(void *);
 
+extern void *SafeRecurseCpp( func_sr rtn, void *arg );
 #if defined( __WATCOMC__ ) && defined( _M_IX86 ) && !defined( __NT__ )
-
-#pragma aux SafeRecurseCpp parm caller [eax ebx ecx edx]; /* just to be sure! */
-
+#pragma aux SafeRecurseCpp __parm __caller [__eax __ebx __ecx __edx]    /* just to be sure! */
 #else
-
 // nothing special
-
 #endif
-
-extern  void *SafeRecurseCpp( func_sr rtn, void *arg );

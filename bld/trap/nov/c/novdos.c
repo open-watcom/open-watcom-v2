@@ -199,9 +199,12 @@ static void IpxWait( void )
     //*******************************************************************
     extern void clock(void);
     #pragma aux clock = \
-        0xb4 0x2c                       /* mov ah,02ch */       \
-        0xcd 0x21                       /* int  21h    */       \
-        modify [ cx dx ];
+            "mov  ah,2ch"   \
+            "int 21h"       \
+        __parm      [] \
+        __value     \
+        __modify    [__cx __dx]
+
     clock();
 
     _IPXRelinquishControl();
@@ -470,13 +473,14 @@ static char FindPartner( void )
 #else
     {
         extern char ReadPropertyValue( void *, void *);
-
-        #pragma aux ReadPropertyValue =         \
-        0xb4 0xe3                       /* mov ah,0e3h */       \
-        0x1e                            /* push ds */           \
-        0x07                            /* pop es */            \
-        0xcd 0x21                       /* int 21h */           \
-        parm [ si ] [ di ] value [al] modify [ es ];
+        #pragma aux ReadPropertyValue = \
+                "mov  ah,0e3h"  \
+                "push ds"       \
+                "pop  es"       \
+                "int 21h"       \
+            __parm      [__si] [__di] \
+            __value     [__al] \
+            __modify    [__es]
 
         static char ReqBuff[80];
         unsigned    i;

@@ -38,50 +38,56 @@
 #define NoCur   0x2000      /* outside screen */
 
 extern void VIDSetPos( unsigned, unsigned );
-#pragma aux VIDSetPos =                                         \
-0XB0 0X0F       /* mov    al,f                          */      \
-0XEE            /* out    dx,al                         */      \
-0X42            /* inc    dx                            */      \
-0X88 0XD8       /* mov    al,bl                         */      \
-0XEE            /* out    dx,al                         */      \
-0X4A            /* dec    dx                            */      \
-0XB0 0X0E       /* mov    al,e                          */      \
-0XEE            /* out    dx,al                         */      \
-0X42            /* inc    dx                            */      \
-0X8A 0XC7       /* mov    al,bh                         */      \
-0XEE            /* out    dx,al                         */      \
-        parm caller [dx] [bx];
+#pragma aux VIDSetPos = \
+        "mov  al,0fh"   \
+        "out  dx,al"    \
+        "inc  dx"       \
+        "mov  al,bl"    \
+        "out  dx,al"    \
+        "dec  dx"       \
+        "mov  al,0eh"   \
+        "out  dx,al"    \
+        "inc  dx"       \
+        "mov  al,bh"    \
+        "out  dx,al"    \
+    __parm __caller [__dx] [__bx] \
+    __value         \
+    __modify        [__ax]
 
 extern void VIDSetCurTyp( unsigned, unsigned );
-#pragma aux VIDSetCurTyp =                                      \
-0X50            /* push   ax                            */      \
-0XB0 0X0A       /* mov    al,a                          */      \
-0XEE            /* out    dx,al                         */      \
-0X42            /* inc    dx                            */      \
-0X8A 0XC4       /* mov    al,ah                         */      \
-0XEE            /* out    dx,al                         */      \
-0X4A            /* dec    dx                            */      \
-0XB0 0X0B       /* mov    al,b                          */      \
-0XEE            /* out    dx,al                         */      \
-0X42            /* inc    dx                            */      \
-0X58            /* pop    ax                            */      \
-0XEE            /* out    dx,al                         */      \
-        parm caller [dx] [ax];
+#pragma aux VIDSetCurTyp = \
+        "push ax"       \
+        "mov  al,0ah"   \
+        "out  dx,al"    \
+        "inc  dx"       \
+        "mov  al,ah"    \
+        "out  dx,al"    \
+        "dec  dx"       \
+        "mov  al,0bh"   \
+        "out  dx,al"    \
+        "inc  dx"       \
+        "pop  ax"       \
+        "out  dx,al"    \
+    __parm __caller [__dx] [__ax] \
+    __value         \
+    __modify        []
 
 extern unsigned VIDGetCurTyp( unsigned );
-#pragma aux VIDGetCurTyp =                                      \
-0XB0 0X0B       /* mov    al,b                          */      \
-0XEE            /* out    dx,al                         */      \
-0X42            /* inc    dx                            */      \
-0XEC            /* in     al,dx                         */      \
-0X88 0XC4       /* mov    ah,al                         */      \
-0X4A            /* dec    dx                            */      \
-0XB0 0X0A       /* mov    al,a                          */      \
-0XEE            /* out    dx,al                         */      \
-0X42            /* inc    dx                            */      \
-0XEC            /* in     al,dx                         */      \
-0X86 0XE0       /* xchg   ah,al                         */      \
-        parm caller [dx] value [ax];
+#pragma aux VIDGetCurTyp = \
+        "mov  al,0bh"   \
+        "out  dx,al"    \
+        "inc  dx"       \
+        "in   al,dx"    \
+        "mov  ah,al"    \
+        "dec  dx"       \
+        "mov  al,0ah"   \
+        "out  dx,al"    \
+        "inc  dx"       \
+        "in   al,dx"    \
+        "xchg ah,al"    \
+    __parm __caller [__dx] \
+    __value         [__ax] \
+    __modify        []
 
 
 unsigned        VIDPort = VIDMONOINDXREG;

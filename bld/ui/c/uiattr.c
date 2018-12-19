@@ -38,21 +38,21 @@
 #endif
 
 #if defined( PROGRAM_VGA )
-#pragma aux SetColourRegister =         \
-    "   MOV     AX, 1010h   "           \
-    "   INT     10h         "           \
-        parm caller [bx] [dh] [ch] [cl] \
-        modify      [ax];
+extern void SetColourRegister( unsigned, char, char, char );
+#pragma aux SetColourRegister = \
+        "mov  ax,1010h" \
+        "int 10h"       \
+    __parm __caller [__bx] [__dh] [__ch] [__cl] \
+    __modify        [__ax]
 
+extern void SetBlinkAttr( char );
 #pragma aux SetBlinkAttr =              \
-    "   MOV     AX, 1003h   "           \
-    "   INT     10h         "           \
-        parm caller [bl]                \
-        modify      [ax];
+        "mov  ax,1030h" \
+        "int 10h"       \
+    __parm __caller [__bl] \
+    __modify        [__ax]
 
-static  char    BlinkAttr       = 1;
-void    SetBlinkAttr( char );
-void    SetColourRegister( unsigned, char, char, char );
+static char     BlinkAttr = 1;
 
 a_colour    VGAcolours[16] = {
 //      RED   GREEN    BLUE

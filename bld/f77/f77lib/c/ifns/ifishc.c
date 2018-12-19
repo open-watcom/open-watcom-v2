@@ -37,44 +37,51 @@
 #include "ftnstd.h"
 #include "ifenv.h"
 
+
 #ifdef _M_I86
 
-unsigned long           _lrotl(unsigned long,short);
-#pragma aux _lrotl =                                    \
-        0x81 0xE1 0x1F 0x00     /*      and cx,001fH */ \
-        0xE3 0x09               /*      jcxz L2      */ \
-        0xD1 0xE0               /* L1:  shl ax,1     */ \
-        0xD1 0xD2               /*      rcl dx,1     */ \
-        0x15 0x00 0x00          /*      adc ax,0     */ \
-        0xE2 0xF7               /*      loop L1      */ \
-        parm [ax dx] [cx]       /* L2:               */ \
-        value [ax dx];
+unsigned long   _lrotl(unsigned long,short);
+#pragma aux _lrotl = \
+        "and  cx,1fh"   \
+        "jcxz short L2" \
+    "L1: shl  ax,1"     \
+        "rcl  dx,1"     \
+        "adc  ax,0"     \
+        "loop short L1" \
+    "L2:"               \
+    __parm      [__dx __ax] [__cx] \
+    __value     [__dx __ax] \
+    __modify    []
 
-unsigned long           _lrotr( unsigned long, short );
-#pragma aux _lrotr =                                    \
-        0x81 0xE1 0x1F 0x00     /*      and CX,001fH */ \
-        0xE3 0x0A               /*      jcxz L2      */ \
-        0xD1 0xCA               /* L1:  ror DX,1     */ \
-        0xD1 0xC2               /*      rol DX,1     */ \
-        0xD1 0xD8               /*      rcr AX,1     */ \
-        0xD1 0xDA               /*      rcr DX,1     */ \
-        0xE2 0xF6               /*      loop L1      */ \
-        parm [ax dx] [cx]       /* L2:               */ \
-        value [ax dx];
+unsigned long   _lrotr( unsigned long, short );
+#pragma aux _lrotr = \
+        "and  cx,1fh"   \
+        "jcxz short L2" \
+    "L1: ror  dx,1"     \
+        "rol  dx,1"     \
+        "rcr  ax,1"     \
+        "rcr  dx,1"     \
+        "loop short L1" \
+    "L2:"               \
+    __parm      [__dx __ax] [__cx] \
+    __value     [__dx __ax] \
+    __modify    []
 
-#elif defined( __386__ )
+#elif defined( _M_IX86 )
 
-unsigned long           _lrotl(unsigned long,char);
-#pragma aux _lrotl =                                    \
-        0xD3 0xC0               /*      rol EAX,CL   */ \
-        parm [eax] [cl]                                 \
-        value [eax];
+unsigned long   _lrotl(unsigned long,char);
+#pragma aux _lrotl = \
+        "rol  eax,cl"   \
+    __parm      [__eax] [__cl] \
+    __value     [__eax] \
+    __modify    []
 
-unsigned long           _lrotr(unsigned long,char);
-#pragma aux _lrotr =                                    \
-        0xD3 0xC8               /*      ror EAX,CL   */ \
-        parm [eax] [cl]                                 \
-        value [eax];
+unsigned long   _lrotr(unsigned long,char);
+#pragma aux _lrotr = \
+        "ror  eax,cl"   \
+    __parm      [__eax] [__cl] \
+    __value     [__eax] \
+    __modify    []
 
 #else
 
@@ -109,9 +116,8 @@ static unsigned long maskTable[32] = {
         0xfffffff0,     // 1111 1111 1111 1111 1111 1111 1111 0000
         0xfffffff8,     // 1111 1111 1111 1111 1111 1111 1111 1000
         0xfffffffc,     // 1111 1111 1111 1111 1111 1111 1111 1100
-        0xfffffffe };   // 1111 1111 1111 1111 1111 1111 1111 1110
-
-
+        0xfffffffe      // 1111 1111 1111 1111 1111 1111 1111 1110
+};
 
 static unsigned_32 _lrotl( unsigned_32 arg, unsigned_32 cnt ) {
 //=============================================================

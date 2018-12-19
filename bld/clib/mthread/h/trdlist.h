@@ -60,7 +60,7 @@
 
   #pragma aux __tls_alloc "*" __value [__eax] __modify [__ecx]
   #pragma aux __tls_free "*" __parm [__ecx] __modify [__eax]
-  #pragma aux __tls_get_value "*" __parm [__ecx] value [__eax] __modify [__edx]
+  #pragma aux __tls_get_value "*" __parm [__ecx] __value [__eax] __modify [__edx]
   #pragma aux __tls_set_value "*" __parm [__ecx] [__eax] __modify [__edx]
   #pragma aux __create_thread "*" __parm [__edx] [__ebx] [__edi] [__eax] [__ecx]
 #elif defined( __RDOSDEV__ )

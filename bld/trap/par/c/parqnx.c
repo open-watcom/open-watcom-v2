@@ -54,9 +54,7 @@ int NumPrinters()
 }
 
 
-#pragma off(unreferenced);
 unsigned PrnAddress( int printer )
-#pragma on(unreferenced);
 {
     unsigned short  __far *par;
 
@@ -64,8 +62,8 @@ unsigned PrnAddress( int printer )
     return( par[printer] );
 }
 
-#pragma aux get_cs = "mov ax,cs" value [ax];
-#pragma aux get_flags = "pushfd" "pop eax" value [eax];
+#pragma aux get_cs = "mov ax,cs" __value [__ax]
+#pragma aux get_flags = "pushfd" "pop eax" __value [__eax]
 
 extern unsigned short get_cs(void);
 extern unsigned get_flags(void);

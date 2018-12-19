@@ -351,15 +351,17 @@ void TurnOffCapsLock( void )
 
 extern unsigned short CheckRemovable( unsigned char );
 #pragma aux CheckRemovable = \
-        "mov    ax,4408h" \
-        "int    21h"      \
-        "cmp    ax,0fh"   \
-        "jne short ok"    \
-        "xor    ax,ax"    \
-        "jmp short done"  \
-    "ok: inc    ax"       \
-    "done:"               \
-    parm [bl] value[ax];
+        "mov  ax,4408h"     \
+        "int 21h"           \
+        "cmp  ax,0fh"       \
+        "jne short ok"      \
+        "xor  ax,ax"        \
+        "jmp short done"    \
+    "ok: inc  ax"           \
+    "done:"                 \
+    __parm      [__bl] \
+    __value     [__ax] \
+    __modify    []
 
 /*
  * DoGetDriveType - get the type of drive A-Z

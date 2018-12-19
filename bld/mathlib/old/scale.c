@@ -43,11 +43,11 @@ extern  int                 _CmpBigInt(int, int _WCNEAR *);
 extern  double              _Scale10V( double, int );
 
 #if defined(__386__)
-#pragma aux     _Rnd2Int        "_*" parm routine [eax] [edx];
-#pragma aux     _CmpBigInt      "_*" parm caller [eax] [edx];
+#pragma aux     _Rnd2Int        "_*" __parm __routine [__eax] [__edx]
+#pragma aux     _CmpBigInt      "_*" __parm __caller [__eax] [__edx]
 #elif defined( _M_I86 )
-#pragma aux     _Rnd2Int        "_*" parm routine [ax] [dx];
-#pragma aux     _CmpBigInt      "_*" parm caller [ax] [dx];
+#pragma aux     _Rnd2Int        "_*" __parm __routine [__ax] [__dx]
+#pragma aux     _CmpBigInt      "_*" __parm __caller [__ax] [__dx]
 #endif
 
 

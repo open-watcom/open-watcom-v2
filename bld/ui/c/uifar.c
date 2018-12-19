@@ -43,76 +43,77 @@
 #ifdef _M_I86
 
 extern void _forward( void );
-#pragma aux _forward = "cld" modify []
+#pragma aux _forward = "cld" __modify []
 
 extern void _backward( void );
-#pragma aux _backward = "std" modify []
+#pragma aux _backward = "std" __modify []
 
 extern PIXEL _snowget( LP_PIXEL );
 #pragma aux _snowget = \
-       0x1e                       /*     push    ds         */  \
-       0x8e 0xda                  /*     mov     ds,dx      */  \
-       0xba 0xda 0x03             /*     mov     dx,03daH   */  \
-       0xec                       /* L3  in      al,dx      */  \
-       0xd0 0xc8                  /*       ror     al,1     */  \
-       0x72 0xfb                  /*       jb      L3       */  \
-       0xfa                       /*     cli                */  \
-       0xec                       /* L4  in      al,dx      */  \
-       0xd0 0xc8                  /*       ror     al,1     */  \
-       0x73 0xfb                  /*       jae     L4       */  \
-       0xad                       /*     lodsw              */  \
-       0xfb                       /*     sti                */  \
-       0x1f                       /*     pop     ds         */  \
-       parm caller [dx si]                                      \
-       value [ax]                                               \
-       modify [ax dx];
+        "push ds"       \
+        "mov  ds,dx"    \
+        "mov  dx,3dah"  \
+    "L1: in   al,dx"    \
+        "ror  al,1"     \
+        "jb short L1"   \
+        "cli"           \
+    "L2: in   al,dx"    \
+        "ror  al,1"     \
+        "jae short L2"  \
+        "lodsw"         \
+        "sti"           \
+        "pop  ds"       \
+    __parm __caller [__dx __si] \
+    __value         [__ax] \
+    __modify        [__ax __dx]
 
 extern LP_PIXEL _snowput( LP_PIXEL, PIXEL );
 #pragma aux _snowput = \
-       0xba 0xda 0x03             /*     mov     dx,03daH   */  \
-       0xec                       /* L3  in      al,dx      */  \
-       0xd0 0xc8                  /*       ror     al,1     */  \
-       0x72 0xfb                  /*       jb      L3       */  \
-       0xfa                       /*     cli                */  \
-       0xec                       /* L4  in      al,dx      */  \
-       0xd0 0xc8                  /*       ror     al,1     */  \
-       0x73 0xfb                  /*       jae     L4       */  \
-       0x8b 0xc3                  /*       mov     ax,bx    */  \
-       0xab                       /*     stosw              */  \
-       0xfb                       /*     sti                */  \
-       parm caller [es di] [bx]                                 \
-       value [es di]                                            \
-       modify [ax dx];
+        "mov  dx,3dah" \
+    "L1: in   al,dx"    \
+        "ror  al,1"     \
+        "jb short L1"   \
+        "cli"           \
+    "L2: in   al,dx"    \
+        "ror  al,1"     \
+        "jae short L2"  \
+        "mov  ax,bx"    \
+        "stosw"         \
+        "sti"           \
+    __parm __caller [__es __di] [__bx] \
+    __value         [__es __di] \
+    __modify        [__ax __dx]
 
 extern void _snowcopy( LP_PIXEL, LP_PIXEL, int );
 #pragma aux _snowcopy = \
-       0x1e                       /*     push    ds         */  \
-       0x8e 0xda                  /*     mov     ds,dx      */  \
-       0xba 0xda 0x03             /*     mov     dx,03daH   */  \
-       0xec                       /* top in      al,dx      */  \
-       0xd0 0xc8                  /*       ror     al,1     */  \
-       0x72 0xfb                  /*       jb      L3       */  \
-       0xfa                       /*     cli                */  \
-       0xec                       /*     in      al,dx      */  \
-       0xd0 0xc8                  /*       ror     al,1     */  \
-       0x73 0xfb                  /*       jae     in       */  \
-       0xad                       /*     lodsw              */  \
-       0xfb                       /*     sti                */  \
-       0x8b 0xd8                  /*     mov     bx,ax      */  \
-       0xec                       /*     in      al,dx      */  \
-       0xd0 0xc8                  /*       ror     al,1     */  \
-       0x72 0xfb                  /*       jb      in       */  \
-       0xfa                       /*     cli                */  \
-       0xec                       /*     in      al,dx      */  \
-       0xd0 0xc8                  /*       ror     al,1     */  \
-       0x73 0xfb                  /*       jae     in       */  \
-       0x8b 0xc3                  /*     mov     ax,bx      */  \
-       0xab                       /*     stosw              */  \
-       0xfb                       /*     sti                */  \
-       0xe2 0xe0                  /*     loop top           */  \
-       0x1f                       /*     pop     ds         */  \
-       parm caller [es di] [dx si] [cx]                         \
-       modify [ax dx bx cx];
+        "push ds"           \
+        "mov  ds,dx"        \
+        "mov  dx,03dah"     \
+    "top:"                  \
+    "L1: in   al,dx"        \
+        "ror  al,1"         \
+        "jb short L1"       \
+        "cli"               \
+    "L2: in   al,dx"        \
+        "ror  al,1"         \
+        "jae short L2"      \
+        "lodsw"             \
+        "sti"               \
+        "mov  bx,ax"        \
+    "L3: in   al,dx"        \
+        "ror  al,1"         \
+        "jb short L3"       \
+        "cli"               \
+    "L4: in   al,dx"        \
+        "ror  al,1"         \
+        "jae short L4"      \
+        "mov  ax,bx"        \
+        "stosw"             \
+        "sti"               \
+        "loop short top"    \
+        "pop  ds"           \
+    __parm __caller [__es __di] [__dx __si] [__cx] \
+    __modify        [__ax __dx __bx __cx]
 
 #endif
 

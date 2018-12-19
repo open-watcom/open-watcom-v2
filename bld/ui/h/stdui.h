@@ -798,7 +798,7 @@ extern void             win_uisetmono( void );
 extern void             win_uisetcolor( int clr );
 
 extern void __loadds __far win_uihookrtn( unsigned event, unsigned info );
-#pragma aux win_uihookrtn parm [ax] [cx];
+#pragma aux win_uihookrtn __parm [__ax] [__cx]
 
 #elif defined( __RDOS__ )
 

@@ -66,10 +66,10 @@ enum {
     _USAGE_BRIEF
 };
 
-#if defined( __WATCOMC__ ) && !defined( __AXP__ )
-#pragma aux ExitWithUsage aborts;
-#endif
 extern void     ExitWithUsage( const char *__usage[], int __type );
+#if defined( __WATCOMC__ ) && !defined( __AXP__ )
+#pragma aux ExitWithUsage __aborts
+#endif
 
 /*
  * __usage:     same as the usage parameter for GetOpt

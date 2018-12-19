@@ -61,14 +61,16 @@
 #if defined( __OS2__ ) && defined( _M_I86 ) || defined( __DOS__ )
 extern long DosGetFullPath( char __FAR *org, char __FAR *real );
 #pragma aux DosGetFullPath = \
-        "push   ds" \
-        "mov    si,ax" \
-        "mov    ds,dx" \
-        "mov    ah,60H" \
-        "int    21h" \
-        "sbb    dx,dx" \
-        "pop    ds" \
-        parm [dx ax] [es di] value [dx ax] modify[si];
+        "push ds"       \
+        "mov  si,ax"    \
+        "mov  ds,dx"    \
+        "mov  ah,60H"   \
+        "int 21h"       \
+        "sbb  dx,dx"    \
+        "pop  ds"       \
+    __parm      [dx ax] [es di] \
+    __value     [dx ax] \
+    __modify    [si]
 
 /*
  * dosSameFile - DOS specific same file test
