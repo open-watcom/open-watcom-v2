@@ -70,8 +70,8 @@
     #ifndef REG_xDX
         #define REG_xDX
     #endif
-    #ifndef REG_xDS
-        #define REG_xDS
+    #ifndef REG_DS
+        #define REG_DS
     #endif
     #ifndef REG_ES
         #define REG_ES
