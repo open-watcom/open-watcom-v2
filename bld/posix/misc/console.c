@@ -24,7 +24,7 @@
 *
 *  ========================================================================
 *
-* Description: get console dimensions 
+* Description: get console dimensions
 *
 ****************************************************************************/
 
@@ -80,10 +80,12 @@ int GetConsoleHeight( void )
 }
 #elif defined( __DOS__ )
 unsigned char getVideoMode( void );
-    #pragma aux getVideoMode = \
-            "mov ah, 0fh" \
-            "int 010h" \
-            value [ah] modify[bx];
+#pragma aux getVideoMode = \
+        "mov  ah,0fh"   \
+        "int 10h"       \
+    __parm      [] \
+    __value     [__ah] \
+    __modify    [__bx]
 
 int GetConsoleWidth( void )
 {
@@ -91,16 +93,18 @@ int GetConsoleWidth( void )
 }
 
 unsigned char getRowCount( void );
-    #pragma aux getRowCount = \
-                "push   es" \
-                "push   bp" \
-                "mov    ax, 01130h" \
-                "xor    bh, bh" \
-                "mov    dl, 018h" \
-                "int    010h" \
-                "pop    bp" \
-                "pop    es" \
-                value [dl] modify [ax bx cx dx];
+#pragma aux getRowCount = \
+        "push   es" \
+        "push   bp" \
+        "mov    ax,1130h" \
+        "xor    bh,bh" \
+        "mov    dl,18h" \
+        "int 10h" \
+        "pop    bp" \
+        "pop    es" \
+    __parm      [] \
+    __value     [__dl] \
+    __modify    [__ax __bx __cx __dx]
 
 int GetConsoleHeight( void )
 {

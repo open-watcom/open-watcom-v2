@@ -31,7 +31,7 @@
 
 
 #ifdef __NT__
-    #pragma aux __fortran "*" parm [] modify [ eax ecx edx ];
+    #pragma aux __fortran "*" __parm [] __modify [__eax __ecx __edx]
     #define PB_EXPORT      __export __fortran
 #else
     #define PB_EXPORT      __pascal __export

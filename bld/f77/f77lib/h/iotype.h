@@ -33,19 +33,16 @@
 #define _IOTYPE_H_INCLUDED
 
 typedef PTYPE (io_type_rtn)(void);
-
-#if defined( _M_IX86 )
-#ifdef __386__
-  #pragma aux io_type_decl modify [eax ebx ecx edx esi edi];
-#else
+#if defined( _M_I86 )
   #if defined( __SMALL__ ) || defined( __MEDIUM__ ) || defined( __WINDOWS__ )
-    #pragma aux io_type_decl modify [ax bx cx dx si di es];
+    #pragma aux io_type_decl __modify [__ax __bx __cx __dx __si __di __es]
   #else
-    #pragma aux io_type_decl modify [ax bx cx dx si di ds es];
+    #pragma aux io_type_decl __modify [__ax __bx __cx __dx __si __di __ds __es]
   #endif
-#endif
-
-#pragma aux ( io_type_rtn, io_type_decl )
+  #pragma aux ( io_type_rtn, io_type_decl )
+#elif defined( _M_IX86 )
+  #pragma aux io_type_decl __modify [__eax __ebx __ecx __edx __esi __edi]
+  #pragma aux ( io_type_rtn, io_type_decl )
 #endif
 
 extern  io_type_rtn             IOType;         // for optimizing compiler

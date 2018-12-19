@@ -79,41 +79,41 @@ typedef struct {
 } display_configuration;
 
 extern display_configuration BIOSDevCombCode( void );
-#pragma aux BIOSDevCombCode =   \
-        "push   bp"             \
-        "mov    ax,1a00h"       \
-        "int 10h"               \
-        "cmp    al,1ah"         \
-        "jz short L1"           \
-        "sub    bx,bx"          \
-    "L1: pop    bp"             \
-    parm            []          \
-    value           [bx]        \
-    modify exact    [ax bx]
+#pragma aux BIOSDevCombCode = \
+        "push bp"       \
+        "mov  ax,1a00h" \
+        "int 10h"       \
+        "cmp  al,1ah"   \
+        "jz short L1"   \
+        "sub  bx,bx"    \
+    "L1: pop  bp"       \
+    __parm              [] \
+    __value             [__bx] \
+    __modify __exact    [__ax __bx]
 
-extern char        BIOSGetMode( void );
-#pragma aux BIOSGetMode =       \
-        "push   bp"             \
-        "mov    ah,0fh"         \
-        "int 10h"               \
-        "pop    bp"             \
-    parm            []          \
-    value           [al]        \
-    modify exact    [ax bh]
+extern char BIOSGetMode( void );
+#pragma aux BIOSGetMode = \
+        "push bp"       \
+        "mov  ah,0fh"   \
+        "int 10h"       \
+        "pop  bp"       \
+    __parm              [] \
+    __value             [__al] \
+    __modify __exact    [__ax __bh]
 
 extern signed long BIOSEGAInfo( void );
-#pragma aux BIOSEGAInfo =       \
-        "push   bp"             \
-        "mov    ah,12h"         \
-        "mov    bl,10h"         \
-        "mov    bh,0ffh"        \
-        "int 10h"               \
-        "mov    ax,bx"          \
-        "mov    dx,cx"          \
-        "pop    bp"             \
-    parm            []          \
-    value           [dx ax]     \
-    modify exact    [ax bx cx dx]
+#pragma aux BIOSEGAInfo = \
+        "push bp"       \
+        "mov  ah,12h"   \
+        "mov  bl,10h"   \
+        "mov  bh,0ffh"  \
+        "int 10h"       \
+        "mov  ax,bx"    \
+        "mov  dx,cx"    \
+        "pop  bp"       \
+    __parm              [] \
+    __value             [__dx __ax] \
+    __modify __exact    [__ax __bx __cx __dx]
 
 enum ega_seqencer {
     SEQ_PORT        = 0x3c4,
@@ -215,9 +215,9 @@ enum ega_graphics_controller {
 extern void _ega_write( unsigned, char, char );
 #pragma aux _ega_write = \
         "out dx,ax"     \
-    parm            [dx] [al] [ah] \
-    value           \
-    modify exact
+    __parm              [__dx] [__al] [__ah] \
+    __value             \
+    __modify __exact    []
 
 /* read vga registers */
 extern char _vga_read( unsigned, char );
@@ -225,16 +225,16 @@ extern char _vga_read( unsigned, char );
         "out dx,al"     \
         "inc dx"        \
         "in  al,dx"     \
-    parm            [dx] [al] \
-    value           [al] \
-    modify exact    [al dx]
+    __parm              [__dx] [__al] \
+    __value             [__al] \
+    __modify __exact    [__al __dx]
 
 extern void Fillb( unsigned, unsigned, unsigned, unsigned );
 #pragma aux Fillb =     \
         "rep stosb"     \
-    parm caller     [es] [di] [ax] [cx] \
-    value           \
-    modify exact    [cx di]
+    __parm __caller     [__es] [__di] [__ax] [__cx] \
+    __value             \
+    __modify __exact    [__cx __di]
 
 #define _seq_write( reg, val )          _ega_write( SEQ_PORT, reg, val )
 #define _graph_write( reg, val )        _ega_write( GRA_PORT, reg, val )
@@ -252,9 +252,9 @@ extern void _disable_video( unsigned );
         "out dx,al"     \
         "mov al,0"      \
         "out dx,al"     \
-    parm            [dx] \
-    value           \
-    modify exact    [al dx]
+    __parm              [__dx] \
+    __value             \
+    __modify __exact    [__al __dx]
 
 /* enable video  */
 extern void _enable_video( unsigned );
@@ -267,9 +267,9 @@ extern void _enable_video( unsigned );
         "out dx,al"     \
         "mov al,0"      \
         "out dx,al"     \
-    parm            [dx] \
-    value           \
-    modify exact    [al dx]
+    __parm              [__dx] \
+    __value             \
+    __modify __exact    [__al __dx]
 
 enum vid_state_info {
     VID_STATE_HARDWARE      = 0x1,
@@ -289,9 +289,9 @@ extern void MyMoveData( unsigned srcseg, unsigned srcoff, unsigned destseg, unsi
         "mov    ds,dx"  \
         "rep    movsb"  \
         "pop    ds"     \
-    parm            [dx] [si] [es] [di] [cx] \
-    value           \
-    modify exact    [cx di si]
+    __parm              [__dx] [__si] [__es] [__di] [__cx] \
+    __value             \
+    __modify __exact    [__cx __di __si]
 
 #define VID_STATE       5
 #define FONT_SIZE       8 * 1024

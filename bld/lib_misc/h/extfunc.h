@@ -51,27 +51,27 @@
 
         #define REG_GS          __gs
         #if defined(__SW_3S)
-            #define REG_AX      __eax
-            #define REG_BX      __ebx
-            #define REG_CX      __ecx
-            #define REG_DX      __edx
+            #define REG_xAX      __eax
+            #define REG_xBX      __ebx
+            #define REG_xCX      __ecx
+            #define REG_xDX      __edx
         #endif
     #endif
 
-    #ifndef REG_AX
-        #define REG_AX
+    #ifndef REG_xAX
+        #define REG_xAX
     #endif
-    #ifndef REG_BX
-        #define REG_BX
+    #ifndef REG_xBX
+        #define REG_xBX
     #endif
-    #ifndef REG_CX
-        #define REG_CX
+    #ifndef REG_xCX
+        #define REG_xCX
     #endif
-    #ifndef REG_DX
-        #define REG_DX
+    #ifndef REG_xDX
+        #define REG_xDX
     #endif
-    #ifndef REG_DS
-        #define REG_DS
+    #ifndef REG_xDS
+        #define REG_xDS
     #endif
     #ifndef REG_ES
         #define REG_ES
@@ -83,7 +83,7 @@
         #define REG_GS
     #endif
 
-    #pragma aux __outside_CLIB modify [REG_AX REG_BX REG_CX REG_DX REG_DS REG_ES REG_FS REG_GS]
+    #pragma aux __outside_CLIB __modify [REG_xAX REG_xBX REG_xCX REG_xDX REG_DS REG_ES REG_FS REG_GS]
     /*
         use as follows:
 
@@ -92,10 +92,10 @@
 
     */
 
-    #undef REG_AX
-    #undef REG_BX
-    #undef REG_CX
-    #undef REG_DX
+    #undef REG_xAX
+    #undef REG_xBX
+    #undef REG_xCX
+    #undef REG_xDX
     #undef REG_DS
     #undef REG_ES
     #undef REG_FS

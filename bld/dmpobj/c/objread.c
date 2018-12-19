@@ -371,27 +371,27 @@ unsigned_32 GetVariable( void )
     #if defined( _M_I86SM ) || defined( _M_I86MM )
         extern byte docksum( byte *buf, unsigned_16 len );
         #pragma aux docksum = \
-            0x30 0xd2       /* xor dl,dl */ \
-            0xac            /* L1: lodsb */ \
-            0x00 0xc2       /* add dl,al */ \
-            0xe2 0xfb       /* loop L1 */ \
-            parm            [si] [cx] \
-            value           [dl] \
-            modify          [ax dl];
+                "xor  dl,dl"    \
+            "L1: lodsb"         \
+                "add  dl,al"    \
+                "loop short L1" \
+            __parm      [__si] [__cx] \
+            __value     [__dl] \
+            __modify    [__ax __dl]
         #define SPECIAL_CHKSUM
     #elif defined( _M_I86 )
         extern byte docksum( byte __far *buf, unsigned_16 len );
         #pragma aux docksum = \
-            0x1e            /* push ds */ \
-            0x8e 0xda       /* mov ds,dx */ \
-            0x30 0xd2       /* xor dl,dl */ \
-            0xac            /* L1: lodsb */ \
-            0x00 0xc2       /* add dl,al */ \
-            0xe2 0xfb       /* loop L1 */ \
-            0x1f            /* pop ds */ \
-            parm            [dx si] [cx] \
-            value           [dl] \
-            modify          [ax];
+                "push ds"       \
+                "mov  ds,dx"    \
+                "xor  dl,dl"    \
+            "L1: lodsb"         \
+                "add  dl,al"    \
+                "loop short L1" \
+                "pop  ds"       \
+            __parm      [__dx __si] [__cx] \
+            __value     [__dl] \
+            __modify    [__ax]
         #define SPECIAL_CHKSUM
     #endif
 #endif

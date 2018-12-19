@@ -43,16 +43,28 @@ extern unsigned_32 _stkpop( void );
 extern void _stkpush( unsigned_32 );
 
 #if defined(__386__)
-#pragma aux     _stkpop = 0x58 /* pop eax */\
-                        parm value [eax] modify nomemory [esp];
-#pragma aux     _stkpush = 0x50 /* push eax */\
-                        parm caller [eax] modify nomemory [esp];
+#pragma aux _stkpop = \
+        "pop  eax"  \
+    __parm              [] \
+    __value             [__eax] \
+    __modify __nomemory [__esp]
+#pragma aux _stkpush = \
+        "push eax"  \
+    __parm __caller     [__eax] \
+    __value             \
+    __modify __nomemory [__esp]
 
 #else                                           /* 16-bit land */
-#pragma aux     _stkpop = 0x58 /* pop ax */\
-                          0x5A /* pop dx */\
-                        parm value [ax dx] modify nomemory [sp];
-#pragma aux     _stkpush = 0x52 /* push dx */\
-                          0x50  /* pop ax */\
-                        parm caller [ax dx] modify nomemory [sp];
+#pragma aux _stkpop = \
+        "pop  ax"   \
+        "pop  dx"   \
+    __parm              [] \
+    __value             [__dx __ax] \
+    __modify __nomemory [sp]
+#pragma aux _stkpush = \
+        "push dx"   \
+        "push ax"   \
+    __parm __caller     [__dx __ax] \
+    __value             \
+    __modify __nomemory [sp]
 #endif
