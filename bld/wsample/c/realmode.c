@@ -158,7 +158,11 @@ static void __interrupt __far timer_handler( union INTPACK r )
     our own timer interrupt handler.
 */
 extern short GetCS( void );
-#pragma aux GetCS = 0x8c 0xc8;
+#pragma aux GetCS = \
+        "mov ax,cs" \
+    __parm      [] \
+    __value     [__ax] \
+    __modify    []
 
 void StartTimer( void )
 {

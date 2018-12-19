@@ -31,18 +31,23 @@
 
 
 #ifndef _WSAMPLE_H_INCLUDED
-#ifdef _MARK_ON
-  #ifdef __386__
-    #pragma aux __mark = 0xcc parm nomemory [dx eax] [bx] [ecx] \
-                         modify exact nomemory [];
-  #else
-    #pragma aux __mark = 0xcc parm nomemory [dx ax]  [bx] [cx]  \
-                         modify exact nomemory [];
-  #endif
-  extern void __mark( void __far *, unsigned short, void __near * );
-  #define _MARK_( x )   __mark( x, 0, (void __near *)0 )
-#else
-  #define _MARK_( x )
-#endif
 #define _WSAMPLE_H_INCLUDED
+
+#ifdef _MARK_ON
+    extern void __mark( void __far *, unsigned short, void __near * );
+  #ifdef __386__
+    #define AUX_INFO_PARM __nomemory [__dx __eax] [__bx] [__ecx]
+  #else
+    #define AUX_INFO_PARM __nomemory [__dx __ax] [__bx] [__cx]
+  #endif
+    #pragma aux __mark = \
+            "int 3" \
+        __parm                      AUX_INFO_PARM \
+        __value                     \
+        __modify __exact __nomemory []
+    #define _MARK_( x )   __mark( x, 0, (void __near *)0 )
+#else
+    #define _MARK_( x )
+#endif
+
 #endif

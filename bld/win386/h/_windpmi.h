@@ -36,7 +36,7 @@
 
 extern WORD     _DPMIGetAliases( DWORD offset, DWORD __far *desc, WORD cnt);
 extern WORD     _DPMIGetAlias( DWORD offset, DWORD __far *desc);
-#pragma aux _DPMIGetAlias parm[dx ax] [es si] value[ax];
+#pragma aux _DPMIGetAlias __parm [__dx __ax] [__es __si] __value [__ax]
 extern void     _DPMIFreeAlias( WORD sel );
 extern WORD     _DPMIGetHugeAlias( DWORD offset, DWORD __far *res, DWORD size );
 extern void     _DPMIFreeHugeAlias( DWORD desc, DWORD size );

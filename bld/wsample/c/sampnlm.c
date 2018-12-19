@@ -65,8 +65,12 @@ typedef struct code_load {
     samp_block_kinds    kind;
 } code_load;
 
-extern short            GetCS( void );
-#pragma aux GetCS = 0x8c 0xc8 value [ax];
+extern short GetCS( void );
+#pragma aux GetCS = \
+        "mov ax,cs" \
+    __parm      [] \
+    __value     [__ax] \
+    __modify    []
 
 #if 0
 void CodeLoad( struct LoadDefinitionStructure *loaded, samp_block_kinds kind );

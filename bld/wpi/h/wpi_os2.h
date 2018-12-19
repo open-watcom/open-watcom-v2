@@ -1383,11 +1383,10 @@ extern HWND _wpi_getparent( HWND hwnd );
         WinSetParent( win, parent, TRUE )
 
     #define _wpi_getkeystate( vkey ) \
-                                WinGetKeyState( HWND_DESKTOP, (int)(vkey) )
+        WinGetKeyState( HWND_DESKTOP, (int)(vkey) )
 
-    #pragma aux __wpi_selectobject parm [];
-extern WPI_HANDLE __wpi_selectobject( WPI_PRES pres, WPI_HANDLE v_obj,
-                                                        void *v_old_obj );
+extern WPI_HANDLE __wpi_selectobject( WPI_PRES pres, WPI_HANDLE v_obj, void *v_old_obj );
+#pragma aux __wpi_selectobject __parm [];
     #define _wpi_selectobject( pres, obj ) \
         __wpi_selectobject( pres, obj, alloca( sizeof(WPI_OBJECT) ) )
 

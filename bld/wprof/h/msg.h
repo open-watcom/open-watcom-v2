@@ -123,5 +123,5 @@ LITSTR( LMS_RECURSIVE_MAD_FAILURE,  "Can not recover from machine architecture f
 extern void ErrorMsg( char *msg, ... );
 extern void fatal( char *msg, ... );
 #ifdef __WATCOMC__
-#pragma aux fatal aborts;
+#pragma aux fatal __aborts
 #endif

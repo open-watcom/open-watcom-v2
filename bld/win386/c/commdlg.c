@@ -38,8 +38,8 @@
 #include "winstubs.h"
 #include "_commdlg.h"
 
-#pragma aux BackPatch_commdlg parm [ax];
 extern LPVOID FAR BackPatch_commdlg( char *str );
+#pragma aux BackPatch_commdlg __parm [__ax]
 
 static BOOL  (FAR PASCAL *commdlgChooseColor)(LPCHOOSECOLOR);
 static HWND  (FAR PASCAL *commdlgReplaceText)(LPFINDREPLACE);

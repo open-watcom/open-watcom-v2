@@ -37,24 +37,23 @@
  * detected. This is passed the length to copy in paragraphs.
 */
 
-extern  void DoFastCopyPara( unsigned dst, unsigned src, unsigned len_in_paras );
-
+extern void DoFastCopyPara( unsigned dst, unsigned src, unsigned len_in_paras );
 #pragma aux DoFastCopyPara = \
-        ".386" \
-        "xor si,si" \
-        "xor di,di" \
+        ".386"          \
+        "xor si,si"     \
+        "xor di,di"     \
         "test byte ptr CS:__OVLFLAGS__, 1 " \
-        "jz   cpu86" \
-        "shl cx,2" \
-        "rep movsd" \
+        "jz short cpu86" \
+        "shl cx,2"      \
+        "rep movsd"     \
         "jmp short end" \
-"cpu86:  shl cx,1" \
-        "shl cx,1" \
-        "shl cx,1" \
-        "rep movsw" \
-"end:   " \
-        parm [es] [ds] [cx]               \
-        modify exact [si di cx];
+    "cpu86: shl cx,1"   \
+        "shl cx,1"      \
+        "shl cx,1"      \
+        "rep movsw"     \
+    "end:"              \
+    __parm              [__es] [__ds] [__cx] \
+    __modify __exact    [__si __di __cx]
 
 
 /**************************************************************************/
@@ -820,7 +819,7 @@ extern unsigned_32 __near __OVLLONGJMP__( unsigned ovl_num, unsigned segment,
 #ifdef OVL_DEBUG
 #include <conio.h>
 
-#pragma aux cprintf modify [es ds];
+#pragma aux cprintf __modify [__es __ds]
 
 #define CRLF "\r\n"
 

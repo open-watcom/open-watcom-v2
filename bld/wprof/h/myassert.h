@@ -31,18 +31,18 @@
 
 
 #ifndef MYASSERT_H
+#define MYASSERT_H  1
 
 #undef  myassert
 #ifdef NDEBUG
 #define myassert(ignore)
 #else
-extern  void            AssertionFailed( char *, unsigned int );
+extern void AssertionFailed( char *, unsigned int );
 #ifndef __AXP__
-#pragma aux AssertionFailed aborts;
+#pragma aux AssertionFailed __aborts
 #endif
 #define myassert(expr)    if(!(expr)) AssertionFailed(__FILE__,__LINE__)
 #endif
 
-#define MYASSERT_H  1
 #endif
 

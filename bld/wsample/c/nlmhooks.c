@@ -51,8 +51,10 @@ typedef struct {
 
 extern void GetIDTBaseOff( baseoffset * );
 #pragma aux GetIDTBaseOff = \
-        0x0f 0x01 0x08 /* sidt  [eax] */ \
-    parm caller [eax];
+        "sidt  [eax]"   \
+    __parm __caller [__eax] \
+    __value         \
+    __modify        []
 
 static intrptr HookVect( intrptr new_intrptr, int vect )
 {

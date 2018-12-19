@@ -100,33 +100,37 @@ unsigned long    codesize;
 #if defined( __WATCOMC__ ) && defined( __386__ )
 unsigned fastcmp( unsigned char *src, unsigned char *dst, int *cmp );
 
-#pragma aux fastcmp parm [esi] [edi] [edx] modify exact [eax ebx] value [ecx] = \
-        "       xor ecx,ecx" \
-        "L1:    mov eax,[esi+ecx]" \
-        "       mov ebx,[edi+ecx]" \
-        "       lea ecx,4[ecx]" \
-        "       xor eax,ebx" \
-        "       jne dscan" \
-        "       cmp ecx,60" \
-        "       jb  L1" \
-        "       jmp finished" \
-        "dscan: lea ecx,-4[ecx]" \
-        "       test ax,ax" \
-        "       jne in_low_word" \
-        "       lea ecx,2[ecx]" \
-        "       shr eax,16" \
-        "in_low_word:" \
-        "       test al,al" \
-        "       jne almost" \
-        "       inc ecx" \
-        "almost:"\
-        "       xor eax,eax"\
-        "       xor ebx,ebx"\
-        "       mov al, [esi+ecx]" \
-        "       mov bl, [edi+ecx]" \
-        "       sub eax,ebx"\
-        "       mov [edx],eax"\
-        "finished:";
+#pragma aux fastcmp = \
+        "xor  ecx,ecx"          \
+    "L1: mov  eax,[esi+ecx]"    \
+        "mov  ebx,[edi+ecx]"    \
+        "lea  ecx,4[ecx]"       \
+        "xor  eax,ebx"          \
+        "jne short dscan"       \
+        "cmp  ecx,60"           \
+        "jb short L1"           \
+        "jmp short finished"    \
+    "dscan:"                    \
+        "lea ecx,-4[ecx]"       \
+        "test ax,ax"            \
+        "jne short in_low_word" \
+        "lea  ecx,2[ecx]"       \
+        "shr  eax,16"           \
+    "in_low_word:"              \
+        "test al,al"            \
+        "jne short almost"      \
+        "inc  ecx"              \
+    "almost:"                   \
+        "xor  eax,eax"          \
+        "xor  ebx,ebx"          \
+        "mov  al,[esi+ecx]"     \
+        "mov  bl,[edi+ecx]"     \
+        "sub  eax,ebx"          \
+        "mov  [edx],eax"        \
+    "finished:"                 \
+    __parm              [__esi] [__edi] [__edx] \
+    __value             [__ecx] \
+    __modify __exact    [__eax __ebx]
 #endif
 
 static void InitTree( void )  /* Initializing tree */

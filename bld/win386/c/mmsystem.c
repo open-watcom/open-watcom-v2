@@ -41,8 +41,9 @@
 #include "winstubs.h"
 #include "_mmsyste.h"
 
-#pragma aux BackPatch_mmsystem parm [ax];
+
 extern LPVOID FAR BackPatch_mmsystem( char *str );
+#pragma aux BackPatch_mmsystem __parm [__ax]
 
 static UINT (FAR PASCAL *mmsystemmidiInAddBuffer)(HMIDIIN hMidiIn, LPMIDIHDR lpMidiInHdr, UINT uSize);
 static UINT (FAR PASCAL *mmsystemmidiInPrepareHeader)(HMIDIIN hMidiIn, LPMIDIHDR lpMidiInHdr, UINT uSize);

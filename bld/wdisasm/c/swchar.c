@@ -33,23 +33,22 @@
 #include "disasm.h"
 
 #if defined( __DOS__ )
-extern  unsigned char     _DOS_Switch_Char();
-
-#pragma aux     _DOS_Switch_Char = \
-                        0x52            /* push dx */\
-                        0xb8 0x00 0x37  /* mov ax,0x3700 */\
-                        0xcd 0x21       /* int 21h       */\
-                        0x88 0xd0       /* mov al,dl     */\
-                        0x5a            /* pop dx        */;
+extern unsigned char    _DOS_Switch_Char( void );
+#pragma aux _DOS_Switch_Char = \
+        "mov  ax,3700h" \
+        "int 21h"       \
+    __parm      [] \
+    __value     [__dl] \
+    __modify    [__ax]
 #endif
 
-int _dos_switch_char()
-    {
+int _dos_switch_char( void )
+{
 #if defined( __DOS__ )
-        return( _DOS_Switch_Char() );
+    return( _DOS_Switch_Char() );
 #elif defined( __OS2__ ) || defined( __NT__ )
-        return( '/' );
+    return( '/' );
 #elif defined( __QNX__ )
-        return( '-' );
+    return( '-' );
 #endif
-    }
+}

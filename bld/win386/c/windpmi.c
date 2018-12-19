@@ -144,7 +144,7 @@ WORD _DPMIGetAliases( DWORD offset, DWORD __far *res, WORD cnt)
      */
     *res = 0L;
     rc = DPMIAllocateLDTDescriptors( cnt );
-    if( rc < 0L ) {
+    if( rc < 0 ) {
         return( 666 );
     }
     sel = (WORD)rc;
@@ -304,7 +304,7 @@ WORD InitFlatAddrSpace( DWORD baseaddr, DWORD len )
      * get a code selector pointing to the memory
      */
     rc = DPMIAllocateLDTDescriptors( 1 );
-    if( rc < 0L ) {
+    if( rc < 0 ) {
         return( 4 );
     }
     sel = (WORD)rc;
@@ -316,7 +316,7 @@ WORD InitFlatAddrSpace( DWORD baseaddr, DWORD len )
      * get a data and stack selector pointing to the memory
      */
     rc = DPMIAllocateLDTDescriptors( 2 );
-    if( rc < 0L ) {
+    if( rc < 0 ) {
         DPMIFreeLDTDescriptor( sel );
         return( 4 );
     }
@@ -485,7 +485,7 @@ int InitSelectorCache( void )
     WORD        sel;
 
     rc = DPMIAllocateLDTDescriptors( MAX_CACHE + 2 );
-    if( rc < 0L ) {
+    if( rc < 0 ) {
         return( rc );
     }
     firstCacheSel = (WORD)rc;

@@ -38,8 +38,8 @@
 #include "penwoem.h"
 #include "winext.h"
 
-#pragma aux BackPatch_penwin parm [ax];
 extern LPVOID FAR BackPatch_penwin( char *str );
+#pragma aux BackPatch_penwin __parm [__ax]
 
 static UINT (FAR PASCAL *penwinEnumSymbols)(LPSYG, WORD, ENUMPROC, LPVOID);
 static BOOL (FAR PASCAL *penwinExecuteGesture)(HWND, SYV, LPRCRESULT);
