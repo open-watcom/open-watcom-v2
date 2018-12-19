@@ -39,13 +39,13 @@
 extern char _NEAR *GetSP( void );
 extern void SetSP( char _NEAR * );
 #ifdef _M_I86
-#pragma aux GetSP __value [__sp]
+#pragma aux GetSP = __value [__sp]
 #pragma aux SetSP = \
         "mov  sp,ax" \
     __parm      [__ax] \
     __modify    [__sp]
 #else
-#pragma aux GetSP __value [esp]
+#pragma aux GetSP = __value [__esp]
 #pragma aux SetSP = \
         "mov  esp,eax" \
     __parm      [__eax] \

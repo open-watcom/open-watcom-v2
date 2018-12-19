@@ -39,8 +39,8 @@
 
 void PushAll( void );
 void PopAll( void );
-#pragma aux PushAll = "pusha"
-#pragma aux PopAll = "popa" __modify [__ax __bx __cx __dx __sp __bp __di __si]
+#pragma aux PushAll = ".386" "pusha"
+#pragma aux PopAll = ".386" "popa" __modify [__ax __bx __cx __dx __sp __bp __di __si]
 
 extern DWORD _GetASelectorLimit( WORD );
 #pragma aux _GetASelectorLimit = \

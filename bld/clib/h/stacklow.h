@@ -36,9 +36,9 @@
 #if defined( _M_IX86 )
     extern  unsigned    _SP( void );
   #if defined( _M_I86 )
-    #pragma aux _SP = "mov ax,sp" __value [__ax]
+    #pragma aux _SP = __value [__sp]
   #else
-    #pragma aux _SP = "mov eax,esp" __value [__eax]
+    #pragma aux _SP = __value [__esp]
   #endif
 #endif
 

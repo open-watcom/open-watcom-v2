@@ -59,9 +59,7 @@
 
 #if !defined(_THIN_LIB)
 extern unsigned __SP( void );
-#pragma aux __SP = \
-        "mov eax,esp"   \
-    __value [__eax]
+#pragma aux __SP = __value [__esp]
 #endif
 
 extern unsigned short __DS( void );
