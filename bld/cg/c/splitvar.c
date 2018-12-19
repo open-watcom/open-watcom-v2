@@ -33,7 +33,7 @@
 
 #include "_cgstd.h"
 #include "coderep.h"
-#include "stack.h"
+#include "stackcg.h"
 #include "data.h"
 #include "namelist.h"
 #include "regalloc.h"

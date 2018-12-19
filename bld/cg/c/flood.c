@@ -35,7 +35,7 @@
 #include "coderep.h"
 #include "confldef.h"
 #include "model.h"
-#include "stack.h"
+#include "stackcg.h"
 #include "nullprop.h"
 #include "flood.h"
 

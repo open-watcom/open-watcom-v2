@@ -41,7 +41,7 @@
 #include "zoiks.h"
 #include "data.h"
 #include "fpu.h"
-#include "stack.h"
+#include "stackcg.h"
 #include "redefby.h"
 #include "rgtbl.h"
 #include "insutil.h"

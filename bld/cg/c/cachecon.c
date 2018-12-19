@@ -33,7 +33,7 @@
 
 #include "_cgstd.h"
 #include "coderep.h"
-#include "stack.h"
+#include "stackcg.h"
 #include "makeins.h"
 #include "foldins.h"
 #include "convins.h"

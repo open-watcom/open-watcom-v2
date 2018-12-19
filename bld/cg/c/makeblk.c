@@ -38,7 +38,7 @@
 #include "makeins.h"
 #include "data.h"
 #include "utils.h"
-#include "stack.h"
+#include "stackcg.h"
 #include "makeaddr.h"
 #include "namelist.h"
 #include "targetin.h"

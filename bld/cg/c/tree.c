@@ -51,7 +51,7 @@
 #include "namelist.h"
 #include "patch.h"
 #include "rgtbl.h"
-#include "stack.h"
+#include "stackcg.h"
 #include "treeprot.h"
 #include "treeconv.h"
 #include "treefold.h"

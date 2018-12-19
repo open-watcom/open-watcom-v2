@@ -34,7 +34,7 @@
 #include "coderep.h"
 #include "data.h"
 #include "makeins.h"
-#include "stack.h"
+#include "stackcg.h"
 #include "namelist.h"
 #include "edge.h"
 #include "insutil.h"

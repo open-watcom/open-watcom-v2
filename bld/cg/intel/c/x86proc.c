@@ -33,7 +33,7 @@
 #include "_cgstd.h"
 #include "coderep.h"
 #include "cgaux.h"
-#include "stack.h"
+#include "stackcg.h"
 #include "zoiks.h"
 #include "data.h"
 #include "display.h"

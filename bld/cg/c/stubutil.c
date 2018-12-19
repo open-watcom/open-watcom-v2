@@ -45,7 +45,7 @@
 #include "cgstub.h"
 #include "cgmem.h"
 #include "utils.h"
-#include "stack.h"
+#include "stackcg.h"
 #include "stubdata.h"
 #include "dumptree.h"
 #include "feprotos.h"

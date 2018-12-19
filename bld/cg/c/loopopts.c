@@ -35,7 +35,7 @@
 #include "indvars.h"
 #include "cgmem.h"
 #include "cfloat.h"
-#include "stack.h"
+#include "stackcg.h"
 #include "zoiks.h"
 #include "i64.h"
 #include "data.h"

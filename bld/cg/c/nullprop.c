@@ -34,7 +34,7 @@
 #include "coderep.h"
 #include "cgmem.h"
 #include "data.h"
-#include "stack.h"
+#include "stackcg.h"
 #include "redefby.h"
 #include "nullprop.h"
 #include "insdead.h"

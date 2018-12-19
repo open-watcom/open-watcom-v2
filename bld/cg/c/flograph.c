@@ -35,7 +35,7 @@
 #include "coderep.h"
 #include "cgmem.h"
 #include "zoiks.h"
-#include "stack.h"
+#include "stackcg.h"
 #include "data.h"
 #include "makeblk.h"
 #include "insutil.h"

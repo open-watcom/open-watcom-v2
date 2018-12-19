@@ -39,7 +39,7 @@
 #include "memout.h"
 #include "data.h"
 #include "utils.h"
-#include "stack.h"
+#include "stackcg.h"
 #include "nullprop.h"
 #include "generate.h"
 #include "scmain.h"

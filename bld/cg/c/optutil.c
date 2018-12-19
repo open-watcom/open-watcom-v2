@@ -32,7 +32,7 @@
 
 #include "_cgstd.h"
 #include "optwif.h"
-#include "stack.h"
+#include "stackcg.h"
 #include "optutil.h"
 #include "optmkins.h"
 #include "optins.h"
