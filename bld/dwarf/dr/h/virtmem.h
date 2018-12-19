@@ -76,25 +76,27 @@ extern unsigned_32      ReadULEB128( drmem_hdl * );         /* inline */
 /* warning -- this function only works if the ULEB128 is <= 0x0fffffff */
 /* if greater numbers are used, the lowest nibble is zeroed. */
 #pragma aux ReadULEB128 =                                           \
-    "       push    ecx"                                            \
-    "       push    esi"                                            \
+        "push    ecx"                                            \
+        "push    esi"                                            \
                                                                     \
-    "       mov     esi,[edx]"  /* esi points to start of buffer */ \
-    "       mov     cl,27H"     /* #bits to rotate eax at end */    \
-    "       xor     eax,eax"    /* clear eax */                     \
+        "mov     esi,[edx]"  /* esi points to start of buffer */ \
+        "mov     cl,27H"     /* #bits to rotate eax at end */    \
+        "xor     eax,eax"    /* clear eax */                     \
                                                                     \
-    "L1:    sub     cl,07H"     /* 7 bits less to rotate at end */  \
-    "       ror     eax,07H"    /* accept bottom seven bits */      \
-    "       lodsb"              /* load next buffer byte into eax */\
-    "       test    al,80H"     /* is sign bit on for last load? */ \
-    "       jnz     L1"         /*   if so, continue loop */        \
+    "L1: sub     cl,07H"     /* 7 bits less to rotate at end */  \
+        "ror     eax,07H"    /* accept bottom seven bits */      \
+        "lodsb"              /* load next buffer byte into eax */\
+        "test    al,80H"     /* is sign bit on for last load? */ \
+        "jnz     L1"         /*   if so, continue loop */        \
                                                                     \
-    "       ror     eax,cl"     /* rotate eax rest of way */        \
-    "       mov     [edx],esi"  /* update buffer pointer */         \
+        "ror     eax,cl"     /* rotate eax rest of way */        \
+        "mov     [edx],esi"  /* update buffer pointer */         \
                                                                     \
-    "       pop     esi"                                            \
-    "       pop     ecx"                                            \
-        parm [edx] value [eax] modify nomemory
+        "pop     esi"                                            \
+        "pop     ecx"                                            \
+    __parm          [__edx] \
+    __value         [__eax] \
+    __modify __nomemory
 
 #else
 
