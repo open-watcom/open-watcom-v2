@@ -91,7 +91,7 @@ _WCRTLINK int intdosx( union REGS *inregs, union REGS *outregs, struct SREGS *se
     register int            status;
 
     status = DoDosxCall( inregs, outregs, segregs );
-    outregs->x.cflag = status;
+    outregs->x.cflag = (status & 1);
     _dosretax( outregs->x.eax, status );
     return( outregs->x.eax );
 #else
