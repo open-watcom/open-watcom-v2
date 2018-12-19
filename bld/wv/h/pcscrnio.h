@@ -462,7 +462,7 @@ extern void BIOSSetMode( unsigned char mode );
 #pragma aux BIOSSetMode = \
         CALL_INT10( 0 )     \
     __parm              [__al] \
-    __value             [__bh] \
+    __value             \
     __modify __exact    [__ax]
 
 extern unsigned short BIOSGetCurPos( unsigned char pagenb );
