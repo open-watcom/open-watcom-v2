@@ -46,7 +46,7 @@ extern struct heapstart         *LastSeg;
 extern void                     *SyMemBeg;
 extern void                     *SyMemEnd;
 
-#pragma aux __AllocSeg modify[];
+#pragma aux __AllocSeg __modify[];
 __segment __AllocSeg( unsigned int amount )
     {
         unsigned n;             /* number of paragraphs desired   */

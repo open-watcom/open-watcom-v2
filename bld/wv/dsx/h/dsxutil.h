@@ -106,6 +106,6 @@ extern unsigned_8       RMSegEnd[];
 #define RM_OFF( sym )   ((unsigned)(sym)-(unsigned)RMSegStart)
 
 extern void Boom( unsigned );
-#pragma aux Boom = "db 0xf, 0xff" parm [eax]
+#pragma aux Boom = "db 0xf, 0xff" __parm [__eax]
 
 extern const char *DOSEnvFind( const char *name );

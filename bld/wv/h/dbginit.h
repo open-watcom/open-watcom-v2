@@ -37,7 +37,7 @@ extern void             GUISysFini( void );
 extern bool             SysGUI( void );
 extern void             WndCleanUp( void );
 #ifdef __WATCOMC__
-#pragma aux KillDebugger aborts;
+#pragma aux KillDebugger __aborts
 #endif
 extern void             KillDebugger( int rc );
 extern void             GrabHandlers( void );

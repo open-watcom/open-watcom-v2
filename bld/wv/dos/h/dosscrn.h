@@ -34,60 +34,74 @@
 #include "pcscrnio.h"
 
 
-extern void        BIOSCharSet( unsigned char, unsigned char, unsigned, unsigned, unsigned, unsigned  );
-#pragma aux BIOSCharSet =       \
-        "xchg   bp,si"          \
-        "mov    ah,11h"         \
-        "xor    bl,bl"          \
-        "int    10h"            \
-        "xchg   bp,si"          \
-    parm [al] [bh] [cx] [dx] [es] [si] modify exact [ah bl]
+extern void BIOSCharSet( unsigned char, unsigned char, unsigned, unsigned, unsigned, unsigned  );
+#pragma aux BIOSCharSet = \
+        "xchg bp,si"    \
+        "mov  ah,11h"   \
+        "xor  bl,bl"    \
+        "int 10h"       \
+        "xchg bp,si"    \
+    __parm              [__al] [__bh] [__cx] [__dx] [__es] [__si] \
+    __value             \
+    __modify __exact    [__ah __bl]
 
 /* get video save size */
 extern unsigned _VidStateSize( unsigned );
-#pragma aux     _VidStateSize = \
-        "mov    ax,1c00h"       \
-        "int    10h"            \
-        "cmp    al,1ch"         \
-        "je short L1"           \
-        "xor    bx,bx"          \
-    "L1:"                       \
-    parm [cx] value [bx] modify exact [ax bx]
+#pragma aux _VidStateSize = \
+        "mov  ax,1c00h" \
+        "int 10h"       \
+        "cmp  al,1ch"   \
+        "je short L1"   \
+        "xor  bx,bx"    \
+    "L1:"               \
+    __parm [__cx] \
+    __value [__bx] \
+    __modify __exact [__ax __bx]
 
 /* save video state */
-extern void     _VidStateSave( unsigned, unsigned, unsigned );
-#pragma aux     _VidStateSave = \
-        "mov    ax,1c01h"       \
-        "int    10h"            \
-    parm [cx] [es] [bx] modify exact [ax]
+extern void _VidStateSave( unsigned, unsigned, unsigned );
+#pragma aux _VidStateSave = \
+        "mov  ax,1c01h" \
+        "int 10h"       \
+    __parm              [__cx] [__es] [__bx] \
+    __value             \
+    __modify __exact    [ax]
 
 /* restore video state */
-extern void     _VidStateRestore( unsigned, unsigned, unsigned );
-#pragma aux     _VidStateRestore = \
-        "mov    ax,1c02h"       \
-        "int    10h"            \
-    parm [cx] [es] [bx] modify exact [ax]
+extern void _VidStateRestore( unsigned, unsigned, unsigned );
+#pragma aux _VidStateRestore = \
+        "mov  ax,1c02h" \
+        "int 10h"       \
+    __parm              [__cx] [__es] [__bx] \
+    __value             \
+    __modify __exact    [__ax]
 
 extern unsigned MouseStateSize( void );
 #pragma aux MouseStateSize = \
-        "sub    bx,bx"      \
-        "mov    ax,15h"     \
-        "int    33h"        \
-    value [bx] modify exact [ax bx]
+        "sub  bx,bx"    \
+        "mov  ax,15h"   \
+        "int 33h"       \
+    __parm              [] \
+    __value             [__bx] \
+    __modify __exact    [__ax __bx]
 
 
 extern void MouseStateSave( unsigned, unsigned, unsigned );
 #pragma aux MouseStateSave =    \
-        "mov    ax,16h"         \
-        "int    33h"            \
-    parm [es] [dx] [bx] modify exact [ax]
+        "mov  ax,16h"   \
+        "int 33h"       \
+    __parm              [__es] [__dx] [__bx] \
+    __value             \
+    __modify __exact    [__ax]
 
 
 extern void MouseStateRestore( unsigned, unsigned, unsigned );
 #pragma aux MouseStateRestore = \
-        "mov    ax,17h"         \
-        "int    33h"            \
-    parm [es] [dx] [bx] modify exact [ax]
+        "mov  ax,17h"   \
+        "int 33h"       \
+    __parm              [__es] [__dx] [__bx] \
+    __value             \
+    __modify __exact    [__ax]
 
 #if 0
 extern void vertsync( void );
@@ -96,7 +110,9 @@ extern void vertsync( void );
     "L1: in al,dx"      \
         "test al,8"     \
         "jz short L1"   \
-    modify exact [al dx]
+    __parm              [] \
+    __value             \
+    __modify __exact    [__al __dx]
 #endif
 
 extern unsigned char    ActFontTbls;

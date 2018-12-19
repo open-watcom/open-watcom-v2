@@ -35,7 +35,6 @@
 #include "dbgdefn.h"
 #include "dbgdata.h"
 #include "dbgwind.h"
-#include "kbio.h"
 #include "dbgmem.h"
 #include "dbgscrn.h"
 #include "dbgerr.h"

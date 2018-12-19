@@ -65,18 +65,19 @@
 #if defined( __DOS__ ) && defined( __386__ )
 #if !defined( __OSI__ )
 extern int _d16ReserveExt( int );
-#pragma aux _d16ReserveExt =    "mov cx,ax" \
-                                "shr eax,16" \
-                                "mov bx,ax" \
-                                "mov dx,1400H" \
-                                "mov ax,0ff00H" \
-                                "int 21H" \
-                                "ror eax,16" \
-                                "mov ax,dx" \
-                                "ror eax,16" \
-                                parm [eax] \
-                                value [eax] \
-                                modify [ebx ecx edx]
+#pragma aux _d16ReserveExt = \
+        "mov cx,ax" \
+        "shr eax,16" \
+        "mov bx,ax" \
+        "mov dx,1400H" \
+        "mov ax,0ff00H" \
+        "int 21H" \
+        "ror eax,16" \
+        "mov ax,dx" \
+        "ror eax,16" \
+    __parm      [__eax] \
+    __value     [__eax] \
+    __modify    [__ebx __ecx __edx]
 #endif
 #endif
 

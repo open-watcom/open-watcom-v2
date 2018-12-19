@@ -46,7 +46,7 @@ extern struct heapstart         *LastSeg;
 extern void                     *SyMemBeg;
 extern void                     *SyMemEnd;
 
-#pragma aux __GrowSeg modify[];
+#pragma aux __GrowSeg __modify[];
 int __GrowSeg( unsigned short seg, unsigned int amount )
     {
         unsigned n;             /* number of paragraphs desired   */
