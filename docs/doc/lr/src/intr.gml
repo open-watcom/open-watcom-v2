@@ -14,10 +14,8 @@ be interrupted with an interrupt whose number is given by
 Before the interrupt, the CPU registers are loaded from the structure
 located by
 .arg regs
-.ct .li
- and low 8-bit of CPU flags are set to 0 for
-.id &funcb.
-function.
+.ct .li .
+Low 8-bit of the CPU flags are set to 0.
 .np
 All of the segment registers must contain valid values.
 Failure to do so will cause a segment violation when running
@@ -29,7 +27,7 @@ Following the interrupt, the structure located by
 is filled with the contents of the CPU registers.
 .np
 .id &funcb.
-functions are similar to the
+function is similar to the
 .kw int86x
 function, except that only one structure is used for the register
 values and that the BP (EBP in 386 library) register is included in
@@ -42,9 +40,7 @@ after the interrupt in question.
 .return begin
 The
 .id &funcb.
-,
-.id &funcb.f
-functions do not return a value.
+function do not return a value.
 .return end
 .see begin
 .im seeint
