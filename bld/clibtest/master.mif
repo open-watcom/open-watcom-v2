@@ -140,6 +140,53 @@ start_build : .symbolic
 start_test : .symbolic
     @set ERROR_MSG=failure to run $$^*
 
+runtests : .symbolic
+!ifdef notnt
+    set notnt=NOTNT
+!endif
+!ifdef norun386
+    set norun386=NORUN386
+!endif
+!ifdef norun286
+    set norun286=NORUN286
+!endif
+!ifdef nodos4gw
+    set nodos4gw=NODOS4GW
+!endif
+!ifdef __OS2__
+    @%make underos2
+    @echo ==== $(%__CTIME__) $(%__CWD__) ==== | tee.exe os2.log
+    @echo Running tests under OS/2 and Win-OS/2... | tee.exe -a os2.log
+    -@..\os2.cmd | tee.exe -a os2.log
+#    -@..\winos2.cmd | tee.exe -a os2.log
+#    -@command /e:2048 /c ..\dos.bat | tee.exe -a os2.log
+    @cat os2.log >> ..\_os2_.log
+!else ifdef __MSDOS__
+    @%make underdos
+    -@clog dos.log
+    @echo ==== $(%__CTIME__) $(%__CWD__) ====
+    @echo Running tests under DOS...
+    -@command /e:2048 /c ..\dos.bat
+    -@command /e:2048 /c ..\windows.bat
+    -@clog
+    @cat dos.log >> ..\_dos_.log
+!else ifdef __NT__
+    @%make underwnt
+    @echo ==== $(%__CTIME__) $(%__CWD__) ==== | tee.exe wnt.log
+    @echo Running tests under Windows NT... | tee.exe -a wnt.log
+    -@..\wnt.bat | tee.exe -a wnt.log
+    @cat wnt.log >> ..\_wnt_.log
+!else ifdef __LINUX__
+    @%make underlnx386
+    @echo ==== $(%__CTIME__) $(%__CWD__) ==== | tee lnx.log
+    @echo Running tests under Linux... | tee -a lnx.log
+    -@./lnx_3r.exe | tee -a lnx.log
+    -@./lnx_3s.exe | tee -a lnx.log
+    @cat lnx.log >> ../_lnx_.log
+!else
+!error Operating system unknown.
+!endif
+
 dos_s.exe : $(srcfile)
     @%make echo_cc
     $(noecho)$(comp_wcc_i86) $(wcc_any) $[@ -fo=$^*.obj $(incl_sys_dos) $(test_flags) $(test_flags_i86) -ms -bt=dos $(c_dbg_flags) $(extra_test_flags)
@@ -550,7 +597,6 @@ lnx_3s.exe : $(srcfile)
 
 # Run 16-bit DOS executables
 $+$(t_rundos)$- : .symbolic
-#    @set
     -$@.exe $(extra_run)
     @if errorlevel 1 %append $(%ERROR_FILE) $(%ERROR_MSG)
 
@@ -561,7 +607,6 @@ $+$(t_runcw)$- : .symbolic
 
 # Run DOS/4G 32-bit DOS extended executables
 $+$(t_rund4g)$- : .symbolic
-#    @set
     # The DOS/4GW 1.97 loader uses an old broken 16-bit MSC runtime that does
     # not handle long PATH env vars; make PATH short for this test
     @set OPATH=$(%PATH)
@@ -570,8 +615,8 @@ $+$(t_rund4g)$- : .symbolic
 !else
     @set PATH=$(%WATCOM)\binw
 !endif
-#    -$@.exe $(extra_run)
-#    @if errorlevel 1 %append $(%ERROR_FILE) $(%ERROR_MSG)
+    -$@.exe $(extra_run)
+    @if errorlevel 1 %append $(%ERROR_FILE) $(%ERROR_MSG)
     @set PATH=$(%OPATH)
     @set OPATH=
 
@@ -582,7 +627,6 @@ $+$(t_runpls)$- : .symbolic
 
 # Run Windows 3.x 16-bit executables
 $+$(t_runw16)$- : .symbolic
-#    @set
     @rm -f tmp.log
     -$@.exe $(extra_run)
     @if errorlevel 1 %append $(%ERROR_FILE) $(%ERROR_MSG)
@@ -590,7 +634,6 @@ $+$(t_runw16)$- : .symbolic
 
 # Run Windows 3.x 32-bit executables (Win386)
 $+$(t_runw386)$- : .symbolic
-#    @set
     @rm -f tmp.log
     -$@.exe $(extra_run)
     @if errorlevel 1 %append $(%ERROR_FILE) $(%ERROR_MSG)
@@ -619,4 +662,4 @@ $+$(t_runlnx)$- : .symbolic
 clean global : .procedure
     @%make echo_clean
     @%make common_clean
-    $(noecho)rm -f *.rex tmp.log tmpfile _tmpfile.*
+    $(noecho)rm -f *.rex *.log tmpfile _tmpfile.*

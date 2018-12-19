@@ -97,11 +97,8 @@ static char *GetNextWordNT( const char *buff, char *res )
 vi_rc EditFile( const char *name, bool dammit )
 {
     char        *fn, **list, *currfn;
-    size_t      i;
-    unsigned    ocnt;
-    size_t      j;
-    size_t      k;
-    size_t      len;
+    int         i, ocnt;
+    int         j, len;
     window_id   wid = NO_WINDOW;
     char        cdir[FILENAME_MAX];
     info        *ci, *il;
@@ -140,17 +137,17 @@ vi_rc EditFile( const char *name, bool dammit )
         len = strlen( fn );
         if( len > 0 ) {
             strcpy( mask, fn );
-            k = 0;
+            ocnt = 0;
             for( i = len; i-- > 0; ) {
                 if( fn[i] == FILE_SEP ) {
                     for( j = i + 1; j <= len; j++ ) {
                         mask[j - (i + 1)] = fn[j];
                     }
-                    k = i;
+                    ocnt = i;
                     break;
                 }
             }
-            fn[k] = '\0';
+            fn[ocnt] = '\0';
         }
         if( fn[0] != '\0' ) {
             rc = SelectFileOpen( fn, &fn, mask, true );
@@ -353,10 +350,7 @@ static const vi_key     fileopts_evlist[] = {
  */
 vi_rc EditFileFromList( void )
 {
-    unsigned    fcnt;
-    unsigned    j;
-    unsigned    n;
-    int         tmp;
+    int         i, tmp, j, n = 0, fcnt;
     window_id   wid;
     bool        repeat = true;
     info        *cinfo;
@@ -364,7 +358,6 @@ vi_rc EditFileFromList( void )
     window_info wi;
     selectitem  si;
     vi_rc       rc;
-    int         i;
 
     /*
      * set up options for file list
@@ -376,8 +369,9 @@ vi_rc EditFileFromList( void )
     if( rc != ERR_NO_ERR ) {
         return( rc );
     }
-    n = 0;
+
     while( repeat > 0 ) {
+
         /*
          * set up for this pass
          */
@@ -388,7 +382,7 @@ vi_rc EditFileFromList( void )
         /*
          * allocate a buffer for strings, add strings
          */
-        list = (char **)MemAlloc( GimmeFileCount() * sizeof( char * ) );
+        list = (char **) MemAlloc( GimmeFileCount() * sizeof( char * ) );
         for( j = 0, cinfo = InfoHead; cinfo != NULL; cinfo = cinfo->next, ++j ) {
             list[j] = MemAlloc( strlen( cinfo->CurrentFile->name ) + 3 );
             if( cinfo->CurrentFile->modified ) {
@@ -427,9 +421,9 @@ vi_rc EditFileFromList( void )
         rc = SelectItem( &si );
         n = si.num;
         if( rc == ERR_NO_ERR ) {
-            if( si.num >= 0 ) {
+            if( n >= 0 ) {
                 cinfo = InfoHead;
-                while( si.num-- > 0 ) {
+                for( j = 0; j < n; ++j ) {
                     cinfo = cinfo->next;
                 }
                 BringUpFile( cinfo, true );
@@ -455,6 +449,7 @@ vi_rc EditFileFromList( void )
 
         filelistw_info.area.y2 = tmp;
         MemFreeList( fcnt, list );
+
     }
 
     /*

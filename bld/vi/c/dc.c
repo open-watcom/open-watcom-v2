@@ -242,10 +242,10 @@ vi_rc DCUpdate( void )
 
                 displayText = line->data;
                 if( line->u.ld.nolinedata ) {
-                    if( WorkLine->len == -1 ) {
-                        displayText = "*** ERR NULL DATA ***";
-                    } else {
+                    if( WorkLine->len >= 0 ) {
                         displayText = WorkLine->data;
+                    } else {
+                        displayText = "*** ERR NULL DATA ***";
                     }
                 }
                 displayOffset = VirtualLineLen( displayText );

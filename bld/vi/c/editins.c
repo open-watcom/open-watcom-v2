@@ -278,9 +278,9 @@ vi_rc IMEnter( void )
 {
     char        *buff;
     char        *buffx;
-    size_t      len;
-    size_t      col;
-    size_t      el;
+    int         len;
+    int         col;
+    int         el;
 
     if( CurrentFile == NULL ) {
         return( ERR_NO_FILE );
@@ -347,9 +347,9 @@ vi_rc IMEnter( void )
 } /* IMEnter */
 
 /*
- * backSpace - process the backspace key in insert mode
+ * IMBackSpace - process the backspace key in insert mode
  */
-static vi_rc backSpace( bool fromDelete )
+vi_rc IMBackSpace( void )
 {
     char        killedChar, overChar;
     bool        mv_right;
@@ -373,9 +373,7 @@ static vi_rc backSpace( bool fromDelete )
         }
         stay_at_end = ( WorkLine->len == 0 );
         doneWithCurrentLine();
-        if( !fromDelete ) {
-            abbrevCnt = 0;
-        }
+        abbrevCnt = 0;
         GoToLineRelCurs( CurrentPos.line - 1 );
         GoToColumnOnCurrentLine( CurrentLine->len );
         mv_right = ( CurrentLine->len != 0 );
@@ -402,15 +400,6 @@ static vi_rc backSpace( bool fromDelete )
     DisplayWorkLine( SSKillsFlags( killedChar ) || SSKillsFlags( overChar ) );
     return( ERR_NO_ERR );
 
-} /* backSpace */
-
-/*
- * IMBackSpace - process the backspace key in insert mode
- */
-vi_rc IMBackSpace( void )
-{
-    return( backSpace( false ) );
-
 } /* IMBackSpace */
 
 /*
@@ -425,10 +414,9 @@ vi_rc IMDelete( void )
     }
 
     startNewLineUndo();
-    if( WorkLine->len == -1 ) {
+    wlen = WorkLine->len + 1;
+    if( wlen == 0 ) {
         wlen = CurrentLine->len + 1;
-    } else {
-        wlen = WorkLine->len + 1;
     }
     if( EditFlags.Modeless && CurrentPos.column == wlen && CurrentLine->next ) {
         /* go to beginning of next line */
@@ -437,11 +425,11 @@ vi_rc IMDelete( void )
         GetCurrentLine();
     } else {
         GoToColumn( CurrentPos.column + 1, wlen );
+        if( CurrentPos.column != wlen - 1 || abbrevCnt == 0 ) {
+            abbrevCnt++;        /* gets subtracted by IMBackSpace */
+        }
     }
-    if( abbrevCnt > 0 ) {
-        abbrevCnt++;        /* gets subtracted by IMBackSpace */
-    }
-    return( backSpace( true ) );
+    return( IMBackSpace() );
 
 } /* IMDelete */
 
@@ -497,10 +485,9 @@ vi_rc IMCursorKey( void )
     event       *ev;
     int         type;
 
-    if( WorkLine->len == -1 ) {
+    wlen = WorkLine->len + 1;
+    if( wlen == 0 ) {
         wlen = CurrentLine->len + 1;
-    } else {
-        wlen = WorkLine->len + 1;
     }
 
     /*
@@ -913,7 +900,7 @@ vi_rc IMCloseBrace( void )
 static void continueInsertText( int col, bool overstrike )
 {
     overStrike = overstrike;
-//    abbrevCnt = 0;
+    abbrevCnt = 0;
     if( !EditFlags.Modeless ) {
         UpdateEditStatus();
     }

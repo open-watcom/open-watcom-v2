@@ -273,7 +273,7 @@ void    FreeErrorMsgData( void );
 void    ErrorFini( void );
 
 /* expandfn.c */
-unsigned ExpandFileNames( char *, char *** );
+int     ExpandFileNames( char *, char *** );
 
 /* fcb.c */
 vi_rc   OpenFcbData( file * );
@@ -595,7 +595,7 @@ void    *MemAlloc( size_t );
 void    *MemAllocUnsafe( size_t );
 void    MemFree( void * );
 void    MemFreePtr( void ** );
-void    MemFreeList( unsigned, char ** );
+void    MemFreeList( int, char ** );
 void    *MemReAlloc( void *, size_t );
 void    *MemReAllocUnsafe( void *ptr, size_t size );
 void    *StaticAlloc( void );
@@ -705,7 +705,7 @@ void    FiniSavebufs( void );
 
 /* select.c */
 vi_rc   SelectItem( selectitem *si );
-vi_rc   SelectItemAndValue( window_info *, char *, char **, unsigned, vi_rc (*)(const char *, char *, int * ), size_t, char **, unsigned );
+vi_rc   SelectItemAndValue( window_info *, char *, char **, int , vi_rc (*)(const char *, char *, int * ), size_t, char **, int );
 
 /* selrgn.c */
 void    UpdateDrag( window_id, int, int );

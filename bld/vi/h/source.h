@@ -102,7 +102,7 @@ struct sfile;
 typedef struct labels {
     char            **name;
     struct sfile    **pos;
-    unsigned short  cnt;
+    short           cnt;
 } labels;
 
 typedef unsigned short  var_len;
@@ -180,7 +180,7 @@ extern int          CurrentSrcToken;
 /*
  * function prototypes
  */
-
+ 
 /* srcassgn.c */
 extern vi_rc    SrcAssign( const char *, vlist * );
 

@@ -39,10 +39,9 @@
  * ExpandFileNames - take a file name, and expand it out to a list of dos
  *                   file names
  */
-unsigned ExpandFileNames( char *p, char ***argv )
+int ExpandFileNames( char *p, char ***argv )
 {
-    unsigned    argc;
-    int         i;
+    int         argc, i;
     char        drive[_MAX_DRIVE], directory[_MAX_DIR], name[_MAX_FNAME];
     char        extin[_MAX_EXT], pathin[FILENAME_MAX];
     char        *start, *new;
@@ -97,7 +96,7 @@ unsigned ExpandFileNames( char *p, char ***argv )
             continue;
         _splitpath( DirFiles[i]->name, NULL, NULL, name, extin );
         _makepath( pathin, drive, directory, name, extin );
-        *argv = MemReAlloc( *argv, ( argc + 1 ) * sizeof( char * ) );
+        *argv = MemReAlloc( *argv, (argc + 1) * sizeof( char * ) );
         new = MemAlloc( strlen( pathin ) + 1 );
         strcpy( new, pathin );
         (*argv)[argc++] = new;

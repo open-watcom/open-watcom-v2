@@ -105,56 +105,6 @@ static bool grabNum( unsigned *val )
     return( false );
 }
 
-static void endOfPragma(
-    void )
-{
-    if( CurToken == T_SEMI_COLON )
-        NextToken();
-    ExpectingToken( T_NULL );
-    while( CurToken != T_NULL && CurToken != T_EOF ) {
-        NextToken();
-    }
-}
-
-const char *SkipUnderscorePrefix( const char *str, size_t *len )
-/**************************************************************/
-{
-    const char  *start;
-
-    start = str;
-    if( *str == '_' ) {
-        str++;
-        if( *str == '_' ) {
-            str++;
-        }
-    }
-    if( len != NULL ) {
-        *len -= str - start;
-    }
-    return( str );
-}
-
-static bool PragIdRecog(        // RECOGNIZE PRAGMA ID
-    const char *what )          // - id
-{
-    bool ok;
-
-    ok = ( stricmp( SkipUnderscorePrefix( Buffer, NULL ), what ) == 0 );
-    if( ok ) {
-        NextToken();
-    }
-    return( ok );
-}
-
-bool PragRecog(                 // RECOGNIZE PRAGMA ID
-    const char *what )          // - id
-{
-    if( IS_ID_OR_KEYWORD( CurToken ) ) {
-        return( PragIdRecog( what ) );
-    }
-    return( false );
-}
-
 // forms:
 //
 // #pragma template_depth n
@@ -518,6 +468,17 @@ static void pragDisableMessage( // DISABLE WARNING MESSAGE
     PPCTL_DISABLE_MACROS();
 }
 
+static void endOfPragma(
+    void )
+{
+    if( CurToken == T_SEMI_COLON )
+        NextToken();
+    ExpectingToken( T_NULL );
+    while( CurToken != T_NULL && CurToken != T_EOF ) {
+        NextToken();
+    }
+}
+
 void PragmaSetToggle(           // SET TOGGLE
     bool set_flag )             // - true ==> set flag
 {
@@ -538,7 +499,50 @@ void PragmaSetToggle(           // SET TOGGLE
     #undef toggle_pick
 }
 
+const char *SkipUnderscorePrefix( const char *str, size_t *len )
+/**************************************************************/
+{
+    const char  *start;
 
+    start = str;
+    if( *str == '_' ) {
+        str++;
+        if( *str == '_' ) {
+            str++;
+        }
+    }
+    if( len != NULL ) {
+        *len -= str - start;
+    }
+    return( str );
+}
+
+static bool PragIdRecog(        // RECOGNIZE PRAGMA ID
+    const char *what )          // - id
+{
+    bool ok;
+
+    ok = ( stricmp( SkipUnderscorePrefix( Buffer, NULL ), what ) == 0 );
+    if( ok ) {
+        NextToken();
+    }
+    return( ok );
+}
+
+bool PragRecog(                 // RECOGNIZE PRAGMA ID
+    const char *what )          // - id
+{
+    if( IS_ID_OR_KEYWORD( CurToken ) ) {
+        return( PragIdRecog( what ) );
+    }
+    return( false );
+}
+
+// forms:
+//
+// #pragma on (toggle)
+// #pragma off (toggle)
+//
 static void pragFlag(           // SET TOGGLES
     bool set_flag )             // - true ==> set flag
 {
@@ -1026,6 +1030,7 @@ static void pragReadOnlyFile
     }
     PPCTL_DISABLE_MACROS();
 }
+
 
 // form: #pragma read_only_directory "directory"*
 //

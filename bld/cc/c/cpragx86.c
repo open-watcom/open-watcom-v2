@@ -208,10 +208,10 @@ bool GetPragAuxAlias( void )
     isfar16 = PragRecog( "far16" );
     if( IS_ID_OR_KEYWORD( CurToken ) ) {
         CurrAlias = SearchPragAuxAlias( Buffer );
-        PPNextToken();
+        NextToken();
     }
     if( CurToken == T_RIGHT_PAREN )
-        PPNextToken();
+        NextToken();
     if( isfar16 )
         AuxInfo.flags |= AUX_FLAG_FAR16;
     CopyAuxInfo();
@@ -227,7 +227,7 @@ typedef enum {
 } fix_words;
 
 static fix_words FixupKeyword( void )
-/***********************************/
+/**********************************/
 {
     fix_words retn;             // - return
 
@@ -597,7 +597,7 @@ static bool GetByteSeq( byte_seq **code )
 #endif
 
     AsmSysInit( buff );
-    PPNextToken();
+    NextToken();
     too_many_bytes = false;
     uses_auto = false;
     offset = 0;
@@ -610,9 +610,9 @@ static bool GetByteSeq( byte_seq **code )
 #else
             AsmLine( Buffer, false );
 #endif
-            PPNextToken();
+            NextToken();
             if( CurToken == T_COMMA ) {
-                PPNextToken();
+                NextToken();
             }
         } else if( CurToken == T_CONSTANT ) {
 #if _CPU == 8086
@@ -622,7 +622,7 @@ static bool GetByteSeq( byte_seq **code )
             }
 #endif
             AsmCodeBuffer[AsmCodeAddress++] = (unsigned char)Constant;
-            PPNextToken();
+            NextToken();
         } else {
 #if _CPU == 8086
             use_fpu_emu = false;
@@ -641,18 +641,18 @@ static bool GetByteSeq( byte_seq **code )
                     CErr1( ERR_EXPECTING_ID );
                 } else {
                     name = CStrSave( Buffer );
-                    PPNextToken();
+                    NextToken();
                     if( CurToken == T_PLUS ) {
-                        PPNextToken();
+                        NextToken();
                         if( CurToken == T_CONSTANT ) {
                             offset = Constant;
-                            PPNextToken();
+                            NextToken();
                         }
                     } else if( CurToken == T_MINUS ) {
-                        PPNextToken();
+                        NextToken();
                         if( CurToken == T_CONSTANT ) {
                             offset = -(int)Constant;
-                            PPNextToken();
+                            NextToken();
                         }
                     }
                 }
@@ -889,10 +889,10 @@ void PragAux( void )
 
     InitAuxInfo();
     PPCTL_ENABLE_MACROS();
-    PPNextToken();
+    NextToken();
     if( GetPragAuxAliasInfo() ) {
         SetCurrInfo( Buffer );
-        PPNextToken();
+        NextToken();
         PragObjNameInfo( &AuxInfo.objname );
         have.f_call = false;
         have.f_loadds = false;
