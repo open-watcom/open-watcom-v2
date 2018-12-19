@@ -78,47 +78,47 @@ extern short    DoDosxCall( void *in, void *out, void *sr );
     __modify        [__bx __cx __dx __si __di]
 #else
 #pragma aux DoDosxCall = \
-        "push ds"           \
-        "mov  ds,di"        \
-        "push bp"           \
-        "mov  es,0[bx]"     \
-        "mov  bp,6[bx]"     \
-        "push dx"           \
-        "push ax"           \
-        "push ds"           \
-        "push bx"           \
-        "mov  ds,cx"        \
-        "mov  ax,0[si]"     \
-        "mov  bx,2[si]"     \
-        "mov  cx,4[si]"     \
-        "mov  dx,6[si]"     \
-        "mov  di,10[si]"    \
-        "mov  si,8[si]"     \
-        "mov  ds,bp"        \
-        "clc"               \
-        "int 21h"           \
-        "push ds"           \
-        "push si"           \
-        "mov  bp,sp"        \
-        "mov  si,8[bp]"     \
-        "mov  ds,10[bp]"    \
-        "pop  bp"           \
-        "mov  0[si],ax"     \
-        "mov  2[si],bx"     \
-        "mov  4[si],cx"     \
-        "mov  6[si],dx"     \
-        "mov  8[si],bp"     \
-        "mov  10[si],di"    \
-        "sbb  ax,ax"        \
-        "pop  bx"           \
-        "pop  si"           \
-        "pop  ds"           \
-        "mov  0[si],es"     \
-        "mov  6[si],bx"     \
-        "pop  bx"           \
-        "pop  bx"           \
-        "pop  bp"           \
-        "pop  ds"           \
+        "push ds"        /* ----------. */ \
+        "mov  ds,di"     /*           | */ \
+        "push bp"        /* ---------.| */ \
+        "mov  es,0[bx]"  /*          || */ \
+        "mov  bp,6[bx]"  /*          || */ \
+        "push dx"        /* --------.|| */ \
+        "push ax"        /* -------.||| */ \
+        "push ds"        /* ------.|||| */ \
+        "push bx"        /* -----.||||| */ \
+        "mov  ds,cx"     /*      |||||| */ \
+        "mov  ax,0[si]"  /*      |||||| */ \
+        "mov  bx,2[si]"  /*      |||||| */ \
+        "mov  cx,4[si]"  /*      |||||| */ \
+        "mov  dx,6[si]"  /*      |||||| */ \
+        "mov  di,10[si]" /*      |||||| */ \
+        "mov  si,8[si]"  /*      |||||| */ \
+        "mov  ds,bp"     /*      |||||| */ \
+        "clc"            /*      |||||| */ \
+        "int 21h"        /*      |||||| */ \
+        "push ds"        /* ----.|||||| */ \
+        "push si"        /* ---.||||||| */ \
+        "mov  bp,sp"     /*    |||||||| */ \
+        "mov  si,8[bp]"  /*    |||||||| */ \
+        "mov  ds,10[bp]" /*    |||||||| */ \
+        "pop  bp"        /* ---'||||||| */ \
+        "mov  0[si],ax"  /*     ||||||| */ \
+        "mov  2[si],bx"  /*     ||||||| */ \
+        "mov  4[si],cx"  /*     ||||||| */ \
+        "mov  6[si],dx"  /*     ||||||| */ \
+        "mov  8[si],bp"  /*     ||||||| */ \
+        "mov  10[si],di" /*     ||||||| */ \
+        "sbb  ax,ax"     /*     ||||||| */ \
+        "pop  bx"        /*(ds)-'|||||| */ \
+        "pop  si"        /* -----'||||| */ \
+        "pop  ds"        /* ------'|||| */ \
+        "mov  0[si],es"  /*        |||| */ \
+        "mov  6[si],bx"  /*        |||| */ \
+        "pop  bx"        /* -------'||| */ \
+        "pop  bx"        /* --------'|| */ \
+        "pop  bp"        /* ---------'| */ \
+        "pop  ds"        /* ----------' */ \
     __parm __caller [__si __cx] [__ax __dx] [__bx __di] \
     __value         [__ax] \
     __modify        [__di __es]
