@@ -132,13 +132,14 @@ bool    WndProcMacro( a_window wnd, gui_key key )
 
 #ifdef __DOS__
 extern void BIOSSetPage( char pagenb );
-#pragma aux BIOSSetPage =                               \
-        " push   bp             ",                      \
-        " mov    ah, 5          ",                      \
-        " int    10h            ",                      \
-        " pop    bp             "                       \
-        parm [al]                                       \
-        modify exact [ah];
+#pragma aux BIOSSetPage = \
+        "push bp"       \
+        "mov  ah,5"     \
+        "int 10h"       \
+        "pop  bp"       \
+    __parm              [__al] \
+    __value             \
+    __modify __exact    [__ah]
 #endif
 
 gui_window_styles WndStyle = GUI_PLAIN | GUI_GMOUSE;
