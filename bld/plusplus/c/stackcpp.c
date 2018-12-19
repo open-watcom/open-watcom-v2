@@ -30,7 +30,7 @@
 
 
 #include "plusplus.h"
-#include "stacksr.h"
+#include "stackcpp.h"
 
 #if defined( __WATCOMC__ ) && defined( _M_IX86 ) && !defined( __NT__ )
 
