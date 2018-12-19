@@ -664,13 +664,13 @@ static int GetDriveInfo( char drive, bool removable )
             r.w.ax = 0x4409;    // query device local/remote
             r.w.bx = drive_num;
             intdos( &r, &r );
-            if( !r.w.cflag && (r.w.dx & 0x1000) ) {
+            if( r.w.cflag == 0 && (r.w.dx & 0x1000) ) {
                 info->fixed = false;
             }
             r.w.ax = 0x4408;    // query device removable
             r.w.bx = drive_num;
             intdos( &r, &r );
-            if( !r.w.cflag ) {
+            if( r.w.cflag == 0 ) {
                 info->diskette = ( r.w.ax == 0 );
                 if( info->diskette ) {
                     info->fixed = false;

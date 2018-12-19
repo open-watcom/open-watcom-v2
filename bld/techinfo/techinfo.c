@@ -437,7 +437,7 @@ static void get_mem_info( void )
     regs.h.ah = 0x48;
     regs.x.bx = 0xffff;
     int86( 0x21, &regs, &regs );
-    if( regs.w.cflag != 0 ) {
+    if( regs.w.cflag ) {
         mem = regs.x.bx;
         mem *= 16;
         techoutput( "Amount of free base memory is: %l bytes\n", mem );

@@ -129,7 +129,7 @@ int _fintdos( union REGS __far *inregs, union REGS __far *outregs )
     int             status;
 
     status = BDDoDosCall( inregs, outregs );
-    outregs->x.cflag = status & 1;
+    outregs->x.cflag = (status & 1);
     _dosretax( outregs->x.ax, status );
     return( outregs->x.ax );
 }
@@ -139,7 +139,7 @@ int _fintdosx( union REGS __far *inregs, union REGS __far *outregs, struct SREGS
     int             status;
 
     status = BDDoDosxCall( inregs, outregs, segregs );
-    outregs->x.cflag = status & 1;
+    outregs->x.cflag = (status & 1);
     _dosretax( outregs->x.ax, status );
     return( outregs->x.ax );
 }
