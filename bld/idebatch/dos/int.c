@@ -37,7 +37,6 @@
 #include <dos.h>
 #include <ctype.h>
 #include <malloc.h>
-#include "winprag.h"
 #include "link.h"
 #include "common.h"
 #include "wdebug.h"

@@ -33,9 +33,10 @@
 #include "vi.h"
 
 #ifdef __IDE__
+
 #include "common.h"
 #include "link.h"
-#include "winprag.h"
+#include "wdebug.h"
 
 /*
  * IDEInit - set up for communication with the IDE
