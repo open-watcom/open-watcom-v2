@@ -29,10 +29,14 @@
 ****************************************************************************/
 
 
+#define TO_SR_VALUE(x)      ((void *)(pointer_int)(x))
+#define FROM_SR_VALUE(x,t)  ((t)(pointer_int)(x))
+
 typedef void *(*func_sr)(void *);
 
 extern void *SafeRecurseCpp( func_sr rtn, void *arg );
 #if defined( __WATCOMC__ ) && defined( _M_IX86 ) && !defined( __NT__ )
+/* just to be sure! must not put any parametr on the stack */
 #pragma aux SafeRecurseCpp __parm __caller [__eax __ebx __ecx __edx]    /* just to be sure! */
 #else
 // nothing special

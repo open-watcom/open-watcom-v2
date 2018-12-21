@@ -29,7 +29,8 @@
 ****************************************************************************/
 
 
-#define SR_RETURN(x)    ((void *)(pointer_int)(x))
+#define TO_SR_VALUE(x)      ((void *)(pointer_int)(x))
+#define FROM_SR_VALUE(x,t)  ((t)(pointer_int)(x))
 
 typedef void    *(*func_sr)(void *);
 

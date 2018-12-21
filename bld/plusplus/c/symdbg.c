@@ -633,7 +633,7 @@ static dbg_type symbolicDebugClassType( TYPE type )
     } else {
         ret = symWVDebugClassType( type );
     }
-    return( ret );
+    return( TO_SR_VALUE( ret ) );
 }
 
 static dbg_type basedPointerType( TYPE type, TYPE base, SD_CONTROL control )
@@ -887,7 +887,7 @@ dbg_type SymbolicDebugType( TYPE type, SD_CONTROL control )
             prevFwdInfo = fwd_info;
             {
                 // from code generator
-                dt = (dbg_type)(pointer_int)SafeRecurseCpp( (func_sr)symbolicDebugClassType, type );
+                dt = FROM_SR_VALUE( SafeRecurseCpp( (func_sr)symbolicDebugClassType, type ), db_type );
             }
             if( fwd_info->dn != NULL ) {
                 dt = DBEndName( fwd_info->dn, dt );
@@ -897,8 +897,7 @@ dbg_type SymbolicDebugType( TYPE type, SD_CONTROL control )
                     base->u.c.info->dbg_no_vbases = dt;
                 } else {
                     base->u.c.info->dbg_no_vbases =
-                        DBEndName( fwd_info->comp_dn,
-                                   base->u.c.info->dbg_no_vbases );
+                        DBEndName( fwd_info->comp_dn, base->u.c.info->dbg_no_vbases );
                 }
             }
             prevFwdInfo = fwd_info->next;

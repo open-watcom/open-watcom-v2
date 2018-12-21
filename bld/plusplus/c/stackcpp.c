@@ -32,15 +32,16 @@
 #include "plusplus.h"
 #include "stackcpp.h"
 
+
 #if defined( __WATCOMC__ ) && defined( _M_IX86 ) && !defined( __NT__ )
 
 #include "walloca.h"
 
 extern char __near  *bp( void );
-#pragma aux bp = __value [__ebp];
+#pragma aux bp = __value [__ebp]
 
 extern char __near  *sp( void );
-#pragma aux sp = __value [__esp];
+#pragma aux sp = __value [__esp]
 
 extern void         setsp( void __near * );
 #pragma aux setsp = "mov esp,eax" __parm [__eax] __modify [__esp]
