@@ -74,7 +74,7 @@ extern  int SegInfo( unsigned short selector );
         "shl    eax,31"     \
         "mov    ax,di"      \
     __parm __caller     [__ebx] \
-    __value             [__edi] \
+    __value             [__eax] \
     __modify __exact    [__eax __ecx __edx __esi __ebx __edi]
 
 extern  int SegmentLimit( void );
