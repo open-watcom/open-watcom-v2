@@ -53,17 +53,7 @@ extern int GetFcb( void *, void * );
 #pragma aux Out43 = 0xe6 0x43 __parm [__al]
 #pragma aux Out42 = 0xe6 0x42 __parm [__al]
 
-extern void JustAnInt28( void );
-#pragma aux JustAnInt28 = "int 28h";
-
 extern unsigned DosMaxAlloc( void );
-
-extern void DosIdleCall( void );
-#pragma aux DosIdleCall = \
-        "mov    ax,1680h" \
-        "int    2fh"      \
-    __modify    [__ax]
-
 
 #pragma aux DoSpawn = \
         "push ds"   \

@@ -35,6 +35,7 @@
 #include <curses.h>
 #include "win.h"
 #include "dosx.h"
+#include "osidle.h"
 
 
 #define PHAR_SCRN_SEL   0x34
@@ -216,7 +217,7 @@ void MyDelay( int ms )
 
     final_ticks = ClockTicks + ((ms * 182L + 5000L) / 10000L);
     do {
-        DosIdleCall();
+        ReleaseVMTimeSlice();
     } while( ClockTicks < final_ticks );
 
 } /* MyDelay */

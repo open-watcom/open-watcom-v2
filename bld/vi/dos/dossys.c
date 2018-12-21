@@ -35,6 +35,7 @@
 #include "dosx.h"
 #include "vibios.h"
 #include "pragmas.h"
+#include "osidle.h"
 
 
 extern void UpdateDOSClock( void );
@@ -381,7 +382,7 @@ void MyDelay( int ms )
 
     final_ticks = ClockTicks + ((ms * 182L + 5000L) / 10000L);
     do {
-        DosIdleCall();
+        ReleaseVMTimeSlice();
     } while( ClockTicks < final_ticks );
 
 } /* MyDelay */
@@ -407,7 +408,7 @@ bool KeyboardHit( void )
 #if !( defined( _M_I86 ) || defined( __4G__ ) )
         UpdateDOSClock();
 #endif
-        JustAnInt28();
+        DOSIdle();
     }
     return( rc );
 
