@@ -623,8 +623,8 @@ static dbg_type symCVDebugClassType( TYPE type )
     return( dt );
 }
 
-static dbg_type symbolicDebugClassType( TYPE type )
-/*************************************************/
+static void *symbolicDebugClassType( TYPE type )
+/**********************************************/
 {
     dbg_type ret;
 
