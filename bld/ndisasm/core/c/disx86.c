@@ -1777,6 +1777,14 @@ dis_handler_return X86Imm_8( dis_handle *h, void *d, dis_dec_ins *ins )
             }
         }
         break;
+    case DI_X86_aam:
+        ins->op[0].value.s._32[I64LO32] = GetUByte( d, ins->size );
+        ins->size += 1;
+        if( ins->op[0].value.s._32[I64LO32] != 10 ) {
+            ins->op[0].ref_type = DRT_X86_BYTE;
+            ins->num_ops++;
+        }
+        break;
     default:
         X86GetImmedVal( code.type3.s, W_DEFAULT, d, ins );
         break;
