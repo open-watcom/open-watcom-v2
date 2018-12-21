@@ -39,7 +39,8 @@
 #include <malloc.h>
 #include "link.h"
 #include "common.h"
-#include "wdebug.h"
+#include "osidle.h"
+
 
 extern void __far * __far OldInt21;
 extern void __far TrapInt21( void );
@@ -106,7 +107,7 @@ int main( void )
             VxDConnect();
             break;
         }
-        TimeSlice();
+        ReleaseVMTimeSlice();
     }
     cputs( "DOS Driver started\r\n" );
     for( ;; ) {

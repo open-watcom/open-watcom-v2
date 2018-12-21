@@ -36,7 +36,7 @@
 
 #include "common.h"
 #include "link.h"
-#include "wdebug.h"
+#include "osidle.h"
 
 /*
  * IDEInit - set up for communication with the IDE
@@ -51,7 +51,7 @@ void IDEInit( void )
             VxDConnect();
             break;
         }
-        TimeSlice();
+        ReleaseVMTimeSlice();
     }
 
 } /* IDEInit */

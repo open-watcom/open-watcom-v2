@@ -98,9 +98,6 @@ struct mouse_data {
 typedef struct mouse_data __based( __segname( "_STACK" ) ) *md_stk_ptr;
 
 
-extern void DOSIdleInterrupt( void );
-#pragma aux DOSIdleInterrupt = "int 28h"
-
 extern unsigned short MouseDrvReset( void );
 #pragma aux MouseDrvReset = \
         "xor  ax,ax"        \

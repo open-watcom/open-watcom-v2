@@ -96,38 +96,6 @@ extern _word CS( void );
         "mov    ax,cs" \
     __value [__ax]
 
-extern void TimeSlice( void );
-#pragma aux TimeSlice = \
-        "mov  ax,1680h" \
-        "int 2fh"       \
-    __parm      [] \
-    __value     \
-    __modify    [__ax]
-
-extern void BeginCriticalSection( void );
-#pragma aux BeginCriticalSection = \
-        "mov  ax,1681h" \
-        "int 2fh"       \
-    __parm      [] \
-    __value     \
-    __modify    [__ax]
-
-extern void EndCriticalSection( void );
-#pragma aux EndCriticalSection = \
-        "mov  ax,1682h" \
-        "int 2fh"       \
-    __parm      [] \
-    __value     \
-    __modify    [__ax]
-
-extern int GetVM( void );
-#pragma aux GetVM = \
-        "mov  ax,1683h" \
-        "int 2fh"       \
-    __parm      [] \
-    __value     [__bx] \
-    __modify    [__ax]
-
 extern short CheckWin386Debug( void );                      /* 00 */
 extern short CopyMemory386( _word, _dword, _word, _dword, _word ); /* 01 */
 extern void GetDescriptor( short, void __far * );           /* 02 */

@@ -37,6 +37,8 @@
 #include "trptypes.h"
 #include "trperr.h"
 #include "packet.h"
+#include "osidle.h"
+
 
 static _dword _id;
 #ifdef DEBUG_ME
@@ -120,7 +122,7 @@ bool RemoteConnect( void )
     if( rc == 1 ) {
         return( true );
     } else if( rc == 0 ) {
-        TimeSlice();
+        ReleaseVMTimeSlice();
     }
     return( false );
 #else
@@ -136,7 +138,7 @@ bool RemoteConnect( void )
     for( ;; ) {
         rc = IsConvAck( _id );
         if( !rc ) {
-            TimeSlice();
+            ReleaseVMTimeSlice();
         } else if( rc < 0 ) {
         } else {
             return( true );

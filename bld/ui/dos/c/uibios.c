@@ -40,6 +40,7 @@
 #include "dpmi.h"
 #include "uigchar.h"
 #include "getltdos.h"
+#include "osidle.h"
 
 
 typedef struct {
@@ -69,12 +70,12 @@ static MONITOR ui_data = {
 void IdleInterrupt( void )
 {
 #ifdef _M_I86
-    DOSIdleInterrupt();
+    DOSIdle();
 #elif defined( __OSI__ )
     /* Can't do anything */
 #else
     if( _IsRational() ) {
-        DPMIIdle(); /* Assume DPMI if Rational; else dunno */
+        ReleaseVMTimeSlice(); /* Assume DPMI if Rational; else dunno */
     }
 #endif
 }

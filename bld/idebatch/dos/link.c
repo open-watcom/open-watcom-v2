@@ -38,7 +38,9 @@
 #ifdef __WINDOWS__
 #include <windows.h>
 #endif
+#include "osidle.h"
 #include "link.h"
+
 
 _dword __ConvId;
 
@@ -74,7 +76,7 @@ static void messageLoop( void )
         DispatchMessage( &msg );
     }
     Yield();
-    TimeSlice();
+    ReleaseVMTimeSlice();
     Yield();
 
 } /* messageLoop */
@@ -158,7 +160,7 @@ char __pascal VxDConnect( void )
     if( rc == 1 ) {
         return( 1 );
     } else if( rc == 0 ) {
-        TimeSlice();
+        ReleaseVMTimeSlice();
         return( 0 );
     }
     return 0;           //added by TW (no return value otherwise)??
@@ -171,7 +173,7 @@ char __pascal VxDConnect( void )
     while( 1 ) {
         rc = IsConvAck( __ConvId );
         if( !rc ) {
-            TimeSlice();
+            ReleaseVMTimeSlice();
         } else if( rc < 0 ) {
         } else {
             return( 1 );
