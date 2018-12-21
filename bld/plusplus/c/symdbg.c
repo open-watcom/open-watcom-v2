@@ -887,7 +887,7 @@ dbg_type SymbolicDebugType( TYPE type, SD_CONTROL control )
             prevFwdInfo = fwd_info;
             {
                 // from code generator
-                dt = FROM_SR_VALUE( SafeRecurseCpp( (func_sr)symbolicDebugClassType, type ), db_type );
+                dt = FROM_SR_VALUE( SafeRecurseCpp( (func_sr)symbolicDebugClassType, type ), dbg_type );
             }
             if( fwd_info->dn != NULL ) {
                 dt = DBEndName( fwd_info->dn, dt );
