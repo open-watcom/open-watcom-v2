@@ -129,9 +129,6 @@ extern unsigned char            _osrev;     /* revision number of the Linux kern
 #if !defined( __NETWARE__ )
     #define _RWD_threadid       _threadid
 #endif
-#if !defined( _M_I86 )
-    #define _RWD_Envptr         _Envptr
-#endif
 #define _RWD_environ            environ
 #define _RWD_wenviron           _wenviron
 #define _RWD_env_mask           __env_mask

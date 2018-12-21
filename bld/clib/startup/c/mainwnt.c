@@ -176,9 +176,10 @@ int __NTInit( int is_dll, thread_data *tdata, HANDLE hdll )
             /* for Windows 9x and NT ( 4.0 and above ) use GetEnvironmentStringsA */
             name = "GetEnvironmentStringsA";
         }
+        _Envptr = NULL;
         _getenvs = (GETENVPROC)GetProcAddress( GetModuleHandle( "KERNEL32.DLL" ), name );
         if( _getenvs != NULL ) {
-            _RWD_Envptr = _getenvs();
+            _Envptr = _getenvs();
         }
     }
 
@@ -272,14 +273,14 @@ void __NTFini( void )
      * (see comment above in __NTInit)
      */
 
-    if( _RWD_Envptr != NULL ) {
+    if( _Envptr != NULL ) {
         FREEENVPROC _freeenvs;
 
         _freeenvs = (FREEENVPROC)GetProcAddress( GetModuleHandle( "KERNEL32.DLL" ), "FreeEnvironmentStringsA" );
         if( _freeenvs != NULL ) {
-            _freeenvs( _RWD_Envptr );
+            _freeenvs( _Envptr );
         }
-        _RWD_Envptr = NULL;
+        _Envptr = NULL;
     }
 }
 

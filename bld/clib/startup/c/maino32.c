@@ -139,7 +139,7 @@ void __OS2MainInit( EXCEPTIONREGISTRATIONRECORD *xcpt, void *ptr,
     for( args = cmd; *args != '\0'; ++args ); /* skip over program name */
     ++args;
 
-    _RWD_Envptr = env;
+    _Envptr = env;
     _LpCmdLine = args;
 #ifdef _UNICODE
     _LpwCmdLine = lib_malloc( (strlen( _LpCmdLine ) + 1) * sizeof( wchar_t ) );

@@ -129,7 +129,7 @@ void __setenvp( void )
     /* if we are already initialized, then return */
     if( _RWD_environ != NULL ) return;           /* 10-jun-90 */
   #if defined(__WARP__)
-    startp = _RWD_Envptr;
+    startp = _Envptr;
   #elif defined(__OS2_286__)
     {
         unsigned short  seg;
@@ -185,14 +185,14 @@ void __setenvp( void )
         RdosUnlockSysEnv();
     }
   #elif defined( __NT__ )
-    startp = _RWD_Envptr;
+    startp = _Envptr;
     if( startp == NULL ) {
         startp = "";
     }
   #elif defined( _M_I86 )
     startp = MK_FP( *(unsigned short _WCI86FAR *)( MK_FP( _RWD_psp, 0x2c ) ), 0 );
   #else
-    startp = _RWD_Envptr;
+    startp = _Envptr;
   #endif
     count = 0;
     p = startp;
