@@ -385,23 +385,21 @@ extern void     _DPMIResetWatch( uint_16 handle );
 
 #if defined(__386__)
 #pragma aux _DPMIAllocateLDTDescriptors = \
-        "xor    eax,eax"    \
-        _INT_31             \
-        "mov    dx,ax"      \
-        "sbb    ax,ax"      \
-        "shl    eax,16"     \
-        "mov    ax,dx"      \
+        "xor  eax,eax"  \
+        _INT_31         \
+        "sbb  ecx,ecx"  \
+        "mov  cx,ax"    \
     __parm [__cx] \
-    __value[__eax] \
-    __modify[__dx]
+    __value [__ecx] \
+    __modify __exact [__eax __ecx]
 #else
 #pragma aux _DPMIAllocateLDTDescriptors = \
-        "xor    ax,ax"      \
-        _INT_31             \
-        "sbb    dx,dx"      \
+        "xor  ax,ax"    \
+        _INT_31         \
+        "sbb  cx,cx"    \
     __parm [__cx] \
-    __value[__ax __dx] \
-    __modify []
+    __value [__cx __ax] \
+    __modify __exact [__ax __cx]
 #endif
 
 #pragma aux _DPMIFreeLDTDescriptor = \

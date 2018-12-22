@@ -65,7 +65,7 @@ unsigned short  _ExtenderRealModeSelector;
 #define CTRL_BREAK_VECTOR      0x1b
 
 extern void CheckForBrk(void);
-#pragma aux CheckForBrk = "mov  ah,0xb"  "int   0x21"
+#pragma aux CheckForBrk = "mov  ah,0xb"  "int 0x21"
 
 bool TBreak( void )
 {
@@ -107,8 +107,7 @@ void GrabHandlers( void )
 void RestoreHandlers( void )
 {
     if( PMData->oldint10.a != 0 ) {
-        MySetRMVector( 0x10, PMData->oldint10.s.segment,
-                             PMData->oldint10.s.offset );
+        MySetRMVector( 0x10, PMData->oldint10.s.segment, PMData->oldint10.s.offset );
     }
     if( OldInt1b.a ) {
         MySetRMVector( CTRL_BREAK_VECTOR, OldInt1b.s.segment, OldInt1b.s.offset );
@@ -142,18 +141,16 @@ void KillDebugger( int rc )
 void GUImain( void )
 {
 #if defined(__OSI__)
-    {
-        long    result;
+    long    sel;
 
-        _Extender = DOSX_RATIONAL;
-        result = DPMIAllocateLDTDescriptors( 1 );
-        if( result < 0 ) {
-            StartupErr( LIT_ENG( Unable_to_get_rm_sel ) );
-        }
-        _ExtenderRealModeSelector = result & 0xffff;
-        if( DPMISetSegmentLimit( _ExtenderRealModeSelector, 0xfffff ) ) {
-            StartupErr( LIT_ENG( Unable_to_get_rm_sel ) );
-        }
+    _Extender = DOSX_RATIONAL;
+    sel = DPMIAllocateLDTDescriptors( 1 );
+    if( sel < 0 ) {
+        StartupErr( LIT_ENG( Unable_to_get_rm_sel ) );
+    }
+    _ExtenderRealModeSelector = sel;
+    if( DPMISetSegmentLimit( _ExtenderRealModeSelector, 0xfffff ) ) {
+        StartupErr( LIT_ENG( Unable_to_get_rm_sel ) );
     }
 #endif
     SaveOrigVectors();

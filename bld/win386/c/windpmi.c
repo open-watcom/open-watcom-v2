@@ -93,8 +93,8 @@ static void removeFromSelList( WORD sel )
  */
 WORD _DPMIGetAliases( DWORD offset, DWORD __far *res, WORD cnt)
 {
-    long                rc;
-    WORD                sel,i;
+    long                sel;
+    WORD                i;
     DWORD               limit,base;
     alias_cache_entry   *ace;
 
@@ -143,12 +143,11 @@ WORD _DPMIGetAliases( DWORD offset, DWORD __far *res, WORD cnt)
      * get a descriptor
      */
     *res = 0L;
-    rc = DPMIAllocateLDTDescriptors( cnt );
-    if( rc < 0 ) {
+    sel = DPMIAllocateLDTDescriptors( cnt );
+    if( sel < 0 ) {
         return( 666 );
     }
-    sel = (WORD)rc;
-    *res = ((DWORD)sel) << 16;
+    *res = sel << 16;
     limit = cnt * 0x10000 - 1;
 
     for( i = 0; i < cnt; i++ ) {
@@ -295,19 +294,17 @@ static void setLimitAndAddr( WORD sel, DWORD addr, DWORD len, WORD type )
  */
 WORD InitFlatAddrSpace( DWORD baseaddr, DWORD len )
 {
-    long        rc;
-    WORD        sel;
+    long        sel;
     descriptor  desc;
 
     hugeIncrement = DPMIGetNextSelectorIncrementValue();
     /*
      * get a code selector pointing to the memory
      */
-    rc = DPMIAllocateLDTDescriptors( 1 );
-    if( rc < 0 ) {
+    sel = DPMIAllocateLDTDescriptors( 1 );
+    if( sel < 0 ) {
         return( 4 );
     }
-    sel = (WORD)rc;
     CodeEntry.seg = sel;
     setLimitAndAddr( sel, baseaddr, len, ACCESS_CODE );
     CodeSelectorBase = baseaddr;
@@ -315,12 +312,11 @@ WORD InitFlatAddrSpace( DWORD baseaddr, DWORD len )
     /*
      * get a data and stack selector pointing to the memory
      */
-    rc = DPMIAllocateLDTDescriptors( 2 );
-    if( rc < 0 ) {
-        DPMIFreeLDTDescriptor( sel );
+    sel = DPMIAllocateLDTDescriptors( 2 );
+    if( sel < 0 ) {
+        DPMIFreeLDTDescriptor( CodeEntry.seg );
         return( 4 );
     }
-    sel = (WORD)rc;
     DataSelector = sel;
     setLimitAndAddr( sel, baseaddr, len, ACCESS_DATA );
     StackSelector = sel + hugeIncrement;
@@ -480,16 +476,14 @@ void GetDataSelectorInfo( void )
  */
 int InitSelectorCache( void )
 {
-    long        rc;
+    long        sel;
     int         i;
-    WORD        sel;
 
-    rc = DPMIAllocateLDTDescriptors( MAX_CACHE + 2 );
-    if( rc < 0 ) {
-        return( rc );
+    sel = DPMIAllocateLDTDescriptors( MAX_CACHE + 2 );
+    if( sel < 0 ) {
+        return( sel );
     }
-    firstCacheSel = (WORD)rc;
-    sel = (WORD)rc;
+    firstCacheSel = sel;
     for( i = 0; i < MAX_CACHE + 2; i++ ) {
         if( i < MAX_CACHE ) {
             aliasCache[i].sel = sel;

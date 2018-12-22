@@ -36,32 +36,6 @@
 #include "exitwmsg.h"
 #include "rtinit.h"
 
-unsigned short  _ExtenderRealModeSelector;
-
-#ifdef __WINDOWS_386__
-
-static void init( void )
-{
-    long    result;
-
-    result = DPMIAllocateLDTDescriptors( 1 );
-    if( result < 0 ) {
-        __fatal_runtime_error( "Unable to allocate real mode selector", -1 );
-        // never return
-    }
-    _ExtenderRealModeSelector = result;
-    if( DPMISetSegmentLimit( _ExtenderRealModeSelector, 0xfffff ) ) {
-        __fatal_runtime_error( "Unable to set limit of real mode selector", -1 );
-        // never return
-    }
-}
-
-static void fini( void )
-{
-    DPMIFreeLDTDescriptor( _ExtenderRealModeSelector );
-}
-
-#else
 
 extern short __get_ds( void );
 #pragma aux __get_ds = \
@@ -70,8 +44,11 @@ extern short __get_ds( void );
     __value             [__ax] \
     __modify __exact    [__ax]
 
+unsigned short  _ExtenderRealModeSelector;
+
 static void init( void )
 {
+#ifndef __WINDOWS_386__
     if( _IsFlashTek() ) {
         _ExtenderRealModeSelector = __x386_zero_base_selector;
     } else if( _IsPharLap() || _IsOS386() ) {
@@ -80,31 +57,36 @@ static void init( void )
     } else if( _IsRationalZeroBase() || _IsCodeBuilder() ) {
         _ExtenderRealModeSelector = __get_ds();
     } else if( _IsRationalNonZeroBase() ) {
-        long    result;
+#endif
+        long    sel;
 
-        result = DPMIAllocateLDTDescriptors( 1 );
-        if( result < 0 ) {
+        sel = DPMIAllocateLDTDescriptors( 1 );
+        if( sel < 0 ) {
             __fatal_runtime_error( "Unable to allocate real mode selector", -1 );
             // never return
         }
-        _ExtenderRealModeSelector = result & 0xffff;
+        _ExtenderRealModeSelector = sel;
         if( DPMISetSegmentLimit( _ExtenderRealModeSelector, 0xfffff ) ) {
             __fatal_runtime_error( "Unable to set limit of real mode selector", -1 );
             // never return
         }
+#ifndef __WINDOWS_386__
     } else {
         _ExtenderRealModeSelector = 0;
     }
+#endif
 }
 
 static void fini( void )
 {
+#ifndef __WINDOWS_386__
     if( _IsRationalNonZeroBase() ) {
-        DPMIFreeLDTDescriptor( _ExtenderRealModeSelector );
-    }
-}
-
 #endif
+        DPMIFreeLDTDescriptor( _ExtenderRealModeSelector );
+#ifndef __WINDOWS_386__
+    }
+#endif
+}
 
 AXI( init, INIT_PRIORITY_FPU )
 AYI( fini, INIT_PRIORITY_FPU )

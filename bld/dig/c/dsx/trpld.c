@@ -330,7 +330,7 @@ static char *CopyEnv( void )
 static char *SetTrapHandler( void )
 {
     char                dummy;
-    long                result;
+    long                sel;
     descriptor          desc;
     version_info        ver;
 
@@ -358,19 +358,19 @@ static char *SetTrapHandler( void )
                 }
             }
             PMData->othersaved = false;
-            result = DPMIAllocateLDTDescriptors( 1 );
-            if( result < 0 ) {
+            sel = DPMIAllocateLDTDescriptors( 1 );
+            if( sel < 0 ) {
                 return( TC_ERR_CANT_LOAD_TRAP );
             }
             DPMIGetDescriptor( FP_SEG( PMData ), &desc );
-            PMData->pmode_cs   = (unsigned_16)result;
+            PMData->pmode_cs = sel;
             desc.xtype.use32 = 0;
             desc.type.execute = 1;
-            DPMISetDescriptor( PMData->pmode_cs, &desc );
-            PMData->pmode_eip  = RM_OFF( BackFromRealMode );
-            PMData->pmode_ds   = FP_SEG( &PMData );
-            PMData->pmode_es   = PMData->pmode_ds;
-            PMData->pmode_ss   = FP_SEG( &dummy );
+            DPMISetDescriptor( sel, &desc );
+            PMData->pmode_eip = RM_OFF( BackFromRealMode );
+            PMData->pmode_ds  = FP_SEG( &PMData );
+            PMData->pmode_es  = PMData->pmode_ds;
+            PMData->pmode_ss  = FP_SEG( &dummy );
             IntrState = IS_DPMI;
         }
     }
