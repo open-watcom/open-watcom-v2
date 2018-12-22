@@ -264,7 +264,7 @@ extern void     __far *_DPMIGetVendorSpecificAPI( char __far * );
 
 extern int_32   _DPMISetWatch( uint_32 linear, uint_8 len, dpmi_watch_type type );
 extern void     _DPMIClearWatch( uint_16 handle );
-extern int_16   _DPMITestWatch( uint_16 handle );
+extern int      _DPMITestWatch( uint_16 handle );
 extern void     _DPMIResetWatch( uint_16 handle );
 
 #pragma aux _DPMIModeDetect = \
@@ -291,7 +291,7 @@ extern void     _DPMIResetWatch( uint_16 handle );
         "mov    ax,bx"      \
     __parm [__ebx] [__dl] [__dh] \
     __value [__eax] \
-    __modify [__ecx]
+    __modify __exact [__eax __ebx __ecx]
 #else
 #pragma aux _DPMISetWatch = \
         "mov    ax,0b00h"   \
@@ -300,7 +300,36 @@ extern void     _DPMIResetWatch( uint_16 handle );
         "sbb    cx,cx"      \
     __parm [__bx __cx] [__dl] [__dh] \
     __value [__cx __bx] \
-    __modify []
+    __modify __exact [__ax __bx __cx]
+#endif
+
+#pragma aux _DPMIClearWatch = \
+        "mov    ax,0b01h"   \
+        _INT_31             \
+    __parm [__bx] \
+    __value \
+    __modify __exact [__ax]
+
+#if defined(__386__)
+#pragma aux _DPMITestWatch = \
+        "mov  ax,0b02h"     \
+        _INT_31             \
+        "sbb  ebx,ebx"      \
+        "and  eax,1"        \
+        "or   ebx,eax"      \
+    __parm [__bx] \
+    __value [__ebx] \
+    __modify __exact [__eax __ebx]
+#else
+#pragma aux _DPMITestWatch = \
+        "mov  ax,0b02h"     \
+        _INT_31             \
+        "sbb  bx,bx"        \
+        "and  ax,1"         \
+        "or   bx,ax"        \
+    __parm [__bx] \
+    __value [__bx] \
+    __modify __exact [__ax __bx]
 #endif
 
 #pragma aux _DPMIResetWatch = \
@@ -308,22 +337,7 @@ extern void     _DPMIResetWatch( uint_16 handle );
         _INT_31             \
     __parm [__bx] \
     __value \
-    __modify []
-
-#pragma aux _DPMIClearWatch = \
-        "mov    ax,0b01h"   \
-        _INT_31             \
-    __parm [__bx] \
-    __value \
-    __modify []
-
-#pragma aux _DPMITestWatch = \
-        "mov    ax,0b02h"   \
-        _INT_31             \
-        "and    ax,1"       \
-    __parm [__bx] \
-    __value [__ax] \
-    __modify []
+    __modify __exact [__ax]
 
 #if defined(__386__)
 #pragma aux _DPMIGetVersion = \
