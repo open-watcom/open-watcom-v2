@@ -139,7 +139,7 @@ bool IsDeclspec( char *start, char *end )
     bool        found;
 
     found = false;
-    if( declspec_table == NULL ) {
+    if( declspec_table != NULL ) {
         save_char = *end;
         *end = '\0';
         entry = declspec_table + hashpjw( start, declspec_table_entries );
