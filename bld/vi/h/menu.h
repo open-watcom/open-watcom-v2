@@ -32,6 +32,8 @@
 #ifndef _MENU_INCLUDED
 #define _MENU_INCLUDED
 
+#include "wresid.h"
+
 #define MAX_FLOAT_MENUS 4
 
 /* menu.c */
@@ -47,9 +49,9 @@ extern vi_rc    DoMenuDelete( const char *data );
 extern vi_rc    InitMenu( void );
 extern void     FiniMenu( void );
 extern vi_rc    DoMenu( void );
-extern int      GetMenuIdFromCoord( int x );
-extern int      GetCurrentMenuId( void );
-extern vi_rc    SetToMenuId( int id );
+extern ctl_id   GetMenuIdFromCoord( int x );
+extern ctl_id   GetCurrentMenuId( void );
+extern vi_rc    SetToMenuId( ctl_id id );
 extern vi_rc    DoFloatMenu( int flt_id, int slen, windim x1, windim y1 );
 extern vi_rc    ActivateFloatMenu( const char * );
 extern vi_rc    DoWindowGadgetMenu( void );
