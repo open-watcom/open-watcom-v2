@@ -262,7 +262,7 @@ extern uint_32  _DPMISavePMStateAddr( void );
 extern uint_16  _DPMISaveStateSize( void );
 extern void     __far *_DPMIGetVendorSpecificAPI( char __far * );
 
-extern int_32   _DPMISetWatch( uint_32 linear, uint_8 len, dpmi_watch_type type );
+extern int_32   _DPMISetWatch( uint_32 linear, uint_8 len, uint_8 type );
 extern void     _DPMIClearWatch( uint_16 handle );
 extern int      _DPMITestWatch( uint_16 handle );
 extern void     _DPMIResetWatch( uint_16 handle );
