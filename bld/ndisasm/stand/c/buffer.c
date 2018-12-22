@@ -91,7 +91,7 @@ char *FmtHexNum( char *buff, unsigned prec, dis_value value )
     return( buff );
 }
 
-char *FmtLabelNum( char *buff, uint_32 value )
+char *FmtLabelNum( char *buff, unsigned long value )
 {
     sprintf( buff, "%c$%lu", LabelChar, value );
     return( buff );
@@ -254,7 +254,7 @@ void BufferQuoteName( const char *name )
     }
 }
 
-void BufferLabelNum( uint_32 value )
+void BufferLabelNum( unsigned long value )
 {
     FmtLabelNum( IntermedBuffer, value );
     BufferConcat( IntermedBuffer );

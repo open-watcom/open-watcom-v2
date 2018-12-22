@@ -48,10 +48,10 @@ extern void             BufferUnsigned( unsigned long value );
 extern void             BufferPrint( void );
 extern size_t           BufferMsg( int );
 extern void             BufferAlignToTab( unsigned );
-extern void             BufferLabelNum( uint_32 value );
+extern void             BufferLabelNum( unsigned long value );
 extern void             BufferLinePrefixAddress( dis_sec_offset, bool );
 extern void             BufferLinePrefixData( unsigned_8 *, dis_sec_offset, dis_sec_offset, unsigned, unsigned );
 extern char             *FmtHexNum( char *buff, unsigned prec, dis_value value );
-extern char             *FmtLabelNum( char *buff, uint_32 value );
+extern char             *FmtLabelNum( char *buff, unsigned long value );
 
 #endif
