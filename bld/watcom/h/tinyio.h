@@ -433,7 +433,7 @@ typedef uint_32 __based( __segname( "_STACK" ) )    *u32_stk_ptr;
 #define TINY_ERROR( h )         ((int_32)(h)<0)
 #define TINY_OK( h )            ((int_32)(h)>=0)
 #define TINY_INFO( h )          ((uint_16)(h))
-#define TINY_LINFO( h )          ((uint_32)(h))
+#define TINY_LINFO( h )         ((uint_32)(h))
 /* 5-nov-90 AFS TinySeek returns a 31-bit offset that must be sign extended */
 #define TINY_INFO_SEEK( h )     (((int_32)(h)^0xc0000000L)-0xc0000000L)
 
@@ -828,6 +828,9 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
  #define _INT_21        _INT 0x21
 #endif
 
+#define _INT_25         _INT 0x25
+#define _INT_26         _INT 0x26
+
 #if defined( __OSI__ ) && defined( __CALL31__ )
  extern  void   __Int31( void );
  #pragma aux __Int31 "*"
@@ -920,10 +923,10 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 
 #pragma aux _TinyGetPSP = \
         _PUSHF          \
-        "xor eax,eax"   \
+        "xor  eax,eax"  \
         _MOV_AH DOS_GET_PSP \
         _INT_21         \
-        "mov ax,bx"     \
+        "mov  ax,bx"    \
         _POPF           \
     __parm              [] \
     __value             [__eax] \
@@ -932,18 +935,18 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 #pragma aux _TinySetMaxHandleCount = \
         _MOV_AH DOS_SET_HCOUNT \
         _INT_21         \
-        "rcl    eax,1"  \
-        "ror    eax,1"  \
+        "rcl  eax,1"    \
+        "ror  eax,1"    \
     __parm __caller     [__bx] \
     __value             [__eax] \
     __modify __exact    [__eax]
 
 #pragma aux _TinyCBAlloc = \
-        "mov eax,80004800h" \
+        "mov  eax,80004800h" \
         _INT_21         \
-        "sbb ebx,ebx"   \
-        "not ebx"       \
-        "and eax,ebx"   \
+        "sbb  ebx,ebx"  \
+        "not  ebx"      \
+        "and  eax,ebx"  \
     __parm __caller     [__ebx] \
     __value             [__eax] \
     __modify __exact    [__eax __ebx]
@@ -951,161 +954,161 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 #pragma aux _TinyMemAlloc = \
         _MOV_AH DOS_ALLOC_SEG \
         _INT_21         \
-        "sbb ebx,ebx"   \
-        "not ebx"       \
-        "and eax,ebx"   \
+        "sbb  ebx,ebx"  \
+        "not  ebx"      \
+        "and  eax,ebx"  \
     __parm __caller     [__ebx] \
     __value             [__eax] \
     __modify __exact    [__eax __ebx]
 
 #pragma aux _TinyDPMISegToSel = \
-        "mov ax,2"      \
+        "mov  ax,2"     \
         _INT_31         \
         "jnc short finish" \
-        "xor ax,ax"     \
+        "xor  ax,ax"    \
     "finish:"           \
     __parm              [__bx] \
     __value             [__ax] \
     __modify __exact    [__ax __bx]
 
 #pragma aux _TinyDPMICreateSel = \
-        "xor eax,eax"   \
+        "xor  eax,eax"  \
         _INT_31         \
         "jnc short L1"  \
-        "xor ax,ax"     \
+        "xor  ax,ax"    \
     "L1:"               \
     __parm              [__cx] \
     __value             [__ax] \
     __modify __exact    [__ax]
 
 #pragma aux _TinyDPMISetBase = \
-        "mov ecx,edx"   \
-        "shr ecx,16"    \
-        "mov ax,7"      \
+        "mov  ecx,edx"  \
+        "shr  ecx,16"   \
+        "mov  ax,7"     \
         _INT_31         \
-        "sbb eax,eax"   \
+        "sbb  eax,eax"  \
     __parm              [__bx] [__edx] \
     __value             [__eax] \
     __modify __exact    [__eax __ecx]
 
 #pragma aux _TinyDPMISetLimit = \
-        "mov ecx,edx"   \
-        "shr ecx,16"    \
-        "mov ax,8"      \
+        "mov  ecx,edx"  \
+        "shr  ecx,16"   \
+        "mov  ax,8"     \
         _INT_31         \
-        "sbb eax,eax"   \
+        "sbb  eax,eax"  \
     __parm              [__bx] [__edx] \
     __value             [__eax] \
     __modify __exact    [__eax __ecx]
 
 #pragma aux _TinyDPMISetRights = \
-        "mov ax,9"      \
+        "mov  ax,9"     \
         _INT_31         \
-        "sbb eax,eax"   \
+        "sbb  eax,eax"  \
     __parm              [__bx] [__cx] \
     __value             [__eax] \
     __modify __exact    [__eax]
 
 #pragma aux _TinyDPMIGetDescriptor = \
         "push es"       \
-        "mov es,ecx"    \
-        "mov ax,0bh"    \
+        "mov  es,ecx"   \
+        "mov  ax,0bh"   \
         _INT_31         \
-        "sbb eax,eax"   \
-        "pop es"        \
+        "sbb  eax,eax"  \
+        "pop  es"       \
     __parm              [__bx] [__cx __edi] \
     __value             [__eax] \
     __modify __exact    [__eax]
 
 #pragma aux _TinyDPMISetDescriptor = \
         "push es"       \
-        "mov es,ecx"    \
-        "mov ax,0ch"    \
+        "mov  es,ecx"   \
+        "mov  ax,0ch"   \
         _INT_31         \
-        "sbb eax,eax"   \
-        "pop es"        \
+        "sbb  eax,eax"  \
+        "pop  es"       \
     __parm              [__bx] [__cx __edi] \
     __value             [__eax] \
     __modify __exact    [__eax]
 
 #pragma aux _TinyDPMICreateCSAlias = \
-        "mov ax,0ah"    \
+        "mov  ax,0ah"   \
         _INT_31         \
         "jnc short finish" \
-        "xor ax,ax"     \
+        "xor  ax,ax"    \
     "finish:"           \
     __parm __caller     [__bx] \
     __value             [__ax] \
     __modify __exact    [__ax]
 
 #pragma aux _TinyDPMIFreeSel = \
-        "mov ax,1"      \
+        "mov  ax,1"     \
         _INT_31         \
-        "sbb eax,eax"   \
+        "sbb  eax,eax"  \
     __parm __caller     [__bx] \
     __value             [__eax] \
     __modify __exact    [__eax]
 
 #pragma aux _TinyDPMIRawPMtoRMAddr = \
-        "mov ax,306h"   \
-        "xor edi,edi"   \
+        "mov  ax,306h"  \
+        "xor  edi,edi"  \
         "stc"           \
         _INT_31         \
-        "mov cx,si"     \
+        "mov  cx,si"    \
         "jnc short finish" \
-        "xor cx,cx"     \
-        "xor edi,edi"   \
+        "xor  cx,cx"    \
+        "xor  edi,edi"  \
     "finish:"           \
     __parm __caller     [] \
     __value             [__cx __edi] \
     __modify __exact    [__eax __cx __si __edi]
 
 #pragma aux _TinyDPMIRawRMtoPMAddr = \
-        "mov ax,306h"   \
+        "mov  ax,306h"  \
         "stc"           \
         _INT_31         \
         "jnc short L1"  \
-        "xor ebx,ebx"   \
+        "xor  ebx,ebx"  \
         "jmp short finish" \
-    "L1: shl ebx,16"    \
-        "mov bx,cx"     \
+    "L1: shl  ebx,16"   \
+        "mov  bx,cx"    \
     "finish:"           \
     __parm __caller     [] \
     __value             [__ebx] \
     __modify __exact    [__eax __ebx __cx __si __edi]
 
 #pragma aux _TinyDPMISaveRMStateAddr = \
-        "mov ax,305h"   \
+        "mov  ax,305h"  \
         "stc"           \
         _INT_31         \
-        "mov cx,si"     \
+        "mov  cx,si"    \
         "jnc short finish" \
-        "xor cx,cx"     \
-        "xor edi,edi"   \
+        "xor  cx,cx"    \
+        "xor  edi,edi"  \
     "finish:"           \
     __parm __caller     [] \
     __value             [__cx __edi] \
     __modify __exact    [__ax __bx __cx __si __edi]
 
 #pragma aux _TinyDPMISavePMStateAddr = \
-        "mov ax,305h"   \
+        "mov  ax,305h"  \
         _INT_31         \
         "jnc short L1"  \
-        "xor cx,cx"     \
-        "xor ebx,ebx"   \
+        "xor  cx,cx"    \
+        "xor  ebx,ebx"  \
         "jmp short finish" \
-    "L1: shl ebx,16"    \
-        "mov bx,cx"     \
+    "L1: shl  ebx,16"   \
+        "mov  bx,cx"    \
     "finish:"           \
     __parm __caller     [] \
     __value             [__ebx] \
     __modify __exact    [__ax __ebx __cx __si __edi]
 
 #pragma aux _TinyDPMISaveStateSize = \
-        "mov ax,305h"   \
+        "mov  ax,305h"  \
         _INT_31         \
         "jnc short finish" \
-        "xor ax,ax"     \
+        "xor  ax,ax"    \
     "finish:"           \
     __parm __caller     [] \
     __value             [__ax] \
@@ -1113,158 +1116,158 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 
 #pragma aux _TinyDPMISimulateRealInt = \
         "push es"       \
-        "mov es,edx"    \
-        "mov ax,300h"   \
+        "mov  es,edx"   \
+        "mov  ax,300h"  \
         _INT_31         \
-        "sbb eax,eax"   \
-        "pop es"        \
+        "sbb  eax,eax"  \
+        "pop  es"       \
     __parm __caller     [__bl] [__bh] [__cx] [__dx __edi] \
     __value             [__eax] \
     __modify __exact    [__eax __bx __cx __edi]
 
 #pragma aux _TinyDPMICallRealFarFrame = \
         "push es"       \
-        "mov es,edx"    \
-        "mov ax,301h"   \
+        "mov  es,edx"   \
+        "mov  ax,301h"  \
         _INT_31         \
-        "sbb eax,eax"   \
-        "pop es"        \
+        "sbb  eax,eax"  \
+        "pop  es"       \
     __parm __caller     [__bh] [__cx] [__dx __edi] \
     __value             [__eax] \
     __modify __exact    [__eax __bx __cx __edi]
 
 #pragma aux _TinyDPMICallRealIntFrame = \
         "push es"       \
-        "mov es,edx"    \
-        "mov ax,302h"   \
+        "mov  es,edx"   \
+        "mov  ax,302h"  \
         _INT_31         \
-        "sbb eax,eax"   \
-        "pop es"        \
+        "sbb  eax,eax"  \
+        "pop  es"       \
     __parm __caller     [__bh] [__cx] [__dx __edi] \
     __value             [__eax] \
     __modify __exact    [__eax __bx __cx __edi]
 
 #pragma aux _TinyDPMIGetProtectVect = \
-        "mov ax,204h"   \
+        "mov  ax,204h"  \
         _INT_31         \
         "jnc short finish" \
-        "xor cx,cx"     \
-        "xor edx,edx"   \
+        "xor  cx,cx"    \
+        "xor  edx,edx"  \
     "finish:"           \
     __parm __caller     [__bl] \
     __value             [__cx __edx] \
     __modify __exact    [__ax __bx __cx __edx]
 
 #pragma aux _TinyDPMISetProtectVect = \
-        "mov ax,205h"   \
+        "mov  ax,205h"  \
         _INT_31         \
-        "sbb eax,eax"   \
+        "sbb  eax,eax"  \
     __parm __caller     [__bl] [__cx __edx] \
     __value             [__eax] \
     __modify __exact    [__eax __bx __cx __edx]
 
 #pragma aux _TinyDPMIGetProtectExcpt = \
-        "mov ax,202h"   \
+        "mov  ax,202h"  \
         _INT_31         \
         "jnc short finish" \
-        "xor cx,cx"     \
-        "xor edx,edx"   \
+        "xor  cx,cx"    \
+        "xor  edx,edx"  \
     "finish:"           \
     __parm __caller     [__bl] \
     __value             [__cx __edx] \
     __modify __exact    [__ax __bx __cx __edx]
 
 #pragma aux _TinyDPMISetProtectExcpt = \
-        "mov ax,203h"   \
+        "mov  ax,203h"  \
         _INT_31         \
-        "sbb eax,eax"   \
+        "sbb  eax,eax"  \
     __parm __caller     [__bl] [__cx __edx] \
     __value             [__eax] \
     __modify __exact    [__eax __bx __cx __edx]
 
 #pragma aux _TinyDPMIAlloc = \
-        "mov    ax,501h" \
+        "mov  ax,501h"  \
         _INT_31         \
-        "sbb    eax,eax" /* eax=-1 if alloc failed */ \
-        "inc    eax"     /* eax=0  if alloc failed */ \
+        "sbb  eax,eax"  /* eax=-1 if alloc failed */ \
+        "inc  eax"      /* eax=0  if alloc failed */ \
         "je short finish" \
-        "mov    ax,bx"   /* linear address returned in BX:CX */ \
-        "shl    eax,16" \
-        "mov    ax,cx"  \
-        "mov    [eax],di"  /* store handle in block */ \
-        "mov    2[eax],si" /* ... */ \
+        "mov  ax,bx"    /* linear address returned in BX:CX */ \
+        "shl  eax,16"   \
+        "mov  ax,cx"    \
+        "mov  [eax],di" /* store handle in block */ \
+        "mov  2[eax],si" /* ... */ \
     "finish:"           \
     __parm __caller     [__bx] [__cx] \
     __value             [__eax] \
     __modify __exact    [__eax __ebx __ecx __esi __edi]
 
 #pragma aux _TinyDPMIRealloc = \
-        "mov    di,[eax]"  /* get memory block handle */\
-        "mov    si,2[eax]" /* ... */\
-        "mov    ax,503h" \
+        "mov  di,[eax]" /* get memory block handle */\
+        "mov  si,2[eax]" /* ... */\
+        "mov  ax,503h"  \
         _INT_31         \
-        "sbb    eax,eax"   /* eax=-1 if alloc failed */ \
-        "inc    eax"       /* eax=0  if alloc failed */ \
+        "sbb  eax,eax"  /* eax=-1 if alloc failed */ \
+        "inc  eax"      /* eax=0  if alloc failed */ \
         "je short finish" \
-        "mov    ax,bx"     /* linear address returned in BX:CX */ \
-        "shl    eax,16" \
-        "mov    ax,cx"  \
-        "mov    [eax],di"  /* store new handle in block */ \
-        "mov    2[eax],si" /* ... */ \
+        "mov  ax,bx"    /* linear address returned in BX:CX */ \
+        "shl  eax,16"   \
+        "mov  ax,cx"    \
+        "mov  [eax],di" /* store new handle in block */ \
+        "mov  2[eax],si" /* ... */ \
     "finish:"           \
     __parm __caller     [__eax] [__bx] [__cx] \
     __value             [__eax] \
     __modify __exact    [__eax __ebx __ecx __esi __edi]
 
 #pragma aux _TinyDPMIFree = \
-        "mov ax,502h"   \
+        "mov  ax,502h"  \
         _INT_31         \
     __parm __caller     [__si] [__di] \
     __value             \
     __modify __exact    [__eax __esi __edi]
 
 #pragma aux _TinyDPMIBase = \
-        "mov ax,6"      \
+        "mov  ax,6"     \
         _INT_31         \
-        "mov eax,ecx"   \
-        "shl eax,16"    \
-        "mov ax,dx"     \
+        "mov  eax,ecx"  \
+        "shl  eax,16"   \
+        "mov  ax,dx"    \
     __parm __caller     [__bx] \
     __value             [__eax] \
     __modify __exact    [__eax __ebx __ecx __edx]
 
 #pragma aux _TinyDPMIDOSAlloc = \
-        "mov ax,100h"   \
+        "mov  ax,100h"  \
         _INT_31         \
-        "sbb ebx,ebx"   \
-        "not ebx"       \
-        "shl eax,16"    \
-        "mov ax,dx"     \
-        "and eax,ebx"   \
+        "sbb  ebx,ebx"  \
+        "not  ebx"      \
+        "shl  eax,16"   \
+        "mov  ax,dx"    \
+        "and  eax,ebx"  \
     __parm __caller     [__bx] \
     __value             [__eax] \
     __modify __exact    [__eax __ebx __edx]
 
 #pragma aux _TinyDPMIDOSFree = \
-        "mov ax,101h"   \
+        "mov  ax,101h"  \
         _INT_31         \
     __parm __caller     [__dx] \
     __value             \
     __modify __exact    [__eax __edx]
 
 #pragma aux _TinyDPMIGetRealVect = \
-        "mov ax,200h"   \
+        "mov  ax,200h"  \
         _INT_31         \
-        "shl ecx,16"    \
-        "mov cx,dx"     \
+        "shl  ecx,16"   \
+        "mov  cx,dx"    \
     __parm __caller     [__bl] \
     __value             [__ecx] \
     __modify __exact    [__eax __ebx __ecx __edx]
 
 #pragma aux _TinyDPMISetRealVect = \
-        "mov ax,201h"   \
+        "mov  ax,201h"  \
         _INT_31         \
-        "sbb eax,eax"   \
+        "sbb  eax,eax"  \
     __parm __caller     [__bl] [__cx] [__dx] \
     __value             [__eax] \
     __modify __exact    [__eax __ebx __ecx __edx]
@@ -1273,15 +1276,15 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
         _MOV_AX_W _GET_ DOS_CHMOD \
         _INT_21         \
         "jc short finish" \
-        _TEST_BL 0x02  \
+        _TEST_BL 0x02   \
         "jz short finish" \
-        _TEST_CL 0x01  \
+        _TEST_CL 0x01   \
         "jz short finish" \
         _MOV_AX_W 0x00 EACCES \
         _STC            \
     "finish:"           \
-        "sbb ecx,ecx"   \
-        "mov cx,ax"     \
+        "sbb  ecx,ecx"  \
+        "mov  cx,ax"    \
     __parm __caller     [__edx] [__bl] \
     __value             [__ecx] \
     __modify __exact    [__eax __ecx]
@@ -1296,8 +1299,8 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 #pragma aux _nTinyOpen = \
         _MOV_AH DOS_OPEN \
         _INT_21         \
-        "rcl eax,1"     \
-        "ror eax,1"     \
+        "rcl  eax,1"    \
+        "ror  eax,1"    \
     __parm __caller     [__edx] [__al] \
     __value             [__eax] \
     __modify __exact    [__eax]
@@ -1305,8 +1308,8 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 #pragma aux _nTinyCreate = \
         _MOV_AH DOS_CREAT \
         _INT_21         \
-        "rcl eax,1"     \
-        "ror eax,1"     \
+        "rcl  eax,1"    \
+        "ror  eax,1"    \
     __parm __caller     [__edx] [__ecx] \
     __value             [__eax] \
     __modify __exact    [__eax]
@@ -1314,8 +1317,8 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 #pragma aux _nTinyCreateEx = \
         _MOV_AX_W 0 DOS_EXT_CREATE \
         _INT_21         \
-        "rcl eax,1"     \
-        "ror eax,1"     \
+        "rcl  eax,1"    \
+        "ror  eax,1"    \
     __parm __caller     [__esi] [__ebx] [__ecx] [__edx] \
     __value             [__eax] \
     __modify __exact    [__eax __ecx]
@@ -1323,8 +1326,8 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 #pragma aux _nTinyCreateNew = \
         _MOV_AH DOS_CREATE_NEW \
         _INT_21         \
-        "rcl eax,1"     \
-        "ror eax,1"     \
+        "rcl  eax,1"    \
+        "ror  eax,1"    \
     __parm __caller     [__edx] [__ecx] \
     __value             [__eax] \
     __modify __exact    [__eax]
@@ -1332,8 +1335,8 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 #pragma aux _nTinyCreateTemp = \
         _MOV_AH DOS_CREATE_TMP \
         _INT_21         \
-        "rcl eax,1"     \
-        "ror eax,1"     \
+        "rcl  eax,1"    \
+        "ror  eax,1"    \
     __parm __caller     [__edx] [__ecx] \
     __value             [__eax] \
     __modify __exact    [__eax]
@@ -1341,8 +1344,8 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 #pragma aux _TinyClose = \
         _MOV_AH DOS_CLOSE \
         _INT_21         \
-        "rcl eax,1"     \
-        "ror eax,1"     \
+        "rcl  eax,1"    \
+        "ror  eax,1"    \
     __parm __caller     [__bx] \
     __value             [__eax] \
     __modify __exact    [__eax]
@@ -1351,8 +1354,8 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
         _MOV_AH DOS_COMMIT_FILE \
         "clc"           \
         _INT_21         \
-        "rcl eax,1"     \
-        "ror eax,1"     \
+        "rcl  eax,1"    \
+        "ror  eax,1"    \
     __parm __caller     [__bx] \
     __value             [__eax] \
     __modify __exact    [__eax]
@@ -1360,8 +1363,8 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 #pragma aux _nTinyWrite = \
         _MOV_AH DOS_WRITE \
         _INT_21         \
-        "rcl eax,1"     \
-        "ror eax,1"     \
+        "rcl  eax,1"    \
+        "ror  eax,1"    \
     __parm __caller     [__bx] [__edx] [__ecx] \
     __value             [__eax] \
     __modify __exact    [__eax]
@@ -1369,12 +1372,12 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 #pragma aux _fTinyWrite = \
         "push ds"       \
         "xchg edx,eax"  \
-        "mov ds,eax"    \
+        "mov  ds,eax"   \
         _MOV_AH DOS_WRITE \
         _INT_21         \
-        "rcl eax,1"     \
-        "ror eax,1"     \
-        "pop ds"        \
+        "rcl  eax,1"    \
+        "ror  eax,1"    \
+        "pop  ds"       \
     __parm __caller     [__bx] [__dx __eax] [__ecx] \
     __value             [__eax] \
     __modify __exact    [__eax __edx]
@@ -1382,8 +1385,8 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 #pragma aux _nTinyRead = \
         _MOV_AH DOS_READ \
         _INT_21         \
-        "rcl eax,1"     \
-        "ror eax,1"     \
+        "rcl  eax,1"    \
+        "ror  eax,1"    \
     __parm __caller     [__bx] [__edx] [__ecx] \
     __value             [__eax] \
     __modify __exact    [__eax]
@@ -1391,38 +1394,38 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 #pragma aux _fTinyRead = \
         "push ds"       \
         "xchg edx,eax"  \
-        "mov ds,eax"    \
+        "mov  ds,eax"   \
         _MOV_AH DOS_READ \
         _INT_21         \
-        "rcl eax,1"     \
-        "ror eax,1"     \
-        "pop ds"        \
+        "rcl  eax,1"    \
+        "ror  eax,1"    \
+        "pop  ds"       \
     __parm __caller     [__bx] [__dx __eax] [__ecx] \
     __value             [__eax] \
     __modify __exact    [__eax __edx]
 
 #pragma aux _TinyLSeek = \
         _MOV_AH DOS_LSEEK \
-        "mov ecx,edx"   \
-        "shr ecx,16"    \
+        "mov  ecx,edx"  \
+        "shr  ecx,16"   \
         _INT_21         \
-        "mov ss:[edi],ax"   \
-        "mov ss:2[edi],dx"  \
-        "rcl eax,1"     \
-        "ror eax,1"     \
+        "mov  ss:[edi],ax" \
+        "mov  ss:2[edi],dx" \
+        "rcl  eax,1"    \
+        "ror  eax,1"    \
     __parm __caller     [__bx] [__edx] [__al] [__edi] \
     __value             [__eax] \
     __modify __exact    [__eax __ecx __edx]
 
 #pragma aux _TinySeek = \
         _MOV_AH DOS_LSEEK \
-        "mov ecx,edx"   \
-        "shr ecx,16"    \
+        "mov  ecx,edx"  \
+        "shr  ecx,16"   \
         _INT_21         \
-        "rcl dx,1"      \
-        "ror dx,1"      \
-        "shl edx,16"    \
-        "mov dx,ax"     \
+        "rcl  dx,1"     \
+        "ror  dx,1"     \
+        "shl  edx,16"   \
+        "mov  dx,ax"    \
     __parm __caller     [__bx] [__edx] [__al] \
     __value             [__edx] \
     __modify __exact    [__eax __ecx __edx]
@@ -1430,8 +1433,8 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 #pragma aux _nTinyDelete = \
         _MOV_AH DOS_UNLINK \
         _INT_21         \
-        "rcl eax,1"     \
-        "ror eax,1"     \
+        "rcl  eax,1"    \
+        "ror  eax,1"    \
     __parm __caller     [__edx] \
     __value             [__eax] \
     __modify __exact    [__eax]
@@ -1447,8 +1450,8 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
         "mov es,ecx"    \
         _MOV_AH DOS_RENAME \
         _INT_21         \
-        "rcl eax,1"     \
-        "ror eax,1"     \
+        "rcl  eax,1"    \
+        "ror  eax,1"    \
         "pop es"        \
         "pop ebx"       \
     __parm __caller     [__edx] [__cx __edi] \
@@ -1458,8 +1461,8 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 #pragma aux _nTinyMakeDir = \
         _MOV_AH DOS_MKDIR \
         _INT_21         \
-        "rcl eax,1"     \
-        "ror eax,1"     \
+        "rcl  eax,1"    \
+        "ror  eax,1"    \
     __parm __caller     [__edx] \
     __value             [__eax] \
     __modify __exact    [__eax]
@@ -1467,8 +1470,8 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 #pragma aux _nTinyRemoveDir = \
         _MOV_AH DOS_RMDIR \
         _INT_21         \
-        "rcl eax,1"     \
-        "ror eax,1"     \
+        "rcl  eax,1"    \
+        "ror  eax,1"    \
     __parm __caller     [__edx] \
     __value             [__eax] \
     __modify __exact    [__eax]
@@ -1476,8 +1479,8 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 #pragma aux _nTinyChangeDir = \
         _MOV_AH DOS_CHDIR \
         _INT_21         \
-        "rcl eax,1"     \
-        "ror eax,1"     \
+        "rcl  eax,1"    \
+        "ror  eax,1"    \
     __parm __caller     [__edx] \
     __value             [__eax] \
     __modify __exact    [__eax]
@@ -1485,8 +1488,8 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 #pragma aux _nTinyGetCWDir = \
         _MOV_AH DOS_GETCWD \
         _INT_21         \
-        "rcl eax,1"     \
-        "ror eax,1"     \
+        "rcl  eax,1"    \
+        "ror  eax,1"    \
     __parm __caller     [__esi] [__dl] \
     __value             [__eax] \
     __modify __exact    [__eax]
@@ -1506,8 +1509,8 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 #pragma aux _TinyDup = \
         _MOV_AH DOS_DUP \
         _INT_21         \
-        "rcl eax,1"     \
-        "ror eax,1"     \
+        "rcl  eax,1"    \
+        "ror  eax,1"    \
     __parm __caller     [__bx] \
     __value             [__eax] \
     __modify __exact    [__eax]
@@ -1515,8 +1518,8 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 #pragma aux _TinyDup2 = \
         _MOV_AH DOS_DUP2 \
         _INT_21         \
-        "rcl eax,1"     \
-        "ror eax,1"     \
+        "rcl  eax,1"    \
+        "ror  eax,1"    \
     __parm __caller     [__bx] [__cx] \
     __value             [__eax] \
     __modify __exact    [__eax]
@@ -1524,8 +1527,8 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 #pragma aux _TinyAllocBlock = \
         _MOV_AH DOS_ALLOC_SEG \
         _INT_21         \
-        "rcl eax,1"     \
-        "ror eax,1"     \
+        "rcl  eax,1"    \
+        "ror  eax,1"    \
     __parm __caller     [__ebx] \
     __value             [__eax] \
     __modify __exact    [__eax __ebx]
@@ -1534,17 +1537,17 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
         _MOV_AH DOS_ALLOC_SEG \
         _INT_21         \
         "jnc short finish" \
-        "mov eax,ebx"   \
-        "rcl eax,1"     \
-        "ror eax,1"     \
+        "mov  eax,ebx"   \
+        "rcl  eax,1"    \
+        "ror  eax,1"    \
     "finish:"           \
     __parm __caller     [__ebx] \
     __value             [__eax] \
     __modify __exact    [__eax __ebx]
 
 #pragma aux _TinyMaxAlloc = \
-        "xor ebx,ebx"   \
-        "dec ebx"       \
+        "xor  ebx,ebx"   \
+        "dec  ebx"       \
         _MOV_AH DOS_ALLOC_SEG \
         _INT_21         \
     __parm __caller     [] \
@@ -1553,49 +1556,55 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 
 #pragma aux _TinyFreeBlock = \
         "push es"       \
-        "mov es,eax"    \
+        "mov  es,eax"    \
         _MOV_AH DOS_FREE_SEG \
         _INT_21         \
-        "rcl eax,1"     \
-        "ror eax,1"     \
-        "pop es"        \
+        "rcl  eax,1"    \
+        "ror  eax,1"    \
+        "pop  es"        \
     __parm __caller     [__eax] \
     __value             [__eax] \
     __modify __exact    [__eax]
 
 #pragma aux _TinySetBlock = \
+        "push es"       \
+        "mov  es,eax"   \
         _MOV_AH DOS_MODIFY_SEG \
         _INT_21         \
-        "rcl eax,1"     \
-        "ror eax,1"     \
-    __parm __caller     [__ebx] [__es] \
+        "rcl  eax,1"    \
+        "ror  eax,1"    \
+        "pop  es"       \
+    __parm __caller     [__ebx] [__eax] \
     __value             [__eax] \
     __modify __exact    [__eax __ebx]
 
 #pragma aux _TinyMaxSet = \
-        "xor ebx,ebx"   \
-        "dec ebx"       \
+        "push es"       \
+        "mov  es,eax"   \
+        "xor  ebx,ebx"  \
+        "dec  ebx"      \
         _MOV_AH DOS_MODIFY_SEG \
         _INT_21         \
-    __parm __caller     [__es] \
+        "pop  es"       \
+    __parm __caller     [__eax] \
     __value             [__ebx] \
     __modify __exact    [__eax __ebx]
 
 #pragma aux _TinyGetDeviceInfo = \
         _MOV_AX_W _GET_ DOS_IOCTL \
         _INT_21         \
-        "rcl edx,1"     \
-        "ror edx,1"     \
+        "rcl  edx,1"    \
+        "ror  edx,1"    \
     __parm __caller     [__bx] \
     __value             [__edx] \
     __modify __exact    [__eax __edx]
 
 #pragma aux _TinySetDeviceInfo = \
-        "xor dh,dh"      \
+        "xor  dh,dh"    \
         _MOV_AX_W _SET_ DOS_IOCTL \
         _INT_21         \
-        "rcl edx,1"     \
-        "ror edx,1"     \
+        "rcl  edx,1"    \
+        "ror  edx,1"    \
     __parm __caller     [__bx] [__dl] \
     __value             [__edx] \
     __modify __exact    [__eax __edx]
@@ -1623,10 +1632,10 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 #pragma aux _TinyGetDate = \
         _MOV_AH DOS_GET_DATE \
         _INT_21         \
-        "sub cx,1900"   \
-        "mov ch,al"     \
-        "shl ecx,16"    \
-        "mov cx,dx"     \
+        "sub  cx,1900"  \
+        "mov  ch,al"    \
+        "shl  ecx,16"   \
+        "mov  cx,dx"    \
     __parm __caller     [] \
     __value             [__ecx] \
     __modify __exact    [__eax __ecx __edx]
@@ -1634,8 +1643,8 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 #pragma aux _TinyGetTime = \
         _MOV_AH DOS_GET_TIME \
         _INT_21         \
-        "shl ecx,16"    \
-        "mov cx,dx"     \
+        "shl  ecx,16"   \
+        "mov  cx,dx"    \
     __parm __caller     [] \
     __value             [__ecx] \
     __modify __exact    [__eax __ecx __edx]
@@ -1699,8 +1708,8 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 #pragma aux _nTinyFindFirst = \
         _MOV_AH DOS_FIND_FIRST \
         _INT_21         \
-        "rcl eax,1"     \
-        "ror eax,1"     \
+        "rcl  eax,1"    \
+        "ror  eax,1"    \
     __parm __caller     [__edx] [__cx] \
     __value             [__eax] \
     __modify __exact    [__eax]
@@ -1708,8 +1717,8 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 #pragma aux _nTinyFindFirstDTA = \
         _MOV_AH DOS_FIND_FIRST \
         _INT_21         \
-        "rcl eax,1"     \
-        "ror eax,1"     \
+        "rcl  eax,1"    \
+        "ror  eax,1"    \
     __parm __caller     [__edx] [__cx] [__ebx] \
     __value             [__eax] \
     __modify __exact    [__eax]
@@ -1717,8 +1726,8 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 #pragma aux _TinyFindNext = \
         _MOV_AH DOS_FIND_NEXT \
         _INT_21         \
-        "rcl eax,1"     \
-        "ror eax,1"     \
+        "rcl  eax,1"    \
+        "ror  eax,1"    \
     __parm __caller     [] \
     __value             [__eax] \
     __modify __exact    [__eax]
@@ -1726,8 +1735,8 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 #pragma aux _TinyFindNextDTA = \
         _MOV_AX_W 0 DOS_FIND_NEXT \
         _INT_21         \
-        "rcl eax,1"     \
-        "ror eax,1"     \
+        "rcl  eax,1"    \
+        "ror  eax,1"    \
     __parm __caller     [__edx] \
     __value             [__eax] \
     __modify __exact    [__eax]
@@ -1735,8 +1744,8 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 #pragma aux _TinyFindCloseDTA = \
         _MOV_AX_W 1 DOS_FIND_NEXT \
         _INT_21         \
-        "rcl eax,1"     \
-        "ror eax,1"     \
+        "rcl  eax,1"    \
+        "ror  eax,1"    \
     __parm __caller     [__edx] \
     __value             [__eax] \
     __modify __exact    [__eax]
@@ -1744,10 +1753,10 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 #pragma aux _TinyGetFileStamp = \
         _MOV_AX_W _GET_ DOS_FILE_DATE \
         _INT_21         \
-        "rcl dx,1"      \
-        "ror dx,1"      \
-        "shl edx,16"    \
-        "mov dx,cx"     \
+        "rcl  dx,1"      \
+        "ror  dx,1"      \
+        "shl  edx,16"    \
+        "mov  dx,cx"     \
     __parm __caller     [__bx] \
     __value             [__edx] \
     __modify __exact    [__eax __ecx __edx]
@@ -1755,34 +1764,34 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 #pragma aux _TinySetFileStamp = \
         _MOV_AX_W _SET_ DOS_FILE_DATE \
         _INT_21         \
-        "rcl eax,1"     \
-        "ror eax,1"     \
+        "rcl  eax,1"    \
+        "ror  eax,1"    \
     __parm __caller     [__bx] [__cx] [__dx] \
     __value             [__eax] \
     __modify __exact    [__eax]
 
 #pragma aux _TinyLock = \
-        "mov edx,ecx"   \
-        "shr ecx,16"    \
-        "mov edi,esi"   \
-        "shr esi,16"    \
+        "mov  edx,ecx"   \
+        "shr  ecx,16"    \
+        "mov  edi,esi"   \
+        "shr  esi,16"    \
         _MOV_AX_W 0 DOS_RECORD_LOCK \
         _INT_21         \
-        "rcl eax,1"     \
-        "ror eax,1"     \
+        "rcl  eax,1"    \
+        "ror  eax,1"    \
     __parm __caller     [__bx] [__ecx] [__esi] \
     __value             [__eax] \
     __modify __exact    [__eax __ecx __edx __edi __esi]
 
 #pragma aux _TinyUnlock = \
-        "mov edx,ecx"   \
-        "shr ecx,16"    \
-        "mov edi,esi"   \
-        "shr esi,16"    \
+        "mov  edx,ecx"   \
+        "shr  ecx,16"    \
+        "mov  edi,esi"   \
+        "shr  esi,16"    \
         _MOV_AX_W 1 DOS_RECORD_LOCK \
         _INT_21         \
-        "rcl eax,1"     \
-        "ror eax,1"     \
+        "rcl  eax,1"    \
+        "ror  eax,1"    \
     __parm __caller     [__bx] [__ecx] [__esi] \
     __value             [__eax] \
     __modify __exact    [__eax __ecx __edx __edi __esi]
@@ -2004,7 +2013,7 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 
 #pragma aux _nTinyAbsRead = \
         _SET_DS_DGROUP_SAFE  \
-        _INT 0x25       \
+        _INT_25         \
         "jc short finish" \
         _ADD_SP 0x02    \
     "finish:"           \
@@ -2016,7 +2025,7 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 
 #pragma aux _fTinyAbsRead = \
         _SET_DS_SREG_SAFE \
-        _INT 0x25       \
+        _INT_25         \
         "jc short finish" \
         _ADD_SP 0x02    \
     "finish:"           \
@@ -2028,7 +2037,7 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 
 #pragma aux _nTinyAbsWrite = \
         _SET_DS_DGROUP_SAFE \
-        _INT 0x26       \
+        _INT_26         \
         "jc short finish" \
         _ADD_SP 0x02    \
     "finish:"           \
@@ -2040,7 +2049,7 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 
 #pragma aux _fTinyAbsWrite = \
         _SET_DS_SREG_SAFE \
-        _INT 0x26       \
+        _INT_26         \
         "jc short finish" \
         _ADD_SP 0x02    \
     "finish:"           \
@@ -2053,8 +2062,8 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 #pragma aux _TinyLSeek = \
         _MOV_AH DOS_LSEEK \
         _INT_21         \
-        "mov ss:[di],ax" \
-        "mov ss:2[di],dx" \
+        "mov  ss:[di],ax" \
+        "mov  ss:2[di],dx" \
         _RCL_DX_1       \
         _ROR_DX_1       \
     __parm __caller     [__bx] [__dx __cx] [__al] [__di] \
@@ -2669,20 +2678,20 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 #pragma aux _TinySetMaxHandleCount = \
         _MOV_AH DOS_SET_HCOUNT \
         _INT_21         \
-        "sbb    dx,dx"  \
+        "sbb  dx,dx"  \
     __parm __caller     [__bx] \
     __value             [__dx __ax] \
     __modify __exact    [__ax __dx]
 
 #pragma aux _TinyDPMIGetRealVect = \
-        "mov ax,200h"   \
+        "mov  ax,200h"   \
         _INT_31         \
     __parm __caller     [__bl] \
     __value             [__cx __dx] \
     __modify __exact    [__ax __bx __cx __dx]
 
 #pragma aux _TinyDPMISetRealVect = \
-        "mov ax,201h"   \
+        "mov  ax,201h"   \
         _INT_31         \
         _SBB_AX_AX      \
         _MOV_DX_AX      \
@@ -2691,7 +2700,7 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
     __modify __exact    [__ax __bx __cx __dx]
 
 #pragma aux _TinyDPMIGetProtectVect = \
-        "mov ax,204h"   \
+        "mov  ax,204h"   \
         _INT_31         \
         "jnc short finish" \
         _XOR_CX_CX      \
@@ -2711,7 +2720,7 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
     __modify __exact    [__ax __bx __cx __dx]
 
 #pragma aux _TinyDPMIRawPMtoRMAddr = \
-        "mov ax,306h"   \
+        "mov  ax,306h"   \
         _INT_31         \
         "jnc short L1"  \
         _XOR_CX_CX      \
@@ -2725,7 +2734,7 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
     __modify __exact    [__ax __bx __cx __si __di]
 
 #pragma aux _TinyDPMIRawRMtoPMAddr = \
-        "mov ax,306h"   \
+        "mov  ax,306h"   \
         _INT_31         \
         "jnc short finish" \
         _XOR_BX_BX      \
@@ -2737,7 +2746,7 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
     __modify __exact    [__ax __bx __cx __si __di]
 
 #pragma aux _TinyDPMISaveRMStateAddr = \
-        "mov ax,305h"   \
+        "mov  ax,305h"   \
         _INT_31         \
         "jnc short L1"  \
         _XOR_CX_CX      \
@@ -2751,7 +2760,7 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
     __modify __exact    [__ax __bx __cx __si __di]
 
 #pragma aux _TinyDPMISavePMStateAddr = \
-        "mov ax,305h"   \
+        "mov  ax,305h"   \
         _INT_31         \
         "jnc short finish" \
         _XOR_CX_CX      \
@@ -2763,7 +2772,7 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
     __modify __exact    [__ax __bx __cx __si __di]
 
 #pragma aux _TinyDPMISaveStateSize = \
-        "mov ax,305h"   \
+        "mov  ax,305h"   \
         _INT_31         \
         "jnc short finish" \
         _XOR_AX_AX      \
@@ -2773,7 +2782,7 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
     __modify __exact    [__ax __bx __cx __si __di]
 
 #pragma aux _TinyDPMICreateCSAlias = \
-        "mov ax,0ah"    \
+        "mov  ax,0ah"   \
         _INT_31         \
         "jnc short finish" \
         _XOR_AX_AX      \
@@ -2783,7 +2792,7 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
     __modify __exact    [__ax]
 
 #pragma aux _TinyDPMIFreeSel = \
-        "mov ax,1"      \
+        "mov  ax,1"     \
         _INT_31         \
         _SBB_AX_AX      \
         _MOV_DX_AX      \
@@ -2792,7 +2801,7 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
     __modify __exact    [__ax]
 
 #pragma aux _TinyDPMIBase = \
-        "mov ax,6"      \
+        "mov  ax,6"     \
         _INT_31         \
         "jnc short finish" \
         _XOR_DX_DX      \
@@ -2804,7 +2813,7 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
     __modify __exact    [__ax __bx __cx __dx]
 
 #pragma aux _TinyDPMISegToSel = \
-        "mov ax,2"      \
+        "mov  ax,2"     \
         _INT_31         \
         "jnc short finish" \
         _XOR_AX_AX      \
@@ -2814,7 +2823,7 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
     __modify __exact    [__ax __bx]
 
 #pragma aux _TinyDPMICreateSel = \
-        "xor ax,ax"     \
+        "xor  ax,ax"    \
         _INT_31         \
         "jnc short finish" \
         _XOR_AX_AX      \
@@ -2824,7 +2833,7 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
     __modify __exact    [__ax]
 
 #pragma aux _TinyDPMISetBase = \
-        "mov ax,7"      \
+        "mov  ax,7"     \
         _INT_31         \
         _SBB_AX_AX      \
         _MOV_DX_AX      \
@@ -2833,7 +2842,7 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
     __modify __exact    [__ax __dx]
 
 #pragma aux _TinyDPMISetLimit = \
-        "mov ax,8"      \
+        "mov  ax,8"     \
         _INT_31         \
         _SBB_AX_AX      \
         _MOV_DX_AX      \
@@ -2842,7 +2851,7 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
     __modify __exact    [__ax __dx]
 
 #pragma aux _TinyDPMISetRights = \
-        "mov ax,9"      \
+        "mov  ax,9"     \
         _INT_31         \
         _SBB_AX_AX      \
         _MOV_DX_AX      \
@@ -2853,7 +2862,7 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 #pragma aux _TinyDPMIGetDescriptor = \
         _PUSH_ES        \
         _MOV_ES_CX      \
-        "mov ax,0bh"    \
+        "mov  ax,0bh"   \
         _INT_31         \
         _SBB_AX_AX      \
         _MOV_DX_AX      \
@@ -2865,7 +2874,7 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 #pragma aux _TinyDPMISetDescriptor = \
         _PUSH_ES        \
         _MOV_ES_CX      \
-        "mov ax,0ch"    \
+        "mov  ax,0ch"   \
         _INT_31         \
         _SBB_AX_AX      \
         _MOV_DX_AX      \
