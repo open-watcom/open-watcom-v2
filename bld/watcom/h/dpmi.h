@@ -532,7 +532,7 @@ extern int      _DPMIResetWatch( uint_16 handle );
 #pragma aux _DPMISetDescriptorAccessRights = \
         "mov  ax,9"     \
         _INT_31         \
-        "sbb  eax,eax"    \
+        "sbb  eax,eax"  \
     __parm [__bx] [__cx] \
     __value [__eax] \
     __modify __exact [__eax]
@@ -645,11 +645,11 @@ extern int      _DPMIResetWatch( uint_16 handle );
 #pragma aux _DPMICreateCodeSegmentAliasDescriptor = \
         "mov  ax,0ah"   \
         _INT_31         \
-        "rcl  eax,1"    \
-        "ror  eax,1"    \
+        "sbb  ebx,ebx"  \
+        "mov  bx,ax"    \
     __parm [__bx] \
-    __value [__eax] \
-    __modify []
+    __value [__ebx] \
+    __modify __exact [__eax __ebx]
 
 #pragma aux _DPMIGetDescriptor = \
         "push es"       \
@@ -704,10 +704,10 @@ extern int      _DPMIResetWatch( uint_16 handle );
 #pragma aux _DPMICreateCodeSegmentAliasDescriptor = \
         "mov ax,0ah"    \
         _INT_31         \
-        "sbb dx,dx"     \
+        "sbb bx,bx"     \
     __parm [__bx] \
-    __value [__dx __ax] \
-    __modify []
+    __value [__bx __ax] \
+    __modify __exact[__ax __bx]
 
 #pragma aux _DPMIGetDescriptor = \
         "mov  ax,0bh"   \
