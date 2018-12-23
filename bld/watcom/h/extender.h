@@ -32,10 +32,6 @@
 
 #if defined(__DOS__) && !defined(__OSI__) && !defined(__CALL21__)
 
-#if !defined(__DOS_EXT__) && defined(_M_IX86) && !defined(_M_I86)
-#define __DOS_EXT__
-#endif
-
 /*
  * Values for '_Extender'
  */

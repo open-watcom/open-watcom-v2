@@ -39,6 +39,10 @@
 #endif
 
 
+#if !defined(__DOS_EXT__) && defined(__DOS_386__) && !defined(__OSI__) && !defined(__CALL21__)
+#define __DOS_EXT__
+#endif
+
 #define BLK2CPTR(f)     ((unsigned)((unsigned)(f) + TAG_SIZE))
 #define CPTR2BLK(p)     ((unsigned)((unsigned)(p) - TAG_SIZE))
 
