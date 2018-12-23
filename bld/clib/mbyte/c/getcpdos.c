@@ -161,7 +161,6 @@ unsigned short dos_get_code_page( void )
 {
     unsigned short      codepage = 0;
 
-
     /*** Get the code page ***/
     if( _IsPharLap() ) {
         union REGS      r;
@@ -199,11 +198,10 @@ unsigned short dos_get_code_page( void )
         intdosx( &r, &r, &sregs );
     } else if( _IsRational() ) {
         dpmi_dos_block      dos_block;
-        unsigned short      selector;
         rm_call_struct      dblock;
 
         /*** Allocate some DOS memory with DPMI ***/
-        dos_block = DPMIAllocateDOSMemoryBlock( 1 );      /* one paragraph is enough */
+        dos_block = DPMIAllocateDOSMemoryBlock( 1 );    /* one paragraph is enough */
 
         memset( &dblock, 0, sizeof( dblock ) );
         dblock.eax = 0x6501;                /* get international info */
