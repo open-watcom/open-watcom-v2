@@ -44,7 +44,7 @@
     #include <wos2.h>
 #elif defined(__RDOS__)
     #include <rdos.h>
-#elif defined(__DOS_386__) || defined(__CALL21__)
+#elif defined(__DOS__)
     #include "tinyio.h"
 #endif
 

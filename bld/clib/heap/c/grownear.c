@@ -52,6 +52,8 @@
   #include <wos2.h>
 #elif defined( __RDOS__ )
   #include <rdos.h>
+#elif defined( __DOS__ )
+  #include "tinyio.h"
 #endif
 #include "rtdata.h"
 #if defined( __WARP__ )
@@ -59,9 +61,6 @@
 #endif
 #include "heapacc.h"
 #include "heap.h"
-#if defined( __DOS_386__ ) || defined( __CALL21__ )
-  #include "tinyio.h"
-#endif
 
 
 #define FIRST_FRL(h)    ((freelist_nptr)(h + 1))
