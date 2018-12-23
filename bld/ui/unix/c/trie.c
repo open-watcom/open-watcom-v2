@@ -99,20 +99,17 @@ bool TrieInit( void )
 }
 
 
-static void free_subtrie( eNode *subt )
+static void free_subtrie( eTrie *trie )
 {
     int         i;
 
-    if( subt == NULL )
-        return;
-
-    if( subt->trie != NULL ) {
-        for( i = 0; i < subt->trie->num_child; i++ ) {
-            free_subtrie( &(subt->trie->child[i]) );
+    if( trie != NULL ) {
+        for( i = 0; i < trie->num_child; i++ ) {
+            free_subtrie( trie->child[i].trie );
         }
-        uifree( subt->trie );
+        uifree( trie->child );
+        uifree( trie );
     }
-    uifree( subt );
 }
 
 /* frees the trie.
@@ -122,8 +119,9 @@ void TrieFini( void )
     int         i;
 
     for( i = 0; i < KeyTrie.num_child; i++ ) {
-        free_subtrie( &(KeyTrie.child[i]) );
+        free_subtrie( KeyTrie.child[i].trie );
     }
+    uifree( KeyTrie.child );
 }
 
 /* Search for children. Will return position
