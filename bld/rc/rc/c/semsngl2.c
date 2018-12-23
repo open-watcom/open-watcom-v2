@@ -54,98 +54,89 @@ void SemOS2AddSingleLineResource( WResID *name, YYTOKENTYPE type,
     ResMemFlags     flags, flagsMDP, flagsMP;
     char            full_filename[_MAX_PATH];
     static bool     firstIcon = true;
+    bool            error;
 
-    if( ErrorHasOccured ) {
+    error = true;
+    if( !ErrorHasOccured ) {
+        if( RcFindSourceFile( filename, full_filename ) == -1 ) {
+            RcError( ERR_CANT_FIND_FILE, filename );
+        } else {
+            error = AddDependency( full_filename );
+            if( !error ) {
+                flagsMDP = MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE | MEMFLAG_PURE;
+                flagsMP  = MEMFLAG_MOVEABLE | MEMFLAG_PURE;
+                switch( type ) {
+                case Y_DEFAULTICON:
+                    /* DEFAULTICON doesn't have a name, let's make our own */
+                    name = RESALLOC( sizeof( WResID ) );
+                    name->IsName = false;
+                    name->ID.Num = 999;
+                    firstIcon    = true;    /* Trigger a warning if we have one already */
+                    /* Note the fallthrough! */
+                case Y_POINTER:
+                case Y_ICON:
+                    if( fullflags != NULL ) {
+                        SemOS2CheckResFlags( fullflags, 0, MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE, 0 );
+                        flags = fullflags->flags;
+                    } else {
+                        flags = flagsMDP;
+                    }
+
+                    /* Duplicate the first icon encountered as the default icon IFF it
+                       has resource ID equal to 1
+                    */
+                    if( firstIcon && !name->IsName && (name->ID.Num == 999 || name->ID.Num == 1) ) {
+                        WResID      *id;
+
+                        id = RESALLOC( sizeof( WResID ) );
+                        if( id == NULL )
+                            break;
+
+                        firstIcon  = false;
+                        id->IsName = false;
+                        id->ID.Num = 22;
+                        start = SemCopyRawFileOnly( full_filename );
+                        SemAddResourceFree( name, WResIDFromNum( OS2_RT_POINTER ), flags, start );
+
+                        start = SemCopyRawFileOnly( full_filename );
+                        SemAddResourceFree( id, WResIDFromNum( OS2_RT_DEFAULTICON ), flagsMDP, start );
+                    } else {
+                        start = SemCopyRawFileOnly( full_filename );
+                        SemAddResourceFree( name, WResIDFromNum( OS2_RT_POINTER ), flags, start );
+                    }
+                    break;
+                case Y_BITMAP:
+                    if( fullflags != NULL ) {
+                        SemOS2CheckResFlags( fullflags, 0, MEMFLAG_MOVEABLE, MEMFLAG_PURE );
+                        flags = fullflags->flags;
+                    } else {
+                        flags = flagsMP;
+                    }
+                    start = SemCopyRawFileOnly( full_filename );
+                    SemAddResourceFree( name, WResIDFromNum( OS2_RT_BITMAP ), flags, start );
+                    break;
+                case Y_FONT:
+                    if( fullflags != NULL ) {
+                        SemOS2CheckResFlags( fullflags, 0, MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE, MEMFLAG_PURE );
+                        flags = fullflags->flags;
+                    } else {
+                        flags = flagsMDP;
+                    }
+                    AddFontResources( name, flags, full_filename );
+                    break;
+                default:
+                    RESFREE( name );
+                    break;
+                }
+            }
+        }
+    }
+    if( error ) {
         RESFREE( name );
-        RESFREE( filename );
-        return;
+        ErrorHasOccured = true;
     }
-
-    if( RcFindSourceFile( filename, full_filename ) == -1 ) {
-        RcError( ERR_CANT_FIND_FILE, filename );
-        goto HANDLE_ERROR;
-    }
-
-    if( AddDependency( full_filename ) )
-        goto HANDLE_ERROR;
-
-    flagsMDP = MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE | MEMFLAG_PURE;
-    flagsMP  = MEMFLAG_MOVEABLE | MEMFLAG_PURE;
-
-    switch( type ) {
-    case Y_DEFAULTICON:
-        /* DEFAULTICON doesn't have a name, let's make our own */
-        name = RESALLOC( sizeof( WResID ) );
-        name->IsName = false;
-        name->ID.Num = 999;
-        firstIcon    = true;    /* Trigger a warning if we have one already */
-        /* Note the fallthrough! */
-    case Y_POINTER:
-    case Y_ICON:
-        if( fullflags != NULL ) {
-            SemOS2CheckResFlags( fullflags, 0, MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE, 0 );
-            flags = fullflags->flags;
-        } else {
-            flags = flagsMDP;
-        }
-
-        /* Duplicate the first icon encountered as the default icon IFF it
-           has resource ID equal to 1
-        */
-        if( firstIcon && !name->IsName && (name->ID.Num == 999 || name->ID.Num == 1) ) {
-            WResID      *id;
-
-            id = RESALLOC( sizeof( WResID ) );
-            if( id == NULL )
-                break;
-
-            firstIcon  = false;
-            id->IsName = false;
-            id->ID.Num = 22;
-            start = SemCopyRawFileOnly( full_filename );
-            SemAddResourceFree( name, WResIDFromNum( OS2_RT_POINTER ), flags, start );
-
-            start = SemCopyRawFileOnly( full_filename );
-            SemAddResourceFree( id, WResIDFromNum( OS2_RT_DEFAULTICON ), flagsMDP, start );
-        } else {
-            start = SemCopyRawFileOnly( full_filename );
-            SemAddResourceFree( name, WResIDFromNum( OS2_RT_POINTER ), flags, start );
-        }
-        break;
-
-    case Y_BITMAP:
-        if( fullflags != NULL ) {
-            SemOS2CheckResFlags( fullflags, 0, MEMFLAG_MOVEABLE, MEMFLAG_PURE );
-            flags = fullflags->flags;
-        } else {
-            flags = flagsMP;
-        }
-        start = SemCopyRawFileOnly( full_filename );
-        SemAddResourceFree( name, WResIDFromNum( OS2_RT_BITMAP ), flags, start );
-        break;
-
-    case Y_FONT:
-        if( fullflags != NULL ) {
-            SemOS2CheckResFlags( fullflags, 0, MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE, MEMFLAG_PURE );
-            flags = fullflags->flags;
-        } else {
-            flags = flagsMDP;
-        }
-        AddFontResources( name, flags, full_filename );
-        break;
-    default:
-        RESFREE( name );
-        break;
-    }
-
     RESFREE( filename );
 
-    return;
-
-HANDLE_ERROR:
-    ErrorHasOccured = true;
-    RESFREE( name );
-    RESFREE( filename );
 } /* SemOS2AddSingleLineResource */
 
 static RcStatus readFontInfo( FILE *fp, FontInfo *info, int *err_code )
