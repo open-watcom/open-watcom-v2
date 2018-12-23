@@ -70,8 +70,8 @@ essentially no worst case performance scenario.
     #include "tinyio.h"
 #elif defined( __DOS__ )
     #include <i86.h>
-    #include "tinyio.h"
     #include "extender.h"
+    #include "dpmi.h"
 #elif defined( __QNX__ )
     #include <sys/osinfo.h>
     #include <sys/seginfo.h>
@@ -84,37 +84,6 @@ essentially no worst case performance scenario.
 #include "feprotos.h"
 
 #ifdef __DOS__
-
-typedef struct {
-    unsigned largest_free;
-    unsigned max_unlocked_page_alloc;
-    unsigned max_locked_page_alloc;
-    unsigned linear_addr_space_in_pages;
-    unsigned total_unlocked_pages;
-    unsigned free_pages;
-    unsigned physical_pages;
-    unsigned free_linear_addr_space_in_pages;
-    unsigned size_of_page_file_in_pages;
-    unsigned fill[4];
-} dpmi_mem;
-
-extern int _TinyDPMIGetFreeMemoryInformation( dpmi_mem * );
-#pragma aux _TinyDPMIGetFreeMemoryInformation = \
-        "push es"      \
-        "push ds"      \
-        "pop es"       \
-        "mov ax,0500h" \
-        "int 31h"      \
-        "pop es"       \
-        "sbb eax,eax"  \
-    __parm  [__edi] \
-    __value [__eax]
-
-extern char int2f( short );
-#pragma aux int2f = \
-        "int 2fh"   \
-    __parm  [__ax] \
-    __value [__al]
 
 extern short    __psp;
 #pragma aux __psp "*";
@@ -132,7 +101,7 @@ typedef pointer_int     tag;
 
 static  pointer     MemFromSys( size_t );
 
-static pointer_int  AllocSize = { 0 };
+static pointer_int  AllocSize = 0;
 static pointer_int  MemorySize;
 static int          Initialized = 0;
 #ifdef MEMORY_STATS
@@ -242,22 +211,21 @@ static  void    CalcMemSize( void )
     }
 #if defined( __DOS__ )
     {
-        char        *memstart;
-
         MemorySize = 0;
         if( _IsRational() ) {
 
             dpmi_mem            mem_info;
 
-            _TinyDPMIGetFreeMemoryInformation( &mem_info );
+            DPMIGetFreeMemoryInformation( &mem_info );
             memory_available = mem_info.largest_free - _1K;
 
         } else { // PharLap or win386
 
-            memstart = sbrk( 0 );
-            if( int2f( 0x1686 ) == 0 ) { // DPMI HOST
+            if( DPMIModeDetect() == 0 ) { // DPMI HOST
+
                 dpmi_mem    mem_info;
-                _TinyDPMIGetFreeMemoryInformation( &mem_info );
+
+                DPMIGetFreeMemoryInformation( &mem_info );
                 if( max_size_queried ) {
                     memory_available = mem_info.largest_free;
                 } else {
@@ -270,9 +238,11 @@ static  void    CalcMemSize( void )
                     }
                 }
             } else {
-                memory_available = *(char * __far *)MK_FP( __psp, 0x60 ) - memstart;
+                memory_available = *(char * __far *)MK_FP( __psp, 0x60 ) - sbrk( 0 );
             }
-            if( memory_available < _1M ) memory_available = _1M;
+            if( memory_available < _1M ) {
+                memory_available = _1M;
+            }
         }
         if( size_requested != 0 ) {
             if( memory_available < size_requested ) {
