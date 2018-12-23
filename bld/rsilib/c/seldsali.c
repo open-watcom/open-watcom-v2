@@ -16,11 +16,11 @@
 SELECTOR rsi_sel_data_alias( SELECTOR csel )
 {
     if( USESDPMI() ) {
-        long    rc;
+        long    sel;
 
-        if( (rc = DPMICreateCodeSegmentAliasDescriptor( csel )) < 0 )
+        if( (sel = DPMICreateCodeSegmentAliasDescriptor( csel )) < 0 )
             return( NULL_SEL );
-        return( rc );
+        return( sel );
     } else {
         union _REGS     r;
 
