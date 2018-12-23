@@ -235,24 +235,24 @@ extern void     _fDPMIGetVersion( version_info __far * );
 extern void     _nDPMIGetVersion( version_info * );
 extern int_32   _DPMIAllocateLDTDescriptors( uint_16 );
 extern int_32   _DPMISegmentToDescriptor( uint_16 );
-extern void     _DPMIFreeLDTDescriptor( uint_16 );
+extern int      _DPMIFreeLDTDescriptor( uint_16 );
 extern uint_16  _DPMIGetNextSelectorIncrementValue( void );
 extern uint_32  _DPMIGetSegmentBaseAddress( uint_16 );
 extern int      _DPMISetSegmentBaseAddress( uint_16, uint_32 );
 extern int      _DPMISetSegmentLimit( uint_16, uint_32 );
-extern void     _DPMISetDescriptorAccessRights( uint_16, uint_16 );
+extern int      _DPMISetDescriptorAccessRights( uint_16, uint_16 );
 extern int_16   _fDPMIAllocateMemoryBlock( dpmi_mem_block __far *, uint_32 );
 extern int_16   _nDPMIAllocateMemoryBlock( dpmi_mem_block *, uint_32 );
 extern int_16   _fDPMIResizeMemoryBlock( dpmi_mem_block __far *, uint_32, uint_32 );
 extern int_16   _nDPMIResizeMemoryBlock( dpmi_mem_block *, uint_32, uint_32 );
-extern int_16   _DPMIFreeMemoryBlock( uint_32 );
+extern int      _DPMIFreeMemoryBlock( uint_32 );
 extern int      _DPMILockLinearRegion( uint_32, uint_32 );
 extern int      _DPMIUnlockLinearRegion( uint_32, uint_32 );
 extern int      _DPMIGetDescriptor( uint_16, descriptor __far * );
 extern int      _DPMISetDescriptor( uint_16, descriptor __far * );
 extern int_32   _DPMICreateCodeSegmentAliasDescriptor( uint_16 );
-extern int_16   _nDPMIGetFreeMemoryInformation( dpmi_mem * );
-extern int_16   _fDPMIGetFreeMemoryInformation( dpmi_mem __far * );
+extern int      _nDPMIGetFreeMemoryInformation( dpmi_mem * );
+extern int      _fDPMIGetFreeMemoryInformation( dpmi_mem __far * );
 extern int      _DPMISimulateRealModeInterrupt( uint_8 interrupt, uint_8 flags,
                         uint_16 words_to_copy, rm_call_struct __far *call_st );
 extern dpmi_dos_block _DPMIAllocateDOSMemoryBlock( uint_16 para );
@@ -265,9 +265,9 @@ extern uint_16  _DPMISaveStateSize( void );
 extern void     __far *_DPMIGetVendorSpecificAPI( char __far * );
 
 extern int_32   _DPMISetWatch( uint_32 linear, uint_8 len, uint_8 type );
-extern void     _DPMIClearWatch( uint_16 handle );
+extern int      _DPMIClearWatch( uint_16 handle );
 extern int      _DPMITestWatch( uint_16 handle );
-extern void     _DPMIResetWatch( uint_16 handle );
+extern int      _DPMIResetWatch( uint_16 handle );
 
 #pragma aux _DPMIIdle = \
         "mov  ax,1680h" \
@@ -305,12 +305,23 @@ extern void     _DPMIResetWatch( uint_16 handle );
     __modify __exact [__ax __bx __cx]
 #endif
 
+#if defined(__386__)
 #pragma aux _DPMIClearWatch = \
         "mov  ax,0b01h" \
         _INT_31         \
+        "sbb  eax,eax"  \
     __parm [__bx] \
-    __value \
+    __value [__eax] \
+    __modify __exact [__eax]
+#else
+#pragma aux _DPMIClearWatch = \
+        "mov  ax,0b01h" \
+        _INT_31         \
+        "sbb  ax,ax"    \
+    __parm [__bx] \
+    __value [__ax] \
     __modify __exact [__ax]
+#endif
 
 #if defined(__386__)
 #pragma aux _DPMITestWatch = \
@@ -334,12 +345,23 @@ extern void     _DPMIResetWatch( uint_16 handle );
     __modify __exact [__ax __bx]
 #endif
 
+#if defined(__386__)
 #pragma aux _DPMIResetWatch = \
         "mov  ax,0b03h" \
         _INT_31         \
+        "sbb  eax,eax"  \
     __parm [__bx] \
-    __value \
+    __value [__eax] \
+    __modify __exact [__eax]
+#else
+#pragma aux _DPMIResetWatch = \
+        "mov  ax,0b03h" \
+        _INT_31         \
+        "sbb  ax,ax"    \
+    __parm [__bx] \
+    __value [__ax] \
     __modify __exact [__ax]
+#endif
 
 #if defined(__386__)
 #pragma aux _DPMIGetVersion = \
@@ -404,12 +426,23 @@ extern void     _DPMIResetWatch( uint_16 handle );
     __modify __exact [__ax __cx]
 #endif
 
+#if defined(__386__)
 #pragma aux _DPMIFreeLDTDescriptor = \
         "mov  ax,1"     \
         _INT_31         \
+        "sbb  eax,eax"  \
     __parm [__bx] \
-    __value \
-    __modify[__ax]
+    __value [__eax] \
+    __modify __exact [__eax]
+#else
+#pragma aux _DPMIFreeLDTDescriptor = \
+        "mov  ax,1"     \
+        _INT_31         \
+        "sbb  ax,ax"    \
+    __parm [__bx] \
+    __value [__ax] \
+    __modify __exact [__ax]
+#endif
 
 #if defined(__386__)
 #pragma aux _DPMISegmentToDescriptor = \
@@ -495,13 +528,35 @@ extern void     _DPMIResetWatch( uint_16 handle );
     __modify __exact [__ax]
 #endif
 
+#if defined(__386__)
 #pragma aux _DPMISetDescriptorAccessRights = \
         "mov  ax,9"     \
         _INT_31         \
+        "sbb  eax,eax"    \
     __parm [__bx] [__cx] \
-    __value \
+    __value [__eax] \
+    __modify __exact [__eax]
+#else
+#pragma aux _DPMISetDescriptorAccessRights = \
+        "mov  ax,9"     \
+        _INT_31         \
+        "sbb  ax,ax"    \
+    __parm [__bx] [__cx] \
+    __value [__ax] \
     __modify __exact [__ax]
+#endif
 
+#if defined(__386__)
+#pragma aux _DPMIFreeMemoryBlock =  \
+        "mov  di,si"    \
+        "shr  esi,16"   \
+        "mov  ax,502h"  \
+        _INT_31         \
+        "sbb  eax,eax"  \
+    __parm [__esi] \
+    __value [__eax] \
+    __modify __exact [__eax __di __esi]
+#else
 #pragma aux _DPMIFreeMemoryBlock =  \
         "xchg si,di"    \
         "mov  ax,502h"  \
@@ -509,7 +564,8 @@ extern void     _DPMIResetWatch( uint_16 handle );
         "sbb  ax,ax"    \
     __parm [__di __si] \
     __value [__ax] \
-    __modify []
+    __modify __exact [__ax __di __si]
+#endif
 
 #if defined(__386__)
 #pragma aux _DPMILockLinearRegion = \
@@ -745,13 +801,26 @@ extern void     _DPMIResetWatch( uint_16 handle );
     __value [__ax] \
     __modify [__di __si __bx __cx __dx]
 
+#if defined(__386__)
+#pragma aux _nDPMIGetFreeMemoryInformation = \
+        "push es"       \
+        "push ds"       \
+        "pop  es"       \
+        "mov  ax,500h"  \
+        _INT_31         \
+        "pop  es"       \
+        "sbb  eax,eax"  \
+    __parm [__edi] \
+    __value [__eax] \
+    __modify __exact [__eax]
+#else
 #pragma aux _fDPMIGetFreeMemoryInformation = \
         "mov  ax,500h"  \
         _INT_31         \
         "sbb  ax,ax"    \
     __parm [__es __di] \
     __value [__ax] \
-    __modify []
+    __modify __exact [__ax]
 
 #pragma aux _nDPMIGetFreeMemoryInformation = \
         "push es"       \
@@ -763,7 +832,8 @@ extern void     _DPMIResetWatch( uint_16 handle );
         "sbb  ax,ax"    \
     __parm [__di] \
     __value [__ax] \
-    __modify []
+    __modify __exact [__ax]
+#endif
 
 #if defined(__386__)
 #pragma aux _DPMIGetRealModeInterruptVector = \

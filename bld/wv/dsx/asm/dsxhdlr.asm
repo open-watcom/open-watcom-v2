@@ -96,12 +96,12 @@ rm_func         dw 0                            ;function in file to call
 initfunc        dd 0aaaaaaaah                   ;addr of TrapInit()
 reqfunc         dd 0bbbbbbbbh                   ;addr of TrapAccess()
 finifunc        dd 0cccccccch                   ;addr of TrapFini()
-envseg          dw 0                            ;seg of environment
-envseg_pm       dw 0                            ;pm seg of environment
+envseg_rm       dw 0                            ;rm segment of environment
+envseg_pm       dw 0                            ;pm segment of environment
 switchaddr      dd 0                            ;addr to switch back to pmode
 saveaddr        dd 0                            ;addr of save state procedure
-saveseg         dw 0                            ;segment of save state buffer
-saveseg_pm      dw 0                            ; pm seg of save state buffer
+saveseg_rm      dw 0                            ;rm segment of save state buffer
+saveseg_pm      dw 0                            ;pm segment of save state buffer
 savesize        dw 0 
 pmode_ds        dw 0                            ;value to put in ds on return
 pmode_es        dw 0                            ; ...
@@ -217,7 +217,7 @@ copy_vectors    MACRO   src_seg, src_off, dst_seg, dst_off
 restore_state   PROC NEAR
                 push    ax
                 push    es
-                mov     es, ds:saveseg
+                mov     es, ds:saveseg_rm
                 mov     al, 1                   ;al=1 means restore state
                 call    ds:saveaddr
 
@@ -231,7 +231,7 @@ save_state      PROC NEAR
                 push    ax
                 push    es
 
-                mov     es, ds:saveseg
+                mov     es, ds:saveseg_rm
                 xor     al, al                  ;al=0 means save state
                 call    ds:saveaddr
 
@@ -324,9 +324,9 @@ RMTrapFini_     ENDP
 calltrapfile    PROC NEAR
                 copy_vectors 0, 0, ds, vecttable2
                 copy_vectors ds, vecttable1, 0, 0
-                set_envseg ds:save_env, ds:envseg
+                set_envseg ds:save_env, ds:envseg_rm
                 call    ds:rm_func
-                set_envseg ds:envseg, ds:save_env
+                set_envseg ds:envseg_rm, ds:save_env
                 copy_vectors 0, 0, ds, vecttable1
                 copy_vectors ds, vecttable2, 0, 0
                 ret

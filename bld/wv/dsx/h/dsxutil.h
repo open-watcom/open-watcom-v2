@@ -31,20 +31,13 @@
 
 
 #include "extender.h"
+#include "dpmi.h"
 #include "machtype.h"
 
 typedef union {
     addr32_ptr  s;
     unsigned_32 a;
 } memptr;
-
-typedef union {
-    struct {
-        addr_seg        rm;
-        addr_seg        pm;
-    }           segm;
-    unsigned_32 dpmi_adr;
-} dos_memory;
 
 #define         NUM_VECTS       256
 #define         MAX_MSG_SIZE    0x400
@@ -61,10 +54,10 @@ typedef struct {
     memptr          initfunc;
     memptr          reqfunc;
     memptr          finifunc;
-    dos_memory      envseg;
+    dpmi_dos_block  envseg;
     memptr          switchaddr;
     memptr          saveaddr;
-    dos_memory      saveseg;
+    dpmi_dos_block  saveseg;
     unsigned_16     savesize;
     addr_seg        pmode_ds;
     addr_seg        pmode_es;
@@ -86,7 +79,7 @@ typedef struct {
 #include "poppck.h"
 
 extern rm_data          __far *PMData;
-extern dos_memory       RMData;
+extern dpmi_dos_block   RMData;
 
 extern unsigned_8       RMSegStart[];
 extern unsigned_8       RMDataStart[];

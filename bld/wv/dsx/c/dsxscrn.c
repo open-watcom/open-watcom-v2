@@ -38,7 +38,6 @@
 #include "stdui.h"
 #include "dbgmem.h"
 #include "dsxutil.h"
-#include "dpmi.h"
 #include "dbgscrn.h"
 #include "uidbg.h"
 #include "guigmous.h"
@@ -52,13 +51,13 @@
 #define MONO_VIDEO_BUFF         (LP_PIXEL)RealModeSegmPtr( 0xb000 )
 #define COLOUR_VIDEO_BUFF       (LP_PIXEL)RealModeSegmPtr( 0xb800 )
 
-#define RmSwapSegPtr( offs )    SwapSeg.segm.rm, offs
+#define RmSwapSegPtr( offs )    SwapSeg.rm, offs
 
 #define TstMono()               ChkCntrlr( VIDMONOINDXREG )
 #define TstColour()             ChkCntrlr( VIDCOLRINDXREG )
 
-#define save_to_rm_swap( off, data, size )      _fmemcpy( EXTENDER_RM2PM( SwapSeg.segm.rm, off ), data, size )
-#define restore_from_rm_swap( off, data, size ) _fmemcpy( data, EXTENDER_RM2PM( SwapSeg.segm.rm, off ), size )
+#define save_to_rm_swap( off, data, size )      _fmemcpy( EXTENDER_RM2PM( SwapSeg.rm, off ), data, size )
+#define restore_from_rm_swap( off, data, size ) _fmemcpy( data, EXTENDER_RM2PM( SwapSeg.rm, off ), size )
 
 #define save_to_swap( off, data, size )         _fmemcpy( RegenSave + off, data, size )
 #define restore_from_swap( off, data, size )    _fmemcpy( data, RegenSave + off, size )
@@ -87,7 +86,7 @@ static uint_16                  NoCur;
 static unsigned char            DbgBiosMode;
 static unsigned char            DbgChrSet;
 static unsigned char            DbgRows;
-static dos_memory               SwapSeg;
+static dpmi_dos_block           SwapSeg;
 static addr32_off               VidStateOff = 0;
 static addr32_off               PgmMouse = 0;
 static addr32_off               DbgMouse = 0;
@@ -842,8 +841,8 @@ static void AllocSave( void )
     mouse_size = 0;
     if( _IsOn( SW_USE_MOUSE ) )
         mouse_size = MouseStateSize();
-    SwapSeg.dpmi_adr = DPMIAllocateDOSMemoryBlock( _NBPARAS( rm_regen_size + state_size + 2 * mouse_size ) );
-    if( SwapSeg.segm.pm == 0 ) {
+    SwapSeg = DPMIAllocateDOSMemoryBlock( _NBPARAS( rm_regen_size + state_size + 2 * mouse_size ) );
+    if( SwapSeg.pm == 0 ) {
         StartupErr( LIT_ENG( Unable_to_alloc_DOS_mem ) );
     }
     /***************************************************************
@@ -1115,7 +1114,7 @@ void FiniScreen( void )
     } else {
         UserScreen();
     }
-    DPMIFreeDOSMemoryBlock( SwapSeg.segm.pm );
+    DPMIFreeDOSMemoryBlock( SwapSeg.pm );
     _Free( RegenSave );
 }
 
