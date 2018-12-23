@@ -39,7 +39,6 @@
 #elif defined(__DOS__)
     #include <dos.h>
     #include "tinyio.h"
-    #include "extender.h"
 #endif
 #include "rtstack.h"
 #include "rterrno.h"

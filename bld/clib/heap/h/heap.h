@@ -36,6 +36,7 @@
 
 #ifdef _M_IX86
 #include <i86.h>
+#include "extender.h"
 #endif
 
 
