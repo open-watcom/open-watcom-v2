@@ -614,7 +614,7 @@ static bool ck_init( void )
     if( !init_trie() )
         return( false );
 
-    switch( ti_read_tix( (UIConCtrl == NULL) ) ) {
+    switch( ti_read_tix( GetTermType() ) ) {
     case TIX_FAIL:
         return( false );
     case TIX_NOFILE:

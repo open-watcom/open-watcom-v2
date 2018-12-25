@@ -93,6 +93,9 @@ void SetTermType( const char *new_term )
     if( UITermType != NULL ) {
         uifree( UITermType );
     }
+    if( new_term == NULL ) {
+        new_term = "";
+    }
     len = strlen( new_term ) + 1;
     UITermType = uimalloc( len );
     memcpy( UITermType, new_term, len );

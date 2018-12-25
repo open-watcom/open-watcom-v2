@@ -36,4 +36,4 @@
 // array of char mappings
 extern char         ti_char_map[256];
 
-extern tix_status   ti_read_tix( bool );
+extern tix_status   ti_read_tix( const char *termname );
