@@ -127,6 +127,10 @@ void intern finibios( void )
 {
     _uibiosfini();
     del_curterm( cur_term );
+    if( UITermType != NULL ) {
+        uifree( UITermType );
+        UITermType = NULL;
+    }
 }
 
 static unsigned RefreshForbid = 0;

@@ -301,7 +301,7 @@ static bool TryTTY( void )
     if( end != NULL ) {
         /* and also told us the terminal type */
         *end = NULLCHAR;
-        SetTermType( strdup( end + 1 ) );
+        SetTermType( end + 1 );
     }
     DbgConHandle = open( DbgTerminal, O_RDWR );
     if( DbgConHandle == -1 ) {
@@ -457,7 +457,7 @@ void FiniScreen( void )
 void ScrnSpawnStart( void )
 {
     const char  *term;
-    const char  *curr_term;
+    char        *curr_term;
 
     if( InitConsole == -1 ) {
         curr_term = GetTermType();
@@ -473,7 +473,7 @@ void ScrnSpawnStart( void )
 
 void ScrnSpawnEnd( void )
 {
-    const char  *curr_term;
+    char    *curr_term;
 
     if( InitConsole == -1 ) {
         curr_term = GetTermType();
