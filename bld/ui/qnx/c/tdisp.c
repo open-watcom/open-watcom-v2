@@ -178,8 +178,8 @@ static void __puts( char *s )
 
     if( s == NULL )
         return;
-    while( (c = *s++) != '\0' ) {
-        __putchar(c);
+    while( (c = (unsigned char)*s++) != '\0' ) {
+        __putchar( c );
     }
 }
 
@@ -214,14 +214,16 @@ static void __puts( char *s )
 
 static void QNX_CURSOR_MOVE( int c, int r )
 {
-    __putchar( _ESC_CHAR ); __putchar( '=' );
+    __putchar( _ESC_CHAR );
+    __putchar( '=' );
     __putchar( r + ' ' );
     __putchar( c + ' ' );
 }
 
 static void QNX_SETCOLOUR( int f, int b )
 {
-    __putchar( _ESC_CHAR ); __putchar( '@' );
+    __putchar( _ESC_CHAR );
+    __putchar( '@' );
     __putchar( '0' + f );
     __putchar( '0' + b );
 }
@@ -240,21 +242,22 @@ static void _putp( char *s )
 
     if( s == NULL )
         return;
-    while( (c = *s++) != '\0' ) {
+    while( (c = (unsigned char)*s++) != '\0' ) {
         // check and see if we're at the start of a padding sequence
         if( c == '$' && *s == '<' ) {
             bbuf = s;
             s++;
             pad = 0;
             // read until the end of the sequence or the end of the string
-            while( (c = *s++) != '\0' && ( c != '>' ) ) {
+            while( (c = (unsigned char)*s++) != '\0' && ( c != '>' ) ) {
                 // suck up digits
                 if( c >= '0' && c <= '9' ) {
                     pad *= 10;
                     pad += c;
                 } else if( c == '.' ) {
                     // Skip tenth's
-                    if( (c = *s) >= '0' && c <= '9' ) {
+                    c = (unsigned char)*s;
+                    if( c >= '0' && c <= '9' ) {
                         s++;
                         // cheap rounding
                         if( c >= '5' ) {
@@ -277,7 +280,7 @@ static void _putp( char *s )
                 if( !xon_xoff || mand ) {
                     mand = false;
                     for( i = 0; i < pad; i++ ) {
-                        __putchar( pad_char[0] );
+                        __putchar( (unsigned char)pad_char[0] );
                     }
                 }
             } else {
@@ -1205,12 +1208,12 @@ QNXDebugPrintf2("cursor address %d,%d\n",j,i);
 #define TI_SLURPCHAR( __ch )  \
 {                             \
     unsigned char __c = __ch; \
-    if( rcount != 0 && ( rchar != ti_char_map[__c] || ralt != ti_alt_map( __c ) ) ) \
+    if( rcount != 0 && ( rchar != ti_char_map[__c] || ralt != ti_alt_map_chk( __c ) ) ) \
         TI_DUMPCHARS();       \
     rcol = (rcount == 0) ? j : rcol; \
     rcount++;                 \
     rchar = ti_char_map[__c]; \
-    ralt = ti_alt_map( __c ); \
+    ralt = ti_alt_map_chk( __c ); \
 }
 
 
