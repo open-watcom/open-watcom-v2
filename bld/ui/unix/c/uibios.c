@@ -47,31 +47,40 @@
 
 extern PossibleDisplay  DisplayList[];
 
-static const char       *UITermType = NULL; /* global so that the debugger can get at it */
+static char     *UITermType = NULL; /* global so that the debugger can get at it */
 
 bool UIAPI uiset80col( void )
 {
     return( true );
 }
 
-const char *GetTermType( void )
+char *GetTermType( void )
 {
+    const char  *p;
+    size_t      len;
+
     if( UITermType == NULL ) {
-        UITermType = getenv( "TERM" );
-        if( UITermType == NULL ) {
-            UITermType = "";
+        p = getenv( "TERM" );
+        if( p == NULL ) {
+            p = "";
         }
+        len = strlen( p ) + 1;
+        UITermType = uimalloc( len );
+        memcpy( UITermType, p, len );
     }
     return( UITermType );
 }
 
-const char *SetTermType( const char *new_term )
+void SetTermType( const char *new_term )
 {
-    const char  *old_term;
+    size_t      len;
 
-    old_term = UITermType;
-    UITermType = new_term;
-    return( old_term );
+    if( UITermType != NULL ) {
+        uifree( UITermType );
+    }
+    len = strlen( new_term ) + 1;
+    UITermType = uimalloc( len );
+    memcpy( UITermType, new_term, len );
 }
 
 bool intern initbios( void )
@@ -91,17 +100,8 @@ bool intern initbios( void )
         UIConHandle = fileno( UIConFile );
         fcntl( UIConHandle, F_SETFD, 1 );
     }
+    setupterm( GetTermType(), UIConHandle, NULL );
 
-    {
-        const char  *p1;
-        char        *p2;
-
-        p1 = GetTermType();
-        p2 = uimalloc( strlen( p1 ) + 1 );
-        strcpy( p2, p1 );
-        setupterm( p2, UIConHandle, NULL );
-        uifree( p2 );
-    }
     /* will report an error message and exit if any
        problem with a terminfo */
 
