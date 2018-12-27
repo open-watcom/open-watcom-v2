@@ -532,7 +532,6 @@ vi_rc SelectLineInFile( selflinedata *sfd )
         if( hiflag && ((key >= VI_KEY( ALT_A ) && key <= VI_KEY( ALT_Z )) ||
                        (key >= VI_KEY( a ) && key <= VI_KEY( z )) || (key >= VI_KEY( A ) && key <= VI_KEY( Z )) ||
                        (key >= VI_KEY( 1 ) && key <= VI_KEY( 9 ))) ) {
-            i = 0;
             if( key >= VI_KEY( ALT_A ) && key <= VI_KEY( ALT_Z ) ) {
                 key2 = key - VI_KEY( ALT_A ) + 'A';
             } else if( key >= VI_KEY( a ) && key <= VI_KEY( z ) ) {
@@ -540,15 +539,14 @@ vi_rc SelectLineInFile( selflinedata *sfd )
             } else {
                 key2 = key;
             }
-            ptr = sfd->hilite;
-            while( ptr->_char != '\0' ) {
+            i = 0;
+            for( ptr = sfd->hilite; ptr->_char != '\0'; ptr++ ) {
                 if( toupper( ptr->_char ) == key2 ) {
                     cln = i + 1;
                     key = VI_KEY( ENTER );
                     break;
                 }
                 ++i;
-                ++ptr;
             }
         }
 
@@ -556,7 +554,6 @@ vi_rc SelectLineInFile( selflinedata *sfd )
          * check if a return-event has been selected
          */
         if( sfd->retevents != NULL ) {
-            i = 0;
             if( key == VI_KEY( MOUSEEVENT ) ) {
                 if( fs_mouse_window_id == fs_event_window_id && LastMouseEvent == VI_MOUSE_PRESS ) {
                     DisplayMouse( false );
@@ -564,13 +561,12 @@ vi_rc SelectLineInFile( selflinedata *sfd )
                     key = VI_KEY( ENTER );
                 }
             } else {
-                while( sfd->retevents[i] != 0 ) {
+                for( i = 0; sfd->retevents[i] != VI_KEY( DUMMY ); i++ ) {
                     if( key == sfd->retevents[i] ) {
                         sfd->event = key;
                         key = VI_KEY( ENTER );
                         break;
                     }
-                    i++;
                 }
             }
         }
