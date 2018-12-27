@@ -41,20 +41,24 @@
 #endif
 #include <assert.h>
 
+
+#define ROUND_TOPAGE_BEGIN(x)   (((x) / perPage) * perPage)
+#define ROUND_TOLINE_BEGIN(x)   (((x) / maxJ) * maxJ)
+#define ROUND_TOLINE_END(x)     (((x) / maxJ) * maxJ + maxJ - 1 )
+
 static window_id    dir_wid = NO_WINDOW;
-static int          oldFilec;
-static int          lastFilec;
-static int          oldPage = -1;
+static int          oldFilec = 0;
+static int          lastFilec = 0;
+static int          mouseFilec = -1;
 static int          maxJ;
 static int          perPage;
-static int          maxPage;
-static int          cPage;
+static int          oldPage = -1;
+static int          cPage = 0;
 static bool         hasWrapped = false;
 static bool         isDone = false;
-static int          mouseFilec = -1;
 static char         strFmt[] = " %c%S";
 
-static bool hasMouseHandler;
+static bool         hasMouseHandler = false;
 
 /*
  * FileCompleteMouseHandler - handle mouse events for file completion
@@ -74,7 +78,7 @@ static bool FileCompleteMouseHandler( window_id wid, int win_x, int win_y )
         return( false );
     }
 
-    mouseFilec = cPage + (win_x - 1) / NAMEWIDTH + (win_y - 1) * maxJ;
+    mouseFilec = cPage + ( win_x - 1 ) / NAMEWIDTH + ( win_y - 1 ) * maxJ;
 
     return( true );
 
@@ -248,13 +252,13 @@ void FileCompleteMouseClick( window_id wid, int x, int y, bool dclick )
     GetClientRect( wid, &rect );
     column_width = NAMEWIDTH * FontAverageWidth( WIN_TEXT_FONT( w ) );
     column_height = FontHeight( WIN_TEXT_FONT( w ) );
-    left_margin = (rect.right - rect.left - column_width * columns) >> 1;
+    left_margin = ( rect.right - rect.left - column_width * columns ) >> 1;
     if( x < left_margin || x + left_margin > rect.right ) {
         return;
     }
-    c = (x - left_margin) / column_width;
-    file = (y / column_height) * columns + c;
-    file += cPage * perPage;
+    c = ( x - left_margin ) / column_width;
+    file = ( y / column_height ) * columns + c;
+    file += cPage;
     if( dclick ) {
         isDone = true;
     }
@@ -279,12 +283,10 @@ static void parseFileName( int i, char *buffer )
     buffer[NAMEWIDTH] = '\0';
 }
 
-#define ROW( i )    ((i) / maxJ)
-#define COL( i )    ((i) % maxJ)
-
 static void getBounds( int *start, int *end )
 {
-    int         first, last;
+    int         first;
+    int         last;
 
     if( oldFilec < lastFilec ) {
         first = oldFilec;
@@ -293,8 +295,8 @@ static void getBounds( int *start, int *end )
         first = lastFilec;
         last = oldFilec;
     }
-    *start = ROW( first ) * maxJ;
-    *end = ROW( last ) * maxJ + maxJ - 1;
+    *start = ROUND_TOLINE_BEGIN( first );
+    *end = ROUND_TOLINE_END( last );
 }
 
 static void displayFiles( void )
@@ -331,16 +333,16 @@ static void displayFiles( void )
     left_edge >>= 1;
     right_edge = rect.right - left_edge - 1;
 
-    cPage = lastFilec / perPage;
+    cPage = ROUND_TOPAGE_BEGIN( lastFilec );
     if( cPage != oldPage ) {
-        start = cPage * perPage;
-        end = start + perPage + maxJ;
+        start = cPage;
+        end = cPage + perPage + maxJ;
     } else {
         getBounds( &start, &end );
     }
 
     // assert( start <= lastFilec && lastFilec <= end );
-    rect.top = (ROW( start ) - cPage * perPage / maxJ) * font_height;
+    rect.top = ( start / maxJ - cPage / maxJ ) * font_height;
     rect.bottom = rect.top + font_height;
     rect.left = 0;
     rect.right = left_edge;
@@ -348,12 +350,12 @@ static void displayFiles( void )
     column = 0;
     for( i = start; i <= end; i++ ) {
         parseFileName( i, &buffer[0] );
-        style = (i == lastFilec) ? WIN_HILIGHT_STYLE( w ) : WIN_TEXT_STYLE( w );
+        style = ( i == lastFilec ) ? WIN_HILIGHT_STYLE( w ) : WIN_TEXT_STYLE( w );
         rect.left = column * column_width + left_edge;
         rect.right = rect.left + column_width;
         BlankRectIndirect( dir_wid, style->background, &rect );
         WriteString( dir_wid, rect.left, rect.top, style, &buffer[0] );
-        column = (column + 1) % maxJ;
+        column = ( column + 1 ) % maxJ;
         if( column == 0 ) {
             /* blat out the rest of the row and continue on */
             rect.left = right_edge;
@@ -392,9 +394,8 @@ static void displayFiles( void )
 
     st = 0;
     end = perPage;
-    cPage = lastFilec / perPage;
+    cPage = ROUND_TOPAGE_BEGIN( lastFilec );
     if( cPage > 0 ) {
-        cPage *= perPage;
         st += cPage;
         end += cPage;
     }
@@ -484,10 +485,9 @@ vi_rc StartFileComplete( char *data, size_t start, size_t max, vi_key what )
 #else
     maxJ = WindowAuxInfo( dir_wid, WIND_INFO_TEXT_COLS ) / NAMEWIDTH;
 #endif
-    maxl = WindowAuxInfo( dir_wid, WIND_INFO_TEXT_LINES ) - 1;
-    perPage = ( maxl + 1 ) * maxJ;
+    maxl = WindowAuxInfo( dir_wid, WIND_INFO_TEXT_LINES );
+    perPage = maxl * maxJ;
     oldPage = -1;
-    maxPage = ( DirFileCount + perPage - 1 ) / perPage;
     displayFiles();
     PushMouseEventHandler( FileCompleteMouseHandler );
     hasMouseHandler = true;
