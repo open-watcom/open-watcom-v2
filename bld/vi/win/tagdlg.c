@@ -90,16 +90,16 @@ WINEXPORT INT_PTR CALLBACK TagListDlgProc( HWND hwnd, UINT msg, WPARAM wparam, L
 /*
  * PickATag - create dialog to select a specific tag
  */
-int PickATag( int tag_count, char **tag_list, const char *tagname )
+list_linenum PickATag( list_linenum tag_count, char **tag_list, const char *tagname )
 {
-    DLGPROC     dlgproc;
-    int         rc;
+    DLGPROC         dlgproc;
+    list_linenum    rc;
 
-    tagCount = tag_count;
+    tagCount = (int)tag_count;
     tagList = tag_list;
 
     dlgproc = MakeProcInstance_DLG( TagListDlgProc, InstanceHandle );
-    rc = DialogBoxParam( InstanceHandle, "TAGS", root_window_id, dlgproc, (LPARAM)tagname );
+    rc = (list_linenum)DialogBoxParam( InstanceHandle, "TAGS", root_window_id, dlgproc, (LPARAM)tagname );
     FreeProcInstance_DLG( dlgproc );
     return( rc );
 

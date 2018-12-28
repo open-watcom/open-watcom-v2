@@ -35,13 +35,13 @@
 /*
  * tempFileSetup - set up a temp file with data in it
  */
-static void tempFileSetup( file **cfile, char *list[], int maxlist, size_t indent, bool makelower )
+static void tempFileSetup( file **cfile, char *list[], list_linenum maxlist, size_t indent, bool makelower )
 {
-    int         j;
-    size_t      i;
-    size_t      k;
-    size_t      boff;
-    char        dd[FILENAME_MAX];
+    list_linenum    j;
+    size_t          i;
+    size_t          k;
+    size_t          boff;
+    char            dd[FILENAME_MAX];
 
     /*
      * allocate temporary file structures
@@ -84,7 +84,7 @@ static void tempFileSetup( file **cfile, char *list[], int maxlist, size_t inden
  */
 vi_rc SelectItem( selectitem *si )
 {
-    int                 j;
+    list_linenum        j;
     file                *cfile;
     selflinedata        sfd;
     vi_rc               rc;
@@ -115,7 +115,7 @@ vi_rc SelectItem( selectitem *si )
             }
             si->num = -1;
         } else {
-            j = (int) sfd.sl - 1;
+            j = sfd.sl - 1;
             if( si->result != NULL ) {
                 strcpy( si->result, si->list[j] );
             }
@@ -138,10 +138,10 @@ vi_rc SelectItem( selectitem *si )
  * SelectItemAndValue - select item from list and give it a value
  */
 vi_rc SelectItemAndValue( window_info *wi, char *title, char **list,
-                        int maxlist, vi_rc (*updatertn)( const char *, char *, int * ),
+                        list_linenum maxlist, vi_rc (*updatertn)( const char *, char *, int * ),
                         size_t indent, char **vals, int valoff )
 {
-//    int                 j;
+//    list_linenum        j;
     file                *cfile;
     selflinedata        sfd;
     vi_rc               rc;
@@ -168,7 +168,7 @@ vi_rc SelectItemAndValue( window_info *wi, char *title, char **list,
         if( sfd.sl == -1 ) {
             break;
         }
-//        j = (int) sfd.sl - 1;
+//        j = sfd.sl - 1;
     }
 
     /*

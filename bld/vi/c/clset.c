@@ -1110,13 +1110,17 @@ static int compareString( void const *p1, void const *p2 )
 /*
  * getSetInfo - build string of values
  */
-static int getSetInfo( char ***vals, char ***list, int *longest )
+static list_linenum getSetInfo( char ***vals, char ***list, int *longest )
 {
-    int         i, j;
-    char        settokstr[TOK_MAX_LEN + 1];
-    char        tmpstr[MAX_STR];
-    set_data    **sdata;
-    int         tc, tc1, tc2;
+    list_linenum    i;
+    int             i1;
+    int             i2;
+    char            settokstr[TOK_MAX_LEN + 1];
+    char            tmpstr[MAX_STR];
+    set_data        **sdata;
+    list_linenum    tc;
+    int             tc1;
+    int             tc2;
 
     tc1 = GetNumberOfTokens( SetVarTokens );
     tc2 = GetNumberOfTokens( SetFlagTokens );
@@ -1125,15 +1129,15 @@ static int getSetInfo( char ***vals, char ***list, int *longest )
     *list = MemAlloc( tc * sizeof( char * ) );
     *vals = MemAlloc( tc * sizeof( char * ) );
 
-    for( i = 0; i < tc1; i++ ) {
-        sdata[i] = MemAlloc( sizeof( set_data ) );
-        sdata[i]->setting = DupString( GetTokenStringCVT( SetVarTokens, i, settokstr, true ) );
-        sdata[i]->val = DupString( getOneSetVal( i, false, tmpstr, true ) );
+    for( i1 = 0; i1 < tc1; i1++ ) {
+        sdata[i1] = MemAlloc( sizeof( set_data ) );
+        sdata[i1]->setting = DupString( GetTokenStringCVT( SetVarTokens, i1, settokstr, true ) );
+        sdata[i1]->val = DupString( getOneSetVal( i1, false, tmpstr, true ) );
     }
-    for( i = 0; i < tc2; i++ ) {
-        sdata[tc1 + i] = MemAlloc( sizeof( set_data ) );
-        sdata[tc1 + i]->setting = DupString( GetTokenStringCVT( SetFlagTokens, i, settokstr, true ) );
-        sdata[tc1 + i]->val = DupString( getOneSetVal( i, true, tmpstr, true ) );
+    for( i2 = 0; i2 < tc2; i2++ ) {
+        sdata[tc1 + i2] = MemAlloc( sizeof( set_data ) );
+        sdata[tc1 + i2]->setting = DupString( GetTokenStringCVT( SetFlagTokens, i2, settokstr, true ) );
+        sdata[tc1 + i2]->val = DupString( getOneSetVal( i2, true, tmpstr, true ) );
     }
     qsort( sdata, tc, sizeof( set_data * ), compareString );
     for( i = 0; i < tc; i++ ) {
@@ -1142,12 +1146,12 @@ static int getSetInfo( char ***vals, char ***list, int *longest )
         MemFree( sdata[i] );
     }
     MemFree( sdata );
-    i = GetLongestTokenLength( SetVarTokens );
-    j = GetLongestTokenLength( SetFlagTokens );
-    if( i > j ) {
-        *longest = i;
+    i1 = GetLongestTokenLength( SetVarTokens );
+    i2 = GetLongestTokenLength( SetFlagTokens );
+    if( i1 > i2 ) {
+        *longest = i1;
     } else {
-        *longest = j;
+        *longest = i2;
     }
     return( tc );
 
@@ -1160,18 +1164,19 @@ static int getSetInfo( char ***vals, char ***list, int *longest )
  */
 vi_rc Set( const char *name )
 {
-    char        fn[MAX_STR];
-    vi_rc       rc = ERR_NO_ERR;
-    int         j, i;
-    int         winflag;
-    const char  *pfn;
+    char            fn[MAX_STR];
+    vi_rc           rc = ERR_NO_ERR;
+    int             j, k;
+    int             winflag;
+    const char      *pfn;
 #ifndef VICOMP
 #ifndef __WIN__
-    short       tmp;
-    int         tc;
-    char        **vals = NULL;
-    char        **list;
-    int         longest;
+    short           tmp;
+    list_linenum    tc;
+    list_linenum    i;
+    char            **vals = NULL;
+    char            **list;
+    int             longest;
 #endif
 #endif
 
@@ -1199,7 +1204,7 @@ vi_rc Set( const char *name )
         tmp = setw_info.area.y2;
         i = setw_info.area.y2 - setw_info.area.y1 + BORDERDIFF( setw_info );
         if( tc < i ) {
-            setw_info.area.y2 -= (i - tc);
+            setw_info.area.y2 -= (windim)( i - tc );
         }
         rc = SelectItemAndValue( &setw_info, "Settings", list, tc, SettingSelected, 1, vals, longest + 3 );
         setw_info.area.y2 = tmp;
@@ -1222,10 +1227,10 @@ vi_rc Set( const char *name )
                 j = Tokenize( SetVarTokens, fn, false );
                 if( j == TOK_INVALID ) {
                     pfn = fn;
-                    i = 1;
+                    k = 1;
                     if( tolower( pfn[0] ) == 'n' && tolower( pfn[1] ) == 'o' ) {
                         pfn += 2;
-                        i = -1;
+                        k = -1;
                     }
                     j = Tokenize( SetFlagShortTokens, pfn, false );
                     if( j == TOK_INVALID ) {
@@ -1235,7 +1240,7 @@ vi_rc Set( const char *name )
                         }
                     }
                     j += SETVAR_T_;
-                    j *= i;
+                    j *= k;
                 }
 #ifndef VICOMP
             } else {

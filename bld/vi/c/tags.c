@@ -117,21 +117,21 @@ vi_rc FindTag( const char *tag )
 /*
  * PickATag - pick a tag
  */
-static int PickATag( int tag_count, char **tag_list, const char *tagname )
+static list_linenum PickATag( list_linenum tag_count, char **tag_list, const char *tagname )
 {
-    window_info wi;
-    int         i;
-    bool        show_lineno;
-    selectitem  si;
-    vi_rc       rc;
-    char        title[MAX_STR];
+    window_info     wi;
+    list_linenum    i;
+    bool            show_lineno;
+    selectitem      si;
+    vi_rc           rc;
+    char            title[MAX_STR];
 
     memcpy( &wi, &dirw_info, sizeof( window_info ) );
     wi.area.x1 = 12;
     wi.area.x2 = EditVars.WindMaxWidth - 12;
     i = wi.area.y2 - wi.area.y1 + BORDERDIFF( wi );
     if( tag_count < i ) {
-        wi.area.y2 -= i - tag_count;
+        wi.area.y2 -= (windim)( i - tag_count );
     }
     show_lineno = ( tag_count > i );
     MySprintf( title, "Pick A File For Tag \"%s\"", tagname );
@@ -164,12 +164,12 @@ static int PickATag( int tag_count, char **tag_list, const char *tagname )
  */
 static vi_rc selectTag( FILE *fp, const char *str, char *buff, char *fname )
 {
-    int         tag_count;
-    char        **tag_list;
-    int         i;
-    int         whichtag;
-    char        tag[MAX_STR];
-    char        *p;
+    list_linenum    tag_count;
+    char            **tag_list;
+    int             i;
+    list_linenum    whichtag;
+    char            tag[MAX_STR];
+    char            *p;
 
     tag_count = 0;
     tag_list = NULL;

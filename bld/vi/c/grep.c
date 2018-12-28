@@ -69,7 +69,7 @@ WINEXPORT INT_PTR CALLBACK GrepListDlgProc95( HWND dlg, UINT msg, WPARAM wparam,
 #define MAXBYTECNT  4096
 #define MAX_DISP    60
 
-static void fileGrep( const char *, char **, int *, window_id );
+static void fileGrep( const char *, char **, list_linenum *, window_id );
 static vi_rc fSearch( const char *, char * );
 static vi_rc eSearch( const char *, char * );
 static vi_rc doGREP( const char * );
@@ -170,11 +170,11 @@ static vi_rc getFile( const char *fname )
     return( rc );
 }
 
-static int initList( window_id wid, const char *dirlist, char **list )
+static list_linenum initList( window_id wid, const char *dirlist, char **list )
 {
-    char        dir[MAX_STR];
-    int         clist;
-    size_t      len;
+    char            dir[MAX_STR];
+    list_linenum    clist;
+    size_t          len;
 
 #ifdef __WIN__
     InitGrepDialog();
@@ -308,7 +308,7 @@ WINEXPORT INT_PTR CALLBACK GrepListDlgProc( HWND dlg, UINT msg, WPARAM wparam, L
         MySprintf( tmp, "Files Containing \"%s\"", searchString );
         SetWindowText( dlg, tmp );
         fileList = (char **)MemAlloc( sizeof( char * ) * MAX_FILES );
-        fileCount = initList( list_box, (const char *)lparam, fileList );
+        fileCount = (int)initList( list_box, (const char *)lparam, fileList );
         if( fileCount == 0 ) {
             /* tell him that there are no matches and close down? */
             Message1( "String \"%s\" not found", searchString );
@@ -381,7 +381,7 @@ WINEXPORT INT_PTR CALLBACK GrepListDlgProc95( HWND dlg, UINT msg, WPARAM wparam,
         lvc.iSubItem = 1;
         SendMessage( list_box, LVM_INSERTCOLUMN, 1, (LPARAM)&lvc );
         fileList = (char **)MemAlloc( sizeof( char * ) * MAX_FILES );
-        fileCount = initList( list_box, (const char *)lparam, fileList );
+        fileCount = (int)initList( list_box, (const char *)lparam, fileList );
         if( fileCount == 0 ) {
             Message1( "String \"%s\" not found", searchString );
             EndDialog( dlg, DO_NOT_CLEAR_MESSAGE_WINDOW );
@@ -464,16 +464,17 @@ static const vi_key     editopts_evlist[] = {
  */
 static vi_rc doGREP( const char *dirlist )
 {
-    int         i;
-    int         clist;
-    int         n = 0;
-    window_id   wid;
-    char        **list;
-    window_info wi_disp, wi_opts;
-    int         s, e, cnt;
-    bool        show_lineno;
-    selectitem  si;
-    vi_rc       rc;
+    list_linenum    i;
+    list_linenum    clist;
+    list_linenum    n;
+    window_id       wid;
+    char            **list;
+    window_info     wi_disp, wi_opts;
+    list_linenum    s;
+    list_linenum    e;
+    bool            show_lineno;
+    selectitem      si;
+    vi_rc           rc;
 
     /*
      * prepare list array
@@ -495,7 +496,7 @@ static vi_rc doGREP( const char *dirlist )
          * got list of matches, so lets select an item, shall we?
          */
         CloseAWindow( wid );
-        if( clist ) {
+        if( clist > 0 ) {
             /*
              * define display window dimensions
              */
@@ -504,7 +505,7 @@ static vi_rc doGREP( const char *dirlist )
             wi_disp.area.x2 = EditVars.WindMaxWidth - 2;
             i = wi_disp.area.y2 - wi_disp.area.y1 + BORDERDIFF( wi_disp );
             if( clist < i ) {
-                wi_disp.area.y2 -= ( i - clist );
+                wi_disp.area.y2 -= (windim)( i - clist );
             }
             show_lineno = ( clist > i );
             /*
@@ -518,6 +519,7 @@ static vi_rc doGREP( const char *dirlist )
                 /*
                  * process selections
                  */
+                n = 0;
                 for( ;; ) {
                     if( n > clist - 1 ) {
                         n = clist - 1;
@@ -547,8 +549,8 @@ static vi_rc doGREP( const char *dirlist )
                     } else {
                         s = e = n;
                     }
-                    for( cnt = s; cnt <= e; cnt++ ) {
-                        rc = getFile( list[cnt] );
+                    for( i = s; i <= e; i++ ) {
+                        rc = getFile( list[i] );
                         if( rc != ERR_NO_ERR ) {
                             break;
                         }
@@ -587,7 +589,7 @@ static vi_rc doGREP( const char *dirlist )
 /*
  * fileGrep - search a single dir and build list of files
  */
-static void fileGrep( const char *dir, char **list, int *clist, window_id wid )
+static void fileGrep( const char *dir, char **list, list_linenum *clist, window_id wid )
 {
     char        fn[FILENAME_MAX], data[FILENAME_MAX], ts[FILENAME_MAX];
     char        path[FILENAME_MAX];

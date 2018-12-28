@@ -233,7 +233,7 @@ vi_rc Global( linenum n1, linenum n2, const char *data, int dmt )
             return( rc1 );
         }
     }
-    Message1( "%l matches found",changecnt );
+    Message1( "%l matches found", changecnt );
     DCDisplayAllLines();
     return( rc );
 

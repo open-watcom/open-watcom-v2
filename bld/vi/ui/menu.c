@@ -676,17 +676,18 @@ static int currentID;
  */
 static vi_rc processMenu( int sel, menu *cmenu, windim xpos, windim ypos, windim rmaxwidth )
 {
-    int         i;
-    windim      ws;
-    char        result[80];
-    int         resint, allowrl, *arl;
-    selectitem  si;
-    menu        *tmenu;
-    menu_item   *cmi;
-    windim      x1, y1, x2, y2;
-    windim      diff;
-    windim      maxwidth;
-    vi_rc       rc;
+    list_linenum    i;
+    windim          ws;
+    char            result[80];
+    list_linenum    resint;
+    int             allowrl, *arl;
+    selectitem      si;
+    menu            *tmenu;
+    menu_item       *cmi;
+    windim          x1, y1, x2, y2;
+    windim          diff;
+    windim          maxwidth;
+    vi_rc           rc;
 
     maxwidth = rmaxwidth;
     if( maxwidth < 0 ) {
@@ -761,7 +762,7 @@ static vi_rc processMenu( int sel, menu *cmenu, windim xpos, windim ypos, windim
         si.wi = &menuw_info;
         si.title = NULL;
         si.list = cmenu->list;
-        si.maxlist = (int)cmenu->itemcnt;
+        si.maxlist = (list_linenum)cmenu->itemcnt;
         si.result = result;
         si.num = 0;
         si.allowrl = arl;

@@ -125,7 +125,7 @@ void    GetMenuHelpString( char *res );
 void    SetMenuHelpString( const char *str );
 void    UsageDialog( char **, char *, int );
 char    *GetInitialFileName( void );
-int     PickATag( int tag_count, char **tag_list, const char *tagname );
+list_linenum PickATag( list_linenum tag_count, char **tag_list, const char *tagname );
 
 #ifdef __WINDOWS__
 bool    HasShare( void );

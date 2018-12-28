@@ -350,14 +350,18 @@ static const vi_key     fileopts_evlist[] = {
  */
 vi_rc EditFileFromList( void )
 {
-    int         i, tmp, j, n = 0, fcnt;
-    window_id   wid;
-    bool        repeat = true;
-    info        *cinfo;
-    char        **list, modchar;
-    window_info wi;
-    selectitem  si;
-    vi_rc       rc;
+    list_linenum    i;
+    int             tmp;
+    list_linenum    j;
+    list_linenum    n;
+    list_linenum    fcnt;
+    window_id       wid;
+    bool            repeat;
+    info            *cinfo;
+    char            **list, modchar;
+    window_info     wi;
+    selectitem      si;
+    vi_rc           rc;
 
     /*
      * set up options for file list
@@ -370,7 +374,9 @@ vi_rc EditFileFromList( void )
         return( rc );
     }
 
-    while( repeat > 0 ) {
+    n = 0;
+    repeat = true;
+    while( repeat ) {
 
         /*
          * set up for this pass
@@ -382,8 +388,10 @@ vi_rc EditFileFromList( void )
         /*
          * allocate a buffer for strings, add strings
          */
-        list = (char **) MemAlloc( GimmeFileCount() * sizeof( char * ) );
-        for( j = 0, cinfo = InfoHead; cinfo != NULL; cinfo = cinfo->next, ++j ) {
+        fcnt = GimmeFileCount();
+        list = (char **) MemAlloc( fcnt * sizeof( char * ) );
+        j = 0;
+        for( cinfo = InfoHead; cinfo != NULL; cinfo = cinfo->next ) {
             list[j] = MemAlloc( strlen( cinfo->CurrentFile->name ) + 3 );
             if( cinfo->CurrentFile->modified ) {
                 modchar = '*';
@@ -391,12 +399,12 @@ vi_rc EditFileFromList( void )
                 modchar = ' ';
             }
             MySprintf( list[j], "%c %s", modchar, cinfo->CurrentFile->name );
+            j++;
         }
-        fcnt = j;
         tmp = filelistw_info.area.y2;
         i = filelistw_info.area.y2 - filelistw_info.area.y1 + BORDERDIFF( filelistw_info );
         if( j < i ) {
-            filelistw_info.area.y2 -= ( i - j );
+            filelistw_info.area.y2 -= (windim)( i - j );
         }
         /*
          * get file

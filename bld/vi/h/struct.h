@@ -596,6 +596,7 @@ typedef struct {
     char                _char;
 } hilst;
 
+typedef int             list_linenum;
 /*
  * SelectItem data
  */
@@ -603,14 +604,14 @@ typedef struct {
     window_info         *wi;                // info describing window to create
     char                *title;             // title of window
     char                **list;             // lines to display
-    int                 maxlist;            // number of lines in list
+    list_linenum        maxlist;            // number of lines in list
     char                *result;            // where to copy the data for the picked line
-    int                 num;                // number of the picked line
+    list_linenum        num;                // number of the picked line
     int                 *allowrl;           // allow cursor right/left (for menu bar)
     hilst               *hilite;            // chars to highlight
     const vi_key        *retevents;         // events that simulate pressing enter
     vi_key              event;              // event that caused a return
-    linenum             cln;                // current line to display
+    list_linenum        cln;                // current line to display
     window_id           event_wid;          // alternate window to accept events in (like the options window after fgrep...)
     bool                show_lineno : 1;    // show lines in top-right corner
     bool                is_menu     : 1;    // is a menu we are showing
@@ -624,14 +625,14 @@ typedef struct {
     char                **vals;                 // values associated with each line
     int                 valoff;                 // offset to display values beside line data
     window_info         *wi;                    // info describing window to create
-    linenum             sl;                     // selected line
+    list_linenum        sl;                     // selected line
     char                *title;                 // title of window
     vi_rc (*checkres)(const char *, char *, int * ); // check if selected change is valid
     int                 *allowrl;               // allow cursor right/left (for menu bar)
     hilst               *hilite;                // chars to highlight
     const vi_key        *retevents;             // events that simulate pressing enter
     vi_key              event;                  // event that caused a return
-    linenum             cln;                    // current line to display
+    list_linenum        cln;                    // current line to display
     window_id           event_wid;              // alternate window to accept events in (like the options window after fgrep...)
     bool                show_lineno        : 1; // show lines in top-right corner
     bool                is_menu            : 1; // select list is a menu
