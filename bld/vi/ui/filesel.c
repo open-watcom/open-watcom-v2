@@ -445,10 +445,10 @@ vi_rc SelectLineInFile( selflinedata *sfd )
     int             winflag;
     int             leftcol = 0;
     int             key2;
-    bool            done = false;
-    bool            redraw = true;
-    bool            hiflag = false;
-    bool            drawbord = false;
+    bool            done;
+    bool            redraw;
+    bool            hiflag;
+    bool            drawbord;
     int             farx;
     list_linenum    text_lines;
     list_linenum    pagetop;
@@ -470,9 +470,7 @@ vi_rc SelectLineInFile( selflinedata *sfd )
     if( sfd->show_lineno ) {
         farx++;
     }
-    if( sfd->hilite != NULL ) {
-        hiflag = true;
-    }
+    hiflag = ( sfd->hilite != NULL );
     rc = NewWindow2( &fs_select_window_id, sfd->wi );
     if( rc != ERR_NO_ERR ) {
         return( rc );
@@ -503,6 +501,8 @@ vi_rc SelectLineInFile( selflinedata *sfd )
      * now, allow free scrolling and selection
      */
     lln = 1;
+    redraw = true;
+    drawbord = false;
     done = false;
     while( !done ) {
         if( redraw ) {
@@ -755,7 +755,6 @@ vi_rc SelectLineInFile( selflinedata *sfd )
         default:
             redraw = false;
             break;
-
         }
     }
     PopMouseEventHandler();

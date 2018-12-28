@@ -209,6 +209,7 @@ void FormatDirToFile( file *cfile, bool add_drives )
     /*
      * add drives
      */
+#ifndef __UNIX__
     if( add_drives ) {
         for( i = 'A'; i <= 'Z'; i++ ) {
             if( DoGetDriveType( i ) != DRIVE_TYPE_NONE ) {
@@ -217,7 +218,7 @@ void FormatDirToFile( file *cfile, bool add_drives )
             }
         }
     }
-
+#endif
     CreateFcbData( cfile, currOff );
 
 } /* FormatDirToFile */

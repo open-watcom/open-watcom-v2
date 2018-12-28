@@ -92,9 +92,9 @@ static vi_rc getDir( const char *dname, bool want_all_dirs )
     for( i = len; i > 0; i-- ) {
         ch = dname[i - 1];
 #ifdef __UNIX__
-        if( ch == '/' ) {
+        if( ch == FILE_SEP ) {
 #else
-        if( ch == '/' || ch == '\\' || ch == DRV_SEP ) {
+        if( ch == ALT_FILE_SEP || ch == FILE_SEP || ch == DRV_SEP ) {
 #endif
             break;
         }
@@ -117,7 +117,7 @@ static vi_rc getDir( const char *dname, bool want_all_dirs )
         return( rc );
     }
 #ifndef __UNIX__
-    if( ch != '\\' && ch != '/' && ch != DRV_SEP && ch != '\0' ) {
+    if( ch != FILE_SEP && ch != ALT_FILE_SEP && ch != DRV_SEP && ch != '\0' ) {
         strcat( path, FILE_SEP_STR );
     }
     strcat( path, ALL_FILES_WILD_CARD );

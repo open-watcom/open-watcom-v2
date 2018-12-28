@@ -133,9 +133,9 @@ static vi_rc doFileComplete( char *data, size_t start, size_t max, bool getnew, 
         if( newstartdef )
             continue;
 #ifdef __UNIX__
-        if( c == '/' ) {
+        if( c == FILE_SEP ) {
 #else
-        if( c = DRV_SEP || c == '/' || c == '\\' ) {
+        if( c = DRV_SEP || c == ALT_FILE_SEP || c == FILE_SEP ) {
 #endif
             newstartdef = true;
             newstart = i;

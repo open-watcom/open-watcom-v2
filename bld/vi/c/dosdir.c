@@ -68,7 +68,7 @@ bool IsDirectory( char *name )
     if( rc != 0 )
         return( false ); /* not valid */
 
-    if( name[1] == DRV_SEP && name[2] == '\\' && name[3] == '\0' ) {
+    if( name[1] == DRV_SEP && name[2] == FILE_SEP && name[3] == '\0' ) {
         /* this is a root dir -- this is OK */
         return( true );
     }
