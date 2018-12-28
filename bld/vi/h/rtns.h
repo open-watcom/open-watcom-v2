@@ -593,10 +593,12 @@ void    MatchFini( void );
 /* mem.c */
 void    *MemAlloc( size_t );
 void    *MemAllocUnsafe( size_t );
+char    **MemAllocList( int );
 void    MemFree( void * );
 void    MemFreePtr( void ** );
 void    MemFreeList( int, char ** );
 void    *MemReAlloc( void *, size_t );
+char    **MemReAllocList( char **, int );
 void    *MemReAllocUnsafe( void *ptr, size_t size );
 void    *StaticAlloc( void );
 void    StaticFree( char * );
