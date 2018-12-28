@@ -99,7 +99,7 @@ void *MemReAlloc( void *ptr, size_t size )
 /*
  * MemReAllocList - reallocate a block, and it will succeed.
  */
-void *MemReAllocList( void *ptr, int count )
+char **MemReAllocList( char **ptr, int count )
 {
     return( realloc( ptr, count * sizeof( char * ) ) );
 
