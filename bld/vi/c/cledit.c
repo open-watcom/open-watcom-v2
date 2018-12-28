@@ -389,7 +389,7 @@ vi_rc EditFileFromList( void )
          * allocate a buffer for strings, add strings
          */
         fcnt = GimmeFileCount();
-        list = (char **) MemAlloc( fcnt * sizeof( char * ) );
+        list = MemAllocList( fcnt );
         j = 0;
         for( cinfo = InfoHead; cinfo != NULL; cinfo = cinfo->next ) {
             list[j] = MemAlloc( strlen( cinfo->CurrentFile->name ) + 3 );
@@ -457,7 +457,6 @@ vi_rc EditFileFromList( void )
 
         filelistw_info.area.y2 = tmp;
         MemFreeList( fcnt, list );
-
     }
 
     /*

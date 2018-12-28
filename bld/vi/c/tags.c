@@ -176,7 +176,7 @@ static vi_rc selectTag( FILE *fp, const char *str, char *buff, char *fname )
     p = GetNextWord1( buff, tag );
     for( ;; ) {
         p = SkipLeadingSpaces( p );
-        tag_list = MemReAlloc( tag_list, sizeof( char * ) * ( tag_count + 1 ) );
+        tag_list = MemReAllocList( tag_list, tag_count + 1 );
         tag_list[tag_count] = DupString( p );
         i = 0;
         p = tag_list[tag_count];

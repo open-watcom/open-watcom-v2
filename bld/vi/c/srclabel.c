@@ -66,7 +66,7 @@ vi_rc AddLabel( sfile *sf, labels *labs, const char *lbl )
     /*
      * reallocate buffers
      */
-    labs->name = MemReAlloc( labs->name, (labs->cnt + 1) * sizeof( char * ) );
+    labs->name = MemReAllocList( labs->name, labs->cnt + 1 );
     labs->pos = MemReAlloc( labs->pos, (labs->cnt + 1) * sizeof( struct sfile * ) );
 
     /*

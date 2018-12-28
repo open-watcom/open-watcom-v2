@@ -712,7 +712,7 @@ static vi_rc processSetToken( int j, char *new, const char **pvalue, int *winfla
             break;
         case SETVAR_T_TILECOLOR:
             if( EditVars.TileColors == NULL ) {
-                EditVars.TileColors = (type_style *) MemAlloc( sizeof( type_style ) * ( EditVars.MaxTileColors + 1 ) );
+                EditVars.TileColors = (type_style *)MemAlloc( sizeof( type_style ) * ( EditVars.MaxTileColors + 1 ) );
                 for( i = 0; i <= EditVars.MaxTileColors; ++i ) {
                     EditVars.TileColors[i].foreground = -1;
                     EditVars.TileColors[i].background = -1;
@@ -1126,8 +1126,8 @@ static list_linenum getSetInfo( char ***vals, char ***list, int *longest )
     tc2 = GetNumberOfTokens( SetFlagTokens );
     tc = tc1 + tc2;
     sdata = MemAlloc( tc * sizeof( set_data * ) );
-    *list = MemAlloc( tc * sizeof( char * ) );
-    *vals = MemAlloc( tc * sizeof( char * ) );
+    *list = MemAllocList( tc );
+    *vals = MemAllocList( tc );
 
     for( i1 = 0; i1 < tc1; i1++ ) {
         sdata[i1] = MemAlloc( sizeof( set_data ) );
