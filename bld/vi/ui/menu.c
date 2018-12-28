@@ -695,7 +695,6 @@ static vi_rc processMenu( int sel, menu *cmenu, windim xpos, windim ypos, windim
     }
 
     for( ;; ) {
-
         if( cmenu->has_file_list ) {
             addFileList( cmenu );
         }

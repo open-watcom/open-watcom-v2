@@ -66,8 +66,7 @@ WINEXPORT INT_PTR CALLBACK TagListDlgProc( HWND hwnd, UINT msg, WPARAM wparam, L
         case IDOK:
             i = (int)SendDlgItemMessage( hwnd, TAGS_LISTBOX, LB_GETCURSEL, 0, 0L );
             if( i == LB_ERR ) {
-                MessageBox( hwnd, "No selection", EditorName,
-                            MB_ICONEXCLAMATION | MB_OK );
+                MessageBox( hwnd, "No selection", EditorName, MB_ICONEXCLAMATION | MB_OK );
             } else {
                 EndDialog( hwnd, i );
             }

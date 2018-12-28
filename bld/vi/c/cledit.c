@@ -96,25 +96,25 @@ static char *GetNextWordNT( const char *buff, char *res )
  */
 vi_rc EditFile( const char *name, bool dammit )
 {
-    char        *fn;
-    char        **list;
-    char        *currfn;
-    size_t      i;
-    int         ocnt;
-    size_t      j;
-    size_t      k;
-    size_t      len;
-    window_id   wid = NO_WINDOW;
-    char        cdir[FILENAME_MAX];
-    info        *ci;
-    info        *il;
-    bool        usedir = false;
-    char        mask[FILENAME_MAX];
-    bool        reset_dir;
+    char            *fn;
+    char            **list;
+    char            *currfn;
+    list_linenum    i;
+    list_linenum    ocnt;
+    size_t          j;
+    size_t          k;
+    size_t          len;
+    window_id       wid = NO_WINDOW;
+    char            cdir[FILENAME_MAX];
+    info            *ci;
+    info            *il;
+    bool            usedir = false;
+    char            mask[FILENAME_MAX];
+    bool            reset_dir;
 #ifdef __WIN__
-    char        *altname = NULL;
+    char            *altname = NULL;
 #endif
-    vi_rc       rc;
+    vi_rc           rc;
 
     fn = MemAlloc( FILENAME_MAX );
 
@@ -431,30 +431,28 @@ vi_rc EditFileFromList( void )
         rc = SelectItem( &si );
         n = si.num;
         repeat = false;
-        if( rc == ERR_NO_ERR ) {
-            if( n >= 0 ) {
-                cinfo = InfoHead;
-                for( i = 0; i < n; i++ ) {
-                    cinfo = cinfo->next;
+        if( rc == ERR_NO_ERR && n >= 0 ) {
+            cinfo = InfoHead;
+            while( n-- > 0 ) {
+                cinfo = cinfo->next;
+            }
+            BringUpFile( cinfo, true );
+            switch( si.event ) {
+            case VI_KEY( DUMMY ):
+            case VI_KEY( F1 ):
+                break;
+            case VI_KEY( F2 ):
+                rc = NextFile();
+                if( rc <= ERR_NO_ERR ) {
+                    repeat = true;
                 }
-                BringUpFile( cinfo, true );
-                switch( si.event ) {
-                case VI_KEY( DUMMY ):
-                case VI_KEY( F1 ):
-                    break;
-                case VI_KEY( F2 ):
-                    rc = NextFile();
-                    if( rc <= ERR_NO_ERR ) {
-                        repeat = true;
-                    }
-                    break;
-                case VI_KEY( F3 ):
-                    rc = SaveAndExit( NULL );
-                    if( rc <= ERR_NO_ERR ) {
-                        repeat = true;
-                    }
-                    break;
+                break;
+            case VI_KEY( F3 ):
+                rc = SaveAndExit( NULL );
+                if( rc <= ERR_NO_ERR ) {
+                    repeat = true;
                 }
+                break;
             }
         }
         filelistw_info.area.y2 = tmp;
