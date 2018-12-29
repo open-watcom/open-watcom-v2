@@ -159,10 +159,12 @@ void FormatDirToFile( file *cfile, bool add_drives )
 {
     list_linenum    i;
     list_linenum    j;
-    int             c;
     list_linenum    lastdir;
     char            str[MAX_STR];
     direct_ent      *de;
+#ifndef __UNIX__
+    int             c;
+#endif
 
     if( cfile->fcbs.head != NULL ) {
         if( cfile->fcbs.head->nullfcb ) {

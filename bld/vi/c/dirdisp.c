@@ -379,7 +379,6 @@ static void displayFiles( void )
 {
     char            tmp[FILENAME_MAX];
     char            tmp2[FILENAME_MAX];
-    char            dirc;
     size_t          j;
     size_t          z;
     size_t          k;
