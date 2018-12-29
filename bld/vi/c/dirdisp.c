@@ -268,8 +268,6 @@ void FileCompleteMouseClick( window_id wid, int x, int y, bool dclick )
 
 static void parseFileName( list_linenum i, char *buffer )
 {
-    char        ch;
-
     if( i >= DirFileCount ) {
         MySprintf( buffer, strFmt, SingleBlank );
     } else {
@@ -281,10 +279,10 @@ static void parseFileName( list_linenum i, char *buffer )
     buffer[NAMEWIDTH] = '\0';
 }
 
-static void getBounds( int *start, int *end )
+static void getBounds( list_linenum *start, list_linenum *end )
 {
-    int         first;
-    int         last;
+    list_linenum    first;
+    list_linenum    last;
 
     if( oldFilec < lastFilec ) {
         first = oldFilec;
@@ -536,3 +534,4 @@ void PauseFileComplete( void )
     }
 
 } /* PauseFileComplete */
+
