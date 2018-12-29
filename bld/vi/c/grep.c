@@ -307,7 +307,7 @@ WINEXPORT INT_PTR CALLBACK GrepListDlgProc( HWND dlg, UINT msg, WPARAM wparam, L
         SendMessage( list_box, WM_SETFONT, (WPARAM)FontHandle( dirw_info.text_style.font ), 0L );
         MySprintf( tmp, "Files Containing \"%s\"", searchString );
         SetWindowText( dlg, tmp );
-        fileList = MemAlloc( MAX_FILES );
+        fileList = MemAllocList( MAX_FILES );
         fileCount = (int)initList( list_box, (const char *)lparam, fileList );
         if( fileCount == 0 ) {
             /* tell him that there are no matches and close down? */
@@ -380,7 +380,7 @@ WINEXPORT INT_PTR CALLBACK GrepListDlgProc95( HWND dlg, UINT msg, WPARAM wparam,
         lvc.pszText = "Line";
         lvc.iSubItem = 1;
         SendMessage( list_box, LVM_INSERTCOLUMN, 1, (LPARAM)&lvc );
-        fileList = MemAlloc( MAX_FILES );
+        fileList = MemAllocList( MAX_FILES );
         fileCount = (int)initList( list_box, (const char *)lparam, fileList );
         if( fileCount == 0 ) {
             Message1( "String \"%s\" not found", searchString );
@@ -480,7 +480,7 @@ static vi_rc doGREP( const char *dirlist )
      * prepare list array
      */
     clist = 0;
-    list = MemAlloc( MAX_FILES );
+    list = MemAllocList( MAX_FILES );
 
     /*
      * create info. window
@@ -805,7 +805,7 @@ static vi_rc fSearch( const char *fn, char *r )
                             strloc = searchString;
                         }
                     }
-    
+
                 }
                 if( bcnt != MAXBYTECNT || rc == FGREP_FOUND_STRING ) {
                     break;

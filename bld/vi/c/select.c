@@ -96,7 +96,7 @@ vi_rc SelectItem( selectitem *si )
      */
     memset( &sfd, 0, sizeof( sfd ) );
     sfd.f = cfile;
-    sfd.wi= si->wi;
+    sfd.wi = si->wi;
     sfd.title = si->title;
     sfd.allowrl = si->allowrl;
     sfd.hilite = si->hilite;

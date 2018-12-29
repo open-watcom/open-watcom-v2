@@ -178,7 +178,6 @@ static vi_rc displayGenericLines( file *f, list_linenum pagetop, int leftcol,
                                 list_linenum hilite, type_style *style, hilst *hilist,
                                 char **vals, int valoff )
 {
-    int             i;
     int             j;
     int             k;
     list_linenum    text_lines;
@@ -259,9 +258,8 @@ static vi_rc displayGenericLines( file *f, list_linenum pagetop, int leftcol,
                 goto evil_goto;
             } else if( cline->len > leftcol ) {
                 if( vals != NULL ) {
-                    i = cline->len - leftcol;
                     strncpy( tmp, &(cline->data[leftcol]), EditVars.WindMaxWidth + 5 );
-                    for( k = i; k < valoff; k++ ) {
+                    for( k = cline->len - leftcol; k < valoff; k++ ) {
                         tmp[k] = ' ';
                     }
                     tmp[k] = '\0';
