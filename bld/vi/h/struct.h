@@ -596,8 +596,7 @@ typedef struct {
     char                _char;
 } hilst;
 
-//typedef int             list_linenum;
-typedef long long             list_linenum;
+typedef int             list_linenum;
 
 /*
  * SelectItem data
