@@ -63,7 +63,8 @@ static bool             isMenu;
  */
 vi_rc SelectFileOpen( const char *dir, char **result_ptr, const char *mask, bool want_all_dirs )
 {
-    char                dd[FILENAME_MAX], cdir[FILENAME_MAX];
+    char                dd[FILENAME_MAX];
+    char                cdir[FILENAME_MAX];
     list_linenum        j;
     file                *cfile;
     fcb                 *cfcb;
@@ -72,6 +73,7 @@ vi_rc SelectFileOpen( const char *dir, char **result_ptr, const char *mask, bool
     bool                need_entire_path;
     char                *result = *result_ptr;
     vi_rc               rc;
+    char                *p;
 
     /*
      * get current directory
@@ -85,10 +87,11 @@ vi_rc SelectFileOpen( const char *dir, char **result_ptr, const char *mask, bool
      * work through all files
      */
     for( ;; ) {
-        if( dd[strlen( dd ) - 1] != FILE_SEP ) {
-            strcat( dd, FILE_SEP_STR );
+        p = dd + strlen( dd );
+        if( *(p - 1) != FILE_SEP ) {
+            *p++ = FILE_SEP;
         }
-        strcat( dd, mask );
+        strcpy( p, mask );
         rc = GetSortDir( dd, want_all_dirs );
         if( rc != ERR_NO_ERR ) {
             return( rc );
@@ -124,10 +127,11 @@ vi_rc SelectFileOpen( const char *dir, char **result_ptr, const char *mask, bool
             /* file entry */
             if( need_entire_path ) {
                 strcpy( result, CurrentDirectory );
-                if( result[strlen(result) - 1] != FILE_SEP ) {
-                    strcat( result, FILE_SEP_STR );
+                p = result + strlen( result );
+                if( *(p - 1) != FILE_SEP ) {
+                    *p++ = FILE_SEP;
                 }
-                strcat( result, DirFiles[j]->name );
+                strcpy( p, DirFiles[j]->name );
             } else {
                 strcpy( result, DirFiles[j]->name );
             }
@@ -136,10 +140,11 @@ vi_rc SelectFileOpen( const char *dir, char **result_ptr, const char *mask, bool
         if( j < DirFileCount ) {
             /* sub-directory entry */
             strcpy( dd, cdir );
-            if( dd[strlen(dd) - 1] != FILE_SEP ) {
-                strcat( dd, FILE_SEP_STR );
+            p = dd + strlen( dd );
+            if( *(p - 1) != FILE_SEP ) {
+                *p++ = FILE_SEP;
             }
-            strcat( dd, DirFiles[j]->name );
+            strcpy( p, DirFiles[j]->name );
         } else {
             /* drive entry */
             GimmeLinePtr( j + 1, cfile, &cfcb, &cline );
@@ -173,13 +178,17 @@ static vi_rc displayGenericLines( file *f, list_linenum pagetop, int leftcol,
                                 list_linenum hilite, type_style *style, hilst *hilist,
                                 char **vals, int valoff )
 {
-    int             i, j, k;
+    int             i;
+    int             j;
+    int             k;
     list_linenum    text_lines;
     list_linenum    cl;
-    fcb             *cfcb, *tfcb;
+    fcb             *cfcb;
+    fcb             *tfcb;
     line            *cline;
     hilst           *ptr;
-    type_style      *text_style, *hot_key_style;
+    type_style      *text_style;
+    type_style      *hot_key_style;
     window_info     *wi;
     type_style      base_style;
     char            tmp[MAX_STR];
@@ -293,7 +302,9 @@ evil_goto:  if( ptr != NULL ) {
  */
 static bool SelectLineMouseHandler( window_id wid, int win_x, int win_y )
 {
-    int x, y, i;
+    int     x;
+    int     y;
+    int     i;
 
     if( LastMouseEvent != VI_MOUSE_DRAG && LastMouseEvent != VI_MOUSE_PRESS &&
         LastMouseEvent != VI_MOUSE_DCLICK && LastMouseEvent != VI_MOUSE_RELEASE &&
