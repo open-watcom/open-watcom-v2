@@ -104,7 +104,7 @@ select_rgn      SelRgn;
  * directory data
  */
 direct_ent      * _NEAR DirFiles[MAX_FILES];
-int             DirFileCount;
+list_linenum    DirFileCount;
 
 /*
  * key map data

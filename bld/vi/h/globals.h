@@ -115,7 +115,7 @@ extern vi_key _NEAR     SavebufBound[];
 
 /* directory info */
 extern direct_ent * _NEAR   DirFiles[MAX_FILES];
-extern int              DirFileCount;
+extern list_linenum     DirFileCount;
 
 /* window info */
 extern window_info      editw_info, messagew_info, statusw_info;

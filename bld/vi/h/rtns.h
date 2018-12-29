@@ -273,7 +273,7 @@ void    FreeErrorMsgData( void );
 void    ErrorFini( void );
 
 /* expandfn.c */
-int     ExpandFileNames( char *, char *** );
+list_linenum ExpandFileNames( const char *, char *** );
 
 /* fcb.c */
 vi_rc   OpenFcbData( file * );

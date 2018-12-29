@@ -172,19 +172,18 @@ vi_rc GetSortDir( const char *name, bool want_all_dirs )
     DirFini();
 
     rc = getDir( name, want_all_dirs );
-    if( rc != ERR_NO_ERR ) {
-        return( rc );
+    if( rc == ERR_NO_ERR ) {
+        if( DirFileCount > 0 ) {
+            qsort( DirFiles, DirFileCount, sizeof( direct_ent * ), compare );
+        }
     }
-    if( DirFileCount > 0 ) {
-        qsort( DirFiles, DirFileCount, sizeof( direct_ent * ), compare );
-    }
-    return( ERR_NO_ERR );
+    return( rc );
 
 } /* GetSortDir */
 
 void DirFini( void )
 {
-    int i;
+    list_linenum    i;
 
     for( i = 0; i < DirFileCount; i++ ) {
         MemFree( DirFiles[i] );

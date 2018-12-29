@@ -39,15 +39,17 @@
  * ExpandFileNames - take a file name, and expand it out to a list of dos
  *                   file names
  */
-int ExpandFileNames( char *p, char ***argv )
+list_linenum ExpandFileNames( const char *p, char ***argv )
 {
-    int         argc, i;
-    char        drive[_MAX_DRIVE], directory[_MAX_DIR], name[_MAX_FNAME];
-    char        extin[_MAX_EXT], pathin[FILENAME_MAX];
-    char        *start, *new;
-    bool        wildcard;
-    vi_rc       rc;
-    char        c;
+    list_linenum    argc;
+    list_linenum    i;
+    char            drive[_MAX_DRIVE], directory[_MAX_DIR], name[_MAX_FNAME];
+    char            extin[_MAX_EXT], pathin[FILENAME_MAX];
+    const char      *start;
+    char            *new;
+    bool            wildcard;
+    vi_rc           rc;
+    char            c;
 
     argc = 0;
     wildcard = false;

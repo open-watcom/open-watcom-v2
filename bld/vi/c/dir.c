@@ -75,9 +75,6 @@ void GetCWD2( char *str, size_t maxlen )
 vi_rc ChangeDirectory( const char *dir )
 {
 #if !defined( __UNIX__ )
-    size_t      shift;
-
-    shift = 0;
     if( dir[1] == DRV_SEP ) {
         if( _chdrive( tolower( (unsigned char)dir[0] ) - 'a' + 1 ) ) {
             return( ERR_NO_SUCH_DRIVE );
@@ -85,9 +82,8 @@ vi_rc ChangeDirectory( const char *dir )
         if( dir[2] == '\0' ) {
             return( ERR_NO_ERR );
         }
-        shift = 2;
+        dir += 2;
     }
-    dir += shift;
 #endif
     if( chdir( dir ) )
         return( ERR_DIRECTORY_OP_FAILED );
@@ -161,10 +157,12 @@ static void addDirData( file *cfile, const char *str )
   */
 void FormatDirToFile( file *cfile, bool add_drives )
 {
-    int         i, j;
-    int         lastdir = 0;
-    char        str[MAX_STR];
-    direct_ent  *de;
+    list_linenum    i;
+    list_linenum    j;
+    int             c;
+    list_linenum    lastdir;
+    char            str[MAX_STR];
+    direct_ent      *de;
 
     if( cfile->fcbs.head != NULL ) {
         if( cfile->fcbs.head->nullfcb ) {
@@ -175,7 +173,7 @@ void FormatDirToFile( file *cfile, bool add_drives )
 
     currOff = 0;
     totalBytes = 0;
-
+    lastdir = 0;
     /*
      * add directory data
      */
@@ -211,9 +209,9 @@ void FormatDirToFile( file *cfile, bool add_drives )
      */
 #ifndef __UNIX__
     if( add_drives ) {
-        for( i = 'A'; i <= 'Z'; i++ ) {
-            if( DoGetDriveType( i ) != DRIVE_TYPE_NONE ) {
-                MySprintf( str, "  [%c:]", (char)i - 'A' + 'a' );
+        for( c = 'A'; c <= 'Z'; c++ ) {
+            if( DoGetDriveType( c ) != DRIVE_TYPE_NONE ) {
+                MySprintf( str, "  [%c:]", (char)c - 'A' + 'a' );
                 addDirData( cfile, str );
             }
         }

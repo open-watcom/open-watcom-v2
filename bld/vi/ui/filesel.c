@@ -85,7 +85,6 @@ vi_rc SelectFileOpen( const char *dir, char **result_ptr, const char *mask, bool
      * work through all files
      */
     for( ;; ) {
-
         if( dd[strlen( dd ) - 1] != FILE_SEP ) {
             strcat( dd, FILE_SEP_STR );
         }
@@ -121,40 +120,41 @@ vi_rc SelectFileOpen( const char *dir, char **result_ptr, const char *mask, bool
             break;
         }
         j = sfd.sl - 1;
-        if( j >= DirFileCount || IS_SUBDIR( DirFiles[j] ) ) {
-            if( j >= DirFileCount ) {
-                GimmeLinePtr( j + 1, cfile, &cfcb, &cline );
-                dd[0] = cline->data[3];
-                dd[1] = ':';
-                dd[2] = '\0';
-            } else {
-                strcpy( dd, cdir );
-                if( dd[strlen(dd) - 1] != FILE_SEP ) {
-                    strcat( dd, FILE_SEP_STR );
+        if( j < DirFileCount && !IS_SUBDIR( DirFiles[j] ) ) {
+            /* file entry */
+            if( need_entire_path ) {
+                strcpy( result, CurrentDirectory );
+                if( result[strlen(result) - 1] != FILE_SEP ) {
+                    strcat( result, FILE_SEP_STR );
                 }
-                strcat( dd, DirFiles[j]->name );
+                strcat( result, DirFiles[j]->name );
+            } else {
+                strcpy( result, DirFiles[j]->name );
             }
-            FreeEntireFile( cfile );
-            rc = SetCWD( dd );
-            if( rc != ERR_NO_ERR ) {
-                return( rc );
-            }
-            need_entire_path = true;
-            strcpy( cdir, CurrentDirectory );
-            strcpy( dd, CurrentDirectory );
-            continue;
+            break;
         }
-        if( need_entire_path ) {
-            strcpy( result, CurrentDirectory );
-            if( result[strlen(result) - 1] != FILE_SEP ) {
-                strcat( result, FILE_SEP_STR );
+        if( j < DirFileCount ) {
+            /* sub-directory entry */
+            strcpy( dd, cdir );
+            if( dd[strlen(dd) - 1] != FILE_SEP ) {
+                strcat( dd, FILE_SEP_STR );
             }
+            strcat( dd, DirFiles[j]->name );
         } else {
-            result[0] = '\0';
+            /* drive entry */
+            GimmeLinePtr( j + 1, cfile, &cfcb, &cline );
+            dd[0] = cline->data[3];
+            dd[1] = ':';
+            dd[2] = '\0';
         }
-        strcat( result, DirFiles[j]->name );
-        break;
-
+        rc = SetCWD( dd );
+        if( rc != ERR_NO_ERR ) {
+            break;
+        }
+        FreeEntireFile( cfile );
+        need_entire_path = true;
+        strcpy( cdir, CurrentDirectory );
+        strcpy( dd, CurrentDirectory );
     }
 
     /*

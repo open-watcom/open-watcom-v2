@@ -214,11 +214,18 @@ static void checkFlags( int *argc, char *argv[], char *start[],
  */
 static void doInitializeEditor( int argc, char *argv[] )
 {
-    int             i, arg, ocnt, startcnt = 0;
+    int             i;
+    int             arg;
+    list_linenum    j;
+    list_linenum    ocnt;
+    int             startcnt = 0;
     srcline         sline;
-    int             k, j;
-    char            tmp[_MAX_PATH], c[1];
-    char            buff[MAX_STR], file[MAX_STR], **list;
+    int             k;
+    char            tmp[_MAX_PATH];
+    char            c[1];
+    char            buff[MAX_STR];
+    char            file[MAX_STR];
+    char            **list;
     char            cmd[MAX_STR * 2];
     char            *parm;
     char            *startup[MAX_STARTUP];
