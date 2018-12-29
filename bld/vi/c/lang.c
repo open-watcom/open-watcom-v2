@@ -161,7 +161,7 @@ static hash_entry *createTable( int entries )
 {
     hash_entry  *table;
 
-    table = MemAlloc( entries * sizeof( hash_entry ) );
+    table = _MemAllocArray( hash_entry, entries );
     memset( table, 0, entries * sizeof( hash_entry ) );
 
     return( table );
@@ -178,7 +178,7 @@ static void addTable( hash_entry *table, char *Keyword, int NumKeyword, int entr
     } TmpValue;
     TmpValue    *tmpValue, *tmpIndex;
 
-    tmpValue = tmpIndex = MemAlloc( NumKeyword * sizeof( TmpValue ) );
+    tmpValue = tmpIndex = _MemAllocArray( TmpValue, NumKeyword );
     keyword = Keyword;
     for( i = 0; i < NumKeyword; i++ ) {
         tmpIndex->hashValue = hashpjw( keyword, entries );

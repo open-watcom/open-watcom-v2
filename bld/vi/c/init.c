@@ -346,9 +346,9 @@ static void doInitializeEditor( int argc, char *argv[] )
     if( EditVars.TagFileName == NULL ) {
         EditVars.TagFileName = DupString( "tags" );
     }
-    DotBuffer = MemAlloc( (maxdotbuffer + 2) * sizeof( vi_key ) );
-    AltDotBuffer = MemAlloc( (maxdotbuffer + 2) * sizeof( vi_key ) );
-    DotCmd = MemAlloc( (maxdotbuffer + 2) * sizeof( vi_key ) );
+    DotBuffer = _MemAllocArray( vi_key, maxdotbuffer + 2 );
+    AltDotBuffer = _MemAllocArray( vi_key, maxdotbuffer + 2 );
+    DotCmd = _MemAllocArray( vi_key, maxdotbuffer + 2 );
     SwapBlockInit( EditVars.MaxSwapBlocks );
     ReadBuffer = MemAlloc( MAX_IO_BUFFER + 6 );
     WriteBuffer = MemAlloc( MAX_IO_BUFFER + 6 );

@@ -361,7 +361,7 @@ char **BuildTokenList( int num, char *list )
     char        **arr, *data, *t;
     int         k, i = 0, off = 0;
 
-    arr = MemAllocList( num );
+    arr = _MemAllocList( num );
     for( ;; ) {
 
         t = &list[off];

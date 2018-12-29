@@ -593,12 +593,10 @@ void    MatchFini( void );
 /* mem.c */
 void    *MemAlloc( size_t );
 void    *MemAllocUnsafe( size_t );
-char    **MemAllocList( int );
 void    MemFree( void * );
 void    MemFreePtr( void ** );
-void    MemFreeList( int, char ** );
+void    MemFreeList( list_linenum, char ** );
 void    *MemReAlloc( void *, size_t );
-char    **MemReAllocList( char **, int );
 void    *MemReAllocUnsafe( void *ptr, size_t size );
 void    *StaticAlloc( void );
 void    StaticFree( char * );
@@ -607,6 +605,11 @@ void    StaticFini( void );
 char    *MemStrDup( const char * );
 void    InitMem( void );
 void    FiniMem( void );
+
+#define _MemAllocArray(t,c)     (t *)MemAlloc( (c) * sizeof( t ) )
+#define _MemReAllocArray(p,t,c) (t *)MemReAlloc( p, (c) * sizeof( t ) )
+#define _MemAllocList(c)        (char **)MemAlloc( (c) * sizeof( char * ) )
+#define _MemReAllocList(p,c)    (char **)MemReAlloc( p, (c) * sizeof( char * ) )
 
 /* misc.c */
 long    ExecCmd( const char *, const char *, const char * );

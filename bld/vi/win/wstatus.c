@@ -54,7 +54,7 @@ void StatusWndSetSeparatorsWithArray( section_size *source, int num )
     int                 i;
 
     assert( num > 0 );
-    list = MemAlloc( num * sizeof( status_block_desc ) );
+    list = _MemAllocArray( status_block_desc, num );
     for( i = 0; i < num; i++ ) {
         list[i].separator_width = SEPERATOR_WIDTH;
         list[i].width = source[i];
@@ -173,7 +173,7 @@ static void processLButtonDown( HWND hwnd, WPARAM wparam, LPARAM lparam )
     capIndex = setCursor( GET_X( lparam ) - CURSOR_CORRECT );
     if( capIndex != -1 ) {
         SetCapture( hwnd );
-        sections = MemAlloc( (EditVars.NumStatusSections + 2) * sizeof( section_size ) );
+        sections = _MemAllocArray( section_size, EditVars.NumStatusSections + 2 );
         GetClientRect( status_window_id, &rect );
         memcpy( sections + 1, EditVars.StatusSections, EditVars.NumStatusSections * sizeof( section_size ) );
         sections[0] = 0;

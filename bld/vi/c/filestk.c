@@ -43,7 +43,7 @@ void InitFileStack( void )
 {
     fDepth = 0;
     MemFree( fStack );
-    fStack = MemAlloc( EditVars.MaxPush * sizeof( file_stack * ) );
+    fStack = _MemAllocArray( file_stack *, EditVars.MaxPush );
 
 } /* InitFileStack */
 

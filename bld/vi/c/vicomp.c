@@ -97,15 +97,6 @@ void *MemReAlloc( void *ptr, size_t size )
 } /* MemReAlloc */
 
 /*
- * MemReAllocList - reallocate a block, and it will succeed.
- */
-char **MemReAllocList( char **ptr, int count )
-{
-    return( realloc( ptr, count * sizeof( char * ) ) );
-
-} /* MemReAllocList */
-
-/*
  * StrMerge - merge a number of strings together
  */
 char *StrMerge( int cnt, char *str, ... )

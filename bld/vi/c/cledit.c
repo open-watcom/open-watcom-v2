@@ -393,7 +393,7 @@ vi_rc EditFileFromList( void )
          * allocate a buffer for strings, add strings
          */
         fcnt = GimmeFileCount();
-        list = MemAllocList( fcnt );
+        list = _MemAllocList( fcnt );
         i = 0;
         for( cinfo = InfoHead; cinfo != NULL; cinfo = cinfo->next ) {
             list[i] = MemAlloc( strlen( cinfo->CurrentFile->name ) + 3 );

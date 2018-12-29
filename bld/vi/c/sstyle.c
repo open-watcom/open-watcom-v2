@@ -383,7 +383,7 @@ void SSDifBlock( ss_block *ss_old, char *text, int start_col,
 
 ss_block *SSNewBlock( void )
 {
-    return( MemAlloc( MAX_SS_BLOCKS * sizeof( ss_block ) ) );
+    return( _MemAllocArray( ss_block, MAX_SS_BLOCKS ) );
 }
 
 void SSKillBlock( ss_block *ss )

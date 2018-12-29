@@ -128,9 +128,9 @@ window *AllocWindow( window_id wid, windim x1, windim y1, windim x2, windim y2, 
     w->has_gadgets = has_gadgets;
     w->accessed = 0;
     w->isswapped = false;
-    w->text = MemAlloc( size * sizeof( char_info ) );
-    w->overlap = MemAlloc( size * sizeof( window_id ) );
-    w->whooverlapping = MemAlloc( size * sizeof( window_id ) );
+    w->text = _MemAllocArray( char_info, size );
+    w->overlap = _MemAllocArray( window_id, size );
+    w->whooverlapping = _MemAllocArray( window_id, size );
     w->area.x1 = x1;
     w->area.x2 = x2;
     w->area.y1 = y1;

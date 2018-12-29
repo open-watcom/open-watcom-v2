@@ -678,7 +678,7 @@ static vi_rc processSetToken( int j, char *new, const char **pvalue, int *winfla
                 if( k <= 0 ) {
                     break;
                 }
-                EditVars.StatusSections = MemReAlloc( EditVars.StatusSections, sizeof( unsigned short ) * ( EditVars.NumStatusSections + 1 ) );
+                EditVars.StatusSections = _MemReAllocArray( EditVars.StatusSections, unsigned short, EditVars.NumStatusSections + 1 );
                 EditVars.StatusSections[EditVars.NumStatusSections] = (unsigned short)k;
                 EditVars.NumStatusSections++;
                 value = GetNextWord2( value, fn, ',' );
@@ -712,7 +712,7 @@ static vi_rc processSetToken( int j, char *new, const char **pvalue, int *winfla
             break;
         case SETVAR_T_TILECOLOR:
             if( EditVars.TileColors == NULL ) {
-                EditVars.TileColors = (type_style *)MemAlloc( sizeof( type_style ) * ( EditVars.MaxTileColors + 1 ) );
+                EditVars.TileColors = _MemAllocArray( type_style, EditVars.MaxTileColors + 1 );
                 for( i = 0; i <= EditVars.MaxTileColors; ++i ) {
                     EditVars.TileColors[i].foreground = -1;
                     EditVars.TileColors[i].background = -1;
@@ -989,7 +989,7 @@ static vi_rc processSetToken( int j, char *new, const char **pvalue, int *winfla
             case SETVAR_T_MAXTILECOLORS:
                 k = (EditVars.TileColors == NULL) ? 0 : EditVars.MaxTileColors + 1;
                 EditVars.MaxTileColors = lval;
-                EditVars.TileColors = MemReAlloc( EditVars.TileColors, sizeof( type_style ) * ( EditVars.MaxTileColors + 1 ) );
+                EditVars.TileColors = _MemReAllocArray( EditVars.TileColors, type_style, EditVars.MaxTileColors + 1 );
                 for( ; k <= EditVars.MaxTileColors; ++k ) {
                     EditVars.TileColors[k].foreground = -1;
                     EditVars.TileColors[k].background = -1;
@@ -1125,9 +1125,9 @@ static list_linenum getSetInfo( char ***vals, char ***list, int *longest )
     tc1 = GetNumberOfTokens( SetVarTokens );
     tc2 = GetNumberOfTokens( SetFlagTokens );
     tc = tc1 + tc2;
-    sdata = MemAlloc( tc * sizeof( set_data * ) );
-    *list = MemAllocList( tc );
-    *vals = MemAllocList( tc );
+    sdata = _MemAllocArray( set_data *, tc );
+    *list = _MemAllocList( tc );
+    *vals = _MemAllocList( tc );
 
     for( i1 = 0; i1 < tc1; i1++ ) {
         sdata[i1] = MemAlloc( sizeof( set_data ) );
@@ -1166,7 +1166,8 @@ vi_rc Set( const char *name )
 {
     char            fn[MAX_STR];
     vi_rc           rc = ERR_NO_ERR;
-    int             j, k;
+    int             j;
+    int             k;
     int             winflag;
     const char      *pfn;
 #ifndef VICOMP

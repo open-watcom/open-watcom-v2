@@ -232,7 +232,7 @@ void XMSInit( void )
         XMSCtrl.size = XMS_MAX_BLOCK_SIZE;
     }
 
-    xmsPtrs = MemAlloc( sizeof( long ) * MaxXMSBlocks );
+    xmsPtrs = _MemAllocArray( long, MaxXMSBlocks );
 
     for( i = 0; i < MaxXMSBlocks; i++ ) {
         xmsPtrs[i] = xmsAlloc( MAX_IO_BUFFER );

@@ -213,25 +213,6 @@ void *MemAlloc( size_t size )
 
 } /* MemAlloc */
 
-char **MemAllocList( int count )
-{
-    void        *tmp;
-
-#ifdef TRMEM
-#ifndef __WATCOMC__
-    tmp = doMemAllocUnsafe( count * sizeof( char * ), (WHO_PTR)2 );
-#else
-    tmp = doMemAllocUnsafe( count * sizeof( char * ), _trmem_guess_who() );
-#endif
-#else
-    tmp = doMemAllocUnsafe( count * sizeof( char * ), (WHO_PTR)0 );
-#endif
-    if( tmp == NULL ) {
-        AbandonHopeAllYeWhoEnterHere( ERR_NO_MEMORY );
-    }
-    return( tmp );
-}
-
 /*
  * MemAllocUnsafe - allocate some memory, return null if it fails
  */
@@ -288,10 +269,10 @@ void MemFreePtr( void **ptr )
 /*
  * MemFreeList - free up memory
  */
-void MemFreeList( int count, char **ptr )
+void MemFreeList( list_linenum count, char **ptr )
 {
     if( ptr != NULL ) {
-        int i;
+        list_linenum    i;
         for( i = 0; i < count; i++ ) {
             MemFree( ptr[i] );
         }
@@ -394,26 +375,6 @@ void *MemReAlloc( void *ptr, size_t size )
     return( tmp );
 
 } /* MemReAlloc */
-
-char **MemReAllocList( char **ptr, int count )
-{
-    void        *tmp;
-
-#ifdef TRMEM
-#ifndef __WATCOMC__
-    tmp = doMemReAllocUnsafe( ptr, count * sizeof( char * ), (WHO_PTR)8 );
-#else
-    tmp = doMemReAllocUnsafe( ptr, count * sizeof( char * ), _trmem_guess_who() );
-#endif
-#else
-    tmp = doMemReAllocUnsafe( ptr, count * sizeof( char * ), (WHO_PTR)0 );
-#endif
-    if( tmp == NULL ) {
-        AbandonHopeAllYeWhoEnterHere( ERR_NO_MEMORY );
-    }
-    return( tmp );
-
-}
 
 static char *staticBuffs[MAX_STATIC_BUFFERS];
 static bool staticUse[MAX_STATIC_BUFFERS];

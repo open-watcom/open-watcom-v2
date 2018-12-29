@@ -138,9 +138,9 @@ static void fetchWindow( window *w )
     long        pos;
 
     size = w->width * w->height;
-    w->text = MemAlloc( size * sizeof( char_info ) );
-    w->whooverlapping = MemAlloc( size * sizeof( window_id ) );
-    w->overlap = MemAlloc( size * sizeof( window_id ) );
+    w->text = _MemAllocArray( char_info, size );
+    w->whooverlapping = _MemAllocArray( window_id, size );
+    w->overlap = _MemAllocArray( window_id, size );
 
     pos = (long)w->id * buffSize();
     FileSeek( swapHandle, pos );

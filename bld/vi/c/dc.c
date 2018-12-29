@@ -70,7 +70,7 @@ void DCCreate( void )
     nlines = WindowAuxInfo( CurrentInfo->current_window_id, WIND_INFO_TEXT_LINES );
     CurrentInfo->dclines = NULL;
     if( nlines > 0 ) {
-        dcline = MemAlloc( nlines * sizeof( dc_line ) );
+        dcline = _MemAllocArray( dc_line, nlines );
         CurrentInfo->dclines = dcline;
         for( i = 0; i < nlines; i++ ) {
             initDCLine( dcline );
@@ -104,7 +104,7 @@ void DCResize( info *info )
         }
         info->dclines = NULL;
     } else {
-        info->dclines = dcline = MemReAlloc( info->dclines, nlines * sizeof( dc_line ) );
+        info->dclines = dcline = _MemReAllocArray( info->dclines, dc_line, nlines );
         dcline += info->dc_size;
         for( ; extra-- > 0; ) {
             initDCLine( dcline );
@@ -131,7 +131,7 @@ void DCScroll( int nlines )
     dcline = CurrentInfo->dclines;
 
     // 'wrap' pointers so don't need to free/allocate ss blocks, etc.
-    dcline_temp = MemAlloc( CurrentInfo->dc_size * sizeof( dc_line ) );
+    dcline_temp = _MemAllocArray( dc_line, CurrentInfo->dc_size );
     bit = abs( nlines ) * sizeof( dc_line );
     rest = (CurrentInfo->dc_size - abs( nlines )) * sizeof( dc_line );
     if( nlines > 0 ) {

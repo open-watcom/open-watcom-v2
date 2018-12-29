@@ -172,7 +172,7 @@ void HistInit( history_data *h, int max )
 {
     h->max = max;
     h->curr = 0;
-    h->data = MemReAllocList( h->data, h->max + 1 );
+    h->data = _MemReAllocList( h->data, max + 1 );
 
 } /* HistInit */
 

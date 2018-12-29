@@ -40,7 +40,7 @@ static vi_key   *keyVals;
 
 static bool key_alloc( int cnt )
 {
-    keyVals = MemAlloc( cnt * sizeof( vi_key ) );
+    keyVals = _MemAllocArray( vi_key, cnt );
     return( true );
 }
 
@@ -378,7 +378,7 @@ vi_rc AddKeyMap( key_map *scr, const char *data )
      * get storage for key map
      */
     len = strlen( data );
-    scr->data = MemAlloc( ( len + 1 ) * sizeof( vi_key ) );
+    scr->data = _MemAllocArray( vi_key, len + 1 );
     scr->inuse = false;
 
     /*
@@ -437,8 +437,8 @@ vi_rc AddKeyMap( key_map *scr, const char *data )
  */
 void InitKeyMaps( void )
 {
-    KeyMaps = MemAlloc( MAX_EVENTS * sizeof( key_map ) );
-    InputKeyMaps = MemAlloc( MAX_EVENTS * sizeof( key_map ) );
+    KeyMaps = _MemAllocArray( key_map, MAX_EVENTS );
+    InputKeyMaps = _MemAllocArray( key_map, MAX_EVENTS );
 
 } /* InitKeyMaps */
 

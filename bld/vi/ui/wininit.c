@@ -43,7 +43,7 @@ static void allocImage( void )
     size_t  size;
 
     size = EditVars.WindMaxWidth * EditVars.WindMaxHeight;
-    ScreenImage = MemAlloc( size * sizeof( window_id ) );
+    ScreenImage = _MemAllocArray( window_id, size );
     for( i = 0; i < size; i++ ) {
         ScreenImage[i] = NO_WINDOW;
     }

@@ -88,8 +88,8 @@ void BoundDataInit( void )
      * get number of files, and get space to store data
      */
     dataFcnt = *(bind_size *)BndMemory;
-    dataOffsets = MemAlloc( dataFcnt * sizeof( bind_size ) );
-    entryCounts = MemAlloc( dataFcnt * sizeof( bind_size ) );
+    dataOffsets = _MemAllocArray( bind_size, dataFcnt );
+    entryCounts = _MemAllocArray( bind_size, dataFcnt );
 
     /*
      * get file names
