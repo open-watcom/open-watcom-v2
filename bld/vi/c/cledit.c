@@ -420,7 +420,7 @@ vi_rc EditFileFromList( void )
             si.result = NULL;
             si.num = n;
             si.allowrl = NULL;
-            si.hilite = NULL;
+            si.hi_list = NULL;
             si.retevents = fileopts_evlist;
             si.event = VI_KEY( DUMMY );
             si.cln = n + 1;

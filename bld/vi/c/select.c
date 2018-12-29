@@ -99,7 +99,7 @@ vi_rc SelectItem( selectitem *si )
     sfd.wi = si->wi;
     sfd.title = si->title;
     sfd.allowrl = si->allowrl;
-    sfd.hilite = si->hilite;
+    sfd.hi_list = si->hi_list;
     sfd.show_lineno = si->show_lineno;
     sfd.retevents = si->retevents;
     sfd.event = si->event;

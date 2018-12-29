@@ -145,7 +145,7 @@ static list_linenum PickATag( list_linenum tag_count, char **tag_list, const cha
     si.result = NULL;
     si.num = 0;
     si.allowrl = NULL;
-    si.hilite = NULL;
+    si.hi_list = NULL;
     si.retevents = NULL;
     si.event = VI_KEY( DUMMY );
     si.cln = 1;

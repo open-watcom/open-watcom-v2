@@ -594,7 +594,7 @@ typedef unsigned short  viattr_t;
 typedef struct {
     int                 _offs;
     char                _char;
-} hilst;
+} hichar;
 
 typedef int             list_linenum;
 
@@ -609,7 +609,7 @@ typedef struct {
     char                *result;            // where to copy the data for the picked line
     list_linenum        num;                // number of the picked line
     int                 *allowrl;           // allow cursor right/left (for menu bar)
-    hilst               *hilite;            // chars to highlight
+    hichar              *hi_list;           // chars to highlight
     const vi_key        *retevents;         // events that simulate pressing enter
     vi_key              event;              // event that caused a return
     list_linenum        cln;                // current line to display
@@ -630,7 +630,7 @@ typedef struct {
     char                *title;                 // title of window
     vi_rc (*checkres)(const char *, char *, int * ); // check if selected change is valid
     int                 *allowrl;               // allow cursor right/left (for menu bar)
-    hilst               *hilite;                // chars to highlight
+    hichar              *hi_list;               // chars to highlight
     const vi_key        *retevents;             // events that simulate pressing enter
     vi_key              event;                  // event that caused a return
     list_linenum        cln;                    // current line to display

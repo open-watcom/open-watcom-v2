@@ -533,7 +533,7 @@ static vi_rc doGREP( const char *dirlist )
                     si.result = NULL;
                     si.num = n;
                     si.allowrl = NULL;
-                    si.hilite = NULL;
+                    si.hi_list = NULL;
                     si.retevents = editopts_evlist;
                     si.event = VI_KEY( DUMMY );
                     si.cln = n + 1;

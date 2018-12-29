@@ -175,7 +175,7 @@ vi_rc SelectFileOpen( const char *dir, char **result_ptr, const char *mask, bool
  * displayGenericLines - display all lines in a window
  */
 static vi_rc displayGenericLines( file *f, list_linenum pagetop, int leftcol,
-                                list_linenum hilite, type_style *style, hilst *hilist,
+                                list_linenum hi_line, type_style *hilight_style, hichar *hi_list,
                                 char **vals, int valoff )
 {
     int             j;
@@ -185,7 +185,7 @@ static vi_rc displayGenericLines( file *f, list_linenum pagetop, int leftcol,
     fcb             *cfcb;
     fcb             *tfcb;
     line            *cline;
-    hilst           *ptr;
+    list_linenum    hi_idx;
     type_style      *text_style;
     type_style      *hot_key_style;
     window_info     *wi;
@@ -215,11 +215,8 @@ static vi_rc displayGenericLines( file *f, list_linenum pagetop, int leftcol,
         /*
          * run through each line in the window
          */
-        ptr = hilist;
-        if( ptr != NULL ) {
-            ptr += pagetop - 1;
-        }
         cl = pagetop;
+        hi_idx = cl - 1;
         for( j = 1; j <= text_lines; j++ ) {
             if( cline == NULL ) {
                 DisplayLineInWindow( fs_select_window_id, j, "~" );
@@ -227,14 +224,14 @@ static vi_rc displayGenericLines( file *f, list_linenum pagetop, int leftcol,
                 if( isMenu ) {
                     if( InvokeMenuHook( CurrentMenuNumber, cl ) == -1 ) {
 //                        disabled = true;
-                        if( cl == hilite ) {
+                        if( cl == hi_line ) {
                             wi = &activegreyedmenu_info;
                         } else {
                             wi = &greyedmenu_info;
                         }
                     } else {
 //                        disabled = false;
-                        if( cl == hilite ) {
+                        if( cl == hi_line ) {
                             wi = &activemenu_info;
                         } else {
                             wi = &menuw_info;
@@ -244,8 +241,8 @@ static vi_rc displayGenericLines( file *f, list_linenum pagetop, int leftcol,
                     hot_key_style = &wi->hilight_style;
                 } else {
                     text_style = &base_style;
-                    if( cl == hilite ) {
-                        text_style = style;
+                    if( cl == hi_line ) {
+                        text_style = hilight_style;
                     }
                     hot_key_style = text_style;
                 }
@@ -271,13 +268,11 @@ static vi_rc displayGenericLines( file *f, list_linenum pagetop, int leftcol,
                     } else {
                         DisplayLineInWindowWithColor( fs_select_window_id, j, SingleBlank, text_style, 0 );
                     }
-                    if( ptr != NULL ) {
-                        SetCharInWindowWithColor( fs_select_window_id, j, 1 + ptr->_offs, ptr->_char, hot_key_style );
+                    if( hi_list != NULL ) {
+                        SetCharInWindowWithColor( fs_select_window_id, j, 1 + hi_list[hi_idx]._offs, hi_list[hi_idx]._char, hot_key_style );
                     }
                 }
-                if( ptr != NULL ) {
-                    ptr += 1;
-                }
+                hi_idx++;
                 rc = GimmeNextLinePtr( f, &cfcb, &cline );
                 if( rc == ERR_NO_ERR ) {
                     cl++;
@@ -447,7 +442,7 @@ static bool adjustCLN( list_linenum *cln, list_linenum *pagetop, list_linenum am
  */
 vi_rc SelectLineInFile( selflinedata *sfd )
 {
-    int             i;
+    list_linenum    i;
     int             winflag;
     int             leftcol = 0;
     int             key2;
@@ -461,9 +456,7 @@ vi_rc SelectLineInFile( selflinedata *sfd )
     list_linenum    endline;
     list_linenum    lln;
     list_linenum    cln;
-    list_linenum    ln;
     char            tmp[MAX_STR];
-    hilst           *ptr;
     vi_rc           rc;
     vi_key          key;
 
@@ -476,7 +469,7 @@ vi_rc SelectLineInFile( selflinedata *sfd )
     if( sfd->show_lineno ) {
         farx++;
     }
-    hiflag = ( sfd->hilite != NULL );
+    hiflag = ( sfd->hi_list != NULL );
     rc = NewWindow2( &fs_select_window_id, sfd->wi );
     if( rc == ERR_NO_ERR ) {
         if( !sfd->is_menu ) {
@@ -516,9 +509,7 @@ vi_rc SelectLineInFile( selflinedata *sfd )
                     drawbord = true;
                 }
                 if( hiflag ) {
-                    ptr = sfd->hilite;
-                    ptr += cln - 1;
-                    if( ptr->_char == (char)-1 ) {
+                    if( sfd->hi_list[cln - 1]._char == (char)-1 ) {
                         if( cln > lln ) {
                             cln++;
                         } else if( cln < lln ) {
@@ -529,7 +520,7 @@ vi_rc SelectLineInFile( selflinedata *sfd )
                 if( drawbord ) {
                     DrawBorder( fs_select_window_id );
                 }
-                displayGenericLines( sfd->f, pagetop, leftcol, cln, &(sfd->wi->hilight_style), sfd->hilite, sfd->vals, sfd->valoff );
+                displayGenericLines( sfd->f, pagetop, leftcol, cln, &(sfd->wi->hilight_style), sfd->hi_list, sfd->vals, sfd->valoff );
             }
             lln = cln;
             redraw = true;
@@ -550,14 +541,12 @@ vi_rc SelectLineInFile( selflinedata *sfd )
                 } else {
                     key2 = key;
                 }
-                ln = 1;
-                for( ptr = sfd->hilite; ptr->_char != '\0'; ptr++ ) {
-                    if( toupper( ptr->_char ) == key2 ) {
-                        cln = ln;
+                for( i = 0; sfd->hi_list[i]._char != '\0'; i++ ) {
+                    if( toupper( sfd->hi_list[i]._char ) == key2 ) {
+                        cln = i + 1;
                         key = VI_KEY( ENTER );
                         break;
                     }
-                    ln++;
                 }
             }
 
@@ -589,9 +578,7 @@ vi_rc SelectLineInFile( selflinedata *sfd )
             case VI_KEY( MOUSEEVENT ):
                 DisplayMouse( false );
                 if( hiflag ) {
-                    ptr = sfd->hilite;
-                    ptr += mouseLine;
-                    if( ptr->_char == (char)-1 ) {
+                    if( sfd->hi_list[mouseLine]._char == (char)-1 ) {
                         break;
                     }
                 }

@@ -42,7 +42,7 @@
 typedef struct menu_item {
     struct menu_item    *next, *prev;
     char                *cmd;
-    hilst               hi;
+    hichar              hi_char;
     unsigned char       slen;
     char                str[1];
 } menu_item;
@@ -53,8 +53,8 @@ typedef struct menu {
     int             itemcnt;
     int             orig_itemcnt;
     char            **list;
-    hilst           *hilist;
-    hilst           hi;
+    hichar          *hi_list;
+    hichar          hi_char;
     bool            has_file_list   : 1;
     bool            need_hook       : 1;
     bool            has_last_files  : 1;
@@ -100,7 +100,7 @@ static void dumpMenu( FILE *f, menu *cmenu )
         if( citem->slen == 0 ) {
             MyFprintf( f, "    menuitem \"\"\n" );
         } else {
-            getMenuName( str, citem->str, citem->slen, citem->hi._offs );
+            getMenuName( str, citem->str, citem->slen, citem->hi_char._offs );
             MyFprintf( f, "    menuitem \"%s\" %s\n", str, citem->cmd );
         }
     }
@@ -124,7 +124,7 @@ void BarfMenuData( FILE *f )
         MyFprintf( f, "endmenu\n" );
     }
     for( cmenu = menuHead; cmenu != NULL; cmenu = cmenu->next ) {
-        getMenuName( str, cmenu->str, cmenu->slen, cmenu->hi._offs );
+        getMenuName( str, cmenu->str, cmenu->slen, cmenu->hi_char._offs );
         if( cmenu->need_hook ) {
             MyFprintf( f, "menu %s 1\n", str );
         } else {
@@ -172,7 +172,7 @@ static void freeMenuData( menu *cmenu )
         return;
     }
     MemFree( cmenu->list );
-    MemFree( cmenu->hilist );
+    MemFree( cmenu->hi_list );
     for( curr = cmenu->itemhead; curr != NULL; curr = next ) {
         next = curr->next;
         MemFree( curr );
@@ -277,8 +277,8 @@ vi_rc StartMenu( const char *data )
         *predef_menu = tmp;
     }
     strcpy( tmp->str, str );
-    tmp->hi._char = ch;
-    tmp->hi._offs = hioff;
+    tmp->hi_char._char = ch;
+    tmp->hi_char._offs = hioff;
     tmp->slen = (unsigned char)len;
     tmp->need_hook = need_hook;
     currMenu = tmp;
@@ -295,19 +295,19 @@ static void initMenuList( menu *cmenu )
     int         i;
 
     MemFree( cmenu->list );
-    MemFree( cmenu->hilist );
+    MemFree( cmenu->hi_list );
     cmenu->list = _MemAllocList( cmenu->itemcnt );
-    cmenu->hilist = _MemAllocArray( hilst, cmenu->itemcnt + 1 );
+    cmenu->hi_list = _MemAllocArray( hichar, cmenu->itemcnt + 1 );
 
     cmi = cmenu->itemhead;
     for( i = 0; i < cmenu->itemcnt; i++ ) {
         cmenu->list[i] = cmi->str;
-        cmenu->hilist[i]._char = cmi->hi._char;
-        cmenu->hilist[i]._offs = cmi->hi._offs;
+        cmenu->hi_list[i]._char = cmi->hi_char._char;
+        cmenu->hi_list[i]._offs = cmi->hi_char._offs;
         cmi = cmi->next;
     }
-    cmenu->hilist[i]._char = 0;
-    cmenu->hilist[i]._offs = 0;
+    cmenu->hi_list[i]._char = '\0';
+    cmenu->hi_list[i]._offs = 0;
 
 } /* initMenuList */
 
@@ -325,7 +325,7 @@ vi_rc ViEndMenu( void )
     if( currMenu == menuTail ) {
         menuCnt++;
     }
-    ch = toupper( currMenu->hi._char );
+    ch = toupper( currMenu->hi_char._char );
     if( ch >= 'A' && ch <='Z' ) {
         key = ch - 'A' + VI_KEY( ALT_A );
         EventList[key].rtn.old = DoMenu;
@@ -364,8 +364,8 @@ vi_rc MenuItem( const char *data )
     size = sizeof( menu_item ) + len + strlen( data ) + 2;
     tmp = MemAlloc( size );
     tmp->slen = (unsigned char)len;
-    tmp->hi._char = ch;
-    tmp->hi._offs = hioff;
+    tmp->hi_char._char = ch;
+    tmp->hi_char._offs = hioff;
     strcpy( tmp->str, str );
     tmp->cmd = &(tmp->str[len + 1]);
     strcpy( tmp->cmd, data );
@@ -590,7 +590,7 @@ vi_rc InitMenu( void )
 
     ws = 0;
     for( cmenu = menuHead; cmenu != NULL; cmenu = cmenu->next ) {
-        SetCharInWindowWithColor( menu_window_id, 1, ws + START_OFFSET + 1 + cmenu->hi._offs, cmenu->hi._char, &menubarw_info.hilight_style );
+        SetCharInWindowWithColor( menu_window_id, 1, ws + START_OFFSET + 1 + cmenu->hi_char._offs, cmenu->hi_char._char, &menubarw_info.hilight_style );
         ws += cmenu->slen + 2;
     }
 
@@ -637,8 +637,8 @@ static void lightMenu( int sel, int ws, bool on )
     }
 
     for( i = 0; i < cmenu->slen; i++ ) {
-        if( i == cmenu->hi._offs && !on ) {
-            ch = cmenu->hi._char;
+        if( i == cmenu->hi_char._offs && !on ) {
+            ch = cmenu->hi_char._char;
             style = menubarw_info.hilight_style;
         } else {
             ch = cmenu->str[i];
@@ -765,7 +765,7 @@ static vi_rc processMenu( int sel, menu *cmenu, windim xpos, windim ypos, windim
         si.result = result;
         si.num = 0;
         si.allowrl = arl;
-        si.hilite = cmenu->hilist;
+        si.hi_list = cmenu->hi_list;
         si.retevents = NULL;
         si.event = VI_KEY( DUMMY );
         si.cln = 1;
@@ -841,7 +841,7 @@ vi_rc DoMenu( void )
     ch = LastEvent - VI_KEY( ALT_A ) + 'A';
     i = 0;
     for( cmenu = menuHead; cmenu != NULL; cmenu = cmenu->next ) {
-        if( ch == cmenu->hi._char ) {
+        if( ch == cmenu->hi_char._char ) {
             sel = i;
             break;
         }
@@ -981,7 +981,7 @@ bool IsMenuHotKey( vi_key key )
 
     ch = key - VI_KEY(ALT_A ) + 'A';
     for( curr = menuHead; curr != NULL; curr = curr->next ) {
-        if( curr->hi._char == ch ) {
+        if( curr->hi_char._char == ch ) {
             return( true );
         }
     }
