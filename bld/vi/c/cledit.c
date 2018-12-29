@@ -377,91 +377,89 @@ vi_rc EditFileFromList( void )
     wi.area.x1 = 2;
     wi.area.x2 = 19;
     rc = DisplayExtraInfo( &wi, &wid, fileOpts, sizeof( fileOpts ) / sizeof( fileOpts[0] ) );
-    if( rc != ERR_NO_ERR ) {
-        return( rc );
-    }
-
-    n = 0;
-    repeat = true;
-    while( repeat ) {
-        /*
-         * set up for this pass
-         */
-        MoveWindowToFrontDammit( wid, false );
-        SaveCurrentInfo();
-        /*
-         * allocate a buffer for strings, add strings
-         */
-        fcnt = GimmeFileCount();
-        list = _MemAllocList( fcnt );
-        i = 0;
-        for( cinfo = InfoHead; cinfo != NULL; cinfo = cinfo->next ) {
-            list[i] = MemAlloc( strlen( cinfo->CurrentFile->name ) + 3 );
-            MySprintf( list[i], "  %s", cinfo->CurrentFile->name );
-            if( cinfo->CurrentFile->modified ) {
-                list[i][0] = '*';
-            }
-            i++;
-        }
-        tmp = filelistw_info.area.y2;
-        i = filelistw_info.area.y2 - filelistw_info.area.y1 + BORDERDIFF( filelistw_info );
-        if( i > fcnt ) {
-            filelistw_info.area.y2 -= (windim)( i - fcnt );
-        }
-        /*
-         * get file
-         */
-        if( n > fcnt - 1 ) {
-            n = fcnt - 1;
-        }
-        si.is_menu = false;
-        si.show_lineno = true;
-        si.wi = &filelistw_info;
-        si.title = "Current Files";
-        si.list = list;
-        si.maxlist = fcnt;
-        si.result = NULL;
-        si.num = n;
-        si.allowrl = NULL;
-        si.hilite = NULL;
-        si.retevents = fileopts_evlist;
-        si.event = VI_KEY( DUMMY );
-        si.cln = n + 1;
-        si.event_wid = wid;
-        rc = SelectItem( &si );
-        n = si.num;
-        repeat = false;
-        if( rc == ERR_NO_ERR && n >= 0 ) {
+    if( rc == ERR_NO_ERR ) {
+        n = 0;
+        repeat = true;
+        while( repeat ) {
+            /*
+             * set up for this pass
+             */
+            MoveWindowToFrontDammit( wid, false );
+            SaveCurrentInfo();
+            /*
+             * allocate a buffer for strings, add strings
+             */
+            fcnt = GimmeFileCount();
+            list = _MemAllocList( fcnt );
             cinfo = InfoHead;
-            while( n-- > 0 ) {
+            for( i = 0; i < fcnt; i++ ) {
+                list[i] = MemAlloc( strlen( cinfo->CurrentFile->name ) + 3 );
+                MySprintf( list[i], "  %s", cinfo->CurrentFile->name );
+                if( cinfo->CurrentFile->modified ) {
+                    list[i][0] = '*';
+                }
                 cinfo = cinfo->next;
             }
-            BringUpFile( cinfo, true );
-            switch( si.event ) {
-            case VI_KEY( DUMMY ):
-            case VI_KEY( F1 ):
-                break;
-            case VI_KEY( F2 ):
-                rc = NextFile();
-                if( rc <= ERR_NO_ERR ) {
-                    repeat = true;
-                }
-                break;
-            case VI_KEY( F3 ):
-                rc = SaveAndExit( NULL );
-                if( rc <= ERR_NO_ERR ) {
-                    repeat = true;
-                }
-                break;
+            tmp = filelistw_info.area.y2;
+            i = filelistw_info.area.y2 - filelistw_info.area.y1 + BORDERDIFF( filelistw_info );
+            if( i > fcnt ) {
+                filelistw_info.area.y2 -= (windim)( i - fcnt );
             }
+            /*
+             * get file
+             */
+            if( n > fcnt - 1 ) {
+                n = fcnt - 1;
+            }
+            si.is_menu = false;
+            si.show_lineno = true;
+            si.wi = &filelistw_info;
+            si.title = "Current Files";
+            si.list = list;
+            si.maxlist = fcnt;
+            si.result = NULL;
+            si.num = n;
+            si.allowrl = NULL;
+            si.hilite = NULL;
+            si.retevents = fileopts_evlist;
+            si.event = VI_KEY( DUMMY );
+            si.cln = n + 1;
+            si.event_wid = wid;
+            rc = SelectItem( &si );
+            n = si.num;
+            repeat = false;
+            if( rc == ERR_NO_ERR && n >= 0 ) {
+                cinfo = InfoHead;
+                while( n-- > 0 ) {
+                    cinfo = cinfo->next;
+                }
+                BringUpFile( cinfo, true );
+                switch( si.event ) {
+                case VI_KEY( DUMMY ):
+                case VI_KEY( F1 ):
+                    break;
+                case VI_KEY( F2 ):
+                    rc = NextFile();
+                    if( rc <= ERR_NO_ERR ) {
+                        repeat = true;
+                    }
+                    break;
+                case VI_KEY( F3 ):
+                    rc = SaveAndExit( NULL );
+                    if( rc <= ERR_NO_ERR ) {
+                        repeat = true;
+                    }
+                    break;
+                }
+            }
+            filelistw_info.area.y2 = tmp;
+            MemFreeList( fcnt, list );
         }
-        filelistw_info.area.y2 = tmp;
-        MemFreeList( fcnt, list );
+        /*
+         * get rid of option stuff
+         */
+        CloseAWindow( wid );
     }
-    /*
-     * get rid of option stuff
-     */
-    CloseAWindow( wid );
     return( rc );
 
 } /* EditFileFromList */
