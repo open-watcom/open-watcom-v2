@@ -660,7 +660,7 @@ vi_rc IMTabs( void )
             }
             len -= j;
         } else {
-            for( i = len; i >= tc; i-- ) {
+            for( i = len + 1; i-- > tc; ) {
                 buff[i + j] = buff[i];
             }
             for( i = 0; i < j; i++ ) {
