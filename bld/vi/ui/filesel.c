@@ -255,26 +255,27 @@ static vi_rc displayGenericLines( file *f, list_linenum pagetop, int leftcol,
              */
             if( cline->len == 0 ) {
                 DisplayCrossLineInWindow( fs_select_window_id, j );
-                goto evil_goto;
-            } else if( cline->len > leftcol ) {
-                if( vals != NULL ) {
-                    strncpy( tmp, &(cline->data[leftcol]), EditVars.WindMaxWidth + 5 );
-                    for( k = cline->len - leftcol; k < valoff; k++ ) {
-                        tmp[k] = ' ';
-                    }
-                    tmp[k] = '\0';
-                    strcat( tmp, vals[j + pagetop - 2] );
-                    DisplayLineInWindowWithColor( fs_select_window_id, j, tmp, text_style, 0 );
-                } else {
-                    DisplayLineInWindowWithColor( fs_select_window_id, j, cline->data, text_style, leftcol );
-                }
             } else {
-                DisplayLineInWindowWithColor( fs_select_window_id, j, SingleBlank, text_style, 0 );
+                if( cline->len > leftcol ) {
+                    if( vals != NULL ) {
+                        strncpy( tmp, &(cline->data[leftcol]), EditVars.WindMaxWidth + 5 );
+                        for( k = cline->len - leftcol; k < valoff; k++ ) {
+                            tmp[k] = ' ';
+                        }
+                        tmp[k] = '\0';
+                        strcat( tmp, vals[j + pagetop - 2] );
+                        DisplayLineInWindowWithColor( fs_select_window_id, j, tmp, text_style, 0 );
+                    } else {
+                        DisplayLineInWindowWithColor( fs_select_window_id, j, cline->data, text_style, leftcol );
+                    }
+                } else {
+                    DisplayLineInWindowWithColor( fs_select_window_id, j, SingleBlank, text_style, 0 );
+                }
+                if( ptr != NULL ) {
+                    SetCharInWindowWithColor( fs_select_window_id, j, 1 + ptr->_offs, ptr->_char, hot_key_style );
+                }
             }
             if( ptr != NULL ) {
-                SetCharInWindowWithColor( fs_select_window_id, j, 1 + ptr->_offs, ptr->_char, hot_key_style );
-            }
-evil_goto:  if( ptr != NULL ) {
                 ptr += 1;
             }
             rc = GimmeNextLinePtr( f, &cfcb, &cline );
@@ -588,7 +589,7 @@ vi_rc SelectLineInFile( selflinedata *sfd )
         }
 
         /*
-         * process key stroke
+         * pre-process mouse events, remap to key stroke if possible
          */
         switch( key ) {
         case VI_KEY( MOUSEEVENT ):
@@ -607,10 +608,18 @@ vi_rc SelectLineInFile( selflinedata *sfd )
             }
             if( mouseScroll != MS_NONE ) {
                 switch( mouseScroll ) {
-                case MS_UP: goto evil_up;
-                case MS_DOWN: goto evil_down;
-                case MS_PAGEUP: goto evil_pageup;
-                case MS_PAGEDOWN: goto evil_pagedown;
+                case MS_UP: 
+                    key = VI_KEY( UP );
+                    break;
+                case MS_DOWN:
+                    key = VI_KEY( DOWN );
+                    break;
+                case MS_PAGEUP:
+                    key = VI_KEY( PAGEUP );
+                    break;
+                case MS_PAGEDOWN:
+                    key = VI_KEY( PAGEDOWN );
+                    break;
                 case MS_EXPOSEDOWN:
                     adjustCLN( &cln, &pagetop, pagetop + text_lines - cln - 1, endline, text_lines );
                     adjustCLN( &cln, &pagetop, 1, endline, text_lines );
@@ -639,7 +648,7 @@ vi_rc SelectLineInFile( selflinedata *sfd )
                 if( fs_mouse_window_id == fs_select_window_id ) {
                     cln = mouseLine + pagetop;
                     if( cln <= endline ) {
-                        goto evil_enter;
+                        key = VI_KEY( ENTER );
                     }
                 }
                 break;
@@ -650,7 +659,7 @@ vi_rc SelectLineInFile( selflinedata *sfd )
                 } else {
                     cln = mouseLine + pagetop;
                     if( cln <= endline ) {
-                        goto evil_enter;
+                        key = VI_KEY( ENTER );
                     }
                 }
                 break;
@@ -670,10 +679,19 @@ vi_rc SelectLineInFile( selflinedata *sfd )
                 break;
             }
             break;
+        }
+
+        /*
+         * process key stroke
+         */
+        switch( key ) {
+        case VI_KEY( MOUSEEVENT ):
+            /* nothing to do */
+            /* already pre-processed */
+            break;
         case VI_KEY( ESC ):
             done = true;
             break;
-        evil_enter:
         case VI_KEY( ENTER ):
         case VI_KEY( SPACE ):
             /*
@@ -722,12 +740,10 @@ vi_rc SelectLineInFile( selflinedata *sfd )
                 done = true;
             }
             break;
-        evil_up:
         case VI_KEY( UP ):
         case VI_KEY( k ):
             drawbord = adjustCLN( &cln, &pagetop, -1, endline, text_lines );
             break;
-        evil_down:
         case VI_KEY( DOWN ):
         case VI_KEY( j ):
             drawbord = adjustCLN( &cln, &pagetop, 1, endline, text_lines );
@@ -738,12 +754,10 @@ vi_rc SelectLineInFile( selflinedata *sfd )
         case VI_KEY( CTRL_PAGEDOWN ):
             drawbord = adjustCLN( &cln, &pagetop, endline - cln, endline, text_lines );
             break;
-        evil_pageup:
         case VI_KEY( PAGEUP ):
         case VI_KEY( CTRL_B ):
             drawbord = adjustCLN( &cln, &pagetop, -text_lines, endline, text_lines );
             break;
-        evil_pagedown:
         case VI_KEY( PAGEDOWN ):
         case VI_KEY( CTRL_F ):
             drawbord = adjustCLN( &cln, &pagetop, text_lines, endline, text_lines );
