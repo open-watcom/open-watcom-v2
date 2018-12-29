@@ -296,8 +296,8 @@ static void initMenuList( menu *cmenu )
 
     MemFree( cmenu->list );
     MemFree( cmenu->hilist );
-    cmenu->list = MemAllocList( cmenu->itemcnt );
-    cmenu->hilist = MemAlloc( sizeof( hilst ) * (cmenu->itemcnt + 1) );
+    cmenu->list = _MemAllocList( cmenu->itemcnt );
+    cmenu->hilist = _MemAllocArray( hilst, cmenu->itemcnt + 1 );
 
     cmi = cmenu->itemhead;
     for( i = 0; i < cmenu->itemcnt; i++ ) {
