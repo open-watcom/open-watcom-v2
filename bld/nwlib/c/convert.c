@@ -39,17 +39,16 @@
 
 static void GetARValue( const char *element, ar_len len, char delimiter, char *buffer );
 
-static unsigned long GetARNumeric( char *str, int max, int base )
-/***************************************************************/
+static unsigned long GetARNumeric( const char *str, int max, int base )
+/*********************************************************************/
 // get a numeric value from an ar_header
 {
-    char                save;
+    char                buf[20];
     unsigned long       value;
 
-    save = *(str + max);
-    *(str + max) = '\0';
-    value = strtoul( str, NULL, base );
-    *(str + max) = save;
+    memcpy( buf, str, max );
+    buf[max] = '\0';
+    value = strtoul( buf, NULL, base );
     return( value );
 }
 
@@ -178,5 +177,5 @@ void CreateARHeader( ar_header *ar, arch_header * arch )
     PutARValue( ar->gid, arch->gid, AR_ELEMENT_BASE, AR_GID_LEN );
     PutARValue( ar->mode, arch->mode, AR_MODE_BASE, AR_MODE_LEN );
     PutARValue( ar->size, arch->size, AR_ELEMENT_BASE, AR_SIZE_LEN );
-    strncpy( ar->header_ident, AR_HEADER_IDENT, AR_HEADER_IDENT_LEN );
+    memcpy( ar->header_ident, AR_HEADER_IDENT, AR_HEADER_IDENT_LEN );
 }
