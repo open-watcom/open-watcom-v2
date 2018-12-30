@@ -76,19 +76,21 @@ static ctl_file *KeyList = NULL;
 static char     Product_ver[3];
 
 /* Defaults for all output values */
-static char     *DefType   = NULL;
-static char     *DefRedist = NULL;
-static char     *DefDir    = NULL;
-static char     *DefUsr    = NULL;
-static char     *DefRel    = NULL;
-static char     *DefCond   = NULL;
-static char     *DefPack   = NULL;
-static char     *DefWhere  = NULL;
-static char     *DefDesc   = NULL;
-static char     *DefOld    = NULL;
-static char     *DefPatch  = NULL;
-static char     *DefDstvar = NULL;
-static char     *DefKeys   = NULL;
+static const char   *DefType   = NULL;
+static const char   *DefRedist = NULL;
+static const char   *DefDir    = NULL;
+static const char   *DefUsr    = NULL;
+static const char   *DefRel    = NULL;
+static const char   *DefCond   = NULL;
+static const char   *DefPack   = NULL;
+static const char   *DefWhere  = NULL;
+static const char   *DefDesc   = NULL;
+static const char   *DefOld    = NULL;
+static const char   *DefPatch  = NULL;
+static const char   *DefDstvar = NULL;
+static const char   *DefKeys   = NULL;
+
+static const char   * const blank = "";
 
 static void AddToList( const char *name, ctl_file **owner )
 {
@@ -260,7 +262,7 @@ static char *SubstOne( const char **inp, char *out )
     const char  *in;
     char        *p;
     char        *starpos;
-    char        *rep;
+    const char  *rep;
     unsigned    parm;
 
     in = *inp;
@@ -300,7 +302,7 @@ static char *SubstOne( const char **inp, char *out )
                 if( UndefWarn ) {
                     Log( false, "<%s> is undefined\n", out );
                 }
-                rep = "";
+                rep = blank;
             }
             strcpy( out, rep );
             *inp = in + 1;
@@ -425,7 +427,7 @@ static bool ContainsWord( const char *str, ctl_file *word_list, bool and_op )
     return( and_op );
 }
 
-static void set_product_version( char *filename )
+static void set_product_version( const char *filename )
 {
     char    *filever;
 
@@ -444,19 +446,65 @@ static void set_product_version( char *filename )
     }
 }
 
-#define DEFVAL(x)   ((x==NULL)?"":x)
+static char *item_def( const char *old, const char *new, const char *item )
+{
+    if( old != NULL ) {
+        printf( "langdat warning: default item '%s' already defined\n", item );
+        MFree( (void *)old );
+    }
+    return( MStrdup( new ) );
+}
+
+static char *item_redef( const char *old, const char *new )
+{
+    if( old != NULL ) {
+        MFree( (void *)old );
+    }
+    return( MStrdup( new ) );
+}
+
+static char *item_append( const char *old, const char *new )
+{
+    char    *p;
+
+    if( old == NULL ) {
+        p = MStrdup( new );
+    } else {
+        size_t  len;
+
+        len = strlen( old ) + strlen( new ) + 1 + 1;
+        p = MAlloc( len );
+        strcpy( p, old );
+        MFree( (void *)old );
+        strcat( p, " " );
+        strcat( p, new );
+    }
+    return( p );
+}
+
+#define FREE_ITEM(x) if( x != NULL && x != blank ) { MFree( (void *)x ); } x = NULL
+
+#define DEFVAL(x)   ((x==NULL)?blank:x)
 #define DEFVALA(x)  ((x==NULL)?NULL:MStrdup(x))
 
 static void ProcessLine( const char *line )
 {
     char    *cmd, *p, *str;
     char    *line_copy;
-    char    *type, *redist, *dir, *usr, *rel, *cond;
-    char    *where, *desc, *old, *dstvar;
-    char    *keys;
-//    char    *pack, *patch;
+    const char  *type;
+    const char  *redist;
+    const char  *dir;
+    const char  *usr;
+    const char  *rel;
+    const char  *cond;
+    const char  *where;
+    const char  *desc;
+    const char  *old;
+    const char  *dstvar;
+    const char  *keys;
+//    const char  *pack;
+//    const char  *patch;
     bool    special;
-    size_t  len;
 
     special = false;
     type = DEFVAL( DefType );
@@ -493,41 +541,15 @@ static void ProcessLine( const char *line )
         } else if( !stricmp( cmd, "rel" ) ) {
             rel = str;
         } else if( !stricmp( cmd, "cond" ) ) {
-            if( cond != NULL ) {
-                MFree( cond );
-            }
-            cond = MStrdup( str );
+            cond = item_redef( cond, str );
         } else if( !stricmp( cmd, "conda" ) ) {
-            if( cond == NULL ) {
-                cond = MStrdup( str );
-            } else {
-                len = strlen( cond ) + strlen( str ) + 1 + 1;
-                p = MAlloc( len );
-                strcpy( p, cond );
-                MFree( cond );
-                cond = p;
-                strcat( p, " " );
-                strcat( p, str );
-            }
+            cond = item_append( cond, str );
         } else if( !stricmp( cmd, "pack" ) ) {
 //            pack = str;
         } else if( !stricmp( cmd, "where" ) ) {
-            if( where != NULL ) {
-                MFree( where );
-            }
-            where = MStrdup( str );
+            where = item_redef( where, str );
         } else if( !stricmp( cmd, "wherea" ) ) {
-            if( where == NULL ) {
-                where = MStrdup( str );
-            } else {
-                len = strlen( where ) + strlen( str ) + 1 + 1;
-                p = MAlloc( len );
-                strcpy( p, where );
-                MFree( where );
-                where = p;
-                strcat( p, " " );
-                strcat( p, str );
-            }
+            where = item_append( where, str );
         } else if( !stricmp( cmd, "desc" ) ) {
             desc = str;
         } else if( !stricmp( cmd, "descr" ) ) {     //  Multiple spellings
@@ -548,13 +570,13 @@ static void ProcessLine( const char *line )
     } while( cmd != NULL );
     if( !special ) {
         if( cond == NULL ) {
-            cond = "";
+            cond = blank;
         }
         if( where == NULL ) {
-            where = "";
+            where = blank;
         }
         if( keys == NULL ) {
-            keys = "";
+            keys = blank;
         }
         set_product_version( usr );
         set_product_version( rel );
@@ -564,13 +586,27 @@ static void ProcessLine( const char *line )
             Log( true, "<%s><%s><%s><%s><%s><%s><%s><%s><%s><%s>\n", type, redist, dir, old, usr, rel, where, dstvar, cond, desc );
         }
     }
+    FREE_ITEM( cond );
+    FREE_ITEM( where );
     MFree( line_copy );
-    if( cond != NULL && *cond != '\0' ) {
-        MFree( cond );
-    }
-    if( where != NULL && *where != '\0' ) {
-        MFree( where );
-    }
+}
+
+static void FreeDefault( void )
+{
+    /* Reset any existing defaults */
+    FREE_ITEM( DefType );
+    FREE_ITEM( DefRedist );
+    FREE_ITEM( DefDir );
+    FREE_ITEM( DefUsr );
+    FREE_ITEM( DefRel );
+    FREE_ITEM( DefCond );
+    FREE_ITEM( DefPack );
+    FREE_ITEM( DefWhere );
+    FREE_ITEM( DefDesc );
+    FREE_ITEM( DefOld );
+    FREE_ITEM( DefPatch );
+    FREE_ITEM( DefDstvar );
+    FREE_ITEM( DefKeys );
 }
 
 static void ProcessDefault( const char *line )
@@ -578,61 +614,48 @@ static void ProcessDefault( const char *line )
     char    *cmd, *p, *q, *str;
     char    *line_copy;
 
-    /* Reset any existing defaults */
-    if( DefType != NULL ) MFree( DefType );
-    if( DefRedist != NULL ) MFree( DefRedist );
-    if( DefDir != NULL ) MFree( DefDir );
-    if( DefUsr != NULL ) MFree( DefUsr );
-    if( DefRel != NULL ) MFree( DefRel );
-    if( DefCond != NULL ) MFree( DefCond );
-    if( DefPack != NULL ) MFree( DefPack );
-    if( DefWhere != NULL ) MFree( DefWhere );
-    if( DefDesc != NULL ) MFree( DefDesc );
-    if( DefOld != NULL ) MFree( DefOld );
-    if( DefPatch != NULL ) MFree( DefPatch );
-    if( DefDstvar != NULL ) MFree( DefDstvar );
-    if( DefKeys != NULL ) MFree( DefKeys );
-    DefType = DefRedist = DefDir = DefUsr = DefRel = DefCond = DefPack
-        = DefWhere = DefDesc = DefOld = DefPatch = DefDstvar = DefKeys = NULL;
+    FreeDefault();
 
     /* Process new defaults (if provided) */
     line_copy = MStrdup( line );
     p = SkipBlanks( line_copy );
     q = strtok( p, "]" );
     q += strlen( q ) - 1;
-    while( (q >= p) && ((*q == ' ') || (*q == '\t')) ) --q;
-    if( *q == '\"' ) ++q;
+    while( (q >= p) && ((*q == ' ') || (*q == '\t')) )
+        --q;
+    if( *q == '\"' )
+        ++q;
     *q = '\0';
     cmd = strtok( p, "=" );
     if( cmd != NULL ) {
         do {
             str = strtok( NULL, "\"" );
             if( !stricmp( cmd, "type" ) ) {
-                DefType = MStrdup( str );
+                DefType = item_def( DefType, str, cmd );
             } else if( !stricmp( cmd, "redist" ) ) {
-                DefRedist = MStrdup( str );
+                DefRedist = item_def( DefRedist, str, cmd );
             } else if( !stricmp( cmd, "dir" ) ) {
-                DefDir = MStrdup( str );
+                DefDir = item_def( DefDir, str, cmd );
             } else if( !stricmp( cmd, "usr" ) ) {
-                DefUsr = MStrdup( str );
+                DefUsr = item_def( DefUsr, str, cmd );
             } else if( !stricmp( cmd, "rel" ) ) {
-                DefRel = MStrdup( str );
+                DefRel = item_def( DefRel, str, cmd );
             } else if( !stricmp( cmd, "cond" ) ) {
-                DefCond = MStrdup( str );
+                DefCond = item_def( DefCond, str, cmd );
             } else if( !stricmp( cmd, "pack" ) ) {
-                DefPack = MStrdup( str );
+                DefPack = item_def( DefPack, str, cmd );
             } else if( !stricmp( cmd, "where" ) ) {
-                DefWhere = MStrdup( str );
+                DefWhere = item_def( DefWhere, str, cmd );
             } else if( !stricmp( cmd, "desc" ) ) {
-                DefDesc = MStrdup( str );
+                DefDesc = item_def( DefDesc, str, cmd );
             } else if( !stricmp( cmd, "old" ) ) {
-                DefOld = MStrdup( str );
+                DefOld = item_def( DefOld, str, cmd );
             } else if( !stricmp( cmd, "patch" ) ) {
-                DefPatch = MStrdup( str );
+                DefPatch = item_def( DefPatch, str, cmd );
             } else if( !stricmp( cmd, "dstvar" ) ) {
-                DefDstvar = MStrdup( str );
+                DefDstvar = item_def( DefDstvar, str, cmd );
             } else if( !stricmp( cmd, "keys" ) ) {
-                DefKeys = MStrdup( str );
+                DefKeys = item_def( DefKeys, str, cmd );
             } else {
                 printf( "langdat warning: unknown default %s\n", cmd );
                 printf( "(in file %s line %d)\n", IncludeStk->name, IncludeStk->lineno );
@@ -848,6 +871,7 @@ int main( int argc, char *argv[] )
         MFree( CtlList );
         CtlList = next;
     }
+    FreeDefault();
     CloseLog();
     MClose();
     return( 0 );
