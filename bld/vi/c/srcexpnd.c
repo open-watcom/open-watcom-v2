@@ -38,7 +38,7 @@
 
 static int      bPos;
 static char     *bPtr;
-static int      recurseDepth;
+static int      recurseDepth = 0;
 
 /*
  * addChar - add a character to new expanded line
@@ -73,9 +73,9 @@ char *Expand( char *odata, const char *data, vlist *vl )
             strcpy( odata, data );
         }
     } else {
+        recurseDepth++;
         obpos = bPos;
         obptr = bPtr;
-        recurseDepth++;
         bPos = 0;
         bPtr = result;
 
@@ -165,9 +165,9 @@ char *Expand( char *odata, const char *data, vlist *vl )
         }
         bPtr[bPos++] = '\0';
         memcpy( odata, result, bPos );
-        recurseDepth--;
         bPos = obpos;
         bPtr = obptr;
+        recurseDepth--;
     }
     return( odata );
 

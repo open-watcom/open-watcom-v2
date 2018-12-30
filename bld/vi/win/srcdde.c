@@ -111,8 +111,8 @@ static bool GetHDDEDATA( const char **str, HDDEDATA *res )
 bool RunDDECommand( int token, const char *str, char *tmp1, vi_rc *result, vlist *vl )
 {
     vi_rc       rc;
-    char        *tmp2;
-    char        *tmp3;
+    char        tmp2[MAX_INPUT_LINE];
+    char        tmp3[MAX_INPUT_LINE];
     HSZ         hdl;
     HSZ         serverhdl, topichdl;
     DWORD       dword;
@@ -122,15 +122,6 @@ bool RunDDECommand( int token, const char *str, char *tmp1, vi_rc *result, vlist
     int         len;
     jmp_buf     jmpaddr;
     int         jmprc;
-
-    tmp2 = alloca( MAX_INPUT_LINE );
-    if( tmp2 == NULL ) {
-        return( false );
-    }
-    tmp3 = alloca( MAX_INPUT_LINE );
-    if( tmp3 == NULL ) {
-        return( false );
-    }
 
     if( token == T_DDEINIT ) {
         if( !DDEInit() ) {

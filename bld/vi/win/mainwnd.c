@@ -221,7 +221,7 @@ WINEXPORT LRESULT CALLBACK MainWindowProc( HWND hwnd, UINT msg, WPARAM wparam, L
     vi_rc       rc;
     HANDLE      hfileinfo;
     int         cnt, i;
-    char        *buff;
+    char        buff[FILENAME_MAX + 2];   /* we add a " at the beginning and at the end so we can handle path- and filenames with spaces */
 
     switch( msg ) {
     case WM_CREATE:
@@ -233,20 +233,17 @@ WINEXPORT LRESULT CALLBACK MainWindowProc( HWND hwnd, UINT msg, WPARAM wparam, L
         timerID = SetTimer( hwnd, TIMER_ID, 60L * 1000L, NULL );
         break;
     case WM_DROPFILES:
-        hfileinfo = (HANDLE) wparam;
+        hfileinfo = (HANDLE)wparam;
         cnt = DragQueryFile( hfileinfo, (UINT)-1, NULL, 0 );
-        buff = alloca( FILENAME_MAX + 2 );   /* we add a " at the beginning and at the end so we can handle path- and filenames with spaces */
-        if( buff != NULL ) {
-            buff[0] = '"';      /* one " at the beginning of the filename */
-            for( i = 0; i < cnt; i++ ) {
-                if( DragQueryFile( hfileinfo, i, buff + 1, FILENAME_MAX ) == (UINT)-1 ) {
-                    break;
-                }
-                strcat( buff, SingleQuote );
-                rc = EditFile( buff, false );
-                if( rc > ERR_NO_ERR ) {
-                    Error( GetErrorMsg( rc ) );
-                }
+        buff[0] = '"';      /* one " at the beginning of the filename */
+        for( i = 0; i < cnt; i++ ) {
+            if( DragQueryFile( hfileinfo, i, buff + 1, FILENAME_MAX ) == (UINT)-1 ) {
+                break;
+            }
+            strcat( buff, SingleQuote );
+            rc = EditFile( buff, false );
+            if( rc > ERR_NO_ERR ) {
+                Error( GetErrorMsg( rc ) );
             }
         }
         DragFinish( hfileinfo );
@@ -319,8 +316,7 @@ WINEXPORT LRESULT CALLBACK MainWindowProc( HWND hwnd, UINT msg, WPARAM wparam, L
             if( rc != MENU_COMMAND_NOT_HANDLED ) {
                 DCUpdateAll();
                 if( rc > ERR_NO_ERR ) {
-                    buff = GetErrorMsg( rc );
-                    Error( buff );
+                    Error( GetErrorMsg( rc ) );
                 }
             }
             SetWindowCursor();

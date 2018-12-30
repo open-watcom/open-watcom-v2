@@ -41,9 +41,10 @@ static char pkwDelims[] = " /";
 /*
  * ParseCommandLine - parse a command line
  */
-vi_rc ParseCommandLine( const char *cmdl, linenum *n1, bool *n1flag, linenum *n2, bool *n2flag, int *token, const char **data )
+vi_rc ParseCommandLine( const char *cmdl, linenum *n1, bool *n1flag, linenum *n2, bool *n2flag, int *token, char *data )
 {
-    char        *tres, *tmp;
+    char        *tok_buf;
+    alias_list  *al;
     int         j;
     linenum     l;
     vi_rc       rc;
@@ -51,14 +52,9 @@ vi_rc ParseCommandLine( const char *cmdl, linenum *n1, bool *n1flag, linenum *n2
     /*
      * set up for parse
      */
-    tres = alloca( MAX_INPUT_LINE );
-    tmp = alloca( MAX_INPUT_LINE );
-    if( tmp == NULL || tres == NULL ) {
-        return( ERR_NO_STACK );
-    }
     *n1flag = false;
     *n2flag = false;
-    *data = "";
+    *data = '\0';
 
     /*
      * change null command to '.'
@@ -142,7 +138,7 @@ vi_rc ParseCommandLine( const char *cmdl, linenum *n1, bool *n1flag, linenum *n2
      * check for system token
      */
     if( *cmdl == '!' ) {
-        *data = cmdl + 1;
+        strcpy( data, cmdl + 1 );
         *token = PCL_T_SYSTEM;
         return( ERR_NO_ERR );
     }
@@ -150,30 +146,31 @@ vi_rc ParseCommandLine( const char *cmdl, linenum *n1, bool *n1flag, linenum *n2
     /*
      * get token and data
      */
-    cmdl = GetNextWord( cmdl, tres, pkwDelims );
-    if( *tres == '\0' ) {
-        *data = cmdl;
-        return( ERR_NO_ERR );
+    tok_buf = StaticAlloc();
+    if( tok_buf == NULL ) {
+        return( ERR_NO_MEMORY );
     }
-    if( CheckAlias( tres, tmp ) == ERR_NO_ERR ) {
-        strcat( tmp, cmdl );
-        strcpy( (char *)cmdl, tmp );
-        cmdl = GetNextWord( cmdl, tres, pDelims );
-        if( *tres == '\0' ) {
-            *data = cmdl;
-            return( ERR_NO_ERR );
+    cmdl = GetNextWord( cmdl, tok_buf, pkwDelims );
+    if( *tok_buf != '\0' ) {
+        al = CheckAlias( tok_buf );
+        if( al != NULL ) {
+            strcpy( data, al->expand );
+            strcat( data, cmdl );
+            cmdl = GetNextWord( data, tok_buf, pDelims );
+        }
+        if( *tok_buf != '\0' ) {
+            j = Tokenize( CmdLineTokens, tok_buf, false );
+            if( j == TOK_INVALID ) {
+                j = Tokenize( ExCmdTokens, tok_buf, false );
+                if( j != TOK_INVALID ) {
+                    j += 1000;
+                }
+            }
+            *token = j;
         }
     }
-
-    j = Tokenize( CmdLineTokens, tres, false );
-    if( j == TOK_INVALID ) {
-        j = Tokenize( ExCmdTokens, tres, false );
-        if( j != TOK_INVALID ) {
-            j += 1000;
-        }
-    }
-    *token = j;
-    *data = cmdl;
+    StaticFree( tok_buf );
+    strcpy( data, cmdl );
     return( ERR_NO_ERR );
 
 } /* ParseCommandLine */

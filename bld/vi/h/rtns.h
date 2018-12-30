@@ -40,7 +40,7 @@ void    DeleteString( char ** );
 
 /* alias.c */
 vi_rc   SetAlias( const char * );
-vi_rc   CheckAlias( const char *, char * );
+alias_list *CheckAlias( const char *str );
 bool    CheckAbbrev( const char *, int * );
 vi_rc   Abbrev( const char * );
 vi_rc   UnAbbrev( const char * );
@@ -672,7 +672,7 @@ void    GetEndString( char *data, char *res );
 void    ParseConfigFile( char * );
 
 /* parsecl.c */
-vi_rc   ParseCommandLine( const char *, linenum *, bool *, linenum *, bool *, int *, const char ** );
+vi_rc   ParseCommandLine( const char *, linenum *, bool *, linenum *, bool *, int *, char * );
 vi_rc   GetAddress( const char **, linenum * );
 
 /* printf.c */

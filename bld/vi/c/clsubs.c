@@ -30,7 +30,6 @@
 
 
 #include "vi.h"
-#include "walloca.h"
 #include "rxsupp.h"
 #include "win.h"
 #ifdef __WIN__
@@ -193,7 +192,9 @@ static void nextSearchStartPos( i_mark *pos, bool gflag, int rlen )
  */
 vi_rc Substitute( linenum n1, linenum n2, const char *data )
 {
-    char        *sstr, *rstr, *newr;
+    char        sstr[MAX_INPUT_LINE];
+    char        rstr[MAX_INPUT_LINE];
+    char        *newr;
     char        c;
     char        *linedata;
     bool        iflag = false;
@@ -218,14 +219,6 @@ vi_rc Substitute( linenum n1, linenum n2, const char *data )
     LastChangeCount = 0;
     LastLineCount = 0;
 
-    sstr = alloca( MAX_INPUT_LINE );
-    if( sstr == NULL ) {
-        return( ERR_NO_STACK );
-    }
-    rstr = alloca( MAX_INPUT_LINE  );
-    if( rstr == NULL ) {
-        return( ERR_NO_STACK );
-    }
     data = GetNextWord( data, sstr, SingleSlash );
     if( *sstr == '\0' ) {
         return( ERR_INVALID_SUBS_CMD );

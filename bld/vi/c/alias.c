@@ -135,16 +135,9 @@ vi_rc UnAlias( const char *what )
 /*
  * CheckAlias - check for an alias
  */
-vi_rc CheckAlias( const char *str, char *what )
+alias_list *CheckAlias( const char *str )
 {
-    alias_list  *al;
-
-    al = checkGenericAlias( str, 0, alHead );
-    if( al == NULL ) {
-        return( ALIAS_NOT_FOUND );
-    }
-    strcpy( what, al->expand );
-    return( ERR_NO_ERR );
+    return( checkGenericAlias( str, 0, alHead ) );
 
 } /* CheckAlias */
 
