@@ -152,7 +152,7 @@ struct dirent;
 vi_rc   MyGetFileSize( const char *, long * );
 void    FormatFileEntry( direct_ent *file, char *res );
 bool    IsDirectory( char *name );
-void    GetFileInfo( direct_ent *tmp, struct dirent *nd, const char *path );
+void    GetFileInfo( direct_ent *tmp, struct dirent *dire, const char *path );
 
 /* dotmode.c */
 vi_rc   DoDotMode( void );

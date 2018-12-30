@@ -56,8 +56,6 @@ static list_linenum oldPage = -1;
 static list_linenum cPage = 0;
 static bool         hasWrapped = false;
 static bool         isDone = false;
-static char         strFmt[] = "  %S";
-
 static bool         hasMouseHandler = false;
 
 /*
@@ -217,6 +215,16 @@ static vi_rc doFileComplete( char *data, size_t start, size_t max, bool getnew, 
 
 } /* doFileComplete */
 
+static void parseFileName( list_linenum i, char *buffer )
+{
+    MySprintf( buffer, "  %S", ( i < DirFileCount ) ? DirFiles[i]->name : SingleBlank );
+    if( i < DirFileCount ) {
+        if( IS_SUBDIR( DirFiles[i] ) ) {
+            buffer[1] = FILE_SEP;
+        }
+    }
+}
+
 #ifdef __WIN__
 static int calcColumns( window_id wid )
 {
@@ -264,19 +272,6 @@ void FileCompleteMouseClick( window_id wid, int x, int y, bool dclick )
     }
     mouseFilec = file;
     KeyAdd( VI_KEY( FAKEMOUSE ) );
-}
-
-static void parseFileName( list_linenum i, char *buffer )
-{
-    if( i >= DirFileCount ) {
-        MySprintf( buffer, strFmt, SingleBlank );
-    } else {
-        MySprintf( buffer, strFmt, DirFiles[i]->name );
-        if( IS_SUBDIR( DirFiles[i] ) ) {
-            buffer[1] = FILE_SEP;
-        }
-    }
-    buffer[NAMEWIDTH] = '\0';
 }
 
 static void getBounds( list_linenum *start, list_linenum *end )
@@ -345,12 +340,13 @@ static void displayFiles( void )
     BlankRectIndirect( dir_wid, WIN_TEXT_BACKCOLOR( w ), &rect );
     column = 0;
     for( i = start; i <= end; i++ ) {
-        parseFileName( i, &buffer[0] );
+        parseFileName( i, buffer );
+        buffer[NAMEWIDTH] = '\0';
         style = ( i == lastFilec ) ? WIN_HILIGHT_STYLE( w ) : WIN_TEXT_STYLE( w );
         rect.left = column * column_width + left_edge;
         rect.right = rect.left + column_width;
         BlankRectIndirect( dir_wid, style->background, &rect );
-        WriteString( dir_wid, rect.left, rect.top, style, &buffer[0] );
+        WriteString( dir_wid, rect.left, rect.top, style, buffer );
         column = ( column + 1 ) % maxJ;
         if( column == 0 ) {
             /* blat out the rest of the row and continue on */
@@ -409,25 +405,15 @@ static void displayFiles( void )
             hiliteon = true;
             hilite = j;
         }
-        if( i >= DirFileCount ) {
-            MySprintf( tmp2, strFmt, SingleBlank );
-        } else {
-            MySprintf( tmp2, strFmt, DirFiles[i]->name );
-            if( IS_SUBDIR( DirFiles[i] ) ) {
-                tmp2[1] = FILE_SEP;
-            }
-            tmp2[NAMEWIDTH] = '\0';
-        }
+        parseFileName( i, tmp2 );
+        tmp2[NAMEWIDTH] = '\0';
         strcat( tmp, tmp2 );
         j++;
         if( j == maxJ || i == ( end - 1 ) ) {
             DisplayLineInWindow( dir_wid, l++, tmp );
             if( hiliteon ) {
                 j = hilite * NAMEWIDTH;
-                MySprintf( tmp2, strFmt, DirFiles[lastFilec]->name );
-                if( IS_SUBDIR( DirFiles[lastFilec] ) ) {
-                    tmp2[1] = FILE_SEP;
-                }
+                parseFileName( lastFilec, tmp2 );
                 z = j + strlen( tmp2 );
                 for( k = j; k < z; k++ ) {
                     SetCharInWindowWithColor( dir_wid, l - 1, k + 1, tmp2[k - j], &filecw_info.hilight_style );

@@ -36,18 +36,18 @@
 
 
 #ifdef __WIN__
-    #define CFG_NAME    "weditor.ini"
+    #define CFG_NAME            "weditor.ini"
 #else
-    #define CFG_NAME    "ed.cfg"
+    #define CFG_NAME            "ed.cfg"
 #endif
 
-#define VI_2F_ID        0xfc
+#define VI_2F_ID                0xfc
 
-#define SPLIT_CHAR      3
+#define SPLIT_CHAR              3
 
-#define TOK_INVALID         (-1)
+#define TOK_INVALID             (-1)
 
-#define GET_BOOL_PREFIX(b)  ((b) ? "" : "no")
+#define GET_BOOL_PREFIX(b)      ((b) ? "" : "no")
 
 typedef enum {
     DRIVE_TYPE_NONE,
@@ -61,11 +61,10 @@ typedef enum {
 } linedel_flags;
 
 #ifndef _A_SUBDIR
-    #define _A_SUBDIR       0x10    /* Subdirectory */
+    #define _A_SUBDIR           0x10    /* Subdirectory */
 #endif
 
-#define IS_SUBDIR(f)        (((f)->attr & _A_SUBDIR) != 0)
-#define SET_SUBDIR(f)       (f)->attr |= _A_SUBDIR
+#define IS_SUBDIR(f)            (((f)->attr & _A_SUBDIR) != 0)
 
 #if defined( __UNIX__ )
     #define FILE_SEP            '/'
@@ -81,17 +80,17 @@ typedef enum {
     #define TMP_NAME_LEN        14
 #endif
 
-#define TOK_MAX_LEN     30
-#define NAMEWIDTH       14
-#define MAX_NUM_STR     48
+#define TOK_MAX_LEN             30
+#define NAMEWIDTH               14
+#define MAX_NUM_STR             48
 
 /*
  * extra data per line: +4 because of swap file
  * considerations: +2 for CR,LF and +2 for extra line data
  */
-#define LINE_EXTRA      (2 + sizeof( linedata_t ))
+#define LINE_EXTRA              (2 + sizeof( linedata_t ))
 
-#define Tab( col, ta )  ((ta == 0) ? 0 : ((((col - 1) / ta) + 1) * ta - (col - 1)))
+#define Tab( col, ta )          ((ta == 0) ? 0 : ((((col - 1) / ta) + 1) * ta - (col - 1)))
 
 #define INITIAL_MATCH_COUNT     4
 #define MIN_LINE_LEN            128
@@ -144,18 +143,18 @@ typedef enum {
 /*
  * data files
  */
-#define ED_CFG          0
-#define BIND_DAT        1
-#define ERRMSG_DAT      2
-#define ERROR_DAT       3
-#define DATA_FILE_CNT   4
+#define ED_CFG                  0
+#define BIND_DAT                1
+#define ERRMSG_DAT              2
+#define ERROR_DAT               3
+#define DATA_FILE_CNT           4
 
 /*
  * savebuf constants
  */
-#define SAVEBUF_NOP     0
-#define SAVEBUF_LINE    1
-#define SAVEBUF_FCBS    2
+#define SAVEBUF_NOP             0
+#define SAVEBUF_LINE            1
+#define SAVEBUF_FCBS            2
 
 /*
  * text insertion constants
@@ -218,33 +217,33 @@ typedef enum font_type {
 /*
  * word constants
  */
-#define ON_BLANK        1
-#define ON_DELIM        2
-#define ON_CHAR         3
-#define ON_ENDOFLINE    4
-#define ON_STARTOFLINE  5
+#define ON_BLANK            1
+#define ON_DELIM            2
+#define ON_CHAR             3
+#define ON_ENDOFLINE        4
+#define ON_STARTOFLINE      5
 
 /*
  * undo constants
  */
-#define START_UNDO_GROUP        1
-#define UNDO_DELETE_FCBS        2
-#define UNDO_INSERT_LINES       3
-#define END_UNDO_GROUP          4
+#define START_UNDO_GROUP    1
+#define UNDO_DELETE_FCBS    2
+#define UNDO_INSERT_LINES   3
+#define END_UNDO_GROUP      4
 
 /*
  * directory constants
  */
-#define CREATE_DIR      0x39
-#define DELETE_DIR      0x3a
-#define CHANGE_DIR      0x3b
+#define CREATE_DIR          0x39
+#define DELETE_DIR          0x3a
+#define CHANGE_DIR          0x3b
 
 /*
  * Justification contants for Status bar
  */
-#define FMT_LEFT        0x01
-#define FMT_RIGHT       0x02
-#define FMT_CENTRE      0x03
+#define FMT_LEFT            0x01
+#define FMT_RIGHT           0x02
+#define FMT_CENTRE          0x03
 
 /*
  * history constants

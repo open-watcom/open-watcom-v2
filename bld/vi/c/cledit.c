@@ -160,7 +160,8 @@ vi_rc EditFile( const char *name, bool dammit )
             if( name[0] == '\0' ) {
                 altname = MemAlloc( 1000 );
                 rc = SelectFileOpen( CurrentDirectory, &altname, mask, true );
-                name = GetNextFileName( altname, fn );  // if multiple, kill path
+                name = GetNextFileName( altname, fn );
+                // if multiple, skip first item ( path )
                 if( isMultipleFiles( name ) ) {
                     name = GetNextFileName( name, fn ); // get 1st name
                 }

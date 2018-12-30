@@ -81,14 +81,14 @@ bool IsDirectory( char *name )
 /*
  * GetFileInfo - get info from a directory entry
  */
-void GetFileInfo( direct_ent *tmp, struct dirent *nd, const char *path )
+void GetFileInfo( direct_ent *tmp, struct dirent *dire, const char *path )
 {
     path = path;
 
-    tmp->attr = nd->d_attr;
-    tmp->date = *((date_struct *) &nd->d_date);
-    tmp->time = *((time_struct *) &nd->d_time);
-    tmp->fsize = nd->d_size;
+    tmp->attr = dire->d_attr;
+    tmp->date = *((date_struct *)&dire->d_date);
+    tmp->time = *((time_struct *)&dire->d_time);
+    tmp->fsize = dire->d_size;
 
 } /* GetFileInfo */
 
@@ -97,27 +97,25 @@ void GetFileInfo( direct_ent *tmp, struct dirent *nd, const char *path )
  */
 void FormatFileEntry( direct_ent *file, char *res )
 {
-    char        buff[FILENAME_MAX], tmp[FILENAME_MAX];
+    char        buff[11];
+    char        tmp[FILENAME_MAX];
     long        size;
 
+    size = file->fsize;
+    MySprintf( tmp, "  %S", file->name );
     if( IS_SUBDIR( file ) ) {
-        MySprintf(tmp, " " FILE_SEP_STR "%S", file->name);
-    } else {
-        if( !IsTextFile( file->name ) ) {
-            MySprintf(tmp, " *%S", file->name);
-        } else {
-            MySprintf(tmp, "  %S", file->name);
-        }
+        tmp[1] = FILE_SEP;
+        size = 0;
+    } else if( !IsTextFile( file->name ) ) {
+        tmp[1] = '*';
     }
 
     /*
-     * build attributeibutes
+     * build attributes
      */
     strcpy( buff, "-------" );
-    size = file->fsize;
     if( IS_SUBDIR( file ) ) {
         buff[0] = 'd';
-        size = 0;
     }
     if( file->attr & _A_ARCH ) {
         buff[1] = 'a';
