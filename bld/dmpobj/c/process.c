@@ -195,7 +195,6 @@ static void doDependency( void )
     DOSDATE_T   dos_date;
     DOSDATE_T   dos_time;
     time_t      t;
-    char        *p;
     char        buff[80];
 
     if( EndRec() ) {
@@ -306,7 +305,7 @@ static int doLinkerDirective( void )
     case LDIR_OPT_FAR_CALLS:
         s1 = GetIndex();
         if( TranslateIndex ) {
-            sd = GetSegdef( sl );
+            sd = GetSegdef( s1 );
             if( sd != NULL ) {
                 segname = GetLname( sd->segind );
             } else {
