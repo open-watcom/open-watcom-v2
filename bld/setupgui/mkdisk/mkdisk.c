@@ -194,14 +194,23 @@ static char *mygets( char *buf, size_t len, FILE *fp )
         q = p;
         while( *q == ' ' || *q == '\t' )
             ++q;
+        got = strlen( q );
         if( p != q )
-            strcpy( p, q );
-        got = strlen( p );
-        if( got <= 1 )
+            memmove( p, q, got + 1 );
+        /* check '\n' char */
+        if( got == 0 || p[got - 1] != '\n' )
             break;
-        got -= 2;
-        if( p[got] != '\\' || p[got + 1] != '\n' )
+        /* skip '\n' */
+        got--;
+        /* check continuation char '\\' */
+        if( got == 0 || p[got - 1] != '\\' ) {
+            /* terminate buffer */
+            p[got] = '\0';
             break;
+        }
+        /* skip '\\' */
+        got--;
+        /* continuation, append next line to the buffer */
         p += got;
         len -= got;
     }
@@ -930,7 +939,6 @@ void ReadSection( FILE *fp, const char *section, LIST **list )
         }
         if( SectionBuf[0] == '#' || SectionBuf[0] == '\0' )
             continue;
-        SectionBuf[strlen( SectionBuf ) - 1] = '\0';
         if( stricmp( SectionBuf, section ) == 0 ) {
             break;
         }
@@ -947,9 +955,6 @@ void ReadSection( FILE *fp, const char *section, LIST **list )
         }
         if( SectionBuf[0] == '#' || SectionBuf[0] == '\0' )
             continue;
-        SectionBuf[strlen( SectionBuf ) - 1] = '\0';
-        if( SectionBuf[0] == '\0' )
-            break;
         if( strnicmp( SectionBuf, "setup=", 6 ) == 0 ) {
             Setup = strdup( &SectionBuf[6] );
             Setup = ReplaceEnv( Setup );
@@ -1124,7 +1129,6 @@ void DumpFile( FILE *out, char *fname )
 {
     FILE                *in;
     char                *buf;
-    size_t              len;
 
     in = PathOpen( fname );
     if( in == NULL ) {
@@ -1141,9 +1145,6 @@ void DumpFile( FILE *out, char *fname )
             break;
         }
         if( strnicmp( buf, "include=", 8 ) == 0 ) {
-            len = strlen( buf );
-            if( buf[len - 1] == '\n' )
-                buf[len - 1] = '\0';
             DumpFile( out, buf + 8 );
         } else {
             fputs( buf, out );
