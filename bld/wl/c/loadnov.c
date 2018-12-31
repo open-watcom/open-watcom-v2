@@ -129,8 +129,8 @@ static unsigned_32 WriteNovImports( fixed_header *header )
                 refs = import->u.v.num_relocs;
             }
             WriteLoadU32( refs );
-            size = sizeof( unsigned_32 ) + refs * sizeof( refs );
-            wrote += size;
+            size = refs * sizeof( refs );
+            wrote += sizeof( unsigned_32 ) + size;
             if( import->contents <= MAX_IMP_INTERNAL ) {
                 WriteLoad( import->u.r.relocs, size );
             } else {        // imports are in virtual memory.
