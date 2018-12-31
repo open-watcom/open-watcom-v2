@@ -61,29 +61,37 @@ VERSION_INFO            *VersionList = NULL;
 bool AddFile( const char *path, const char *file, const char *rel_file, const char *patch )
 //=========================================================================================
 {
-    FILE_INFO           *new, **owner;
+    FILE_INFO   *new;
+    FILE_INFO   **owner;
 
     new = malloc( sizeof( FILE_INFO ) );
-    if( new == NULL ) {
-        printf( "Out of memory\n" );
-        return( false );
-    } else {
+    if( new != NULL ) {
         new->path = strdup( path );
-        new->file = strdup( file );
-        new->rel_file = strdup( rel_file );
-        new->pack = strdup( patch );
-        if( new->path == NULL || new->file == NULL || new->pack == NULL ) {
-            printf( "Out of memory\n" );
-            return( false );
+        if( new->path != NULL ) {
+            new->file = strdup( file );
+            if( new->file != NULL ) {
+                new->rel_file = strdup( rel_file );
+                if( new->rel_file != NULL ) {
+                    new->pack = strdup( patch );
+                    if( new->pack != NULL ) {
+                        new->next = NULL;
+                        owner = &FileList;
+                        while( *owner != NULL ) {
+                            owner = &(*owner)->next;
+                        }
+                        *owner = new;
+                        return( true );
+                    }
+                    free( new->rel_file );
+                }
+                free( new->file );
+            }
+            free( new->path );
         }
-        new->next = NULL;
-        owner = &FileList;
-        while( *owner != NULL ) {
-            owner = &(*owner)->next;
-        }
-        *owner = new;
-        return( true );
+        free( new );
     }
+    printf( "Out of memory\n" );
+    return( false );
 }
 
 
