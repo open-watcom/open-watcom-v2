@@ -80,13 +80,13 @@ _WCRTLINK extern int pthread_join( pthread_t __thread, void **__value_ptr );
 _WCRTLINK extern int pthread_detach( pthread_t __thread );
 
 /* Self */
-_WCRTLINK extern pthread_t pthread_self( );
+_WCRTLINK extern pthread_t pthread_self( void );
 
 /* Cancellation */
 _WCRTLINK extern int pthread_cancel( pthread_t __thread );
 _WCRTLINK extern int pthread_setcancelstate( int __state, int *__oldstate );
 _WCRTLINK extern int pthread_setcanceltype( int __type, int *__oldtype );
-_WCRTLINK extern void pthread_testcancel( );
+_WCRTLINK extern void pthread_testcancel( void );
 
 /* Equality */
 _WCRTLINK extern int pthread_equal( pthread_t __pt1, pthread_t __pt2 );
@@ -97,7 +97,7 @@ _WCRTLINK extern int pthread_cond_destroy( pthread_cond_t *__cond );
 _WCRTLINK extern int pthread_cond_signal( pthread_cond_t *__cond );
 _WCRTLINK extern int pthread_cond_broadcast( pthread_cond_t *__cond );
 _WCRTLINK extern int pthread_cond_wait( pthread_cond_t *__cond, pthread_mutex_t *__mutex );
-_WCRTLINK extern int pthread_cond_timedwait( pthread_cond_t *__cond, pthread_mutex_t *__mutex, const struct timespec *abstime );
+_WCRTLINK extern int pthread_cond_timedwait( pthread_cond_t *__cond, pthread_mutex_t *__mutex, const struct timespec *__abstime );
 
 /* Thread-specific keys */
 _WCRTLINK extern int pthread_key_create( pthread_key_t *__key, void (_WCCALLBACK *__destructor)(void*) );
@@ -123,7 +123,7 @@ _WCRTLINK extern int pthread_barrier_wait( pthread_barrier_t *__barrier );
 
 /* Thread concurrency */
 _WCRTLINK extern int pthread_getconcurrency(void);
-_WCRTLINK extern int pthread_setconcurrency(int new_level);
+_WCRTLINK extern int pthread_setconcurrency(int __new_level);
 
 /* Scheduling */
 _WCRTLINK extern int pthread_getschedparam( pthread_t __thr, int *__policy, struct sched_param *__param );
@@ -155,8 +155,8 @@ _WCRTLINK extern int pthread_attr_setscope( pthread_attr_t *__attr, int __conten
 _WCRTLINK extern int pthread_attr_getscope( const pthread_attr_t *__attr, int *__contentionscope );
 _WCRTLINK extern int pthread_attr_setstackaddr( pthread_attr_t *__attr, void *__stackaddr );
 _WCRTLINK extern int pthread_attr_getstackaddr( const pthread_attr_t *__attr, void **__stackaddr );
-_WCRTLINK extern int pthread_attr_setstacksize( pthread_attr_t *attr, size_t __stacksize );
-_WCRTLINK extern int pthread_attr_getstacksize( const pthread_attr_t *attr, size_t *__stacksize );
+_WCRTLINK extern int pthread_attr_setstacksize( pthread_attr_t *__attr, size_t __stacksize );
+_WCRTLINK extern int pthread_attr_getstacksize( const pthread_attr_t *__attr, size_t *__stacksize );
 _WCRTLINK extern int pthread_attr_setstack( pthread_attr_t *__attr, void *__stackaddr, size_t __stacksize );
 _WCRTLINK extern int pthread_attr_getstack( const pthread_attr_t *__attr, void **__stackaddr, size_t *__stacksize );
 

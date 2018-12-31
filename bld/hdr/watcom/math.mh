@@ -130,20 +130,20 @@ _WMRTLINK extern int _FLSign( long double __x );
 #define FP_NAN          3
 #define FP_INFINITE     4
 
-#define fpclassify(x)                               \
-    ((sizeof(x) == sizeof(float)) ? _FSClass(x) :   \
-    (sizeof(x) == sizeof(double)) ? _FDClass(x) :   \
-                                    _FLClass(x))
+#define fpclassify(__x)                                 \
+    ((sizeof(__x) == sizeof(float)) ? _FSClass(__x) :   \
+    (sizeof(__x) == sizeof(double)) ? _FDClass(__x) :   \
+                                      _FLClass(__x))
 
-#define isfinite(x)     (fpclassify(x) <= FP_NORMAL)
-#define isinf(x)        (fpclassify(x) == FP_INFINITE)
-#define isnan(x)        (fpclassify(x) == FP_NAN)
-#define isnormal(x)     (fpclassify(x) == FP_NORMAL)
+#define isfinite(__x)   (fpclassify(__x) <= FP_NORMAL)
+#define isinf(__x)      (fpclassify(__x) == FP_INFINITE)
+#define isnan(__x)      (fpclassify(__x) == FP_NAN)
+#define isnormal(__x)   (fpclassify(__x) == FP_NORMAL)
 
-#define signbit(x)                                  \
-    ((sizeof(x) == sizeof(float)) ? _FSSign(x) :    \
-    (sizeof(x) == sizeof(double)) ? _FDSign(x) :    \
-                                    _FLSign(x))
+#define signbit(__x)                                    \
+    ((sizeof(__x) == sizeof(float)) ? _FSSign(__x) :    \
+    (sizeof(__x) == sizeof(double)) ? _FDSign(__x) :    \
+                                      _FLSign(__x))
 
 :: The following externs are also defined in float.h
 /* Floating-point Infinity and NaN constants */
@@ -223,12 +223,12 @@ _WMRTLINK extern double scalbn( double __x, int __n );
 _WMRTLINK extern double tgamma( double __x );
 _WMRTLINK extern double trunc( double __x );
 
-_WMRTLINK extern float nanf(const char *ignored);
-_WMRTLINK extern double nan(const char *ignored);
+_WMRTLINK extern float nanf(const char *__ignored);
+_WMRTLINK extern double nan(const char *__ignored);
 #ifdef _LONG_DOUBLE_
-_WMRTLINK extern long double nanl(const char *ignored);
+_WMRTLINK extern long double nanl(const char *__ignored);
 #else
-_WMRTLINK extern double nanl(const char *ignored);
+_WMRTLINK extern double nanl(const char *__ignored);
 #endif
 
 :segment DOS | QNX | RDOS

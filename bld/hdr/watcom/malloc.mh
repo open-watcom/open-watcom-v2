@@ -31,17 +31,16 @@
 #define _FREEENTRY      1
 
 :segment LINUX
-#undef __FILLER
 #ifdef _M_IX86
- #define __FILLER(a) unsigned short a;
+ #define __FILLER_MALLOC(__a)   unsigned short __a;
 #else
- #define __FILLER(a)
+ #define __FILLER_MALLOC(__a)
 #endif
 
 :endsegment
 typedef struct _heapinfo {
 :segment LINUX
-    void _WCFAR *_pentry; __FILLER(_1)  /* heap pointer */
+    void _WCFAR *_pentry; __FILLER_MALLOC(_1) /* heap pointer */
 :elsesegment
     void _WCFAR *_pentry;               /* heap pointer */
 :endsegment
@@ -143,7 +142,7 @@ using std::_os2hmalloc;
 #define _NULLOFF ((void __based(void) *)~0)
 
 _WCRTLINK extern int _bfreeseg( __segment __seg );
-_WCRTLINK extern __segment _bheapseg( size_t size );
+_WCRTLINK extern __segment _bheapseg( size_t __size );
 _WCRTLINK extern void __based(void) *_bcalloc( __segment __seg, size_t __num, size_t __size );
 _WCRTLINK extern void __based(void) *_bexpand( __segment __seg, void __based(void) *__mem, size_t __size );
 _WCRTLINK extern void _bfree( __segment __seg, void __based(void) *__mem );

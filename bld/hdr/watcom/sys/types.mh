@@ -82,9 +82,9 @@ typedef short unsigned  msg_t;  /* Used for message passing         */
 typedef long            nid_t;  /* Used for network IDs             */
 :include extepi.sp
 
-#define minor(device)                   ((int)((device) & 0x3ff))
-#define major(device)                   ((int)(((device) >> 10) & 0x3f))
-#define makedev(node,major,minor)       ((dev_t)(((node) << 16) | ((major) << 10) | (minor)))
+#define minor(__device)                 ((int)((__device) & 0x3ff))
+#define major(__device)                 ((int)(((__device) >> 10) & 0x3f))
+#define makedev(__node,__major,__minor) ((dev_t)(((__node) << 16) | ((__major) << 10) | (__minor)))
 
 typedef char _WCI86FAR *caddr_t;
 
@@ -115,9 +115,9 @@ typedef int             key_t;
 typedef unsigned short  sel_t;
 
 :elsesegment DOS | RDOS
-#define major(device)           ((int)(((device) >> 8) & 0xFF))
-#define minor(device)           ((int)((device) & 0xff))
-#define makedev(major,minor)    ((dev_t) (((major) << 8) | (minor)))
+#define major(__device)             ((int)(((__device) >> 8) & 0xFF))
+#define minor(__device)             ((int)((__device) & 0xff))
+#define makedev(__major,__minor)    ((dev_t)(((__major) << 8) | (__minor)))
 
 :endsegment
 :include poppack.sp

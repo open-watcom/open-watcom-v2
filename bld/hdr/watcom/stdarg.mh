@@ -48,30 +48,29 @@ typedef __va_list va_list;
  #define _AXP_FLOAT_REGS    6
  extern void *__builtin_va_start(__va_list*, ...);
  #pragma intrinsic(__builtin_va_start)
- #define va_start(ap,pn) (__builtin_va_start(&ap,pn,1))
- #define va_arg(ap,type) ((ap).__offset+=\
-     ((sizeof(type)+_AXP_WORD_SIZE-1)&~(_AXP_WORD_SIZE-1)),\
-     (*(type *)((ap).__base+(ap).__offset-\
-       ((__builtin_isfloat(type)&&(ap).__offset <=\
+ #define va_start(__ap,__pn)    (__builtin_va_start(&__ap,__pn,1))
+ #define va_arg(__ap,__type)    ((__ap).__offset+=\
+     ((sizeof(__type)+_AXP_WORD_SIZE-1)&~(_AXP_WORD_SIZE-1)),\
+     (*(__type *)((__ap).__base+(__ap).__offset-\
+       ((__builtin_isfloat(__type)&&(__ap).__offset <=\
          (_AXP_FLOAT_REGS*_AXP_FLOAT_SIZE)) ?\
            (_AXP_FLOAT_REGS*_AXP_FLOAT_SIZE)+_AXP_FLOAT_SIZE :\
-             ((sizeof(type)+_AXP_WORD_SIZE-1)&~(_AXP_WORD_SIZE-1))))))
- #define va_end(ap)      ((void)0)
+             ((sizeof(__type)+_AXP_WORD_SIZE-1)&~(_AXP_WORD_SIZE-1))))))
+ #define va_end(__ap)           ((void)0)
 #elif defined(__PPC__)
 :segment DOS | RDOS
  #ifdef __NT__
-  #define _INTSIZEOF(n)   ( (sizeof(n) + sizeof(int) - 1) & ~(sizeof(int) - 1) )
-  #define       _ALIGNIT(ap,t) \
-        ((((int)(ap))+(sizeof(t)<8?3:7)) & (sizeof(t)<8?~3:~7))
-  #define va_start(ap,v)  ( ap = (__va_list)&v + _INTSIZEOF(v) )
-  #define va_arg(ap,t)    ( *(t *)((ap = (char *) (_ALIGNIT(ap, t) + _INTSIZEOF(t))) - _INTSIZEOF(t)) )
-  #define va_end(ap)      ( ap = (__va_list)0 )
+  #define _INTSIZEOF(__n)       ((sizeof(__n) + sizeof(int) - 1) & ~(sizeof(int) - 1))
+  #define _ALIGNIT(__ap,__t)    ((((int)(__ap))+(sizeof(__t)<8?3:7)) & (sizeof(__t)<8?~3:~7))
+  #define va_start(__ap,__v)    (__ap = (__va_list)&__v + _INTSIZEOF(__v))
+  #define va_arg(__ap,__t)      (*(__t *)((__ap = (char *)(_ALIGNIT(__ap,__t) + _INTSIZEOF(__t))) - _INTSIZEOF(__t)))
+  #define va_end(__ap)          (__ap = (__va_list)0)
  #else
 :endsegment
   extern void *__builtin_va_start( __va_list * );
   #pragma intrinsic(__builtin_va_start)
-  #define va_start(ap,pn) (__builtin_va_start(&ap,pn))
-  #define va_arg(ap,type) (__builtin_va_arg(&ap,type))
+  #define va_start(__ap,__pn)   (__builtin_va_start(&__ap,__pn))
+  #define va_arg(__ap,__type)   (__builtin_va_arg(&__ap,__type))
 :segment DOS | RDOS
  #endif
 :endsegment
@@ -79,44 +78,44 @@ typedef __va_list va_list;
  #define _MIPS_WORD_SIZE     4
  extern void *__builtin_va_start(__va_list*, ...);
  #pragma intrinsic(__builtin_va_start)
- #define va_start(ap,pn) (__builtin_va_start(&ap,pn,1))
- #define va_arg(ap,type) ((ap).__offset+=\
-     ((sizeof(type)+_MIPS_WORD_SIZE-1)&~(_MIPS_WORD_SIZE-1)),\
-     (*(type *)((ap).__base+(ap).__offset-\
-       (((sizeof(type)+_MIPS_WORD_SIZE-1)&~(_MIPS_WORD_SIZE-1))))))
- #define va_end(ap)      ((void)0)
+ #define va_start(__ap,__pn)    (__builtin_va_start(&__ap,__pn,1))
+ #define va_arg(__ap,__type)    ((__ap).__offset+=\
+     ((sizeof(__type)+_MIPS_WORD_SIZE-1)&~(_MIPS_WORD_SIZE-1)),\
+     (*(__type *)((__ap).__base+(__ap).__offset-\
+       (((sizeof(__type)+_MIPS_WORD_SIZE-1)&~(_MIPS_WORD_SIZE-1))))))
+ #define va_end(__ap)           ((void)0)
 #else
 :segment DOS | QNX | RDOS
  #if defined(__HUGE__) || defined(__SW_ZU)
 :elsesegment
  #ifdef __SW_ZU
 :endsegment
-  #define va_start(ap,pn) ((ap)[0]=(char _WCFAR*)&pn+\
-      ((sizeof(pn)+sizeof(int)-1)&~(sizeof(int)-1)),(void)0)
-  #define va_arg(ap,type)     ((ap)[0]+=\
-      ((sizeof(type)+sizeof(int)-1)&~(sizeof(int)-1)),\
-      (*(type _WCFAR*)((ap)[0]-((sizeof(type)+sizeof(int)-1)&~(sizeof(int)-1)))))
-  #define va_end(ap)        ((ap)[0]=0,(void)0)
+  #define va_start(__ap,__pn)   ((__ap)[0]=(char _WCFAR*)&__pn+\
+      ((sizeof(__pn)+sizeof(int)-1)&~(sizeof(int)-1)),(void)0)
+  #define va_arg(__ap,__type)   ((__ap)[0]+=\
+      ((sizeof(__type)+sizeof(int)-1)&~(sizeof(int)-1)),\
+      (*(__type _WCFAR*)((__ap)[0]-((sizeof(__type)+sizeof(int)-1)&~(sizeof(int)-1)))))
+  #define va_end(__ap)          ((__ap)[0]=0,(void)0)
  #else
-  #define va_start(ap,pn) ((ap)[0]=(char *)&pn+\
-      ((sizeof(pn)+sizeof(int)-1)&~(sizeof(int)-1)),(void)0)
-  #define va_arg(ap,type)     ((ap)[0]+=\
-      ((sizeof(type)+sizeof(int)-1)&~(sizeof(int)-1)),\
-      (*(type *)((ap)[0]-((sizeof(type)+sizeof(int)-1)&~(sizeof(int)-1)))))
-  #define va_end(ap)        ((ap)[0]=0,(void)0)
+  #define va_start(__ap,__pn)   ((__ap)[0]=(char *)&__pn+\
+      ((sizeof(__pn)+sizeof(int)-1)&~(sizeof(int)-1)),(void)0)
+  #define va_arg(__ap,__type)   ((__ap)[0]+=\
+      ((sizeof(__type)+sizeof(int)-1)&~(sizeof(int)-1)),\
+      (*(__type *)((__ap)[0]-((sizeof(__type)+sizeof(int)-1)&~(sizeof(int)-1)))))
+  #define va_end(__ap)          ((__ap)[0]=0,(void)0)
  #endif
 #endif
 
 :: define __va_copy even if -za is used
 #if defined(__PPC__) || defined(__AXP__)
- #define __va_copy(dest,src) ((dest)=(src),(void)0)
+ #define __va_copy(__dest,__src)    ((__dest)=(__src),(void)0)
 #else
- #define __va_copy(dest,src) ((dest)[0]=(src)[0],(void)0)
+ #define __va_copy(__dest,__src)    ((__dest)[0]=(__src)[0],(void)0)
 #endif
 
 :: Extensions section (C99 va_copy definition)
 :include ext.sp
-#define va_copy(dest,src) __va_copy(dest,src)
+#define va_copy(__dest,__src)   __va_copy(__dest,__src)
 :include extepi.sp
 
 :segment CNAME

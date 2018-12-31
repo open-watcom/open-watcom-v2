@@ -133,14 +133,14 @@ struct _stati64 {
 :endsegment
 :include modedef.sp
 
-#define S_ISFIFO(m) (((m)&S_IFMT)==S_IFIFO)    /* Test for FIFO (pipe)        */
-#define S_ISCHR(m)  (((m)&S_IFMT)==S_IFCHR)    /* Test for char special file  */
-#define S_ISDIR(m)  (((m)&S_IFMT)==S_IFDIR)    /* Test for directory file     */
-#define S_ISBLK(m)  (((m)&S_IFMT)==S_IFBLK)    /* Test for block specl file   */
-#define S_ISREG(m)  (((m)&S_IFMT)==S_IFREG)    /* Test for regular file       */
-#define S_ISLNK(m)  (((m)&S_IFMT)==S_IFLNK)    /* Test for symbolic link      */
-#define S_ISNAM(m)  (((m)&S_IFMT)==S_IFNAM)    /* Test for special named file */
-#define S_ISSOCK(m) (((m)&S_IFMT)==S_IFSOCK)   /* Test for socket             */
+#define S_ISFIFO(__m) (((__m)&S_IFMT)==S_IFIFO)    /* Test for FIFO (pipe)        */
+#define S_ISCHR(__m)  (((__m)&S_IFMT)==S_IFCHR)    /* Test for char special file  */
+#define S_ISDIR(__m)  (((__m)&S_IFMT)==S_IFDIR)    /* Test for directory file     */
+#define S_ISBLK(__m)  (((__m)&S_IFMT)==S_IFBLK)    /* Test for block specl file   */
+#define S_ISREG(__m)  (((__m)&S_IFMT)==S_IFREG)    /* Test for regular file       */
+#define S_ISLNK(__m)  (((__m)&S_IFMT)==S_IFLNK)    /* Test for symbolic link      */
+#define S_ISNAM(__m)  (((__m)&S_IFMT)==S_IFNAM)    /* Test for special named file */
+#define S_ISSOCK(__m) (((__m)&S_IFMT)==S_IFSOCK)   /* Test for socket             */
 
 /*
  *  POSIX 1003.1 Prototypes.

@@ -20,13 +20,12 @@
 
 :include pshpackl.sp
 
-#undef __FILLER
 :segment DOS | QNX
 #if defined(_M_I86) || defined(__WINDOWS_386__)
- #define __FILLER(a)
+ #define __FILLER_I86(__a)
 #else
 :endsegment
- #define __FILLER(a) unsigned short a;
+ #define __FILLER_I86(__a)  unsigned short __a;
 :segment DOS | QNX
 #endif
 :endsegment
@@ -54,12 +53,12 @@ struct DWORDREGS {
 /* word registers */
 
 struct WORDREGS {
-        unsigned short ax;  __FILLER(_1)
-        unsigned short bx;  __FILLER(_2)
-        unsigned short cx;  __FILLER(_3)
-        unsigned short dx;  __FILLER(_4)
-        unsigned short si;  __FILLER(_5)
-        unsigned short di;  __FILLER(_6)
+        unsigned short ax;  __FILLER_I86(_1)
+        unsigned short bx;  __FILLER_I86(_2)
+        unsigned short cx;  __FILLER_I86(_3)
+        unsigned short dx;  __FILLER_I86(_4)
+        unsigned short si;  __FILLER_I86(_5)
+        unsigned short di;  __FILLER_I86(_6)
 :segment DOS | QNX
 #ifdef __WINDOWS_386__
         unsigned short cflag;
@@ -74,10 +73,10 @@ struct WORDREGS {
 /* byte registers */
 
 struct BYTEREGS {
-        unsigned char al, ah;  __FILLER(_1)
-        unsigned char bl, bh;  __FILLER(_2)
-        unsigned char cl, ch;  __FILLER(_3)
-        unsigned char dl, dh;  __FILLER(_4)
+        unsigned char al, ah;  __FILLER_I86(_1)
+        unsigned char bl, bh;  __FILLER_I86(_2)
+        unsigned char cl, ch;  __FILLER_I86(_3)
+        unsigned char dl, dh;  __FILLER_I86(_4)
 };
 
 /* general purpose registers union - overlays the corresponding dword,
@@ -117,20 +116,20 @@ struct SREGS {
 /* intr structs */
 
 struct REGPACKB {
-        unsigned char al, ah;  __FILLER(_1)
-        unsigned char bl, bh;  __FILLER(_2)
-        unsigned char cl, ch;  __FILLER(_3)
-        unsigned char dl, dh;  __FILLER(_4)
+        unsigned char al, ah;  __FILLER_I86(_1)
+        unsigned char bl, bh;  __FILLER_I86(_2)
+        unsigned char cl, ch;  __FILLER_I86(_3)
+        unsigned char dl, dh;  __FILLER_I86(_4)
 };
 
 struct REGPACKW {
-        unsigned short ax;  __FILLER(_1)
-        unsigned short bx;  __FILLER(_2)
-        unsigned short cx;  __FILLER(_3)
-        unsigned short dx;  __FILLER(_4)
-        unsigned short bp;  __FILLER(_5)
-        unsigned short si;  __FILLER(_6)
-        unsigned short di;  __FILLER(_7)
+        unsigned short ax;  __FILLER_I86(_1)
+        unsigned short bx;  __FILLER_I86(_2)
+        unsigned short cx;  __FILLER_I86(_3)
+        unsigned short dx;  __FILLER_I86(_4)
+        unsigned short bp;  __FILLER_I86(_5)
+        unsigned short si;  __FILLER_I86(_6)
+        unsigned short di;  __FILLER_I86(_7)
         unsigned short ds;
         unsigned short es;
 :segment DOS | QNX
@@ -181,20 +180,20 @@ struct INTPACKX {
          is invoked with at least the /3 switch.
 */
 struct INTPACKW {
-        unsigned short gs;  __FILLER(_1)
-        unsigned short fs;  __FILLER(_2)
-        unsigned short es;  __FILLER(_3)
-        unsigned short ds;  __FILLER(_4)
-        unsigned short di;  __FILLER(_5)
-        unsigned short si;  __FILLER(_6)
-        unsigned short bp;  __FILLER(_7)
-        unsigned short sp;  __FILLER(_8)
-        unsigned short bx;  __FILLER(_9)
-        unsigned short dx;  __FILLER(_a)
-        unsigned short cx;  __FILLER(_b)
-        unsigned short ax;  __FILLER(_c)
-        unsigned short ip;  __FILLER(_d)
-        unsigned short cs;  __FILLER(_e)
+        unsigned short gs;  __FILLER_I86(_1)
+        unsigned short fs;  __FILLER_I86(_2)
+        unsigned short es;  __FILLER_I86(_3)
+        unsigned short ds;  __FILLER_I86(_4)
+        unsigned short di;  __FILLER_I86(_5)
+        unsigned short si;  __FILLER_I86(_6)
+        unsigned short bp;  __FILLER_I86(_7)
+        unsigned short sp;  __FILLER_I86(_8)
+        unsigned short bx;  __FILLER_I86(_9)
+        unsigned short dx;  __FILLER_I86(_a)
+        unsigned short cx;  __FILLER_I86(_b)
+        unsigned short ax;  __FILLER_I86(_c)
+        unsigned short ip;  __FILLER_I86(_d)
+        unsigned short cs;  __FILLER_I86(_e)
         unsigned flags;
 };
 struct INTPACKB {
@@ -213,10 +212,10 @@ struct INTPACKB {
 :segment DOS | QNX
 #endif
 :endsegment
-        unsigned char bl, bh; __FILLER(_1)
-        unsigned char dl, dh; __FILLER(_2)
-        unsigned char cl, ch; __FILLER(_3)
-        unsigned char al, ah; __FILLER(_4)
+        unsigned char bl, bh; __FILLER_I86(_1)
+        unsigned char dl, dh; __FILLER_I86(_2)
+        unsigned char cl, ch; __FILLER_I86(_3)
+        unsigned char al, ah; __FILLER_I86(_4)
 };
 union  INTPACK {
         struct INTPACKB h;

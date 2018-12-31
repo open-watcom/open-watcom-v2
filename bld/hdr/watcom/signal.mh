@@ -143,7 +143,7 @@ struct stack_t {
 
 #define _SS_SETSEG  (1<<8)
 
-extern int sigaltstack(const stack_t *ss, stack_t *oss);
+extern int sigaltstack(const stack_t *__ss, stack_t *__oss);
 
 #endif
 
@@ -258,7 +258,7 @@ _WCRTLINK extern int  sigfillset( sigset_t *__set );
 _WCRTLINK extern int  sigismember( const sigset_t *__set, int __signo );
 _WCRTLINK extern int  sigpending( sigset_t *__set );
 _WCRTLINK extern int  sigprocmask( int __how, const sigset_t *__set, sigset_t *__oset );
-_WCRTLINK extern int  sigsuspend( const sigset_t *sigmask );
+_WCRTLINK extern int  sigsuspend( const sigset_t *__sigmask );
 :segment LINUX
 _WCRTLINK extern int  siginterrupt( int __signo, int __flag );
 _WCRTLINK extern int  sigwait( const sigset_t *__set, int *__sig );

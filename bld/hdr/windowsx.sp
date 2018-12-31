@@ -107,7 +107,7 @@ _WCRTLINK extern char _WCFAR *_fstrupr( char _WCFAR *__string );
 #define _fstrtok_r  strtok_r
 :elsesegment WINDOWSX_STRING
 _WCRTLINK extern char _WCFAR *_fstrspnp( const char _WCFAR *__s1, const char _WCFAR *__s2 );
-_WCRTLINK extern char _WCFAR *_fstrtok_r( char _WCFAR *str, const char _WCFAR *charset, char _WCFAR **ptr );
+_WCRTLINK extern char _WCFAR *_fstrtok_r( char _WCFAR *__str, const char _WCFAR *__charset, char _WCFAR **__ptr );
 :endsegment
 :segment WINDOWSX_MALLOC | WINDOWSX_STRING
 :segment DOS

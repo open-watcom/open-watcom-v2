@@ -177,8 +177,8 @@ _WCRTLINK extern int    setegid( gid_t __newegroup );
 _WCRTLINK extern int    seteuid( uid_t __newuserid );
 _WCRTLINK extern int    setgid( gid_t __newgroup );
 _WCRTLINK extern int    setpgid( pid_t __pid, pid_t __pgroupid );
-_WCRTLINK extern int    setregid( gid_t real, uid_t effective );
-_WCRTLINK extern int    setreuid( uid_t real, uid_t effective );
+_WCRTLINK extern int    setregid( gid_t __real, uid_t __effective );
+_WCRTLINK extern int    setreuid( uid_t __real, uid_t __effective );
 _WCRTLINK extern pid_t  setsid( void );
 _WCRTLINK extern int    setuid( uid_t __newuserid );
 _WCRTLINK extern int    symlink( const char *__pname, const char *__slink );
@@ -192,7 +192,7 @@ _WCRTLINK extern int    ttyname_r( int __fildes, char *__buf, size_t __buflen );
 _WCRTLINK extern int    mkdir( const char *__path, mode_t __mode );
 _WCRTLINK extern int    mknod( const char *__path, mode_t __mode, int __dev );
 _WCRTLINK extern int    mount( const char *__special, const char *__dir, int __rwflag );
-_WCRTLINK extern int    tcsetct( int __fildes, pid_t pid );
+_WCRTLINK extern int    tcsetct( int __fildes, pid_t __pid );
 _WCRTLINK extern int    umount( const char *__special );
 :endsegment
 :segment LINUX
@@ -218,14 +218,14 @@ _WCRTLINK extern char   *qnx_fullpath( char *__fullpath, const char *__path );
 
 struct _psinfo2; /* for C++ */
 
-_WCRTLINK extern int    qnx_getids( pid_t pid, struct _psinfo2 *info );
-_WCRTLINK extern int    qnx_setids( pid_t pid, int id, unsigned subtype );
-_WCRTLINK extern int    qnx_sync( nid_t nid );
+_WCRTLINK extern int    qnx_getids( pid_t __pid, struct _psinfo2 *__info );
+_WCRTLINK extern int    qnx_setids( pid_t __pid, int __id, unsigned __subtype );
+_WCRTLINK extern int    qnx_sync( nid_t __nid );
 _WCRTLINK extern int    unlock( int __fildes, long __offset, long __nbytes );
 :endsegment
 :include extepi.sp
 
-_WCRTLINK extern size_t confstr( int, char*, size_t );
+_WCRTLINK extern size_t confstr( int, char *, size_t );
 :include extposix.sp
 _WCRTLINK extern char   *basename( char *__fname );
 _WCRTLINK extern off_t  ltrunc( int __fildes, off_t __offset, int __origin );

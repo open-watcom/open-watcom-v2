@@ -115,8 +115,8 @@ _WCRTLINK extern int    _execvpe( const char *__file, const char *const __argv[]
 
 :segment RDOS
  _WCRTLINK extern int  _beginthread(
-                void (_WCCALLBACK *__start_address)(void *), int prio,
-                const char *thread_name,
+                void (_WCCALLBACK *__start_address)(void *), int __prio,
+                const char *__thread_name,
                 unsigned __stack_size, void *__arglist );
  #pragma intrinsic(_beginthread)
  _WCRTLINK extern void  _endthread( void );

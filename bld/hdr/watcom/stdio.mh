@@ -271,7 +271,7 @@ _WCRTLINK extern __w_FILE   *__get_iob_ptr( void );
  #define __iob          __iob_br
 #endif
 
-_WCRTLINK extern __w_FILE   *__get_std_file(unsigned handle);
+_WCRTLINK extern __w_FILE   *__get_std_file(unsigned __handle);
 
 #ifndef __OBSCURE_STREAM_INTERNALS
 
@@ -491,38 +491,38 @@ _WCRTLINK extern int        pclose( __w_FILE *__stream );
 :: Eventually they can be re-introduced as proper in-line functions.
 :segment !CNAME
 #ifndef __OBSCURE_STREAM_INTERNALS
-#define clearerr(fp)    ((fp)->_flag &= ~(_SFERR|_EOF))
-#define feof(fp)        ((fp)->_flag & _EOF)
-#define ferror(fp)      ((fp)->_flag & _SFERR)
-#define fileno(fp)      ((fp)->_handle)
-#define _fileno(fp)     ((fp)->_handle)
+#define clearerr(__fp)  ((__fp)->_flag &= ~(_SFERR|_EOF))
+#define feof(__fp)      ((__fp)->_flag & _EOF)
+#define ferror(__fp)    ((__fp)->_flag & _SFERR)
+#define fileno(__fp)    ((__fp)->_handle)
+#define _fileno(__fp)   ((__fp)->_handle)
 #endif
 ::
 #if defined(__SW_BD) || defined(__SW_BM)
-#define getc(fp)        fgetc(fp)
-#define putc(c,fp)      fputc(c,fp)
+#define getc(__fp)      fgetc(__fp)
+#define putc(__c,__fp)  fputc(__c,__fp)
 #else
 #ifndef __OBSCURE_STREAM_INTERNALS
-#define getc(fp) \
-        ((fp)->_cnt<=0 \
+#define getc(__fp) \
+        ((__fp)->_cnt<=0 \
 :segment DOS | RDOS
-        || (unsigned)((*(fp)->_ptr)-'\x0d')<=('\x1a'-'\x0d') \
+        || (unsigned)((*(__fp)->_ptr)-'\x0d')<=('\x1a'-'\x0d') \
 :endsegment
-        ? fgetc(fp) \
-        : ((fp)->_cnt--,*(fp)->_ptr++))
+        ? fgetc(__fp) \
+        : ((__fp)->_cnt--,*(__fp)->_ptr++))
 ::
-#define putc(c,fp) \
-        ((fp)->_flag&_IONBF \
-        || (fp)->_bufsize-(fp)->_cnt<=1 \
-        ? fputc(c,fp) \
-        : ((*(fp)->_ptr=(unsigned char)(c))=='\n') \
-        ? fputc('\n',fp) \
-        : ((fp)->_flag|=_DIRTY,(fp)->_cnt++,*(fp)->_ptr++))
+#define putc(__c,__fp) \
+        ((__fp)->_flag&_IONBF \
+        || (__fp)->_bufsize-(__fp)->_cnt<=1 \
+        ? fputc(__c,__fp) \
+        : ((*(__fp)->_ptr=(unsigned char)(__c))=='\n') \
+        ? fputc('\n',__fp) \
+        : ((__fp)->_flag|=_DIRTY,(__fp)->_cnt++,*(__fp)->_ptr++))
 #endif
 #endif
 ::
 #define getchar()       getc(stdin)
-#define putchar(c)      putc(c,stdout)
+#define putchar(__c)    putc(__c,stdout)
 
 :endsegment
 ::::::::: Safer C :::::::::

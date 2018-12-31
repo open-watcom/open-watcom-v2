@@ -188,11 +188,11 @@ using std::uintmax_t;
 :segment DOS | QNX | RDOS
 #ifdef _M_I86
  #ifdef __HUGE__
-  #define PTRDIFF_MIN     (-2147483647L-1)
-  #define PTRDIFF_MAX     2147483647L
+  #define PTRDIFF_MIN    (-2147483647L-1)
+  #define PTRDIFF_MAX    2147483647L
  #else
-  #define PTRDIFF_MIN     (-32767-1)
-  #define PTRDIFF_MAX     32767
+  #define PTRDIFF_MIN    (-32767-1)
+  #define PTRDIFF_MAX    32767
  #endif
  #define SIG_ATOMIC_MIN  (-32767-1)
  #define SIG_ATOMIC_MAX  32767
@@ -221,18 +221,18 @@ using std::uintmax_t;
 #ifdef __STDC_CONSTANT_MACROS
 
 :endsegment
-#define INT8_C(x)    (x)
-#define INT16_C(x)   (x)
-#define INT32_C(x)   (x + (INT32_MAX - INT32_MAX))
-#define INT64_C(x)   (x + (INT64_MAX - INT64_MAX))
+#define INT8_C(__x)     (__x)
+#define INT16_C(__x)    (__x)
+#define INT32_C(__x)    (__x + (INT32_MAX - INT32_MAX))
+#define INT64_C(__x)    (__x + (INT64_MAX - INT64_MAX))
 
-#define UINT8_C(x)   (x)
-#define UINT16_C(x)  (x)
-#define UINT32_C(x)  (x + (UINT32_MAX - UINT32_MAX))
-#define UINT64_C(x)  (x + (UINT64_MAX - UINT64_MAX))
+#define UINT8_C(__x)    (__x)
+#define UINT16_C(__x)   (__x)
+#define UINT32_C(__x)   (__x + (UINT32_MAX - UINT32_MAX))
+#define UINT64_C(__x)   (__x + (UINT64_MAX - UINT64_MAX))
 
-#define INTMAX_C(x)  (x + (INT64_MAX - INT64_MAX))
-#define UINTMAX_C(x) (x + (UINT64_MAX - UINT64_MAX))
+#define INTMAX_C(__x)   (__x + (INT64_MAX - INT64_MAX))
+#define UINTMAX_C(__x)  (__x + (UINT64_MAX - UINT64_MAX))
 
 :segment CNAME
 #endif /* Constant macros. */

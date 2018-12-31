@@ -34,12 +34,12 @@ typedef enum {
 #define __WALL          0x40000000 /* Wait for any child.  */
 #define __WCLONE        0x80000000 /* Wait for cloned process.  */
 
-#define WEXITSTATUS(status)     (((status) & 0xff00) >> 8)
-#define WTERMSIG(status)        ((status) & 0x7f)
-#define WSTOPSIG(status)        (((status) & 0xff00) >> 8)
-#define WIFEXITED(status)       (((status) & 0x7f) == 0)
-#define WIFSIGNALED(status)     (((status) & 0xff) != 0x7f && ((status) & 0x7f) != 0)
-#define WIFSTOPPED(status)      (((status) & 0xff) == 0x7f)
+#define WEXITSTATUS(__s)    (((__s) & 0xff00) >> 8)
+#define WTERMSIG(__s)       ((__s) & 0x7f)
+#define WSTOPSIG(__s)       (((__s) & 0xff00) >> 8)
+#define WIFEXITED(__s)      (((__s) & 0x7f) == 0)
+#define WIFSIGNALED(__s)    (((__s) & 0xff) != 0x7f && ((__s) & 0x7f) != 0)
+#define WIFSTOPPED(__s)     (((__s) & 0xff) == 0x7f)
 
 _WCRTLINK extern pid_t  wait( int *__stat_loc );
 _WCRTLINK extern pid_t  waitpid( pid_t __pid, int *__stat_loc, int __options );

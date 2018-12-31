@@ -25,7 +25,7 @@ typedef union {
 
 /* General support intrinsics */
 void  _m_empty(void);
-__m64 _m_from_int(int i);
+__m64 _m_from_int(int __i);
 int   _m_to_int(__m64 *__m);
 __m64 _m_packsswb(__m64 *__m1, __m64 *__m2);
 __m64 _m_packssdw(__m64 *__m1, __m64 *__m2);
@@ -145,19 +145,19 @@ __m64 _m_pcmpgtd(__m64 *__m1, __m64 *__m2);
 
 #pragma aux __m_unary = \
     __parm [__eax] \
-    __value [] __struct __caller [__esi] \
+    __value __struct __caller [__esi] \
     __modify __exact []
 
 #pragma aux __m_binary = \
     __parm [__eax] [__edx] \
-    __value [] __struct __caller [__esi] \
+    __value __struct __caller [__esi] \
     __modify __exact []
 
 #pragma aux _m_empty = \
         ".586" \
         "emms" \
     __parm [] \
-    __value [] \
+    __value \
     __modify __exact []
 
 #pragma aux _m_to_int = \

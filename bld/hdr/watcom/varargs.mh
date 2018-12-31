@@ -22,17 +22,17 @@
 #undef va_start
 
 #ifdef __PPC__
- extern void *__builtin_va_start(va_list*, ...);
+ extern void *__builtin_va_start(va_list *, ...);
  #pragma intrinsic(__builtin_va_start)
  #define va_alist       void *__alist, ...
  #define va_dcl
- #define va_start(ap)   (__builtin_va_start(&ap,__alist,0))
+ #define va_start(__ap) (__builtin_va_start(&__ap,__alist,0))
 #elif defined(__AXP__)
- extern void *__builtin_va_start(va_list*, ...);
+ extern void *__builtin_va_start(va_list *, ...);
  #pragma intrinsic(__builtin_va_start)
  #define va_alist       void *__alist, ...
  #define va_dcl
- #define va_start(ap)   (__builtin_va_start(&ap,__alist,0))
+ #define va_start(__ap) (__builtin_va_start(&__ap,__alist,0))
 #else
  #define va_alist       void *__alist, ...
  #define va_dcl
@@ -41,9 +41,9 @@
 :elsesegment
  #ifdef __SW_ZU
 :endsegment
-  #define va_start(ap)  ((ap)[0]=(char _WCFAR*)&__alist,(void)0)
+  #define va_start(__ap)    ((__ap)[0]=(char _WCFAR*)&__alist,(void)0)
  #else
-  #define va_start(ap)  ((ap)[0]=(char *)&__alist,(void)0)
+  #define va_start(__ap)    ((__ap)[0]=(char *)&__alist,(void)0)
  #endif
 #endif
 

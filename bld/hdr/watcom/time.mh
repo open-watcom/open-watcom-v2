@@ -198,7 +198,7 @@ _WCRTLINK extern size_t     wcsftime( wchar_t *, size_t, const wchar_t *, const 
 :include nsstdepi.sp
 
 :segment !CNAME
-#define difftime( t1, t0 )  ( ( double ) ( t1 ) - ( double ) ( t0 ) )
+#define difftime(__t1,__t0)  ((double)( __t1 ) - (double)( __t0 ))
 
 :endsegment
 ::
@@ -232,21 +232,21 @@ _WCRTLINK extern wchar_t    *__wasctime( const __w_tm *, wchar_t * );
 :segment LINUX | QNX
 :include extunix.sp
 
-_WCRTLINK extern int    nanosleep( const struct timespec *rqtp, struct timespec *rmtp );
+_WCRTLINK extern int    nanosleep( const struct timespec *__rqtp, struct timespec *__rmtp );
 
-_WCRTLINK extern int    timer_create( clockid_t clock_id, struct sigevent *evp, timer_t *tmr );
-_WCRTLINK extern int    timer_delete( timer_t timerid );
-_WCRTLINK extern int    timer_getoverrun( timer_t timerid );
-_WCRTLINK extern int    timer_gettime( timer_t timerid, struct itimerspec *value );
-_WCRTLINK extern int    timer_settime( timer_t timerid, int flags, struct itimerspec *value, struct itimerspec *ovalue );
+_WCRTLINK extern int    timer_create( clockid_t __clock_id, struct sigevent *__evp, timer_t *__tmr );
+_WCRTLINK extern int    timer_delete( timer_t __timerid );
+_WCRTLINK extern int    timer_getoverrun( timer_t __timerid );
+_WCRTLINK extern int    timer_gettime( timer_t __timerid, struct itimerspec *__value );
+_WCRTLINK extern int    timer_settime( timer_t __timerid, int __flags, struct itimerspec *__value, struct itimerspec *__ovalue );
 
-_WCRTLINK extern int    clock_gettime( clockid_t clock_id, struct timespec *tp );
-_WCRTLINK extern int    clock_getres( clockid_t clock_id, struct timespec *res );
+_WCRTLINK extern int    clock_gettime( clockid_t __clock_id, struct timespec *__tp );
+_WCRTLINK extern int    clock_getres( clockid_t __clock_id, struct timespec *__res );
 :segment QNX
-_WCRTLINK extern int    clock_settime( clockid_t clock_id, struct timespec *tp );
+_WCRTLINK extern int    clock_settime( clockid_t __clock_id, struct timespec *__tp );
 :elsesegment LINUX
-_WCRTLINK extern int    clock_settime( clockid_t clock_id, const struct timespec *tp );
-_WCRTLINK extern int    clock_nanosleep( clockid_t clock_id, int flags, const struct timespec *req, struct timespec *rmdr );
+_WCRTLINK extern int    clock_settime( clockid_t __clock_id, const struct timespec *__tp );
+_WCRTLINK extern int    clock_nanosleep( clockid_t __clock_id, int __flags, const struct timespec *__req, struct timespec *__rmdr );
 :endsegment
 
 :include extepi.sp
@@ -255,14 +255,14 @@ _WCRTLINK extern int    clock_nanosleep( clockid_t clock_id, int flags, const st
 :segment QNX
 :include ext.sp
 
-_WCRTLINK extern int    clock_setres( clockid_t clock_id, struct timespec *res );
+_WCRTLINK extern int    clock_setres( clockid_t __clock_id, struct timespec *__res );
 
-_WCRTLINK extern int    qnx_getclock( pid_t pid, clockid_t clock_id, struct timespec *tp );
-_WCRTLINK extern int    qnx_setclock( pid_t pid, clockid_t clock_id, struct timespec *tp );
-_WCRTLINK extern int    qnx_clock( nid_t nid, clockid_t clock_id, struct timespec *tp );
+_WCRTLINK extern int    qnx_getclock( pid_t __pid, clockid_t __clock_id, struct timespec *__tp );
+_WCRTLINK extern int    qnx_setclock( pid_t __pid, clockid_t __clock_id, struct timespec *__tp );
+_WCRTLINK extern int    qnx_clock( nid_t __nid, clockid_t __clock_id, struct timespec *__tp );
 
 _WCRTLINK extern long   qnx_timerperiod( long );
-_WCRTLINK extern long   qnx_ticksize( long nsec, int flags );
+_WCRTLINK extern long   qnx_ticksize( long __nsec, int __flags );
 _WCRTLINK extern int    qnx_adj_time( long, long, long *, long * );
 
 :include extepi.sp

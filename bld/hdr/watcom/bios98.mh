@@ -171,15 +171,12 @@ struct com_t {
 #define _bios_timeofday         __nec98_bios_timeofday
 
 
-_WCRTLINK extern unsigned short _bios_disk(unsigned __cmd,
-                                           struct diskinfo_t *__diskinfo);
+_WCRTLINK extern unsigned short _bios_disk(unsigned __cmd, struct diskinfo_t *__diskinfo);
 _WCRTLINK extern unsigned short _bios_equiplist(void);
 _WCRTLINK extern unsigned short _bios_keybrd(unsigned,unsigned char *);
 _WCRTLINK extern unsigned short _bios_memsize(void);
-_WCRTLINK extern unsigned short _bios_printer(unsigned __cmd,
-                                              unsigned char *_data);
-_WCRTLINK extern unsigned short _bios_serialcom(unsigned __cmd,unsigned __port,
-                                                struct com_t *__data);
+_WCRTLINK extern unsigned short _bios_printer(unsigned __cmd, unsigned char *_data);
+_WCRTLINK extern unsigned short _bios_serialcom(unsigned __cmd,unsigned __port, struct com_t *__data);
 _WCRTLINK extern unsigned short _bios_timeofday(unsigned __cmd,char *__timeval);
 
 :include poppack.sp

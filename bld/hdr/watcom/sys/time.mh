@@ -34,9 +34,9 @@ typedef long fd_mask;
 
 #define FD_SETSIZE          1024
 #define __NFDBITS           (8 * sizeof (fd_mask))
-#define __FDELT(d)          ((d) / __NFDBITS)
-#define __FDMASK(d)         ((fd_mask) 1 << ((d) % __NFDBITS))
-#define __FDS_BITS(set) ((set)->fds_bits)
+#define __FDELT(__d)        ((__d) / __NFDBITS)
+#define __FDMASK(__d)       ((fd_mask) 1 << ((__d) % __NFDBITS))
+#define __FDS_BITS(__set)   ((__set)->fds_bits)
 
 /* fd_set for select */
 typedef struct {
@@ -46,16 +46,16 @@ typedef struct {
 /* We don't use `memset' because this would require a prototype and
  * the array isn't too big.
  */
-#define FD_ZERO(set) \
+#define FD_ZERO(__set) \
     do { \
         unsigned int __i; \
-        fd_set *__arr = (set); \
-        for(__i = 0; __i < sizeof (fd_set) / sizeof (fd_mask); ++__i) \
-            __FDS_BITS (__arr)[__i] = 0; \
+        fd_set *__arr = (__set); \
+        for(__i = 0; __i < sizeof(fd_set) / sizeof(fd_mask); ++__i) \
+            __FDS_BITS(__arr)[__i] = 0; \
     } while( 0 )
-#define FD_SET(d, set)      (__FDS_BITS (set)[__FDELT (d)] |= __FDMASK (d))
-#define FD_CLR(d, set)      (__FDS_BITS (set)[__FDELT (d)] &= ~__FDMASK (d))
-#define FD_ISSET(d, set)    (__FDS_BITS (set)[__FDELT (d)] & __FDMASK (d))
+#define FD_SET(__d,__set)   (__FDS_BITS(__set)[__FDELT (__d)] |= __FDMASK(__d))
+#define FD_CLR(__d,__set)   (__FDS_BITS(__set)[__FDELT (__d)] &= ~__FDMASK(__d))
+#define FD_ISSET(__d,__set) (__FDS_BITS(__set)[__FDELT (__d)] & __FDMASK(__d))
 
 :elsesegment
 :include pshpackl.sp
@@ -104,7 +104,7 @@ _WCRTLINK extern int select( int __width, fd_set *__readfds, fd_set *__writefds,
 _WCRTLINK extern int getitimer( int __which, struct itimerval *__value );
 _WCRTLINK extern int setitimer( int __which, const struct itimerval *__value, struct itimerval *__ovalue );
 ::_WCRTLINK extern int adjtime( struct timeval *__itv, struct timeval *__otv );
-::_WCRTLINK extern int utimes( char *__path, struct timeval *tvp );
+::_WCRTLINK extern int utimes( char *__path, struct timeval *__tvp );
 
 :include poppack.sp
 
