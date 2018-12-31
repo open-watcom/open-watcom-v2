@@ -166,11 +166,20 @@ static char *mygets( char *buf, size_t len, FILE *fp )
         got = strlen( q );
         if( p != q )
             memmove( p, q, got + 1 );
-        if( got <= 1 )
+        /* check '\n' char */
+        if( got == 0 || p[got - 1] != '\n' )
             break;
-        got -= 2;
-        if( p[got] != '\\' || p[got + 1] != '\n' )
+        /* skip '\n' */
+        got--;
+        /* check continuation char '\\' */
+        if( got == 0 || p[got - 1] != '\\' ) {
+            /* terminate buffer */
+            p[got] = '\0';
             break;
+        }
+        /* skip '\\' */
+        got--;
+        /* continuation, append next line to the buffer */
         p += got;
         len -= got;
     }
@@ -913,7 +922,6 @@ void ReadSection( FILE *fp, const char *section, LIST **list )
         }
         if( SectionBuf[0]== '#' || SectionBuf[0]== '\0' )
             continue;
-        SectionBuf[strlen( SectionBuf ) - 1]= '\0';
         if( stricmp( SectionBuf, section ) == 0 ) {
             break;
         }
@@ -930,17 +938,16 @@ void ReadSection( FILE *fp, const char *section, LIST **list )
         }
         if( SectionBuf[0]== '#' || SectionBuf[0]== '\0' )
             continue;
-        SectionBuf[strlen( SectionBuf ) - 1]= '\0';
-        if( SectionBuf[0]== '\0' )
-            break;
         if( strnicmp( SectionBuf, "setup=", 6 ) == 0 ) {
             char *p;
             p = strdup( &SectionBuf[6] );
+            free( Setup );
             Setup = ReplaceEnv( p );
             continue;
         }
         new = malloc( sizeof( LIST ) );
         if( new == NULL ) {
+            fclose( fp );
             printf( "\nOut of memory\n" );
             exit( 1 );
         }
@@ -1112,7 +1119,6 @@ void DumpFile( FILE *out, const char *fname )
 {
     FILE                *in;
     char                *buf;
-    size_t              len;
 
     in = PathOpen( fname );
     if( in != NULL ) {
@@ -1120,9 +1126,6 @@ void DumpFile( FILE *out, const char *fname )
         if( buf != NULL ) {
             for( ; mygets( buf, SECTION_BUF_SIZE, in ) != NULL; ) {
                 if( strnicmp( buf, "include=", 8 ) == 0 ) {
-                    len = strlen( buf );
-                    if( buf[len - 1] == '\n' )
-                        buf[len - 1] = '\0';
                     DumpFile( out, buf + 8 );
                 } else {
                     fputs( buf, out );
