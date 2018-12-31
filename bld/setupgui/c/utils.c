@@ -2447,6 +2447,7 @@ bool GetDirParams( int argc, char **argv, char **inf_name, char **src_path, char
             case 'F':
                 if( argv[i][2] == '=' && argv[i][3] != '\0' &&
                     access( &argv[i][3], R_OK ) == 0 ) {
+                    GUIMemFree( VariablesFile );
                     VariablesFile = GUIStrDup( &argv[i][3], NULL );
                 }
                 break;
