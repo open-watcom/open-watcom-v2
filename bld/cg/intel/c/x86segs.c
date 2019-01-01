@@ -173,8 +173,17 @@ name    *GetSegment( name *op ) {
     if( !HW_CEqual( reg, HW_EMPTY ) )
         return( AllocRegName( reg ) );
     seg = AskSegID( op->v.symbol, op->m.memory_type );
-    if( AskSegNear( seg ) )
-        return( AddrConst( NULL, AskBackSeg(), CONS_SEGMENT ) );
+
+    /**
+     * This assumption breaks code that uses a non-default data segment for holding
+     * const data or array pointers. This prevent the resulting OMF file from having
+     * a relocation in it that the linker can fix (such as GEOS glue). By forcing
+     * a full far load, proper relocations are generated
+     * - mcasadevall 01/01/2019
+     */
+
+    //if( AskSegNear( seg ) )
+    //    return( AddrConst( NULL, AskBackSeg(), CONS_SEGMENT ) );
     return( AddrConst( op, seg, CONS_SEGMENT ) );
 }
 
