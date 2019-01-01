@@ -55,9 +55,7 @@ static void             setInitialData( omf_file_handle ofh )
      */
     ofh->machine_type = ORL_MACHINE_TYPE_I8086;
     ofh->type = ORL_FILE_TYPE_OBJECT;
-    ofh->flags = 0;
-    ofh->flags |= ORL_FILE_FLAG_LITTLE_ENDIAN;
-    ofh->flags |= ORL_FILE_FLAG_16BIT_MACHINE;
+    ofh->flags = ORL_FILE_FLAG_LITTLE_ENDIAN | ORL_FILE_FLAG_16BIT_MACHINE;
     ofh->debug_style = OMF_DBG_STYLE_CODEVIEW;
 }
 
@@ -740,6 +738,8 @@ static orl_return       doLNAMES( omf_file_handle ofh, omf_rectyp typ )
     omf_bytes           buffer;
     omf_rec_size        len;
     omf_string_len      slen;
+
+    /* unused parameters */ (void)typ;
 
     assert( ofh );
 

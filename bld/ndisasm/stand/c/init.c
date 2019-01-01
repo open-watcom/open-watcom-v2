@@ -115,6 +115,7 @@ bool IsIntelx86( void )
     switch( GetMachineType() ) {
     case ORL_MACHINE_TYPE_I386:
     case ORL_MACHINE_TYPE_I8086:
+    case ORL_MACHINE_TYPE_AMD64:
         return( true );
     default:
         return( false );

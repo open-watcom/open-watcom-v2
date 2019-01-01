@@ -190,8 +190,10 @@ static char *getUse( orl_sec_flags flags )
 {
     if( flags & ORL_SEC_FLAG_USE_32 ) {
         return( "USE32" );
-    } else {
+    } else if( flags & ORL_SEC_FLAG_USE_16 ) {
         return( "USE16" );
+    } else {
+        return( "" );
     }
 }
 
@@ -390,7 +392,7 @@ void PrintAssumeHeader( section_ptr section )
     orl_group_handle    grp;
     const char          *name;
 
-    if( IsMasmOutput() && (DFormat & DFF_ASM) ) {
+    if( (DFormat & DFF_ASM) && IsMasmOutput() ) {
         grp = ORLSecGetGroup( section->shnd );
         if( grp != ORL_NULL_HANDLE ) {
             name = ORLGroupName( grp );
@@ -420,7 +422,7 @@ void PrintTail( section_ptr section )
 {
     const char      *name;
 
-    if( IsMasmOutput() && (DFormat & DFF_ASM) ) {
+    if( (DFormat & DFF_ASM) && IsMasmOutput() ) {
         name = section->name;
         if( name == NULL ) {
             name = "";
@@ -947,32 +949,46 @@ static orl_return       groupWalker( orl_group_handle grp )
 
 void UseFlatModel( void )
 {
-    if( !flatModel && ( GetMachineType() == ORL_MACHINE_TYPE_I386 ) ) {
-        flatModel = 1;
+    if( !flatModel ) {
+        switch( GetMachineType() ) {
+        case ORL_MACHINE_TYPE_I386:
+        case ORL_MACHINE_TYPE_AMD64:
+            flatModel = 1;
+            break;
+        }
     }
 }
 
 static void doPrologue( void )
 {
-    int         masm_output;
+    int                 masm_output;
 
     masm_output = IsMasmOutput();
 
     /* output the listing */
     if( masm_output ) {
         if( DFormat & DFF_ASM ) {
-            BufferConcat( ".387" );
-            BufferConcatNL();
-            BufferPrint();
-            if( GetMachineType() == ORL_MACHINE_TYPE_I386 ) {
+            switch( GetMachineType() ) {
+            case ORL_MACHINE_TYPE_I8086:
+                BufferConcat( ".387" );
+                BufferConcatNL();
+                BufferPrint();
+                break;
+            case ORL_MACHINE_TYPE_I386:
+                BufferConcat( ".387" );
+                BufferConcatNL();
+                BufferPrint();
                 BufferConcat( ".386p" );
                 BufferConcatNL();
                 BufferPrint();
+                /* fall throught */
+            case ORL_MACHINE_TYPE_AMD64:
                 if( flatModel ) {
                     BufferConcat( ".model flat" );
                     BufferConcatNL();
                     BufferPrint();
                 }
+                break;
             }
         } else if( SourceFileInObject ) {
             BufferConcat( "Module: " );
@@ -996,12 +1012,10 @@ static void doPrologue( void )
 
 static void    doEpilogue( void )
 {
-    if( IsMasmOutput() ) {
-        if( DFormat & DFF_ASM ) {
-            BufferConcat( "\t\tEND" );
-            BufferConcatNL();
-            BufferPrint();
-        }
+    if( (DFormat & DFF_ASM) && IsMasmOutput() ) {
+        BufferConcat( "\t\tEND" );
+        BufferConcatNL();
+        BufferPrint();
     }
 }
 

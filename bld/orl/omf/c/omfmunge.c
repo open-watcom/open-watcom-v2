@@ -834,7 +834,7 @@ static orl_sec_flags getSegSecFlags( omf_file_handle ofh, omf_idx name, omf_idx 
                                     orl_sec_alignment align, int combine, bool use32 )
 {
     char                lname[257];
-    orl_sec_flags       flags = 0;
+    orl_sec_flags       flags;
     omf_string          str;
     int                 slen;
 
@@ -842,6 +842,7 @@ static orl_sec_flags getSegSecFlags( omf_file_handle ofh, omf_idx name, omf_idx 
 
     assert( ofh );
 
+    flags = ORL_SEC_FLAG_NONE;
     str = OmfGetLName( ofh->lnames, class );
     if( str != NULL ) {
         slen = strNUpper( lname, str );
@@ -876,6 +877,8 @@ static orl_sec_flags getSegSecFlags( omf_file_handle ofh, omf_idx name, omf_idx 
 
     if( use32 ) {
         flags |= ORL_SEC_FLAG_USE_32;
+    } else {
+        flags |= ORL_SEC_FLAG_USE_16;
     }
 
     return( flags );

@@ -90,7 +90,7 @@ typedef enum {
 
 bool IsMasmOutput( void )
 {
-    return( (DFormat & DFF_UNIX) == 0 && ( GetFormat() == ORL_OMF ) );
+    return( (DFormat & DFF_UNIX) == 0 );
 }
 
 static void printRawAndAddress( const char *raw_data, dis_sec_offset address )

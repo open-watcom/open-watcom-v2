@@ -661,6 +661,8 @@ num_errors DoPass2( section_ptr section, unsigned_8 *contents, dis_sec_size size
             flags.u.x86 = DIF_X86_USE32_FLAGS;
         }
         is_intel = true;
+    } else if( GetMachineType() == ORL_MACHINE_TYPE_AMD64 ) {
+        is_intel = true;
     } else {
         is_intel = IsIntelx86();
     }

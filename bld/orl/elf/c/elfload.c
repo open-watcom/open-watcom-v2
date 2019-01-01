@@ -171,7 +171,7 @@ static void fix_shdr64_byte_order( elf_file_handle elf_file_hnd, Elf64_Shdr *e_s
 // how the rest of the data is to be interpreted
 static void determine_file_class( elf_file_handle elf_file_hnd, Elf32_Ehdr *e_hdr )
 {
-    elf_file_hnd->flags = 0;
+    elf_file_hnd->flags = ORL_FILE_FLAG_NONE;
     switch( e_hdr->e_ident[EI_DATA] ) {
     case ELFLITTLEENDIAN:
         elf_file_hnd->flags |= ORL_FILE_FLAG_LITTLE_ENDIAN;
@@ -251,7 +251,7 @@ static void determine_file_specs( elf_file_handle elf_file_hnd, elf_half e_machi
 }
 
 
-static void determine_section_specs( elf_sec_handle elf_sec_hnd, elf_word sh_type, unsigned_32 sh_flags )
+static void determine_section_specs( elf_sec_handle elf_sec_hnd, elf_word sh_type, unsigned_32 sh_flags, bool is64bit )
 {
     elf_sec_hnd->flags = ORL_SEC_FLAG_READ_PERMISSION;
     switch( sh_type ) {
@@ -317,6 +317,11 @@ static void determine_section_specs( elf_sec_handle elf_sec_hnd, elf_word sh_typ
         // set execute permission also?
         elf_sec_hnd->flags |= ORL_SEC_FLAG_EXEC;
     }
+    if( is64bit ) {
+        elf_sec_hnd->flags |= ORL_SEC_FLAG_USE_64;
+    } else {
+        elf_sec_hnd->flags |= ORL_SEC_FLAG_USE_32;
+    }
 }
 
 
@@ -351,6 +356,7 @@ static orl_return load_elf_sec_handles( elf_file_handle elf_file_hnd, elf_index 
     elf_index           sh_link;
     elf_index           sh_info;
     unsigned_32         sh_flags;
+    bool                is64bit;
 
     associated_index = (elf_index *)_ClientAlloc( elf_file_hnd, sizeof( elf_index ) * elf_file_hnd->num_sections );
     if( associated_index == NULL )
@@ -369,6 +375,7 @@ static orl_return load_elf_sec_handles( elf_file_handle elf_file_hnd, elf_index 
         return( ORL_OUT_OF_MEMORY );
     }
     s_hdr += elf_file_hnd->shentsize; // skip over index 0
+    is64bit = ( (elf_file_hnd->flags & ORL_FILE_FLAG_64BIT_MACHINE) != 0 );
     for( i = 0; i < elf_file_hnd->num_sections; ++i ) {
         elf_sec_hnd = (elf_sec_handle)_ClientAlloc( elf_file_hnd, ORL_STRUCT_SIZEOF( elf_sec_handle ) );
         if( elf_sec_hnd == NULL ) {
@@ -383,7 +390,7 @@ static orl_return load_elf_sec_handles( elf_file_handle elf_file_hnd, elf_index 
         elf_sec_hnd->elf_file_hnd = elf_file_hnd;
         elf_sec_hnd->index = i + 1;
 
-        if( elf_file_hnd->flags & ORL_FILE_FLAG_64BIT_MACHINE ) {
+        if( is64bit ) {
             s_hdr64 = (Elf64_Shdr *)s_hdr;
             fix_shdr64_byte_order( elf_file_hnd, s_hdr64 );
             name_index[i] = s_hdr64->sh_name;
@@ -450,7 +457,7 @@ static orl_return load_elf_sec_handles( elf_file_handle elf_file_hnd, elf_index 
         }
         elf_sec_hnd->contents = NULL;
         memset( &(elf_sec_hnd->assoc), '\0', sizeof( elf_sec_hnd->assoc ) );
-        determine_section_specs( elf_sec_hnd, sh_type, sh_flags );
+        determine_section_specs( elf_sec_hnd, sh_type, sh_flags, is64bit );
         switch( elf_sec_hnd->type ) {
         case ORL_SEC_TYPE_SYM_TABLE:
             elf_file_hnd->symbol_table = elf_sec_hnd;

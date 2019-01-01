@@ -160,23 +160,25 @@ typedef enum {
 } orl_sec_type;
 
 typedef enum {
-    ORL_SEC_FLAG_NONE                   = 0x0000,
-    ORL_SEC_FLAG_EXEC                   = 0x0001, // section contains executable code
-    ORL_SEC_FLAG_INITIALIZED_DATA       = 0x0002, // section contains initialized data
-    ORL_SEC_FLAG_UNINITIALIZED_DATA     = 0x0004, // section contains uninitialized data (.bss)
-    ORL_SEC_FLAG_GROUPED                = 0x0008, // section is grouped with other sections by name
-    ORL_SEC_FLAG_NO_PADDING             = 0x0010, // section should not be aligned
-    ORL_SEC_FLAG_OVERLAY                = 0x0020, // section contains an overlay
-    ORL_SEC_FLAG_REMOVE                 = 0x0040, // section does not become part of image
-    ORL_SEC_FLAG_COMDAT                 = 0x0080, // section contains communal data
-    ORL_SEC_FLAG_DISCARDABLE            = 0x0100, // section can be discarded as needed
-    ORL_SEC_FLAG_NOT_CACHED             = 0x0200, // section cannot be cached
-    ORL_SEC_FLAG_NOT_PAGEABLE           = 0x0400, // section is not pageable
-    ORL_SEC_FLAG_SHARED                 = 0x0800, // section can be shared in memory
-    ORL_SEC_FLAG_EXECUTE_PERMISSION     = 0x1000, // section can be executed as code
-    ORL_SEC_FLAG_READ_PERMISSION        = 0x2000, // section can be read
-    ORL_SEC_FLAG_WRITE_PERMISSION       = 0x4000, // section can be written to
-    ORL_SEC_FLAG_USE_32                 = 0x8000  // omf section's use-32 bit
+    ORL_SEC_FLAG_NONE                   = 0x00000000,
+    ORL_SEC_FLAG_EXEC                   = 0x00000001, // section contains executable code
+    ORL_SEC_FLAG_INITIALIZED_DATA       = 0x00000002, // section contains initialized data
+    ORL_SEC_FLAG_UNINITIALIZED_DATA     = 0x00000004, // section contains uninitialized data (.bss)
+    ORL_SEC_FLAG_GROUPED                = 0x00000008, // section is grouped with other sections by name
+    ORL_SEC_FLAG_NO_PADDING             = 0x00000010, // section should not be aligned
+    ORL_SEC_FLAG_OVERLAY                = 0x00000020, // section contains an overlay
+    ORL_SEC_FLAG_REMOVE                 = 0x00000040, // section does not become part of image
+    ORL_SEC_FLAG_COMDAT                 = 0x00000080, // section contains communal data
+    ORL_SEC_FLAG_DISCARDABLE            = 0x00000100, // section can be discarded as needed
+    ORL_SEC_FLAG_NOT_CACHED             = 0x00000200, // section cannot be cached
+    ORL_SEC_FLAG_NOT_PAGEABLE           = 0x00000400, // section is not pageable
+    ORL_SEC_FLAG_SHARED                 = 0x00000800, // section can be shared in memory
+    ORL_SEC_FLAG_EXECUTE_PERMISSION     = 0x00001000, // section can be executed as code
+    ORL_SEC_FLAG_READ_PERMISSION        = 0x00002000, // section can be read
+    ORL_SEC_FLAG_WRITE_PERMISSION       = 0x00004000, // section can be written to
+    ORL_SEC_FLAG_USE_16                 = 0x00008000, // section's use-16 bit
+    ORL_SEC_FLAG_USE_32                 = 0x00010000, // section's use-32 bit
+    ORL_SEC_FLAG_USE_64                 = 0x00020000  // section's use-64 bit
 } orl_sec_flags;
 
 typedef enum {

@@ -164,7 +164,7 @@ static bool determine_file_specs( coff_file_handle coff_file_hnd, coff_file_head
 }
 
 static void determine_section_specs( coff_sec_handle coff_sec_hnd,
-                                     coff_section_header *s_hdr )
+                        coff_section_header *s_hdr, bool is64bit )
 /****************************************************************/
 {
     coff_sec_hnd->flags = ORL_SEC_FLAG_NONE;
@@ -224,6 +224,11 @@ static void determine_section_specs( coff_sec_handle coff_sec_hnd,
     } else {
         coff_sec_hnd->align -= 1;
     }
+    if( is64bit ) {
+        coff_sec_hnd->flags |= ORL_SEC_FLAG_USE_64;
+    } else {
+        coff_sec_hnd->flags |= ORL_SEC_FLAG_USE_32;
+    }
 }
 
 static void free_coff_sec_handles( coff_file_handle coff_file_hnd, coff_quantity num_alloced )
@@ -259,6 +264,7 @@ static orl_return load_coff_sec_handles( coff_file_handle coff_file_hnd,
     coff_sec_offset         *reloc_sec_offset;
     coff_sec_size           *reloc_sec_size;
     coff_quantity           reloc_secs_created;
+    bool                    is64bit;
 
     if( coff_file_hnd->num_sections == 0 ) {
         reloc_sec_offset = NULL;
@@ -284,6 +290,7 @@ static orl_return load_coff_sec_handles( coff_file_handle coff_file_hnd,
     }
     coff_file_hnd->coff_sec_hnd = NULL;
     s_hdr = (coff_section_header *)coff_file_hnd->s_hdr_table_buffer;
+    is64bit = ( (coff_file_hnd->flags & ORL_FILE_FLAG_64BIT_MACHINE) != 0 );
     for( i = 0; i < coff_file_hnd->num_sections; ++i ) {
         coff_sec_hnd = (coff_sec_handle)_ClientAlloc( coff_file_hnd, ORL_STRUCT_SIZEOF( coff_sec_handle ) );
         if( coff_sec_hnd == NULL ) {
@@ -315,7 +322,7 @@ static orl_return load_coff_sec_handles( coff_file_handle coff_file_hnd,
         coff_sec_hnd->base = s_hdr->offset;
         coff_sec_hnd->offset = s_hdr->rawdata_ptr;
         coff_sec_hnd->hdr = s_hdr;
-        determine_section_specs( coff_sec_hnd, s_hdr );
+        determine_section_specs( coff_sec_hnd, s_hdr, is64bit );
         coff_sec_hnd->contents = NULL;
         coff_sec_hnd->assoc.normal.reloc_sec = NULL;
         reloc_sec_offset[i] = s_hdr->reloc_ptr;
