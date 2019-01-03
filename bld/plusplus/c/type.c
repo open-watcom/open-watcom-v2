@@ -115,7 +115,7 @@ static carve_t carveCLASSINFO;
 static carve_t carveDECL_INFO;
 
 /* special member function checking return status */
-enum {
+typedef enum {
     SM_RETURN_DECLARATOR        = 0x01, /* found return type declarators */
     SM_NOT_A_FUNCTION           = 0x02, /* found declarators before function */
     SM_CV_FUNCTION_ERROR        = 0x04, /* found () const/volatile use error */
@@ -124,43 +124,43 @@ enum {
     SM_SAW_FUNCTION             = 0x40, /* function declarator seen */
     SM_SAW_DECLARATOR           = 0x80, /* non-function declarator seen */
     SM_NULL                     = 0x00
-};
+} spec_status;
 
 /* special id checking information */
-enum {
+typedef enum {
     IDI_CLASS_TEMPLATE_MEMBER   = 0x01, /* id is a member of a class template */
     IDI_NULL                    = 0x00
-};
+} id_check_info;
 
-enum {
+typedef enum {
     PA_NULL                     = 0x00,
     PA_FUNCTION                 = 0x01
-};
+} pa_control;
 
-enum {
+typedef enum {
     TB_BINDS                    = 0x01,
     TB_NEEDS_TRIVIAL            = 0x02,
     TB_NEEDS_DERIVED            = 0x04,
     TB_NULL                     = 0x00
-};
+} tb_status;
 
-enum {
+typedef enum {
     MTT_INLINE                  = 0x01,
     MTT_COPY_PRAGMA             = 0x02,
     MTT_REUSE_ARGLIST           = 0x04,
     MTT_NULL                    = 0x00
-};
+} thunk_type_control;
 
-enum {
+typedef enum {
     DF_REUSE_ARGLIST            = 0x01,
     DF_NULL                     = 0x00
-};
+} dup_func_control;
 
-enum {
-    DA_DEFARGS_PRESENT          = 0x01,
-    DA_REWRITES                 = 0x02,
-    DA_NULL                     = 0x00
-};
+typedef enum {
+    DP_DEFARGS_PRESENT          = 0x01,
+    DP_REWRITES                 = 0x02,
+    DP_NULL                     = 0x00
+} def_prot_control;
 
 typedef struct {
     PSTK_CTL    with_generic;
@@ -2692,7 +2692,7 @@ static TYPE dupArray( TYPE type, TYPE ref_type, target_size_t size, type_flag fl
     return( base_type );
 }
 
-static TYPE dupFunction( TYPE fn_type, unsigned control )
+static TYPE dupFunction( TYPE fn_type, dup_func_control control )
 {
     unsigned i;
     arg_list *old_args;
@@ -2730,7 +2730,7 @@ TYPE AddNonFunctionPragma( TYPE mod_type, TYPE base_type )
     return( MakeTypeOf( mod_type, type ) );
 }
 
-static TYPE makeThunkType( TYPE type, unsigned mtt_control )
+static TYPE makeThunkType( TYPE type, thunk_type_control mtt_control )
 {
     TYPE new_fn_type;       // - new function type
     TYPE old_fn_type;       // - old function type
@@ -2800,7 +2800,7 @@ static TYPE adjustFullFunctionType( TYPE type
 
     fn_type = FunctionDeclarationType( type );
     old_flags = fn_type->flag;
-    new_flags = ( old_flags | on_flags ) & ~off_flags;
+    new_flags = (old_flags | on_flags) & ~off_flags;
     if( new_flags == old_flags ) {
         /* no change in flags! */
         if( new_ret == NULL && new_pragma == NULL ) {
@@ -2991,7 +2991,7 @@ static PTREE nameOfId( PTREE id )
 static int scanDeclarator( TYPE declarator_list, unsigned *num_args )
 {
     arg_list *args;
-    int status;
+    spec_status sm_status;
     bool cv_function_OK;
 
     /*
@@ -3000,30 +3000,30 @@ static int scanDeclarator( TYPE declarator_list, unsigned *num_args )
             TYP_FUNCTION
             TYP_POINTER
     */
-    status = SM_NULL;
+    sm_status = SM_NULL;
     while( declarator_list != NULL ) {
         cv_function_OK = false;
         switch( declarator_list->id ) {
         case TYP_FUNCTION:
-            if( status & SM_SAW_FUNCTION ) {
-                status |= SM_RETURN_DECLARATOR | SM_SAW_DECLARATOR;
-                status &= ~SM_NOT_A_FUNCTION;
-                if( status & SM_SAW_CV_FUNCTION ) {
-                    status |= SM_CV_FUNCTION_ERROR;
+            if( sm_status & SM_SAW_FUNCTION ) {
+                sm_status |= SM_RETURN_DECLARATOR | SM_SAW_DECLARATOR;
+                sm_status &= ~SM_NOT_A_FUNCTION;
+                if( sm_status & SM_SAW_CV_FUNCTION ) {
+                    sm_status |= SM_CV_FUNCTION_ERROR;
                 }
-            } else if( status & SM_SAW_DECLARATOR ) {
-                status |= SM_RETURN_DECLARATOR;
+            } else if( sm_status & SM_SAW_DECLARATOR ) {
+                sm_status |= SM_RETURN_DECLARATOR;
             }
-            status &= ~SM_SAW_CV_FUNCTION;
+            sm_status &= ~SM_SAW_CV_FUNCTION;
             args = declarator_list->u.f.args;
             if( num_args != NULL ) {
                 *num_args = args->num_args;
             }
             if( args->qualifier != TF1_NULL ) {
                 /* we have <declarator> ( <args> ) const/volatile */
-                status |= SM_SAW_CV_FUNCTION;
+                sm_status |= SM_SAW_CV_FUNCTION;
             }
-            status |= SM_SAW_FUNCTION;
+            sm_status |= SM_SAW_FUNCTION;
             break;
         case TYP_MODIFIER:
             break;
@@ -3031,25 +3031,25 @@ static int scanDeclarator( TYPE declarator_list, unsigned *num_args )
             cv_function_OK = true;
             /* fall through */
         default:
-            if( status & SM_SAW_CV_FUNCTION ) {
+            if( sm_status & SM_SAW_CV_FUNCTION ) {
                 if( ! cv_function_OK ) {
-                    status |= SM_CV_FUNCTION_ERROR;
+                    sm_status |= SM_CV_FUNCTION_ERROR;
                 }
             }
-            if( status & SM_SAW_FUNCTION ) {
-                status |= SM_NOT_A_FUNCTION;
+            if( sm_status & SM_SAW_FUNCTION ) {
+                sm_status |= SM_NOT_A_FUNCTION;
             }
-            status |= SM_SAW_DECLARATOR;
-            status &= ~SM_SAW_CV_FUNCTION;
+            sm_status |= SM_SAW_DECLARATOR;
+            sm_status &= ~SM_SAW_CV_FUNCTION;
         }
         declarator_list = declarator_list->of;
     }
-    if( (status & SM_SAW_FUNCTION) == 0 ) {
+    if( (sm_status & SM_SAW_FUNCTION) == 0 ) {
         /* function type was never found! */
-        status |= SM_NOT_A_FUNCTION;
+        sm_status |= SM_NOT_A_FUNCTION;
     }
-    status &= ~( SM_SAW_FUNCTION | SM_SAW_DECLARATOR | SM_SAW_CV_FUNCTION );
-    return( status );
+    sm_status &= ~( SM_SAW_FUNCTION | SM_SAW_DECLARATOR | SM_SAW_CV_FUNCTION );
+    return( sm_status );
 }
 
 static type_flag convertFnSpec( specifier_t spec )
@@ -3069,7 +3069,7 @@ static type_flag convertFnSpec( specifier_t spec )
     return( flag );
 }
 
-static bool applyFnSpec( TYPE declarator, DECL_SPEC *dspec, int status )
+static bool applyFnSpec( TYPE declarator, DECL_SPEC *dspec, spec_status sm_status )
 {
     specifier_t fn_spec;
     type_flag flags;
@@ -3092,7 +3092,7 @@ static bool applyFnSpec( TYPE declarator, DECL_SPEC *dspec, int status )
         CErr1( ERR_BAD_FN_MODIFIER );
     } else {
         fn_type->flag |= flags;
-        if( status & SM_NOT_A_FUNCTION ) {
+        if( sm_status & SM_NOT_A_FUNCTION ) {
             CErr1( ERR_BAD_FIV_MODIFIER );
         } else {
             if( fn_spec & STY_FRIEND ) {
@@ -3129,42 +3129,42 @@ static void applyFnClassMods( TYPE declarator, DECL_SPEC *dspec )
     }
 }
 
-static void checkUserConversion( TYPE return_type, int status, unsigned arg_cnt)
+static void checkUserConversion( TYPE return_type, spec_status sm_status, unsigned arg_cnt)
 {
-    if( status & SM_NOT_A_FUNCTION ) {
+    if( sm_status & SM_NOT_A_FUNCTION ) {
         CErr1( ERR_USER_CONV_BAD_DECL );
-    } else if( return_type != TypeGetCache( TYPC_DEFAULT_INT ) || (status & SM_RETURN_DECLARATOR) ) {
+    } else if( return_type != TypeGetCache( TYPC_DEFAULT_INT ) || (sm_status & SM_RETURN_DECLARATOR) ) {
         CErr1( ERR_USER_CONV_BAD_RETURN );
     }
-    if( status == SM_NULL && arg_cnt != 0 ) {
+    if( sm_status == SM_NULL && arg_cnt != 0 ) {
         CErr1( ERR_USER_CONV_BAD_FUNC );
     }
 }
 
-static void checkDestructor( TYPE return_type, int status, unsigned num_args )
+static void checkDestructor( TYPE return_type, spec_status sm_status, unsigned num_args )
 {
-    if( status & SM_NOT_A_FUNCTION ) {
+    if( sm_status & SM_NOT_A_FUNCTION ) {
         CErr1( ERR_DESTRUCTOR_BAD_DECL );
-    } else if( return_type != TypeGetCache( TYPC_DEFAULT_INT ) || (status & SM_RETURN_DECLARATOR) ) {
+    } else if( return_type != TypeGetCache( TYPC_DEFAULT_INT ) || (sm_status & SM_RETURN_DECLARATOR) ) {
         CErr1( ERR_DESTRUCTOR_BAD_RETURN );
     }
-    if( status == SM_NULL && num_args != 0 ) {
+    if( sm_status == SM_NULL && num_args != 0 ) {
         CErr1( ERR_DESTRUCTOR_BAD_FUNC );
     }
 }
 
-static void checkOperator( TYPE return_type, int status, NAME name )
+static void checkOperator( TYPE return_type, spec_status sm_status, NAME name )
 {
     /* unused parameters */ (void)return_type;
 
-    if( status & SM_NOT_A_FUNCTION ) {
+    if( sm_status & SM_NOT_A_FUNCTION ) {
         CErr2p( ERR_OPERATOR_BAD_DECL, name );
     }
 }
 
-static void checkUsefulParms( int status, DECL_INFO *dinfo )
+static void checkUsefulParms( spec_status sm_status, DECL_INFO *dinfo )
 {
-    if( status & SM_NOT_A_FUNCTION ) {
+    if( sm_status & SM_NOT_A_FUNCTION ) {
         /* this isn't a function so the saved parms are not useful */
         FreeArgs( dinfo->parms );
         dinfo->parms = NULL;
@@ -3685,7 +3685,7 @@ DECL_INFO *FinishDeclarator( DECL_SPEC *dspec, DECL_INFO *dinfo )
     TYPE mod_type;
     TYPE leftover_type;
     unsigned num_args;
-    int status;
+    spec_status sm_status;
     MSG_NUM msg_num;
     type_flag mod_flags;
     type_flag fn_flag;
@@ -3710,37 +3710,37 @@ DECL_INFO *FinishDeclarator( DECL_SPEC *dspec, DECL_INFO *dinfo )
     prev_type = dspec->partial;
     curr_type = massageFunctionTypeInDSpec( &prev_type, curr_type );
     num_args = 0;
-    status = scanDeclarator( curr_type, &num_args );
-    if( status & SM_CV_FUNCTION_ERROR ) {
+    sm_status = scanDeclarator( curr_type, &num_args );
+    if( sm_status & SM_CV_FUNCTION_ERROR ) {
         CErr1( ERR_CONST_VOLATILE_IN_A_TYPE );
     }
-    if( applyFnSpec( curr_type, dspec, status ) ) {
+    if( applyFnSpec( curr_type, dspec, sm_status ) ) {
         dinfo->friend_fn = true;
         if( dspec->stg_class != STG_NULL ) {
             CErr1( ERR_FRIEND_BAD );
             dspec->stg_class = STG_NULL;
         }
     } else {
-        if(( status & SM_NOT_A_FUNCTION ) == 0 ) {
+        if( (sm_status & SM_NOT_A_FUNCTION) == 0 ) {
             /* these don't apply to friend functions */
             applyFnClassMods( curr_type, dspec );
         }
     }
     if( dinfo->parms != NULL ) {
         /* make sure the parms are useful */
-        checkUsefulParms( status, dinfo );
+        checkUsefulParms( sm_status, dinfo );
     }
     if( id_tree != NULL ) {
         switch( id_tree->cgop ) {
         case CO_NAME_CONVERT:
-            checkUserConversion( prev_type, status, num_args );
+            checkUserConversion( prev_type, sm_status, num_args );
             prev_type = id_tree->type;
             break;
         case CO_NAME_DTOR:
-            checkDestructor( prev_type, status, num_args );
+            checkDestructor( prev_type, sm_status, num_args );
             break;
         case CO_NAME_OPERATOR:
-            checkOperator( prev_type, status, id );
+            checkOperator( prev_type, sm_status, id );
             switch( id_tree->id_cgop ) {
             case CO_NEW:
             case CO_DELETE:
@@ -5455,7 +5455,7 @@ void FreeDeclInfo( DECL_INFO *dinfo )
     CarveFree( carveDECL_INFO, dinfo );
 }
 
-static PTREE verifyQualifiedId( DECL_SPEC *dspec, PTREE id, SCOPE *scope, unsigned *pinfo )
+static PTREE verifyQualifiedId( DECL_SPEC *dspec, PTREE id, SCOPE *scope, id_check_info *pinfo )
 {
     NAME name;
     TYPE class_type;
@@ -5562,7 +5562,7 @@ DECL_INFO *MakeDeclarator( DECL_SPEC *dspec, PTREE id )
 {
     DECL_INFO *dinfo;
     SCOPE scope;
-    unsigned id_info;
+    id_check_info id_info;
 
     id = verifyQualifiedId( dspec, id, &scope, &id_info );
     dinfo = makeDeclInfo( id );
@@ -5823,7 +5823,7 @@ static SYMBOL makeDefaultProto( DECL_INFO *dinfo, unsigned num_args, DECL_INFO *
 
 static unsigned declareDefaultProtos( SCOPE scope, DECL_INFO *dinfo )
 {
-    unsigned control;
+    def_prot_control dp_control;
     unsigned num_args;
     bool is_template;
     DECL_INFO *curr;
@@ -5831,7 +5831,7 @@ static unsigned declareDefaultProtos( SCOPE scope, DECL_INFO *dinfo )
     SYMBOL head;
     SYMBOL *prev_arg;
 
-    control = DA_NULL;
+    dp_control = DP_NULL;
     head = NULL;
     prev_arg = &head;
     num_args = 0;
@@ -5851,12 +5851,12 @@ static unsigned declareDefaultProtos( SCOPE scope, DECL_INFO *dinfo )
                         RewriteFree( curr->defarg_rewrite );
                         curr->defarg_rewrite = NULL;
                     }
-                    control |= DA_REWRITES;
+                    dp_control |= DP_REWRITES;
                 }
             }
-            control |= DA_DEFARGS_PRESENT;
+            dp_control |= DP_DEFARGS_PRESENT;
         } else {
-            if( control & DA_DEFARGS_PRESENT ) {
+            if( dp_control & DP_DEFARGS_PRESENT ) {
                 def_arg_sym = makeDefaultProto( dinfo, num_args, curr );
                 def_arg_sym = defaultArgMustExist( scope, dinfo, def_arg_sym );
             }
@@ -5869,7 +5869,7 @@ static unsigned declareDefaultProtos( SCOPE scope, DECL_INFO *dinfo )
     } RingIterEnd( curr )
     *prev_arg = dinfo->sym;
     dinfo->proto_sym = head;
-    return( is_template ? 0 : control );
+    return( is_template ? 0 : dp_control );
 }
 
 static void deferDefaultRewrites( DECL_INFO *dinfo )
@@ -5904,12 +5904,12 @@ static void deferDefaultRewrites( DECL_INFO *dinfo )
 void DeclareDefaultArgs( SCOPE scope, DECL_INFO *dinfo )
 /******************************************************/
 {
-    unsigned dp_control;
+    def_prot_control dp_control;
 
     if( dinfo->parms != NULL ) {
         dp_control = declareDefaultProtos( scope, dinfo );
-        if( dp_control & DA_DEFARGS_PRESENT ) {
-            if( dp_control & DA_REWRITES ) {
+        if( dp_control & DP_DEFARGS_PRESENT ) {
+            if( dp_control & DP_REWRITES ) {
                 // pack things away to be evaluated
                 DbgAssert( scope == SymScope( dinfo->sym ) );
                 deferDefaultRewrites( dinfo );
@@ -7446,7 +7446,7 @@ static void pushArguments( PSTK_CTL *stk, arg_list *args )
 
 static void pushPrototypeAndArguments( type_bind_info *data,
                                        PTREE p_args, PTREE a_args,
-                                       unsigned control )
+                                       pa_control control )
 {
     unsigned i;
     PTREE p;
@@ -7789,7 +7789,7 @@ static bool modifiersMatch( type_flag b_flags, type_flag u_flags,
     return( true );
 }
 
-static unsigned typesBind( type_bind_info *data, bool is_function )
+static tb_status typesBind( type_bind_info *data, bool is_function )
 {
     type_flag t_flags;
     type_flag b_flags;
@@ -7817,12 +7817,12 @@ static unsigned typesBind( type_bind_info *data, bool is_function )
     bool u_allow_base;
     TYPE match;
     unsigned i;
-    unsigned status;
+    tb_status bind_status;
     struct {
         unsigned        arg_1st_level   : 1;
     } flags;
 
-    status = TB_BINDS;
+    bind_status = TB_BINDS;
     for(;;) {
         flags.arg_1st_level = false;
 
@@ -7962,7 +7962,7 @@ static unsigned typesBind( type_bind_info *data, bool is_function )
                 if( d_flags & ~u_cv_mask ) {
                     return( TB_NULL );
                 }
-                status |= TB_NEEDS_TRIVIAL;
+                bind_status |= TB_NEEDS_TRIVIAL;
                 u_flags &= ~d_flags;
             }
             if( ! modifiersMatch( b_flags, u_flags, b_base, u_base ) ) {
@@ -8005,7 +8005,7 @@ static unsigned typesBind( type_bind_info *data, bool is_function )
                 if( d_flags & ~u_cv_mask ) {
                     return( TB_NULL );
                 }
-                status |= TB_NEEDS_TRIVIAL;
+                bind_status |= TB_NEEDS_TRIVIAL;
                 u_flags &= ~d_flags;
             }
             /* 'u_flags' is known to be a subset of 'b_flags' now */
@@ -8080,7 +8080,7 @@ static unsigned typesBind( type_bind_info *data, bool is_function )
         if( ( d_flags != TF1_NULL )
          && ( ( d_flags & ~u_cv_mask ) == TF1_NULL ) ) {
             /* only const/volatile don't match */
-            status |= TB_NEEDS_TRIVIAL;
+            bind_status |= TB_NEEDS_TRIVIAL;
             b_flags |= d_flags;
         }
         if( ! is_function
@@ -8101,7 +8101,7 @@ static unsigned typesBind( type_bind_info *data, bool is_function )
                             return( TB_NULL );
                         }
                         // OK, we bound to a base class of the bound type
-                        status |= TB_NEEDS_DERIVED;
+                        bind_status |= TB_NEEDS_DERIVED;
                     } else {
                         return( TB_NULL );
                     }
@@ -8176,7 +8176,7 @@ static unsigned typesBind( type_bind_info *data, bool is_function )
         }
     }
     DbgAssert( b_top == NULL && u_top == NULL );
-    return( status );
+    return( bind_status );
 }
 
 typedef enum {
@@ -8362,7 +8362,7 @@ bool BindGenericTypes( SCOPE parm_scope, PTREE parms, PTREE args,
 /**********************************************************************/
 {
     SYMBOL curr, stop;
-    unsigned bind_status;
+    tb_status bind_status;
     bool result;
     auto type_bind_info data;
 
@@ -8371,8 +8371,7 @@ bool BindGenericTypes( SCOPE parm_scope, PTREE parms, PTREE args,
     binderInit( &data, explicit_args );
     data.parm_scope = parm_scope;
 
-    pushPrototypeAndArguments( &data, parms, args,
-                               is_function ? PA_FUNCTION : PA_NULL );
+    pushPrototypeAndArguments( &data, parms, args, is_function ? PA_FUNCTION : PA_NULL );
     result = false;
     bind_status = typesBind( &data, is_function );
     if( bind_status != TB_NULL ) {

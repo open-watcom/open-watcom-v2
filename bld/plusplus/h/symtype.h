@@ -177,20 +177,20 @@ struct decl_spec {
     ms_declspec_t       ms_declspec;                // __declspec( <id> ) modifiers
 
     int                                     : 0;
-    unsigned            type_defined        : 1;    // a type was defined
-    unsigned            type_declared       : 1;    // a type was declared
-    unsigned            ctor_name           : 1;    // decl-spec can be a ctor-name
-    unsigned            is_default          : 1;    // no decl-spec has been specified
-    unsigned            diagnosed           : 1;    // use of decl-spec diagnosed
-    unsigned            decl_checked        : 1;    // type checked (& built) already
-    unsigned            type_elaborated     : 1;    // "class C" or "enum E"
-    unsigned            nameless_allowed    : 1;    // nameless declaration is allowed
+    bool                type_defined        : 1;    // a type was defined
+    bool                type_declared       : 1;    // a type was declared
+    bool                ctor_name           : 1;    // decl-spec can be a ctor-name
+    bool                is_default          : 1;    // no decl-spec has been specified
+    bool                diagnosed           : 1;    // use of decl-spec diagnosed
+    bool                decl_checked        : 1;    // type checked (& built) already
+    bool                type_elaborated     : 1;    // "class C" or "enum E"
+    bool                nameless_allowed    : 1;    // nameless declaration is allowed
 
-    unsigned            generic             : 1;    // <class T, ... templare type arg
-    unsigned            class_instantiation : 1;    // C<X,x> instantiation
-    unsigned            no_more_linkage     : 1;    // no more extern "?" allowed
-    unsigned            arg_declspec        : 1;    // decl-specs for an argument
-    unsigned            class_idiom         : 1;    // "class C;" idiom used
+    bool                generic             : 1;    // <class T, ... templare type arg
+    bool                class_instantiation : 1;    // C<X,x> instantiation
+    bool                no_more_linkage     : 1;    // no more extern "?" allowed
+    bool                arg_declspec        : 1;    // decl-specs for an argument
+    bool                class_idiom         : 1;    // "class C;" idiom used
 
     int                                     : 0;
 };
@@ -213,14 +213,14 @@ PCH_struct decl_info {
     REWRITE             *defarg_rewrite;            // storage for default argument
     NAME                name;                       // name of symbol (NULLable)
     TOKEN_LOCN          init_locn;                  // location of '(' for inits
-    unsigned            sym_used            : 1;    // don't free 'sym'
-    unsigned            friend_fn           : 1;    // symbol is a friend function
-    unsigned            fn_defn             : 1;    // function is being defined
-    unsigned            template_member     : 1;    // declaring a template member
-    unsigned            has_dspec           : 1;    // has decl-specifiers (set by DeclFunction)
-    unsigned            has_defarg          : 1;    // has default argument
-    unsigned            explicit_parms      : 1;    // explicit parms in declarator
-    unsigned            free                : 1;    // used for precompiled headers
+    bool                sym_used            : 1;    // don't free 'sym'
+    bool                friend_fn           : 1;    // symbol is a friend function
+    bool                fn_defn             : 1;    // function is being defined
+    bool                template_member     : 1;    // declaring a template member
+    bool                has_dspec           : 1;    // has decl-specifiers (set by DeclFunction)
+    bool                has_defarg          : 1;    // has default argument
+    bool                explicit_parms      : 1;    // explicit parms in declarator
+    bool                free                : 1;    // used for precompiled headers
 };
 
 // types dealing with representing types
@@ -867,9 +867,9 @@ PCH_struct name_space {
     union {
         unsigned flags;
         struct {
-          unsigned      global_fs   : 1;    // - global filescope
-          unsigned      free        : 1;    // - used for PCH
-          unsigned      unnamed     : 1;    // - unnamed namespace
+          bool          global_fs   : 1;    // - global filescope
+          bool          free        : 1;    // - used for PCH
+          bool          unnamed     : 1;    // - unnamed namespace
         } s;
     } u;
 };
@@ -919,16 +919,16 @@ PCH_struct scope {
     union {
         unsigned        flags;
         struct {
-            unsigned    keep        : 1;    // - indicates scope contains info
-            unsigned    dtor_reqd   : 1;    // - SCOPE_BLK -- need to dtor
-            unsigned    dtor_naked  : 1;    // - SCOPE_BLK -- has naked dtor syms
-            unsigned    try_catch   : 1;    // - SCOPE_BLK -- try/catch block
-            unsigned    arg_check   : 1;    // - check decls against arg scope
-            unsigned    cg_stab     : 1;    // - generate for scope
-            unsigned    in_unnamed  : 1;    // - enclosed in an unnamed namespace
-            unsigned    colour      : 1;    // - using in common enclosing algorithm
-            unsigned    fn_template : 1;    // - SCOPE_TEMPLATE_PARM -- function
-            unsigned    dirty       : 1;    // - a symbol has been added
+            bool        keep        : 1;    // - indicates scope contains info
+            bool        dtor_reqd   : 1;    // - SCOPE_BLK -- need to dtor
+            bool        dtor_naked  : 1;    // - SCOPE_BLK -- has naked dtor syms
+            bool        try_catch   : 1;    // - SCOPE_BLK -- try/catch block
+            bool        arg_check   : 1;    // - check decls against arg scope
+            bool        cg_stab     : 1;    // - generate for scope
+            bool        in_unnamed  : 1;    // - enclosed in an unnamed namespace
+            bool        colour      : 1;    // - using in common enclosing algorithm
+            bool        fn_template : 1;    // - SCOPE_TEMPLATE_PARM -- function
+            bool        dirty       : 1;    // - a symbol has been added
         } s;
     } u;
     scope_type_t        id;                 // - type of scope
@@ -986,17 +986,17 @@ struct search_result {                          // * means private to SCOPE.C
     target_offset_t     vf_offset;              // - offset of vftable pointer
     TOKEN_LOCN          errlocn;                // * location for errors
     inherit_flag        perm;                   // * access permission
-    unsigned            simple          : 1;    // - name is in a FILE or BLOCK scope
-    unsigned            non_virtual     : 1;    // - use delta offset to find scope
+    bool                simple          : 1;    // - name is in a FILE or BLOCK scope
+    bool                non_virtual     : 1;    // - use delta offset to find scope
                                                 // - only valid for lexical lookup
-    unsigned            use_this        : 1;    // - may use "this" to access
-    unsigned            no_this         : 1;    // - cannot use "this" to access
-    unsigned            ambiguous       : 1;    // * name was ambiguously found
-    unsigned            mixed_static    : 1;    // * ovload; if non-static, it's ambig!
-    unsigned            cant_be_auto    : 1;    // * nested function refs an auto
-    unsigned            protected_OK    : 1;    // * protected SYMBOL access is OK
-    unsigned            ignore_access   : 1;    // * don't report access errors
-    unsigned            lookup_error    : 1;    // * general lookup error detected
+    bool                use_this        : 1;    // - may use "this" to access
+    bool                no_this         : 1;    // - cannot use "this" to access
+    bool                ambiguous       : 1;    // * name was ambiguously found
+    bool                mixed_static    : 1;    // * ovload; if non-static, it's ambig!
+    bool                cant_be_auto    : 1;    // * nested function refs an auto
+    bool                protected_OK    : 1;    // * protected SYMBOL access is OK
+    bool                ignore_access   : 1;    // * don't report access errors
+    bool                lookup_error    : 1;    // * general lookup error detected
     int                                 : 0;
 };
 
@@ -1016,7 +1016,7 @@ struct class_table {
     target_offset_t     delta;                  /* delta table ptr goes in */
     target_offset_t     exact_delta;            /* exact delta table ptr goes in */
     vindex              count;                  /* number of things def'd */
-    unsigned            ctor_disp       : 1;    /* apply ctor-disp adjustment */
+    bool                ctor_disp       : 1;    /* apply ctor-disp adjustment */
 };
 
 struct class_vbtable {
@@ -1054,20 +1054,20 @@ struct thunk_action {
     THUNK_CAST          in;                         // step 3
     SYMBOL              override;                   // step 4
     THUNK_CAST          out;                        // step 5
-    unsigned            ctor_disp           : 1;    // control for step 2
-    unsigned            input_virtual       : 1;    // control for step 3
-    unsigned            output_virtual      : 1;    // control for step 5
-    unsigned            non_empty           : 1;    // thunk is necessary
-    unsigned            last_entry          : 1;    // last entry in vftable
-    unsigned            possible_ambiguity  : 1;    // vftable entry may be ambiguous
+    bool                ctor_disp           : 1;    // control for step 2
+    bool                input_virtual       : 1;    // control for step 3
+    bool                output_virtual      : 1;    // control for step 5
+    bool                non_empty           : 1;    // thunk is necessary
+    bool                last_entry          : 1;    // last entry in vftable
+    bool                possible_ambiguity  : 1;    // vftable entry may be ambiguous
     int                                     : 0;
 };
 
 struct class_vftable {
     CLASS_TABLE         h;                      /* header */
     unsigned            amt_left;               /* # of vfns left to go */
-    unsigned            ambiguities     : 1;    /* has potentially ambiguous entries */
-    unsigned            corrupted       : 1;    /* definitely has bad entries */
+    bool                ambiguities     : 1;    /* has potentially ambiguous entries */
+    bool                corrupted       : 1;    /* definitely has bad entries */
     int                                 : 0;
     THUNK_ACTION        data[1];                /* terminated if last_entry is true */
 };
@@ -1130,12 +1130,12 @@ struct member_ptr_cast {                        /* I - input, O - output, * - pr
     vindex              single_test;            /* O: single idx val that needs mapping */
     vindex              vb_index;               /* O: new value for 'index' */
     SYMBOL              mapping;                /* O: unsigned array to map indices */
-    unsigned            safe            : 1;    /* I: casting from 'base' to 'derived' */
-    unsigned            init_conv       : 1;    /* I: convert from found base to final base */
-    unsigned            delta_reqd      : 1;    /* O: true if delta adjustment is req'd */
-    unsigned            mapping_reqd    : 1;    /* O: true is index mapping req'd */
-    unsigned            test_reqd       : 1;    /* O: true if index == 0 test is req'd */
-    unsigned            single_mapping  : 1;    /* O: only one index value needs mapping */
+    bool                safe            : 1;    /* I: casting from 'base' to 'derived' */
+    bool                init_conv       : 1;    /* I: convert from found base to final base */
+    bool                delta_reqd      : 1;    /* O: true if delta adjustment is req'd */
+    bool                mapping_reqd    : 1;    /* O: true is index mapping req'd */
+    bool                test_reqd       : 1;    /* O: true if index == 0 test is req'd */
+    bool                single_mapping  : 1;    /* O: only one index value needs mapping */
 };
 
 /*
