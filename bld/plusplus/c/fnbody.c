@@ -1816,6 +1816,11 @@ static void initFunctionBody( DECL_INFO *dinfo, FUNCTION_DATA *f, TYPE fn_type )
     SYMBOL func;                // - function being compiled
     REWRITE *mem_init;          // - tokens for mem-initializer
 
+    if( fn_type->flag & TF1_INTERRUPT ) {
+        if( !CompFlags.mfi_switch_used ) {
+            fn_type->flag |= TF1_FARSS;
+        }
+    }
     func = dinfo->sym;
     initFunctionData( func, f );
     if( dinfo->scope != NULL ) {
