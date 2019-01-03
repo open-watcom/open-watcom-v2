@@ -3345,7 +3345,7 @@ static TYPE extractFunctionMods( TYPE curr, TYPE *ptail, bool stop_at_nonmod )
             prev = curr;
             continue;
         }
-        if( curr->flag & (TF1_TYP_FUNCTION|TF1_HUG_FUNCTION) ) {
+        if( curr->flag & (TF1_TYP_FUNCTION | TF1_HUG_FUNCTION) ) {
             prev->of = next;
             if( tail == NULL ) {
                 tail = curr;
@@ -3475,7 +3475,7 @@ static TYPE adjustModifiers( DECL_SPEC *dspec, TYPE list )
     if( dspec->ms_declspec != MSDS_NULL ) {
         outermost_list = makeMSDeclSpecType( dspec );
         for( outer = outermost_list; outer != NULL; outer = outer->of ) {
-            if( outer->flag & (TF1_TYP_FUNCTION|TF1_HUG_FUNCTION) ) {
+            if( outer->flag & (TF1_TYP_FUNCTION | TF1_HUG_FUNCTION) ) {
                 any_fn_mod = outermost_list;
                 break;
             }
@@ -3494,7 +3494,7 @@ static TYPE adjustModifiers( DECL_SPEC *dspec, TYPE list )
                 /* leave prev_link as is */
                 continue;
             }
-            if( curr->flag & (TF1_TYP_FUNCTION|TF1_HUG_FUNCTION) ) {
+            if( curr->flag & (TF1_TYP_FUNCTION | TF1_HUG_FUNCTION) ) {
                 any_fn_mod = curr;
             }
             break;
@@ -3531,7 +3531,7 @@ static TYPE adjustModifiers( DECL_SPEC *dspec, TYPE list )
             last_fn_type = curr;
             last_prev = prev;
         } else if( curr->id == TYP_MODIFIER ) {
-            if( curr->flag & (TF1_TYP_FUNCTION|TF1_HUG_FUNCTION) ) {
+            if( curr->flag & (TF1_TYP_FUNCTION | TF1_HUG_FUNCTION) ) {
                 last_fn_mod = curr;
             }
         }
@@ -3632,9 +3632,6 @@ static TYPE makeModifiedTypeOf( TYPE mod, TYPE of )
             if( of->flag & TF1_INTERRUPT ) {
                 /* interrupt implies default far */
                 mod->flag |= TF1_FAR;
-                if( !CompFlags.mfi_switch_used ) {
-                    mod->flag |= TF1_FARSS;
-                }
             }
         }
         mod->flag &= ~TF1_CV_MASK;
@@ -3923,9 +3920,6 @@ DECL_INFO *FinishDeclarator( DECL_SPEC *dspec, DECL_INFO *dinfo )
                     if( prev_type->flag & TF1_INTERRUPT ) {
                         /* interrupt implies default far */
                         prev_type = MakeModifiedType( prev_type, TF1_FAR );
-                        if( !CompFlags.mfi_switch_used ) {
-                            prev_type = MakeModifiedType( prev_type, TF1_FARSS );
-                        }
                     }
                 }
             }
@@ -3948,9 +3942,6 @@ DECL_INFO *FinishDeclarator( DECL_SPEC *dspec, DECL_INFO *dinfo )
                 if( prev_type->flag & TF1_INTERRUPT ) {
                     /* interrupt implies default far */
                     prev_type = MakeModifiedType( prev_type, TF1_FAR );
-                    if( !CompFlags.mfi_switch_used ) {
-                        prev_type = MakeModifiedType( prev_type, TF1_FARSS );
-                    }
                 }
             }
         }
