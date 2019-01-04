@@ -67,19 +67,14 @@
 !inject wipfc           dos  html  htmlhelp  nt  os2  pdf  ps  win docpdf
 
 
-!ifndef docset
-!error docset variable is not defined. Please setup this variable in make file.
-!else ifndef $(docset)
-!error $$(docset) value is not known. Please consult books.mif file for configured values.
+!ifndef dotarget
+!error dotarget variable is not defined. Please setup this variable in make file.
 !endif
-
-#
-# do targets
-#
-!ifeq docset docpdf
-dotarget = pdf
-!else
-dotarget = $(docset)
+!ifeq docset
+docset = $(dotarget)
+!endif
+!ifndef $(docset)
+!error $$(docset) value is not known. Please consult books.mif file for configured values.
 !endif
 
 #
