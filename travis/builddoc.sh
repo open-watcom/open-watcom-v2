@@ -62,8 +62,8 @@ build_proc()
     #
     if [ $RC -eq 0 ]; then
         cd $OWSRCDIR
-        builder -i doctrav
-        RC=$?
+        builder -i doctrav -- -i
+#        RC=$?
     fi
     cd $TRAVIS_BUILD_DIR
     return $RC
