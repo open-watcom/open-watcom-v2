@@ -22,7 +22,7 @@ gitupdf_proc()
     if [ "$TRAVIS_BRANCH" = "$OWBRANCH" ] || [ "$TRAVIS_BRANCH" = "$OWBRANCH_DOCS" ]; then
         if [ "$TRAVIS_EVENT_TYPE" = "push" ]; then
             case "$OWTRAVISJOB" in
-                "BOOTSTRAP" | "BUILD" | "BUILD-1" | "BUILD-2" | "DOCPDF")
+                "BOOTSTRAP" | "BUILD" | "BUILD-1" | "BUILD-2" | "DOCTRAVIS")
                     #
                     # setup client info
                     #

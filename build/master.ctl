@@ -115,20 +115,20 @@ set BLDRULE=
     set LOGFNAME=doc
     echo **** DOC rule
 
-[ BLOCK <1> docpdf ]
-#===================
-    set BLDRULE=docpdf
-    set LOGFNAME=docpdf
-    echo **** DOCPDF rule
+[ BLOCK <1> doctrav ]
+#======================
+    set BLDRULE=doctrav
+    set LOGFNAME=doctrav
+    echo **** DOCTRAV rule
 
-[ BLOCK <1> cpdocpdf ]
-#=====================
-    set BLDRULE=cpdocpdf
-    set LOGFNAME=cpdocpdf
-    # with 'cpdocpdf', we want to force the copy to occur
+[ BLOCK <1> cpdoctrav ]
+#======================
+    set BLDRULE=cpdoctrav
+    set LOGFNAME=cpdoctrv
+    # with 'cpdoctrav', we want to force the copy to occur
     set CPCMD=copy
     set CCCMD=ccopy
-    echo **** CPDOCPDF rule
+    echo **** CPDOCTRAV rule
 
 [ BLOCK <1> docsclean ]
 #======================

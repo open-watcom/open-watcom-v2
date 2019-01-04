@@ -253,8 +253,8 @@ set OWTXTDOCBUILD=1
 [ INCLUDE <OWDOCSDIR>/builder.ctl ]
 set OWTXTDOCBUILD=
 
-[ BLOCK <BLDRULE> docsclean docs docpdf cpdocpdf ]
-#=================================================
+[ BLOCK <BLDRULE> docsclean docs doctrav cpdoctrav ]
+#===================================================
 [ INCLUDE <OWDOCSDIR>/builder.ctl ]
 
 [ BLOCK <BLDRULE> testclean test cleanlog ]

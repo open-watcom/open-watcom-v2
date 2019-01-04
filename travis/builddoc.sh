@@ -58,11 +58,11 @@ build_proc()
         RC=$?
     fi
     #
-    # build PDF documentation
+    # build documentation for Wiki
     #
     if [ $RC -eq 0 ]; then
         cd $OWSRCDIR
-        builder docpdf
+        builder doctravis
         RC=$?
     fi
     cd $TRAVIS_BUILD_DIR

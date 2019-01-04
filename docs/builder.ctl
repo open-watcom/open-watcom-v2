@@ -21,18 +21,21 @@ set PMAKEKEY=txt
 #=================================
     pmake -d <PMAKEKEY> <PROJPMAKE> <2> <3> <4> <5> <6> <7> <8> <9> -h
 
-[ BLOCK <BLDRULE> docpdf ]
-#=========================
+[ BLOCK <BLDRULE> doctrav ]
+#==========================
     cd pdf
-    pmake -d <PMAKEKEY> <PROJPMAKE> <2> <3> <4> <5> <6> <7> <8> <9> -h docset=docpdf
+    pmake -d all <2> <3> <4> <5> <6> <7> <8> <9> -h docset=doctrav
+    cd ..
+    cd html
+    pmake -d all <2> <3> <4> <5> <6> <7> <8> <9> -h docset=doctrav
     cd ..
 
 [ BLOCK <BLDRULE> docsclean clean ]
 #==================================
     pmake -d <PMAKEKEY> <PROJPMAKE> <2> <3> <4> <5> <6> <7> <8> <9> -h clean
 
-[ BLOCK <BLDRULE> docs rel docpdf ]
-#==================================
+[ BLOCK <BLDRULE> docs rel doctrav ]
+#===================================
     cdsay <PROJDIR>
 
 [ BLOCK <BLDRULE> docs rel cprel ]
@@ -50,10 +53,12 @@ set PMAKEKEY=txt
     <CCCMD> txt/*.txt       <OWRELROOT>/
     <CPCMD> areadme.txt     <OWRELROOT>/areadme.txt
 
-[ BLOCK <BLDRULE> cpdocpdf ]
-#===========================
+[ BLOCK <BLDRULE> cpdoctrav ]
+#============================
     [ IFDEF <PMAKEKEY> build ]
         <CCCMD> pdf/*.pdf       <OWRELROOT>/docs/
+        <CCCMD> html/*.htm      <OWRELROOT>/docs/
+        <CCCMD> html/*.bmp      <OWRELROOT>/docs/
     [ ENDIF ]
     <CCCMD> txt/*.txt       <OWRELROOT>/
     <CPCMD> areadme.txt     <OWRELROOT>/areadme.txt
