@@ -321,7 +321,7 @@ jobs:
         - travis/services.sh
         # set environmet variable
         - export OWTOOLS=GCC
-        - export OWTRAVISJOB=DOCPDF
+        - export OWTRAVISJOB=DOCTRAV
         - export OWDOCBUILD=1
       install:
         # install DOS Emulator + Ghostscript
