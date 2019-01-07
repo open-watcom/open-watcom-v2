@@ -167,7 +167,7 @@ extern bool             SimCheckFileInitialCondition( int parm );
 extern void             SimGetPMGroupFileName( char *buff, size_t buff_len );
 extern void             SimGetPMGroupIcon( char *buff, size_t buff_len );
 extern void             SimGetPMGroup( char *buff, size_t buff_len );
-extern int              SimGetNumPMProgs( void );
+extern int              SimGetPMProgsNum( void );
 extern int              SimGetPMProgName( int parm, char *buff );
 extern void             SimGetPMParms( int parm, char *buff, size_t buff_len );
 extern void             SimGetPMDesc( int parm, char *buff, size_t buff_len );
@@ -175,7 +175,7 @@ extern int              SimGetPMIconInfo( int parm, char *buff, size_t buff_len,
 extern bool             SimCheckPMCondition( int parm );
 extern void             SimGetPMGroupName( int parm, char *buff, size_t buff_len );
 extern void             SimGetPMGroupFName( int parm, char *buff, size_t buff_len );
-extern int              SimGetNumPMGroups();
+extern int              SimGetPMGroupsNum();
 extern int              SimNumProfile( void );
 extern void             SimProfInfo( int parm, char *app_name, char *key_name, char *value, char *file_name, char *hive_name );
 extern bool             SimCheckProfCondition( int parm );

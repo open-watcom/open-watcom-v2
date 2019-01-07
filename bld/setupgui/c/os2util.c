@@ -91,7 +91,7 @@ bool CreatePMInfo( bool uninstall )
     if( uninstall ) {
         int     nPMGrp, nMaxPMGroups;
 
-        nMaxPMGroups = SimGetNumPMGroups();
+        nMaxPMGroups = SimGetPMGroupsNum();
         for( nPMGrp = 0; nPMGrp < nMaxPMGroups; nPMGrp++ ) {
             SimGetPMGroupFName( nPMGrp, t1, sizeof( t1 ) );
             if( *t1 != '\0' ) {
@@ -118,7 +118,7 @@ bool CreatePMInfo( bool uninstall )
     obj = create_group( t1, GroupFileName );
 
     // Add the individual PM files to the Group box.
-    nMaxPMProgs = SimGetNumPMProgs();
+    nMaxPMProgs = SimGetPMProgsNum();
     StatusLines( STAT_CREATEPROGRAMFOLDER, "" );
     StatusAmount( 0, nMaxPMProgs );
 

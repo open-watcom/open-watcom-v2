@@ -2970,7 +2970,7 @@ void SimGetPMGroup( char *buff, size_t buff_len )
     }
 }
 
-int SimGetNumPMProgs( void )
+int SimGetPMProgsNum( void )
 /**************************/
 {
     return( SetupInfo.pm_files.num );
@@ -3037,7 +3037,7 @@ bool SimCheckPMCondition( int parm )
     return( EvalCondition( PMInfo[parm].condition ) );
 }
 
-int SimGetNumPMGroups( void )
+int SimGetPMGroupsNum( void )
 /***************************/
 {
     return( SetupInfo.all_pm_groups.num );

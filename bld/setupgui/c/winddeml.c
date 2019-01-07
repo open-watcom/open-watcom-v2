@@ -119,7 +119,7 @@ static bool UseDDE( bool uninstall )
     if( uninstall ) {
         ok = true;
         // Delete the PM Group box
-        num_groups = SimGetNumPMGroups();
+        num_groups = SimGetPMGroupsNum();
         for( i = 0; i < num_groups; i++ ) {
             SimGetPMGroupName( i, t1, sizeof( t1 ) );
             if( *t1 != '\0' ) {
@@ -149,7 +149,7 @@ static bool UseDDE( bool uninstall )
         ok = SendCommand( ddeinst, hconv, buff );
 
         // Add the individual PM files to the Group box.
-        num_icons = SimGetNumPMProgs();
+        num_icons = SimGetPMProgsNum();
         StatusLines( STAT_CREATEPROGRAMFOLDER, "" );
         num_total_install = 0;
         for( i = 0; i < num_icons; i++ ) {
@@ -404,7 +404,7 @@ static bool UseIShellLink( bool uninstall )
     char                group[_MAX_PATH], prog_arg[_MAX_PATH], tmp[_MAX_PATH];
 
     if( uninstall ) {
-        num_groups = SimGetNumPMGroups();
+        num_groups = SimGetPMGroupsNum();
         for( i = 0; i < num_groups; i++ ) {
             SimGetPMGroupName( i, group, sizeof( group ) );
             if( *group != '\0' ) {
@@ -429,7 +429,7 @@ static bool UseIShellLink( bool uninstall )
     }
 
     // Add the individual PM files to the Group box.
-    num_icons = SimGetNumPMProgs();
+    num_icons = SimGetPMProgsNum();
     StatusLines( STAT_CREATEPROGRAMFOLDER, "" );
     num_total_install = 0;
     for( i = 0; i < num_icons; i++ ) {
