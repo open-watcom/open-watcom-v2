@@ -175,7 +175,7 @@ extern int              SimGetPMIconInfo( int parm, char *buff, size_t buff_len,
 extern bool             SimCheckPMCondition( int parm );
 extern void             SimGetPMGroupName( int parm, char *buff, size_t buff_len );
 extern void             SimGetPMGroupFName( int parm, char *buff, size_t buff_len );
-extern int              SimGetNumPMGroups( void );
+extern int              SimGetPMGroupsNum( void );
 extern int              SimNumProfile( void );
 extern void             SimProfInfo( int parm, char *app_name, char *key_name, char *value, char *file_name, char *hive_name );
 extern bool             SimCheckProfCondition( int parm );
