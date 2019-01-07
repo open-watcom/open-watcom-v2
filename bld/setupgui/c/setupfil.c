@@ -45,9 +45,8 @@
 #endif
 #include "wio.h"
 #include "watcom.h"
-#include "gui.h"
-#include "guiutil.h"
 #include "setup.h"
+#include "guiutil.h"
 #include "setupinf.h"
 #include "genvbl.h"
 #include "gendlg.h"

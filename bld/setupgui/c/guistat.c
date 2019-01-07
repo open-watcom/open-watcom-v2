@@ -32,11 +32,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-#include "gui.h"
+#include "setup.h"
 #include "guiutil.h"
 #include "guikey.h"
 #include "dlggen.h"
-#include "setup.h"
 #include "setupwpi.h"
 #include "setupinf.h"
 #include "guistr.h"

@@ -34,7 +34,6 @@
 #include <stdlib.h>
 #include "setup.h"
 #include "iopath.h"
-#include "strvbuf.h"
 
 #include "clibext.h"
 

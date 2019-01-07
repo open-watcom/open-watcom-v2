@@ -39,10 +39,9 @@
     #include <windows.h>
 #endif
 #include "wio.h"
-#include "gui.h"
+#include "setup.h"
 #include "guiutil.h"
 #include "setupinf.h"
-#include "setup.h"
 #include "utils.h"
 #include "dlggen.h"
 #include "dynarray.h"
@@ -435,7 +434,7 @@ void SetDefaultGlobalVarList( void )
 #if defined( __LINUX__ ) && defined( _M_X64 ) && 0
     SetVariableByName( "IsLinux64", "1" );
     SetVariableByName( "IsLinux32", "0" );
-#else 
+#else
     SetVariableByName( "IsLinux64", "0" );
   #if defined( __LINUX__ )
     SetVariableByName( "IsLinux32", "1" );

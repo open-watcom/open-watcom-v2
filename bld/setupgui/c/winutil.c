@@ -34,24 +34,22 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <sys/types.h>
-#if defined( __NT__ ) || defined( __WINDOWS__ )
-  #if defined( __WINDOWS__ )
+#if defined( __WINDOWS__ )
     #define INCLUDE_COMMDLG_H
-  #endif
+#endif
+#if defined( __NT__ )
     #include <windows.h>
-  #if defined( __NT__ )
     #include <commdlg.h>
-  #endif
+#endif
+#if defined( __OS2__ )
+    #define INCL_WINSHELLDATA
 #endif
 #include "wio.h"
 #include "watcom.h"
-#include "bool.h"
+#include "setup.h"
 #if !defined( _UI ) && ( defined( __NT__ ) || defined( __WINDOWS__ ) )
     #include "fontstr.h"
 #endif
-#define INCL_WINSHELLDATA
-#include "gui.h"
-#include "setup.h"
 #include "setupinf.h"
 #include "utils.h"
 #include "genvbl.h"

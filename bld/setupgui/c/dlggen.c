@@ -40,11 +40,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "gui.h"
+#include "setup.h"
 #include "guistr.h"
 #include "guidlg.h"
 #include "dlgbutn.h"
-#include "setup.h"
 #include "setupinf.h"
 #include "dlggen.h"
 #include "genvbl.h"

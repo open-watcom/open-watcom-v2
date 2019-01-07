@@ -38,7 +38,6 @@
 #include <windows.h>
 #include <ddeml.h>
 #include "watcom.h"
-#include "gui.h"
 #include "setup.h"
 #include "setupinf.h"
 #include "genvbl.h"

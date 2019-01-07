@@ -45,13 +45,12 @@
     #include <windows.h>
 #endif
 #include "wio.h"
-#include "gui.h"
+#include "setup.h"
 #include "guistr.h"
 #include "guidlg.h"
 #include "dlgbutn.h"
 #include "guiutil.h"
 #include "guistat.h"
-#include "setup.h"
 #include "setupinf.h"
 #include "genvbl.h"
 #include "gendlg.h"

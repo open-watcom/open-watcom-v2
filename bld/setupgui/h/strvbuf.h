@@ -29,10 +29,6 @@
 ****************************************************************************/
 
 
-#ifndef _STRVBUF_H
-#define _STRVBUF_H
-
-
 typedef struct vbuf{            // VBUF structure
     char           *buf;        // - buffer pointer
     size_t         len;         // - buffer size
@@ -143,5 +139,3 @@ void VbufConcDirSep(            // TERMINATE A VBUF AS PATH BY DIR_SEP
 ;
 #define VbufSize(v)             ((v)->len)                  // RETURN SIZE OF BUFFER
 ;
-
-#endif

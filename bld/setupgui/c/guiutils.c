@@ -33,10 +33,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include "wio.h"
-#include "gui.h"
+#include "setup.h"
 #include "guidlg.h"
 #include "guistr.h"
-#include "setup.h"
 #include "setupinf.h"
 #include "resource.h"
 #include "banner.h"

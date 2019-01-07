@@ -34,7 +34,6 @@
 #include <string.h>
 #define INCL_DOSFILEMGR
 #define INCL_DOSERRORS
-#include "gui.h"
 #include "setup.h"
 #include "setupwpi.h"
 #include "setupinf.h"

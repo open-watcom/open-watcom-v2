@@ -55,6 +55,7 @@
     #define INCL_ERRORS
     #include <os2.h>
 #endif
+#include "bool.h"
 #include "vhandle.h"
 #include "guitypes.h"
 #if defined( __WINDOWS__ )
@@ -64,6 +65,9 @@
 #elif defined( __OS2__ )
     #include "setupdlg.h"
 #endif
+#include "gui.h"
+#include "strvbuf.h"
+
 
 #ifdef __OS2__
     #define     _ID(x) x

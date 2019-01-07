@@ -36,7 +36,6 @@
 #endif
 #include <string.h>
 #include "wio.h"
-#include "gui.h"
 #include "setup.h"
 #include "setupinf.h"
 #include "setupio.h"
