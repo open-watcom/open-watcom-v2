@@ -117,7 +117,7 @@ typedef struct a_dialog_header {
 #define DUMMY_VAR_SIZE 25
 
 
-extern void             CheckStateVars();
+extern void             CheckStateVars( void );
 extern char             *SimGetTargetDriveLetter( int parm, char *buff, size_t buff_len );
 extern bool             SimFileAdd( int parm );
 extern bool             SimFileUpToDate( int parm );
@@ -175,7 +175,7 @@ extern int              SimGetPMIconInfo( int parm, char *buff, size_t buff_len,
 extern bool             SimCheckPMCondition( int parm );
 extern void             SimGetPMGroupName( int parm, char *buff, size_t buff_len );
 extern void             SimGetPMGroupFName( int parm, char *buff, size_t buff_len );
-extern int              SimGetPMGroupsNum();
+extern int              SimGetNumPMGroups( void );
 extern int              SimNumProfile( void );
 extern void             SimProfInfo( int parm, char *app_name, char *key_name, char *value, char *file_name, char *hive_name );
 extern bool             SimCheckProfCondition( int parm );
@@ -203,7 +203,7 @@ extern void             SimGetLabelLabel( int parm, char *buff );
 extern bool             SimCalcTargetSpaceNeeded( void );
 extern void             CheckDLLCount( char * );
 extern void             SimCalcAddRemove( void );
-extern void             SimSetNeedGetDiskSizes();
+extern void             SimSetNeedGetDiskSizes( void );
 extern bool             PatchFiles( void );
 extern void             MsgPut( int resourceid, va_list arglist );
 extern void             PatchError( int format, ... );
@@ -212,16 +212,16 @@ extern void             FreeAllStructs( void );
 extern bool             EvalCondition( const char *str );
 extern bool             SimTargetNeedsUpdate( int parm );
 extern vhandle          SimSubFileVar( int parm, int subfile );
-extern int              SimNumSpawns();
+extern int              SimNumSpawns( void );
 extern void             SimGetSpawnCommand( char *, size_t buff_len, int i );
 extern when_time        SimWhen( int i );
 extern bool             SimEvalSpawnCondition( int i );
-extern int              SimGetNumDisks();
-extern int              SimNumDeletes();
+extern int              SimGetNumDisks( void );
+extern int              SimNumDeletes( void );
 extern char             *SimDeleteName( int );
 extern bool             SimDeleteIsDialog( int );
 extern bool             SimDeleteIsDir( int );
-extern int              SimNumUpgrades();
+extern int              SimNumUpgrades( void );
 extern char             *SimGetUpgradeName( int );
 extern vhandle          MakeDummyVar( void );
 

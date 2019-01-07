@@ -49,7 +49,7 @@ extern char             GetDriveLetter( char *desc );
 extern char             *AddInstallName( char *line, bool dorealloc );
 extern char             *stristr( char *str, char *substr );
 extern void             Log( char *start, ... );
-extern bool             CheckUpgrade();
+extern bool             CheckUpgrade( void );
 extern bool             LicenseFileName( char * );
 extern char             *GetInstallName( void );
 extern bool             PromptUser( char *name, char *dlg, char *skip, char *replace, int *value );
