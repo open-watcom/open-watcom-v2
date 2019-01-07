@@ -42,6 +42,7 @@ objs = &
     gendlg.obj      &
     hash.obj        &
     nlmver.obj      &
+    strvbuf.obj     &
     utils.obj
 
 !ifdef patch
