@@ -329,7 +329,7 @@ static var_type getEnvironVarType( const char *new_var )
     vt = VAR_SETENV_ASSIGN;
 #ifndef __UNIX__
 #ifndef __OS2__
-    if( GetVariableIntVal( "IsOS2DosBox" ) == 1 ) {
+    if( GetVariableBoolVal( "IsOS2DosBox" ) ) {
 #endif
         // OS/2
         if( stricmp( new_var, "LIBPATH" ) == 0 ) {
@@ -673,18 +673,18 @@ static bool ModAuto( char *orig, char *new, bool uninstall )
     int         num_env;
     bool        rc;
 #if defined( __DOS__ ) || defined( __WINDOWS__ )
-    int         isOS2DosBox;
+    bool        isOS2DosBox;
 #endif
 
     num_auto = SimNumAutoExec();
     num_env = SimNumEnvironment();
 #if defined( __DOS__ ) || defined( __WINDOWS__ )
-    isOS2DosBox = GetVariableIntVal( "IsOS2DosBox" );
-    SetVariableByName( "IsOS2DosBox", "0" );
+    isOS2DosBox = GetVariableBoolVal( "IsOS2DosBox" );
+    SetBoolVariableByName( "IsOS2DosBox", false );
 #endif
     rc = ModFile( orig, new, CheckAutoLine, FinishAutoLines, num_auto, num_env, uninstall );
 #if defined( __DOS__ ) || defined( __WINDOWS__ )
-    SetVariableByName( "IsOS2DosBox", ( isOS2DosBox ) ? "1" : "0" );
+    SetBoolVariableByName( "IsOS2DosBox", isOS2DosBox );
 #endif
     return( rc );
 }
@@ -808,7 +808,7 @@ static bool ModConfig( char *orig, char *new, bool uninstall )
 
     num_cfg = SimNumConfig();
 #ifndef __OS2__
-    if( GetVariableIntVal( "IsOS2DosBox" ) == 1 ) {
+    if( GetVariableBoolVal( "IsOS2DosBox" ) ) {
 #endif
         num_env = SimNumEnvironment();
 #ifndef __OS2__
@@ -877,13 +877,13 @@ bool ModifyAutoExec( bool uninstall )
     if( DoDialog( "Modify" ) == DLG_CAN ) {
         return( false );
     }
-    if( GetVariableIntVal( "ModNow" ) == 1 ) {
+    if( GetVariableBoolVal( "ModNow" ) ) {
         mod_type = MOD_IN_PLACE;
     } else {
         mod_type = MOD_LATER;
     }
 
-    if( GetVariableIntVal( "IsWin95" ) != 0 ) {
+    if( GetVariableBoolVal( "IsWin95" ) ) {
         boot_drive = 0;
     } else {
         boot_drive = GetBootDrive();
@@ -914,10 +914,10 @@ bool ModifyAutoExec( bool uninstall )
             MsgBox( NULL, "IDS_CANTFINDCONFIGSYS", GUI_OK );
             return( false );
         }
-        strcpy( newcfg, GetVariableStrVal("CfgDir") );
+        strcpy( newcfg, GetVariableStrVal( "CfgDir" ) );
         OrigConfig[0] = newcfg[0];
         OrigAutoExec[0] = OrigConfig[0];
-        if( GetVariableIntVal( "CfgFileCreate" ) != 0 ) {
+        if( GetVariableBoolVal( "CfgFileCreate" ) ) {
             fp = fopen( OrigConfig, "wt" );
             if( fp == NULL ) {
                 MsgBox( NULL, "IDS_CANTCREATEFILE", GUI_OK, OrigConfig );
@@ -936,7 +936,7 @@ bool ModifyAutoExec( bool uninstall )
         }
         strcpy( newcfg, GetVariableStrVal("CfgDir") );
         OrigAutoExec[0] = newcfg[0];
-        if( GetVariableIntVal( "CfgFileCreate" ) != 0 ) {
+        if( GetVariableBoolVal( "CfgFileCreate" ) ) {
             fp = fopen( OrigAutoExec, "wt" );
             if( fp == NULL ) {
                 MsgBox( NULL, "IDS_CANTCREATEFILE", GUI_OK, OrigAutoExec );
@@ -1080,7 +1080,7 @@ char *ReplaceVars( char *buff, size_t buff_len, const char *src )
                 break;  // no '?' operator
             } else {
                 colon = strchr( quest, ':' );
-                if( GetOptionVarValue( GetVariableByName( varname ), false ) != 0 ) {
+                if( GetOptionVarValue( GetVariableByName( varname ), false ) ) {
                     *colon = '\0';
                     varval = GetVariableStrVal( quest );
                     break;
@@ -1361,14 +1361,14 @@ gui_message_return CheckInstallDLL( char *name, vhandle var_handle )
     SetVariableByName( "OtherDLLDir", path2 );
 
     // don't display the dialog if the user selected the "Skip dialog" option
-    if( GetVariableIntVal( "DLL_Skip_Dialog" ) == 0 ) {
+    if( !GetVariableBoolVal( "DLL_Skip_Dialog" ) ) {
         if( DoDialog( "DLLInstall" ) == DLG_CAN ) {
             remove( unpacked_as );
             return( GUI_RET_CANCEL );
         }
     }
 
-    if( GetVariableIntVal( "DLL_Delete_Old" ) == 1 ) {
+    if( GetVariableBoolVal( "DLL_Delete_Old" ) ) {
         remove( prev_path );
 #ifdef EXTRA_CAUTIOUS_FOR_DLLS
         if( access( name, F_OK ) != 0 || remove( name ) == 0 ) {
@@ -1380,7 +1380,7 @@ gui_message_return CheckInstallDLL( char *name, vhandle var_handle )
             }
         }
 #endif
-    } else if( GetVariableIntVal( "DLL_Keep_Both" ) == 1 ) {
+    } else if( GetVariableBoolVal( "DLL_Keep_Both" ) ) {
 #ifdef EXTRA_CAUTIOUS_FOR_DLLS
         if( access( name, F_OK ) != 0 || remove( name ) == 0 ) {
             rename( unpacked_as, name );
@@ -1391,14 +1391,14 @@ gui_message_return CheckInstallDLL( char *name, vhandle var_handle )
             }
         }
 #endif
-    } else if( GetVariableIntVal( "DLL_Replace_Old" ) == 1 ) {
+    } else if( GetVariableBoolVal( "DLL_Replace_Old" ) ) {
         DoCopyFile( unpacked_as, prev_path, false );
         SetVariableByHandle( var_handle, prev_path );
         remove( unpacked_as );
-    } else if( GetVariableIntVal( "DLL_Dont_Install" ) == 1 ) {
+    } else if( GetVariableBoolVal( "DLL_Dont_Install" ) ) {
         SetVariableByHandle( var_handle, prev_path );
         remove( unpacked_as );
-    } else if( GetVariableIntVal( "DLL_Abort_Install" ) == 1 ) {
+    } else if( GetVariableBoolVal( "DLL_Abort_Install" ) ) {
         SetVariableByHandle( var_handle, prev_path );
         remove( unpacked_as );
         return( GUI_RET_CANCEL );
@@ -1515,14 +1515,14 @@ bool ModifyConfiguration( bool uninstall )
             return( false );
         }
     }
-    if( GetVariableIntVal( "ModLater" ) == 1 ) {
+    if( GetVariableBoolVal( "ModLater" ) ) {
         mod_type = MOD_LATER;
     } else {
         mod_type = MOD_IN_PLACE;
         if( uninstall ) { //Clean up everywhere
             RegLocation[LOCAL_MACHINE].modify = true;
             RegLocation[CURRENT_USER].modify  = true;
-        } else if( GetVariableIntVal( "ModMachine" ) == 1 ) {
+        } else if( GetVariableBoolVal( "ModMachine" ) ) {
             RegLocation[LOCAL_MACHINE].modify = true;
             RegLocation[CURRENT_USER].modify  = false;
         } else { // ModNow == 1 or ModUser == 1
@@ -1600,7 +1600,7 @@ bool ModifyRegAssoc( bool uninstall )
         if( DoDialog( "ModifyAssociations" ) == DLG_CAN ) {
             return( false );
         }
-        if( GetVariableIntVal( "NoModEnv" ) == 1 ) {
+        if( GetVariableBoolVal( "NoModEnv" ) ) {
             return( true );
         }
         num = SimNumAssociations();
@@ -1688,7 +1688,7 @@ bool GenerateBatchFile( bool uninstall )
     bool                *found;
     char                buf[MAXENVVAR + 1];
 #if defined( __DOS__ ) || defined( __WINDOWS__ )
-    int                 isOS2DosBox;
+    bool                isOS2DosBox;
 #endif
 
     ReplaceVars( batch_file, sizeof( batch_file ), GetVariableStrVal( "BatchFileName" ) );
@@ -1709,8 +1709,8 @@ bool GenerateBatchFile( bool uninstall )
 #endif
             fprintf( fp, "echo %s\n", GetVariableStrVal( "BatchFileCaption" ) );
 #if defined( __DOS__ ) || defined( __WINDOWS__ )
-            isOS2DosBox = GetVariableIntVal( "IsOS2DosBox" );
-            SetVariableByName( "IsOS2DosBox", "0" );
+            isOS2DosBox = GetVariableBoolVal( "IsOS2DosBox" );
+            SetBoolVariableByName( "IsOS2DosBox", false );
 #endif
             num_env = SimNumEnvironment();
             if( num_env > 0 ) {
@@ -1720,7 +1720,7 @@ bool GenerateBatchFile( bool uninstall )
                 GUIMemFree( found );
             }
 #if defined( __DOS__ ) || defined( __WINDOWS__ )
-            SetVariableByName( "IsOS2DosBox", ( isOS2DosBox ) ? "1" : "0" );
+            SetBoolVariableByName( "IsOS2DosBox", isOS2DosBox );
 #endif
             fclose( fp );
         }

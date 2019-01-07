@@ -76,20 +76,28 @@ static void remove_group( const char *group )
 bool CreatePMInfo( bool uninstall )
 /*********************************/
 {
-    char                PMProgName[_MAX_PATH], PMProgDesc[MAXBUF];
-    char                PMIconFileName[_MAX_PATH], WorkingDir[_MAX_PATH];
+    char                PMProgName[_MAX_PATH];
+    char                PMProgDesc[MAXBUF];
+    char                PMIconFileName[_MAX_PATH];
+    char                WorkingDir[_MAX_PATH];
     char                PMParams[MAXBUF];
-    char                Cmd[2 * _MAX_PATH], t1[MAXBUF], t2[MAXBUF];
+    char                Cmd[2 * _MAX_PATH];
+    char                t1[MAXBUF];
+    char                t2[MAXBUF];
     char                GroupFileName[_MAX_PATH];
     char                Folder[_MAX_PATH];
-    int                 nDirIndex, icon_number;
-    int                 nPMProg, nMaxPMProgs, len;
+    int                 nDirIndex;
+    int                 icon_number;
+    int                 nPMProg;
+    int                 nMaxPMProgs;
+    int                 len;
     char                *p;
     HOBJECT             obj;
 
     // To uninstall, simply nuke all folders
     if( uninstall ) {
-        int     nPMGrp, nMaxPMGroups;
+        int     nPMGrp;
+        int     nMaxPMGroups;
 
         nMaxPMGroups = SimGetPMGroupsNum();
         for( nPMGrp = 0; nPMGrp < nMaxPMGroups; nPMGrp++ ) {
@@ -255,14 +263,16 @@ static bool SetEAttr( char *filename, char const *name, char const *val )
 }
 
 
-static char             dir_name[_MAX_PATH], label[_MAX_PATH], t1[_MAX_PATH];
-
 // Process [Label] section - use extended attributes to add
 //                           long label to directories
 void LabelDirs( void )
 /********************/
 {
-    int                 i, num;
+    int             i;
+    int             num;
+    static char     dir_name[_MAX_PATH];
+    static char     label[_MAX_PATH];
+    static char     t1[_MAX_PATH];
 
     num = SimNumLabels();
     for( i = 0; i < num; ++i ) {

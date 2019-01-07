@@ -203,7 +203,7 @@ bool ModifyStartup( bool uninstall )
 #ifdef __AXP__
         ret = ModifyConfiguration( uninstall );
 #else
-        if( GetVariableIntVal( "IsWin95" ) != 0 ) {
+        if( GetVariableBoolVal( "IsWin95" ) ) {
             ret = ModifyAutoExec( uninstall );
         } else {
             ret = ModifyConfiguration( uninstall );
@@ -1137,7 +1137,7 @@ bool CheckUpgrade( void )
     char                disk[_MAX_PATH];
     dlg_state           return_state;
 
-    if( GetVariableIntVal( "PreviousInstall" ) )
+    if( GetVariableBoolVal( "PreviousInstall" ) )
         return( true );
     DoDialog( "UpgradeStart" );
 #if defined( __UNIX__ )
@@ -1669,7 +1669,7 @@ static void CopySetupInfFile( void )
     if( (p != NULL) && (strlen( p ) > 0) ) {
         ReplaceVars( tmp_path, sizeof( tmp_path ), p );
         _makepath( dst_path, NULL, tmp_path, "setup.inf", NULL );
-        if( VarGetIntVal( UnInstall ) ) {
+        if( VarGetBoolVal( UnInstall ) ) {
             remove( dst_path );
         } else {
             p = GetVariableStrVal( "SetupInfFile" );
@@ -1722,7 +1722,7 @@ static bool DoCopyFiles( void )
     split_file          *split = NULL;
     split_file          **owner_split = &split;
     split_file          *junk;
-    int                 value;
+    bool                resp_replace;
     vhandle             var_handle;
     gui_message_return  ret = GUI_RET_OK;
     int                 max_files = SimNumFiles();
@@ -1745,10 +1745,10 @@ static bool DoCopyFiles( void )
                 if( SimSubFileReadOnly( filenum, subfilenum ) ) {
                     SimSubFileName( filenum, subfilenum, file_desc );
                     _makepath( tmp_path, NULL, dir, file_desc, NULL );
-                    if( !PromptUser( tmp_path, "ReadOnlyFile", "RO_Skip_Dialog", "RO_Replace_Old", &value ) ) {
+                    if( !PromptUser( tmp_path, "ReadOnlyFile", "RO_Skip_Dialog", "RO_Replace_Old", &resp_replace ) ) {
                         return( false );
                     }
-                    if( value ) {
+                    if( resp_replace ) {
                         chmod( tmp_path, PMODE_W_USR );
                     }
                 }
@@ -1756,10 +1756,10 @@ static bool DoCopyFiles( void )
                     SimSubFileName( filenum, subfilenum, file_desc );
 //                  _splitpath( file_desc, NULL, NULL, NULL, file_ext );
                     _makepath( tmp_path, NULL, dir, file_desc, NULL );
-                    if( !PromptUser( tmp_path, "NewerFile", "Newer_Skip_Dialog", "Newer_Replace_Old", &value ) ) {
+                    if( !PromptUser( tmp_path, "NewerFile", "Newer_Skip_Dialog", "Newer_Replace_Old", &resp_replace ) ) {
                         return( false );
                     }
-                    if( value ) {
+                    if( resp_replace ) {
                         SetFileDate( tmp_path, SimSubFileDate( filenum, subfilenum ) - 1 );
                     }
                 }
@@ -1772,10 +1772,10 @@ static bool DoCopyFiles( void )
                 if( SimSubFileReadOnly( filenum, subfilenum ) ) {
                     SimSubFileName( filenum, subfilenum, file_desc );
                     _makepath( tmp_path, NULL, dir, file_desc, NULL );
-                    if( !PromptUser( tmp_path, "DeleteReadOnlyFile", "RO_Skip_Remove", "RO_Remove_Old", &value ) ) {
+                    if( !PromptUser( tmp_path, "DeleteReadOnlyFile", "RO_Skip_Remove", "RO_Remove_Old", &resp_replace ) ) {
                         return( false );
                     }
-                    if( value ) {
+                    if( resp_replace ) {
                         chmod( tmp_path, PMODE_W_USR );
                         num_total_install += OVERHEAD_SIZE;
                     }
@@ -1957,7 +1957,7 @@ static void RemoveExtraFiles( void )
     const char          *p;
     char                dst_path[_MAX_PATH];
 
-    if( VarGetIntVal( UnInstall ) ) {
+    if( VarGetBoolVal( UnInstall ) ) {
         // delete saved autoexec's and config's
         p = GetVariableStrVal( "DstDir" );
 #if defined( __NT__ )
@@ -2003,10 +2003,10 @@ static void DetermineSrcState( const char *src_dir )
     strcat( dir, "\\cd_source" );
 #endif
     if( access( dir, F_OK ) == 0 ) {
-        SetVariableByName( "SrcIsCD", "1" );
+        SetBoolVariableByName( "SrcIsCD", true );
         SrcInstState = SRC_CD;
     } else {
-        SetVariableByName( "SrcIsCD", "0" );
+        SetBoolVariableByName( "SrcIsCD", false );
         SrcInstState = SRC_DISK;
     }
 }
@@ -2290,15 +2290,15 @@ gui_message_return MsgBox( gui_window *gui, const char *messageid,
 }
 
 
-bool PromptUser( char *name, char *dlg, char *skip, char *replace, int *value )
-/*****************************************************************************/
+bool PromptUser( char *name, char *dlg, char *skip, char *replace, bool *resp_replace )
+/*************************************************************************************/
 {
-    dlg_state                   return_state;
+    dlg_state       return_state;
 
     SetVariableByName( "FileDesc", name );
 
     // don't display the dialog if the user selected the "Skip dialog" option
-    if( GetVariableIntVal( skip ) == 0 ) {
+    if( !GetVariableBoolVal( skip ) ) {
         for( ;; ) {
             return_state = DoDialog( dlg );
             if( return_state != DLG_DONE && return_state != DLG_CAN )
@@ -2309,8 +2309,7 @@ bool PromptUser( char *name, char *dlg, char *skip, char *replace, int *value )
             }
         }
     }
-
-    *value = (GetVariableIntVal( replace ) == 1);
+    *resp_replace = GetVariableBoolVal( replace );
     return( true );
 }
 
@@ -2576,9 +2575,9 @@ void ReadVariablesFile( const char *name )
             if( variable != NULL ) {
                 if( name == NULL || stricmp( name, variable ) == 0 ) {
                     if( stricmp( value, "true" ) == 0 ) {
-                        SetVariableByName( variable, "1" );
+                        SetBoolVariableByName( variable, true );
                     } else if( stricmp( value, "false" ) == 0 ) {
-                        SetVariableByName( variable, "0" );
+                        SetBoolVariableByName( variable, false );
                     } else {
                         SetVariableByName( variable, value );
                     }
@@ -2622,7 +2621,7 @@ void CloseDownMessage( bool installed_ok )
 /****************************************/
 {
     if( installed_ok ) {
-        if( VarGetIntVal( UnInstall ) != 0 ) {
+        if( VarGetBoolVal( UnInstall ) ) {
             MsgBox( NULL, "IDS_UNSETUPCOMPLETE", GUI_OK );
         } else {
             if( ConfigModified ) {
@@ -2641,7 +2640,7 @@ void CloseDownMessage( bool installed_ok )
             }
         }
     } else if( !CancelSetup ) {
-        if( VarGetIntVal( UnInstall ) != 0 ) {
+        if( VarGetBoolVal( UnInstall ) ) {
             MsgBox( NULL, "IDS_UNSETUPNOGOOD", GUI_OK );
         } else {
             MsgBox( NULL, "IDS_SETUPNOGOOD", GUI_OK );

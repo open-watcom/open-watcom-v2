@@ -124,7 +124,7 @@ extern bool             SimFileUpToDate( int parm );
 extern bool             SimFileRemove( int parm );
 extern int              SimNumSubFiles( int parm );
 extern int              SimPermanentFile( int parm );
-extern int              SimSubFileExists( int parm, int subfile );
+extern bool             SimSubFileExists( int parm, int subfile );
 extern void             SimSubFileName( int parm, int subfile, char *buff );
 extern bool             SimSubFileInNewDir( int parm, int subfile );
 extern bool             SimSubFileInOldDir( int parm, int subfile );
@@ -225,7 +225,7 @@ extern int              SimNumUpgrades( void );
 extern char             *SimGetUpgradeName( int );
 extern vhandle          MakeDummyVar( void );
 
-extern int              GetOptionVarValue( vhandle var_handle, bool is_minimal );
+extern bool             GetOptionVarValue( vhandle var_handle, bool is_minimal );
 extern char             *TrimQuote(char*);
 extern void             SetDefaultAutoSetValue( vhandle var_handle );
 extern bool             CheckForceDLLInstall( char *name );

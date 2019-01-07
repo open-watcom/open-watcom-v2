@@ -500,7 +500,7 @@ bool CreatePMInfo( bool uninstall )
 /*********************************/
 {
 #if defined( __NT__ )
-    if( GetVariableIntVal( "IsWin95" ) || GetVariableIntVal( "IsWinNT40" ) ) {
+    if( GetVariableBoolVal( "IsWin95" ) || GetVariableBoolVal( "IsWinNT40" ) ) {
         return( UseIShellLink( uninstall ) );
     } else {
         return( UseDDE( uninstall ) );

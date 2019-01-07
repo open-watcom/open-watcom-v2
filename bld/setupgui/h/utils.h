@@ -52,7 +52,7 @@ extern void             Log( char *start, ... );
 extern bool             CheckUpgrade( void );
 extern bool             LicenseFileName( char * );
 extern char             *GetInstallName( void );
-extern bool             PromptUser( char *name, char *dlg, char *skip, char *replace, int *value );
+extern bool             PromptUser( char *name, char *dlg, char *skip, char *replace, bool *resp_replace );
 #if defined( __NT__ ) || defined( __WINDOWS__ )
 extern bool             GetRootFromPath( char *root, const char *path );
 extern disk_size        FreeSpace( const char *path );

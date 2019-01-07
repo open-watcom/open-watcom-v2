@@ -145,7 +145,7 @@ static struct dir_info {
     int                 parent;
     int                 num_files;
     int                 num_existing;
-    unsigned            used            : 1;
+    bool                used            : 1;
 } *DirInfo = NULL;
 
 
@@ -185,12 +185,12 @@ typedef struct a_file_info {
     unsigned long       disk_date;
     unsigned long       size;
     unsigned long       date;
-    unsigned            in_old_dir  : 1;
-    unsigned            in_new_dir  : 1;
-    unsigned            read_only   : 1;
-    unsigned            is_nlm      : 1;
-    unsigned            is_dll      : 1;
-    unsigned            executable  : 1;
+    bool                in_old_dir  : 1;
+    bool                in_new_dir  : 1;
+    bool                read_only   : 1;
+    bool                is_nlm      : 1;
+    bool                is_dll      : 1;
+    bool                executable  : 1;
 } a_file_info;
 
 typedef enum {
@@ -222,7 +222,9 @@ file_cond_info *FileCondInfo = NULL;
 
 static struct file_info {
     char                *filename;
-    int                 dir_index, old_dir_index, disk_index;
+    int                 dir_index;
+    int                 old_dir_index;
+    int                 disk_index;
     int                 num_files;
     a_file_info         *files;
     union {
@@ -230,10 +232,10 @@ static struct file_info {
         int             i;
     } condition;
     char                file_type;
-    unsigned            add             : 1;
-    unsigned            remove          : 1;
-    unsigned            supplimental    : 1;
-    unsigned            core_component  : 1;
+    bool                add             : 1;
+    bool                remove          : 1;
+    bool                supplimental    : 1;
+    bool                core_component  : 1;
 } *FileInfo = NULL;
 
 static struct pm_info {
@@ -549,29 +551,29 @@ static vhandle GetTokenHandle( const char *p )
     }
 }
 
-int GetOptionVarValue( vhandle var_handle, bool is_minimal )
-/**********************************************************/
+bool GetOptionVarValue( vhandle var_handle, bool is_minimal )
+/***********************************************************/
 {
-//    if( GetVariableIntVal( "_Visibility_Condition_" ) ) {
+//    if( GetVariableBoolVal( "_Visibility_Condition_" ) ) {
     if( VisibilityCondition ) {
-        return( VarGetIntVal( var_handle ) );
+        return( VarGetBoolVal( var_handle ) );
     } else if( IsMagicVar( var_handle ) ) {
         // these are special - we always want their "true" values
-        return( VarGetIntVal( var_handle ) != 0 );
-    } else if( VarGetIntVal( UnInstall ) ) {
+        return( VarGetBoolVal( var_handle ) );
+    } else if( VarGetBoolVal( UnInstall ) ) {
         // uninstall makes everything false
-        return( 0 );
-    } else if( VarGetIntVal( FullInstall ) && VarGetAutoSetCond( var_handle ) != NULL ) {
+        return( false );
+    } else if( VarGetBoolVal( FullInstall ) && VarGetAutoSetCond( var_handle ) != NULL ) {
         // fullinstall pretends all options are turned on
-        return( 1 );
-    } else if( VarGetIntVal( FullCDInstall ) && VarGetAutoSetCond( var_handle ) != NULL ) {
+        return( true );
+    } else if( VarGetBoolVal( FullCDInstall ) && VarGetAutoSetCond( var_handle ) != NULL ) {
         // fullinstallcd pretends all options are turned on except 'HelpFiles'
         return( var_handle != HelpFiles );
     } else if( is_minimal ) {
         // is_minimal makes all file condition variables false
         return( false );
     } else {
-        return( VarGetIntVal( var_handle ) != 0 );
+        return( VarGetBoolVal( var_handle ) );
     }
 }
 
@@ -579,7 +581,7 @@ int GetOptionVarValue( vhandle var_handle, bool is_minimal )
 static bool EvalExprTree( tree_node *tree, bool is_minimal )
 /**********************************************************/
 {
-    int         value = 0;
+    bool        value;
     char        buff[_MAX_PATH];
 
     value = false;
@@ -598,7 +600,7 @@ static bool EvalExprTree( tree_node *tree, bool is_minimal )
         value = ( access( buff, F_OK ) == 0 );
         break;
     case OP_VAR:
-        value = ( GetOptionVarValue( (vhandle)(pointer_int)tree->u.left, is_minimal ) != 0 );
+        value = GetOptionVarValue( (vhandle)(pointer_int)tree->u.left, is_minimal );
         break;
     case OP_TRUE:
         value = !is_minimal;
@@ -655,8 +657,8 @@ static void PropagateValue( tree_node *tree, bool value )
             var_handle = (vhandle)(pointer_int)tree->u.left;
             if( VarGetAutoSetCond( var_handle ) != NULL ) {
                 if( !VarIsRestrictedFalse( var_handle ) ) {
-                    SetVariableByHandle( PreviousInstall, "1" );
-                    SetVariableByHandle( var_handle, "1" );
+                    SetBoolVariableByHandle( PreviousInstall, true );
+                    SetBoolVariableByHandle( var_handle, true );
                 }
             }
         }
@@ -758,7 +760,8 @@ static char *NextToken( char *buf, char delim )
 // Locate the next 'token', delimited by the given character. Return a
 // pointer to the next one, and trim trailing blanks off the current one.
 {
-    char                *p, *q;
+    char            *p;
+    char            *q;
 
     if( buf == NULL ) {
         return( NULL );
@@ -781,7 +784,7 @@ static char *NextToken( char *buf, char delim )
 static char *StripEndBlanks( char *p )
 /************************************/
 {
-    char                *q;
+    char        *q;
 
     if( p == NULL ) {
         return p;
@@ -1281,7 +1284,8 @@ static bool dialog_edit_button( char *next, DIALOG_INFO *dlg )
             val = line;
         }
     }
-    if( val == NULL || val[0] == '\0' ) val = VarGetStrVal( var_handle );
+    if( val == NULL || val[0] == '\0' )
+        val = VarGetStrVal( var_handle );
     SetVariableByHandle( var_handle, val );
     if( VariablesFile != NULL ) {
         ReadVariablesFile( VarGetName( var_handle ) );
@@ -1338,7 +1342,11 @@ static bool dialog_edit_button( char *next, DIALOG_INFO *dlg )
 static bool dialog_other_button( char *next, DIALOG_INFO *dlg )
 /*************************************************************/
 {
-    char                *line, *button_text, *next_copy, *text, *dialog_name;
+    char                *line;
+    char                *button_text;
+    char                *next_copy;
+    char                *text;
+    char                *dialog_name;
     char                *condition;
     vhandle             var_handle;
     bool                rc = true;
@@ -1390,9 +1398,9 @@ static vhandle dialog_set_variable( DIALOG_INFO *dlg, const char *vbl_name,
         } else {
             if( SkipDialogs ) {
                 if( stricmp( init_cond, "true" ) == 0 ) {
-                    SetVariableByHandle( var_handle, "1" );
+                    SetBoolVariableByHandle( var_handle, true );
                 } else if( stricmp( init_cond, "false" ) == 0 ) {
-                    SetVariableByHandle( var_handle, "0" );
+                    SetBoolVariableByHandle( var_handle, false );
                 } else {
                     SetVariableByHandle( var_handle, init_cond );
                 }
@@ -2212,7 +2220,8 @@ static bool GetFileInfo( int dir_index, int i, bool in_old_dir, bool *pzeroed )
     char        buff[_MAX_PATH];
     char        *dir_end;
     struct stat buf;
-    int         j,k;
+    int         j;
+    int         k;
     bool        found;
     bool        supp;
     a_file_info *file;
@@ -2271,12 +2280,14 @@ static bool GetFileInfo( int dir_index, int i, bool in_old_dir, bool *pzeroed )
 static bool GetDiskSizes( void )
 /******************************/
 {
-    int         i, j;
+    int         i;
+    int         j;
     long        status_amount;
     long        status_curr;
     bool        zeroed;
     bool        rc = true;
-    bool        asked, dont_touch;
+    bool        asked;
+    bool        dont_touch;
     bool        uninstall;
 
     status_amount = 0;
@@ -2285,7 +2296,7 @@ static bool GetDiskSizes( void )
     }
     StatusShow( true );
     StatusLines( STAT_CHECKING, "" );
-    SetVariableByHandle( PreviousInstall, "0" );
+    SetBoolVariableByHandle( PreviousInstall, false );
     zeroed = false;
     status_curr = 0;
     InitAutoSetValues();
@@ -2314,7 +2325,7 @@ static bool GetDiskSizes( void )
     if( !rc )
         return( rc );
     dont_touch = false;
-    uninstall = VarGetIntVal( UnInstall );
+    uninstall = VarGetBoolVal( UnInstall );
     if( uninstall ) {
         // if uninstalling - remove all files, don't prompt
         asked = true;
@@ -2456,8 +2467,9 @@ static int PrepareSetupInfo( FILE *io, pass_type pass )
             result = SIM_INIT_NOMEM;
             break;
         }
-        if( State == RS_TERMINATE )
+        if( State == RS_TERMINATE ) {
             break;
+        }
     }
     GUIResetMouseCursor( old_cursor );
     return( result );
@@ -2467,6 +2479,7 @@ bool CheckForceDLLInstall( char *name )
 /*************************************/
 {
     int         i;
+
     if( name == NULL ) {
         return( true );
     }
@@ -2832,19 +2845,19 @@ int SimNumSubFiles( int parm )
 bool SimSubFileInOldDir( int parm, int subfile )
 /**********************************************/
 {
-    return( FileInfo[parm].files[subfile].in_old_dir != 0 );
+    return( FileInfo[parm].files[subfile].in_old_dir );
 }
 
 bool SimSubFileInNewDir( int parm, int subfile )
 /**********************************************/
 {
-    return( FileInfo[parm].files[subfile].in_new_dir != 0 );
+    return( FileInfo[parm].files[subfile].in_new_dir );
 }
 
 bool SimSubFileReadOnly( int parm, int subfile )
 /**********************************************/
 {
-    return( FileInfo[parm].files[subfile].read_only != 0 );
+    return( FileInfo[parm].files[subfile].read_only );
 }
 
 bool SimSubFileExecutable( int parm, int subfile )
@@ -2868,8 +2881,7 @@ bool SimSubFileIsDLL( int parm, int subfile )
 bool SimSubFileNewer( int parm, int subfile )
 /*******************************************/
 {
-    return( FileInfo[parm].files[subfile].disk_date >
-            FileInfo[parm].files[subfile].date );
+    return( FileInfo[parm].files[subfile].disk_date > FileInfo[parm].files[subfile].date );
 }
 
 time_t SimSubFileDate( int parm, int subfile )
@@ -2878,8 +2890,8 @@ time_t SimSubFileDate( int parm, int subfile )
     return( FileInfo[parm].files[subfile].date );
 }
 
-int SimSubFileExists( int parm, int subfile )
-/*******************************************/
+bool SimSubFileExists( int parm, int subfile )
+/********************************************/
 {
     return( SimSubFileInOldDir( parm, subfile ) || SimSubFileInNewDir( parm, subfile ) );
 }
@@ -2979,7 +2991,8 @@ int SimGetPMProgsNum( void )
 static int SimFindDirForFile( char *buff )
 /****************************************/
 {
-    int         i, j;
+    int         i;
+    int         j;
 
     for( i = 0; i < SetupInfo.files.num; i++ ) {
         for( j = 0; j < FileInfo[i].num_files; ++j ) {
@@ -3323,17 +3336,15 @@ void CheckDLLCount( char *install_name )
     // Takes care of DLL usage counts in the Win95/WinNT registry;
     // removes DLLs if their usage count goes to zero and the user
     // agrees to delete them.
-    int                 i;
+    int         i;
 
     install_name=install_name;
     for( i = 0; i < SetupInfo.dlls_to_count.num; i++ ) {
         if( FileInfo[DLLsToCheck[i].index].core_component ) {
             continue;
         }
-        if( VarGetIntVal( UnInstall ) ||
-            FileInfo[DLLsToCheck[i].index].remove ||
-            (!FileInfo[DLLsToCheck[i].index].add &&
-            GetVariableIntVal( "ReInstall" ) != 0) ) {
+        if( VarGetBoolVal( UnInstall ) || FileInfo[DLLsToCheck[i].index].remove
+          || ( !FileInfo[DLLsToCheck[i].index].add && GetVariableBoolVal( "ReInstall" ) ) ) {
             if( DecrementDLLUsageCount( DLLsToCheck[i].full_path ) == 0 ) {
                 if( MsgBox( MainWnd, "IDS_REMOVE_DLL", GUI_YES_NO,
                             DLLsToCheck[i].full_path ) == GUI_RET_YES ) {
@@ -3352,7 +3363,9 @@ void CheckDLLCount( char *install_name )
 void SimCalcAddRemove( void )
 /***************************/
 {
-    int                 i, j, k;
+    int                 i;
+    int                 j;
+    int                 k;
     int                 targ_index = 0;
     int                 dir_index;
     unsigned            cs; /* cluster size */
@@ -3373,20 +3386,20 @@ void SimCalcAddRemove( void )
         InitAutoSetValues();
     }
 
-    previous = VarGetIntVal( PreviousInstall );
-    uninstall = VarGetIntVal( UnInstall );
+    previous = VarGetBoolVal( PreviousInstall );
+    uninstall = VarGetBoolVal( UnInstall );
     // look for existence of ReInstall variable - use this to decide
     // if we should remove unchecked components (wanted for SQL installs)
     reinstall = GetVariableByName( "ReInstall" );
     if( reinstall != NO_VAR ) {
         // it is defined, treat same as PreviousInstall
-        previous = VarGetIntVal( reinstall );
+        previous = VarGetBoolVal( reinstall );
     }
 
     for( i = 0; i < SetupInfo.files.num; ++i ) {
         dir_index = FileInfo[i].dir_index;
         targ_index = DirInfo[dir_index].target;
-        add = EvalExprTree( FileInfo[i].condition.p->cond, VarGetIntVal( MinimalInstall ) != 0 );
+        add = EvalExprTree( FileInfo[i].condition.p->cond, VarGetBoolVal( MinimalInstall ) );
         if( FileInfo[i].supplimental ) {
             remove = false;
             if( uninstall ) {
@@ -3431,7 +3444,7 @@ void SimCalcAddRemove( void )
             if( file->disk_size != 0 ) {
                 DirInfo[dir_index].num_existing++;
                 if( !TargetInfo[targ_index].supplimental ) {
-                    SetVariableByHandle( PreviousInstall, "1" );
+                    SetBoolVariableByHandle( PreviousInstall, true );
                 }
             }
 
@@ -3441,12 +3454,14 @@ void SimCalcAddRemove( void )
             if( FileInfo[i].supplimental ) {
                 _splitpath( file->name, NULL, NULL, NULL, ext );
                 if( stricmp( ext, ".DLL" ) == 0 ) {
-                    char                file_desc[MAXBUF], dir[_MAX_PATH], disk_desc[MAXBUF];
-                    char                file_name[_MAX_FNAME + _MAX_EXT];
-                    int                 disk_num;
-                    char                dst_path[_MAX_PATH];
-                    bool                flag;
-                    int                 m;
+                    char        file_desc[MAXBUF];
+                    char        dir[_MAX_PATH];
+                    char        disk_desc[MAXBUF];
+                    char        file_name[_MAX_FNAME + _MAX_EXT];
+                    int         disk_num;
+                    char        dst_path[_MAX_PATH];
+                    bool        flag;
+                    int         m;
 
                     SimFileDir( i, dir, sizeof( dir ) );
                     SimGetFileDesc( i, file_desc );
@@ -3836,7 +3851,7 @@ bool PatchFiles( void )
     count = 0;
     log = &logstate;
 
-    if( GetVariableIntVal( "DoPatchLog" ) ) {
+    if( GetVariableBoolVal( "DoPatchLog" ) ) {
         log->log_file = LogFileOpen();
         if( log->log_file == NULL ) {
             MsgBox( NULL, "IDS_PATCHABORT", GUI_OK );
@@ -4072,7 +4087,7 @@ void PatchError( int format, ... )
     if( format == ERR_CANT_FIND )
         return;
   #endif
-    if( GetVariableIntVal( "Debug" ) != 0 ) {
+    if( GetVariableBoolVal( "Debug" ) ) {
         va_start( args, format );
         MsgPut( format, args );
         va_end( args );
@@ -4180,7 +4195,7 @@ static void FreeFileInfo( void )
 static void FreeDLLsToCheck( void )
 /*********************************/
 {
-    int                 i;
+    int i;
 
     if( DLLsToCheck != NULL ) {
         for( i = 0; i < SetupInfo.dlls_to_count.num; i++ ) {
@@ -4298,7 +4313,7 @@ static void FreeProfileInfo( void )
 static void FreeOneConfigInfo( array_info *info, struct config_info *array )
 /**************************************************************************/
 {
-    size_t      i;
+    size_t  i;
 
     for( i = 0; i < info->num; i++ ) {
         GUIMemFree( array[i].var );
@@ -4434,11 +4449,7 @@ static void ZeroAutoSetValues( void )
     var_handle = NextGlobalVar( NO_VAR );
     while( var_handle != NO_VAR ) {
         if( VarGetAutoSetCond( var_handle ) != NULL ) {
-            if( VarIsRestrictedTrue( var_handle ) ) {
-                SetVariableByHandle( var_handle, "1" );
-            } else {
-                SetVariableByHandle( var_handle, "0" );
-            }
+            SetBoolVariableByHandle( var_handle, VarIsRestrictedTrue( var_handle ) );
         }
         var_handle = NextGlobalVar( var_handle );
     }
@@ -4452,11 +4463,7 @@ void SetDefaultAutoSetValue( vhandle var_handle )
 
     cond = VarGetAutoSetCond( var_handle );
     if( cond != NULL ) {
-        if( EvalCondition( cond ) ) {
-            SetVariableByHandle( var_handle, "1" );
-        } else {
-            SetVariableByHandle( var_handle, "0" );
-        }
+        SetBoolVariableByHandle( var_handle, EvalCondition( cond ) );
     }
 }
 

@@ -214,7 +214,7 @@ static signed int AddToUsageCount( const char *path, signed int value )
     }
 
     // Don't increment if reinstalling and file already has a nonzero count
-    if( GetVariableIntVal( "ReInstall" ) != 0 && orig_value != 0 && value > 0 ) {
+    if( GetVariableBoolVal( "ReInstall" ) && orig_value != 0 && value > 0 ) {
         value = 0;
     }
 
@@ -476,7 +476,7 @@ void SetDialogFont()
     DWORD   ver;
   #endif
 
-    if( !GetVariableIntVal( "IsJapanese" ) ) {
+    if( !GetVariableBoolVal( "IsJapanese" ) ) {
         fontstr = GUIGetFontInfo( MainWnd );
         GetLogFontFromString( &lf, fontstr );
 //      following line removed - has no effect on line spacing, it only

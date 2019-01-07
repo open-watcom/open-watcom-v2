@@ -201,7 +201,7 @@ gui_message_return CheckInstallNLM( const char *name, vhandle var_handle )
             DoCopyFile( unpacked_as, name, false );
             strcpy( temp, fname );
             strcat( temp, "_NLM_installed" );
-            SetVariableByName( temp, "1" );
+            SetBoolVariableByName( temp, true );
             SetVariableByHandle( var_handle, temp );
         }
     }

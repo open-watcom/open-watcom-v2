@@ -72,9 +72,9 @@ static bool SetupOperations( void )
     bool                uninstall;
 
     // are we doing an UnInstall?
-    uninstall = VarGetIntVal( UnInstall );
+    uninstall = VarGetBoolVal( UnInstall );
 
-    if( GetVariableIntVal( "IsUpgrade" ) == 1 ) {
+    if( GetVariableBoolVal( "IsUpgrade" ) ) {
         if( !CheckUpgrade() ) {
             return( false );
         }
@@ -82,7 +82,7 @@ static bool SetupOperations( void )
 
     DoSpawn( WHEN_BEFORE );
 #ifdef PATCH
-    if( GetVariableIntVal( "Patch" ) == 1 ) {
+    if( GetVariableBoolVal( "Patch" ) ) {
         IsPatch = 1;
         if( !PatchFiles() ) {
             return( false );
@@ -93,7 +93,7 @@ static bool SetupOperations( void )
     DeleteObsoleteFiles();
 
     // Copy the files
-    if( GetVariableIntVal( "DoCopyFiles" ) == 1 ) {
+    if( GetVariableBoolVal( "DoCopyFiles" ) ) {
         if( !CopyAllFiles() ) {
             return( false );
         }
@@ -101,36 +101,35 @@ static bool SetupOperations( void )
     DoSpawn( WHEN_AFTER );
 
     // Modify AUTOEXEC.BAT and CONFIG.SYS
-    if( GetVariableIntVal( "DoModifyAuto" ) == 1 ) {
+    if( GetVariableBoolVal( "DoModifyAuto" ) ) {
         if( !ModifyStartup( uninstall ) ) {
             return( false );
         }
     }
 
     // Perform file associations
-    if( GetVariableIntVal( "DoFileAssociations" ) == 1 ) {
+    if( GetVariableBoolVal( "DoFileAssociations" ) ) {
         if( !ModifyAssociations( uninstall ) ) {
             return( false );
         }
     }
 
     // Generate batch file
-    if( GetVariableIntVal( "GenerateBatchFile" ) == 1 ) {
+    if( GetVariableBoolVal( "GenerateBatchFile" ) ) {
         if( !GenerateBatchFile( uninstall ) ) {
             return( false );
         }
     }
 
     // Create program group (folder)
-    if( GetVariableIntVal( "DoCreateIcons" ) == 1 ||
-        GetVariableIntVal( "DoCreateHelpIcons" ) == 1 ) {
+    if( GetVariableBoolVal( "DoCreateIcons" ) || GetVariableBoolVal( "DoCreateHelpIcons" ) ) {
         if( !ModifyEnvironment( uninstall ) ) {
             return( false );
         }
     }
 
     // Add uninstaller to Add/Remove Programs
-    if( GetVariableIntVal( "DoUninstall" ) == 1 ) {
+    if( GetVariableBoolVal( "DoUninstall" ) ) {
         if( !ModifyUninstall( uninstall ) ) {
             return( false );
         }
@@ -216,7 +215,7 @@ static bool DoMainLoop( dlg_state *state )
     for( ;; ) {
         if( i < 0 ) break;
         if( diag_list[i] == NULL ) {
-            if( GetVariableIntVal( "DoCopyFiles" ) == 1 ) {
+            if( GetVariableBoolVal( "DoCopyFiles" ) ) {
                 if( !CheckDrive( true ) ) {
                     i = 0;
                 }
@@ -342,7 +341,7 @@ void GUImain( void )
                         ok = true;
                     }
                 } else {
-                    if( GetVariableIntVal( "IsMultiInstall" ) ) {
+                    if( GetVariableBoolVal( "IsMultiInstall" ) ) {
                         // push current script on stack
                         DirParamStack( &inf_name, &src_path, Stack_Push );          // "Push"
                     }
