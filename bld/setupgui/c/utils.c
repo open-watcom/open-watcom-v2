@@ -2382,12 +2382,54 @@ static char *GetSelfWithPath( char *buff, int len, char **argv )
     return( strcpy( buff, argv[0] ) );
 }
 
+#if defined( __NT__ ) && !defined( _M_X64 )
+static bool CheckWow64( void )
+{
+    DWORD   version = GetVersion();
+    if( version < 0x80000000 && LOBYTE( LOWORD( version ) ) >= 5 && IsWOW64() ) {
+        char *msg = "You are using 32-bit installer on 64-bit host\n"
+                    "It is recommended to use 64-bit installer\n"
+                    "\ton 64-bit host\n"
+                    "Press OK button to continue with installation\n"
+                    "\tor Cancel button to abort it\n";
+
+        SetVariableByName( "IDS_USEINST64BIT", "%s");
+        if( MsgBox( NULL, "IDS_USEINST64BIT", GUI_OK_CANCEL, msg ) != GUI_RET_OK ) {
+            /* return true to terminate installer */
+            return( true );
+        }
+    }
+    return( false );
+}
+#endif
+
+static void dispUsage( void )
+{
+    char * msg = "Usage: @ [-options]\n\n" \
+        "Supported options (case insensitive):\n\n" \
+        "-f=script\t\tspecify script file to override setup.inf\n" \
+        "-d<name=val>\tdefine a variable for the installer\n" \
+        "-i\t\tinvisible: shows no dialogs; infers -s\n" \
+        "-s\t\tskips dialogs but shows install progress\n" \
+        "-np\t\tdoes not create Program Manager entries\n" \
+        "-ns\t\tdoes not register startup information (paths, environment)\n" ;
+
+    SetVariableByName( "IDS_USAGE", "%s");
+    MsgBox( NULL, "IDS_USAGE", GUI_OK, msg );
+}
+
 bool GetDirParams( int argc, char **argv, char **inf_name, char **src_path, char **arc_name )
 /*******************************************************************************************/
 {
     char                dir[_MAX_DIR];
     char                drive[_MAX_DRIVE];
     int                 i;
+
+#if defined( __NT__ ) && !defined( _M_X64 )
+    if( CheckWow64() ) {
+        return( false );
+    }
+#endif
 
     *inf_name = GUIMemAlloc( _MAX_PATH );
     if( *inf_name == NULL ) {
@@ -2423,23 +2465,9 @@ bool GetDirParams( int argc, char **argv, char **inf_name, char **src_path, char
 #endif
             switch( argv[i][1] ) {
             case '?':
-                {
-                    char * msg = "Usage: @ [-options]\n\n" \
-                        "Supported options (case insensitive):\n\n" \
-                        "-f=script\t\tspecify script file to override setup.inf\n" \
-                        "-d<name=val>\tdefine a variable for the installer\n" \
-                        "-i\t\tinvisible: shows no dialogs; infers -s\n" \
-                        "-s\t\tskips dialogs but shows install progress\n" \
-                        "-np\t\tdoes not create Program Manager entries\n" \
-                        "-ns\t\tdoes not register startup information (paths, environment)\n" ;
-
-                    InitGlobalVarList();
-                    SetVariableByName( "IDS_USAGE", "%s");
-                    MsgBox( NULL, "IDS_USAGE", GUI_OK, msg );
-
-                    /* return false to terminate installer */
-                    return( false );
-                }
+                dispUsage();
+                /* return false to terminate installer */
+                return( false );
             case 'f': // Process "script" file to override variables in setup.inf
             case 'F':
                 if( argv[i][2] == '=' && argv[i][3] != '\0' &&

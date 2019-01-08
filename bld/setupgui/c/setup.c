@@ -309,12 +309,12 @@ void GUImain( void )
     // initialize paths and env. vbls.
 
     if( SetupPreInit( argc, argv ) ) {
+        SetupInit();
+        InitGlobalVarList();
         if( GetDirParams( argc, argv, &inf_name, &src_path, &arc_name ) ) {
-            SetupInit();
             StatusInit();
             GUIDrainEvents();   // push things along
             FileInit( arc_name );
-            InitGlobalVarList();
             strcpy( current_dir, src_path );
             ConcatDirSep( current_dir );
             ok = false;
@@ -372,13 +372,13 @@ void GUImain( void )
             } /* while */
 
             FileFini();
-            FreeGlobalVarList( true );
             FreeDefaultDialogs();
             FreeAllStructs();
             StatusFini();
-            SetupFini();
         }
         FreeDirParams( &inf_name, &src_path, &arc_name );
+        FreeGlobalVarList( true );
+        SetupFini();
     }
     GUIMemClose();
 }
