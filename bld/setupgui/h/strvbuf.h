@@ -29,6 +29,12 @@
 ****************************************************************************/
 
 
+#define VBUF_INIT_BUF       ""
+#define VBUF_INIT_LEN       1
+#define VBUF_INIT_USED      0
+
+#define VBUF_INIT_STRUCT    { VBUF_INIT_BUF, VBUF_INIT_LEN, VBUF_INIT_USED }
+
 typedef struct vbuf{            // VBUF structure
     char           *buf;        // - buffer pointer
     size_t         len;         // - buffer size

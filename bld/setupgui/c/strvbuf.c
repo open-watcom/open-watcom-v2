@@ -76,9 +76,9 @@ void VbufSetLen(                // SET BUFFER LENGTH
 void VbufInit(                  // INITIALIZE BUFFER STRUCTURE
     VBUF *vbuf )                // - VBUF structure
 {
-    vbuf->buf = "";
-    vbuf->len = 1;
-    vbuf->used = 0;
+    vbuf->buf = VBUF_INIT_BUF;
+    vbuf->len = VBUF_INIT_LEN;
+    vbuf->used = VBUF_INIT_USED;
 }
 
 void VbufFree(                  // FREE BUFFER
