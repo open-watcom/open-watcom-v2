@@ -145,19 +145,6 @@ static bool GetOldConfigFileDir( char *newauto, const char *drive_path, bool uni
     return( true );
 }
 
-static char *StrNDup( char *str, size_t len )
-/*******************************************/
-{
-    char                *new;
-
-    new = GUIMemAlloc( len + 1 );
-    if( new != NULL ) {
-        memcpy( new, str, len );
-        new[len] = '\0';
-    }
-    return( new );
-}
-
 #endif  // !__UNIX__
 
 static void NoDupPaths( char *old_value, char *new_value, char delim )
@@ -375,7 +362,7 @@ static void CheckEnvironmentLine( char *line, int num_env, bool *found_env, bool
     default:
         return;
     }
-    env_var = StrNDup( env_val, strlen( env_val ) );
+    env_var = GUIStrDup( env_val, NULL );
     strcpy( env_val, p );
 
     modified = false;
@@ -596,7 +583,7 @@ static void CheckAutoLine( char *line, int num_auto, bool *found_auto, bool unin
             _splitpath( env_val, NULL, NULL, fname, fext );
             if( stricmp( fname, "win" ) == 0
               && ( stricmp( fext, ".com" ) == 0 || fext[0] == '\0' ) ) {
-                WinDotCom = StrNDup( line, strlen( line ) );
+                WinDotCom = GUIStrDup( line, NULL );
                 line[0] = '\0';
                 return;
             }
@@ -605,7 +592,7 @@ static void CheckAutoLine( char *line, int num_auto, bool *found_auto, bool unin
     default:
         return;
     }
-    env_var = StrNDup( env_val, strlen( env_val ) );
+    env_var = GUIStrDup( env_val, NULL );
     strcpy( env_val, p );
 
     modified = false;
@@ -726,7 +713,7 @@ static void CheckConfigLine( char *line, int num_cfg, bool *found_cfg, bool unin
     default:
         return;
     }
-    cfg_var = StrNDup( cfg_val, strlen( cfg_val ) );
+    cfg_var = GUIStrDup( cfg_val, NULL );
     strcpy( cfg_val, p );
 
     run_find = ( stricmp( cfg_var, "RUN" ) == 0 );
