@@ -129,7 +129,6 @@ bool CreatePMInfo( bool uninstall )
     nMaxPMProgs = SimGetPMProgsNum();
     StatusLines( STAT_CREATEPROGRAMFOLDER, "" );
     StatusAmount( 0, nMaxPMProgs );
-
     for( nPMProg = 0; (obj != NULLHANDLE) && (nPMProg < nMaxPMProgs); nPMProg++ ) {
         StatusAmount( nPMProg, nMaxPMProgs );
         if( !SimCheckPMCondition( nPMProg ) ) {
@@ -150,7 +149,7 @@ bool CreatePMInfo( bool uninstall )
             // Process a group (ie. folder)
             SimGetPMParms( nPMProg, t1, sizeof( t1 ) );
             if( t1[0] == '\0' ) {
-                return( true );
+                break;
             }
 
             if( PMProgDesc[0] != '\0' ) {

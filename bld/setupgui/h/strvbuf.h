@@ -124,7 +124,10 @@ void VbufConcI64(               // CONCATENATE A I64 TO VBUF
 void VbufTruncWhite(            // TRUNCATE TRAILING WHITESPACE FROM vbuf->buf
     VBUF *vbuf )                // - VBUF structure
 ;
-void VbufConcDirSep(            // TERMINATE A VBUF AS PATH BY DIR_SEP
+void VbufAddDirSep(             // TERMINATE A VBUF AS PATH BY DIR_SEP
+    VBUF *vbuf )                // - VBUF structure
+;
+void VbufRemDirSep(             // REMOVE DIR_SEP FROM A VBUF END
     VBUF *vbuf )                // - VBUF structure
 ;
 #define VbufLen(v)              ((v)->used)                 // RETURN LENGTH OF BUFFER

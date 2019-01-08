@@ -278,28 +278,68 @@ void VbufTruncWhite(            // TRUNCATE TRAILING WHITESPACE FROM VBUF
     }
 }
 
-
-void VbufConcDirSep(            // TERMINATE A VBUF AS PATH BY DIR_SEP
+void VbufAddDirSep(             // TERMINATE A VBUF AS PATH BY DIR_SEP
     VBUF *vbuf )                // - VBUF structure
 {
     size_t  len;
-    char    c;
+    char    lastChr;
 
-    if( VbufString( vbuf )[0] == '\0' ) {
+    len = VbufLen( vbuf );
+    if( len == 0 ) {
+        // "" -> ".[/\]"
         VbufConcChr( vbuf, '.' );
         VbufConcChr( vbuf, DIR_SEP );
     } else {
-        len = VbufLen( vbuf );
-        c = VbufString( vbuf )[len - 1];
-        if( !IS_PATH_SEP( c ) ) {
-            if( len > 1 && IS_PATH_SEP( VbufString( vbuf )[len - 2] ) && VbufString( vbuf )[len - 1] == '.' ) {
+        lastChr = VbufString( vbuf )[len - 1];
+        if( !IS_DIR_SEP( lastChr ) ) {
+            if( lastChr == '.' && len > 1 && IS_DIR_SEP( VbufString( vbuf )[len - 2] ) ) {
+                // "...nnn[/\]." -> "...nnn[/\]"
                 VbufSetLen( vbuf, len - 1 );
-            } else if( len == 2 && VbufString( vbuf )[1] == ':' ) {
+#ifndef __UNIX__
+            } else if( lastChr == ':' && len == 2 ) {
+                // "x:" -> "x:.[/\]"
                 VbufConcChr( vbuf, '.' );
                 VbufConcChr( vbuf, DIR_SEP );
+#endif
             } else {
+                // "...nnn" -> "...nnn[/\]"
+                // "." -> ".[/\]"
                 VbufConcChr( vbuf, DIR_SEP );
             }
+        }
+    }
+}
+
+void VbufRemDirSep(             // REMOVE DIR_SEP FROM A VBUF AS PATH
+    VBUF *vbuf )                // - VBUF structure
+{
+    size_t  len;
+    char    lastChr;
+
+    len = VbufLen( vbuf );
+    if( len == 0 ) {
+        // "" -> "."
+        VbufConcChr( vbuf, '.' );
+    } else {
+        lastChr = VbufString( vbuf )[len - 1];
+        if( IS_DIR_SEP( lastChr ) ) {
+            if( len == 1 ) {
+                // "[/\]" -> "[/\]."
+                VbufConcChr( vbuf, '.' );
+#ifndef __UNIX__
+            } else if( len == 3 && VbufString( vbuf )[len - 2] == ':' ) {
+                // "x:[/\]" -> "x:[/\]."
+                VbufConcChr( vbuf, '.' );
+#endif
+            } else {
+                // "...nnn[/\]" -> "...nnn"
+                VbufSetLen( vbuf, len - 1 );
+            }
+#ifndef __UNIX__
+        } else if( len == 2 && lastChr == ':' ) {
+            // "x:" -> "x:."
+            VbufConcChr( vbuf, '.' );
+#endif
         }
     }
 }
