@@ -396,12 +396,21 @@ static bool create_icon( char *group, char *pgm, char *desc,
 static bool UseIShellLink( bool uninstall )
 /*****************************************/
 {
-    int                 dir_index, icon_number;
-    int                 i, num_icons, num_groups;
-    int                 num_installed, num_total_install;
-    char                prog_name[_MAX_PATH], prog_desc[_MAX_PATH];
-    char                icon_name[_MAX_PATH], working_dir[_MAX_PATH];
-    char                group[_MAX_PATH], prog_arg[_MAX_PATH], tmp[_MAX_PATH];
+    int                 dir_index;
+    int                 icon_number;
+    int                 i;
+    int                 num_icons;
+    int                 num_groups;
+    int                 num_installed;
+    int                 num_total_install;
+    char                prog_name[_MAX_PATH];
+    char                prog_desc[_MAX_PATH];
+    char                icon_name[_MAX_PATH];
+    char                working_dir[_MAX_PATH];
+    char                group[_MAX_PATH];
+    char                prog_arg[_MAX_PATH];
+    char                tmp[_MAX_PATH];
+    bool                ok;
 
     if( uninstall ) {
         num_groups = SimGetPMGroupsNum();
@@ -438,6 +447,7 @@ static bool UseIShellLink( bool uninstall )
         }
     }
     num_installed = 0;
+    ok = true;
     StatusAmount( 0, num_total_install );
     for( i = 0; i < num_icons; i++ ) {
         if( !SimCheckPMCondition( i ) ) {
@@ -449,8 +459,8 @@ static bool UseIShellLink( bool uninstall )
             /* creating a new group */
             strcpy( group, prog_desc );
             if( !create_group( group ) ) {
-                CoUninitialize();
-                return( false );
+                ok = false;
+                break;
             }
         } else {
             // Adding item to group
@@ -476,21 +486,20 @@ static bool UseIShellLink( bool uninstall )
                 strcpy( icon_name, tmp );
             }
             // Add the new file to the already created PM Group.
-            if( !create_icon( group, prog_name, prog_desc, prog_arg, working_dir,
-                              icon_name, icon_number ) ) {
-                CoUninitialize();
-                return( false );
+            if( !create_icon( group, prog_name, prog_desc, prog_arg, working_dir, icon_name, icon_number ) ) {
+                ok = false;
+                break;
             }
         }
         ++num_installed;
         StatusAmount( num_installed, num_total_install );
-        if( StatusCancelled() )
+        if( StatusCancelled() ) {
             break;
+        }
     }
     StatusAmount( num_total_install, num_total_install );
-
     CoUninitialize();
-    return( true );
+    return( ok );
 }
 
 #endif

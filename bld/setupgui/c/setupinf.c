@@ -4414,13 +4414,14 @@ void FreeAllStructs( void )
 }
 
 
-void SimGetSpawnCommand( char *buff, size_t buff_len, int i )
+bool SimGetSpawnCommand( char *buff, size_t buff_len, int i )
 /***********************************************************/
 {
     buff[0] = '\0';
     if( SpawnInfo[i].command == NULL || SpawnInfo[i].command[0] == '\0' )
-        return;
+        return( true );
     ReplaceVars( buff, buff_len, SpawnInfo[i].command );
+    return( false );
 }
 
 bool SimEvalSpawnCondition( int i )

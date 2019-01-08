@@ -213,7 +213,7 @@ extern bool             EvalCondition( const char *str );
 extern bool             SimTargetNeedsUpdate( int parm );
 extern vhandle          SimSubFileVar( int parm, int subfile );
 extern int              SimNumSpawns( void );
-extern void             SimGetSpawnCommand( char *, size_t buff_len, int i );
+extern bool             SimGetSpawnCommand( char *, size_t buff_len, int i );
 extern when_time        SimWhen( int i );
 extern bool             SimEvalSpawnCondition( int i );
 extern int              SimGetNumDisks( void );

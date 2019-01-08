@@ -450,8 +450,7 @@ void DoSpawn( when_time when )
             continue;
         if( !SimEvalSpawnCondition( i ) )
             continue;
-        SimGetSpawnCommand( buff, sizeof( buff ), i );
-        if( buff[0] == '\0' )
+        if( SimGetSpawnCommand( buff, sizeof( buff ), i ) )
             continue;
         DoSpawnCmd( buff );
     }

@@ -36,12 +36,7 @@
 #include <sys/types.h>
 #if defined( __WINDOWS__ )
     #define INCLUDE_COMMDLG_H
-#endif
-#if defined( __NT__ )
-    #include <windows.h>
-    #include <commdlg.h>
-#endif
-#if defined( __OS2__ )
+#elif defined( __OS2__ )
     #define INCL_WINSHELLDATA
 #endif
 #include "wio.h"
