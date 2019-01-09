@@ -365,9 +365,9 @@ void GUImain( void )
                     GUIMemFree( dir );
                 } /* if */
 
-                FreeGlobalVarList( false );
                 FreeDefaultDialogs();
                 FreeAllStructs();
+                FreeGlobalVarList( false );
                 ConfigModified = false;
             } /* while */
 
