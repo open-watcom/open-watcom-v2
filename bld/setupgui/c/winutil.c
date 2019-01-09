@@ -50,12 +50,16 @@
 #include "genvbl.h"
 
 
+#define FILE_SIZE       _MAX_PATH
+#define HIVE_SIZE       _MAX_PATH
+#define VALUE_SIZE      MAXVALUE
+
 // *********************** Function for writing to WIN.INI *******************
 
 #if defined( __NT__ )
 
-static void CreateRegEntry( char *hive_key, char *app_name, const char *key_name,
-                     char *value, char *file_name, bool add )
+static void CreateRegEntry( const char *hive_key, const char *app_name, const char *key_name,
+                     const char *value, const char *file_name, bool add )
 {
     char                buf[_MAX_PATH];
     long                rc;
@@ -182,7 +186,7 @@ static BYTE *ConvertDWORDToData( DWORD number, DWORD type )
 }
 
 static signed int AddToUsageCount( const char *path, signed int value )
-/**************************************************************/
+/*********************************************************************/
 {
     HKEY                        key_handle;
     LONG                        result;
@@ -255,8 +259,9 @@ signed int DecrementDLLUsageCount( char *path )
 
 #if defined( __WINDOWS__ ) || defined( __NT__ )
 
-static bool ZapKey( char *app_name, char *old, char *new, char *file, char *hive, int pos )
-/**********************************************************************************/
+static bool ZapKey( const char *app_name, const char *old, const char *new,
+                                const char *file, const char *hive, int pos )
+/***************************************************************************/
 {
     FILE        *io;
     char        buff[MAXVALUE];
@@ -299,8 +304,9 @@ static bool ZapKey( char *app_name, char *old, char *new, char *file, char *hive
 #define DEVICE_STRING "device"
 #define ALT_DEVICE    "ecived"
 
-static void AddDevice( char *app_name, char *value, char *file, char *hive, char *buff, bool add )
-/*****************************************************************************************/
+static void AddDevice( const char *app_name, const char *value, const char *file,
+                                const char *hive, const char *value_buf, bool add )
+/*********************************************************************************/
 {
     int         i;
     char        old_name[_MAX_FNAME];
@@ -311,14 +317,18 @@ static void AddDevice( char *app_name, char *value, char *file, char *hive, char
 
     _splitpath( value, NULL, NULL, new_name, new_ext );
     for( i = 0; ZapKey( app_name, DEVICE_STRING, ALT_DEVICE, file, hive, i ); ++i ) {
-        GetPrivateProfileString( app_name, ALT_DEVICE, "", buff, MAXVALUE, file );
-        _splitpath( buff, NULL, NULL, old_name, old_ext );
-        if( !stricmp( old_name, new_name ) && !stricmp( old_ext, new_ext ) ) {
+        // "value_buf" doesn't pass any value, it is used as internal buffer
+        // for writing must be cast to "char *"
+        GetPrivateProfileString( app_name, ALT_DEVICE, "", (char *)value_buf, VALUE_SIZE, file );
+        _splitpath( value_buf, NULL, NULL, old_name, old_ext );
+        if( stricmp( old_name, new_name ) == 0 && stricmp( old_ext, new_ext ) == 0 ) {
             WritePrivateProfileString( app_name, ALT_DEVICE, add ? value : NULL, file );
             done = true;
         }
         ZapKey( app_name, ALT_DEVICE, DEVICE_STRING, file, hive, 0 );
-        if( done ) break;
+        if( done ) {
+            break;
+        }
     }
     if( !done && add ) {
         WritePrivateProfileString( app_name, ALT_DEVICE, value, file );
@@ -326,43 +336,50 @@ static void AddDevice( char *app_name, char *value, char *file, char *hive, char
     }
 }
 
-static void WindowsWriteProfile( char *app_name, char *key_name, char *buf,
-                          char *file_name, bool add, char *value, char *tmp_buff )
-/********************************************************************************/
+static void WindowsWriteProfile( const char *app_name, const char *key_name,
+                            const char *value, const char *file_name, bool add,
+                            const char *value_buf, const char *hive_buf )
+/***************************************************************************/
 {
-    char                *key;
+    const char          *key;
     char                *substr;
     char                *endsub;
+    size_t              len;
 
     key = key_name;
     switch( key[0] ) {
     case '+':
         ++key;
-        GetPrivateProfileString( app_name, key, "", value, MAXVALUE, file_name );
-        substr = stristr( value, buf );
+        // "value_buf" doesn't pass any value, it is used as internal buffer
+        // for writing must be cast to "char *"
+        GetPrivateProfileString( app_name, key, "", (char *)value_buf, VALUE_SIZE, file_name );
+        len = strlen( value );
+        substr = stristr( value_buf, value, len );
         if( substr != NULL ) {
             if( !add ) {
-                endsub = substr + strlen( substr );
+                endsub = substr + len;
                 memmove( substr, endsub, strlen( endsub ) + 1 );
             }
-        } else if( value[0] != '\0' ) {
-            strcat( value, " " );
-            strcat( value, buf );
+        } else if( value_buf[0] != '\0' ) {
+            strcat( (char *)value_buf, " " );
+            strcat( (char *)value_buf, value );
         }
-        WritePrivateProfileString( app_name, key, value, file_name );
+        WritePrivateProfileString( app_name, key, value_buf, file_name );
         break;
     case '*':
-        tmp_buff[0] = '\0';
+        // "hive_buf" doesn't pass any value, it is used as internal buffer
+        // for writing must be cast to "char *"
+        *(char *)hive_buf = '\0';
         if( strpbrk( file_name, "\\/:" ) == NULL ) {
-            GetWindowsDirectory( tmp_buff, _MAX_PATH );
-            strcat( tmp_buff, "\\" );
+            GetWindowsDirectory( (char *)hive_buf, HIVE_SIZE );
+            strcat( (char *)hive_buf, "\\" );
         }
-        strcat( tmp_buff, file_name );
-        AddDevice( app_name, buf, file_name, tmp_buff, value, add );
+        strcat( (char *)hive_buf, file_name );
+        AddDevice( app_name, value, file_name, hive_buf, value_buf, add );
         break;
     default:
         if( add ) {
-            WritePrivateProfileString( app_name, key, buf, file_name );
+            WritePrivateProfileString( app_name, key, value, file_name );
         } else {
             // if file doesn't exist, Windows creates 0-length file
             if( access( file_name, F_OK ) == 0 ) {
@@ -377,8 +394,8 @@ static void WindowsWriteProfile( char *app_name, char *key_name, char *buf,
 
 #if defined( __OS2__ )
 
-static void OS2WriteProfile( char *app_name, char *key_name,
-                      char *value, char *file_name, bool add )
+static void OS2WriteProfile( const char *app_name, const char *key_name,
+                      const char *value, const char *file_name, bool add )
 {
     HAB                 hab;
     HINI                hini;
@@ -416,11 +433,11 @@ void WriteProfileStrings( bool uninstall )
     int                 num, i, sign, end;
     char                app_name[MAXBUF];
     char                key_name[MAXBUF];
-    char                fname[_MAX_PATH];
+    char                file_buf[FILE_SIZE];
     char                file_name[_MAX_PATH];
-    char                hive_name[_MAX_PATH];
+    char                hive_buf[HIVE_SIZE];
+    char                value_buf[VALUE_SIZE];
     char                value[MAXVALUE];
-    char                buf[MAXVALUE];
     bool                add;
 
 
@@ -437,9 +454,9 @@ void WriteProfileStrings( bool uninstall )
     }
 
     for( ; i != end; i += sign ) {
-        SimProfInfo( i, app_name, key_name, value, fname, hive_name );
-        ReplaceVars( buf, sizeof( buf ), value );
-        ReplaceVars( file_name, sizeof( file_name ), fname );
+        SimProfInfo( i, app_name, key_name, value_buf, file_buf, hive_buf );
+        ReplaceVars( value, sizeof( value ), value_buf );
+        ReplaceVars( file_name, sizeof( file_name ), file_buf );
         if( !uninstall ) {
             add = SimCheckProfCondition( i );
             if( !add ) {
@@ -447,15 +464,15 @@ void WriteProfileStrings( bool uninstall )
             }
         }
 #if defined( __WINDOWS__ )
-        WindowsWriteProfile( app_name, key_name, buf, file_name, add, value, hive_name );
+        WindowsWriteProfile( app_name, key_name, value, file_name, add, value_buf, hive_buf );
 #elif defined( __NT__ )
-        if( hive_name[0] != '\0' ) {
-            CreateRegEntry( hive_name, app_name, key_name, buf, file_name, add );
+        if( hive_buf[0] != '\0' ) {
+            CreateRegEntry( hive_buf, app_name, key_name, value, file_name, add );
         } else {
-            WindowsWriteProfile( app_name, key_name, buf, file_name, add, value, hive_name );
+            WindowsWriteProfile( app_name, key_name, value, file_name, add, value_buf, hive_buf );
         }
 #elif defined( __OS2__ )
-        OS2WriteProfile( app_name, key_name, buf, file_name, add );
+        OS2WriteProfile( app_name, key_name, value, file_name, add );
 #endif
     }
 }

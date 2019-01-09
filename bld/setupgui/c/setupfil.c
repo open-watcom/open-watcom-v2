@@ -164,7 +164,7 @@ static void NoDupPaths( char *old_value, char *new_value, char delim )
         }
         look = old_value;
         len = strlen( new_curr );
-        while( (dup = stristr( look, new_curr )) != NULL ) {
+        while( (dup = stristr( look, new_curr, len )) != NULL ) {
             if( dup[len] == delim ) {
                 if( dup == old_value || dup[-1] == delim ) {
                     memmove( dup, dup + len + 1, strlen( dup + len + 1 ) + 1 );

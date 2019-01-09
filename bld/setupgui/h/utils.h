@@ -47,7 +47,7 @@ extern bool             IsDiskette( unsigned drive );
 extern unsigned         GetClusterSize( char drive );
 extern char             GetDriveLetter( char *desc );
 extern char             *AddInstallName( char *line, bool dorealloc );
-extern char             *stristr( char *str, char *substr );
+extern char             *stristr( const char *str, const char *substr, size_t len );
 extern void             Log( char *start, ... );
 extern bool             CheckUpgrade( void );
 extern bool             LicenseFileName( char * );

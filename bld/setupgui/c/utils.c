@@ -2705,17 +2705,15 @@ void CheckHeap( void )
 }
 #endif
 
-char *stristr( char *str, char *substr )
-/**************************************/
+char *stristr( const char *str, const char *substr, size_t substr_len )
+/*********************************************************************/
 {
     size_t  str_len;
-    size_t  substr_len;
 
     str_len = strlen( str );
-    substr_len = strlen( substr );
     while( str_len >= substr_len ) {
         if( strnicmp( str, substr, substr_len ) == 0 )
-            return( str );
+            return( (char *)str );
         ++str;
         --str_len;
     }

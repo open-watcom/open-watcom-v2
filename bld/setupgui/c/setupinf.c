@@ -2479,12 +2479,14 @@ bool CheckForceDLLInstall( char *name )
 /*************************************/
 {
     int         i;
+    size_t      len;
 
     if( name == NULL ) {
         return( true );
     }
+    len = strlen( name );
     for( i = 0; i < SetupInfo.force_DLL_install.num; i++ ) {
-        if( stristr( ForceDLLInstall[i].name, name ) != NULL ) {
+        if( stristr( ForceDLLInstall[i].name, name, len ) != NULL ) {
             return( true );
         }
     }
