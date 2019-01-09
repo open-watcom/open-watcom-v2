@@ -136,6 +136,24 @@ void VbufAddDirSep(             // TERMINATE A VBUF AS PATH BY DIR_SEP
 void VbufRemDirSep(             // REMOVE DIR_SEP FROM A VBUF END
     VBUF *vbuf )                // - VBUF structure
 ;
+void VbufMakepath(              // SET A FILE PATH NAME TO VBUF
+    VBUF *vbuf,                 // - VBUF structure
+    const char *drive,          // - file drive
+    const char *dir,            // - file directory
+    const char *name,           // - file name
+    const char *ext )           // - file extension
+;
+void VbufSplitpath(             // GET A FILE PATH COMPONENTS FROM VBUF
+    const char *full,           // - full file path
+    VBUF *drive,                // - VBUF for drive
+    VBUF *dir,                  // - VBUF for directory
+    VBUF *name,                 // - VBUF for name
+    VBUF *ext )                 // - VBUF for extension
+;
+void VbufFullpath(              // GET A FULL FILE PATH TO VBUF
+    VBUF *vbuf,                 // - VBUF structure
+    const char *file )          // - file name
+;
 #define VbufLen(v)              ((v)->used)                 // RETURN LENGTH OF BUFFER
 ;
 #define VbufRewind(v)           VbufSetLen(v,0)             // CLEAN BUFFER

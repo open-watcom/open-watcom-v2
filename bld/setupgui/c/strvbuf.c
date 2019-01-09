@@ -34,6 +34,7 @@
 #include <stdlib.h>
 #include "setup.h"
 #include "iopath.h"
+#include "pathgrp.h"
 
 #include "clibext.h"
 
@@ -56,7 +57,7 @@ void VbufReqd(                  // ENSURE BUFFER IS OF SUFFICIENT SIZE
     if( reqd >= vbuf->len ) {
         reqd = BUFFER_SIZE( reqd );
         new_buffer = GUIMemAlloc( reqd );
-        memcpy( new_buffer, vbuf->buf, vbuf->used );
+        memcpy( new_buffer, vbuf->buf, vbuf->used + 1 ); // +1 include '\0' terminator
         FREE_BUFFER( vbuf );
         vbuf->buf = new_buffer;
         vbuf->len = reqd;
@@ -342,4 +343,66 @@ void VbufRemDirSep(             // REMOVE DIR_SEP FROM A VBUF AS PATH
 #endif
         }
     }
+}
+
+void VbufMakepath(              // SET A FILE PATH NAME TO VBUF
+    VBUF *vbuf,                 // - VBUF structure
+    const char *drive,          // - file drive
+    const char *dir,            // - file directory
+    const char *name,           // - file name
+    const char *ext )           // - file extension
+{
+    size_t  size;
+
+    size = 0;
+    if( drive != NULL ) {
+        size += strlen( drive ) + 1;
+    }
+    if( dir != NULL ) {
+        size += strlen( dir ) + 1;
+    }
+    if( name != NULL ) {
+        size += strlen( name ) + 1;
+    }
+    if( ext != NULL ) {
+        size += strlen( ext ) + 1;
+    }
+    VbufSetLen( vbuf, 0 );
+    VbufReqd( vbuf, size );
+    _makepath( VbufString( vbuf ), drive, dir, name, ext );
+    VbufSetLen( vbuf, strlen( VbufString( vbuf ) ) );
+}
+
+void VbufSplitpath(             // GET A FILE PATH COMPONENTS FROM VBUF
+    const char *full,           // - full file path
+    VBUF *drive,                // - VBUF for drive
+    VBUF *dir,                  // - VBUF for directory
+    VBUF *name,                 // - VBUF for name
+    VBUF *ext )                 // - VBUF for extension
+{
+    PGROUP  pg;
+
+    _splitpath2( full, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+    if( drive != NULL ) {
+        VbufSetStr( drive, pg.drive );
+    }
+    if( dir != NULL ) {
+        VbufSetStr( dir, pg.dir );
+    }
+    if( name != NULL ) {
+        VbufSetStr( name, pg.fname );
+    }
+    if( ext != NULL ) {
+        VbufSetStr( ext, pg.ext );
+    }
+}
+
+void VbufFullpath(              // GET A FULL FILE PATH TO VBUF
+    VBUF *vbuf,                 // - VBUF structure
+    const char *file )          // - file name
+{
+    char    buffer[_MAX_PATH];
+
+    _fullpath( buffer, file, sizeof( buffer ) );
+    VbufSetStr( vbuf, buffer );
 }
