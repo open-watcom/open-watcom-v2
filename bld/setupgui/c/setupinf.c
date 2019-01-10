@@ -1089,7 +1089,7 @@ static bool dialog_textwindow( char *next, DIALOG_INFO *dlg, bool license_file )
     char                *file_name;
     unsigned int        rows;
     bool                rc = true;
-    void                *io;
+    file_handle         fh;
     struct stat         buf;
     vhandle             var_handle;
 
@@ -1106,15 +1106,15 @@ static bool dialog_textwindow( char *next, DIALOG_INFO *dlg, bool license_file )
     } else {
         if( *line == '@' ) {
             file_name = GUIStrDup( line + 1, NULL );
-            io = FileOpen( file_name, O_RDONLY + O_BINARY );
-            if( io != NULL ) {
+            fh = FileOpen( file_name, O_RDONLY + O_BINARY );
+            if( fh != NULL ) {
                 FileStat( file_name, &buf );
                 text = GUIMemAlloc( buf.st_size + 1 );  // 1 for terminating null
                 if( text != NULL ) {
-                    FileRead( io, text, buf.st_size );
+                    FileRead( fh, text, buf.st_size );
                     text[buf.st_size] = '\0';
                 }
-                FileClose( io );
+                FileClose( fh );
             }
             GUIMemFree( file_name );
             //VERY VERY SLOW!!!!  Don't use large files!!!
@@ -2348,8 +2348,8 @@ static bool GetDiskSizes( void )
 }
 
 
-static char *readLine( void *handle, char *buffer, size_t length )
-/****************************************************************/
+static char *readLine( file_handle fh, char *buffer, size_t length )
+/******************************************************************/
 {
     static int      raw_buf_size;
     char            *line_start;
@@ -2360,7 +2360,7 @@ static char *readLine( void *handle, char *buffer, size_t length )
     do {
         // Read data into raw buffer if it's empty
         if( RawBufPos == NULL ) {
-            raw_buf_size = FileRead( handle, RawReadBuf, BUF_SIZE );
+            raw_buf_size = FileRead( fh, RawReadBuf, BUF_SIZE );
             if( raw_buf_size <= 0 ) {
                 return( NULL );
             }
@@ -2404,8 +2404,8 @@ static char *readLine( void *handle, char *buffer, size_t length )
 }
 
 
-static int PrepareSetupInfo( FILE *io, pass_type pass )
-/*****************************************************/
+static int PrepareSetupInfo( file_handle fh, pass_type pass )
+/***********************************************************/
 {
     int                 result;
     gui_mcursor_handle  old_cursor;
@@ -2425,7 +2425,7 @@ static int PrepareSetupInfo( FILE *io, pass_type pass )
     for( ;; ) {
         len = 0;
         for( ;; ) {
-            if( readLine( io, ReadBuf + len, ReadBufSize - len ) == NULL ) {
+            if( readLine( fh, ReadBuf + len, ReadBufSize - len ) == NULL ) {
                 done = true;
                 break;
             }
@@ -2497,7 +2497,7 @@ long SimInit( const char *inf_name )
 /**********************************/
 {
     long                result;
-    void                *io;
+    file_handle         fh;
     struct stat         stat_buf;
     int                 i;
     gui_text_metrics    metrics;
@@ -2520,21 +2520,21 @@ long SimInit( const char *inf_name )
     }
     RawBufPos = NULL;       // reset buffer position
 
-    io = FileOpen( inf_name, O_RDONLY + O_BINARY );
-    if( io == NULL ) {
+    fh = FileOpen( inf_name, O_RDONLY + O_BINARY );
+    if( fh == NULL ) {
         GUIMemFree( ReadBuf );
         GUIMemFree( RawReadBuf );
         return( SIM_INIT_NOFILE );
     }
     SetVariableByName( "SetupInfFile", inf_name );
-    result = PrepareSetupInfo( io, PRESCAN_FILE );
+    result = PrepareSetupInfo( fh, PRESCAN_FILE );
 #if 0
     // Currently doesn't work for archives
-    FileSeek( io, 0, SEEK_SET );
+    FileSeek( fh, 0, SEEK_SET );
 #else
-    FileClose( io );
-    io = FileOpen( inf_name, O_RDONLY + O_BINARY );
-    if( io == NULL ) {
+    FileClose( fh );
+    fh = FileOpen( inf_name, O_RDONLY + O_BINARY );
+    if( fh == NULL ) {
         GUIMemFree( ReadBuf );
         GUIMemFree( RawReadBuf );
         return( SIM_INIT_NOFILE );
@@ -2571,8 +2571,8 @@ long SimInit( const char *inf_name )
     if( MaxWidthChars > MAX_WINDOW_WIDTH )  {
         MaxWidthChars = MAX_WINDOW_WIDTH;
     }
-    result = PrepareSetupInfo( io, FINAL_SCAN );
-    FileClose( io );
+    result = PrepareSetupInfo( fh, FINAL_SCAN );
+    FileClose( fh );
     GUIMemFree( ReadBuf );
     GUIMemFree( RawReadBuf );
     for( i = 0; i < SetupInfo.files.num; ++i ) {
