@@ -1488,6 +1488,7 @@ static bool CreateDirectoryTree( void )
     int                 i;
     char                dst_path[_MAX_PATH];
     int                 max_dirs = SimNumDirs();
+    bool                ok;
 
     num_total_install = 0;
     for( i = 0; i < max_dirs; i++ ) {
@@ -1500,22 +1501,26 @@ static bool CreateDirectoryTree( void )
         StatusAmount( 0, num_total_install );
     }
     num_installed = 0;
-    for( i = 0; i < max_dirs; i++ ) {
+    ok = true;
+    for( i = 0; ok && i < max_dirs; i++ ) {
         if( SimDirUsed( i ) ) {
-            if( !CreateDstDir( i, dst_path, sizeof( dst_path ) ) )
-                return( false );
+            if( !CreateDstDir( i, dst_path, sizeof( dst_path ) ) ) {
+                ok = false;
+                break;
+            }
             StatusLines( STAT_SAME, dst_path );
             StatusAmount( ++num_installed, num_total_install );
             if( StatusCancelled() ) {
-                return( false );
+                ok = false;
+                break;
             }
         }
     }
-    if( num_total_install != 0 ) {
+    if( ok && num_total_install != 0 ) {
         StatusLines( STAT_SAME, "" );
         StatusAmount( num_total_install, num_total_install );
     }
-    return( true );
+    return( ok );
 }
 
 static bool RelocateFiles( void )
@@ -1530,6 +1535,7 @@ static bool RelocateFiles( void )
     char                dir[_MAX_PATH];
     char                file_desc[MAXBUF];
     int                 max_files = SimNumFiles();
+    bool                ok;
 
     num_total_install = 0;
     for( filenum = 0; filenum < max_files; filenum++ ) {
@@ -1548,7 +1554,8 @@ static bool RelocateFiles( void )
         StatusAmount( 0, num_total_install );
     }
     num_installed = 0;
-    for( filenum = 0; filenum < max_files; filenum++ ) {
+    ok = true;
+    for( filenum = 0; ok && filenum < max_files; filenum++ ) {
         if( SimFileRemove( filenum ) )
             continue;
         max_subfiles = SimNumSubFiles( filenum );
@@ -1564,7 +1571,8 @@ static bool RelocateFiles( void )
                     remove( dst_path );
                 }
                 if( DoCopyFile( src_path, dst_path, false ) != CFE_NOERROR ) {
-                    return( false );
+                    ok = false;
+                    break;
                 }
                 if( SimSubFileExecutable( filenum, subfilenum ) ) {
                     chmod( dst_path, DEF_EXEC );
@@ -1575,11 +1583,11 @@ static bool RelocateFiles( void )
             }
         }
     }
-    if( num_total_install != 0 ) {
+    if( ok && num_total_install != 0 ) {
         StatusLines( STAT_RELOCATING, "" );
         StatusAmount( num_total_install, num_total_install );
     }
-    return( true );
+    return( ok );
 }
 
 
@@ -2205,60 +2213,56 @@ char *AddInstallName( char *text, bool dorealloc )
     return( text );
 }
 
+static void remove_ampersand( char *str )
+{
+    char    c;
+    char    *p;
+
+    p = str;
+    while( (c = *str++) != '\0' ) {
+        if( c == '&' )
+            continue;
+        *p++ = c;
+    }
+    *p = '\0';
+}
+
 gui_message_return MsgBox( gui_window *gui, const char *messageid,
                                   gui_message_type wType, ... )
-/*************************************************************/
+/****************************************************************/
 {
     gui_message_return  result;
-    char                buff[1024];
     char                msg[1024];
     const char          *errormessage;
     va_list             arglist;
-    int                 i;
-    int                 msg_index;
 
-    if( stricmp( messageid, "IDS_NOSETUPINFOFILE" ) == 0 ) {
-        // If the message is "can't find the setup.inf file", then
-        // don't look up the string, because it is in the file we can't find
-        errormessage = "The file %s cannot be found.";
-    } else {
-        errormessage = GetVariableStrVal( messageid );
+    if( !SkipDialogs ) {
+        if( stricmp( messageid, "IDS_NOSETUPINFOFILE" ) == 0 ) {
+            // If the message is "can't find the setup.inf file", then
+            // don't look up the string, because it is in the file we can't find
+            errormessage = "The file %s cannot be found.";
+        } else {
+            errormessage = GetVariableStrVal( messageid );
+        }
+        if( errormessage == NULL ) {
+            strcpy( msg, GetVariableStrVal( "IDS_UNKNOWNERROR" ) );
+        } else {
+            va_start( arglist, wType );
+            vsprintf( msg, errormessage, arglist );
+            va_end( arglist );
+        }
     }
-    if( errormessage == NULL ) {
-        strcpy( buff, GetVariableStrVal( "IDS_UNKNOWNERROR" ) );
-    } else {
-        va_start( arglist, wType );
-        vsprintf( buff, errormessage, arglist );
-        va_end( arglist );
-    }
-    AddInstallName( buff, false );
+//    if( gui == NULL ) {
+//        wType |= GUI_SYSTEMMODAL;
+//    }
 
-    if( gui == NULL ) {
-//      wType |= GUI_SYSTEMMODAL;
-    }
-
-    if( GUIIsGUI() ){
+    if( GUIIsGUI() ) {
         if( wType & GUI_YES_NO ) {
             wType |= GUI_QUESTION;
         } else {
             wType |= GUI_INFORMATION;
         }
     }
-
-//  following code removed - causes infinite loop (and buff will never be NULL)
-//  if( buff == NULL || buff[0] == '\0' ) {
-//      SetupError( "IDS_NULLSTRING" );
-//  }
-
-    msg_index = 0;
-    for( i = 0; i < strlen( buff ); i++ ) {
-        if( buff[i] == '&' ) {
-            continue;              // skip the '& character.
-        }
-        msg[msg_index] = buff[i];
-        msg_index++;
-    }
-    msg[msg_index] = '\0';
 
     if( SkipDialogs ) {
         switch( wType ) {
@@ -2282,8 +2286,9 @@ gui_message_return MsgBox( gui_window *gui, const char *messageid,
             result = GUI_RET_OK;
         }
     } else {
-        result = GUIDisplayMessage( gui == NULL ? MainWnd : gui, msg, GetInstallName(),
-                                    wType );
+        AddInstallName( msg, false );
+        remove_ampersand( msg );
+        result = GUIDisplayMessage( gui == NULL ? MainWnd : gui, msg, GetInstallName(), wType );
     }
     return( result );
 }
