@@ -43,13 +43,13 @@ enum ds_type {
     DS_ZIP
 };
 
-typedef struct data_source_t {
+typedef struct file_handle_t {
     enum ds_type            type;
     union {
         int                 fhandle;
         struct zip_file     *zf;
     } u;
-} data_source;
+} *file_handle;
 
 static enum ds_type     srcType;
 static struct zip       *srcZip;
@@ -147,67 +147,65 @@ int FileStat( const char *path, struct stat *buf )
 }
 
 
-void *FileOpen( const char *path, int flags )
+file_handle FileOpen( const char *path, int flags )
 {
-    data_source     *ds;
+    file_handle     fh;
     char            *alt_path;
 
-    ds = malloc( sizeof( *ds ) );
-    if( ds == NULL )
+    fh = malloc( sizeof( *fh ) );
+    if( fh == NULL )
         return( NULL );
 
-    ds->u.zf = NULL;
+    fh->u.zf = NULL;
     if( srcType == DS_ZIP ) {
         /* First try opening the file inside a ZIP archive */
         alt_path = flipBackSlashes( path );
         if( alt_path != NULL ) {
-            ds->u.zf = zip_fopen( srcZip, alt_path, 0 );
-            ds->type = DS_ZIP;
+            fh->u.zf = zip_fopen( srcZip, alt_path, 0 );
+            fh->type = DS_ZIP;
             free( alt_path );
         }
     }
-    if( ds->u.zf == NULL ) {
+    if( fh->u.zf == NULL ) {
         /* If that fails, try opening the file directly */
-        ds->u.fhandle = open( path, flags );
-        ds->type = DS_FILE;
+        fh->u.fhandle = open( path, flags );
+        fh->type = DS_FILE;
     }
-    if( ds->type == DS_FILE && ds->u.fhandle == -1 ) {
-        free( ds );
-        ds = NULL;
+    if( fh->type == DS_FILE && fh->u.fhandle == -1 ) {
+        free( fh );
+        fh = NULL;
     }
-    return( ds );
+    return( fh );
 }
 
 
-int FileClose( void *handle )
+int FileClose( file_handle fh )
 {
-    data_source     *ds = handle;
     int             rc;
 
-    switch( ds->type ) {
+    switch( fh->type ) {
     case DS_FILE:
-        rc = close( ds->u.fhandle );
+        rc = close( fh->u.fhandle );
         break;
     case DS_ZIP:
-        rc = zip_fclose( ds->u.zf );
+        rc = zip_fclose( fh->u.zf );
         break;
     default:
         rc = -1;
     }
 
-    free( ds );
+    free( fh );
     return( rc );
 }
 
 
-long FileSeek( void *handle, long offset, int origin )
+long FileSeek( file_handle fh, long offset, int origin )
 {
-    data_source     *ds = handle;
     long            pos;
 
-    switch( ds->type ) {
+    switch( fh->type ) {
     case DS_FILE:
-        pos = lseek( ds->u.fhandle, offset, origin );
+        pos = lseek( fh->u.fhandle, offset, origin );
         break;
     case DS_ZIP:
         /* I really want to be able to seek! */
@@ -219,17 +217,16 @@ long FileSeek( void *handle, long offset, int origin )
 }
 
 
-size_t FileRead( void *handle, void *buffer, size_t length )
+size_t FileRead( file_handle fh, void *buffer, size_t length )
 {
-    data_source     *ds = handle;
     size_t          amt;
 
-    switch( ds->type ) {
+    switch( fh->type ) {
     case DS_FILE:
-        amt = read( ds->u.fhandle, buffer, length );
+        amt = read( fh->u.fhandle, buffer, length );
         break;
     case DS_ZIP:
-        amt = zip_fread( ds->u.zf, buffer, length );
+        amt = zip_fread( fh->u.zf, buffer, length );
         break;
     default:
         amt = 0;

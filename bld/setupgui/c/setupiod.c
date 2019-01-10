@@ -36,9 +36,9 @@
 #include "setupio.h"
 
 
-typedef struct data_source_t {
+typedef struct file_handle_t {
     int         fhandle;
-} data_source;
+} *file_handle;
 
 int FileInit( const char *archive )
 {
@@ -70,46 +70,41 @@ int FileStat( const char *path, struct stat *buf )
 }
 
 
-void *FileOpen( const char *path, int flags )
+file_handle FileOpen( const char *path, int flags )
 {
-    data_source     *ds;
+    file_handle fh;
 
-    ds = malloc( sizeof( *ds ) );
-    if( ds == NULL )
+    fh = malloc( sizeof( *fh ) );
+    if( fh == NULL )
         return( NULL );
 
-    ds->fhandle = open( path, flags );
-    if( ds->fhandle == -1 ) {
-        free( ds );
-        ds = NULL;
+    fh->fhandle = open( path, flags );
+    if( fh->fhandle == -1 ) {
+        free( fh );
+        fh = NULL;
     }
-    return( ds );
+    return( fh );
 }
 
 
-int FileClose( void *handle )
+int FileClose( file_handle fh )
 {
-    data_source     *ds = handle;
     int             rc;
 
-    rc = close( ds->fhandle );
-    free( ds );
+    rc = close( fh->fhandle );
+    free( fh );
 
     return( rc );
 }
 
 
-long FileSeek( void *handle, long offset, int origin )
+long FileSeek( file_handle fh, long offset, int origin )
 {
-    data_source     *ds = handle;
-
-    return( lseek( ds->fhandle, offset, origin ) );
+    return( lseek( fh->fhandle, offset, origin ) );
 }
 
 
-size_t FileRead( void *handle, void *buffer, size_t length )
+size_t FileRead( file_handle fh, void *buffer, size_t length )
 {
-    data_source     *ds = handle;
-
-    return( read( ds->fhandle, buffer, length ) );
+    return( read( fh->fhandle, buffer, length ) );
 }
