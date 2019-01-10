@@ -252,7 +252,7 @@ void VbufConcDecimal(           // CONCATENATE A DECIMAL TO VBUF
     ultoa( value, buffer, 10 );
     VbufConcStr( vbuf, buffer );
 }
-
+#endif
 
 void VbufConcInteger(           // CONCATENATE A INTEGER TO VBUF
     VBUF *vbuf,                 // - VBUF structure
@@ -263,7 +263,6 @@ void VbufConcInteger(           // CONCATENATE A INTEGER TO VBUF
     ltoa( value, buffer, 10 );
     VbufConcStr( vbuf, buffer );
 }
-#endif
 
 void VbufTruncWhite(            // TRUNCATE TRAILING WHITESPACE FROM VBUF
     VBUF *vbuf )                // - VBUF structure
@@ -369,7 +368,7 @@ void VbufMakepath(              // SET A FILE PATH NAME TO VBUF
     }
     VbufSetLen( vbuf, 0 );
     VbufReqd( vbuf, size );
-    _makepath( VbufString( vbuf ), drive, dir, name, ext );
+    _makepath( vbuf->buf, drive, dir, name, ext );
     VbufSetLen( vbuf, strlen( VbufString( vbuf ) ) );
 }
 

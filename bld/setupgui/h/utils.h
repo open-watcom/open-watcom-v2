@@ -47,12 +47,12 @@ extern bool             IsDiskette( unsigned drive );
 extern unsigned         GetClusterSize( char drive );
 extern char             GetDriveLetter( char *desc );
 extern char             *AddInstallName( char *line, bool dorealloc );
-extern char             *stristr( const char *str, const char *substr, size_t len );
+extern char             *stristr( const char *str, const char *substr, size_t substr_len );
 extern void             Log( char *start, ... );
 extern bool             CheckUpgrade( void );
 extern bool             LicenseFileName( char * );
 extern char             *GetInstallName( void );
-extern bool             PromptUser( char *name, char *dlg, char *skip, char *replace, bool *resp_replace );
+extern bool             PromptUser( const char *name, char *dlg, char *skip, char *replace, bool *resp_replace );
 #if defined( __NT__ ) || defined( __WINDOWS__ )
 extern bool             GetRootFromPath( char *root, const char *path );
 extern disk_size        FreeSpace( const char *path );

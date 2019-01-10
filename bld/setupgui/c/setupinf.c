@@ -2493,8 +2493,8 @@ bool CheckForceDLLInstall( char *name )
     return( false );
 }
 
-long SimInit( char *inf_name )
-/****************************/
+long SimInit( const char *inf_name )
+/**********************************/
 {
     long                result;
     void                *io;
@@ -2593,8 +2593,8 @@ int SimNumDeletes( void )
     return( SetupInfo.delete.num );
 }
 
-char *SimDeleteName( int i )
-/**************************/
+const char *SimDeleteName( int i )
+/********************************/
 {
     return( DeleteInfo[i].name );
 }
@@ -2666,8 +2666,8 @@ void SimSetTargTempDisk( int parm, char disk )
     *TargetInfo[parm].temp_disk = disk;
 }
 
-char *SimGetTargTempDisk( int parm )
-/**********************************/
+const char *SimGetTargTempDisk( int parm )
+/****************************************/
 {
     return( TargetInfo[parm].temp_disk );
 }
@@ -3285,8 +3285,8 @@ int SimNumUpgrades( void )
     return( SetupInfo.upgrade.num );
 }
 
-char *SimGetUpgradeName( int parm )
-/*********************************/
+const char *SimGetUpgradeName( int parm )
+/***************************************/
 {
     return( UpgradeInfo[parm].name );
 }
@@ -3297,8 +3297,8 @@ char *SimGetUpgradeName( int parm )
  * =======================================================================
  */
 
-char *SimGetTargetDriveLetter( int parm, char *buff, size_t buff_len )
-/********************************************************************/
+const char *SimGetTargetDriveLetter( int parm, char *buff, size_t buff_len )
+/**************************************************************************/
 {
     char temp[_MAX_PATH];
 
@@ -3531,7 +3531,7 @@ bool SimCalcTargetSpaceNeeded( void )
 {
     int                 i;
     gui_mcursor_handle  old_cursor;
-    char                *temp;
+    const char          *temp;
     char                temp_path[_MAX_PATH];
 
     /* assume power of 2 */

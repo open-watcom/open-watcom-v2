@@ -2289,8 +2289,8 @@ gui_message_return MsgBox( gui_window *gui, const char *messageid,
 }
 
 
-bool PromptUser( char *name, char *dlg, char *skip, char *replace, bool *resp_replace )
-/*************************************************************************************/
+bool PromptUser( const char *name, char *dlg, char *skip, char *replace, bool *resp_replace )
+/*******************************************************************************************/
 {
     dlg_state       return_state;
 

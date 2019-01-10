@@ -118,15 +118,15 @@ void VbufConcDecimal(           // CONCATENATE A DECIMAL TO VBUF
     VBUF *vbuf,                 // - VBUF structure
     unsigned value )            // - value to be concatenated
 ;
-void VbufConcInteger(           // CONCATENATE A INTEGER TO VBUF
-    VBUF *vbuf,                 // - VBUF structure
-    int value )                 // - value to be concatenated
-;
 void VbufConcI64(               // CONCATENATE A I64 TO VBUF
     VBUF *vbuf,                 // - VBUF structure
     signed_64 value )           // - value to be concatenated
 ;
 #endif
+void VbufConcInteger(           // CONCATENATE A INTEGER TO VBUF
+    VBUF *vbuf,                 // - VBUF structure
+    int value )                 // - value to be concatenated
+;
 void VbufTruncWhite(            // TRUNCATE TRAILING WHITESPACE FROM vbuf->buf
     VBUF *vbuf )                // - VBUF structure
 ;
@@ -154,15 +154,15 @@ void VbufFullpath(              // GET A FULL FILE PATH TO VBUF
     VBUF *vbuf,                 // - VBUF structure
     const char *file )          // - file name
 ;
-#define VbufLen(v)              ((v)->used)                 // RETURN LENGTH OF BUFFER
+#define VbufLen(v)              ((v)->used)                         // RETURN LENGTH OF BUFFER
 ;
-#define VbufRewind(v)           VbufSetLen(v,0)             // CLEAN BUFFER
+#define VbufRewind(v)           VbufSetLen(v,0)                     // CLEAN BUFFER
 ;
-#define VbufSetPosBack(v,n)     VbufSetLen(v,(v)->used-n)   // SHORTEN BUFFER LENGTH
+#define VbufSetPosBack(v,n)     VbufSetLen(v,(v)->used - n)         // SHORTEN BUFFER LENGTH
 ;
-#define VbufBuffer(v)           ((unsigned char *)(v)->buf) // RETURN POINTER OF BUFFER
+#define VbufBuffer(v)           ((const unsigned char *)(v)->buf)   // RETURN POINTER OF BUFFER
 ;
-#define VbufString(v)           ((v)->buf)                  // RETURN POINTER OF BUFFER
+#define VbufString(v)           ((const char *)(v)->buf)            // RETURN POINTER OF BUFFER
 ;
-#define VbufSize(v)             ((v)->len)                  // RETURN SIZE OF BUFFER
+#define VbufSize(v)             ((v)->len)                          // RETURN SIZE OF BUFFER
 ;

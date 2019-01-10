@@ -118,7 +118,7 @@ typedef struct a_dialog_header {
 
 
 extern void             CheckStateVars( void );
-extern char             *SimGetTargetDriveLetter( int parm, char *buff, size_t buff_len );
+extern const char       *SimGetTargetDriveLetter( int parm, char *buff, size_t buff_len );
 extern bool             SimFileAdd( int parm );
 extern bool             SimFileUpToDate( int parm );
 extern bool             SimFileRemove( int parm );
@@ -137,10 +137,10 @@ extern bool             SimSubFileReadOnly( int parm, int subfile );
 extern long             SimSubFileSize( int parm, int subfile );
 extern bool             SimFileSplit( int parm );
 extern bool             SimFileLastSplit( int parm );
-extern void             SaveState(void);
-extern long             SimInit( char *buff );
+extern void             SaveState( void );
+extern long             SimInit( const char *buff );
 extern void             SimSetTargTempDisk( int parm, char disk );
-extern char             *SimGetTargTempDisk( int parm );
+extern const char       *SimGetTargTempDisk( int parm );
 extern int              SimGetTargNumFiles( int parm );
 extern int              SimNumTargets( void );
 extern disk_ssize       SimTargetSpaceNeeded( int parm );
@@ -218,14 +218,14 @@ extern when_time        SimWhen( int i );
 extern bool             SimEvalSpawnCondition( int i );
 extern int              SimGetNumDisks( void );
 extern int              SimNumDeletes( void );
-extern char             *SimDeleteName( int );
+extern const char       *SimDeleteName( int );
 extern bool             SimDeleteIsDialog( int );
 extern bool             SimDeleteIsDir( int );
 extern int              SimNumUpgrades( void );
-extern char             *SimGetUpgradeName( int );
+extern const char       *SimGetUpgradeName( int );
 extern vhandle          MakeDummyVar( void );
 
 extern bool             GetOptionVarValue( vhandle var_handle, bool is_minimal );
-extern char             *TrimQuote(char*);
+extern char             *TrimQuote( char * );
 extern void             SetDefaultAutoSetValue( vhandle var_handle );
 extern bool             CheckForceDLLInstall( char *name );
