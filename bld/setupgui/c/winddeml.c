@@ -295,7 +295,7 @@ static void munge_fname( char *buff )
     }
 }
 
-static void get_group_name( char *buff, char *group )
+static void get_group_name( char *buff, const char *group )
 {
     LPITEMIDLIST        ppidl;
 
@@ -310,7 +310,7 @@ static void get_group_name( char *buff, char *group )
     munge_fname( buff );
 }
 
-static bool create_group( char *group )
+static bool create_group( const char *group )
 {
     char                buff[_MAX_PATH];
     int                 rc;
@@ -325,7 +325,7 @@ static bool create_group( char *group )
     }
 }
 
-static void delete_dir( char * dir )
+static void delete_dir( const char * dir )
 {
     DIR                 *dirp;
     struct dirent       *direntp;
@@ -354,7 +354,7 @@ static void delete_dir( char * dir )
     rmdir( dir );
 }
 
-static void remove_group( char *group )
+static void remove_group( const char *group )
 {
     char                buff[_MAX_PATH];
 
@@ -362,8 +362,8 @@ static void remove_group( char *group )
     delete_dir( buff );
 }
 
-static bool create_icon( char *group, char *pgm, char *desc,
-                         char *arg, char *work, char *icon, int icon_num )
+static bool create_icon( const char *group, const char *pgm, const char *desc,
+                         const char *arg, const char *work, const char *icon, int icon_num )
 {
     HRESULT             hres;
     IShellLink          *m_link;
