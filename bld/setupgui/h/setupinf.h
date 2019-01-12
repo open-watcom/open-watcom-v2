@@ -201,7 +201,7 @@ extern int              SimNumLabels( void );
 extern void             SimGetLabelDir( int parm, char *buff );
 extern void             SimGetLabelLabel( int parm, char *buff );
 extern bool             SimCalcTargetSpaceNeeded( void );
-extern void             CheckDLLCount( char * );
+extern void             CheckDLLCount( const char * );
 extern void             SimCalcAddRemove( void );
 extern void             SimSetNeedGetDiskSizes( void );
 extern bool             PatchFiles( void );

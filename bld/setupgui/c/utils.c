@@ -2294,8 +2294,8 @@ gui_message_return MsgBox( gui_window *gui, const char *messageid,
 }
 
 
-bool PromptUser( const char *name, char *dlg, char *skip, char *replace, bool *resp_replace )
-/*******************************************************************************************/
+bool PromptUser( const char *name, const char *dlg, const char *skip, const char *replace, bool *resp_replace )
+/*************************************************************************************************************/
 {
     dlg_state       return_state;
 
@@ -2620,8 +2620,8 @@ void ReadVariablesFile( const char *name )
     fclose( fp );
 }
 
-bool InitInfo( char *inf_name, char *src_path )
-/*********************************************/
+bool InitInfo( const char *inf_name, char *src_path )
+/***************************************************/
 // initialize global vbls. and read setup.inf into memory.
 {
     char                dir[_MAX_DIR];

@@ -243,14 +243,14 @@ static signed int AddToUsageCount( const char *path, signed int value )
     return( return_value );
 }
 
-signed int IncrementDLLUsageCount( char *path )
-/*********************************************/
+signed int IncrementDLLUsageCount( const char *path )
+/***************************************************/
 {
     return AddToUsageCount( path, 1 );
 }
 
-signed int DecrementDLLUsageCount( char *path )
-/*********************************************/
+signed int DecrementDLLUsageCount( const char *path )
+/***************************************************/
 {
     return AddToUsageCount( path, -1 );
 }

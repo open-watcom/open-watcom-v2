@@ -1213,8 +1213,8 @@ static void CheckVersion( char *path, char *drive, char *dir )
     close( fp );
 }
 
-gui_message_return CheckInstallDLL( char *name, vhandle var_handle )
-/******************************************************************/
+gui_message_return CheckInstallDLL( const char *name, vhandle var_handle )
+/************************************************************************/
 {
     const char          *dst;
     size_t              dst_len;

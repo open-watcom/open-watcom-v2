@@ -3332,15 +3332,16 @@ static void MarkUsed( int dir_index )
 }
 
 #if defined ( __NT__ )
-void CheckDLLCount( char *install_name )
-/**************************************/
+void CheckDLLCount( const char *install_name )
+/********************************************/
 {
     // Takes care of DLL usage counts in the Win95/WinNT registry;
     // removes DLLs if their usage count goes to zero and the user
     // agrees to delete them.
     int         i;
 
-    install_name=install_name;
+    /* unused parameters */ (void)install_name;
+
     for( i = 0; i < SetupInfo.dlls_to_count.num; i++ ) {
         if( FileInfo[DLLsToCheck[i].index].core_component ) {
             continue;

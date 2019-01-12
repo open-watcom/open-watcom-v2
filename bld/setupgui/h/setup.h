@@ -130,9 +130,8 @@ extern bool             ConfigModified;
 extern gui_window       *MainWnd;
 
 extern char             *ReplaceVars( char *, size_t, const char * );
-extern gui_message_return CheckInstallDLL( char*, vhandle );
+extern gui_message_return CheckInstallDLL( const char *, vhandle );
 extern gui_message_return CheckInstallNLM( const char *, vhandle );
-extern bool             IsNLMNewerThanExistingNLM(char *name);
 extern bool             CreatePMInfo( bool );
 extern bool             ModifyConfiguration( bool );
 extern bool             ModifyAutoExec( bool );

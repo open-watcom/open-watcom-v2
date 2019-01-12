@@ -38,7 +38,7 @@ extern COPYFILE_ERROR   DoCopyFile( const char *, const char *, bool );
 extern bool             CopyAllFiles( void );
 extern gui_message_return MsgBox( gui_window *, const char *, gui_message_type, ... );
 extern bool             CheckDrive( bool );
-extern bool             InitInfo( char *, char * );
+extern bool             InitInfo( const char *, char * );
 extern bool             GetDirParams( int, char **, char **, char **, char ** );
 extern bool             FreeDirParams( char **, char **, char ** );
 extern void             CloseDownMessage( bool state );
@@ -50,16 +50,15 @@ extern char             *AddInstallName( char *line, bool dorealloc );
 extern char             *stristr( const char *str, const char *substr, size_t substr_len );
 extern void             Log( char *start, ... );
 extern bool             CheckUpgrade( void );
-extern bool             LicenseFileName( char * );
 extern char             *GetInstallName( void );
-extern bool             PromptUser( const char *name, char *dlg, char *skip, char *replace, bool *resp_replace );
+extern bool             PromptUser( const char *name, const char *dlg, const char *skip, const char *replace, bool *resp_replace );
 #if defined( __NT__ ) || defined( __WINDOWS__ )
 extern bool             GetRootFromPath( char *root, const char *path );
 extern disk_size        FreeSpace( const char *path );
 extern long             ClusterSize( const char *path );
 #endif
-extern signed int       IncrementDLLUsageCount( char *path );
-extern signed int       DecrementDLLUsageCount( char *path );
+extern signed int       IncrementDLLUsageCount( const char *path );
+extern signed int       DecrementDLLUsageCount( const char *path );
 extern void             ReadVariablesFile( const char * name );
 extern void             ConcatDirSep( char *dir );
 extern void             RemoveDirSep( char *dir );
