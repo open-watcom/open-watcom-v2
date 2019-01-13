@@ -129,7 +129,7 @@ enum {
 extern bool             ConfigModified;
 extern gui_window       *MainWnd;
 
-extern char             *ReplaceVars( char *, size_t, const char * );
+extern void             ReplaceVars( VBUF *, const char * );
 extern gui_message_return CheckInstallDLL( const char *, vhandle );
 extern gui_message_return CheckInstallNLM( const char *, vhandle );
 extern bool             CreatePMInfo( bool );
@@ -137,7 +137,7 @@ extern bool             ModifyConfiguration( bool );
 extern bool             ModifyAutoExec( bool );
 extern bool             GenerateBatchFile( bool );
 #if defined( __NT__ )
-extern bool             GetRegString( HKEY, const char *, const char *, char *, DWORD );
+extern bool             GetRegString( HKEY, const char *, const char *, VBUF * );
 extern bool             ModifyRegAssoc( bool );
 extern bool             AddToUninstallList( bool );
 #endif

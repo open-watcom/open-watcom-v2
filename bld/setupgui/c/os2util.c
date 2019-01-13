@@ -42,33 +42,39 @@
 
 #define ICONFILETAG     "ICONFILE="
 
-static HOBJECT create_group( const char *group, const char *grp_filename )
-/************************************************************************/
+static HOBJECT create_group( VBUF *group, VBUF *grp_filename )
+/************************************************************/
 {
     HOBJECT     hobj;
-    char        cmd[2 * _MAX_PATH];
-    char        icon_file[MAXBUF];
+    VBUF        cmd;
+    VBUF        icon_file;
 
-    sprintf( cmd, "OPEN=ICON;OBJECTID=%s;", grp_filename );   // add more parms here if necessary
-
-    SimGetPMGroupIcon( icon_file, sizeof( icon_file ) );
-    if( icon_file[0] != '\0' ) {
-        strcat( cmd, ICONFILETAG );
-        ReplaceVars( cmd + ( sizeof( ICONFILETAG ) - 1 ), sizeof( cmd ) - ( sizeof( ICONFILETAG ) - 1 ), icon_file );
-        strcat( cmd, ";" );
+    VbufInit( &cmd );
+    VbufInit( &icon_file );
+    VbufConcStr( &cmd, "OPEN=ICON;OBJECTID=" );
+    VbufConcVbuf( &cmd, grp_filename );
+    VbufConcChr( &cmd, ';' );
+    // add more parms here if necessary
+    SimGetPMGroupIcon( &icon_file );
+    if( VbufLen( &icon_file ) > 0 ) {
+        VbufConcStr( &cmd, ICONFILETAG );
+        ReplaceVars( &icon_file, NULL );
+        VbufConcVbuf( &cmd, &icon_file );
+        VbufConcChr( &cmd, ';' );
     }
-
-    hobj = WinCreateObject( "WPFolder", group, cmd, "<WP_DESKTOP>", CO_UPDATEIFEXISTS );
+    hobj = WinCreateObject( "WPFolder", VbufString( group ), VbufString( &cmd ), "<WP_DESKTOP>", CO_UPDATEIFEXISTS );
+    VbufFree( &icon_file );
+    VbufFree( &cmd );
     return( hobj );
 }
 
 
-static void remove_group( const char *group )
-/*******************************************/
+static void remove_group( VBUF *group )
+/*************************************/
 {
     HOBJECT     hobj;
 
-    hobj = WinQueryObject( group );
+    hobj = WinQueryObject( VbufString( group ) );
     WinDestroyObject( hobj );
 }
 
@@ -76,149 +82,177 @@ static void remove_group( const char *group )
 bool CreatePMInfo( bool uninstall )
 /*********************************/
 {
-    char                PMProgName[_MAX_PATH];
-    char                PMProgDesc[MAXBUF];
-    char                PMIconFileName[_MAX_PATH];
-    char                WorkingDir[_MAX_PATH];
-    char                PMParams[MAXBUF];
-    char                Cmd[2 * _MAX_PATH];
-    char                t1[MAXBUF];
-    char                t2[MAXBUF];
-    char                GroupFileName[_MAX_PATH];
-    char                Folder[_MAX_PATH];
+    VBUF                PMProgName;
+    VBUF                PMProgDesc;
+    VBUF                PMParams;
+    VBUF                PMIconFileName;
+    VBUF                WorkingDir;
+    VBUF                Folder;
+    VBUF                Cmd;
+    VBUF                tmp;
+    VBUF                group;
+    VBUF                GroupFileName;
     int                 nDirIndex;
     int                 icon_number;
-    int                 nPMProg;
-    int                 nMaxPMProgs;
-    int                 len;
-    char                *p;
+    int                 i;
+    int                 num;
+    size_t              len;
+    const char          *p;
     HOBJECT             obj;
 
+    VbufInit( &GroupFileName );
     // To uninstall, simply nuke all folders
     if( uninstall ) {
-        int     nPMGrp;
-        int     nMaxPMGroups;
-
-        nMaxPMGroups = SimGetPMGroupsNum();
-        for( nPMGrp = 0; nPMGrp < nMaxPMGroups; nPMGrp++ ) {
-            SimGetPMGroupFName( nPMGrp, t1, sizeof( t1 ) );
-            if( *t1 != '\0' ) {
-                sprintf( GroupFileName, "<%s>", t1 );
+        num = SimGetPMGroupsNum();
+        for( i = 0; i < num; i++ ) {
+            SimGetPMGroupFName( i, &GroupFileName );
+            if( VbufLen( &GroupFileName ) > 0 ) {
                 // Delete the PM Group box
-                remove_group( GroupFileName );
+                VbufPrepChr( &GroupFileName, '<' );
+                VbufConcChr( &GroupFileName, '>' );
+                remove_group( &GroupFileName );
             }
         }
+        VbufFree( &GroupFileName );
         return( true );
     }
 
-    SimGetPMGroup( t1, sizeof( t1 ) );
-    if( t1[0] == '\0' ) {
+    VbufInit( &group );
+    SimGetPMGroup( &group );
+    if( VbufLen( &group ) == 0 ) {
+        VbufFree( &group );
+        VbufFree( &GroupFileName );
         return( true );
     }
 
-    SimGetPMGroupFileName( t2, sizeof( t2 ) );
-    if( t2[0] != '\0' ) {
-        sprintf( GroupFileName, "<%s>", t2 );
+    SimGetPMGroupFileName( &GroupFileName );
+    if( VbufLen( &GroupFileName ) > 0 ) {
+        VbufPrepChr( &GroupFileName, '<' );
+        VbufConcChr( &GroupFileName, '>' );
     } else {
-        sprintf( GroupFileName, "<WSETUP_FLDR>" );
+        VbufConcStr( &GroupFileName, "<WSETUP_FLDR>" );
     }
 
-    obj = create_group( t1, GroupFileName );
+    obj = create_group( &group, &GroupFileName );
+
+    VbufInit( &PMProgName );
+    VbufInit( &PMProgDesc );
+    VbufInit( &PMParams );
+    VbufInit( &PMIconFileName );
+    VbufInit( &WorkingDir );
+    VbufInit( &Folder );
+    VbufInit( &Cmd );
 
     // Add the individual PM files to the Group box.
-    nMaxPMProgs = SimGetPMProgsNum();
     StatusLines( STAT_CREATEPROGRAMFOLDER, "" );
-    StatusAmount( 0, nMaxPMProgs );
-    for( nPMProg = 0; (obj != NULLHANDLE) && (nPMProg < nMaxPMProgs); nPMProg++ ) {
-        StatusAmount( nPMProg, nMaxPMProgs );
-        if( !SimCheckPMCondition( nPMProg ) ) {
+    num = SimGetPMProgsNum();
+    StatusAmount( 0, num );
+    for( i = 0; (obj != NULLHANDLE) && (i < num); i++ ) {
+        StatusAmount( i, num );
+        if( !SimCheckPMCondition( i ) ) {
             continue;
         }
-        SimGetPMDesc( nPMProg, PMProgDesc, sizeof( PMProgDesc ) );
+        SimGetPMDesc( i, &PMProgDesc );
         // Replace '\n' in Description with LineFeed character
-        for( p = PMProgDesc; *p != '\0'; ++p ) {
-            if( *p == '\\' && *(p + 1) == 'n' ) {
-                *p = '\n';
-                strcpy( p + 1, p + 2 );
-                ++p;
+        for( p = VbufString( &PMProgDesc ); *p != '\0'; ++p ) {
+            if( p[0] == '\\' && p[1] == 'n' ) {
+                len = p - VbufString( &PMProgDesc );
+                VbufSetStr( &tmp, p + 2 );
+                VbufSetLen( &PMProgDesc, len );
+                VbufConcChr( &PMProgDesc, '\n' );
+                VbufConcVbuf( &PMProgDesc, &tmp );
+                p = VbufString( &PMProgDesc ) + len + 1;
             }
         }
 
-        nDirIndex = SimGetPMProgName( nPMProg, PMProgName );
-        if( strcmp( PMProgName, "GROUP" ) == 0 ) {
+        nDirIndex = SimGetPMProgName( i, &PMProgName );
+        if( strcmp( VbufString( &PMProgName ), "GROUP" ) == 0 ) {
             // Process a group (ie. folder)
-            SimGetPMParms( nPMProg, t1, sizeof( t1 ) );
-            if( t1[0] == '\0' ) {
+            SimGetPMParms( i, &GroupFileName );
+            if( VbufLen( &GroupFileName ) == 0 ) {
                 break;
             }
-
-            if( PMProgDesc[0] != '\0' ) {
-                sprintf( GroupFileName, "<%s>", t1 );
+            if( VbufLen( &PMProgDesc ) > 0 ) {
+                VbufPrepChr( &GroupFileName, '<' );
+                VbufConcChr( &GroupFileName, '>' );
             } else {
-                sprintf( GroupFileName, "<WSETUP_FOL>" );
+                VbufSetStr( &GroupFileName, "<WSETUP_FOL>" );
             }
-
-            obj = create_group( PMProgDesc, GroupFileName );
+            obj = create_group( &PMProgDesc, &GroupFileName );
         } else {
             // Process a regular object
             if( nDirIndex == -1 ) {
-                WorkingDir[0] = '\0';
-                ReplaceVars( t2, sizeof( t2 ), PMProgName );
-                strcpy( PMProgName, t2 );
+                VbufRewind( &WorkingDir );
+                ReplaceVars( &PMProgName, NULL );
             } else {
-                SimGetDir( nDirIndex, WorkingDir, sizeof( WorkingDir ) );
+                SimGetDir( nDirIndex, &WorkingDir );
             }
 
             // Get parameters
-            SimGetPMParms( nPMProg, t1, sizeof( t1 ) );
-            ReplaceVars( PMParams, sizeof( PMParams ), t1 );
-            if( PMParams[0] == '+' ) {
+            SimGetPMParms( i, &PMParams );
+            ReplaceVars( &PMParams, NULL );
+            if( VbufString( &PMParams )[0] == '+' ) {
                 // Format is: +folder_name[+parameters]
-                p = strchr( &PMParams[1], '+' );
+                p = strchr( VbufString( &PMParams ) + 1, '+' );
                 if( p == NULL ) {
-                    strcpy( Folder, &PMParams[1] );
-                    PMParams[0] = '\0';
+                    VbufSetStr( &Folder, VbufString( &PMParams ) + 1 );
+                    VbufRewind( &PMParams );
                 } else {
-                    len = p - PMParams - 1;
-                    memcpy( Folder, &PMParams[1], len );
-                    Folder[len] = '\0';
-                    ++p;
-                    memmove( PMParams, p, strlen( p ) );
+                    VbufSetBuffer( &Folder, p - VbufString( &PMParams ) - 1, VbufString( &PMParams ) + 1 );
+                    VbufSetStr( &PMParams, p + 1);
                 }
             } else {
                 // Use default folder
-                strcpy( Folder, GroupFileName );
+                VbufSetVbuf( &Folder, &GroupFileName );
             }
 
             // Append the subdir where the icon file is and the icon file's name.
-            nDirIndex = SimGetPMIconInfo( nPMProg, PMIconFileName, sizeof( PMIconFileName ), &icon_number );
+            nDirIndex = SimGetPMIconInfo( i, &PMIconFileName, &icon_number );
             if( icon_number == -1 ) {
                 icon_number = 0;
             }
             if( nDirIndex != -1 ) {
-                SimGetDir( nDirIndex, t1, sizeof( t1 ) );
-                strcat( t1, PMIconFileName );
-                strcpy( PMIconFileName, t1 );
+                SimGetDir( nDirIndex, &tmp );
+                VbufPrepVbuf( &PMIconFileName, &tmp );
             }
-
-            if( PMProgName[0] == '+' ) {
-                sprintf( Cmd, "SHADOWID=%s%s", WorkingDir, &PMProgName[1] );
-                obj = WinCreateObject( "WPShadow", PMProgDesc, Cmd, Folder, CO_REPLACEIFEXISTS );
+            if( VbufString( &PMProgName )[0] == '+' ) {
+                VbufSetStr( &Cmd, "SHADOWID=" );
+                VbufConcVbuf( &Cmd, &WorkingDir );
+                VbufConcStr( &Cmd, VbufString( &PMProgName ) + 1 );
+                obj = WinCreateObject( "WPShadow", VbufString( &PMProgDesc ), VbufString( &Cmd ), VbufString( &Folder ), CO_REPLACEIFEXISTS );
             } else {
-                // Add the new file to the already created PM Group.
-                sprintf( Cmd, "EXENAME=%s%s;PARAMETERS=%s;STARTUPDIR=%s",
-                         WorkingDir, PMProgName, PMParams, WorkingDir );
-                obj = WinCreateObject( "WPProgram", PMProgDesc, Cmd, Folder, CO_REPLACEIFEXISTS );
+                /*
+                 * Add the new file to the already created PM Group.
+                 */
+                VbufSetStr( &Cmd, "EXENAME=" );
+                VbufConcVbuf( &Cmd, &WorkingDir );
+                VbufConcVbuf( &Cmd, &PMProgName );
+                VbufConcStr( &Cmd, ";PARAMETERS=" );
+                VbufConcVbuf( &Cmd, &PMParams );
+                VbufConcStr( &Cmd, ";STARTUPDIR=" );
+                VbufConcVbuf( &Cmd, &WorkingDir );
+                obj = WinCreateObject( "WPProgram", VbufString( &PMProgDesc ), VbufString( &Cmd ), VbufString( &Folder ), CO_REPLACEIFEXISTS );
             }
         }
     }
-    StatusAmount( nMaxPMProgs, nMaxPMProgs );
+    StatusAmount( num, num );
+
+    VbufFree( &Cmd );
+    VbufFree( &Folder );
+    VbufFree( &WorkingDir );
+    VbufFree( &PMIconFileName );
+    VbufFree( &PMParams );
+    VbufFree( &PMProgDesc );
+    VbufFree( &PMProgName );
+    VbufFree( &tmp );
+    VbufFree( &group );
+    VbufFree( &GroupFileName );
     return( true );
 }
 
 
-static bool SetEAttr( char *filename, char const *name, char const *val )
-/***********************************************************************/
+static bool SetEAttr( const char *filename, char const *name, char const *val )
+/*****************************************************************************/
 {
     FEA2LIST            *fet;
     GEA2LIST            *get;
@@ -267,18 +301,20 @@ static bool SetEAttr( char *filename, char const *name, char const *val )
 void LabelDirs( void )
 /********************/
 {
-    int             i;
-    int             num;
-    static char     dir_name[_MAX_PATH];
-    static char     label[_MAX_PATH];
-    static char     t1[_MAX_PATH];
+    int         i;
+    int         num;
+    VBUF        dir_name;
+    VBUF        label;
 
+    VbufInit( &dir_name );
+    VbufInit( &label );
     num = SimNumLabels();
     for( i = 0; i < num; ++i ) {
-        SimGetLabelDir( i, t1 );
-        ReplaceVars( dir_name, sizeof( dir_name ), t1 );
-        SimGetLabelLabel( i, label );
-        SetEAttr( dir_name, ".LONGNAME", label );
+        SimGetLabelDir( i, &dir_name );
+        ReplaceVars( &dir_name, NULL );
+        SimGetLabelLabel( i, &label );
+        SetEAttr( VbufString( &dir_name ), ".LONGNAME", VbufString( &label ) );
     }
+    VbufFree( &label );
+    VbufFree( &dir_name );
 }
-

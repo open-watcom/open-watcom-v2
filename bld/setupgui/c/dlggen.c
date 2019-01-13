@@ -105,7 +105,7 @@ static gui_control_class ControlClass( gui_ctl_id id, a_dialog_header *curr_dial
 static void SetDynamic( gui_window *gui, vhandle var_handle, bool *drive_checked )
 /*******************************************************************************/
 {
-    char        buff[256];
+    VBUF        buff;
     const char  *p;
 
     p = VarGetStrVal( var_handle );
@@ -120,9 +120,11 @@ static void SetDynamic( gui_window *gui, vhandle var_handle, bool *drive_checked
             ++p;
         }
     }
-    ReplaceVars( buff, sizeof( buff ), VarGetStrVal( var_handle ) );
-    AddInstallName( buff, false );
-    GUISetText( gui, VH2ID( var_handle ), buff );
+    VbufInit( &buff );
+    ReplaceVars( &buff, VarGetStrVal( var_handle ) );
+    AddInstallName( &buff );
+    GUISetText( gui, VH2ID( var_handle ), VbufString( &buff ) );
+    VbufFree( &buff );
 }
 
 
@@ -866,37 +868,37 @@ static void AdjustDialogControls( a_dialog_header *curr_dialog )
 dlg_state GenericDialog( gui_window *parent, a_dialog_header *curr_dialog )
 /*************************************************************************/
 {
-    char                *title;
+    VBUF                title;
     DLG_WINDOW_SET      result;
     int                 width;
     int                 height;
-    char                buff[MAXBUF];
 
     if( curr_dialog == NULL ) {
         return( DLG_CAN );
     }
     AdjustDialogControls( curr_dialog );
-
     result.state = DLG_CAN;
     result.current_dialog = curr_dialog;
+    VbufInit( &title );
     if( curr_dialog->title != NULL ) {
-        title = curr_dialog->title;
+        VbufConcStr( &title, curr_dialog->title );
     } else {
-        title = ReplaceVars( buff, sizeof( buff ), GetVariableStrVal( "AppName" ) );
+        ReplaceVars( &title, GetVariableStrVal( "AppName" ) );
     }
     width = curr_dialog->cols;
     height = curr_dialog->rows;
 #if defined( __OS2__ ) && !defined( _UI )
     height -= 1;
 #endif
-    if( width < strlen( title ) + WIDTH_BORDER + 2 ) {
-        width = strlen( title ) + WIDTH_BORDER + 2;
+    if( width < VbufLen( &title ) + WIDTH_BORDER + 2 ) {
+        width = VbufLen( &title ) + WIDTH_BORDER + 2;
     }
 
     GUIRefresh();
-    GUIModalDlgOpen( parent == NULL ? MainWnd : parent, title, height, width,
+    GUIModalDlgOpen( parent == NULL ? MainWnd : parent, VbufString( &title ), height, width,
                      curr_dialog->controls, curr_dialog->num_controls,
                      &GenericGUIEventProc, &result );
     ResetDriveInfo();
+    VbufFree( &title );
     return( result.state );
 }

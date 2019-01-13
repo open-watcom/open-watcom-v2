@@ -582,8 +582,9 @@ static bool EvalExprTree( tree_node *tree, bool is_minimal )
 /**********************************************************/
 {
     bool        value;
-    char        buff[_MAX_PATH];
+    VBUF        tmp;
 
+    VbufInit( &tmp );
     value = false;
     switch( tree->op ) {
     case OP_AND:
@@ -596,8 +597,8 @@ static bool EvalExprTree( tree_node *tree, bool is_minimal )
         value = !EvalExprTree( tree->u.left, is_minimal );
         break;
     case OP_EXIST:
-        ReplaceVars( buff, sizeof( buff ), (char *)tree->u.left );
-        value = ( access( buff, F_OK ) == 0 );
+        ReplaceVars( &tmp, (char *)tree->u.left );
+        value = ( access( VbufString( &tmp ), F_OK ) == 0 );
         break;
     case OP_VAR:
         value = GetOptionVarValue( (vhandle)(pointer_int)tree->u.left, is_minimal );
@@ -608,6 +609,7 @@ static bool EvalExprTree( tree_node *tree, bool is_minimal )
     case OP_FALSE:
         break;
     }
+    VbufFree( &tmp );
     return( value );
 }
 
@@ -943,13 +945,14 @@ static bool dialog_static( char *next, DIALOG_INFO *dlg )
 {
     char                *line;
     int                 len;
-    char                *text;
+    VBUF                text;
     bool                rc = true;
     vhandle             var_handle;
 
+    VbufInit( &text );
     line = next; next = NextToken( line, '"' );
     line = next; next = NextToken( line, '"' );
-    text = GUIStrDup( line, NULL );
+    VbufConcStr( &text, line );
     line = next; next = NextToken( line, ',' );
     line = next; next = NextToken( line, ',' );
     if( EvalCondition( line ) ) {
@@ -958,11 +961,11 @@ static bool dialog_static( char *next, DIALOG_INFO *dlg )
         dlg->curr_dialog->controls_ext[dlg->curr_dialog->num_controls].pVisibilityConds = GUIStrDup( line, NULL );
         // dummy_var allows control to have an id - used by dynamic visibility feature
         var_handle = MakeDummyVar();
-        if( text != NULL ) {
-            text = AddInstallName( text, true );
-            len = strlen( text );
+        if( VbufLen( &text ) > 0 ) {
+            AddInstallName( &text );
+            len = VbufLen( &text );
             set_dlg_dynamstring( dlg->curr_dialog->controls, dlg->controls.num - 1,
-                text, VarGetId( var_handle ), dlg->col_num, dlg->row_num, dlg->col_num + len );
+                VbufString( &text ), VarGetId( var_handle ), dlg->col_num, dlg->row_num, dlg->col_num + len );
             if( dlg->max_width < dlg->col_num + len ) {
                 dlg->max_width = dlg->col_num + len;
             }
@@ -973,7 +976,7 @@ static bool dialog_static( char *next, DIALOG_INFO *dlg )
     } else {
         rc = false;
     }
-    GUIMemFree( text );
+    VbufFree( &text );
     return( rc );
 }
 
@@ -1248,7 +1251,7 @@ static bool dialog_edit_button( char *next, DIALOG_INFO *dlg )
 #endif
     vhandle             var_handle;
     vhandle             var_handle_2;
-    char                buff[MAXBUF];
+    VBUF                buff;
     bool                rc = true;
 
     line = next; next = NextToken( line, ',' );
@@ -1256,6 +1259,7 @@ static bool dialog_edit_button( char *next, DIALOG_INFO *dlg )
     var_handle = AddVariable( vbl_name );
     line = next; next = NextToken( line, ',' );
     val = NULL;
+    VbufInit( &buff );
     if( line[0] != '\0' ) {
         if( line[0] == '%' ) {
             val = GetVariableStrVal( &line[1] );
@@ -1271,8 +1275,8 @@ static bool dialog_edit_button( char *next, DIALOG_INFO *dlg )
                 if( value != NULL ) {
                     *value = '\0';
                     ++value;
-                    if( GetRegString( HKEY_CURRENT_USER, section, value, buff, MAXBUF ) ) {
-                        val = buff;
+                    if( GetRegString( HKEY_CURRENT_USER, section, value, &buff ) ) {
+                        val = VbufString( &buff );
                     }
                 }
 #endif
@@ -1292,7 +1296,7 @@ static bool dialog_edit_button( char *next, DIALOG_INFO *dlg )
     }
     line = next; next = NextToken( line, '"' );
     line = next; next = NextToken( line, '"' );
-    ReplaceVars( buff, sizeof( buff ), line );
+    ReplaceVars( &buff, line );
     line = next; next = NextToken( line, ',' );
     line = next; next = NextToken( line, ',' );
 
@@ -1318,24 +1322,25 @@ static bool dialog_edit_button( char *next, DIALOG_INFO *dlg )
         BumpDlgArrays( dlg );
         // condition for visibility (dynamic)
         dlg->curr_dialog->controls_ext[dlg->curr_dialog->num_controls + 1].pVisibilityConds = GUIStrDup( line, NULL );
-        set_dlg_edit( dlg->curr_dialog->controls, dlg->controls.num - 1, buff,
+        set_dlg_edit( dlg->curr_dialog->controls, dlg->controls.num - 1, VbufString( &buff ),
                       VarGetId( var_handle ), C0, dlg->row_num, C0 + BW - 1 );
-        if( buff[0] != '\0' ) {
+        if( VbufLen( &buff ) > 0 ) {
             BumpDlgArrays( dlg );
             // condition for visibility (dynamic)
             dlg->curr_dialog->controls_ext[dlg->curr_dialog->num_controls + 2].pVisibilityConds = GUIStrDup( line, NULL );
             // dummy_var allows control to have an id - used by dynamic visibility feature
             var_handle = MakeDummyVar();
-            set_dlg_dynamstring( dlg->curr_dialog->controls, dlg->controls.num - 1, buff,
-                                 VarGetId( var_handle ), C0, dlg->row_num, C0 + strlen( buff ) );
+            set_dlg_dynamstring( dlg->curr_dialog->controls, dlg->controls.num - 1, VbufString( &buff ),
+                                 VarGetId( var_handle ), C0, dlg->row_num, C0 + VbufLen( &buff ) );
         }
-        if( dlg->max_width < 2 * strlen( buff ) ) {
-            dlg->max_width = 2 * strlen( buff );
+        if( dlg->max_width < 2 * VbufLen( &buff ) ) {
+            dlg->max_width = 2 * VbufLen( &buff );
         }
     } else {
         rc = false;
     }
     GUIMemFree( vbl_name );
+    VbufFree( &buff );
     return( rc );
 }
 
@@ -1547,7 +1552,7 @@ static bool dialog_editcontrol( char *next, DIALOG_INFO *dlg )
     char                *value;
 #endif
     vhandle             var_handle;
-    char                buff[MAXBUF];
+    VBUF                buff;
     bool                rc = true;
 
     line = next; next = NextToken( line, ',' );
@@ -1555,6 +1560,7 @@ static bool dialog_editcontrol( char *next, DIALOG_INFO *dlg )
     var_handle = AddVariable( vbl_name );
     line = next; next = NextToken( line, ',' );
     val = NULL;
+    VbufInit( &buff );
     if( line[0] != '\0' ) {
         if( line[0] == '%' ) {
             val = GetVariableStrVal( &line[1] );
@@ -1570,8 +1576,8 @@ static bool dialog_editcontrol( char *next, DIALOG_INFO *dlg )
                 if( value != NULL ) {
                     *value = '\0';
                     ++value;
-                    if( GetRegString( HKEY_CURRENT_USER, section, value, buff, MAXBUF ) ) {
-                        val = buff;
+                    if( GetRegString( HKEY_CURRENT_USER, section, value, &buff ) ) {
+                        val = VbufString( &buff );
                     }
                 }
 #endif
@@ -1592,7 +1598,7 @@ static bool dialog_editcontrol( char *next, DIALOG_INFO *dlg )
     }
     line = next; next = NextToken( line, '"' );
     line = next; next = NextToken( line, '"' );
-    ReplaceVars( buff, sizeof( buff ), line );
+    ReplaceVars( &buff, line );
     line = next; next = NextToken( line, ',' );
     line = next; next = NextToken( line, ',' );
     if( EvalCondition( line ) ) {
@@ -1603,22 +1609,23 @@ static bool dialog_editcontrol( char *next, DIALOG_INFO *dlg )
         // condition for visibility (dynamic)
         dlg->curr_dialog->controls_ext[dlg->curr_dialog->num_controls].pVisibilityConds = GUIStrDup( line, NULL );
         set_dlg_edit( dlg->curr_dialog->controls, dlg->controls.num - 1,
-                      buff, VarGetId( var_handle ), C0, dlg->row_num, C0 + W - 1 );
-        if( buff[0] != '\0' ) {
+                      VbufString( &buff ), VarGetId( var_handle ), C0, dlg->row_num, C0 + W - 1 );
+        if( VbufLen( &buff ) > 0 ) {
             BumpDlgArrays( dlg );
             // condition for visibility (dynamic)
             dlg->curr_dialog->controls_ext[dlg->curr_dialog->num_controls + 1].pVisibilityConds = GUIStrDup( line, NULL );
             // dummy_var allows control to have an id - used by dynamic visibility feature
             var_handle = MakeDummyVar();
-            set_dlg_dynamstring( dlg->curr_dialog->controls, dlg->controls.num - 1, buff,
-                                 VarGetId( var_handle ), C0, dlg->row_num, C0 + strlen( buff ) );
+            set_dlg_dynamstring( dlg->curr_dialog->controls, dlg->controls.num - 1, VbufString( &buff ),
+                                 VarGetId( var_handle ), C0, dlg->row_num, C0 + VbufLen( &buff ) );
         }
-        if( dlg->max_width < 2 * strlen( buff ) ) {
-            dlg->max_width = 2 * strlen( buff );
+        if( dlg->max_width < 2 * VbufLen( &buff ) ) {
+            dlg->max_width = 2 * VbufLen( &buff );
         }
     } else {
         rc = false;
     }
+    VbufFree( &buff );
     GUIMemFree( vbl_name );
     return( rc );
 }
@@ -2217,8 +2224,8 @@ static bool ProcLine( char *line, pass_type pass )
 static bool GetFileInfo( int dir_index, int i, bool in_old_dir, bool *pzeroed )
 /*****************************************************************************/
 {
-    char        buff[_MAX_PATH];
-    char        *dir_end;
+    VBUF        buff;
+    size_t      dir_end;
     struct stat buf;
     int         j;
     int         k;
@@ -2228,12 +2235,15 @@ static bool GetFileInfo( int dir_index, int i, bool in_old_dir, bool *pzeroed )
 
     if( dir_index == -1 )
         return( false );
-    SimDirNoSlash( dir_index, buff, sizeof( buff ) );
-    if( access( buff, F_OK ) != 0 )
+    VbufInit( &buff );
+    SimDirNoSlash( dir_index, &buff );
+    if( access( VbufString( &buff ), F_OK ) != 0 ) {
+        VbufFree( &buff );
         return( false );
+    }
 
-    ConcatDirSep( buff );
-    dir_end = buff + strlen( buff );
+    VbufAddDirSep( &buff );
+    dir_end = VbufLen( &buff );
     found = false;
     supp = TargetInfo[DirInfo[FileInfo[i].dir_index].target].supplimental;
     if( supp ) {
@@ -2245,9 +2255,10 @@ static bool GetFileInfo( int dir_index, int i, bool in_old_dir, bool *pzeroed )
         file->disk_size = 0;
         if( file->name == NULL )
             continue;
-        strcpy( dir_end, file->name );
-        if( access( buff, F_OK ) == 0 ) {
-            stat( buff, &buf );
+        VbufSetLen( &buff, dir_end );
+        VbufConcStr( &buff, file->name );
+        if( access( VbufString( &buff ), F_OK ) == 0 ) {
+            stat( VbufString( &buff ), &buf );
             found = true;
             file->disk_size = buf.st_size;
             file->disk_date = (unsigned long)buf.st_mtime;
@@ -2274,6 +2285,7 @@ static bool GetFileInfo( int dir_index, int i, bool in_old_dir, bool *pzeroed )
             }
         }
     }
+    VbufFree( &buff );
     return( found );
 }
 
@@ -2623,17 +2635,17 @@ int SimNumTargets( void )
     return( SetupInfo.target.num );
 }
 
-void SimTargetDir( int i, char *buff, size_t buff_len )
-/*****************************************************/
+void SimTargetDir( int i, VBUF *buff )
+/************************************/
 {
-    ReplaceVars( buff, buff_len, GetVariableStrVal( TargetInfo[i].name ) );
+    ReplaceVars( buff, GetVariableStrVal( TargetInfo[i].name ) );
 }
 
-void SimTargetDirName( int i, char *buff, size_t buff_len )
-/*********************************************************/
+void SimTargetDirName( int i, VBUF *buff )
+/****************************************/
 {
     // same as SimTargetDir, only don't expand macros
-    ReplaceVars( buff, buff_len, TargetInfo[i].name );
+    ReplaceVars( buff, TargetInfo[i].name );
 }
 
 bool SimTargetNeedsUpdate( int i )
@@ -2708,16 +2720,13 @@ int SimNumDirs( void )
     return( SetupInfo.dirs.num );
 }
 
-void SimDirNoSlash( int i, char *buff, size_t buff_len )
-/******************************************************/
+void SimDirNoSlash( int i, VBUF *buff )
+/*************************************/
 {
-    char                dir[_MAX_DIR];
-
-    SimTargetDir( DirInfo[i].target, buff, buff_len );
-    strcpy( dir, DirInfo[i].desc );
-    if( !IS_EMPTY( dir ) ) {
-        ConcatDirSep( buff );
-        strcat( buff, dir );
+    SimTargetDir( DirInfo[i].target, buff );
+    if( !IS_EMPTY( DirInfo[i].desc ) ) {
+        VbufAddDirSep( buff );
+        VbufConcStr( buff, DirInfo[i].desc );
     }
 }
 
@@ -2727,11 +2736,11 @@ bool SimDirUsed( int i )
     return( DirInfo[i].used );
 }
 
-void SimGetDir( int i, char *buff, size_t buff_len )
-/**************************************************/
+void SimGetDir( int i, VBUF *buff )
+/*********************************/
 {
-    SimDirNoSlash( i, buff, buff_len );
-    ConcatDirSep( buff );
+    SimDirNoSlash( i, buff );
+    VbufAddDirSep( buff );
 }
 
 /*
@@ -2797,10 +2806,10 @@ int SimFileDiskNum( int parm )
     return( FileInfo[parm].disk_index );
 }
 
-void SimFileDir( int parm, char *buff, size_t buff_len )
-/******************************************************/
+void SimFileDir( int parm, VBUF *buff )
+/*************************************/
 {
-    SimGetDir( FileInfo[parm].dir_index, buff, buff_len );
+    SimGetDir( FileInfo[parm].dir_index, buff );
 }
 
 int SimFileDirNum( int parm )
@@ -2809,12 +2818,14 @@ int SimFileDirNum( int parm )
     return( FileInfo[parm].dir_index );
 }
 
-bool SimFileOldDir( int parm, char *buff, size_t buff_len )
-/*********************************************************/
+bool SimFileOldDir( int parm, VBUF *buff )
+/****************************************/
 {
-    if( FileInfo[parm].old_dir_index == -1 )
+    if( FileInfo[parm].old_dir_index == -1 ) {
+        VbufRewind( buff );
         return( false );
-    SimGetDir( FileInfo[parm].old_dir_index, buff, buff_len );
+    }
+    SimGetDir( FileInfo[parm].old_dir_index, buff );
     return( true );
 }
 
@@ -2951,36 +2962,33 @@ bool SimFileRemove( int parm )
  * =======================================================================
  */
 
-void SimGetPMGroupFileName( char *buff, size_t buff_len )
-/*******************************************************/
+void SimGetPMGroupFileName( VBUF *buff )
+/**************************************/
 {
     if( SetupInfo.pm_group_file_name != NULL ) {
-        strncpy( buff, SetupInfo.pm_group_file_name, buff_len - 1 );
-        buff[buff_len - 1] = '\0';
+        VbufSetStr( buff, SetupInfo.pm_group_file_name );
     } else {
-        buff[0] = '\0';
+        VbufRewind( buff );
     }
 }
 
-void SimGetPMGroupIcon( char *buff, size_t buff_len )
-/***************************************************/
+void SimGetPMGroupIcon( VBUF *buff )
+/**********************************/
 {
     if( SetupInfo.pm_group_icon != NULL ) {
-        strncpy( buff, SetupInfo.pm_group_icon, buff_len - 1 );
-        buff[buff_len - 1] = '\0';
+        VbufSetStr( buff, SetupInfo.pm_group_icon );
     } else {
-        buff[0] = '\0';
+        VbufRewind( buff );
     }
 }
 
-void SimGetPMGroup( char *buff, size_t buff_len )
-/***********************************************/
+void SimGetPMGroup( VBUF *buff )
+/******************************/
 {
     if( SetupInfo.pm_group_name != NULL ) {
-        strncpy( buff, SetupInfo.pm_group_name, buff_len - 1 );
-        buff[buff_len - 1] = '\0';
+        VbufSetStr( buff, SetupInfo.pm_group_name );
     } else {
-        buff[0] = '\0';
+        VbufRewind( buff );
     }
 }
 
@@ -2990,8 +2998,8 @@ int SimGetPMProgsNum( void )
     return( SetupInfo.pm_files.num );
 }
 
-static int SimFindDirForFile( char *buff )
-/****************************************/
+static int SimFindDirForFile( const char *buff )
+/**********************************************/
 {
     int         i;
     int         j;
@@ -3007,43 +3015,40 @@ static int SimFindDirForFile( char *buff )
 }
 
 
-int SimGetPMProgName( int parm, char *buff )
+int SimGetPMProgName( int parm, VBUF *buff )
 /******************************************/
 {
-    strcpy( buff, PMInfo[parm].filename );
+    VbufSetStr( buff, PMInfo[parm].filename );
     // Return directory index.
-    if( buff[0] == '+' ) {    // OS/2 shadow
-        return( SimFindDirForFile( &buff[1] ) );
+    if( VbufString( buff )[0] == '+' ) {    // OS/2 shadow
+        return( SimFindDirForFile( VbufString( buff ) + 1 ) );
     } else {
-        return( SimFindDirForFile( buff ) );
+        return( SimFindDirForFile( VbufString( buff ) ) );
     }
 }
 
-void SimGetPMParms( int parm, char *buff, size_t buff_len )
+void SimGetPMParms( int parm, VBUF *buff )
+/****************************************/
+{
+    VbufSetStr( buff, PMInfo[parm].parameters );
+}
+
+void SimGetPMDesc( int parm, VBUF *buff )
+/***************************************/
+{
+    VbufSetStr( buff, PMInfo[parm].desc );
+}
+
+int SimGetPMIconInfo( int parm, VBUF *buff, int *icon_pos )
 /*********************************************************/
 {
-    strncpy( buff, PMInfo[parm].parameters, buff_len - 1 );
-    buff[buff_len - 1] = '\0';
-}
-
-void SimGetPMDesc( int parm, char *buff, size_t buff_len )
-/********************************************************/
-{
-    strncpy( buff, PMInfo[parm].desc, buff_len - 1 );
-    buff[buff_len - 1] = '\0';
-}
-
-int SimGetPMIconInfo( int parm, char *buff, size_t buff_len, int *icon_pos )
-/**************************************************************************/
-{
     if( PMInfo[parm].icoioname == NULL ) {
-        ReplaceVars( buff, buff_len, PMInfo[parm].filename );
+        ReplaceVars( buff, PMInfo[parm].filename );
     } else {
-        strncpy( buff, PMInfo[parm].icoioname, buff_len - 1 );
-        buff[buff_len - 1] = '\0';
+        VbufSetStr( buff, PMInfo[parm].icoioname );
     }
     *icon_pos = PMInfo[parm].icon_pos;
-    return( SimFindDirForFile( buff ) );
+    return( SimFindDirForFile( VbufString( buff ) ) );
 }
 
 bool SimCheckPMCondition( int parm )
@@ -3058,18 +3063,16 @@ int SimGetPMGroupsNum( void )
     return( SetupInfo.all_pm_groups.num );
 }
 
-void SimGetPMGroupName( int parm, char *buff, size_t buff_len )
-/*************************************************************/
+void SimGetPMGroupName( int parm, VBUF *buff )
+/********************************************/
 {
-    strncpy( buff, AllPMGroups[parm].group, buff_len - 1 );
-    buff[buff_len - 1] = '\0';
+    VbufSetStr( buff, AllPMGroups[parm].group );
 }
 
-void SimGetPMGroupFName( int parm, char *buff, size_t buff_len )
-/**************************************************************/
+void SimGetPMGroupFName( int parm, VBUF *buff )
+/*********************************************/
 {
-    strncpy( buff, AllPMGroups[parm].group_file_name, buff_len - 1 );
-    buff[buff_len - 1] = '\0';
+    VbufSetStr( buff, AllPMGroups[parm].group_file_name );
 }
 
 /*
@@ -3084,22 +3087,20 @@ int SimNumProfile( void )
     return( SetupInfo.profile.num );
 }
 
-void SimProfInfo( int parm, char *app_name, char *key_name, char *value,
-                         char *file_name, char *hive_name )
+void SimProfInfo( int parm, VBUF *app_name, VBUF *key_name, VBUF *value,
+                         VBUF *file_name, VBUF *hive_name )
 /**********************************************************************/
 {
-    strcpy( app_name, ProfileInfo[parm].app_name );
-    strcpy( key_name, ProfileInfo[parm].key_name );
-    strcpy( value, ProfileInfo[parm].value );
-    if( ProfileInfo[parm].file_name == NULL ) {
-        file_name[0] = '\0';
-    } else {
-        strcpy( file_name, ProfileInfo[parm].file_name );
+    VbufSetStr( app_name, ProfileInfo[parm].app_name );
+    VbufSetStr( key_name, ProfileInfo[parm].key_name );
+    VbufSetStr( value, ProfileInfo[parm].value );
+    VbufRewind( file_name );
+    if( ProfileInfo[parm].file_name != NULL ) {
+        VbufConcStr( file_name, ProfileInfo[parm].file_name );
     }
-    if( ProfileInfo[parm].hive_name == NULL ) {
-        hive_name[0] = '\0';
-    } else {
-        strcpy( hive_name, ProfileInfo[parm].hive_name );
+    VbufRewind( hive_name );
+    if( ProfileInfo[parm].hive_name != NULL ) {
+        VbufConcStr( hive_name, ProfileInfo[parm].hive_name );
     }
 }
 
@@ -3116,14 +3117,14 @@ bool SimCheckProfCondition( int parm )
  */
 
 static append_mode SimGetConfigStringsFrom( struct config_info *array, int i,
-                           const char **new_var, char *buff, size_t buff_len )
+                                            VBUF *new_var, VBUF *buff )
 /****************************************************************************/
 {
     append_mode append;
     char        *p;
 
     append = AM_OVERWRITE;
-    ReplaceVars( buff, buff_len, array[i].value );
+    ReplaceVars( buff, array[i].value );
     p = array[i].var;
     if( *p == '+' ) {
         ++p;
@@ -3134,7 +3135,7 @@ static append_mode SimGetConfigStringsFrom( struct config_info *array, int i,
             append = AM_AFTER;
         }
     }
-    *new_var = p;
+    VbufSetStr( new_var, p );
     return( append );
 }
 
@@ -3144,10 +3145,10 @@ int SimNumAutoExec( void )
     return( SetupInfo.autoexec.num );
 }
 
-append_mode SimGetAutoExecStrings( int i, const char **new_var, char *buff, size_t buff_len )
-/*******************************************************************************************/
+append_mode SimGetAutoExecStrings( int i, VBUF *new_var, VBUF *buff )
+/*******************************************************************/
 {
-    return( SimGetConfigStringsFrom( AutoExecInfo, i, new_var, buff, buff_len ) );
+    return( SimGetConfigStringsFrom( AutoExecInfo, i, new_var, buff ) );
 }
 
 bool SimCheckAutoExecCondition( int parm )
@@ -3163,10 +3164,10 @@ int SimNumConfig( void )
 }
 
 
-append_mode SimGetConfigStrings( int i, const char **new_var, char *buff, size_t buff_len )
-/*****************************************************************************************/
+append_mode SimGetConfigStrings( int i, VBUF *new_var, VBUF *buff )
+/*****************************************************************/
 {
-    return( SimGetConfigStringsFrom( ConfigInfo, i, new_var, buff, buff_len ) );
+    return( SimGetConfigStringsFrom( ConfigInfo, i, new_var, buff ) );
 }
 
 bool SimCheckConfigCondition( int parm )
@@ -3182,10 +3183,10 @@ int SimNumEnvironment( void )
 }
 
 
-append_mode SimGetEnvironmentStrings( int i, const char **new_var, char *buff, size_t buff_len )
-/**********************************************************************************************/
+append_mode SimGetEnvironmentStrings( int i, VBUF *new_var, VBUF *buff )
+/**********************************************************************/
 {
-    return( SimGetConfigStringsFrom( EnvironmentInfo, i, new_var, buff, buff_len ) );
+    return( SimGetConfigStringsFrom( EnvironmentInfo, i, new_var, buff ) );
 }
 
 bool SimCheckEnvironmentCondition( int parm )
@@ -3260,16 +3261,16 @@ int SimNumLabels( void )
     return( SetupInfo.label.num );
 }
 
-void SimGetLabelDir( int parm, char *buff )
+void SimGetLabelDir( int parm, VBUF *buff )
 /*****************************************/
 {
-    strcpy( buff, LabelInfo[parm].dir );
+    VbufSetStr( buff, LabelInfo[parm].dir );
 }
 
-void SimGetLabelLabel( int parm, char *buff )
+void SimGetLabelLabel( int parm, VBUF *buff )
 /*******************************************/
 {
-    strcpy( buff, LabelInfo[parm].label );
+    VbufSetStr( buff, LabelInfo[parm].label );
 }
 
 
@@ -3297,24 +3298,25 @@ const char *SimGetUpgradeName( int parm )
  * =======================================================================
  */
 
-const char *SimGetTargetDriveLetter( int parm, char *buff, size_t buff_len )
-/**************************************************************************/
+const char *SimGetTargetDriveLetter( int parm, VBUF *buff )
+/*********************************************************/
 {
     char temp[_MAX_PATH];
 
-    SimTargetDir( parm, buff, buff_len );
-    if( buff[0] == '\0' ) {
-        getcwd( buff, buff_len );
-    } else if( buff[0] != '\\' || buff[1] != '\\' ) {
-        if( buff[0] == '\\' && buff[1] != '\\' ) {
-            strcpy( temp, buff );
-            getcwd( buff, buff_len );
-            strcat( buff, temp );
-        } else if( buff[1] != ':' ) {
-            getcwd( buff, buff_len );
+    SimTargetDir( parm, buff );
+    if( VbufLen( buff ) == 0 ) {
+        getcwd( temp, sizeof( temp ) );
+        VbufSetStr( buff, temp );
+    } else if( VbufString( buff )[0] != '\\' || VbufString( buff )[1] != '\\' ) {
+        if( VbufString( buff )[0] == '\\' && VbufString( buff )[1] != '\\' ) {
+            getcwd( temp, sizeof( temp ) );
+            VbufPrepStr( buff, &temp );
+        } else if( VbufString( buff )[1] != ':' ) {
+            getcwd( temp, sizeof( temp ) );
+            VbufSetStr( buff, temp );
         }
     }
-    return( buff );
+    return( VbufString( buff ) );
 }
 
 
@@ -3458,7 +3460,7 @@ void SimCalcAddRemove( void )
                 _splitpath( file->name, NULL, NULL, NULL, ext );
                 if( stricmp( ext, ".DLL" ) == 0 ) {
                     char        file_desc[MAXBUF];
-                    char        dir[_MAX_PATH];
+                    VBUF        dir;
                     char        disk_desc[MAXBUF];
                     char        file_name[_MAX_FNAME + _MAX_EXT];
                     int         disk_num;
@@ -3466,11 +3468,12 @@ void SimCalcAddRemove( void )
                     bool        flag;
                     int         m;
 
-                    SimFileDir( i, dir, sizeof( dir ) );
+                    VbufInit( &dir );
+                    SimFileDir( i, &dir );
                     SimGetFileDesc( i, file_desc );
                     SimGetFileName( i, file_name );
                     disk_num = SimFileDisk( i, disk_desc );
-                    _makepath( dst_path, NULL, dir, file_desc, NULL );
+                    _makepath( dst_path, NULL, VbufString( &dir ), file_desc, NULL );
 
                     flag = false;
                     for( m = 0; m < SetupInfo.dlls_to_count.num; m++ ) {
@@ -3533,7 +3536,7 @@ bool SimCalcTargetSpaceNeeded( void )
     int                 i;
     gui_mcursor_handle  old_cursor;
     const char          *temp;
-    char                temp_path[_MAX_PATH];
+    VBUF                temp_path;
 
     /* assume power of 2 */
 
@@ -3543,16 +3546,20 @@ bool SimCalcTargetSpaceNeeded( void )
         NeedGetDiskSizes = false;
     }
     old_cursor = GUISetMouseCursor( GUI_HOURGLASS_CURSOR );
+    VbufInit( &temp_path );
     for( i = 0; i < SetupInfo.target.num; ++i ) {
-        temp = SimGetTargetDriveLetter( i, temp_path, sizeof( temp_path ) );
-        if( temp == NULL )
+        temp = SimGetTargetDriveLetter( i, &temp_path );
+        if( temp == NULL ) {
+            VbufFree( &temp_path );
             return( false );
+        }
         strcpy( TargetInfo[i].temp_disk, temp );
         TargetInfo[i].space_needed = 0;
         TargetInfo[i].max_tmp_file = 0;
         TargetInfo[i].num_files = 0;
         TargetInfo[i].needs_update = false;
     }
+    VbufFree( &temp_path );
     for( i = 0; i < SetupInfo.dirs.num; ++i ) {
         DirInfo[i].used = false;
         DirInfo[i].num_existing = 0;
@@ -3582,11 +3589,11 @@ static void AddFileName( int i, char *buffer, int rename )
 }
 
 
-static void GetSourcePath( int i, char *buff, size_t buff_len )
-/*************************************************************/
+static void GetSourcePath( int i, VBUF *buff )
+/********************************************/
 {
-    ReplaceVars( buff, buff_len, GetVariableStrVal( "Srcdir" ) );
-    strcat( buff, PatchInfo[i].srcfile );
+    ReplaceVars( buff, GetVariableStrVal( "Srcdir" ) );
+    VbufConcStr( buff, PatchInfo[i].srcfile );
 }
 
 
@@ -3832,15 +3839,15 @@ bool PatchFiles( void )
     // only this function will be called )
 
     int                 i;
-    char                destfullpath[_MAX_PATH];
-    char                srcfullpath[_MAX_PATH];
+    VBUF                destfullpath;
+    VBUF                srcfullpath;
     gui_message_return  guiret;
-    int                 count;  // count successful patches
+    int                 count;      // count successful patches
     const char          *appname;
-    bool                go_ahead;
     char                exetype[3];
     log_state           logstate;
     log_state           *log;
+    bool                ok;
 
 
     // note:  Up until this point, PatchInfo[x].destdir contains an
@@ -3867,128 +3874,121 @@ bool PatchFiles( void )
         log->log_file = NULL;
         log->do_log = false;
     }
-
-    for( i = 0; i < SetupInfo.patch_files.num; i++ ) {
-        destfullpath[0] = srcfullpath[0] = '\0';
+    VbufInit( &destfullpath );
+    VbufInit( &srcfullpath );
+    ok = true;
+    for( i = 0; ok && i < SetupInfo.patch_files.num; i++ ) {
         if( !EvalCondition( PatchInfo[i].condition ) ) {
             StatusAmount( i + 1, SetupInfo.patch_files.num );
             continue;
         }
+        VbufRewind( &srcfullpath );
+        VbufRewind( &destfullpath );
         switch( PatchInfo[i].command ) {
-
         case PATCH_FILE:
-            GetSourcePath( i, srcfullpath, sizeof( srcfullpath ) );
-            if( access( srcfullpath, R_OK ) == 0 ) {
+            GetSourcePath( i, &srcfullpath );
+            if( access( VbufString( &srcfullpath ), R_OK ) == 0 ) {
+                PATCH_RET_CODE ret;
+
                 patchDirIndex = i;       // used in secondary search during patch
-                go_ahead = SecondaryPatchSearch( PatchInfo[i].destfile, destfullpath );
-                if( go_ahead ) {
+                if( SecondaryPatchSearch( PatchInfo[i].destfile, destfullpath ) ) {
                     if( PatchInfo[i].exetype[0] != '.' &&
-                        ExeType( destfullpath, exetype ) &&
+                        ExeType( VbufString( &destfullpath ), exetype ) &&
                         strcmp( exetype, PatchInfo[i].exetype ) != 0 ) {
-                        go_ahead = false;
+                        break;
                     }
                 }
-
-                if( go_ahead ) {
-                    PATCH_RET_CODE ret;
-
-                    StatusLines( STAT_PATCHFILE, destfullpath );
-                    StatusShow( true );
-                    LogWriteMsgStr( log, "IDS_UNPACKING", destfullpath );
-                    ret = DoPatchFile( srcfullpath, destfullpath, 0 );
-                    if( ret == PATCH_RET_OKAY ) {
-                        ++count;
-                        LogWriteMsg( log, "IDS_SUCCESS" );
+                StatusLines( STAT_PATCHFILE, VbufString( &destfullpath ) );
+                StatusShow( true );
+                LogWriteMsgStr( log, "IDS_UNPACKING", VbufString( &destfullpath ) );
+                ret = DoPatchFile( VbufString( &srcfullpath ), VbufString( &destfullpath ), 0 );
+                if( ret == PATCH_RET_OKAY ) {
+                    ++count;
+                    LogWriteMsg( log, "IDS_SUCCESS" );
+                    break;
+                } else {
+                    LogWriteMsg( log, "IDS_FAILED_UNPACKING" );
+                    if( !PatchErrorDialog( ret, i ) ) {
+                        LogWriteMsg( log, "IDS_PATCHABORT" );
+                        ok = false;
                         break;
-                    } else {
-                        LogWriteMsg( log, "IDS_FAILED_UNPACKING" );
-                        if( !PatchErrorDialog( ret, i ) ) {
-                            LogWriteMsg( log, "IDS_PATCHABORT" );
-                            LogFileClose( log );
-                            return( false );
-                        }
                     }
                 }
             }
             break;
-
         case PATCH_COPY_FILE:
-            GetSourcePath( i, srcfullpath, sizeof( srcfullpath ) );
-            GetDestDir( i, destfullpath, sizeof( destfullpath ) );
+            GetSourcePath( i, &srcfullpath );
+            GetDestDir( i, &destfullpath );
 
             // get rid of trailing slash: OS/2 needs this for access(...) to work
             if( destfullpath[strlen( destfullpath ) - 1] == '\\' ) {
                 destfullpath[strlen( destfullpath ) - 1] = '\0';
             }
 
-            if( access( destfullpath, F_OK ) == 0 ) {
-                AddFileName( i, destfullpath, 0 );
-                StatusLines( STAT_CREATEFILE, destfullpath );
+            if( access( VbufString( &destfullpath ), F_OK ) == 0 ) {
+                AddFileName( i, VbufString( &destfullpath ), 0 );
+                StatusLines( STAT_CREATEFILE, VbufString( &destfullpath ) );
                 StatusShow( true );
-                if( access( srcfullpath, R_OK ) == 0 ) {
-                    LogWriteMsgStr( log, "IDS_UNPACKING", destfullpath );
-                    if( DoCopyFile( srcfullpath, destfullpath, false ) == CFE_NOERROR ) {
+                if( access( VbufString( &srcfullpath ), R_OK ) == 0 ) {
+                    LogWriteMsgStr( log, "IDS_UNPACKING", VbufString( &destfullpath ) );
+                    if( DoCopyFile( VbufString( &srcfullpath ), VbufString( &destfullpath ), false ) == CFE_NOERROR ) {
                         ++count;
                         LogWriteMsg( log, "IDS_SUCCESS" );
                         break;
                     }
                     LogWriteMsg( log, "IDS_FAILED_UNPACKING" );
-                    if( !CopyErrorDialog( CFE_ERROR, i, srcfullpath ) ) {
+                    if( !CopyErrorDialog( CFE_ERROR, i, VbufString( &srcfullpath ) ) ) {
                         LogWriteMsg( log, "IDS_PATCHABORT" );
-                        LogFileClose( log );
-                        return( false );
+                        ok = false
+                        break;
                     }
                 }
             }
             break;
-
         case PATCH_DELETE_FILE:
-            GetDestDir( i, destfullpath, sizeof( destfullpath ) );
-            AddFileName( i, destfullpath, 0 );
-            StatusLines( STAT_DELETEFILE, destfullpath );
+            GetDestDir( i, &destfullpath );
+            AddFileName( i, VbufString( &destfullpath ), 0 );
+            StatusLines( STAT_DELETEFILE, VbufString( &destfullpath ) );
             StatusShow( true );
-            if( access( destfullpath, F_OK | W_OK ) == 0 ) {
-                LogWriteMsgStr( log, "IDS_DELETING", destfullpath );
-                if( DoDeleteFile( destfullpath ) ) {
+            if( access( VbufString( &destfullpath ), F_OK | W_OK ) == 0 ) {
+                LogWriteMsgStr( log, "IDS_DELETING", VbufString( &destfullpath ) );
+                if( DoDeleteFile( VbufString( &destfullpath ) ) ) {
                     ++count;
                     LogWriteMsg( log, "IDS_SUCCESS" );
                 } else {
                     LogWriteMsg( log, "IDS_FAILED_DELETING" );
-                    guiret = MsgBox( NULL, "IDS_DELETEFILEERROR", GUI_YES_NO,
-                                     destfullpath );
+                    guiret = MsgBox( NULL, "IDS_DELETEFILEERROR", GUI_YES_NO, VbufString( &destfullpath ) );
                     if( guiret == GUI_RET_NO ) {
                         LogWriteMsg( log, "IDS_PATCHABORT" );
-                        LogFileClose( log );
-                        return( false );
+                        ok = false
+                        break;
                     }
                 }
             }
             break;
-
         case PATCH_MAKE_DIR:
-            ReplaceVars( destfullpath, sizeof( destfullpath ), PatchInfo[i].destdir );
+            ReplaceVars( &destfullpath, PatchInfo[i].destdir );
 
-            StatusLines( STAT_CREATEDIRECTORY, destfullpath );
+            StatusLines( STAT_CREATEDIRECTORY, VbufString( &destfullpath ) );
             StatusShow( true );
-            if( access( destfullpath, F_OK ) != 0 ) {
-                LogWriteMsgStr( log, "IDS_CREATINGDIR", destfullpath );
+            if( access( VbufString( &destfullpath ), F_OK ) != 0 ) {
+                LogWriteMsgStr( log, "IDS_CREATINGDIR", VbufString( &destfullpath ) );
 #ifdef __UNIX__
-                if( mkdir( destfullpath, PMODE_RWX ) == 0 ) {
+                if( mkdir( VbufString( &destfullpath ), PMODE_RWX ) == 0 ) {
 #else
-                if( mkdir( destfullpath ) == 0 ) {
+                if( mkdir( VbufString( &destfullpath ) ) == 0 ) {
 #endif
                     LogWriteMsg( log, "IDS_SUCCESS" );
                 } else {
-                    guiret = MsgBox( NULL, "IDS_CREATEDIRERROR", GUI_YES_NO, destfullpath );
+                    guiret = MsgBox( NULL, "IDS_CREATEDIRERROR", GUI_YES_NO, VbufString( &destfullpath ) );
                     if( guiret == GUI_RET_NO ) {
                         LogWriteMsg( log, "IDS_FAILED_CREATINGDIR" );
-                        LogFileClose( log );
-                        return( false );
+                        ok = false
+                        break;
                     }
                 }
             }
             break;
-
         default:
             /* Something went wrong, but what can we do about it now? */
             break;
@@ -3997,23 +3997,22 @@ bool PatchFiles( void )
         StatusAmount( i + 1, SetupInfo.patch_files.num );
         if( PatchStatusCancelled() ) {
             LogWriteMsg( log, "IDS_PATCHABORT" );
-            LogFileClose( log );
-            return( false );
+            ok = false;
         }
     }
+    VbufFree( &destfullpath );
     PatchStatusCancelled(); /* make sure display gets updated */
 
-    if( count == 0 ) {
+    if( ok && count == 0 ) {
         LogWriteMsg( log, "IDS_NO_FILES_PATCHED" );
     }
     LogFileClose( log );
-
-    if( count == 0 ) {
+    if( ok && count == 0 ) {
         // no files patched successfully
         MsgBox( NULL, "IDS_NO_FILES_PATCHED", GUI_OK );
-        return( false );
+        ok = false;
     }
-    return( true );
+    return( ok );
 }
 
 
@@ -4417,13 +4416,14 @@ void FreeAllStructs( void )
 }
 
 
-bool SimGetSpawnCommand( char *buff, size_t buff_len, int i )
-/***********************************************************/
+bool SimGetSpawnCommand( VBUF *buff, int i )
+/******************************************/
 {
-    buff[0] = '\0';
-    if( SpawnInfo[i].command == NULL || SpawnInfo[i].command[0] == '\0' )
+    if( SpawnInfo[i].command == NULL || SpawnInfo[i].command[0] == '\0' ) {
+        VbufRewind( buff );
         return( true );
-    ReplaceVars( buff, buff_len, SpawnInfo[i].command );
+    }
+    ReplaceVars( buff, SpawnInfo[i].command );
     return( false );
 }
 

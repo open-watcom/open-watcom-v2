@@ -142,41 +142,38 @@ static bool SetupOperations( void )
 
 #define MAX_DIAGS 20
 
-static bool DirParamStack( char **inf_name, char **src_path, DIR_PARAM_STACK_OPS function )
-/*****************************************************************************************/
+static bool DirParamStack( VBUF *inf_name, VBUF *src_path, DIR_PARAM_STACK_OPS function )
+/***************************************************************************************/
 {
     // Not really a stack; stores only one "node"
 
-    static char *       old_inf_name = NULL;
-    static char *       old_src_path = NULL;
+    static VBUF old_inf_name = VBUF_INIT_STRUCT;
+    static VBUF old_src_path = VBUF_INIT_STRUCT;
+    static bool isempty = true;
 
     if( function == Stack_Push ) {
         // Push values on "stack"
-        old_inf_name = *inf_name;
-        old_src_path = *src_path;
-
-        *inf_name = GUIMemAlloc( _MAX_PATH );
-        if( *inf_name == NULL ) {
-            return( false );
+        if( !isempty ) {
+            isempty = false;
+            VbufFree( &old_inf_name );
+            VbufFree( &old_src_path );
         }
-        *src_path = GUIMemAlloc( _MAX_PATH );
-        if( *src_path == NULL ) {
-            GUIMemFree( *inf_name );
-            return( false );
-        }
+        VbufSetVbuf( &old_inf_name, inf_name );
+        VbufSetVbuf( &old_src_path, src_path );
         return( true );
     } else if( function == Stack_Pop ) {
         // Pop
-        GUIMemFree( *inf_name );
-        GUIMemFree( *src_path );
-        *inf_name = old_inf_name;
-        *src_path = old_src_path;
-        old_inf_name = NULL;
-        old_src_path = NULL;
+        VbufSetVbuf( inf_name, &old_inf_name );
+        VbufSetVbuf( src_path, &old_src_path );
+        if( !isempty ) {
+            isempty = true;
+            VbufFree( &old_inf_name );
+            VbufFree( &old_src_path );
+        }
         return( true );
     } else {
         // IsEmpty
-        return( old_inf_name == NULL );
+        return( isempty );
     }
 }
 
@@ -293,13 +290,13 @@ void GUImain( void )
 {
     int                 argc = 0;
     char                **argv = NULL;
-    char                *dir;
-    char                *drive;
-    char                *inf_name;
-    char                *src_path;
-    char                *arc_name;
-    char                *new_inf;
-    char                current_dir[_MAX_PATH];
+    VBUF                dir;
+    VBUF                drive;
+    VBUF                inf_name;
+    VBUF                src_path;
+    VBUF                arc_name;
+    VBUF                new_inf;
+    VBUF                current_dir;
     bool                ok;
     dlg_state           state;
 
@@ -308,17 +305,25 @@ void GUImain( void )
 
     // initialize paths and env. vbls.
 
+    VbufInit( &new_inf );
     if( SetupPreInit( argc, argv ) ) {
         SetupInit();
         InitGlobalVarList();
+        VbufInit( &inf_name );
+        VbufInit( &src_path );
+        VbufInit( &arc_name );
         if( GetDirParams( argc, argv, &inf_name, &src_path, &arc_name ) ) {
             StatusInit();
             GUIDrainEvents();   // push things along
-            FileInit( arc_name );
-            strcpy( current_dir, src_path );
-            ConcatDirSep( current_dir );
+            FileInit( VbufString( &arc_name ) );
+            VbufInit( &new_inf );
+            VbufInit( &current_dir );
+            VbufInit( &drive );
+            VbufInit( &dir );
+            VbufConcVbuf( &current_dir, &src_path );
+            VbufAddDirSep( &current_dir );
             ok = false;
-            while( !ok && InitInfo( inf_name, src_path ) ) {
+            while( !ok && InitInfo( &inf_name, &src_path ) ) {
 
                 ok = DoMainLoop( &state );
 
@@ -345,40 +350,36 @@ void GUImain( void )
                         // push current script on stack
                         DirParamStack( &inf_name, &src_path, Stack_Push );          // "Push"
                     }
-                    new_inf = GUIMemAlloc( _MAX_PATH );
-                    drive = GUIMemAlloc( _MAX_DRIVE );
-                    dir = GUIMemAlloc( _MAX_PATH );
-                    ok = ( new_inf != NULL && drive != NULL && dir != NULL );
-                    if( ok ) {
-                        // construct new path relative to previous
-                        ReplaceVars( new_inf, _MAX_PATH, GetVariableStrVal( "SetupPath" ) );
-                        _splitpath( current_dir, drive, dir, NULL, NULL );
-                        _makepath( inf_name, drive, dir, new_inf, NULL );
-                        _splitpath( inf_name, drive, dir, NULL, NULL );
-                        _makepath( src_path, drive, dir, NULL, NULL );
-                        RemoveDirSep( src_path );
-//                        strcpy( current_dir, src_path );
-//                        ConcatDirSep( current_dir );
-                    }
-                    GUIMemFree( new_inf );
-                    GUIMemFree( drive );
-                    GUIMemFree( dir );
-                } /* if */
-
+                    // construct new path relative to previous
+                    ReplaceVars( &new_inf, GetVariableStrVal( "SetupPath" ) );
+                    VbufSplitpath( VbufString( &current_dir ), &drive, &dir, NULL, NULL );
+                    VbufMakepath( &inf_name, VbufString( &drive ), VbufString( &dir ), VbufString( &new_inf ), NULL );
+                    VbufSplitpath( VbufString( &inf_name ), &drive, &dir, NULL, NULL );
+                    VbufMakepath( &src_path, VbufString( &drive ), VbufString( &dir ), NULL, NULL );
+                    VbufRemDirSep( &src_path );
+                }
                 FreeDefaultDialogs();
                 FreeAllStructs();
                 FreeGlobalVarList( false );
                 ConfigModified = false;
             } /* while */
 
+            VbufFree( &dir );
+            VbufFree( &drive );
+            VbufFree( &current_dir );
+            VbufFree( &new_inf );
             FileFini();
             FreeDefaultDialogs();
             FreeAllStructs();
             StatusFini();
         }
-        FreeDirParams( &inf_name, &src_path, &arc_name );
+        FreeDirParams();
+        VbufFree( &arc_name );
+        VbufFree( &src_path );
+        VbufFree( &inf_name );
         FreeGlobalVarList( true );
         SetupFini();
     }
+    VbufFree( &new_inf );
     GUIMemClose();
 }

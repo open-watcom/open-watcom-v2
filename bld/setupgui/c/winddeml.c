@@ -48,14 +48,14 @@
 
 #define DDE_WAITTIME    3000
 
-static bool ddeSendCommand( DWORD ddeinst, HCONV hconv, char *buff )
+static bool ddeSendCommand( DWORD ddeinst, HCONV hconv, VBUF *buff )
 /******************************************************************/
 {
     HDDEDATA    hData;
     HDDEDATA    hrc;
 
     // Note data handle is freed by call to DdeClientTransaction
-    hData = DdeCreateDataHandle( ddeinst, (LPBYTE)buff, (DWORD)( strlen( buff ) + 1 ), 0, (HSZ)NULL, 0L, 0L );
+    hData = DdeCreateDataHandle( ddeinst, (LPBYTE)VbufString( buff ), (DWORD)( VbufLen( buff ) + 1 ), 0, (HSZ)NULL, 0L, 0L );
     if( hData == (HDDEDATA)NULL ) {
         return( false );
     }
@@ -68,10 +68,10 @@ static bool ddeSendCommand( DWORD ddeinst, HCONV hconv, char *buff )
     return( true );
 }
 
-static bool ddeCreateGroup( DWORD ddeinst, HCONV hconv, const char *group, const char *fname )
-/********************************************************************************************/
+static bool ddeCreateGroup( DWORD ddeinst, HCONV hconv, VBUF *group, VBUF *fname )
+/********************************************************************************/
 {
-    char    buff[_MAX_PATH];
+    VBUF    buff;
     bool    ok;
 
     // send "[CreateGroup(%s,%s)]"
@@ -79,76 +79,113 @@ static bool ddeCreateGroup( DWORD ddeinst, HCONV hconv, const char *group, const
     // send "[CreateGroup(%s,0)]"
     //   or
     // send "[CreateGroup(%s)]"
-    if( fname[0] != '\0' ) {
-        sprintf( buff, "[CreateGroup(%s,%s)]", group, fname );
-    } else {
+    VbufInit( &buff );
+    VbufConcStr( &buff, "[CreateGroup(" );
+    VbufConcVbuf( &buff, group );
+    if( VbufLen( fname ) > 0 ) {
+        VbufConcChr( &buff, ',' );
+        VbufConcVbuf( &buff, fname );
 #if defined( __NT__ )
-        sprintf( buff, "[CreateGroup(%s,0)]", group );  // create a personal group
-#else
-        sprintf( buff, "[CreateGroup(%s)]", group );
+    } else {
+        VbufConcStr( &buff, ",0" );     // create a personal group
 #endif
     }
-    ok = ddeSendCommand( ddeinst, hconv, buff );
+    VbufConcStr( &buff, ")]" );
+    ok = ddeSendCommand( ddeinst, hconv, &buff );
+    VbufFree( &buff );
     return( ok );
 }
 
-static bool ddeDeleteGroup( DWORD ddeinst, HCONV hconv, const char *group )
-/****pp*******************************************************************/
+static bool ddeDeleteGroup( DWORD ddeinst, HCONV hconv, VBUF *group )
+/****pp*************************************************************/
 {
-    char    buff[_MAX_PATH];
+    VBUF    buff;
     bool    ok;
 
     // send "[DeleteGroup(%s)]"
-    sprintf( buff, "[DeleteGroup(%s)]", group );
-    ok = ddeSendCommand( ddeinst, hconv, buff );
+    VbufInit( &buff );
+    VbufConcStr( &buff, "[CreateGroup(" );
+    VbufConcVbuf( &buff, group );
+    VbufConcStr( &buff, ")]" );
+    ok = ddeSendCommand( ddeinst, hconv, &buff );
+    VbufFree( &buff );
     return( ok );
 }
 
-static bool ddeGroupReplaceItem( DWORD ddeinst, HCONV hconv, const char *prog_desc )
-/**********************************************************************************/
+static bool ddeGroupReplaceItem( DWORD ddeinst, HCONV hconv, VBUF *prog_desc )
+/****************************************************************************/
 {
-    char    buff[_MAX_PATH];
+    VBUF    buff;
     bool    ok;
 
     // send "[ReplaceItem(%s)]"
-    sprintf( buff, "[ReplaceItem(%s)]", prog_desc );
-    ok = ddeSendCommand( ddeinst, hconv, buff );
+    VbufInit( &buff );
+    VbufConcStr( &buff, "[ReplaceItem(" );
+    VbufConcVbuf( &buff, prog_desc );
+    VbufConcStr( &buff, ")]" );
+    ok = ddeSendCommand( ddeinst, hconv, &buff );
+    VbufFree( &buff );
     return( ok );
 }
 
-static bool ddeGroupAddItem1( DWORD ddeinst, HCONV hconv, const char *prog_name,
-            const char *prog_desc, const char *prog_args, const char *working_dir,
-                                const char *icon_name, int icon_number )
+static bool ddeGroupAddItem1( DWORD ddeinst, HCONV hconv, VBUF *prog_name,
+            VBUF *prog_desc, VBUF *prog_args, VBUF *working_dir,
+                                VBUF *icon_name, int icon_number )
 /********************************************************************************/
 {
-    char    buff[_MAX_PATH];
+    VBUF    buff;
     bool    ok;
 
     // send "[AddItem(%s,%s,%s,%d,-1,-1,%s)]"
-    sprintf( buff, "[AddItem(%s%s,%s,%s,%d,-1,-1,%s)]", prog_name, prog_args, prog_desc, icon_name, icon_number, working_dir );
-    ok = ddeSendCommand( ddeinst, hconv, buff );
+    VbufInit( &buff );
+    VbufConcStr( &buff, "[AddItem(" );
+    VbufConcVbuf( &buff, prog_name );
+    VbufConcVbuf( &buff, prog_args );
+    VbufConcChr( &buff, ',' );
+    VbufConcVbuf( &buff, prog_desc );
+    VbufConcChr( &buff, ',' );
+    VbufConcVbuf( &buff, icon_name );
+    VbufConcChr( &buff, ',' );
+    VbufConcInteger( &buff, icon_number );
+    VbufConcStr( &buff, ",-1,-1," );
+    VbufConcVbuf( &buff, working_dir );
+    VbufConcStr( &buff, ")]" );
+    ok = ddeSendCommand( ddeinst, hconv, &buff );
+    VbufFree( &buff );
     return( ok );
 }
 
 #if defined( __WINDOWS__ )
-static bool ddeGroupAddItem2( DWORD ddeinst, HCONV hconv, const char *prog_name,
-            const char *prog_desc, const char *prog_args, const char *working_dir,
-                                const char *icon_name, int icon_number )
+static bool ddeGroupAddItem2( DWORD ddeinst, HCONV hconv, VBUF *prog_name,
+            VBUF *prog_desc, VBUF *prog_args, VBUF *working_dir,
+                                VBUF *icon_name, int icon_number )
 /********************************************************************************/
 {
-    char    buff[_MAX_PATH];
+    VBUF    buff;
     bool    ok;
 
     // send "[AddItem(%s%s,%s,%s,%d)]"
-    sprintf( buff, "[AddItem(%s%s%s,%s,%s,%d)]", working_dir, prog_name, prog_args, prog_desc, icon_name, icon_number );
-    ok = ddeSendCommand( ddeinst, hconv, buff );
+    VbufInit( &buff );
+    VbufConcStr( &buff, "[AddItem(" );
+    VbufConcVbuf( &buff, working_dir );
+    VbufConcVbuf( &buff, prog_name );
+    VbufConcVbuf( &buff, prog_args );
+    VbufConcChr( &buff, ',' );
+    VbufConcVbuf( &buff, prog_desc );
+    VbufConcChr( &buff, ',' );
+    VbufConcVbuf( &buff, icon_name );
+    VbufConcChr( &buff, ',' );
+    VbufConcInteger( &buff, icon_number );
+    VbufConcStr( &buff, ")]" );
+    ok = ddeSendCommand( ddeinst, hconv, &buff );
+    VbufFree( &buff );
     return( ok );
 }
 #endif
 
-static bool ddeGroupAddItem( DWORD ddeinst, HCONV hconv, const char *prog_name,
-            const char *prog_desc, const char *prog_args, const char *working_dir,
-                                const char *icon_name, int icon_number )
+static bool ddeGroupAddItem( DWORD ddeinst, HCONV hconv, VBUF *prog_name,
+            VBUF *prog_desc, VBUF *prog_args, VBUF *working_dir,
+                                VBUF *icon_name, int icon_number )
 /********************************************************************************/
 {
     bool    ok;
@@ -182,13 +219,13 @@ static bool UseDDE( bool uninstall )
     int                 num_installed;
     int                 num_total_install;
     bool                ok;
-    char                group[_MAX_PATH];
-    char                prog_name[_MAX_PATH];
-    char                prog_desc[_MAX_PATH];
-    char                prog_args[_MAX_PATH];
-    char                icon_name[_MAX_PATH];
-    char                working_dir[_MAX_PATH];
-    char                tmp[_MAX_PATH];
+    VBUF                group;
+    VBUF                prog_name;
+    VBUF                prog_desc;
+    VBUF                prog_args;
+    VBUF                icon_name;
+    VBUF                working_dir;
+    VBUF                tmp;
     HWND                hwnd_pm;
     DWORD               ddeinst = 0; // Important that this is initially 0
     UINT                rc;
@@ -197,9 +234,11 @@ static bool UseDDE( bool uninstall )
     HCONV               hconv;
     char                progman[] = "PROGMAN";
 
+    VbufInit( &group );
     if( !uninstall ) {
-        SimGetPMGroup( group, sizeof( group ) );
-        if( group[0] == '\0' ) {
+        SimGetPMGroup( &group );
+        if( VbufLen( &group ) == 0 ) {
+            VbufFree( &group );
             return( true );
         }
     }
@@ -209,6 +248,7 @@ static bool UseDDE( bool uninstall )
      */
     rc = DdeInitialize( &ddeinst, NULL, APPCMD_CLIENTONLY, 0L );
     if( rc != 0 ) {
+        VbufFree( &group );
         return( false );
     }
     happ = DdeCreateStringHandle( ddeinst, progman, CP_WINANSI );
@@ -216,6 +256,12 @@ static bool UseDDE( bool uninstall )
     hconv = DdeConnect( ddeinst, happ, htopic, NULL );
     ok = ( hconv != (HCONV)NULL );
     if( ok ) {
+        VbufInit( &working_dir );
+        VbufInit( &prog_name );
+        VbufInit( &prog_desc );
+        VbufInit( &prog_args );
+        VbufInit( &icon_name );
+        VbufInit( &tmp );
         /*
          * Disable the Program Manager so that the user can't work with it
          * while we are doing our stuff.
@@ -229,12 +275,12 @@ static bool UseDDE( bool uninstall )
             // Delete the PM Group box
             num_groups = SimGetPMGroupsNum();
             for( i = 0; i < num_groups; i++ ) {
-                SimGetPMGroupName( i, group, sizeof( group ) );
-                if( *group != '\0' ) {
+                SimGetPMGroupName( i, &group );
+                if( VbufLen( &group ) > 0 ) {
                     /*
                      * Delete the PM Group box
                      */
-                    ok = ddeDeleteGroup( ddeinst, hconv, group );
+                    ok = ddeDeleteGroup( ddeinst, hconv, &group );
                 }
             }
         } else {
@@ -243,12 +289,12 @@ static bool UseDDE( bool uninstall )
              * (Don't do this for SQL install, since user may install
              * the server, and then install the client)
              */
-            ok = ddeDeleteGroup( ddeinst, hconv, group );
+            ok = ddeDeleteGroup( ddeinst, hconv, &group );
             /*
              * re-Create the PM Group box.
              */
-            SimGetPMGroupFileName( tmp, sizeof( tmp ) );
-            ok = ddeCreateGroup( ddeinst, hconv, group, tmp );
+            SimGetPMGroupFileName( &tmp );
+            ok = ddeCreateGroup( ddeinst, hconv, &group, &tmp );
 
             /*
              * Add the individual PM files to the Group box.
@@ -267,50 +313,48 @@ static bool UseDDE( bool uninstall )
                 if( !SimCheckPMCondition( i ) ) {
                     continue;
                 }
-                SimGetPMDesc( i, prog_desc, sizeof( prog_desc ) );
-                dir_index = SimGetPMProgName( i, prog_name );
-                if( strcmp( prog_name, "GROUP" ) == 0 ) {
+                SimGetPMDesc( i, &prog_desc );
+                dir_index = SimGetPMProgName( i, &prog_name );
+                if( strcmp( VbufString( &prog_name ), "GROUP" ) == 0 ) {
                     /*
                      * Delete the PM Group box to get rid of stale icons
                      */
-                    ok = ddeDeleteGroup( ddeinst, hconv, prog_desc );
+                    ok = ddeDeleteGroup( ddeinst, hconv, &prog_desc );
                     /*
                      * Creating a new group
                      */
-                    SimGetPMParms( i, prog_args, sizeof( prog_args ) );
-                    ok = ddeCreateGroup( ddeinst, hconv, prog_desc, prog_args );
+                    SimGetPMParms( i, &prog_args );
+                    ok = ddeCreateGroup( ddeinst, hconv, &prog_desc, &prog_args );
                 } else {
                     /*
                      * Adding item to group
                      */
                     if( dir_index == -1 ) {
-                        working_dir[0] = '\0';
-                        ReplaceVars( tmp, sizeof( tmp ), prog_name );
-                        strcpy( prog_name, tmp );
+                        VbufRewind( &working_dir );
+                        ReplaceVars( &prog_name, NULL );
                     } else {
-                        SimDirNoSlash( dir_index, working_dir, sizeof( working_dir ) );
+                        SimDirNoSlash( dir_index, &working_dir );
                     }
                     /*
                      * Get parameters
                      */
-                    SimGetPMParms( i, tmp, sizeof( tmp ) );
-                    ReplaceVars( prog_args, sizeof( prog_args ), tmp );
+                    SimGetPMParms( i, &prog_args );
+                    ReplaceVars( &prog_args, NULL );
                     /*
                      * Append the subdir where the icon file is and the icon file's name.
                      */
-                    dir_index = SimGetPMIconInfo( i, icon_name, sizeof( icon_name ), &icon_number );
+                    dir_index = SimGetPMIconInfo( i, &icon_name, &icon_number );
                     if( icon_number == -1 ) {
                         icon_number = 0;
                     }
                     if( dir_index != -1 ) {
-                        SimGetDir( dir_index, tmp, sizeof( tmp ) );
-                        strcat( tmp, icon_name );
-                        strcpy( icon_name, tmp );
+                        SimGetDir( dir_index, &tmp );
+                        VbufPrepVbuf( &icon_name, &tmp );
                     }
                     /*
                      * Add the new file to the already created PM Group.
                      */
-                    ok = ddeGroupAddItem( ddeinst, hconv, prog_name, prog_desc, prog_args, working_dir, icon_name, icon_number );
+                    ok = ddeGroupAddItem( ddeinst, hconv, &prog_name, &prog_desc, &prog_args, &working_dir, &icon_name, icon_number );
                 }
                 ++num_installed;
                 StatusAmount( num_installed, num_total_install );
@@ -332,10 +376,17 @@ static bool UseDDE( bool uninstall )
          * (only if running from CD)removing this call seems to be an OK workaround
          */
 //         DdeDisconnect( hconv );
+        VbufFree( &tmp );
+        VbufFree( &icon_name );
+        VbufFree( &prog_args );
+        VbufFree( &prog_desc );
+        VbufFree( &prog_name );
+        VbufFree( &working_dir );
     }
     DdeFreeStringHandle( ddeinst, happ );
     DdeFreeStringHandle( ddeinst, htopic );
     DdeUninitialize( ddeinst );
+    VbufFree( &group );
     return( ok );
 }
 
@@ -350,47 +401,56 @@ static bool UseDDE( bool uninstall )
 // Directory names cannot have forward slashes in them, and probably other
 // characters. This is a problem for "C/C++". Not all platforms are restricted
 // like this, so just munge the file name here.
-static void munge_fname( char *buff )
+static void munge_fname( VBUF *buff )
 {
-    char    *s;
-    char    buff2[_MAX_PATH];
+    const char  *s;
+    VBUF        tmp;
+    size_t      len;
 
-    s = buff;
-    while( *s ) {
+    VbufInit( &tmp );
+    for( s = VbufString( buff ); *s != '\0'; s++ ) {
         if( *s == '/' ) {
-//    MessageBox(0, buff, 0, 0);
-            strcpy( buff2, s + 1 );
-            strcpy( s, " - " );     // replace slash by underscore
-            strcpy( s + 3, buff2 );
-//    MessageBox(0, buff, 0, 0);
+//    MessageBox(0, VbufString( buff ), 0, 0);
+            len = s - VbufString( buff );
+            VbufSetStr( &tmp, s + 1 );
+            VbufSetLen( buff, len );
+            VbufConcStr( &tmp, " - " );     // replace slash by underscore
+            VbufConcVbuf( buff, &tmp );
+            s = VbufString( buff ) + len + 2;
+//    MessageBox(0, VbufString( buff ), 0, 0);
         }
-        ++s;
     }
+    VbufFree( &tmp );
 }
 
-static void get_group_name( char *buff, const char *group )
+static void get_group_name( VBUF *buff, VBUF *group )
 {
-    LPITEMIDLIST        ppidl;
+    LPITEMIDLIST    ppidl;
+    char            tmp[_MAX_PATH];
 
+    VbufRewind( buff );
     if( SHGetSpecialFolderLocation( NULL, CSIDL_PROGRAMS, &ppidl ) == NOERROR ) {
-        SHGetPathFromIDList( ppidl, buff );
+        SHGetPathFromIDList( ppidl, tmp );
+        VbufConcStr( buff, tmp );
     } else {
-        GetWindowsDirectory( buff, _MAX_PATH );
-        strcat( buff, "\\Start Menu\\Programs" );
+        GetWindowsDirectory( tmp, _MAX_PATH );
+        VbufConcStr( buff, tmp );
+        VbufConcStr( buff, "\\Start Menu\\Programs" );
     }
-    strcat( buff, "\\" );
-    strcat( buff, group );
+    VbufConcStr( buff, "\\" );
+    VbufConcVbuf( buff, group );
     munge_fname( buff );
 }
 
-static bool linkCreateGroup( const char *group )
+static bool linkCreateGroup( VBUF *group )
 {
-    char                buff[_MAX_PATH];
-    int                 rc;
+    VBUF            buff;
+    int             rc;
 
-    get_group_name( buff, group );
-    rc = mkdir( buff );
-
+    VbufInit( &buff );
+    get_group_name( &buff, group );
+    rc = mkdir( VbufString( &buff ) );
+    VbufFree( &buff );
     if( rc == -1 && errno != EEXIST ) {
         return( false );
     } else {
@@ -398,16 +458,17 @@ static bool linkCreateGroup( const char *group )
     }
 }
 
-static void delete_dir( const char *dir )
+static void delete_dir( VBUF *dir )
 {
     DIR                 *dirp;
     struct dirent       *direntp;
-    char                file[_MAX_PATH];
+    VBUF                file;
 
+    VbufInit( &file );
     // Delete contents of directory
-    strcpy( file, dir );
-    strcat( file, "\\*.*" );
-    dirp = opendir( file );
+    VbufConcVbuf( &file, dir );
+    VbufConcStr( &file, "\\*.*" );
+    dirp = opendir( VbufString( &file ) );
     if( dirp != NULL ) {
         for( ;; ) {
             direntp = readdir( dirp );
@@ -417,43 +478,47 @@ static void delete_dir( const char *dir )
             if( direntp->d_attr & 0x10 ) {        /* don't care about directories */
                 continue;
             }
-            strcpy( file, dir );
-            strcat( file, "\\" );
-            strcat( file, direntp->d_name );
-            remove( file );
+            VbufSetVbuf( &file, dir );
+            VbufConcStr( &file, "\\" );
+            VbufConcStr( &file, direntp->d_name );
+            remove( VbufString( &file ) );
         }
         closedir( dirp );
     }
-    rmdir( dir );
+    rmdir( VbufString( dir ) );
+    VbufFree( &file );
 }
 
-static void linkDeleteGroup( const char *group )
+static void linkDeleteGroup( VBUF *group )
 {
-    char                buff[_MAX_PATH];
+    VBUF    buff;
 
-    get_group_name( buff, group );
-    delete_dir( buff );
+    VbufInit( &buff );
+    get_group_name( &buff, group );
+    delete_dir( &buff );
+    VbufFree( &buff );
 }
 
-static bool linkGroupAddItem( const char *group, const char *prog_name, const char *prog_desc,
-                                            const char *prog_args, const char *working_dir,
-                                            const char *icon_name, int icon_num )
+static bool linkGroupAddItem( VBUF *group, VBUF *prog_name, VBUF *prog_desc,
+                                            VBUF *prog_args, VBUF *working_dir,
+                                            VBUF *icon_name, int icon_num )
 /********************************************************************************************/
 {
     HRESULT             hres;
     IShellLink          *m_link;
     IPersistFile        *p_file;
     WORD                w_link[_MAX_PATH];
-    char                link[_MAX_PATH];
+    VBUF                link;
 
+    VbufInit( &link );
     // Determine names of link files
-    get_group_name( link, group );
-    strcat( link, "\\" );
-    strcat( link, prog_desc );
-    strcat( link, ".lnk" );
-    munge_fname( link );
+    get_group_name( &link, group );
+    VbufConcStr( &link, "\\" );
+    VbufConcVbuf( &link, prog_desc );
+    VbufConcStr( &link, ".lnk" );
+    munge_fname( &link );
 
-    MultiByteToWideChar( CP_ACP, 0, link, -1, w_link, _MAX_PATH );
+    MultiByteToWideChar( CP_ACP, 0, VbufString( &link ), -1, w_link, _MAX_PATH );
 
     // Create an IShellLink object and get a pointer to the IShellLink interface
     m_link = NULL;
@@ -465,11 +530,11 @@ static bool linkGroupAddItem( const char *group, const char *prog_name, const ch
         hres = m_link->lpVtbl->QueryInterface( m_link, &IID_IPersistFile, (void **)&p_file );
         if( SUCCEEDED( hres ) ) {
             // Set the properties of the shortcut
-            hres = m_link->lpVtbl->SetPath( m_link, prog_name );
-            hres = m_link->lpVtbl->SetDescription( m_link, prog_desc );
-            hres = m_link->lpVtbl->SetWorkingDirectory( m_link, working_dir );
-            hres = m_link->lpVtbl->SetArguments( m_link, prog_args );
-            hres = m_link->lpVtbl->SetIconLocation( m_link, icon_name, icon_num );
+            hres = m_link->lpVtbl->SetPath( m_link, VbufString( prog_name ) );
+            hres = m_link->lpVtbl->SetDescription( m_link, VbufString( prog_desc ) );
+            hres = m_link->lpVtbl->SetWorkingDirectory( m_link, VbufString( working_dir ) );
+            hres = m_link->lpVtbl->SetArguments( m_link, VbufString( prog_args ) );
+            hres = m_link->lpVtbl->SetIconLocation( m_link, VbufString( icon_name ), icon_num );
 
             // Save the shortcut via the IPersistFile::Save member function.
             hres = p_file->lpVtbl->Save( p_file, w_link, TRUE );
@@ -479,6 +544,7 @@ static bool linkGroupAddItem( const char *group, const char *prog_name, const ch
        // Release the pointer to IShellLink.
        m_link->lpVtbl->Release( m_link );
     }
+    VbufFree( &link );
     return( SUCCEEDED( hres ) );
 }
 
@@ -492,101 +558,111 @@ static bool UseIShellLink( bool uninstall )
     int                 num_groups;
     int                 num_installed;
     int                 num_total_install;
-    char                prog_name[_MAX_PATH];
-    char                prog_desc[_MAX_PATH];
-    char                icon_name[_MAX_PATH];
-    char                working_dir[_MAX_PATH];
-    char                group[_MAX_PATH];
-    char                prog_args[_MAX_PATH];
-    char                tmp[_MAX_PATH];
+    VBUF                prog_name;
+    VBUF                prog_desc;
+    VBUF                icon_name;
+    VBUF                working_dir;
+    VBUF                group;
+    VBUF                prog_args;
+    VBUF                tmp;
     bool                ok;
 
+    VbufInit( &group );
     if( uninstall ) {
         num_groups = SimGetPMGroupsNum();
         for( i = 0; i < num_groups; i++ ) {
-            SimGetPMGroupName( i, group, sizeof( group ) );
-            if( *group != '\0' ) {
+            SimGetPMGroupName( i, &group );
+            if( VbufLen( &group ) > 0 ) {
                 // Delete the PM Group box
-                linkDeleteGroup( group );
+                linkDeleteGroup( &group );
             }
         }
+        VbufFree( &group );
         return( true );
     }
-
-    SimGetPMGroup( group, sizeof( group ) );
-    if( group[0] == '\0' ) {
+    SimGetPMGroup( &group );
+    if( VbufLen( &group ) == 0 ) {
+        VbufFree( &group );
         return( true );
     }
 
     CoInitialize( NULL );
 
     // Create the PM Group box.
-    if( !linkCreateGroup( group ) ) {
-        CoUninitialize();
-        return( false );
-    }
-
-    // Add the individual PM files to the Group box.
-    num_icons = SimGetPMProgsNum();
-    StatusLines( STAT_CREATEPROGRAMFOLDER, "" );
-    num_total_install = 0;
-    for( i = 0; i < num_icons; i++ ) {
-        if( SimCheckPMCondition( i ) ) {
-            ++num_total_install;
+    ok = linkCreateGroup( &group );
+    if( ok ) {
+        // Add the individual PM files to the Group box.
+        num_icons = SimGetPMProgsNum();
+        StatusLines( STAT_CREATEPROGRAMFOLDER, "" );
+        num_total_install = 0;
+        for( i = 0; i < num_icons; i++ ) {
+            if( SimCheckPMCondition( i ) ) {
+                ++num_total_install;
+            }
         }
-    }
-    num_installed = 0;
-    ok = true;
-    StatusAmount( 0, num_total_install );
-    for( i = 0; ok && i < num_icons; i++ ) {
-        if( !SimCheckPMCondition( i ) ) {
-            continue;
-        }
-        SimGetPMDesc( i, prog_desc, sizeof( prog_desc ) );
-        dir_index = SimGetPMProgName( i, prog_name );
-        if( strcmp( prog_name, "GROUP" ) == 0 ) {
-            /* creating a new group */
-            ok = linkCreateGroup( prog_desc );
-        } else {
-            /*
-             * Adding item to group
-             */
-            if( dir_index == -1 ) {
-                working_dir[0] = '\0';
-                ReplaceVars( tmp, sizeof( tmp ), prog_name );
-                strcpy( prog_name, tmp );
+        VbufInit( &prog_name );
+        VbufInit( &prog_desc );
+        VbufInit( &icon_name );
+        VbufInit( &working_dir );
+        VbufInit( &prog_args );
+        VbufInit( &tmp );
+        num_installed = 0;
+        StatusAmount( 0, num_total_install );
+        for( i = 0; ok && i < num_icons; i++ ) {
+            if( !SimCheckPMCondition( i ) ) {
+                continue;
+            }
+            SimGetPMDesc( i, &prog_desc );
+            dir_index = SimGetPMProgName( i, &prog_name );
+            if( strcmp( VbufString( &prog_name ), "GROUP" ) == 0 ) {
+                /* creating a new group */
+                ok = linkCreateGroup( &prog_desc );
             } else {
-                SimDirNoSlash( dir_index, working_dir, sizeof( working_dir ) );
+                /*
+                 * Adding item to group
+                 */
+                if( dir_index == -1 ) {
+                    VbufRewind( &working_dir );
+                    ReplaceVars( &prog_name, NULL );
+                } else {
+                    SimDirNoSlash( dir_index, &working_dir );
+                }
+                /*
+                 * Get parameters
+                 */
+                SimGetPMParms( i, &prog_args );
+                ReplaceVars( &prog_args, NULL );
+                /*
+                 * Append the subdir where the icon file is and the icon file's name.
+                 */
+                dir_index = SimGetPMIconInfo( i, &icon_name, &icon_number );
+                if( icon_number == -1 )
+                    icon_number = 0;
+                if( dir_index != -1 ) {
+                    SimGetDir( dir_index, &tmp );
+                    VbufPrepVbuf( &icon_name, &tmp );
+                }
+                /*
+                 * Add the new file to the already created PM Group.
+                 */
+                ok = linkGroupAddItem( &group, &prog_name, &prog_desc, &prog_args, &working_dir, &icon_name, icon_number );
             }
-            /*
-             * Get parameters
-             */
-            SimGetPMParms( i, tmp, sizeof( tmp ) );
-            ReplaceVars( prog_args, sizeof( prog_args ), tmp );
-            /*
-             * Append the subdir where the icon file is and the icon file's name.
-             */
-            dir_index = SimGetPMIconInfo( i, icon_name, sizeof( icon_name ), &icon_number );
-            if( icon_number == -1 )
-                icon_number = 0;
-            if( dir_index != -1 ) {
-                SimGetDir( dir_index, tmp, sizeof( tmp ) );
-                strcat( tmp, icon_name );
-                strcpy( icon_name, tmp );
+            ++num_installed;
+            StatusAmount( num_installed, num_total_install );
+            if( StatusCancelled() ) {
+                break;
             }
-            /*
-             * Add the new file to the already created PM Group.
-             */
-            ok = linkGroupAddItem( group, prog_name, prog_desc, prog_args, working_dir, icon_name, icon_number );
         }
-        ++num_installed;
-        StatusAmount( num_installed, num_total_install );
-        if( StatusCancelled() ) {
-            break;
-        }
+        StatusAmount( num_total_install, num_total_install );
+        VbufFree( &tmp );
+        VbufFree( &prog_args );
+        VbufFree( &working_dir );
+        VbufFree( &icon_name );
+        VbufFree( &prog_desc );
+        VbufFree( &prog_name );
     }
-    StatusAmount( num_total_install, num_total_install );
     CoUninitialize();
+    VbufFree( &group );
     return( ok );
 }
 
@@ -603,4 +679,3 @@ bool CreatePMInfo( bool uninstall )
 #endif
     return( UseDDE( uninstall ) );
 }
-

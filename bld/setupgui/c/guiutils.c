@@ -310,10 +310,12 @@ bool SetupInit( void )
 void SetupTitle( void )
 /*********************/
 {
-    char        buff[MAXBUF];
+    VBUF    buff;
 
-    ReplaceVars( buff, sizeof( buff ), GetVariableStrVal( "AppName" ) );
-    GUISetWindowText( MainWnd, buff );
+    VbufInit( &buff );
+    ReplaceVars( &buff, GetVariableStrVal( "AppName" ) );
+    GUISetWindowText( MainWnd, VbufString( &buff ) );
+    VbufFree( &buff );
 }
 
 

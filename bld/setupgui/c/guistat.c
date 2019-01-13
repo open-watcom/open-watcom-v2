@@ -491,13 +491,15 @@ bool StatusCancelled( void )
 void StatusInit( void )
 /*********************/
 {
-    char        buff[MAXBUF];
+    VBUF    buff;
 
     if( StatusWnd == NULL ) {
-        ReplaceVars( buff, sizeof( buff ), GetVariableStrVal( "AppName" ) );
-        if( OpenStatusWindow( buff ) ) {
+        VbufInit( &buff );
+        ReplaceVars( &buff, GetVariableStrVal( "AppName" ) );
+        if( OpenStatusWindow( VbufString( &buff ) ) ) {
             GUIHideWindow( StatusWnd );
         }
+        VbufFree( &buff );
     }
 }
 
