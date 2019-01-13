@@ -33,6 +33,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "wio.h"
+#include "setup.h"
 #include "setupio.h"
 
 

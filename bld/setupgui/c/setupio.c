@@ -33,27 +33,27 @@
 #include <stdlib.h>
 #include <string.h>
 #include "wio.h"
+#include "setup.h"
 #include "setupio.h"
 #include "zip.h"
 
 
-enum ds_type {
+typedef enum ds_type {
     DS_INVALID,
     DS_FILE,
     DS_ZIP
-};
+} ds_type;
 
 typedef struct file_handle_t {
-    enum ds_type            type;
+    ds_type                 type;
     union {
         int                 fhandle;
         struct zip_file     *zf;
     } u;
 } *file_handle;
 
-static enum ds_type     srcType;
+static ds_type          srcType;
 static struct zip       *srcZip;
-
 
 /* At the moment the incoming path may have either forward or backward
  * slashes as path separators. However, ziplib only likes forward slashes,

@@ -305,7 +305,6 @@ void GUImain( void )
 
     // initialize paths and env. vbls.
 
-    VbufInit( &new_inf );
     if( SetupPreInit( argc, argv ) ) {
         SetupInit();
         InitGlobalVarList();
@@ -363,7 +362,6 @@ void GUImain( void )
                 FreeGlobalVarList( false );
                 ConfigModified = false;
             } /* while */
-
             VbufFree( &dir );
             VbufFree( &drive );
             VbufFree( &current_dir );
@@ -380,6 +378,5 @@ void GUImain( void )
         FreeGlobalVarList( true );
         SetupFini();
     }
-    VbufFree( &new_inf );
     GUIMemClose();
 }

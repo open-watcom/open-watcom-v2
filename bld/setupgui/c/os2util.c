@@ -100,14 +100,18 @@ bool CreatePMInfo( bool uninstall )
     const char          *p;
     HOBJECT             obj;
 
-    VbufInit( &GroupFileName );
-    // To uninstall, simply nuke all folders
+    /*
+     * To uninstall, simply nuke all folders
+     */
     if( uninstall ) {
+        VbufInit( &GroupFileName );
         num = SimGetPMGroupsNum();
         for( i = 0; i < num; i++ ) {
             SimGetPMGroupFName( i, &GroupFileName );
             if( VbufLen( &GroupFileName ) > 0 ) {
-                // Delete the PM Group box
+                /*
+                 * Delete the PM Group box
+                 */
                 VbufPrepChr( &GroupFileName, '<' );
                 VbufConcChr( &GroupFileName, '>' );
                 remove_group( &GroupFileName );
@@ -121,10 +125,10 @@ bool CreatePMInfo( bool uninstall )
     SimGetPMGroup( &group );
     if( VbufLen( &group ) == 0 ) {
         VbufFree( &group );
-        VbufFree( &GroupFileName );
         return( true );
     }
 
+    VbufInit( &GroupFileName );
     SimGetPMGroupFileName( &GroupFileName );
     if( VbufLen( &GroupFileName ) > 0 ) {
         VbufPrepChr( &GroupFileName, '<' );
@@ -143,7 +147,9 @@ bool CreatePMInfo( bool uninstall )
     VbufInit( &Folder );
     VbufInit( &Cmd );
 
-    // Add the individual PM files to the Group box.
+    /*
+     * Add the individual PM files to the Group box.
+     */
     StatusLines( STAT_CREATEPROGRAMFOLDER, "" );
     num = SimGetPMProgsNum();
     StatusAmount( 0, num );
@@ -152,8 +158,10 @@ bool CreatePMInfo( bool uninstall )
         if( !SimCheckPMCondition( i ) ) {
             continue;
         }
+        /*
+         * Replace '\n' in Description with LineFeed character
+         */
         SimGetPMDesc( i, &PMProgDesc );
-        // Replace '\n' in Description with LineFeed character
         for( p = VbufString( &PMProgDesc ); *p != '\0'; ++p ) {
             if( p[0] == '\\' && p[1] == 'n' ) {
                 len = p - VbufString( &PMProgDesc );
@@ -167,7 +175,9 @@ bool CreatePMInfo( bool uninstall )
 
         nDirIndex = SimGetPMProgName( i, &PMProgName );
         if( strcmp( VbufString( &PMProgName ), "GROUP" ) == 0 ) {
-            // Process a group (ie. folder)
+            /*
+             * Process a group (ie. folder)
+             */
             SimGetPMParms( i, &GroupFileName );
             if( VbufLen( &GroupFileName ) == 0 ) {
                 break;
@@ -180,33 +190,44 @@ bool CreatePMInfo( bool uninstall )
             }
             obj = create_group( &PMProgDesc, &GroupFileName );
         } else {
-            // Process a regular object
+            /*
+             * Process a regular object
+             */
             if( nDirIndex == -1 ) {
                 VbufRewind( &WorkingDir );
                 ReplaceVars( &PMProgName, NULL );
             } else {
                 SimGetDir( nDirIndex, &WorkingDir );
             }
-
-            // Get parameters
+            /*
+             * Get parameters
+             */
             SimGetPMParms( i, &PMParams );
             ReplaceVars( &PMParams, NULL );
             if( VbufString( &PMParams )[0] == '+' ) {
-                // Format is: +folder_name[+parameters]
                 p = strchr( VbufString( &PMParams ) + 1, '+' );
                 if( p == NULL ) {
+                    /*
+                     * Format is: "+folder_name"
+                     */
                     VbufSetStr( &Folder, VbufString( &PMParams ) + 1 );
                     VbufRewind( &PMParams );
                 } else {
+                    /*
+                     * Format is: "+folder_name+parameters"
+                     */
                     VbufSetBuffer( &Folder, p - VbufString( &PMParams ) - 1, VbufString( &PMParams ) + 1 );
                     VbufSetStr( &PMParams, p + 1);
                 }
             } else {
-                // Use default folder
+                /*
+                 * Format is: "" use default folder
+                 */
                 VbufSetVbuf( &Folder, &GroupFileName );
             }
-
-            // Append the subdir where the icon file is and the icon file's name.
+            /*
+             * Append the subdir where the icon file is and the icon file's name.
+             */
             nDirIndex = SimGetPMIconInfo( i, &PMIconFileName, &icon_number );
             if( icon_number == -1 ) {
                 icon_number = 0;
@@ -245,13 +266,13 @@ bool CreatePMInfo( bool uninstall )
     VbufFree( &PMProgDesc );
     VbufFree( &PMProgName );
     VbufFree( &tmp );
-    VbufFree( &group );
     VbufFree( &GroupFileName );
+    VbufFree( &group );
     return( true );
 }
 
 
-static bool SetEAttr( const char *filename, char const *name, char const *val )
+static bool SetEAttr( const char *filename, const char *name, const char *val )
 /*****************************************************************************/
 {
     FEA2LIST            *fet;
@@ -296,10 +317,11 @@ static bool SetEAttr( const char *filename, char const *name, char const *val )
 }
 
 
-// Process [Label] section - use extended attributes to add
-//                           long label to directories
 void LabelDirs( void )
-/********************/
+/********************
+ * Process [Label] section - use extended attributes to add
+ *                            long label to directories
+ */
 {
     int         i;
     int         num;
