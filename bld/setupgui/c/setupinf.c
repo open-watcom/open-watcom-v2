@@ -581,8 +581,6 @@ static bool EvalExprTree( tree_node *tree, bool is_minimal )
     bool        value;
     VBUF        tmp;
 
-    VbufInit( &tmp );
-    value = false;
     switch( tree->op ) {
     case OP_AND:
         value = EvalExprTree( tree->u.left, is_minimal ) & EvalExprTree( tree->right, is_minimal );
@@ -594,8 +592,10 @@ static bool EvalExprTree( tree_node *tree, bool is_minimal )
         value = !EvalExprTree( tree->u.left, is_minimal );
         break;
     case OP_EXIST:
+        VbufInit( &tmp );
         ReplaceVars( &tmp, (char *)tree->u.left );
         value = ( access( VbufString( &tmp ), F_OK ) == 0 );
+        VbufFree( &tmp );
         break;
     case OP_VAR:
         value = GetOptionVarValue( (vhandle)(pointer_int)tree->u.left, is_minimal );
@@ -604,9 +604,10 @@ static bool EvalExprTree( tree_node *tree, bool is_minimal )
         value = !is_minimal;
         break;
     case OP_FALSE:
+    default:
+        value = false;
         break;
     }
-    VbufFree( &tmp );
     return( value );
 }
 
@@ -668,33 +669,31 @@ static void PropagateValue( tree_node *tree, bool value )
 }
 
 #ifdef PATCH
-static void GetDestDir( int i, char *buff, size_t buff_len )
-/**********************************************************/
+static void GetDestDir( int i, VBUF *vbuf )
+/*****************************************/
 {
     char                *temp;
-    char                temp2[_MAX_PATH];
+    VBUF                temp2;
     char                drive[_MAX_DRIVE];
     int                 intvalue = 0;
 
-    ReplaceVars( buff, buff_len, GetVariableStrVal( "DstDir" ) );
-    ConcatDirSep( buff );
+    VbufInit( &temp2 );
+    ReplaceVars( vbuf, GetVariableStrVal( "DstDir" ) );
+    VbufAddDirSep( vbuf );
     intvalue = atoi( PatchInfo[i].destdir );
     if( intvalue != 0 ) {
         temp = strchr( DirInfo[intvalue - 1].desc, '=' ) + 1;
     } else {
         // if destination dir specifies the drive, just use it
-        ReplaceVars( temp2, sizeof( temp2 ), PatchInfo[i].destdir );
-        _splitpath( temp2, drive, NULL, NULL, NULL );
+        ReplaceVars( &temp2, PatchInfo[i].destdir );
+        _splitpath( VbufString( &temp2 ), drive, NULL, NULL, NULL );
         if( drive[0] != 0 ) {  // drive specified
-            strcpy( buff, temp2 );
-            ConcatDirSep( buff );
-            return;
-        } else {
-            temp = temp2;
+            VbufRewind( vbuf );
         }
+        temp = VbufString( &temp2 );
     }
-    strcat( buff, temp );
-    ConcatDirSep( buff );
+    VbufConcStr( vbuf, temp );
+    VbufAddDirSep( vbuf );
 }
 
 bool SecondaryPatchSearch( const char *filename, char *buff )
@@ -710,24 +709,28 @@ bool SecondaryPatchSearch( const char *filename, char *buff )
 // findold() in OLDFILE.C (bdiff project) does system path search
 // if first two searches fail and this function returns nonzero.
 
-    char                path[_MAX_PATH];
+    VBUF                path;
     char                ext[_MAX_EXT];
 
     buff[0] = '\0';
-    GetDestDir( patchDirIndex, path, sizeof( path ) );
-    strcat( path, filename );
-    if( access( path, F_OK ) == 0 ) {
-        strcpy( buff, path );
+    VbufInit( &path );
+    GetDestDir( patchDirIndex, &path );
+    VbufConcStr( &path, filename );
+    if( access( VbufString( &path ), F_OK ) == 0 ) {
+        strcpy( buff, VbufString( &path ) );
+        VbufFree( &path );
         return( true );
     } else {
-        ReplaceVars( path, sizeof( path ), GetVariableStrVal( "DstDir" ) );
-        ConcatDirSep( path );
-        strcat( path, filename );
-        if( access( path, F_OK ) == 0 ) {
-            strcpy( buff, path );
+        ReplaceVars( &path, GetVariableStrVal( "DstDir" ) );
+        VbufAddDirSep( &path );
+        VbufConcStr( &path, filename );
+        if( access( VbufString( &path ), F_OK ) == 0 ) {
+            strcpy( buff, VbufString( &path ) );
+            VbufFree( &path );
             return( true );
         }
     }
+    VbufFree( &path );
     _splitpath( filename, NULL, NULL, NULL, ext );
     if( stricmp( ext, ".dll" ) == 0 ) {
         _searchenv( filename, "PATH", buff );
@@ -2063,11 +2066,7 @@ static bool ProcLine( char *line, pass_type pass )
             return( false );
         next = NextToken( line, ',' );
         PMInfo[num].filename = GUIStrDup( line, NULL );
-        if( strcmp( line, "GROUP" ) == 0 ) {
-            tmp = true;
-        } else {
-            tmp = false;
-        }
+        tmp = ( strcmp( line, "GROUP" ) == 0 );
         line = next; next = NextToken( line, ',' );
         PMInfo[num].parameters = GUIStrDup( line, NULL );
         line = next; next = NextToken( line, ',' );
@@ -2962,30 +2961,27 @@ bool SimFileRemove( int parm )
 void SimGetPMGroupFileName( VBUF *buff )
 /**************************************/
 {
+    VbufRewind( buff );
     if( SetupInfo.pm_group_file_name != NULL ) {
-        VbufSetStr( buff, SetupInfo.pm_group_file_name );
-    } else {
-        VbufRewind( buff );
+        VbufConcStr( buff, SetupInfo.pm_group_file_name );
     }
 }
 
 void SimGetPMGroupIcon( VBUF *buff )
 /**********************************/
 {
+    VbufRewind( buff );
     if( SetupInfo.pm_group_icon != NULL ) {
-        VbufSetStr( buff, SetupInfo.pm_group_icon );
-    } else {
-        VbufRewind( buff );
+        VbufConcStr( buff, SetupInfo.pm_group_icon );
     }
 }
 
 void SimGetPMGroup( VBUF *buff )
 /******************************/
 {
+    VbufRewind( buff );
     if( SetupInfo.pm_group_name != NULL ) {
-        VbufSetStr( buff, SetupInfo.pm_group_name );
-    } else {
-        VbufRewind( buff );
+        VbufConcStr( buff, SetupInfo.pm_group_name );
     }
 }
 
@@ -3114,14 +3110,14 @@ bool SimCheckProfCondition( int parm )
  */
 
 static append_mode SimGetConfigStringsFrom( struct config_info *array, int i,
-                                            VBUF *new_var, VBUF *buff )
+                                            VBUF *cfg_var, VBUF *cfg_val )
 /****************************************************************************/
 {
     append_mode append;
     char        *p;
 
+    ReplaceVars( cfg_val, array[i].value );
     append = AM_OVERWRITE;
-    ReplaceVars( buff, array[i].value );
     p = array[i].var;
     if( *p == '+' ) {
         ++p;
@@ -3132,7 +3128,7 @@ static append_mode SimGetConfigStringsFrom( struct config_info *array, int i,
             append = AM_AFTER;
         }
     }
-    VbufSetStr( new_var, p );
+    VbufSetStr( cfg_var, p );
     return( append );
 }
 
@@ -3142,10 +3138,10 @@ int SimNumAutoExec( void )
     return( SetupInfo.autoexec.num );
 }
 
-append_mode SimGetAutoExecStrings( int i, VBUF *new_var, VBUF *buff )
-/*******************************************************************/
+append_mode SimGetAutoExecStrings( int i, VBUF *cfg_var, VBUF *cfg_val )
+/**********************************************************************/
 {
-    return( SimGetConfigStringsFrom( AutoExecInfo, i, new_var, buff ) );
+    return( SimGetConfigStringsFrom( AutoExecInfo, i, cfg_var, cfg_val ) );
 }
 
 bool SimCheckAutoExecCondition( int parm )
@@ -3161,10 +3157,10 @@ int SimNumConfig( void )
 }
 
 
-append_mode SimGetConfigStrings( int i, VBUF *new_var, VBUF *buff )
-/*****************************************************************/
+append_mode SimGetConfigStrings( int i, VBUF *cfg_var, VBUF *cfg_val )
+/********************************************************************/
 {
-    return( SimGetConfigStringsFrom( ConfigInfo, i, new_var, buff ) );
+    return( SimGetConfigStringsFrom( ConfigInfo, i, cfg_var, cfg_val ) );
 }
 
 bool SimCheckConfigCondition( int parm )
@@ -3180,10 +3176,10 @@ int SimNumEnvironment( void )
 }
 
 
-append_mode SimGetEnvironmentStrings( int i, VBUF *new_var, VBUF *buff )
-/**********************************************************************/
+append_mode SimGetEnvironmentStrings( int i, VBUF *cfg_var, VBUF *cfg_val )
+/*************************************************************************/
 {
-    return( SimGetConfigStringsFrom( EnvironmentInfo, i, new_var, buff ) );
+    return( SimGetConfigStringsFrom( EnvironmentInfo, i, cfg_var, cfg_val ) );
 }
 
 bool SimCheckEnvironmentCondition( int parm )
@@ -3471,6 +3467,7 @@ void SimCalcAddRemove( void )
                     SimGetFileName( i, file_name );
                     disk_num = SimFileDisk( i, disk_desc );
                     _makepath( dst_path, NULL, VbufString( &dir ), file_desc, NULL );
+                    VbufFree( &dir );
 
                     flag = false;
                     for( m = 0; m < SetupInfo.dlls_to_count.num; m++ ) {
@@ -3918,8 +3915,8 @@ bool PatchFiles( void )
             GetDestDir( i, &destfullpath );
 
             // get rid of trailing slash: OS/2 needs this for access(...) to work
-            if( destfullpath[strlen( destfullpath ) - 1] == '\\' ) {
-                destfullpath[strlen( destfullpath ) - 1] = '\0';
+            if( VbufString( &destfullpath )[VbufLen( &destfullpath ) - 1] == '\\' ) {
+                VbufString( &destfullpath )[VbufLen( &destfullpath ) - 1] = '\0';
             }
 
             if( access( VbufString( &destfullpath ), F_OK ) == 0 ) {
@@ -3936,8 +3933,7 @@ bool PatchFiles( void )
                     LogWriteMsg( log, "IDS_FAILED_UNPACKING" );
                     if( !CopyErrorDialog( CFE_ERROR, i, VbufString( &srcfullpath ) ) ) {
                         LogWriteMsg( log, "IDS_PATCHABORT" );
-                        ok = false
-                        break;
+                        ok = false;
                     }
                 }
             }
@@ -3957,8 +3953,7 @@ bool PatchFiles( void )
                     guiret = MsgBox( NULL, "IDS_DELETEFILEERROR", GUI_YES_NO, VbufString( &destfullpath ) );
                     if( guiret == GUI_RET_NO ) {
                         LogWriteMsg( log, "IDS_PATCHABORT" );
-                        ok = false
-                        break;
+                        ok = false;
                     }
                 }
             }
@@ -3980,8 +3975,7 @@ bool PatchFiles( void )
                     guiret = MsgBox( NULL, "IDS_CREATEDIRERROR", GUI_YES_NO, VbufString( &destfullpath ) );
                     if( guiret == GUI_RET_NO ) {
                         LogWriteMsg( log, "IDS_FAILED_CREATINGDIR" );
-                        ok = false
-                        break;
+                        ok = false;
                     }
                 }
             }
@@ -3998,6 +3992,7 @@ bool PatchFiles( void )
         }
     }
     VbufFree( &destfullpath );
+    VbufFree( &srcfullpath );
     PatchStatusCancelled(); /* make sure display gets updated */
 
     if( ok && count == 0 ) {

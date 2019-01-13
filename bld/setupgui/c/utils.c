@@ -396,8 +396,7 @@ static bool OS2SpawnWait( const char *cmd, int *rc )
     if( p != NULL )
         *p = ' ';
     for( ;; ) {
-        *rc = DosWaitChild( DCWA_PROCESS, DCWW_NOWAIT, &res,
-                            &dummy, res.codeTerminate );
+        *rc = DosWaitChild( DCWA_PROCESS, DCWW_NOWAIT, &res, &dummy, res.codeTerminate );
         if( *rc != ERROR_CHILD_NOT_COMPLETE ) {
             *rc = res.codeResult;
             break;
@@ -1406,7 +1405,7 @@ COPYFILE_ERROR DoCopyFile( const char *src_path, const char *dst_path, bool appe
 {
     static char         lastchance[1024];
     size_t              buffer_size = 16 * 1024;
-    void                *src_files;
+    file_handle         src_files;
     int                 dst_files;
     int                 bytes_read, bytes_written, style;
     char                *pbuff;
@@ -1710,12 +1709,13 @@ static int UnPackHook( int filenum, int subfilenum, char *name )
     char        dir[_MAX_DIR];
     char        fname[_MAX_FNAME];
     char        ext[_MAX_EXT];
+    int         rc;
 
     if( SimSubFileIsNLM( filenum, subfilenum ) ) {
         NewFileToCheck( name, false );
         _splitpath( name, drive, dir, fname, ext );
         _makepath( name, drive, dir, fname, "._N_" );
-        return( 1 );
+        rc = 1;
     } else if( SimSubFileIsDLL( filenum, subfilenum ) ) {
         NewFileToCheck( name, true );
 #ifdef EXTRA_CAUTIOUS_FOR_DLLS
@@ -1724,9 +1724,11 @@ static int UnPackHook( int filenum, int subfilenum, char *name )
             _makepath( name, drive, dir, fname, "._D_" );
         }
 #endif
-        return( 1 );
+        rc = 1;
+    } else {
+        rc = 0;
     }
-    return( 0 );
+    return( rc );
 }
 
 static bool DoCopyFiles( void )
@@ -1879,10 +1881,10 @@ static bool DoCopyFiles( void )
                 SimFileDir( filenum, &dir );
                 SimGetFileDesc( filenum, file_desc );
                 SimGetFileName( filenum, file_name );
-        //        disk_num = SimFileDisk( filenum, disk_desc );
+//                disk_num = SimFileDisk( filenum, disk_desc );
                 SimFileDisk( filenum, disk_desc );
 
-        //      _splitpath( file_desc, NULL, NULL, NULL, file_ext );
+//                _splitpath( file_desc, NULL, NULL, NULL, file_ext );
                 _makepath( dst_path, NULL, VbufString( &dir ), file_desc, NULL );
 
                 cp = GetVariableStrVal( "DstDir" );
@@ -1903,7 +1905,7 @@ static bool DoCopyFiles( void )
 
                 if( StatusCancelled() ) {
                     ok = false;
-                    break;;
+                    break;
                 }
 
                 max_subfiles = SimNumSubFiles( filenum );
@@ -2088,18 +2090,18 @@ static bool NukePath( VBUF *path, int status )
 {
     DIR                 *d;
     struct dirent       *info;
-    size_t              path_end;
     bool                ok;
+    size_t              path_len;
 #if defined( __UNIX__ )
     struct stat         statbuf;
 #endif
 
     d = opendir( VbufString( path ) );
     VbufAddDirSep( path );
-    path_end = VbufLen( path );
+    path_len = VbufLen( path );
     ok = true;
     while( (info = readdir( d )) != NULL ) {
-        VbufSetLen( path, path_end );
+        VbufSetLen( path, path_len );
         VbufConcStr( path, info->d_name );
 #if defined( __UNIX__ )
         stat( VbufString( path ), &statbuf );
@@ -2129,7 +2131,7 @@ static bool NukePath( VBUF *path, int status )
         }
         StatusLines( status, VbufString( path ) );
     }
-    VbufSetLen( path, path_end );
+    VbufSetLen( path, path_len );
     closedir( d );
     return( ok );
 }
@@ -2227,6 +2229,8 @@ void AddInstallName( VBUF *str )
     VBUF                tmp;
     size_t              len;
 
+    // DBCS should be handled on more places
+    // code need rework
     VbufInit( &tmp );
     inst_name = GetInstallName();
     // p = strchr( text, '@' ); no good for dbcs!!!
@@ -2247,6 +2251,7 @@ void AddInstallName( VBUF *str )
 }
 
 static void remove_ampersand( VBUF *str )
+/***************************************/
 {
     const char      *s;
     VBUF            tmp;
@@ -2265,32 +2270,33 @@ static void remove_ampersand( VBUF *str )
     VbufFree( &tmp );
 }
 
-gui_message_return MsgBox( gui_window *gui, const char *messageid,
+gui_message_return MsgBox( gui_window *gui, const char *msg_id,
                                   gui_message_type wType, ... )
-/****************************************************************/
+/*************************************************************/
 {
     gui_message_return  result;
     char                msg_buf[1024];
     const char          *errormessage;
     va_list             arglist;
-    VBUF                msg;
+    VBUF                msg_text;
 
-    VbufInit( &msg );
+    VbufInit( &msg_text );
     if( !SkipDialogs ) {
-        if( stricmp( messageid, "IDS_NOSETUPINFOFILE" ) == 0 ) {
+        VbufInit( &msg_text );
+        if( stricmp( msg_id, "IDS_NOSETUPINFOFILE" ) == 0 ) {
             // If the message is "can't find the setup.inf file", then
             // don't look up the string, because it is in the file we can't find
             errormessage = "The file %s cannot be found.";
         } else {
-            errormessage = GetVariableStrVal( messageid );
+            errormessage = GetVariableStrVal( msg_id );
         }
         if( errormessage == NULL ) {
-            VbufConcStr( &msg, GetVariableStrVal( "IDS_UNKNOWNERROR" ) );
+            VbufConcStr( &msg_text, GetVariableStrVal( "IDS_UNKNOWNERROR" ) );
         } else {
             va_start( arglist, wType );
             vsprintf( msg_buf, errormessage, arglist );
             va_end( arglist );
-            VbufConcStr( &msg, msg_buf );
+            VbufConcStr( &msg_text, msg_buf );
         }
     }
 //    if( gui == NULL ) {
@@ -2327,11 +2333,11 @@ gui_message_return MsgBox( gui_window *gui, const char *messageid,
             result = GUI_RET_OK;
         }
     } else {
-        AddInstallName( &msg );
-        remove_ampersand( &msg );
-        result = GUIDisplayMessage( gui == NULL ? MainWnd : gui, VbufString( &msg ), GetInstallName(), wType );
+        AddInstallName( &msg_text );
+        remove_ampersand( &msg_text );
+        result = GUIDisplayMessage( gui == NULL ? MainWnd : gui, VbufString( &msg_text ), GetInstallName(), wType );
     }
-    VbufFree( &msg );
+    VbufFree( &msg_text );
     return( result );
 }
 

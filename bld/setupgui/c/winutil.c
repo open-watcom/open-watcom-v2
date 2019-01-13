@@ -88,7 +88,7 @@ static void CreateRegEntry( const char *hive_key, const char *app_name, const ch
         if( key_name[0] != '\0' ) {
             if( value[0] == '#' ) {     // dword
                 dword_val = atoi( value + 1 );
-                rc = RegSetValueEx( hkey1, key_name, 0, REG_DWORD, (LPBYTE)&dword_val, sizeof( long ) );
+                rc = RegSetValueEx( hkey1, key_name, 0, REG_DWORD, (CONST BYTE *)&dword_val, sizeof( long ) );
             } else if( value[0] == '%' ) {      // binary
                 ++value;
                 len = strlen( value );
@@ -108,7 +108,7 @@ static void CreateRegEntry( const char *hive_key, const char *app_name, const ch
                         }
                         value += 2;
                     }
-                    rc = RegSetValueEx( hkey1, key_name, 0, REG_BINARY, (LPBYTE)bin_buf, (DWORD)( len / 2 ) );
+                    rc = RegSetValueEx( hkey1, key_name, 0, REG_BINARY, bin_buf, (DWORD)( len / 2 ) );
                     free( bin_buf );
                 }
             } else {
@@ -118,7 +118,7 @@ static void CreateRegEntry( const char *hive_key, const char *app_name, const ch
                 } else {
                     type = REG_SZ;
                 }
-                rc = RegSetValueEx( hkey1, key_name, 0, type, (LPBYTE)value, (DWORD)( strlen( value ) + 1 ) );
+                rc = RegSetValueEx( hkey1, key_name, 0, type, (CONST BYTE *)value, (DWORD)( strlen( value ) + 1 ) );
             }
         }
     } else {
@@ -459,7 +459,6 @@ void WriteProfileStrings( bool uninstall )
     VBUF                hive_name;
     VBUF                value;
     bool                add;
-
 
     add = false;
     num = SimNumProfile();

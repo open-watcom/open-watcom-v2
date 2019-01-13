@@ -78,8 +78,6 @@ typedef enum {
     VAR_ERROR,
 } var_type;
 
-//static char             new_val[MAXENVVAR + 1];
-
 #if defined( __NT__ )
 static struct reg_location {
     HKEY    key;
@@ -230,29 +228,29 @@ static bool output_line( VBUF *vbuf, var_type vt, VBUF *name, VBUF *value )
 /*************************************************************************/
 {
     VbufRewind( vbuf );
-    if( VbufLen( value ) == 0 )
-        vt = VAR_ERROR;
-    switch( vt ) {
-    case VAR_SETENV_ASSIGN:
-        VbufConcStr( vbuf, SETENV );
-        VbufConcVbuf( vbuf, name );
-        VbufConcChr( vbuf, '=' );
-        VbufConcVbuf( vbuf, value );
-        break;
-    case VAR_ASSIGN:
-    case VAR_ASSIGN_SETENV:
-        VbufConcVbuf( vbuf, name );
-        VbufConcChr( vbuf, '=' );
-        VbufConcVbuf( vbuf, value );
-        break;
-    case VAR_CMD:
-        VbufConcVbuf( vbuf, name );
-        VbufConcChr( vbuf, ' ' );
-        VbufConcVbuf( vbuf, value );
-        break;
-    case VAR_ERROR:
-    default:
-        break;
+    if( VbufLen( value ) > 0 ) {
+        switch( vt ) {
+        case VAR_SETENV_ASSIGN:
+            VbufConcStr( vbuf, SETENV );
+            VbufConcVbuf( vbuf, name );
+            VbufConcChr( vbuf, '=' );
+            VbufConcVbuf( vbuf, value );
+            break;
+        case VAR_ASSIGN:
+        case VAR_ASSIGN_SETENV:
+            VbufConcVbuf( vbuf, name );
+            VbufConcChr( vbuf, '=' );
+            VbufConcVbuf( vbuf, value );
+            break;
+        case VAR_CMD:
+            VbufConcVbuf( vbuf, name );
+            VbufConcChr( vbuf, ' ' );
+            VbufConcVbuf( vbuf, value );
+            break;
+        case VAR_ERROR:
+        default:
+            break;
+        }
     }
     return( VbufLen( vbuf ) > 0 );
 }
@@ -324,8 +322,8 @@ static var_type parse_line( char *line, VBUF *name, VBUF *value, var_type vt_set
 }
 #endif
 
-static var_type getEnvironVarType( const char *env_var )
-/******************************************************/
+static var_type getEnvironVarType( VBUF *env_var )
+/************************************************/
 {
     var_type        vt;
 
@@ -335,13 +333,13 @@ static var_type getEnvironVarType( const char *env_var )
     if( GetVariableBoolVal( "IsOS2DosBox" ) ) {
 #endif
         // OS/2
-        if( stricmp( env_var, "LIBPATH" ) == 0 ) {
+        if( stricmp( VbufString( env_var ), "LIBPATH" ) == 0 ) {
             vt = VAR_ASSIGN;
         }
 #ifndef __OS2__
     } else {
         // DOS, WINDOWS, NT
-        if( stricmp( env_var, "PATH" ) == 0 ) {
+        if( stricmp( VbufString( env_var ), "PATH" ) == 0 ) {
             vt = VAR_CMD;
         }
     }
@@ -411,8 +409,8 @@ static void CheckEnvironmentLine( char *line, int num_env, bool *found_env, bool
 }
 #endif
 
-static void FinishEnvironmentLines( FILE *fp, char *line, int num_env, bool *found_env, bool batch )
-/**************************************************************************************************/
+static void FinishEnvironmentLines( FILE *fp, int num_env, bool *found_env, bool batch )
+/**************************************************************************************/
 {
     int                 i;
     int                 j;
@@ -458,10 +456,10 @@ static void FinishEnvironmentLines( FILE *fp, char *line, int num_env, bool *fou
                 VbufConcStr( &cur_val, ENV_NAME1 );
                 VbufConcVbuf( &cur_val, &cur_var );
                 VbufConcStr( &cur_val, ENV_NAME2 );
-            } else {
+//            } else {
 //                strcpy( value, cur_val );
             }
-        } else {
+//        } else {
 //            strcpy( value, cur_val );
         }
         for( j = i + 1; j < num_env; ++j ) {
@@ -497,7 +495,7 @@ static void FinishEnvironmentLines( FILE *fp, char *line, int num_env, bool *fou
                 fputc( '\n', fp );
             }
         } else {
-            if( output_line( &vbuf, getEnvironVarType( VbufString( &cur_var ) ), &cur_var, &cur_val ) ) {
+            if( output_line( &vbuf, getEnvironVarType( &cur_var ), &cur_var, &cur_val ) ) {
                 fputs( VbufString( &vbuf ), fp );
                 fputc( '\n', fp );
             }
@@ -518,7 +516,7 @@ static void FinishEnvironmentLines( FILE *fp, char *line, int num_env, bool *fou
 
 static bool ModFile( char *orig, char *new,
                      void (*func_xxx)( char *, int, bool *, bool ),
-                     void (*finish_xxx)( FILE *, char *, int, bool *, bool ),
+                     void (*finish_xxx)( FILE *, int, bool *, bool ),
                      int num_xxx, int num_env, bool uninstall )
 /*****************************************************************/
 {
@@ -581,8 +579,8 @@ static bool ModFile( char *orig, char *new,
     fclose( fp1 );
     if( !uninstall ) {
         // handle any remaining variables
-        finish_xxx( fp2, envbuf, num_xxx, found_xxx, false );
-        FinishEnvironmentLines( fp2, envbuf, num_env, found_env, false );
+        finish_xxx( fp2, num_xxx, found_xxx, false );
+        FinishEnvironmentLines( fp2, num_env, found_env, false );
     }
     if( num_xxx > 0 ) {
         GUIMemFree( found_xxx );
@@ -600,12 +598,12 @@ static bool ModFile( char *orig, char *new,
 
 #ifndef __OS2__
 
-static var_type getAutoVarType( const char *cur_var )
-/***************************************************/
+static var_type getAutoVarType( VBUF *auto_var )
+/*********************************************/
 {
     var_type        vt;
 
-    if( memicmp( cur_var, SETENV, SETENV_LEN ) == 0 ) {
+    if( memicmp( VbufString( auto_var ), SETENV, SETENV_LEN ) == 0 ) {
         vt = VAR_ASSIGN_SETENV;
     } else {
         vt = VAR_CMD;
@@ -677,8 +675,8 @@ static void CheckAutoLine( char *line, int num_auto, bool *found_auto, bool unin
     VbufFree( &line_var );
 }
 
-static void FinishAutoLines( FILE *fp, char *line, int num_auto, bool *found_auto, bool batch )
-/*********************************************************************************************/
+static void FinishAutoLines( FILE *fp, int num_auto, bool *found_auto, bool batch )
+/*********************************************************************************/
 {
     int                 i;
     int                 j;
@@ -709,7 +707,7 @@ static void FinishAutoLines( FILE *fp, char *line, int num_auto, bool *found_aut
                 modify_value( &cur_val, &next_val, append, false );
             }
         }
-        if( output_line( &vbuf, getAutoVarType( VbufString( &cur_var ) ), &cur_var, &cur_val ) ) {
+        if( output_line( &vbuf, getAutoVarType( &cur_var ), &cur_var, &cur_val ) ) {
             fputs( VbufString( &vbuf ), fp );
             fputc( '\n', fp );
         }
@@ -753,12 +751,12 @@ static bool ModAuto( char *orig, char *new, bool uninstall )
 
 #endif
 
-static var_type getConfigVarType( const char *cur_var )
-/*****************************************************/
+static var_type getConfigVarType( VBUF *cfg_var )
+/***********************************************/
 {
     var_type        vt;
 
-    if( memicmp( cur_var, SETENV, SETENV_LEN ) == 0 ) {
+    if( memicmp( VbufString( cfg_var ), SETENV, SETENV_LEN ) == 0 ) {
         vt = VAR_ASSIGN_SETENV;
     } else {
         vt = VAR_ASSIGN;
@@ -849,8 +847,8 @@ static void CheckConfigLine( char *line, int num_cfg, bool *found_cfg, bool unin
     VbufFree( &line_var );
 }
 
-static void FinishConfigLines( FILE *fp, char *line, int num_cfg, bool *found_cfg, bool batch )
-/*********************************************************************************************/
+static void FinishConfigLines( FILE *fp, int num_cfg, bool *found_cfg, bool batch )
+/*********************************************************************************/
 {
     int                 i;
     int                 j;
@@ -881,7 +879,7 @@ static void FinishConfigLines( FILE *fp, char *line, int num_cfg, bool *found_cf
                 modify_value( &cur_val, &next_val, append, false );
             }
         }
-        if( output_line( &vbuf, getConfigVarType( VbufString( &cur_var ) ), &cur_var, &cur_val ) ) {
+        if( output_line( &vbuf, getConfigVarType( &cur_var ), &cur_var, &cur_val ) ) {
             fputs( VbufString( &vbuf ), fp );
             fputc( '\n', fp );
         }
@@ -1231,32 +1229,36 @@ static void secondarysearch( char *filename, char *buffer )
     }
 }
 
-static void VersionStr( int fp, char *ver, int verlen, char *verbuf )
-/*******************************************************************/
+static void VersionStr( int fp, char *ver, int verlen, char *verbuf, size_t verbuflen )
+/*************************************************************************************/
 {
-    #define BUFF_SIZE   2048
-    static char         Buffer[BUFF_SIZE];
-    int                 len, size;
+    static char         Buffer[2048];
+    int                 len;
+    int                 size;
     char                *p;
 
     verbuf[0] = '\0';
     for( ;; ) {
-        len = read( fp, Buffer, BUFF_SIZE );
-        if( len < BUFF_SIZE ) {
+        len = read( fp, Buffer, sizeof( Buffer ) );
+        if( len < sizeof( Buffer ) ) {
             size = len;
-            memset( Buffer + size, 0, BUFF_SIZE - size );
+            memset( Buffer + size, 0, sizeof( Buffer ) - size );
         } else {
-            size = BUFF_SIZE - 256;
+            size = sizeof( Buffer ) - 256;
         }
         for( p = Buffer; p < Buffer + size; ++p ) {
             if( memcmp( p, ver, verlen ) == 0 ) {
                 p += verlen;
-                strcpy( verbuf, p );
+                strncpy( verbuf, p, verbuflen );
+                verbuf[verbuflen - 1] = '\0';
                 return;
             }
         }
-        if( len < BUFF_SIZE ) break;    // eof
-        if( lseek( fp, -256L, SEEK_CUR ) == -1 ) break;
+        if( len < sizeof( Buffer ) )
+            break;    // eof
+        if( lseek( fp, -256L, SEEK_CUR ) == -1 ) {
+            break;
+        }
     }
 }
 
@@ -1304,13 +1306,13 @@ static void CheckVersion( char *path, char *drive, char *dir )
              hours, timeptr->tm_min, am_pm );
 
     // also concat version number if it exists
-    VersionStr( fp, "VeRsIoN=", 8, buf );
+    VersionStr( fp, "VeRsIoN=", 8, buf, sizeof( buf ) );
     if( buf[0] != '\0' ) {
         // Novell DLL
         strcat( path, buf );
     } else {
         lseek( fp, 0, SEEK_SET );
-        VersionStr( fp, "FileVersion", 12, buf ); // includes '\0'
+        VersionStr( fp, "FileVersion", 12, buf, sizeof( buf ) ); // includes terminating '\0' of "FileVersion"
         if( buf[0] != '\0' ) {
             // Windows DLL
             strcat( path, buf );
@@ -1761,7 +1763,9 @@ bool AddToUninstallList( bool uninstall )
 {
     HKEY        hkey;
     const char  *val;
-    DWORD       major, minor, dw;
+    DWORD       major;
+    DWORD       minor;
+    DWORD       dw;
     VBUF        buf;
 
     VbufInit( &buf );
@@ -1797,6 +1801,7 @@ bool AddToUninstallList( bool uninstall )
     } else {
         RegDeleteKey( HKEY_LOCAL_MACHINE, VbufString( &buf ) );
     }
+    VbufFree( &buf );
 
     return( true );
 }
@@ -1814,7 +1819,6 @@ bool GenerateBatchFile( bool uninstall )
     char                fname[_MAX_FNAME];
     char                ext[_MAX_EXT];
     bool                *found;
-    char                buf[MAXENVVAR + 1];
 #if defined( __DOS__ ) || defined( __WINDOWS__ )
     bool                isOS2DosBox;
 #endif
@@ -1845,7 +1849,7 @@ bool GenerateBatchFile( bool uninstall )
             if( num_env > 0 ) {
                 found = GUIMemAlloc( num_env * sizeof( bool ) );
                 memset( found, false, num_env * sizeof( bool ) );
-                FinishEnvironmentLines( fp, buf, num_env, found, true );
+                FinishEnvironmentLines( fp, num_env, found, true );
                 GUIMemFree( found );
             }
 #if defined( __DOS__ ) || defined( __WINDOWS__ )

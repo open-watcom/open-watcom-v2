@@ -58,7 +58,7 @@ static bool ddeSendCommand( DWORD ddeinst, HCONV hconv, VBUF *buff )
         return( false );
     }
 
-    hrc = DdeClientTransaction( (LPBYTE) hData, (DWORD)-1L, hconv, (HSZ)NULL, 0L, XTYP_EXECUTE, DDE_WAITTIME, NULL );
+    hrc = DdeClientTransaction( (LPBYTE)hData, (DWORD)-1L, hconv, (HSZ)NULL, 0L, XTYP_EXECUTE, DDE_WAITTIME, NULL );
     if( hrc == (HDDEDATA)NULL ) {
         return( false );
     }
@@ -95,7 +95,7 @@ static bool ddeCreateGroup( DWORD ddeinst, HCONV hconv, VBUF *group, VBUF *fname
 }
 
 static bool ddeDeleteGroup( DWORD ddeinst, HCONV hconv, VBUF *group )
-/****pp*************************************************************/
+/*******************************************************************/
 {
     VBUF    buff;
     bool    ok;
@@ -399,29 +399,31 @@ static bool UseDDE( bool uninstall )
 // Directory names cannot have forward slashes in them, and probably other
 // characters. This is a problem for "C/C++". Not all platforms are restricted
 // like this, so just munge the file name here.
-static void munge_fname( VBUF *buff )
+static void munge_fname( VBUF *name )
+/***********************************/
 {
     const char  *s;
     VBUF        tmp;
     size_t      len;
 
     VbufInit( &tmp );
-    for( s = VbufString( buff ); *s != '\0'; s++ ) {
+    for( s = VbufString( name ); *s != '\0'; s++ ) {
         if( *s == '/' ) {
-//    MessageBox(0, VbufString( buff ), 0, 0);
-            len = s - VbufString( buff );
+//    MessageBox(0, VbufString( name ), 0, 0);
+            len = s - VbufString( name );
             VbufSetStr( &tmp, s + 1 );
-            VbufSetLen( buff, len );
+            VbufSetLen( name, len );
             VbufConcStr( &tmp, " - " );     // replace slash by underscore
-            VbufConcVbuf( buff, &tmp );
-            s = VbufString( buff ) + len + 2;
-//    MessageBox(0, VbufString( buff ), 0, 0);
+            VbufConcVbuf( name, &tmp );
+            s = VbufString( name ) + len + 2;
+//    MessageBox(0, VbufString( name ), 0, 0);
         }
     }
     VbufFree( &tmp );
 }
 
 static void get_group_name( VBUF *buff, VBUF *group )
+/***************************************************/
 {
     LPITEMIDLIST    ppidl;
     char            tmp[_MAX_PATH];
@@ -435,20 +437,21 @@ static void get_group_name( VBUF *buff, VBUF *group )
         VbufConcStr( buff, tmp );
         VbufConcStr( buff, "\\Start Menu\\Programs" );
     }
-    VbufConcStr( buff, "\\" );
+    VbufConcChr( buff, '\\' );
     VbufConcVbuf( buff, group );
     munge_fname( buff );
 }
 
 static bool linkCreateGroup( VBUF *group )
+/****************************************/
 {
-    VBUF            buff;
+    VBUF            dir_name;
     int             rc;
 
-    VbufInit( &buff );
-    get_group_name( &buff, group );
-    rc = mkdir( VbufString( &buff ) );
-    VbufFree( &buff );
+    VbufInit( &dir_name );
+    get_group_name( &dir_name, group );
+    rc = mkdir( VbufString( &dir_name ) );
+    VbufFree( &dir_name );
     if( rc == -1 && errno != EEXIST ) {
         return( false );
     } else {
@@ -457,15 +460,19 @@ static bool linkCreateGroup( VBUF *group )
 }
 
 static void delete_dir( VBUF *dir )
+/*********************************/
 {
     DIR                 *dirp;
     struct dirent       *direntp;
     VBUF                file;
+    size_t              dir_len;
 
     VbufInit( &file );
     // Delete contents of directory
     VbufConcVbuf( &file, dir );
-    VbufConcStr( &file, "\\*.*" );
+    VbufConcChr( &file, '\\' );
+    dir_len = VbufLen( &file );
+    VbufConcStr( &file, "*.*" );
     dirp = opendir( VbufString( &file ) );
     if( dirp != NULL ) {
         for( ;; ) {
@@ -476,8 +483,7 @@ static void delete_dir( VBUF *dir )
             if( direntp->d_attr & 0x10 ) {        /* don't care about directories */
                 continue;
             }
-            VbufSetVbuf( &file, dir );
-            VbufConcStr( &file, "\\" );
+            VbufSetLen( &file, dir_len );
             VbufConcStr( &file, direntp->d_name );
             remove( VbufString( &file ) );
         }
@@ -488,18 +494,18 @@ static void delete_dir( VBUF *dir )
 }
 
 static void linkDeleteGroup( VBUF *group )
+/****************************************/
 {
-    VBUF    buff;
+    VBUF    dir_name;
 
-    VbufInit( &buff );
-    get_group_name( &buff, group );
-    delete_dir( &buff );
-    VbufFree( &buff );
+    VbufInit( &dir_name );
+    get_group_name( &dir_name, group );
+    delete_dir( &dir_name );
+    VbufFree( &dir_name );
 }
 
-static bool linkGroupAddItem( VBUF *group, VBUF *prog_name, VBUF *prog_desc,
-                                            VBUF *prog_args, VBUF *working_dir,
-                                            VBUF *icon_name, int icon_num )
+static bool linkGroupAddItem( VBUF *group, VBUF *prog_name, VBUF *prog_desc, VBUF *prog_args,
+                                            VBUF *working_dir, VBUF *icon_name, int icon_num )
 /********************************************************************************************/
 {
     HRESULT             hres;
@@ -511,7 +517,7 @@ static bool linkGroupAddItem( VBUF *group, VBUF *prog_name, VBUF *prog_desc,
     VbufInit( &link );
     // Determine names of link files
     get_group_name( &link, group );
-    VbufConcStr( &link, "\\" );
+    VbufConcChr( &link, '\\' );
     VbufConcVbuf( &link, prog_desc );
     VbufConcStr( &link, ".lnk" );
     munge_fname( &link );
@@ -652,6 +658,7 @@ static bool UseIShellLink( bool uninstall )
             }
         }
         StatusAmount( num_total_install, num_total_install );
+
         VbufFree( &tmp );
         VbufFree( &prog_args );
         VbufFree( &working_dir );
