@@ -129,7 +129,7 @@ enum {
 extern bool             ConfigModified;
 extern gui_window       *MainWnd;
 
-extern void             ReplaceVars( VBUF *, const char * );
+extern void             ReplaceVars( VBUF *dst, const char *src );
 extern gui_message_return CheckInstallDLL( const char *, vhandle );
 extern gui_message_return CheckInstallNLM( const char *, vhandle );
 extern bool             CreatePMInfo( bool );
