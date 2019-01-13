@@ -54,10 +54,10 @@
 
 #if defined( __NT__ )
 
-static void CreateRegEntry( const char *hive_key, const char *app_name, const char *key_name,
-                     const char *value, const char *file_name, bool add )
+static void CreateRegEntry( VBUF *hive_key, VBUF *app_name, VBUF *key_name,
+                     VBUF *value, VBUF *file_name, bool add )
 {
-    char                buf[_MAX_PATH];
+    VBUF                buf;
     long                rc;
     HKEY                hkey1;
     DWORD               disposition;
@@ -69,60 +69,62 @@ static void CreateRegEntry( const char *hive_key, const char *app_name, const ch
     unsigned char       *bin_buf;
     int                 i;
 
-    strcpy( buf, file_name );
-    len = strlen( buf );
-    if( buf[len - 1] != '\\' ) {
-        strcat( buf, "\\" );
+    VbufInit( &buf );
+    VbufConcVbuf( &buf, file_name );
+    if( VbufString( &buf )[VbufLen( &buf ) - 1] != '\\' ) {
+        VbufConcChr( &buf, '\\' );
     }
-    strcat( buf, app_name );
-    if( stricmp( hive_key, "local_machine" ) == 0 ) {
+    VbufConcVbuf( &buf, app_name );
+    if( stricmp( VbufString( hive_key ), "local_machine" ) == 0 ) {
         key = HKEY_LOCAL_MACHINE;
-    } else if( stricmp( hive_key, "current_user" ) == 0 ) {
+    } else if( stricmp( VbufString( hive_key ), "current_user" ) == 0 ) {
         key = HKEY_CURRENT_USER;
     } else {
         key = HKEY_LOCAL_MACHINE;
     }
     if( add ) {
-        rc = RegCreateKeyEx( key, buf, 0, NULL, REG_OPTION_NON_VOLATILE,
+        rc = RegCreateKeyEx( key, VbufString( &buf ), 0, NULL, REG_OPTION_NON_VOLATILE,
                              KEY_WRITE, NULL, &hkey1, &disposition );
-        if( key_name[0] != '\0' ) {
-            if( value[0] == '#' ) {     // dword
-                dword_val = atoi( value + 1 );
-                rc = RegSetValueEx( hkey1, key_name, 0, REG_DWORD, (CONST BYTE *)&dword_val, sizeof( long ) );
-            } else if( value[0] == '%' ) {      // binary
-                ++value;
-                len = strlen( value );
+        if( VbufLen( key_name ) > 0 ) {
+            if( VbufString( value )[0] == '#' ) {     // dword
+                dword_val = atoi( VbufString( value ) + 1 );
+                rc = RegSetValueEx( hkey1, VbufString( key_name ), 0, REG_DWORD, (CONST BYTE *)&dword_val, sizeof( long ) );
+            } else if( VbufString( value )[0] == '%' ) {      // binary
+                const char *p;
+
+                p = VbufString( value ) + 1;
+                len = VbufLen( value ) - 1;
                 bin_buf = malloc( len / 2 );
                 if( bin_buf != NULL ) {
                     for( i = 0; i < len / 2; ++i ) {
-                        if( tolower( value[0] ) >= 'a' ) {
-                            bin_buf[i] = value[0] - 'a' + 10;
+                        if( tolower( p[0] ) >= 'a' ) {
+                            bin_buf[i] = p[0] - 'a' + 10;
                         } else {
-                            bin_buf[i] = value[0] - '0';
+                            bin_buf[i] = p[0] - '0';
                         }
                         bin_buf[i] = bin_buf[i] * 16;
-                        if( tolower( value[1] ) >= 'a' ) {
-                            bin_buf[i] += value[1] - 'a' + 10;
+                        if( tolower( p[1] ) >= 'a' ) {
+                            bin_buf[i] += p[1] - 'a' + 10;
                         } else {
-                            bin_buf[i] += value[1] - '0';
+                            bin_buf[i] += p[1] - '0';
                         }
-                        value += 2;
+                        p += 2;
                     }
-                    rc = RegSetValueEx( hkey1, key_name, 0, REG_BINARY, bin_buf, (DWORD)( len / 2 ) );
+                    rc = RegSetValueEx( hkey1, VbufString( key_name ), 0, REG_BINARY, bin_buf, (DWORD)( len / 2 ) );
                     free( bin_buf );
                 }
             } else {
-                rc = RegQueryValueEx( hkey1, key_name, NULL, &old_type, NULL, NULL );
+                rc = RegQueryValueEx( hkey1, VbufString( key_name ), NULL, &old_type, NULL, NULL );
                 if( rc == 0 ) {
                     type = old_type;
                 } else {
                     type = REG_SZ;
                 }
-                rc = RegSetValueEx( hkey1, key_name, 0, type, (CONST BYTE *)value, (DWORD)( strlen( value ) + 1 ) );
+                rc = RegSetValueEx( hkey1, VbufString( key_name ), 0, type, (CONST BYTE *)VbufString( value ), (DWORD)( VbufLen( value )  + 1 ) );
             }
         }
     } else {
-        rc = RegDeleteKey( key, buf );
+        rc = RegDeleteKey( key, VbufString( &buf ) );
     }
 }
 
@@ -260,8 +262,8 @@ signed int DecrementDLLUsageCount( const char *path )
 
 #if defined( __WINDOWS__ ) || defined( __NT__ )
 
-static bool ZapKey( const char *app_name, const char *old, const char *new,
-                                const char *file, const char *hive, int pos )
+static bool ZapKey( VBUF *app_name, const char *old, const char *new,
+                                VBUF *file, VBUF *hive, int pos )
 /***************************************************************************/
 {
     FILE        *io;
@@ -272,17 +274,17 @@ static bool ZapKey( const char *app_name, const char *old, const char *new,
     bool        in_sect = false;
 
     /* invalidate cache copy of INI file */
-    app_len = strlen( app_name );
+    app_len = VbufLen( app_name );
     old_len = strlen( old );
-    WritePrivateProfileString( NULL, NULL, NULL, file );
-    io = fopen( hive, "r+t" );
+    WritePrivateProfileString( NULL, NULL, NULL, VbufString( file ) );
+    io = fopen( VbufString( hive ), "r+t" );
     if( io == NULL )
         return( false );
     while( fgets( buff, sizeof( buff ), io ) ) {
         if( buff[0] == '[' ) {
             if( in_sect )
                 break;
-            if( strncmp( app_name, buff + 1, app_len ) == 0 && buff[app_len + 1] == ']' ) {
+            if( strncmp( VbufString( app_name ), buff + 1, app_len ) == 0 && buff[app_len + 1] == ']' ) {
                 in_sect = true;
             }
         } else if( in_sect ) {
@@ -298,16 +300,15 @@ static bool ZapKey( const char *app_name, const char *old, const char *new,
         }
     }
     fclose( io );
-    WritePrivateProfileString( NULL, NULL, NULL, file );
+    WritePrivateProfileString( NULL, NULL, NULL, VbufString( file ) );
     return( false );
 }
 
 #define DEVICE_STRING "device"
 #define ALT_DEVICE    "ecived"
 
-static void AddDevice( const char *app_name, const char *value, const char *file,
-                                                    const char *hive, bool add )
-/*********************************************************************************/
+static void AddDevice( VBUF *app_name, VBUF *value, VBUF *file, VBUF *hive, bool add )
+/***********************************************************************************/
 {
     int         i;
     char        old_name[_MAX_FNAME];
@@ -316,14 +317,14 @@ static void AddDevice( const char *app_name, const char *value, const char *file
     char        new_ext[_MAX_EXT];
     bool        done = false;
 
-    _splitpath( value, NULL, NULL, new_name, new_ext );
+    _splitpath( VbufString( value ), NULL, NULL, new_name, new_ext );
     for( i = 0; ZapKey( app_name, DEVICE_STRING, ALT_DEVICE, file, hive, i ); ++i ) {
         char    value_buf[_MAX_PATH];
 
-        GetPrivateProfileString( app_name, ALT_DEVICE, "", value_buf, sizeof( value_buf ), file );
+        GetPrivateProfileString( VbufString( app_name ), ALT_DEVICE, "", value_buf, sizeof( value_buf ), VbufString( file ) );
         _splitpath( value_buf, NULL, NULL, old_name, old_ext );
         if( stricmp( old_name, new_name ) == 0 && stricmp( old_ext, new_ext ) == 0 ) {
-            WritePrivateProfileString( app_name, ALT_DEVICE, add ? value : NULL, file );
+            WritePrivateProfileString( VbufString( app_name ), ALT_DEVICE, add ? VbufString( value ) : NULL, VbufString( file ) );
             done = true;
         }
         ZapKey( app_name, ALT_DEVICE, DEVICE_STRING, file, hive, 0 );
@@ -332,32 +333,29 @@ static void AddDevice( const char *app_name, const char *value, const char *file
         }
     }
     if( !done && add ) {
-        WritePrivateProfileString( app_name, ALT_DEVICE, value, file );
+        WritePrivateProfileString( VbufString( app_name ), ALT_DEVICE, VbufString( value ), VbufString( file ) );
         ZapKey( app_name, ALT_DEVICE, DEVICE_STRING, file, hive, 0 );
     }
 }
 
-static void WindowsWriteProfile( const char *app_name, const char *key_name,
-                            const char *value, const char *file_name, bool add )
+static void WindowsWriteProfile( VBUF *app_name, VBUF *key_name,
+                            VBUF *value, VBUF *file_name, bool add )
 /******************************************************************************/
 {
-    const char          *key;
     char                *substr;
     size_t              len;
 
-    key = key_name;
-    switch( key[0] ) {
+    switch( VbufString( key_name )[0] ) {
     case '+':
       {
         char    value_buf[VALUE_SIZE];
         VBUF    vbuf;
 
-        ++key;
         VbufInit( &vbuf );
-        GetPrivateProfileString( app_name, key, "", value_buf, sizeof( value_buf ), file_name );
+        GetPrivateProfileString( VbufString( app_name ), VbufString( key_name ) + 1, "", value_buf, sizeof( value_buf ), VbufString( file_name ) );
         VbufConcStr( &vbuf, value_buf );
-        len = strlen( value );
-        substr = stristr( VbufString( &vbuf ), value, len );
+        len = VbufLen( value );
+        substr = stristr( VbufString( &vbuf ), VbufString( value ), len );
         if( substr != NULL ) {
             if( !add ) {
                 VBUF    tmp;
@@ -372,10 +370,10 @@ static void WindowsWriteProfile( const char *app_name, const char *key_name,
             if( add ) {
                 if( VbufLen( &vbuf ) > 0 )
                     VbufConcChr( &vbuf, ' ' );
-                VbufConcStr( &vbuf, value );
+                VbufConcStr( &vbuf, VbufString( value ) );
             }
         }
-        WritePrivateProfileString( app_name, key, VbufString( &vbuf ), file_name );
+        WritePrivateProfileString( VbufString( app_name ), VbufString( key_name ) + 1, VbufString( &vbuf ), VbufString( file_name ) );
         VbufFree( &vbuf );
         break;
       }
@@ -384,25 +382,25 @@ static void WindowsWriteProfile( const char *app_name, const char *key_name,
         VBUF    hive;
 
         VbufInit( &hive );
-        if( strpbrk( file_name, "\\/:" ) == NULL ) {
+        if( strpbrk( VbufString( file_name ), "\\/:" ) == NULL ) {
             char    windir[_MAX_PATH];
 
             GetWindowsDirectory( windir, sizeof( windir ) );
             VbufConcStr( &hive, windir );
             VbufConcChr( &hive, '\\' );
         }
-        VbufConcStr( &hive, file_name );
-        AddDevice( app_name, value, file_name, VbufString( &hive ), add );
+        VbufConcStr( &hive, VbufString( file_name ) );
+        AddDevice( app_name, value, file_name, &hive, add );
         VbufFree( &hive );
         break;
       }
     default:
         if( add ) {
-            WritePrivateProfileString( app_name, key, value, file_name );
+            WritePrivateProfileString( VbufString( app_name ), VbufString( key_name ), VbufString( value ), VbufString( file_name ) );
         } else {
             // if file doesn't exist, Windows creates 0-length file
-            if( access( file_name, F_OK ) == 0 ) {
-                WritePrivateProfileString( app_name, key, NULL, file_name );
+            if( access( VbufString( file_name ), F_OK ) == 0 ) {
+                WritePrivateProfileString( VbufString( app_name ), VbufString( key_name ), NULL, VbufString( file_name ) );
             }
         }
         break;
@@ -413,8 +411,8 @@ static void WindowsWriteProfile( const char *app_name, const char *key_name,
 
 #if defined( __OS2__ )
 
-static void OS2WriteProfile( const char *app_name, const char *key_name,
-                      const char *value, const char *file_name, bool add )
+static void OS2WriteProfile( VBUF *app_name, VBUF *key_name,
+                      VBUF *value, VBUF *file_name, bool add )
 {
     HAB                 hab;
     HINI                hini;
@@ -434,11 +432,11 @@ static void OS2WriteProfile( const char *app_name, const char *key_name,
     }
     // replace os2.ini with filename
     _splitpath( inifile, drive, dir, NULL, NULL );
-    _makepath( inifile, drive, dir, file_name, NULL );
+    _makepath( inifile, drive, dir, VbufString( file_name ), NULL );
     // now we can open the correct ini file
     hini = PrfOpenProfile( hab, inifile );
     if( hini != NULLHANDLE ) {
-        PrfWriteProfileString( hini, app_name, key_name, add ? value : NULL );
+        PrfWriteProfileString( hini, VbufString( app_name ), VbufString( key_name ), add ? VbufString( value ) : NULL );
         PrfCloseProfile( hini );
     }
 }
@@ -487,19 +485,15 @@ void WriteProfileStrings( bool uninstall )
             }
         }
 #if defined( __WINDOWS__ )
-        WindowsWriteProfile( VbufString( &app_name ), VbufString( &key_name ),
-            VbufString( &value ), VbufString( &file_name ), add );
+        WindowsWriteProfile( &app_name, &key_name, &value, &file_name, add );
 #elif defined( __NT__ )
         if( VbufLen( &hive_name ) > 0 ) {
-            CreateRegEntry( VbufString( &hive_name ), VbufString( &app_name ),
-                VbufString( &key_name ), VbufString( &value ), VbufString( &file_name ), add );
+            CreateRegEntry( &hive_name, &app_name, &key_name, &value, &file_name, add );
         } else {
-            WindowsWriteProfile( VbufString( &app_name ), VbufString( &key_name ),
-                VbufString( &value ), VbufString( &file_name ), add );
+            WindowsWriteProfile( &app_name, &key_name, &value, &file_name, add );
         }
 #elif defined( __OS2__ )
-        OS2WriteProfile( VbufString( &app_name ), VbufString( &key_name ),
-                            VbufString( &value ), VbufString( &file_name ), add );
+        OS2WriteProfile( &app_name, &key_name, &value, &file_name, add );
 #endif
     }
     VbufFree( &file_name );

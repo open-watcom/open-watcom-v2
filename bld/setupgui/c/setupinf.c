@@ -2751,20 +2751,20 @@ int SimNumFiles( void )
     return( SetupInfo.files.num );
 }
 
-void SimGetFileDesc( int parm, char *buff )
+void SimGetFileDesc( int parm, VBUF *buff )
 /*****************************************/
 {
     if( FileInfo[parm].num_files == 0 ) {
-        strcpy( buff, FileInfo[parm].filename );
+        VbufSetStr( buff, FileInfo[parm].filename );
     } else {
-        strcpy( buff, FileInfo[parm].files[0].name );
+        VbufSetStr( buff, FileInfo[parm].files[0].name );
     }
 }
 
-void SimGetFileName( int parm, char *buff )
+void SimGetFileName( int parm, VBUF *buff )
 /*****************************************/
 {
-    strcpy( buff, FileInfo[parm].filename );
+    VbufSetStr( buff, FileInfo[parm].filename );
 }
 
 long SimFileSize( int parm )
@@ -2789,10 +2789,10 @@ long SimSubFileSize( int parm, int subfile )
 }
 
 
-int SimFileDisk( int parm, char *buff )
+int SimFileDisk( int parm, VBUF *buff )
 /*************************************/
 {
-    strcpy( buff, DiskInfo[FileInfo[parm].disk_index].desc );
+    VbufSetStr( buff, DiskInfo[FileInfo[parm].disk_index].desc );
     return( FileInfo[parm].disk_index );
 }
 
@@ -2905,10 +2905,10 @@ bool SimSubFileExists( int parm, int subfile )
     return( SimSubFileInOldDir( parm, subfile ) || SimSubFileInNewDir( parm, subfile ) );
 }
 
-void SimSubFileName( int parm, int subfile, char *buff )
+void SimSubFileName( int parm, int subfile, VBUF *buff )
 /******************************************************/
 {
-    strcpy( buff, FileInfo[parm].files[subfile].name );
+    VbufSetStr( buff, FileInfo[parm].files[subfile].name );
 }
 
 vhandle SimSubFileVar( int parm, int subfile )
@@ -3452,21 +3452,23 @@ void SimCalcAddRemove( void )
             if( FileInfo[i].supplimental ) {
                 _splitpath( file->name, NULL, NULL, NULL, ext );
                 if( stricmp( ext, ".DLL" ) == 0 ) {
-                    char        file_desc[MAXBUF];
+                    VBUF        file_desc;
                     VBUF        dir;
-                    char        disk_desc[MAXBUF];
-                    char        file_name[_MAX_FNAME + _MAX_EXT];
-                    int         disk_num;
+//                    char        disk_desc[MAXBUF];
+//                    VBUF        file_name;
+//                    int         disk_num;
                     char        dst_path[_MAX_PATH];
                     bool        flag;
                     int         m;
 
                     VbufInit( &dir );
+                    VbufInit( &file_desc );
                     SimFileDir( i, &dir );
-                    SimGetFileDesc( i, file_desc );
-                    SimGetFileName( i, file_name );
-                    disk_num = SimFileDisk( i, disk_desc );
-                    _makepath( dst_path, NULL, VbufString( &dir ), file_desc, NULL );
+                    SimGetFileDesc( i, &file_desc );
+//                    SimGetFileName( i, &file_name );
+//                    disk_num = SimFileDisk( i, &disk_desc );
+                    _makepath( dst_path, NULL, VbufString( &dir ), VbufString( &file_desc ), NULL );
+                    VbufFree( &file_desc );
                     VbufFree( &dir );
 
                     flag = false;

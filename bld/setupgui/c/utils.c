@@ -1546,7 +1546,7 @@ static bool RelocateFiles( void )
     char                dst_path[_MAX_PATH];
     char                src_path[_MAX_PATH];
     VBUF                dir;
-    char                file_desc[MAXBUF];
+    VBUF                file_desc;
     int                 max_files = SimNumFiles();
     bool                ok;
 
@@ -1567,6 +1567,7 @@ static bool RelocateFiles( void )
         StatusAmount( 0, num_total_install );
     }
     VbufInit( &dir );
+    VbufInit( &file_desc );
     num_installed = 0;
     ok = true;
     for( filenum = 0; ok && filenum < max_files; filenum++ ) {
@@ -1576,10 +1577,10 @@ static bool RelocateFiles( void )
         for( subfilenum = 0; subfilenum < max_subfiles; ++subfilenum ) {
             if( SimSubFileInOldDir( filenum, subfilenum ) ) {
                 SimFileOldDir( filenum, &dir );
-                SimSubFileName( filenum, subfilenum, file_desc );
-                _makepath( src_path, NULL, VbufString( &dir ), file_desc, NULL );
+                SimSubFileName( filenum, subfilenum, &file_desc );
+                _makepath( src_path, NULL, VbufString( &dir ), VbufString( &file_desc ), NULL );
                 SimFileDir( filenum, &dir );
-                _makepath( dst_path, NULL, VbufString( &dir ), file_desc, NULL );
+                _makepath( dst_path, NULL, VbufString( &dir ), VbufString( &file_desc ), NULL );
                 StatusLines( STAT_SAME, src_path );
                 if( SimSubFileInNewDir( filenum, subfilenum ) ) {
                     remove( dst_path );
@@ -1597,6 +1598,7 @@ static bool RelocateFiles( void )
             }
         }
     }
+    VbufFree( &file_desc );
     VbufFree( &dir );
     if( num_total_install != 0 ) {
         StatusLines( STAT_RELOCATING, "" );
@@ -1741,11 +1743,11 @@ static bool DoCopyFiles( void )
     char                dst_path[_MAX_PATH];
     char                tmp_path[_MAX_PATH];
     char                src_path[_MAX_PATH];
-    char                file_name[_MAX_FNAME + _MAX_EXT];
-    char                file_desc[MAXBUF];
+//    VBUF                file_name;
+    VBUF                file_desc;
     VBUF                dir;
     VBUF                tmp;
-    char                disk_desc[MAXBUF];
+//    VBUF                disk_desc;
     VBUF                old_dir;
     long                num_total_install;
     long                num_installed;
@@ -1765,6 +1767,7 @@ static bool DoCopyFiles( void )
     VbufInit( &dir );
     VbufInit( &old_dir );
     VbufInit( &tmp );
+    VbufInit( &file_desc );
     num_total_install = 0;
     ok = true;
     for( filenum = 0; ok && filenum < max_files; filenum++ ) {
@@ -1777,8 +1780,8 @@ static bool DoCopyFiles( void )
             max_subfiles = SimNumSubFiles( filenum );
             for( subfilenum = 0; subfilenum < max_subfiles; ++subfilenum ) {
                 if( SimSubFileReadOnly( filenum, subfilenum ) ) {
-                    SimSubFileName( filenum, subfilenum, file_desc );
-                    _makepath( tmp_path, NULL, VbufString( &dir ), file_desc, NULL );
+                    SimSubFileName( filenum, subfilenum, &file_desc );
+                    _makepath( tmp_path, NULL, VbufString( &dir ), VbufString( &file_desc ), NULL );
                     if( !PromptUser( tmp_path, "ReadOnlyFile", "RO_Skip_Dialog", "RO_Replace_Old", &resp_replace ) ) {
                         ok = false;
                         break;
@@ -1788,9 +1791,9 @@ static bool DoCopyFiles( void )
                     }
                 }
                 if( SimSubFileNewer( filenum, subfilenum ) ) {
-                    SimSubFileName( filenum, subfilenum, file_desc );
+                    SimSubFileName( filenum, subfilenum, &file_desc );
 //                  _splitpath( file_desc, NULL, NULL, NULL, file_ext );
-                    _makepath( tmp_path, NULL, VbufString( &dir ), file_desc, NULL );
+                    _makepath( tmp_path, NULL, VbufString( &dir ), VbufString( &file_desc ), NULL );
                     if( !PromptUser( tmp_path, "NewerFile", "Newer_Skip_Dialog", "Newer_Replace_Old", &resp_replace ) ) {
                         ok = false;
                         break;
@@ -1806,8 +1809,8 @@ static bool DoCopyFiles( void )
                 if( !SimSubFileExists( filenum, subfilenum ) )
                     continue;
                 if( SimSubFileReadOnly( filenum, subfilenum ) ) {
-                    SimSubFileName( filenum, subfilenum, file_desc );
-                    _makepath( tmp_path, NULL, VbufString( &dir ), file_desc, NULL );
+                    SimSubFileName( filenum, subfilenum, &file_desc );
+                    _makepath( tmp_path, NULL, VbufString( &dir ), VbufString( &file_desc ), NULL );
                     if( !PromptUser( tmp_path, "DeleteReadOnlyFile", "RO_Skip_Remove", "RO_Remove_Old", &resp_replace ) ) {
                         ok = false;
                         break;
@@ -1837,13 +1840,13 @@ static bool DoCopyFiles( void )
                     if( !SimSubFileExists( filenum, subfilenum ) )
                         continue;
                     num_installed += OVERHEAD_SIZE;
-                    SimSubFileName( filenum, subfilenum, file_desc );
-                    _makepath( tmp_path, NULL, VbufString( &dir ), file_desc, NULL );
+                    SimSubFileName( filenum, subfilenum, &file_desc );
+                    _makepath( tmp_path, NULL, VbufString( &dir ), VbufString( &file_desc ), NULL );
                     StatusLines( STAT_REMOVING, tmp_path );
                     remove( tmp_path );
                     if( SimSubFileInOldDir( filenum, subfilenum ) ) {
                         SimFileOldDir( filenum, &old_dir );
-                        _makepath( tmp_path, NULL, VbufString( &old_dir ), file_desc, NULL );
+                        _makepath( tmp_path, NULL, VbufString( &old_dir ), VbufString( &file_desc ), NULL );
                         StatusLines( STAT_REMOVING, tmp_path );
                         remove( tmp_path );
                     }
@@ -1879,13 +1882,13 @@ static bool DoCopyFiles( void )
                     continue;
                 }
                 SimFileDir( filenum, &dir );
-                SimGetFileDesc( filenum, file_desc );
-                SimGetFileName( filenum, file_name );
-//                disk_num = SimFileDisk( filenum, disk_desc );
-                SimFileDisk( filenum, disk_desc );
+                SimGetFileDesc( filenum, &file_desc );
+//                SimGetFileName( filenum, &file_name );
+//                disk_num = SimFileDisk( filenum, &disk_desc );
+//                SimFileDisk( filenum, &disk_desc );
 
 //                _splitpath( file_desc, NULL, NULL, NULL, file_ext );
-                _makepath( dst_path, NULL, VbufString( &dir ), file_desc, NULL );
+                _makepath( dst_path, NULL, VbufString( &dir ), VbufString( &file_desc ), NULL );
 
                 cp = GetVariableStrVal( "DstDir" );
                 len = strlen( cp );
@@ -1901,7 +1904,7 @@ static bool DoCopyFiles( void )
                     strcat( p1, VbufString( &dir ) + len );
                 }
                 p = p1 + strlen( p1 );
-                strcpy( p, file_desc );
+                strcpy( p, VbufString( &file_desc ) );
 
                 if( StatusCancelled() ) {
                     ok = false;
@@ -1911,12 +1914,12 @@ static bool DoCopyFiles( void )
                 max_subfiles = SimNumSubFiles( filenum );
                 for( subfilenum = 0; ok && subfilenum < max_subfiles; ++subfilenum ) {
                     do {
-                        SimSubFileName( filenum, subfilenum, file_desc );
+                        SimSubFileName( filenum, subfilenum, &file_desc );
                         var_handle = SimSubFileVar( filenum, subfilenum );
-                        _makepath( tmp_path, NULL, VbufString( &dir ), file_desc, NULL );
+                        _makepath( tmp_path, NULL, VbufString( &dir ), VbufString( &file_desc ), NULL );
 
                         *p = '\0';  // nuke name from end of src_path
-                        strcpy( p, file_desc );
+                        strcpy( p, VbufString( &file_desc ) );
                         StatusLines( STAT_COPYINGFILE, tmp_path );
                         UnPackHook( filenum, subfilenum, tmp_path );
                         copy_error = DoCopyFile( src_path, tmp_path, false );
@@ -1975,6 +1978,7 @@ static bool DoCopyFiles( void )
         }
         StatusAmount( num_total_install, num_total_install );
     }
+    VbufFree( &file_desc );
     VbufFree( &tmp );
     VbufFree( &old_dir );
     VbufFree( &dir );
