@@ -30,10 +30,19 @@
 
 
 #include <stddef.h>
-#if defined( __WINDOWS__ )
+#if defined( __DOS__ )
+    #include <dos.h>
+#elif defined( __WINDOWS__ )
     #include <windows.h>
+    #include <dos.h>
 #elif defined( __NT__ )
     #include <windows.h>
+  #ifdef INCLUDE_COMMDLG_H
+    #include <commdlg.h>
+  #endif
+  #ifdef INCLUDE_DDEML_H
+    #include <ddeml.h>
+  #endif
 #elif defined( __OS2__ )
     #define  INCL_DOSMISC
     // For WPI

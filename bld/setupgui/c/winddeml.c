@@ -30,13 +30,11 @@
 ****************************************************************************/
 
 
+#define INCLUDE_DDEML_H
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
-#define INCLUDE_DDEML_H
-#include <windows.h>
-#include <ddeml.h>
 #include "watcom.h"
 #include "setup.h"
 #include "setupinf.h"

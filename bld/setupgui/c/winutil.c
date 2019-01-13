@@ -29,16 +29,13 @@
 ****************************************************************************/
 
 
+#define INCLUDE_COMMDLG_H
+#define INCL_WINSHELLDATA
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
 #include <sys/types.h>
-#if defined( __WINDOWS__ )
-    #define INCLUDE_COMMDLG_H
-#elif defined( __OS2__ )
-    #define INCL_WINSHELLDATA
-#endif
 #include "wio.h"
 #include "watcom.h"
 #include "setup.h"

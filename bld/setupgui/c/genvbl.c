@@ -35,9 +35,6 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <stdio.h>
-#ifdef __NT__
-    #include <windows.h>
-#endif
 #include "wio.h"
 #include "setup.h"
 #include "guiutil.h"

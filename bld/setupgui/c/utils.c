@@ -44,7 +44,6 @@
   #include <dirent.h>
 #else
   #include <sys/utime.h>
-  #include <dos.h>
   #include <direct.h>
 #endif
 #include "wio.h"

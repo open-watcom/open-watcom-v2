@@ -35,14 +35,6 @@
 #include <ctype.h>
 #include <sys/types.h>
 #include <time.h>
-#if defined( __DOS__ )
-    #include <dos.h>
-#elif defined( __WINDOWS__ ) || defined( __NT__ )
-    #include <windows.h>
-#elif defined( __OS2__ )
-    #define INCL_DOSMISC
-    #include <os2.h>
-#endif
 #include "wio.h"
 #include "watcom.h"
 #include "setup.h"
@@ -1736,8 +1728,9 @@ bool ModifyRegAssoc( bool uninstall )
                 continue;
             SimGetAssociationExt( i, ext );
             SimGetAssociationKeyName( i, keyname );
-            sprintf( buff1, ".%s", ext );
-            RegCreateKey( HKEY_CLASSES_ROOT, buff1, &hkey );
+            VbufSetChr( &buff2, '.' );
+            VbufConcStr( &buff2, ext );
+            RegCreateKey( HKEY_CLASSES_ROOT, VbufString( &buff2 ), &hkey );
             RegSetValue( hkey, NULL, REG_SZ, keyname, (DWORD)strlen( keyname ) );
             RegCloseKey( hkey );
             RegCreateKey( HKEY_CLASSES_ROOT, keyname, &hkey );
@@ -1745,12 +1738,15 @@ bool ModifyRegAssoc( bool uninstall )
             RegSetValue( hkey, NULL, REG_SZ, buff1, (DWORD)strlen( buff1 ) );
             SimGetAssociationProgram( i, program );
             if( SimGetAssociationNoOpen( i ) != 1 ) {
-                sprintf( buff1, "%s %%1", program );
-                ReplaceVars( &buff2, buff1 );
+                VbufSetStr( &buff2, program );
+                VbufConcStr( &buff2, " %%1" );
+                ReplaceVars( &buff2, NULL );
                 RegSetValue( hkey, "shell\\open\\command", REG_SZ, VbufString( &buff2 ), (DWORD)VbufLen( &buff2 ) );
             }
-            sprintf( buff1, "%s,%d", program, SimGetAssociationIconIndex( i ) );
-            ReplaceVars( &buff2, buff1 );
+            VbufSetStr( &buff2, program );
+            VbufConcChr( &buff2, ',' );
+            VbufConcInteger( &buff2, SimGetAssociationIconIndex( i ) );
+            ReplaceVars( &buff2, NULL );
             RegSetValue( hkey, "DefaultIcon", REG_SZ, VbufString( &buff2 ), (DWORD)VbufLen( &buff2 ) );
             RegCloseKey( hkey );
         }

@@ -41,9 +41,6 @@
     #include <sys/utime.h>
     #include <direct.h>
 #endif
-#if defined( __WINDOWS__ ) || defined( __NT__ )
-    #include <windows.h>
-#endif
 #include "wio.h"
 #include "setup.h"
 #include "guistr.h"
