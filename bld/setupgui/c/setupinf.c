@@ -3200,28 +3200,28 @@ int SimNumAssociations( void )
     return( SetupInfo.associations.num );
 }
 
-void SimGetAssociationExt( int parm, char *buff )
+void SimGetAssociationExt( int parm, VBUF *buff )
 /***********************************************/
 {
-    strcpy( buff, AssociationInfo[parm].ext );
+    VbufSetStr( buff, AssociationInfo[parm].ext );
 }
 
-void SimGetAssociationKeyName( int parm, char *buff )
+void SimGetAssociationKeyName( int parm, VBUF *buff )
 /***************************************************/
 {
-    strcpy( buff, AssociationInfo[parm].keyname );
+    VbufSetStr( buff, AssociationInfo[parm].keyname );
 }
 
-void SimGetAssociationProgram( int parm, char *buff )
+void SimGetAssociationProgram( int parm, VBUF *buff )
 /***************************************************/
 {
-    strcpy( buff, AssociationInfo[parm].program );
+    VbufSetStr( buff, AssociationInfo[parm].program );
 }
 
-void SimGetAssociationDescription( int parm, char *buff )
+void SimGetAssociationDescription( int parm, VBUF *buff )
 /*******************************************************/
 {
-    strcpy( buff, AssociationInfo[parm].description );
+    VbufSetStr( buff, AssociationInfo[parm].description );
 }
 
 int SimGetAssociationIconIndex( int parm )
@@ -3303,7 +3303,7 @@ const char *SimGetTargetDriveLetter( int parm, VBUF *buff )
     } else if( VbufString( buff )[0] != '\\' || VbufString( buff )[1] != '\\' ) {
         if( VbufString( buff )[0] == '\\' && VbufString( buff )[1] != '\\' ) {
             getcwd( temp, sizeof( temp ) );
-            VbufPrepStr( buff, &temp );
+            VbufPrepStr( buff, temp );
         } else if( VbufString( buff )[1] != ':' ) {
             getcwd( temp, sizeof( temp ) );
             VbufSetStr( buff, temp );

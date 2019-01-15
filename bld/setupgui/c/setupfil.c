@@ -1683,7 +1683,7 @@ bool ModifyConfiguration( bool uninstall )
                         modify_value_list( &cur_val, &next_val, PATH_LIST_SEP, append, uninstall );
                     }
                 }
-                fprintf( fp, "\n    %s\n", cur_val );
+                fprintf( fp, "\n    %s\n", VbufString( &cur_val ) );
             }
             fclose( fp );
         }
@@ -1709,11 +1709,10 @@ bool ModifyRegAssoc( bool uninstall )
 /***********************************/
 {
     HKEY    hkey;
-    char    buff1[256];
-    VBUF    buff2;
-    char    ext[16];
-    char    keyname[256];
-    char    program[256];
+    VBUF    temp;
+    VBUF    ext;
+    VBUF    keyname;
+    VBUF    program;
     int     num;
     int     i;
 
@@ -1724,36 +1723,42 @@ bool ModifyRegAssoc( bool uninstall )
         if( GetVariableBoolVal( "NoModEnv" ) ) {
             return( true );
         }
-        VbufInit( &buff2 );
+        VbufInit( &temp );
+        VbufInit( &ext );
+        VbufInit( &keyname );
+        VbufInit( &program );
         num = SimNumAssociations();
         for( i = 0; i < num; i++ ) {
             if( !SimCheckAssociationCondition( i ) )
                 continue;
-            SimGetAssociationExt( i, ext );
-            SimGetAssociationKeyName( i, keyname );
-            VbufSetChr( &buff2, '.' );
-            VbufConcStr( &buff2, ext );
-            RegCreateKey( HKEY_CLASSES_ROOT, VbufString( &buff2 ), &hkey );
-            RegSetValue( hkey, NULL, REG_SZ, keyname, (DWORD)strlen( keyname ) );
+            SimGetAssociationExt( i, &ext );
+            SimGetAssociationKeyName( i, &keyname );
+            VbufSetChr( &temp, '.' );
+            VbufConcVbuf( &temp, &ext );
+            RegCreateKey( HKEY_CLASSES_ROOT, VbufString( &temp ), &hkey );
+            RegSetValue( hkey, NULL, REG_SZ, VbufString( &keyname ), (DWORD)VbufLen( &keyname ) );
             RegCloseKey( hkey );
-            RegCreateKey( HKEY_CLASSES_ROOT, keyname, &hkey );
-            SimGetAssociationDescription( i, buff1 );
-            RegSetValue( hkey, NULL, REG_SZ, buff1, (DWORD)strlen( buff1 ) );
-            SimGetAssociationProgram( i, program );
+            RegCreateKey( HKEY_CLASSES_ROOT, VbufString( &keyname ), &hkey );
+            SimGetAssociationDescription( i, &temp );
+            RegSetValue( hkey, NULL, REG_SZ, VbufString( &temp ), (DWORD)VbufLen( &temp ) );
+            SimGetAssociationProgram( i, &program );
             if( SimGetAssociationNoOpen( i ) != 1 ) {
-                VbufSetStr( &buff2, program );
-                VbufConcStr( &buff2, " %%1" );
-                ReplaceVars( &buff2, NULL );
-                RegSetValue( hkey, "shell\\open\\command", REG_SZ, VbufString( &buff2 ), (DWORD)VbufLen( &buff2 ) );
+                VbufSetVbuf( &temp, &program );
+                VbufConcStr( &temp, " %%1" );
+                ReplaceVars( &temp, NULL );
+                RegSetValue( hkey, "shell\\open\\command", REG_SZ, VbufString( &temp ), (DWORD)VbufLen( &temp ) );
             }
-            VbufSetStr( &buff2, program );
-            VbufConcChr( &buff2, ',' );
-            VbufConcInteger( &buff2, SimGetAssociationIconIndex( i ), 0 );
-            ReplaceVars( &buff2, NULL );
-            RegSetValue( hkey, "DefaultIcon", REG_SZ, VbufString( &buff2 ), (DWORD)VbufLen( &buff2 ) );
+            VbufSetVbuf( &temp, &program );
+            VbufConcChr( &temp, ',' );
+            VbufConcInteger( &temp, SimGetAssociationIconIndex( i ), 0 );
+            ReplaceVars( &temp, NULL );
+            RegSetValue( hkey, "DefaultIcon", REG_SZ, VbufString( &temp ), (DWORD)VbufLen( &temp ) );
             RegCloseKey( hkey );
         }
-        VbufFree( &buff2 );
+        VbufFree( &program );
+        VbufFree( &keyname );
+        VbufFree( &ext );
+        VbufFree( &temp );
     }
 
     return( true );
