@@ -1704,32 +1704,42 @@ static void CopySetupInfFile( void )
     VbufFree( &tmp_path );
 }
 
-static int UnPackHook( int filenum, int subfilenum, char *name )
+static int UnPackHook( int filenum, int subfilenum, VBUF *name )
 /**************************************************************/
 {
-    char        drive[_MAX_DRIVE];
-    char        dir[_MAX_DIR];
-    char        fname[_MAX_FNAME];
-    char        ext[_MAX_EXT];
+    VBUF        drive;
+    VBUF        dir;
+    VBUF        fname;
+    VBUF        ext;
     int         rc;
 
+    VbufInit( &drive );
+    VbufInit( &dir );
+    VbufInit( &fname );
+    VbufInit( &ext );
     if( SimSubFileIsNLM( filenum, subfilenum ) ) {
-        NewFileToCheck( name, false );
-        _splitpath( name, drive, dir, fname, ext );
-        _makepath( name, drive, dir, fname, "._N_" );
+        NewFileToCheck( VbufString( name ), false );
+        VbufSplitpath( name, &drive, &dir, &fname, &ext );
+        VbufSetStr( &ext, "._N_" );
+        VbufMakepath( name, &drive, &dir, &fname, &ext );
         rc = 1;
     } else if( SimSubFileIsDLL( filenum, subfilenum ) ) {
-        NewFileToCheck( name, true );
+        NewFileToCheck( VbufString( name ), true );
 #ifdef EXTRA_CAUTIOUS_FOR_DLLS
         if( !IsPatch ) {
-            _splitpath( name, drive, dir, fname, ext );
-            _makepath( name, drive, dir, fname, "._D_" );
+            VbufSplitpath( name, &drive, &dir, &fname, &ext );
+            VbufSetStr( &ext, "._D_" );
+            VbufMakepath( name, &drive, &dir, &fname, &ext );
         }
 #endif
         rc = 1;
     } else {
         rc = 0;
     }
+    VbufFree( &ext );
+    VbufFree( &fname );
+    VbufFree( &dir );
+    VbufFree( &drive );
     return( rc );
 }
 
@@ -1741,7 +1751,7 @@ static bool DoCopyFiles( void )
     int                 subfilenum, max_subfiles;
     COPYFILE_ERROR      copy_error;
     char                dst_path[_MAX_PATH];
-    char                tmp_path[_MAX_PATH];
+    VBUF                tmp_path;
     char                src_path[_MAX_PATH];
 //    VBUF                file_name;
     VBUF                file_desc;
@@ -1768,6 +1778,7 @@ static bool DoCopyFiles( void )
     VbufInit( &old_dir );
     VbufInit( &tmp );
     VbufInit( &file_desc );
+    VbufInit( &tmp_path );
     num_total_install = 0;
     ok = true;
     for( filenum = 0; ok && filenum < max_files; filenum++ ) {
@@ -1781,25 +1792,25 @@ static bool DoCopyFiles( void )
             for( subfilenum = 0; subfilenum < max_subfiles; ++subfilenum ) {
                 if( SimSubFileReadOnly( filenum, subfilenum ) ) {
                     SimSubFileName( filenum, subfilenum, &file_desc );
-                    _makepath( tmp_path, NULL, VbufString( &dir ), VbufString( &file_desc ), NULL );
-                    if( !PromptUser( tmp_path, "ReadOnlyFile", "RO_Skip_Dialog", "RO_Replace_Old", &resp_replace ) ) {
+                    VbufMakepath( &tmp_path, NULL, &dir, &file_desc, NULL );
+                    if( !PromptUser( &tmp_path, "ReadOnlyFile", "RO_Skip_Dialog", "RO_Replace_Old", &resp_replace ) ) {
                         ok = false;
                         break;
                     }
                     if( resp_replace ) {
-                        chmod( tmp_path, PMODE_W_USR );
+                        chmod( VbufString( &tmp_path ), PMODE_W_USR );
                     }
                 }
                 if( SimSubFileNewer( filenum, subfilenum ) ) {
                     SimSubFileName( filenum, subfilenum, &file_desc );
 //                  _splitpath( file_desc, NULL, NULL, NULL, file_ext );
-                    _makepath( tmp_path, NULL, VbufString( &dir ), VbufString( &file_desc ), NULL );
-                    if( !PromptUser( tmp_path, "NewerFile", "Newer_Skip_Dialog", "Newer_Replace_Old", &resp_replace ) ) {
+                    VbufMakepath( &tmp_path, NULL, &dir, &file_desc, NULL );
+                    if( !PromptUser( &tmp_path, "NewerFile", "Newer_Skip_Dialog", "Newer_Replace_Old", &resp_replace ) ) {
                         ok = false;
                         break;
                     }
                     if( resp_replace ) {
-                        SetFileDate( tmp_path, SimSubFileDate( filenum, subfilenum ) - 1 );
+                        SetFileDate( VbufString( &tmp_path ), SimSubFileDate( filenum, subfilenum ) - 1 );
                     }
                 }
             }
@@ -1810,13 +1821,13 @@ static bool DoCopyFiles( void )
                     continue;
                 if( SimSubFileReadOnly( filenum, subfilenum ) ) {
                     SimSubFileName( filenum, subfilenum, &file_desc );
-                    _makepath( tmp_path, NULL, VbufString( &dir ), VbufString( &file_desc ), NULL );
-                    if( !PromptUser( tmp_path, "DeleteReadOnlyFile", "RO_Skip_Remove", "RO_Remove_Old", &resp_replace ) ) {
+                    VbufMakepath( &tmp_path, NULL, &dir, &file_desc, NULL );
+                    if( !PromptUser( &tmp_path, "DeleteReadOnlyFile", "RO_Skip_Remove", "RO_Remove_Old", &resp_replace ) ) {
                         ok = false;
                         break;
                     }
                     if( resp_replace ) {
-                        chmod( tmp_path, PMODE_W_USR );
+                        chmod( VbufString( &tmp_path ), PMODE_W_USR );
                         num_total_install += OVERHEAD_SIZE;
                     }
                 } else {
@@ -1841,14 +1852,14 @@ static bool DoCopyFiles( void )
                         continue;
                     num_installed += OVERHEAD_SIZE;
                     SimSubFileName( filenum, subfilenum, &file_desc );
-                    _makepath( tmp_path, NULL, VbufString( &dir ), VbufString( &file_desc ), NULL );
-                    StatusLines( STAT_REMOVING, tmp_path );
-                    remove( tmp_path );
+                    VbufMakepath( &tmp_path, NULL, &dir, &file_desc, NULL );
+                    StatusLinesVbuf( STAT_REMOVING, &tmp_path );
+                    remove( VbufString( &tmp_path ) );
                     if( SimSubFileInOldDir( filenum, subfilenum ) ) {
                         SimFileOldDir( filenum, &old_dir );
-                        _makepath( tmp_path, NULL, VbufString( &old_dir ), VbufString( &file_desc ), NULL );
-                        StatusLines( STAT_REMOVING, tmp_path );
-                        remove( tmp_path );
+                        VbufMakepath( &tmp_path, NULL, &old_dir, &file_desc, NULL );
+                        StatusLinesVbuf( STAT_REMOVING, &tmp_path );
+                        remove( VbufString( &tmp_path ) );
                     }
                     StatusAmount( num_installed, num_total_install );
                     if( StatusCancelled() ) {
@@ -1916,13 +1927,13 @@ static bool DoCopyFiles( void )
                     do {
                         SimSubFileName( filenum, subfilenum, &file_desc );
                         var_handle = SimSubFileVar( filenum, subfilenum );
-                        _makepath( tmp_path, NULL, VbufString( &dir ), VbufString( &file_desc ), NULL );
+                        VbufMakepath( &tmp_path, NULL, &dir, &file_desc, NULL );
 
                         *p = '\0';  // nuke name from end of src_path
                         strcpy( p, VbufString( &file_desc ) );
-                        StatusLines( STAT_COPYINGFILE, tmp_path );
-                        UnPackHook( filenum, subfilenum, tmp_path );
-                        copy_error = DoCopyFile( src_path, tmp_path, false );
+                        StatusLinesVbuf( STAT_COPYINGFILE, &tmp_path );
+                        UnPackHook( filenum, subfilenum, &tmp_path );
+                        copy_error = DoCopyFile( src_path, VbufString( &tmp_path ), false );
 
                         switch( copy_error ) {
                         case CFE_ABORT:
@@ -1944,7 +1955,7 @@ static bool DoCopyFiles( void )
                             ret = MsgBox( NULL, "IDS_CANTOPENSRC", GUI_RETRY_CANCEL, src_path  );
                             break;
                         case CFE_CANTOPENDST:
-                            ret = MsgBox( NULL, "IDS_CANTOPENDST", GUI_RETRY_CANCEL, tmp_path );
+                            ret = MsgBoxVbuf( NULL, "IDS_CANTOPENDST", GUI_RETRY_CANCEL, &tmp_path );
                             break;
                         }
                         if( ret == GUI_RET_CANCEL ) {
@@ -1954,10 +1965,10 @@ static bool DoCopyFiles( void )
                     } while( copy_error != CFE_NOERROR );
                     if( ok ) {
                         if( SimSubFileExecutable( filenum, subfilenum ) ) {
-                            chmod( tmp_path, DEF_EXEC );
+                            chmod( VbufString( &tmp_path ), DEF_EXEC );
                         }
-                        SetVariableByHandle( var_handle, tmp_path );
-                        UpdateCheckList( tmp_path, var_handle );
+                        SetVariableByHandle( var_handle, VbufString( &tmp_path ) );
+                        UpdateCheckList( VbufString( &tmp_path ), var_handle );
                     }
                 }
                 if( ok ) {
@@ -1978,6 +1989,7 @@ static bool DoCopyFiles( void )
         }
         StatusAmount( num_total_install, num_total_install );
     }
+    VbufFree( &tmp_path );
     VbufFree( &file_desc );
     VbufFree( &tmp );
     VbufFree( &old_dir );
@@ -2346,12 +2358,12 @@ gui_message_return MsgBox( gui_window *gui, const char *msg_id,
 }
 
 
-bool PromptUser( const char *name, const char *dlg, const char *skip, const char *replace, bool *resp_replace )
-/*************************************************************************************************************/
+bool PromptUser( VBUF *name, const char *dlg, const char *skip, const char *replace, bool *resp_replace )
+/*******************************************************************************************************/
 {
     dlg_state       return_state;
 
-    SetVariableByName( "FileDesc", name );
+    SetVariableByName( "FileDesc", VbufString( name ) );
 
     // don't display the dialog if the user selected the "Skip dialog" option
     if( !GetVariableBoolVal( skip ) ) {

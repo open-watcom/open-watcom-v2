@@ -54,7 +54,7 @@ extern char             *stristr( const char *str, const char *substr, size_t su
 extern void             Log( char *start, ... );
 extern bool             CheckUpgrade( void );
 extern char             *GetInstallName( void );
-extern bool             PromptUser( const char *name, const char *dlg, const char *skip, const char *replace, bool *resp_replace );
+extern bool             PromptUser( VBUF *name, const char *dlg, const char *skip, const char *replace, bool *resp_replace );
 #if defined( __NT__ ) || defined( __WINDOWS__ )
 extern bool             GetRootFromPath( char *root, const char *path );
 extern disk_size        FreeSpace( const char *path );
