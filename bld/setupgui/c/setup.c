@@ -351,10 +351,10 @@ void GUImain( void )
                     }
                     // construct new path relative to previous
                     ReplaceVars( &new_inf, GetVariableStrVal( "SetupPath" ) );
-                    VbufSplitpath( VbufString( &current_dir ), &drive, &dir, NULL, NULL );
-                    VbufMakepath( &inf_name, VbufString( &drive ), VbufString( &dir ), VbufString( &new_inf ), NULL );
-                    VbufSplitpath( VbufString( &inf_name ), &drive, &dir, NULL, NULL );
-                    VbufMakepath( &src_path, VbufString( &drive ), VbufString( &dir ), NULL, NULL );
+                    VbufSplitpath( &current_dir, &drive, &dir, NULL, NULL );
+                    VbufMakepath( &inf_name, &drive, &dir, &new_inf, NULL );
+                    VbufSplitpath( &inf_name, &drive, &dir, NULL, NULL );
+                    VbufMakepath( &src_path, &drive, &dir, NULL, NULL );
                     VbufRemDirSep( &src_path );
                 }
                 FreeDefaultDialogs();

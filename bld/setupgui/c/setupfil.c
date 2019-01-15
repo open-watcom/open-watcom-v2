@@ -1748,7 +1748,7 @@ bool ModifyRegAssoc( bool uninstall )
             }
             VbufSetStr( &buff2, program );
             VbufConcChr( &buff2, ',' );
-            VbufConcInteger( &buff2, SimGetAssociationIconIndex( i ) );
+            VbufConcInteger( &buff2, SimGetAssociationIconIndex( i ), 0 );
             ReplaceVars( &buff2, NULL );
             RegSetValue( hkey, "DefaultIcon", REG_SZ, VbufString( &buff2 ), (DWORD)VbufLen( &buff2 ) );
             RegCloseKey( hkey );
@@ -1789,9 +1789,9 @@ bool AddToUninstallList( bool uninstall )
         minor = GetVariableIntVal( "UninstallMinorVersion" );
         RegSetValueEx( hkey, "VersionMinor", 0L, REG_DWORD, (LPBYTE)&minor, (DWORD)( sizeof( DWORD ) ) );
         VbufRewind( &buf );
-        VbufConcInteger( &buf, major );
+        VbufConcInteger( &buf, major, 0 );
         VbufConcChr( &buf, '.' );
-        VbufConcInteger( &buf, minor );
+        VbufConcInteger( &buf, minor, 0 );
         RegSetValueEx( hkey, "DisplayVersion", 0L, REG_SZ, (LPBYTE)VbufString( &buf ), (DWORD)( VbufLen( &buf ) + 1 ) );
         val = GetVariableStrVal( "DstDir" );
         RegSetValueEx( hkey, "InstallLocation", 0L, REG_SZ, (LPBYTE)val, (DWORD)( strlen( val ) + 1 ) );
@@ -1815,22 +1815,27 @@ bool GenerateBatchFile( bool uninstall )
     int                 num_env;
     VBUF                batch_file;
     FILE                *fp;
-    char                drive[_MAX_DRIVE];
-    char                dir[_MAX_DIR];
-    char                fname[_MAX_FNAME];
-    char                ext[_MAX_EXT];
+    VBUF                drive;
+    VBUF                dir;
+    VBUF                fname;
+    VBUF                ext;
     bool                *found;
 #if defined( __DOS__ ) || defined( __WINDOWS__ )
     bool                isOS2DosBox;
 #endif
 
     VbufInit( &batch_file );
+    VbufInit( &drive );
+    VbufInit( &dir );
+    VbufInit( &fname );
+    VbufInit( &ext );
+
     ReplaceVars( &batch_file, GetVariableStrVal( "BatchFileName" ) );
-    _splitpath( VbufString( &batch_file ), drive, dir, fname, ext );
-    if( ext[0] == '\0' ) {
-        strcpy( ext, BATCHEXT );
+    VbufSplitpath( &batch_file, &drive, &dir, &fname, &ext );
+    if( VbufLen( &ext ) == 0 ) {
+        VbufConcStr( &ext, BATCHEXT );
     }
-    VbufMakepath( &batch_file, drive, dir, fname, ext );
+    VbufMakepath( &batch_file, &drive, &dir, &fname, &ext );
     if( uninstall ) {
         remove( VbufString( &batch_file ) );
     } else {
@@ -1859,6 +1864,10 @@ bool GenerateBatchFile( bool uninstall )
             fclose( fp );
         }
     }
+    VbufInit( &ext );
+    VbufInit( &fname );
+    VbufInit( &dir );
+    VbufInit( &drive );
     VbufFree( &batch_file );
     return( true );
 }

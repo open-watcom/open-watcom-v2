@@ -2556,25 +2556,28 @@ bool GetDirParams( int argc, char **argv, VBUF *inf_name, VBUF *src_path, VBUF *
         VbufSetStr( inf_name, argv[i] );
         i++;
     } else {
-        char        buff[_MAX_PATH];
-
         // If archive exists, expect setup.inf inside. Otherwise assume
         // it's right next to the setup executable.
         if( access( VbufString( arc_name ), R_OK ) == 0 ) {
             VbufSetStr( inf_name, "setup.inf" );
         } else {
+            VBUF    temp;
+
+            VbufInit( &temp );
             GetSelfWithPath( inf_name, argv );
-            VbufSplitpath( VbufString( inf_name ), &drive, &dir, NULL, NULL );
-            _makepath( buff, VbufString( &drive ), VbufString( &dir ), "setup", "inf" );
-            VbufFullpath( inf_name, buff );
+            VbufSplitpath( inf_name, &drive, &dir, NULL, NULL );
+            VbufSetStr( inf_name, "setup.inf" );
+            VbufMakepath( &temp, &drive, &dir, inf_name, NULL );
+            VbufFullpath( inf_name, VbufString( &temp ) );
+            VbufFree( &temp );
         }
     }
 
     if( i < argc ) {
         VbufSetStr( src_path, argv[i] );
     } else {
-        VbufSplitpath( VbufString( inf_name ), &drive, &dir, NULL, NULL );
-        VbufMakepath( src_path, VbufString( &drive ), VbufString( &dir ), NULL, NULL );
+        VbufSplitpath( inf_name, &drive, &dir, NULL, NULL );
+        VbufMakepath( src_path, &drive, &dir, NULL, NULL );
     }
     VbufRemDirSep( src_path );
     VbufFree( &dir );

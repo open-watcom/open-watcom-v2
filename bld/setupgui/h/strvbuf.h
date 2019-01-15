@@ -58,21 +58,21 @@ void VbufFree(                  // FREE BUFFER
     VBUF *vbuf )                // - VBUF structure
 ;
 int VbufComp(                   // COMPARE A VBUF
-    VBUF *vbuf1,                // - VBUF structure
-    VBUF *vbuf2,                // - VBUF structure
+    const VBUF *vbuf1,          // - VBUF structure
+    const VBUF *vbuf2,          // - VBUF structure
     bool igncase )              // - bool ignore case
 ;
 void VbufConcVbuf(              // CONCATENATE A VBUF TO VBUF
     VBUF *vbuf1,                // - VBUF structure
-    VBUF *vbuf2 )               // - VBUF structure
+    const VBUF *vbuf2 )         // - VBUF structure
 ;
 void VbufPrepVbuf(              // PREPEND A VBUF TO VBUF
     VBUF *vbuf1,                // - VBUF structure
-    VBUF *vbuf2 )               // - VBUF structure to be prepended
+    const VBUF *vbuf2 )         // - VBUF structure to be prepended
 ;
 void VbufSetVbuf(               // SET A VBUF
     VBUF *vbuf1,                // - VBUF structure
-    VBUF *vbuf2 )               // - VBUF structure
+    const VBUF *vbuf2 )         // - VBUF structure
 ;
 void VbufConcBuffer(            // CONCATENATE A BUFFER TO VBUF
     VBUF *vbuf,                 // - VBUF structure
@@ -125,7 +125,8 @@ void VbufConcI64(               // CONCATENATE A I64 TO VBUF
 #endif
 void VbufConcInteger(           // CONCATENATE A INTEGER TO VBUF
     VBUF *vbuf,                 // - VBUF structure
-    int value )                 // - value to be concatenated
+    int value,                  // - value to be concatenated
+    int digits )                // - minimal number of digits, prepend leading '0' if necessary
 ;
 void VbufTruncWhite(            // TRUNCATE TRAILING WHITESPACE FROM vbuf->buf
     VBUF *vbuf )                // - VBUF structure
@@ -137,18 +138,18 @@ void VbufRemDirSep(             // REMOVE DIR_SEP FROM A VBUF END
     VBUF *vbuf )                // - VBUF structure
 ;
 void VbufMakepath(              // SET A FILE PATH NAME TO VBUF
-    VBUF *vbuf,                 // - VBUF structure
-    const char *drive,          // - file drive
-    const char *dir,            // - file directory
-    const char *name,           // - file name
-    const char *ext )           // - file extension
+    VBUF *vbuf,                 // - full file path
+    const VBUF *drive,          // - file drive
+    const VBUF *dir,            // - file directory
+    const VBUF *name,           // - file name
+    const VBUF *ext )           // - file extension
 ;
 void VbufSplitpath(             // GET A FILE PATH COMPONENTS FROM VBUF
-    const char *full,           // - full file path
-    VBUF *drive,                // - VBUF for drive
-    VBUF *dir,                  // - VBUF for directory
-    VBUF *name,                 // - VBUF for name
-    VBUF *ext )                 // - VBUF for extension
+    const VBUF *full,           // - full file path
+    VBUF *drive,                // - file drive
+    VBUF *dir,                  // - file directory
+    VBUF *name,                 // - file name
+    VBUF *ext )                 // - file extension
 ;
 void VbufFullpath(              // GET A FULL FILE PATH TO VBUF
     VBUF *vbuf,                 // - VBUF structure

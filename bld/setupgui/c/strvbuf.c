@@ -44,6 +44,8 @@
 #define BUFFER_SIZE(x)      ((x+1+(MIN_VBUF_INC-1))&(-MIN_VBUF_INC))
 #define FREE_BUFFER(x)      {if(x->len>1)GUIMemFree(x->buf);}
 
+#define EXT_SEP             '.'
+
 // ************************************
 // Vbuf functions that manage size only
 // ************************************
@@ -95,8 +97,8 @@ void VbufFree(                  // FREE BUFFER
 // ****************************************************
 
 int VbufComp(               // COMPARE A VBUFs
-    VBUF *vbuf1,            // - VBUF structure
-    VBUF *vbuf2,            // - VBUF structure
+    const VBUF *vbuf1,      // - VBUF structure
+    const VBUF *vbuf2,      // - VBUF structure
     bool igncase )          // - bool ignore case
 {
     if( igncase ) {
@@ -112,7 +114,7 @@ int VbufComp(               // COMPARE A VBUFs
 
 void VbufConcVbuf(              // CONCATENATE A VBUF TO VBUF
     VBUF *vbuf1,                // - VBUF structure
-    VBUF *vbuf2 )               // - VBUF structure
+    const VBUF *vbuf2 )         // - VBUF structure
 {
     if( vbuf2->used > 0 ) {
         VbufReqd( vbuf1, vbuf1->used + vbuf2->used );
@@ -124,7 +126,7 @@ void VbufConcVbuf(              // CONCATENATE A VBUF TO VBUF
 
 void VbufPrepVbuf(              // PREPEND A VBUF TO VBUF
     VBUF *vbuf1,                // - VBUF structure
-    VBUF *vbuf2 )               // - VBUF structure to be prepended
+    const VBUF *vbuf2 )         // - VBUF structure to be prepended
 {
     VBUF    temp;
 
@@ -142,7 +144,7 @@ void VbufPrepVbuf(              // PREPEND A VBUF TO VBUF
 
 void VbufSetVbuf(               // SET A VBUF TO VBUF
     VBUF *vbuf1,                // - VBUF structure
-    VBUF *vbuf2 )               // - VBUF structure
+    const VBUF *vbuf2 )         // - VBUF structure
 {
     VbufSetLen( vbuf1, 0 );
     VbufConcVbuf(  vbuf1, vbuf2 );
@@ -256,13 +258,24 @@ void VbufConcDecimal(           // CONCATENATE A DECIMAL TO VBUF
 
 void VbufConcInteger(           // CONCATENATE A INTEGER TO VBUF
     VBUF *vbuf,                 // - VBUF structure
-    int value )                 // - value to be concatenated
+    int value,                  // - value to be concatenated
+    int digits )                // - minimal number of digits, prepend leading '0' if necessary
 {
     char    buffer[16];         // - temp buffer
 
+    VbufSetLen( vbuf, 0 );
+    if( value < 0 ) {
+        VbufConcChr( vbuf, '-' );
+        value = -value;
+    }
     ltoa( value, buffer, 10 );
+    digits -= (int)strlen( buffer );
+    while( digits-- > 0 ) {
+        VbufConcChr( vbuf, '0' );
+    }
     VbufConcStr( vbuf, buffer );
 }
+
 
 void VbufTruncWhite(            // TRUNCATE TRAILING WHITESPACE FROM VBUF
     VBUF *vbuf )                // - VBUF structure
@@ -345,54 +358,174 @@ void VbufRemDirSep(             // REMOVE DIR_SEP FROM A VBUF AS PATH
 }
 
 void VbufMakepath(              // SET A FILE PATH NAME TO VBUF
-    VBUF *vbuf,                 // - VBUF structure
-    const char *drive,          // - file drive
-    const char *dir,            // - file directory
-    const char *name,           // - file name
-    const char *ext )           // - file extension
+    VBUF *full,                 // - VBUF structure
+    const VBUF *drive,          // - file drive
+    const VBUF *dir,            // - file directory
+    const VBUF *name,           // - file name
+    const VBUF *ext )           // - file extension
 {
-    size_t  size;
-
-    size = 0;
     if( drive != NULL ) {
-        size += strlen( drive ) + 1;
+        if( VbufLen( drive ) > 0 ) {
+#if defined( __UNIX__ )
+            VbufConcVbuf( full, drive );
+            /* if node did not end in '/' then put in a provisional one */
+            if( VbufString( full )[VbufLen( full ) - 1] != DIR_SEP ) {
+                VbufConcChr( full, DIR_SEP );
+            }
+#elif defined( __NETWARE__ )
+            VbufConcVbuf( full, drive );
+            if( VbufString( full )[VbufLen( full ) - 1] != DRIVE_SEP ) {
+                VbufConcChr( full, DRIVE_SEP );
+            }
+#else
+            if( ( VbufString( drive )[0] == DIR_SEP ) && ( VbufString( drive )[1] == DIR_SEP ) ) {
+                VbufConcVbuf( full, drive );
+            } else {
+                VbufConcChr( full, VbufString( drive )[0] );
+                VbufConcChr( full, DRIVE_SEP );
+            }
+#endif
+        }
     }
     if( dir != NULL ) {
-        size += strlen( dir ) + 1;
+        if( VbufLen( dir ) > 0 ) {
+            if( VbufString( dir )[0] == DIR_SEP && VbufString( full )[VbufLen( full ) - 1] == DIR_SEP ) {
+                VbufConcStr( full, VbufString( dir ) + 1 );
+            } else {
+                VbufConcVbuf( full, dir );
+            }
+            VbufAddDirSep( full );
+        }
     }
     if( name != NULL ) {
-        size += strlen( name ) + 1;
+        if( VbufLen( name ) > 0 ) {
+            if( VbufString( name )[0] == DIR_SEP && VbufString( full )[VbufLen( full ) - 1] == DIR_SEP ) {
+                VbufConcStr( full, VbufString( name ) + 1 );
+            } else {
+                VbufConcVbuf( full, name );
+            }
+        }
     }
     if( ext != NULL ) {
-        size += strlen( ext ) + 1;
+        if( VbufLen( ext ) > 0 ) {
+            if( VbufString( ext )[0] != EXT_SEP )
+                VbufConcChr( full, EXT_SEP );
+            VbufConcVbuf( full, ext );
+        }
     }
-    VbufSetLen( vbuf, 0 );
-    VbufReqd( vbuf, size );
-    _makepath( vbuf->buf, drive, dir, name, ext );
-    VbufSetLen( vbuf, strlen( VbufString( vbuf ) ) );
 }
 
 void VbufSplitpath(             // GET A FILE PATH COMPONENTS FROM VBUF
-    const char *full,           // - full file path
+    const VBUF *full,           // - full file path
     VBUF *drive,                // - VBUF for drive
     VBUF *dir,                  // - VBUF for directory
     VBUF *name,                 // - VBUF for name
     VBUF *ext )                 // - VBUF for extension
 {
-    PGROUP  pg;
+/* split full QNX path name into its components */
 
-    _splitpath2( full, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
-    if( drive != NULL ) {
-        VbufSetStr( drive, pg.drive );
+/* Under QNX we will map drive to node, dir to dir, and
+ * filename to (filename and extension)
+ *          or (filename) if no extension requested.
+ */
+
+/* Under Netware, 'drive' maps to 'volume' */
+
+    const char *dotp;
+    const char *namep;
+    const char *startp;
+    char       ch;
+    const char *path;
+
+    if( full == NULL ) {
+        if( drive != NULL )
+            VbufRewind( drive );
+        if( dir != NULL )
+            VbufRewind( dir );
+        if( name != NULL )
+            VbufRewind( name );
+        if( ext != NULL ) {
+            VbufRewind( ext );
+        }
+        return;
     }
+    path = VbufString( full );
+
+    /* take apart specification like -> //0/hd/user/fred/filename.ext for QNX */
+    /* take apart specification like -> c:\fred\filename.ext for DOS, OS/2 */
+
+#if defined(__UNIX__)
+
+    /* process node/drive specification */
+    startp = path;
+    if( path[0] == DIR_SEP && path[1] == DIR_SEP ) {
+        path += 2;
+        while( (ch = *path) != '\0' ) {
+            if( IS_DIR_SEP( ch ) || ch == EXT_SEP ) {
+                break;
+            }
+            path++;
+        }
+    }
+    if( drive != NULL ) {
+        VbufSetBuffer( drive, path - startp, startp );
+    }
+
+#elif defined(__NETWARE__)
+
+    startp = strchr( path, DRIVE_SEP );
+    if( startp != NULL ) {
+        if( drive != NULL ) {
+            VbufSetBuffer( drive, startp - path + 1, path );
+        }
+        path = startp + 1;
+    } else {
+        if( drive != NULL ) {
+            VbufRewind( drive );
+        }
+    }
+
+#else
+
+    /* processs drive specification */
+    if( path[0] != '\0' && path[1] == DRIVE_SEP ) {
+        if( drive != NULL ) {
+            VbufSetChr( drive, path[0] );
+            VbufConcChr( drive, DRIVE_SEP );
+        }
+        path += 2;
+    } else {
+        if( drive != NULL ) {
+            VbufRewind( drive );
+        }
+    }
+
+#endif
+
+    /* process /user/fred/filename.ext for QNX */
+    /* process /fred/filename.ext for DOS, OS/2 */
+    dotp = NULL;
+    namep = path;
+    startp = path;
+    while( (ch = *path) != '\0' ) {
+        if( ch == EXT_SEP ) {
+            dotp = path;
+        } else if( IS_DIR_SEP( ch ) ) {
+            namep = path + 1;
+            dotp = NULL;
+        }
+        path++;
+    }
+    if( dotp == NULL )
+        dotp = path;
     if( dir != NULL ) {
-        VbufSetStr( dir, pg.dir );
+        VbufSetBuffer( dir, namep - startp, startp );
     }
     if( name != NULL ) {
-        VbufSetStr( name, pg.fname );
+        VbufSetBuffer( name, dotp - namep, namep );
     }
     if( ext != NULL ) {
-        VbufSetStr( ext, pg.ext );
+        VbufSetBuffer( ext, path - dotp, dotp );
     }
 }
 

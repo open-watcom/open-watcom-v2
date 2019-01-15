@@ -144,7 +144,7 @@ static bool ddeGroupAddItem1( DWORD ddeinst, HCONV hconv, VBUF *prog_name,
     VbufConcChr( &buff, ',' );
     VbufConcVbuf( &buff, icon_name );
     VbufConcChr( &buff, ',' );
-    VbufConcInteger( &buff, icon_number );
+    VbufConcInteger( &buff, icon_number, 0 );
     VbufConcStr( &buff, ",-1,-1," );
     VbufConcVbuf( &buff, working_dir );
     VbufConcStr( &buff, ")]" );
@@ -173,7 +173,7 @@ static bool ddeGroupAddItem2( DWORD ddeinst, HCONV hconv, VBUF *prog_name,
     VbufConcChr( &buff, ',' );
     VbufConcVbuf( &buff, icon_name );
     VbufConcChr( &buff, ',' );
-    VbufConcInteger( &buff, icon_number );
+    VbufConcInteger( &buff, icon_number, 0 );
     VbufConcStr( &buff, ")]" );
     ok = ddeSendCommand( ddeinst, hconv, &buff );
     VbufFree( &buff );
