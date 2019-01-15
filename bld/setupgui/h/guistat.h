@@ -29,6 +29,8 @@
 ****************************************************************************/
 
 
+#define StatusLinesVbuf(m,p)    StatusLines(m, VbufString(p))
+
 extern void StatusShow( bool show );
 extern void StatusFini( void );
 extern void StatusLines( int msg0, const char *message1 );

@@ -3894,7 +3894,7 @@ bool PatchFiles( void )
                         break;
                     }
                 }
-                StatusLines( STAT_PATCHFILE, VbufString( &destfullpath ) );
+                StatusLinesVbuf( STAT_PATCHFILE, &destfullpath );
                 StatusShow( true );
                 LogWriteMsgStr( log, "IDS_UNPACKING", VbufString( &destfullpath ) );
                 ret = DoPatchFile( VbufString( &srcfullpath ), VbufString( &destfullpath ), 0 );
@@ -3923,7 +3923,7 @@ bool PatchFiles( void )
 
             if( access( VbufString( &destfullpath ), F_OK ) == 0 ) {
                 AddFileName( i, VbufString( &destfullpath ), 0 );
-                StatusLines( STAT_CREATEFILE, VbufString( &destfullpath ) );
+                StatusLinesVbuf( STAT_CREATEFILE, &destfullpath );
                 StatusShow( true );
                 if( access( VbufString( &srcfullpath ), R_OK ) == 0 ) {
                     LogWriteMsgStr( log, "IDS_UNPACKING", VbufString( &destfullpath ) );
@@ -3943,7 +3943,7 @@ bool PatchFiles( void )
         case PATCH_DELETE_FILE:
             GetDestDir( i, &destfullpath );
             AddFileName( i, VbufString( &destfullpath ), 0 );
-            StatusLines( STAT_DELETEFILE, VbufString( &destfullpath ) );
+            StatusLinesVbuf( STAT_DELETEFILE, &destfullpath );
             StatusShow( true );
             if( access( VbufString( &destfullpath ), F_OK | W_OK ) == 0 ) {
                 LogWriteMsgStr( log, "IDS_DELETING", VbufString( &destfullpath ) );
@@ -3952,7 +3952,7 @@ bool PatchFiles( void )
                     LogWriteMsg( log, "IDS_SUCCESS" );
                 } else {
                     LogWriteMsg( log, "IDS_FAILED_DELETING" );
-                    guiret = MsgBox( NULL, "IDS_DELETEFILEERROR", GUI_YES_NO, VbufString( &destfullpath ) );
+                    guiret = MsgBoxVbuf( NULL, "IDS_DELETEFILEERROR", GUI_YES_NO, &destfullpath );
                     if( guiret == GUI_RET_NO ) {
                         LogWriteMsg( log, "IDS_PATCHABORT" );
                         ok = false;
@@ -3963,7 +3963,7 @@ bool PatchFiles( void )
         case PATCH_MAKE_DIR:
             ReplaceVars( &destfullpath, PatchInfo[i].destdir );
 
-            StatusLines( STAT_CREATEDIRECTORY, VbufString( &destfullpath ) );
+            StatusLinesVbuf( STAT_CREATEDIRECTORY, &destfullpath );
             StatusShow( true );
             if( access( VbufString( &destfullpath ), F_OK ) != 0 ) {
                 LogWriteMsgStr( log, "IDS_CREATINGDIR", VbufString( &destfullpath ) );
@@ -3974,7 +3974,7 @@ bool PatchFiles( void )
 #endif
                     LogWriteMsg( log, "IDS_SUCCESS" );
                 } else {
-                    guiret = MsgBox( NULL, "IDS_CREATEDIRERROR", GUI_YES_NO, VbufString( &destfullpath ) );
+                    guiret = MsgBoxVbuf( NULL, "IDS_CREATEDIRERROR", GUI_YES_NO, &destfullpath );
                     if( guiret == GUI_RET_NO ) {
                         LogWriteMsg( log, "IDS_FAILED_CREATINGDIR" );
                         ok = false;

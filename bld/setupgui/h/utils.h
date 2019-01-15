@@ -29,6 +29,9 @@
 ****************************************************************************/
 
 
+#define MsgBoxVbuf(w,m,t,p)         MsgBox( w, m, t, VbufString( p ))
+#define MsgBoxVbuf2(w,m,t,p1,p2)    MsgBox( w, m, t, VbufString( p1 ), VbufString( p2 ))
+
 extern bool             ModifyEnvironment( bool );
 extern bool             ModifyStartup( bool );
 extern bool             ModifyAssociations( bool );

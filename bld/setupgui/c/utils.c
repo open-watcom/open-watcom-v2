@@ -1010,7 +1010,7 @@ static bool CreateDstDir( int i, VBUF *buff )
     if( mkdir( VbufString( buff ) ) == 0 )
 #endif
         return( true );
-    MsgBox( NULL, "IDS_CANTMAKEDIR", GUI_OK, VbufString( buff ) );
+    MsgBoxVbuf( NULL, "IDS_CANTMAKEDIR", GUI_OK, buff );
     return( false );
 }
 
@@ -1520,7 +1520,7 @@ static bool CreateDirectoryTree( void )
                 ok = false;
                 break;
             }
-            StatusLines( STAT_SAME, VbufString( &dst_path ) );
+            StatusLinesVbuf( STAT_SAME, &dst_path );
             StatusAmount( ++num_installed, num_total_install );
             if( StatusCancelled() ) {
                 ok = false;
@@ -2133,7 +2133,7 @@ static bool NukePath( VBUF *path, int status )
                 break;
             }
         }
-        StatusLines( status, VbufString( path ) );
+        StatusLinesVbuf( status, path );
     }
     VbufSetLen( path, path_len );
     closedir( d );
@@ -2193,7 +2193,7 @@ void DeleteObsoleteFiles( void )
                         NukePath( &tmp, STAT_REMOVING );
                         rmdir( VbufString( &tmp ) );
                     } else {
-                        StatusLines( STAT_REMOVING, VbufString( &tmp ) );
+                        StatusLinesVbuf( STAT_REMOVING, &tmp );
                         remove( VbufString( &tmp ) );
                     }
                 }
@@ -2668,9 +2668,9 @@ bool InitInfo( VBUF *inf_name, VBUF *src_path )
         return( true );
     }
     if( ret == SIM_INIT_NOMEM ) {
-        MsgBox( NULL, "IDS_NOMEMORY", GUI_OK, VbufString( inf_name ) );
+        MsgBoxVbuf( NULL, "IDS_NOMEMORY", GUI_OK, inf_name );
     } else { // SIM_INIT_NOFILE
-        MsgBox( NULL, "IDS_NOSETUPINFOFILE", GUI_OK, VbufString( inf_name ) );
+        MsgBoxVbuf( NULL, "IDS_NOSETUPINFOFILE", GUI_OK, inf_name );
     }
     return( false );
 }
