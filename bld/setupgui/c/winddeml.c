@@ -66,8 +66,8 @@ static bool ddeSendCommand( DWORD ddeinst, HCONV hconv, VBUF *buff )
     return( true );
 }
 
-static bool ddeCreateGroup( DWORD ddeinst, HCONV hconv, VBUF *group, VBUF *fname )
-/********************************************************************************/
+static bool ddeCreateGroup( DWORD ddeinst, HCONV hconv, const VBUF *group, const VBUF *fname )
+/********************************************************************************************/
 {
     VBUF    buff;
     bool    ok;
@@ -94,8 +94,8 @@ static bool ddeCreateGroup( DWORD ddeinst, HCONV hconv, VBUF *group, VBUF *fname
     return( ok );
 }
 
-static bool ddeDeleteGroup( DWORD ddeinst, HCONV hconv, VBUF *group )
-/*******************************************************************/
+static bool ddeDeleteGroup( DWORD ddeinst, HCONV hconv, const VBUF *group )
+/*************************************************************************/
 {
     VBUF    buff;
     bool    ok;
@@ -110,8 +110,8 @@ static bool ddeDeleteGroup( DWORD ddeinst, HCONV hconv, VBUF *group )
     return( ok );
 }
 
-static bool ddeGroupReplaceItem( DWORD ddeinst, HCONV hconv, VBUF *prog_desc )
-/****************************************************************************/
+static bool ddeGroupReplaceItem( DWORD ddeinst, HCONV hconv, const VBUF *prog_desc )
+/**********************************************************************************/
 {
     VBUF    buff;
     bool    ok;
@@ -126,9 +126,9 @@ static bool ddeGroupReplaceItem( DWORD ddeinst, HCONV hconv, VBUF *prog_desc )
     return( ok );
 }
 
-static bool ddeGroupAddItem1( DWORD ddeinst, HCONV hconv, VBUF *prog_name,
-            VBUF *prog_desc, VBUF *prog_args, VBUF *working_dir,
-                                VBUF *icon_name, int icon_number )
+static bool ddeGroupAddItem1( DWORD ddeinst, HCONV hconv, const VBUF *prog_name,
+            const VBUF *prog_desc, const VBUF *prog_args, const VBUF *working_dir,
+                                const VBUF *icon_name, int icon_number )
 /********************************************************************************/
 {
     VBUF    buff;
@@ -154,9 +154,9 @@ static bool ddeGroupAddItem1( DWORD ddeinst, HCONV hconv, VBUF *prog_name,
 }
 
 #if defined( __WINDOWS__ )
-static bool ddeGroupAddItem2( DWORD ddeinst, HCONV hconv, VBUF *prog_name,
-            VBUF *prog_desc, VBUF *prog_args, VBUF *working_dir,
-                                VBUF *icon_name, int icon_number )
+static bool ddeGroupAddItem2( DWORD ddeinst, HCONV hconv, const VBUF *prog_name,
+            const VBUF *prog_desc, const VBUF *prog_args, const VBUF *working_dir,
+                                const VBUF *icon_name, int icon_number )
 /********************************************************************************/
 {
     VBUF    buff;
@@ -181,9 +181,9 @@ static bool ddeGroupAddItem2( DWORD ddeinst, HCONV hconv, VBUF *prog_name,
 }
 #endif
 
-static bool ddeGroupAddItem( DWORD ddeinst, HCONV hconv, VBUF *prog_name,
-            VBUF *prog_desc, VBUF *prog_args, VBUF *working_dir,
-                                VBUF *icon_name, int icon_number )
+static bool ddeGroupAddItem( DWORD ddeinst, HCONV hconv, const VBUF *prog_name,
+            const VBUF *prog_desc, const VBUF *prog_args, const VBUF *working_dir,
+                                const VBUF *icon_name, int icon_number )
 /********************************************************************************/
 {
     bool    ok;
@@ -422,8 +422,8 @@ static void munge_fname( VBUF *name )
     VbufFree( &tmp );
 }
 
-static void get_group_name( VBUF *buff, VBUF *group )
-/***************************************************/
+static void get_group_name( VBUF *buff, const VBUF *group )
+/*********************************************************/
 {
     LPITEMIDLIST    ppidl;
     char            tmp[_MAX_PATH];
@@ -442,8 +442,8 @@ static void get_group_name( VBUF *buff, VBUF *group )
     munge_fname( buff );
 }
 
-static bool linkCreateGroup( VBUF *group )
-/****************************************/
+static bool linkCreateGroup( const VBUF *group )
+/**********************************************/
 {
     VBUF            dir_name;
     int             rc;
@@ -459,8 +459,8 @@ static bool linkCreateGroup( VBUF *group )
     }
 }
 
-static void delete_dir( VBUF *dir )
-/*********************************/
+static void delete_dir( const VBUF *dir )
+/***************************************/
 {
     DIR                 *dirp;
     struct dirent       *direntp;
@@ -493,8 +493,8 @@ static void delete_dir( VBUF *dir )
     VbufFree( &file );
 }
 
-static void linkDeleteGroup( VBUF *group )
-/****************************************/
+static void linkDeleteGroup( const VBUF *group )
+/**********************************************/
 {
     VBUF    dir_name;
 
@@ -504,8 +504,8 @@ static void linkDeleteGroup( VBUF *group )
     VbufFree( &dir_name );
 }
 
-static bool linkGroupAddItem( VBUF *group, VBUF *prog_name, VBUF *prog_desc, VBUF *prog_args,
-                                            VBUF *working_dir, VBUF *icon_name, int icon_num )
+static bool linkGroupAddItem( const VBUF *group, const VBUF *prog_name, const VBUF *prog_desc,
+        const VBUF *prog_args, const VBUF *working_dir, const VBUF *icon_name, int icon_num )
 /********************************************************************************************/
 {
     HRESULT             hres;

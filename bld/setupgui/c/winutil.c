@@ -54,8 +54,8 @@
 
 #if defined( __NT__ )
 
-static void CreateRegEntry( VBUF *hive_key, VBUF *app_name, VBUF *key_name,
-                     VBUF *value, VBUF *file_name, bool add )
+static void CreateRegEntry( const VBUF *hive_key, const VBUF *app_name, const VBUF *key_name,
+                     const VBUF *value, const VBUF *file_name, bool add )
 {
     VBUF                buf;
     long                rc;
@@ -262,8 +262,8 @@ signed int DecrementDLLUsageCount( const char *path )
 
 #if defined( __WINDOWS__ ) || defined( __NT__ )
 
-static bool ZapKey( VBUF *app_name, const char *old, const char *new,
-                                VBUF *file, VBUF *hive, int pos )
+static bool ZapKey( const VBUF *app_name, const char *old, const char *new,
+                                const VBUF *file, const VBUF *hive, int pos )
 /***************************************************************************/
 {
     FILE        *io;
@@ -307,8 +307,9 @@ static bool ZapKey( VBUF *app_name, const char *old, const char *new,
 #define DEVICE_STRING "device"
 #define ALT_DEVICE    "ecived"
 
-static void AddDevice( VBUF *app_name, VBUF *value, VBUF *file, VBUF *hive, bool add )
-/***********************************************************************************/
+static void AddDevice( const VBUF *app_name, const VBUF *value, const VBUF *file,
+                                                        const VBUF *hive, bool add )
+/**********************************************************************************/
 {
     int         i;
     char        old_name[_MAX_FNAME];
@@ -338,8 +339,8 @@ static void AddDevice( VBUF *app_name, VBUF *value, VBUF *file, VBUF *hive, bool
     }
 }
 
-static void WindowsWriteProfile( VBUF *app_name, VBUF *key_name,
-                            VBUF *value, VBUF *file_name, bool add )
+static void WindowsWriteProfile( const VBUF *app_name, const VBUF *key_name,
+                            const VBUF *value, const VBUF *file_name, bool add )
 /******************************************************************************/
 {
     char                *substr;
@@ -411,8 +412,8 @@ static void WindowsWriteProfile( VBUF *app_name, VBUF *key_name,
 
 #if defined( __OS2__ )
 
-static void OS2WriteProfile( VBUF *app_name, VBUF *key_name,
-                      VBUF *value, VBUF *file_name, bool add )
+static void OS2WriteProfile( const VBUF *app_name, const VBUF *key_name,
+                      const VBUF *value, const VBUF *file_name, bool add )
 {
     HAB                 hab;
     HINI                hini;

@@ -42,8 +42,8 @@
 
 #define ICONFILETAG     "ICONFILE="
 
-static HOBJECT create_group( VBUF *group, VBUF *grp_filename )
-/************************************************************/
+static HOBJECT create_group( const VBUF *group, const VBUF *grp_filename )
+/************************************************************************/
 {
     HOBJECT     hobj;
     VBUF        cmd;
@@ -69,8 +69,8 @@ static HOBJECT create_group( VBUF *group, VBUF *grp_filename )
 }
 
 
-static void remove_group( VBUF *group )
-/*************************************/
+static void remove_group( const VBUF *group )
+/*******************************************/
 {
     HOBJECT     hobj;
 

@@ -141,8 +141,8 @@ static bool GetOldConfigFileDir( char *newauto, const char *drive_path, bool uni
 
 #endif  // !__UNIX__
 
-static void NoDupPaths( VBUF *old_value, VBUF *new_value, char delim )
-/********************************************************************/
+static void NoDupPaths( VBUF *old_value, const VBUF *new_value, char delim )
+/**************************************************************************/
 {
     const char  *dup;
     const char  *look;
@@ -208,8 +208,8 @@ static void NoDupPaths( VBUF *old_value, VBUF *new_value, char delim )
     VbufFree( &tmp );
 }
 
-static void modify_value_list( VBUF *value, VBUF *new_value, char delim, append_mode append, bool uninstall )
-/***********************************************************************************************************/
+static void modify_value_list( VBUF *value, const VBUF *new_value, char delim, append_mode append, bool uninstall )
+/*****************************************************************************************************************/
 {
     NoDupPaths( value, new_value, delim );
     if( !uninstall ) {
@@ -225,8 +225,8 @@ static void modify_value_list( VBUF *value, VBUF *new_value, char delim, append_
     }
 }
 
-static bool output_line( VBUF *vbuf, var_type vt, VBUF *name, VBUF *value )
-/*************************************************************************/
+static bool output_line( VBUF *vbuf, var_type vt, const VBUF *name, const VBUF *value )
+/*************************************************************************************/
 {
     VbufRewind( vbuf );
     if( VbufLen( value ) > 0 ) {
@@ -256,8 +256,8 @@ static bool output_line( VBUF *vbuf, var_type vt, VBUF *name, VBUF *value )
     return( VbufLen( vbuf ) > 0 );
 }
 
-static void modify_value_list_libpath( VBUF *val_before, VBUF *val_after, VBUF *new_value, char delim, append_mode append )
-/*************************************************************************************************************************/
+static void modify_value_list_libpath( VBUF *val_before, VBUF *val_after, const VBUF *new_value, char delim, append_mode append )
+/*******************************************************************************************************************************/
 {
     if( append == AM_AFTER ) {
         NoDupPaths( val_before, new_value, delim );
@@ -323,8 +323,8 @@ static var_type parse_line( char *line, VBUF *name, VBUF *value, var_type vt_set
 }
 #endif
 
-static var_type getEnvironVarType( VBUF *env_var )
-/************************************************/
+static var_type getEnvironVarType( const VBUF *env_var )
+/******************************************************/
 {
     var_type        vt;
 
@@ -599,8 +599,8 @@ static bool ModFile( char *orig, char *new,
 
 #ifndef __OS2__
 
-static var_type getAutoVarType( VBUF *auto_var )
-/*********************************************/
+static var_type getAutoVarType( const VBUF *auto_var )
+/****************************************************/
 {
     var_type        vt;
 
@@ -752,8 +752,8 @@ static bool ModAuto( char *orig, char *new, bool uninstall )
 
 #endif
 
-static var_type getConfigVarType( VBUF *cfg_var )
-/***********************************************/
+static var_type getConfigVarType( const VBUF *cfg_var )
+/*****************************************************/
 {
     var_type        vt;
 

@@ -41,7 +41,7 @@ extern COPYFILE_ERROR   DoCopyFile( const char *, const char *, bool );
 extern bool             CopyAllFiles( void );
 extern gui_message_return MsgBox( gui_window *, const char *, gui_message_type, ... );
 extern bool             CheckDrive( bool );
-extern bool             InitInfo( VBUF *, VBUF * );
+extern bool             InitInfo( const VBUF *, const VBUF * );
 extern bool             GetDirParams( int, char **, VBUF *, VBUF *, VBUF * );
 extern bool             FreeDirParams( void );
 extern void             CloseDownMessage( bool state );
@@ -54,7 +54,7 @@ extern char             *stristr( const char *str, const char *substr, size_t su
 extern void             Log( char *start, ... );
 extern bool             CheckUpgrade( void );
 extern char             *GetInstallName( void );
-extern bool             PromptUser( VBUF *name, const char *dlg, const char *skip, const char *replace, bool *resp_replace );
+extern bool             PromptUser( const VBUF *name, const char *dlg, const char *skip, const char *replace, bool *resp_replace );
 #if defined( __NT__ ) || defined( __WINDOWS__ )
 extern bool             GetRootFromPath( char *root, const char *path );
 extern disk_size        FreeSpace( const char *path );

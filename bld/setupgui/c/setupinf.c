@@ -4410,7 +4410,7 @@ void FreeAllStructs( void )
 }
 
 
-bool SimGetSpawnCommand( VBUF *buff, int i )
+bool SimGetSpawnCommand( int i, VBUF *buff )
 /******************************************/
 {
     if( SpawnInfo[i].command == NULL || SpawnInfo[i].command[0] == '\0' ) {

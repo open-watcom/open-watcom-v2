@@ -454,7 +454,7 @@ void DoSpawn( when_time when )
             continue;
         if( !SimEvalSpawnCondition( i ) )
             continue;
-        if( SimGetSpawnCommand( &buff, i ) )
+        if( SimGetSpawnCommand( i, &buff ) )
             continue;
         DoSpawnCmd( VbufString( &buff ) );
     }
@@ -2358,8 +2358,8 @@ gui_message_return MsgBox( gui_window *gui, const char *msg_id,
 }
 
 
-bool PromptUser( VBUF *name, const char *dlg, const char *skip, const char *replace, bool *resp_replace )
-/*******************************************************************************************************/
+bool PromptUser( const VBUF *name, const char *dlg, const char *skip, const char *replace, bool *resp_replace )
+/*************************************************************************************************************/
 {
     dlg_state       return_state;
 
@@ -2658,8 +2658,8 @@ void ReadVariablesFile( const char *name )
     fclose( fp );
 }
 
-bool InitInfo( VBUF *inf_name, VBUF *src_path )
-/*********************************************/
+bool InitInfo( const VBUF *inf_name, const VBUF *src_path )
+/*********************************************************/
 // initialize global vbls. and read setup.inf into memory.
 {
 //    char                dir[_MAX_DIR];
