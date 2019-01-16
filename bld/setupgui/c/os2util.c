@@ -51,6 +51,7 @@ static HOBJECT create_group( const VBUF *group, const VBUF *grp_filename )
 
     VbufInit( &cmd );
     VbufInit( &icon_file );
+
     VbufConcStr( &cmd, "OPEN=ICON;OBJECTID=" );
     VbufConcVbuf( &cmd, grp_filename );
     VbufConcChr( &cmd, ';' );
@@ -63,6 +64,7 @@ static HOBJECT create_group( const VBUF *group, const VBUF *grp_filename )
         VbufConcChr( &cmd, ';' );
     }
     hobj = WinCreateObject( "WPFolder", VbufString( group ), VbufString( &cmd ), "<WP_DESKTOP>", CO_UPDATEIFEXISTS );
+
     VbufFree( &icon_file );
     VbufFree( &cmd );
     return( hobj );
@@ -139,6 +141,7 @@ bool CreatePMInfo( bool uninstall )
 
     obj = create_group( &group, &GroupFileName );
 
+    VbufInit( &tmp );
     VbufInit( &PMProgName );
     VbufInit( &PMProgDesc );
     VbufInit( &PMParams );
@@ -330,6 +333,7 @@ void LabelDirs( void )
 
     VbufInit( &dir_name );
     VbufInit( &label );
+
     num = SimNumLabels();
     for( i = 0; i < num; ++i ) {
         SimGetLabelDir( i, &dir_name );
@@ -337,6 +341,7 @@ void LabelDirs( void )
         SimGetLabelLabel( i, &label );
         SetEAttr( VbufString( &dir_name ), ".LONGNAME", VbufString( &label ) );
     }
+
     VbufFree( &label );
     VbufFree( &dir_name );
 }
