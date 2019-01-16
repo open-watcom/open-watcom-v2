@@ -139,8 +139,8 @@ extern bool             ConfigModified;
 extern gui_window       *MainWnd;
 
 extern void             ReplaceVars( VBUF *dst, const char *src );
-extern gui_message_return CheckInstallDLL( const char *, vhandle );
-extern gui_message_return CheckInstallNLM( const VBUF *, vhandle );
+extern bool             CheckInstallDLL( const char *, vhandle );
+extern bool             CheckInstallNLM( const VBUF *, vhandle );
 extern bool             CreatePMInfo( bool );
 extern bool             ModifyConfiguration( bool );
 extern bool             ModifyAutoExec( bool );

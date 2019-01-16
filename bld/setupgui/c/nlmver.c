@@ -183,7 +183,7 @@ static bool CheckNewer( const VBUF *newNLM, const VBUF *oldNLM )
     return( SAMENLM );
 }
 
-gui_message_return CheckInstallNLM( const VBUF *name, vhandle var_handle )
+bool CheckInstallNLM( const VBUF *name, vhandle var_handle )
 {
     VBUF        unpacked_as;
     VBUF        temp;
@@ -191,6 +191,7 @@ gui_message_return CheckInstallNLM( const VBUF *name, vhandle var_handle )
     VBUF        dir;
     VBUF        fname;
     VBUF        ext;
+    bool        cancel;
 
     VbufInit( &unpacked_as );
     VbufInit( &temp );
@@ -199,6 +200,7 @@ gui_message_return CheckInstallNLM( const VBUF *name, vhandle var_handle )
     VbufInit( &fname );
     VbufInit( &ext );
 
+    cancel = false;
     VbufSplitpath( name, &drive, &dir, &fname, &ext );
     VbufSetStr( &temp, "._N_" );
     VbufMakepath( &unpacked_as, &drive, &dir, &fname, &temp );
@@ -222,6 +224,6 @@ gui_message_return CheckInstallNLM( const VBUF *name, vhandle var_handle )
     VbufFree( &drive );
     VbufFree( &temp );
     VbufFree( &unpacked_as );
-    return( GUI_RET_OK );
+    return( cancel );
 }
 

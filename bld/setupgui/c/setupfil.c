@@ -914,12 +914,12 @@ static bool ModConfig( char *orig, char *new, bool uninstall )
     return( ModFile( orig, new, CheckConfigLine, FinishConfigLines, num_cfg, num_env, uninstall ) );
 }
 
-static void ReplaceExt( char *filename, char *new_ext )
-/*****************************************************/
+static void ReplaceExt( char *filename, const char *new_ext )
+/***********************************************************/
 {
-    char                drive[_MAX_DRIVE];
-    char                dir[_MAX_DIR];
-    char                fname[_MAX_FNAME];
+    char        drive[_MAX_DRIVE];
+    char        dir[_MAX_DIR];
+    char        fname[_MAX_FNAME];
 
     _splitpath( filename, drive, dir, fname, NULL );
     _makepath( filename, drive, dir, fname, new_ext );
@@ -954,6 +954,8 @@ bool ModifyAutoExec( bool uninstall )
 #endif
     char                newcfg[_MAX_PATH];
     FILE                *fp;
+    const char          *new_ext;
+    bool                ok;
 
     num_auto = SimNumAutoExec();
     num_cfg = SimNumConfig();
@@ -961,164 +963,164 @@ bool ModifyAutoExec( bool uninstall )
     if( num_auto == 0 && num_cfg == 0 && num_env == 0 ) {
         return( true );
     }
+    ok = true;
 #ifdef __OS2__
     SetVariableByName( "AutoText", GetVariableStrVal( "IDS_MODIFY_CONFIG" ) );
 #else
     SetVariableByName( "AutoText", GetVariableStrVal( "IDS_MODIFY_AUTOEXEC" ) );
 #endif
     if( DoDialog( "Modify" ) == DLG_CAN ) {
-        return( false );
+        ok = false;
     }
-    if( GetVariableBoolVal( "ModNow" ) ) {
-        mod_type = MOD_IN_PLACE;
-    } else {
-        mod_type = MOD_LATER;
-    }
+    if( ok ) {
+        if( GetVariableBoolVal( "ModNow" ) ) {
+            mod_type = MOD_IN_PLACE;
+        } else {
+            mod_type = MOD_LATER;
+        }
 
-    if( GetVariableBoolVal( "IsWin95" ) ) {
-        boot_drive = 0;
-    } else {
-        boot_drive = GetBootDrive();
-    }
-    if( boot_drive == 0 ) {
+        if( GetVariableBoolVal( "IsWin95" ) ) {
+            boot_drive = '\0';
+        } else {
+            boot_drive = 'A' + GetBootDrive() - 1;
+            if( boot_drive == 'A' - 1 ) {
+                boot_drive = '\0';
+            }
+        }
+        if( boot_drive == '\0' ) {
 #ifdef __NT__
-        if( GetDriveType( "C:\\" ) == DRIVE_FIXED ) {
-            OrigAutoExec[0] = 'C';   // assume C if it is a hard drive
-        } else {
-            // otherwise guess it is the same as the windows system directory
-            const char  *sys_drv;
-            sys_drv = GetVariableStrVal( "WinSystemDir" );
-            boot_drive = toupper( sys_drv[0] ) - 'A' + 1;
-            OrigAutoExec[0] = 'A' + boot_drive - 1;
-        }
+            if( GetDriveType( "C:\\" ) == DRIVE_FIXED ) {
+                boot_drive = 'C';   // assume C if it is a hard drive
+            } else {
+                // otherwise guess it is the same as the windows system directory
+                const char  *sys_drv;
+                sys_drv = GetVariableStrVal( "WinSystemDir" );
+                boot_drive = toupper( sys_drv[0] );
+            }
 #else
-        OrigAutoExec[0] = 'C';   // assume C
+            boot_drive = 'C';       // assume C
 #endif
-    } else {
-        OrigAutoExec[0] = 'A' + boot_drive - 1;
-    }
-    OrigConfig[0] = OrigAutoExec[0];
-
-    SetVariableByName( "FileToFind", "CONFIG.SYS" );
-    while( access( OrigConfig, F_OK ) != 0 ) {
-        SetVariableByName( "CfgDir", OrigConfig );
-        if( DoDialog( "LocCfg" ) == DLG_CAN ) {
-            MsgBox( NULL, "IDS_CANTFINDCONFIGSYS", GUI_OK );
-            return( false );
         }
-        strcpy( newcfg, GetVariableStrVal( "CfgDir" ) );
-        OrigConfig[0] = newcfg[0];
-        OrigAutoExec[0] = OrigConfig[0];
-        if( GetVariableBoolVal( "CfgFileCreate" ) ) {
-            fp = fopen( OrigConfig, "wt" );
-            if( fp == NULL ) {
-                MsgBox( NULL, "IDS_CANTCREATEFILE", GUI_OK, OrigConfig );
-            } else {
-                fclose( fp );
+        OrigAutoExec[0] = boot_drive;
+        OrigConfig[0] = boot_drive;
+
+        SetVariableByName( "FileToFind", "CONFIG.SYS" );
+        while( access( OrigConfig, F_OK ) != 0 ) {
+            SetVariableByName( "CfgDir", OrigConfig );
+            if( DoDialog( "LocCfg" ) == DLG_CAN ) {
+                MsgBox( NULL, "IDS_CANTFINDCONFIGSYS", GUI_OK );
+                ok = false;
+                break;
+            }
+            strcpy( newcfg, GetVariableStrVal( "CfgDir" ) );
+            OrigConfig[0] = newcfg[0];
+            OrigAutoExec[0] = OrigConfig[0];
+            if( GetVariableBoolVal( "CfgFileCreate" ) ) {
+                fp = fopen( OrigConfig, "wt" );
+                if( fp == NULL ) {
+                    MsgBox( NULL, "IDS_CANTCREATEFILE", GUI_OK, OrigConfig );
+                } else {
+                    fclose( fp );
+                }
             }
         }
     }
 #ifndef __OS2__
-    SetVariableByName( "FileToFind", "AUTOEXEC.BAT" );
-    while( access( OrigAutoExec, F_OK ) != 0 ) {
-        SetVariableByName( "CfgDir", OrigAutoExec );
-        if( DoDialog( "LocCfg" ) == DLG_CAN ) {
-            MsgBox( NULL, "IDS_CANTFINDAUTOEXEC", GUI_OK );
-            return( false );
-        }
-        strcpy( newcfg, GetVariableStrVal("CfgDir") );
-        OrigAutoExec[0] = newcfg[0];
-        if( GetVariableBoolVal( "CfgFileCreate" ) ) {
-            fp = fopen( OrigAutoExec, "wt" );
-            if( fp == NULL ) {
-                MsgBox( NULL, "IDS_CANTCREATEFILE", GUI_OK, OrigAutoExec );
-            } else {
-                fclose( fp );
+    if( ok ) {
+        SetVariableByName( "FileToFind", "AUTOEXEC.BAT" );
+        while( access( OrigAutoExec, F_OK ) != 0 ) {
+            SetVariableByName( "CfgDir", OrigAutoExec );
+            if( DoDialog( "LocCfg" ) == DLG_CAN ) {
+                MsgBox( NULL, "IDS_CANTFINDAUTOEXEC", GUI_OK );
+                ok = false;
+                break;
+            }
+            strcpy( newcfg, GetVariableStrVal("CfgDir") );
+            OrigAutoExec[0] = newcfg[0];
+            if( GetVariableBoolVal( "CfgFileCreate" ) ) {
+                fp = fopen( OrigAutoExec, "wt" );
+                if( fp == NULL ) {
+                    MsgBox( NULL, "IDS_CANTCREATEFILE", GUI_OK, OrigAutoExec );
+                } else {
+                    fclose( fp );
+                }
             }
         }
     }
 #endif
-
-    if( mod_type == MOD_IN_PLACE ) {
-        // copy current files to AUTOEXEC.BAK and CONFIG.BAK
+    if( ok ) {
+        if( mod_type == MOD_IN_PLACE ) {
+            // copy current files to AUTOEXEC.BAK and CONFIG.BAK
 
 #ifndef __OS2__
-        strcpy( newauto, OrigAutoExec );
-        BackupName( newauto );
+            strcpy( newauto, OrigAutoExec );
+            BackupName( newauto );
 #endif
-        strcpy( newcfg, OrigConfig );
-        BackupName( newcfg );
+            strcpy( newcfg, OrigConfig );
+            BackupName( newcfg );
 
+#ifndef __OS2__
+            MsgBox( NULL, "IDS_COPYAUTOEXEC", GUI_OK, newauto, newcfg );
+            if( DoCopyFile( OrigAutoExec, newauto, false ) != CFE_NOERROR ) {
+                MsgBox( NULL, "IDS_ERRORBACKAUTO", GUI_OK );
+            } else {
+                if( !ModAuto( newauto, OrigAutoExec, uninstall ) ) {
+                    ok = false;
+                }
+            }
+#else
+            MsgBox( NULL, "IDS_COPYCONFIGSYS", GUI_OK, newcfg );
+#endif
+            if( ok ) {
+                if( DoCopyFile( OrigConfig, newcfg, false ) != CFE_NOERROR ) {
+                    MsgBox( NULL, "IDS_ERRORBACKCONFIG", GUI_OK );
+                } else {
+                    if( !ModConfig( newcfg, OrigConfig, uninstall ) ) {
+                        ok = false;
+                    }
 #ifdef __OS2__
-        MsgBox( NULL, "IDS_COPYCONFIGSYS", GUI_OK, newcfg );
-#else
-        MsgBox( NULL, "IDS_COPYAUTOEXEC", GUI_OK, newauto, newcfg );
+                    MsgBox( NULL, "IDS_OS2CONFIGSYS", GUI_OK );
 #endif
-
-#ifndef __OS2__
-        if( DoCopyFile( OrigAutoExec, newauto, false ) != CFE_NOERROR ) {
-            MsgBox( NULL, "IDS_ERRORBACKAUTO", GUI_OK );
-        } else {
-            if( !ModAuto( newauto, OrigAutoExec, uninstall ) ) {
-                return( false );
+                }
+                if( ok ) {
+                    // indicate config files were modified if and only if we got this far
+                    ConfigModified = true;
+                }
             }
-        }
-        if( DoCopyFile( OrigConfig, newcfg, false ) != CFE_NOERROR ) {
-            MsgBox( NULL, "IDS_ERRORBACKCONFIG", GUI_OK );
         } else {
-            if( !ModConfig( newcfg, OrigConfig, uninstall ) ) {
-                return( false );
-            }
-        }
-#else
-        if( DoCopyFile( OrigConfig, newcfg, false ) != CFE_NOERROR ) {
-            MsgBox( NULL, "IDS_ERRORBACKCONFIG", GUI_OK );
-        } else {
-            if( !ModConfig( newcfg, OrigConfig, uninstall ) ) {
-                return( false );
-            }
-            MsgBox( NULL, "IDS_OS2CONFIGSYS", GUI_OK );
-        }
-#endif
-        // indicate config files were modified if and only if we got this far
-        ConfigModified = true;
-    } else {
-        // place modifications in AUTOEXEC.NEW and CONFIG.NEW
-#ifndef __OS2__
-        GetOldConfigFileDir( newauto, OrigAutoExec, uninstall );
-        strcat( newauto, &OrigAutoExec[2] );
-#if defined(__NT__)
-        ReplaceExt( newauto, "W95" );
-#else
-        ReplaceExt( newauto, "DOS" );
-#endif
-#endif
-        GetOldConfigFileDir( newcfg, OrigConfig, uninstall );
-        strcat( newcfg, &OrigConfig[2] );
 #if defined( __OS2__ )
-        ReplaceExt( newcfg, "OS2" );
+            new_ext = "OS2";
 #elif defined( __NT__ )
-        ReplaceExt( newcfg, "W95" );
+            new_ext = "W95";
 #else
-        ReplaceExt( newcfg, "DOS" );
+            new_ext = "DOS";
 #endif
+            // place modifications in AUTOEXEC.NEW and CONFIG.NEW
+#ifndef __OS2__
+            GetOldConfigFileDir( newauto, OrigAutoExec, uninstall );
+            strcat( newauto, &OrigAutoExec[2] );
+            ReplaceExt( newauto, new_ext );
+#endif
+            GetOldConfigFileDir( newcfg, OrigConfig, uninstall );
+            strcat( newcfg, &OrigConfig[2] );
+            ReplaceExt( newcfg, new_ext );
 
-#ifdef __OS2__
-        MsgBox( NULL, "IDS_NEWCONFIGSYS", GUI_OK, newcfg );
-        if( !ModConfig( OrigConfig, newcfg, uninstall ) ) {
-            return( false );
-        }
+#ifndef __OS2__
+            MsgBox( NULL, "IDS_NEWAUTOEXEC", GUI_OK, newauto, newcfg );
+            if( !ModAuto( OrigAutoExec, newauto, uninstall ) ) {
+                ok = false;
+            }
 #else
-        MsgBox( NULL, "IDS_NEWAUTOEXEC", GUI_OK, newauto, newcfg );
-        if( !ModAuto( OrigAutoExec, newauto, uninstall ) ) {
-            return( false );
-        }
-        if( !ModConfig( OrigConfig, newcfg, uninstall ) ) {
-            return( false );
-        }
+            MsgBox( NULL, "IDS_NEWCONFIGSYS", GUI_OK, newcfg );
 #endif
+            if( ok ) {
+                if( !ModConfig( OrigConfig, newcfg, uninstall ) ) {
+                    ok = false;
+                }
+            }
+        }
     }
-    return( true );
+    return( ok );
 }
 
 #endif   // !__UNIX__
@@ -1268,8 +1270,8 @@ static void CheckVersion( char *path, char *drive, char *dir )
 /************************************************************/
 {
     int                 fp, hours;
-    size_t              len;
-    char                am_pm, buf[100];
+    char                am_pm;
+    char                buf[100];
     int                 check;
     struct stat         statbuf;
     struct tm           *timeptr;
@@ -1301,10 +1303,10 @@ static void CheckVersion( char *path, char *drive, char *dir )
     }
     _splitpath( path, drive, dir, NULL, NULL );
     _makepath( path, drive, dir, NULL, NULL );
-    len = strlen( path );
-    sprintf( path + len, "  (%.2d-%.2d-%.4d %.2d:%.2d%cm)  ",
+    sprintf( buf, "  (%.2d-%.2d-%.4d %.2d:%.2d%cm)  ",
              timeptr->tm_mon + 1, timeptr->tm_mday, timeptr->tm_year + 1900,
              hours, timeptr->tm_min, am_pm );
+    strcat( path, buf );
 
     // also concat version number if it exists
     VersionStr( fp, "VeRsIoN=", 8, buf, sizeof( buf ) );
@@ -1322,8 +1324,8 @@ static void CheckVersion( char *path, char *drive, char *dir )
     close( fp );
 }
 
-gui_message_return CheckInstallDLL( const char *name, vhandle var_handle )
-/************************************************************************/
+bool CheckInstallDLL( const char *name, vhandle var_handle )
+/**********************************************************/
 {
     const char          *dst;
     size_t              dst_len;
@@ -1341,6 +1343,8 @@ gui_message_return CheckInstallDLL( const char *name, vhandle var_handle )
 #else
     char                prev_path[_MAX_PATH];
 #endif
+    bool                cancel;
+    bool                ok;
 
     _splitpath( name, drive, dir, fname, ext );
     _makepath( dll_name, NULL, NULL, fname, ext );
@@ -1349,26 +1353,14 @@ gui_message_return CheckInstallDLL( const char *name, vhandle var_handle )
 #else
     _makepath( unpacked_as, drive, dir, fname, ext );
 #endif
+    cancel = false;
+    ok = true;
 #if defined( __WINDOWS__ )
     if( OpenFile( dll_name, &ofPrev, OF_EXIST ) == -1 ) {
-        secondarysearch( dll_name, prev_path );
-        if( prev_path[0] == '\0' ) {
-#ifdef EXTRA_CAUTIOUS_FOR_DLLS
-            if( access( name, F_OK ) != 0 || remove( name ) == 0 ) {
-                rename( unpacked_as, name );
-            } else {
-                remove( unpacked_as );
-                if( MsgBox( NULL, "IDS_CANTREPLACE", GUI_YES_NO, name ) == GUI_RET_NO ) {
-                    return( GUI_RET_CANCEL );
-                }
-            }
-#endif
-            return( GUI_RET_OK );     // did not previously exist
-        }
-    }
 #else
     _searchenv( dll_name, "PATH", prev_path );
     if( prev_path[0] == '\0' ) {
+#endif
         secondarysearch( dll_name, prev_path );
         if( prev_path[0] == '\0' ) {
 #ifdef EXTRA_CAUTIOUS_FOR_DLLS
@@ -1377,38 +1369,38 @@ gui_message_return CheckInstallDLL( const char *name, vhandle var_handle )
             } else {
                 remove( unpacked_as );
                 if( MsgBox( NULL, "IDS_CANTREPLACE", GUI_YES_NO, name ) == GUI_RET_NO ) {
-                    return( GUI_RET_CANCEL );
+                    cancel = true;
                 }
             }
 #endif
-            return( GUI_RET_OK );     // did not previously exist
+            ok = false;     // did not previously exist
         }
     }
-#endif
-
-    _splitpath( name, drive, dir, NULL, NULL );
-    _makepath( path1, drive, dir, NULL, NULL );
-    strupr( path1 );
-    _splitpath( prev_path, drive, dir, NULL, NULL );
-    _makepath( path2, drive, dir, NULL, NULL );
-    strupr( path2 );
-    dst = GetVariableStrVal( "DstDir" );
-    dst_len = strlen( dst );
-    if( memicmp( path1, dst, dst_len ) == 0 && memicmp( path2, dst, dst_len ) == 0 ) {
-        /* both files are going into the main installation sub-tree */
+    if( ok ) {
+        _splitpath( name, drive, dir, NULL, NULL );
+        _makepath( path1, drive, dir, NULL, NULL );
+        strupr( path1 );
+        _splitpath( prev_path, drive, dir, NULL, NULL );
+        _makepath( path2, drive, dir, NULL, NULL );
+        strupr( path2 );
+        dst = GetVariableStrVal( "DstDir" );
+        dst_len = strlen( dst );
+        if( memicmp( path1, dst, dst_len ) == 0 && memicmp( path2, dst, dst_len ) == 0 ) {
+            /* both files are going into the main installation sub-tree */
 #ifdef EXTRA_CAUTIOUS_FOR_DLLS
-        if( access( name, F_OK ) != 0 || remove( name ) == 0 ) {
-            rename( unpacked_as, name );
-        } else {
-            remove( unpacked_as );
-            if( MsgBox( NULL, "IDS_CANTREPLACE", GUI_YES_NO, name ) == GUI_RET_NO ) {
-                return( GUI_RET_CANCEL );
+            if( access( name, F_OK ) != 0 || remove( name ) == 0 ) {
+                rename( unpacked_as, name );
+            } else {
+                remove( unpacked_as );
+                if( MsgBox( NULL, "IDS_CANTREPLACE", GUI_YES_NO, name ) == GUI_RET_NO ) {
+                    cancel = true;
+                }
             }
-        }
 #endif
-        return( GUI_RET_OK );
+            ok = false;
+        }
     }
-    if( stricmp( path1, path2 ) == 0 ) {
+    if( ok && stricmp( path1, path2 ) == 0 ) {
 #ifdef EXTRA_CAUTIOUS_FOR_DLLS
         /* both files are going into the same directory */
         struct stat         new, old;
@@ -1423,83 +1415,83 @@ gui_message_return CheckInstallDLL( const char *name, vhandle var_handle )
             } else {
                 remove( unpacked_as );
                 if( MsgBox( NULL, "IDS_CANTREPLACE", GUI_YES_NO, name ) == GUI_RET_NO ) {
-                    return( GUI_RET_CANCEL );
+                    cancel = true;
                 }
             }
         }
-        return( GUI_RET_OK );
-#else
-        /* there is only one file & it's been zapped */
-        return( GUI_RET_OK );
 #endif
+        ok = false;
     }
-    if( CheckForceDLLInstall( dll_name ) ) {
+    if( ok && CheckForceDLLInstall( dll_name ) ) {
 #ifdef EXTRA_CAUTIOUS_FOR_DLLS
         if( access( name, F_OK ) != 0 || remove( name ) == 0 ) {
             rename( unpacked_as, name );
         } else {
             remove( unpacked_as );
             if( MsgBox( NULL, "IDS_CANTREPLACE", GUI_YES_NO, name ) == GUI_RET_NO ) {
-                return( GUI_RET_CANCEL );
+                cancel = true;
             }
         }
 #endif
-        return( GUI_RET_OK );
+        ok = false;
     }
+    if( ok ) {
+        strupr( dll_name );
+        strcpy( path1, unpacked_as );
+        strcpy( path2, prev_path );
+        CheckVersion( path1, drive, dir );
+        CheckVersion( path2, drive, dir );
+        SetVariableByName( "FileDesc", dll_name );
+        SetVariableByName( "DLLDir", path1 );
+        SetVariableByName( "OtherDLLDir", path2 );
 
-    strupr( dll_name );
-    strcpy( path1, unpacked_as );
-    strcpy( path2, prev_path );
-    CheckVersion( path1, drive, dir );
-    CheckVersion( path2, drive, dir );
-    SetVariableByName( "FileDesc", dll_name );
-    SetVariableByName( "DLLDir", path1 );
-    SetVariableByName( "OtherDLLDir", path2 );
-
-    // don't display the dialog if the user selected the "Skip dialog" option
-    if( !GetVariableBoolVal( "DLL_Skip_Dialog" ) ) {
-        if( DoDialog( "DLLInstall" ) == DLG_CAN ) {
-            remove( unpacked_as );
-            return( GUI_RET_CANCEL );
+        // don't display the dialog if the user selected the "Skip dialog" option
+        if( !GetVariableBoolVal( "DLL_Skip_Dialog" ) ) {
+            if( DoDialog( "DLLInstall" ) == DLG_CAN ) {
+                remove( unpacked_as );
+                cancel = true;
+                ok = false;
+            }
         }
     }
-
-    if( GetVariableBoolVal( "DLL_Delete_Old" ) ) {
-        remove( prev_path );
+    if( ok ) {
+        if( GetVariableBoolVal( "DLL_Delete_Old" ) ) {
+            remove( prev_path );
 #ifdef EXTRA_CAUTIOUS_FOR_DLLS
-        if( access( name, F_OK ) != 0 || remove( name ) == 0 ) {
-            rename( unpacked_as, name );
-        } else {
-            remove( unpacked_as );
-            if( MsgBox( NULL, "IDS_CANTREPLACE", GUI_YES_NO, name ) == GUI_RET_NO ) {
-                return( GUI_RET_CANCEL );
+            if( access( name, F_OK ) != 0 || remove( name ) == 0 ) {
+                rename( unpacked_as, name );
+            } else {
+                remove( unpacked_as );
+                if( MsgBox( NULL, "IDS_CANTREPLACE", GUI_YES_NO, name ) == GUI_RET_NO ) {
+                    cancel = true;
+                }
             }
-        }
 #endif
-    } else if( GetVariableBoolVal( "DLL_Keep_Both" ) ) {
+        } else if( GetVariableBoolVal( "DLL_Keep_Both" ) ) {
 #ifdef EXTRA_CAUTIOUS_FOR_DLLS
-        if( access( name, F_OK ) != 0 || remove( name ) == 0 ) {
-            rename( unpacked_as, name );
-        } else {
-            remove( unpacked_as );
-            if( MsgBox( NULL, "IDS_CANTREPLACE", GUI_YES_NO, name ) == GUI_RET_NO ) {
-                return( GUI_RET_CANCEL );
+            if( access( name, F_OK ) != 0 || remove( name ) == 0 ) {
+                rename( unpacked_as, name );
+            } else {
+                remove( unpacked_as );
+                if( MsgBox( NULL, "IDS_CANTREPLACE", GUI_YES_NO, name ) == GUI_RET_NO ) {
+                    cancel = true;
+                }
             }
-        }
 #endif
-    } else if( GetVariableBoolVal( "DLL_Replace_Old" ) ) {
-        DoCopyFile( unpacked_as, prev_path, false );
-        SetVariableByHandle( var_handle, prev_path );
-        remove( unpacked_as );
-    } else if( GetVariableBoolVal( "DLL_Dont_Install" ) ) {
-        SetVariableByHandle( var_handle, prev_path );
-        remove( unpacked_as );
-    } else if( GetVariableBoolVal( "DLL_Abort_Install" ) ) {
-        SetVariableByHandle( var_handle, prev_path );
-        remove( unpacked_as );
-        return( GUI_RET_CANCEL );
+        } else if( GetVariableBoolVal( "DLL_Replace_Old" ) ) {
+            DoCopyFile( unpacked_as, prev_path, false );
+            SetVariableByHandle( var_handle, prev_path );
+            remove( unpacked_as );
+        } else if( GetVariableBoolVal( "DLL_Dont_Install" ) ) {
+            SetVariableByHandle( var_handle, prev_path );
+            remove( unpacked_as );
+        } else if( GetVariableBoolVal( "DLL_Abort_Install" ) ) {
+            SetVariableByHandle( var_handle, prev_path );
+            remove( unpacked_as );
+            cancel = true;
+        }
     }
-    return( GUI_RET_OK );
+    return( cancel );
 }
 
 
