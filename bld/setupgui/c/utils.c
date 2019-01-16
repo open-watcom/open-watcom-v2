@@ -1610,7 +1610,7 @@ static bool RelocateFiles( void )
 
 typedef struct file_check {
     struct file_check   *next;
-    char                *name;
+    VBUF                name;
     vhandle             var_handle;
     bool                is_dll;
 } file_check;
@@ -1618,7 +1618,7 @@ typedef struct file_check {
 static file_check *fileCheck = NULL;
 static file_check *fileCheckThisPack = NULL;
 
-static void NewFileToCheck( const char *name, bool is_dll )
+static void NewFileToCheck( const VBUF *name, bool is_dll )
 /*********************************************************/
 {
     file_check  *new;
@@ -1626,21 +1626,22 @@ static void NewFileToCheck( const char *name, bool is_dll )
     new = GUIMemAlloc( sizeof( *new ) );
     new->next = fileCheckThisPack;
     fileCheckThisPack = new;
-    new->name = GUIStrDup( name, NULL );
+    VbufInit( &new->name );
+    VbufConcVbuf( &new->name, name );
     new->var_handle = NO_VAR;
     new->is_dll = is_dll;
 }
 
-static void UpdateCheckList( const char *name, vhandle var_handle )
+static void UpdateCheckList( const VBUF *name, vhandle var_handle )
 /*****************************************************************/
 {
     file_check  *check;
 
     for( check = fileCheckThisPack; check != NULL; check = check->next ) {
 #if defined( __UNIX__ )
-        if( strcmp( name, check->name ) == 0 ) {
+        if( VbufCompVbuf( name, &check->name, false ) == 0 ) {
 #else
-        if( stricmp( name, check->name ) == 0 ) {
+        if( VbufCompVbuf( name, &check->name, true ) == 0 ) {
 #endif
             check->var_handle = var_handle;
         }
@@ -1669,13 +1670,13 @@ static bool CheckPendingFiles( void )
     for( curr = fileCheck; curr != NULL; curr = next ) {
         next = curr->next;
         if( curr->is_dll ) {
-            ret = CheckInstallDLL( curr->name, curr->var_handle );
+            ret = CheckInstallDLL( VbufString( &curr->name ), curr->var_handle );
         } else {
-            ret = CheckInstallNLM( curr->name, curr->var_handle );
+            ret = CheckInstallNLM( &curr->name, curr->var_handle );
         }
         if( ret == GUI_RET_CANCEL )
             return( false );
-        GUIMemFree( curr->name );
+        VbufFree( &curr->name );
         GUIMemFree( curr );
     }
     return( true );
@@ -1718,13 +1719,13 @@ static int UnPackHook( int filenum, int subfilenum, VBUF *name )
     VbufInit( &fname );
     VbufInit( &ext );
     if( SimSubFileIsNLM( filenum, subfilenum ) ) {
-        NewFileToCheck( VbufString( name ), false );
+        NewFileToCheck( name, false );
         VbufSplitpath( name, &drive, &dir, &fname, &ext );
         VbufSetStr( &ext, "._N_" );
         VbufMakepath( name, &drive, &dir, &fname, &ext );
         rc = 1;
     } else if( SimSubFileIsDLL( filenum, subfilenum ) ) {
-        NewFileToCheck( VbufString( name ), true );
+        NewFileToCheck( name, true );
 #ifdef EXTRA_CAUTIOUS_FOR_DLLS
         if( !IsPatch ) {
             VbufSplitpath( name, &drive, &dir, &fname, &ext );
@@ -1968,7 +1969,7 @@ static bool DoCopyFiles( void )
                             chmod( VbufString( &tmp_path ), DEF_EXEC );
                         }
                         SetVariableByHandle( var_handle, VbufString( &tmp_path ) );
-                        UpdateCheckList( VbufString( &tmp_path ), var_handle );
+                        UpdateCheckList( &tmp_path, var_handle );
                     }
                 }
                 if( ok ) {

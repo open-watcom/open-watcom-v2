@@ -53,7 +53,7 @@ static void LenToASCIIZStr( char *tobuf, const unsigned char *frombuf )
     tobuf[*frombuf] = '\0';
 }
 
-int ReturnNLMVersionInfoFromFile( const char *__pathName, long *majorVersion,
+static int ReturnNLMVersionInfoFromFile( const VBUF *__pathName, long *majorVersion,
                                   long *minorVersion, long *revision, long *year,
                                   long *month, long *day, char *copyrightString,
                                   char *description )
@@ -63,7 +63,7 @@ int ReturnNLMVersionInfoFromFile( const char *__pathName, long *majorVersion,
     nlm_header_3    *verPtr;
     unsigned char   buffer[READ_SIZE];
 
-    handle = open( __pathName, O_BINARY | O_RDONLY );
+    handle = open( VbufString( __pathName ), O_BINARY | O_RDONLY );
     if( handle != EFAILURE ) {
         bytes = read( handle, buffer, READ_SIZE );
         close( handle );
@@ -125,7 +125,7 @@ int ReturnNLMVersionInfoFromFile( const char *__pathName, long *majorVersion,
 
 char sysPath[] = { "SYS:\\SYSTEM\\" };
 
-static bool CheckNewer( const char *newNLM, const char *oldNLM )
+static bool CheckNewer( const VBUF *newNLM, const VBUF *oldNLM )
 {
     int  rc;
     long year, month, day;
@@ -183,29 +183,45 @@ static bool CheckNewer( const char *newNLM, const char *oldNLM )
     return( SAMENLM );
 }
 
-gui_message_return CheckInstallNLM( const char *name, vhandle var_handle )
+gui_message_return CheckInstallNLM( const VBUF *name, vhandle var_handle )
 {
-    char        unpacked_as[_MAX_PATH];
-    char        temp[_MAX_PATH];
-    char        drive[_MAX_DRIVE];
-    char        dir[_MAX_DIR];
-    char        fname[_MAX_FNAME];
-    char        ext[_MAX_EXT];
+    VBUF        unpacked_as;
+    VBUF        temp;
+    VBUF        drive;
+    VBUF        dir;
+    VBUF        fname;
+    VBUF        ext;
 
-    _splitpath( name, drive, dir, fname, ext );
-    _makepath( unpacked_as, drive, dir, fname, "._N_" );
-    if( CheckNewer( unpacked_as, name ) ) {
-        _makepath( temp, NULL, sysPath, fname, ext );
-        if( CheckNewer( unpacked_as, temp ) ) {
-            chmod( name, PMODE_RWX );
-            DoCopyFile( unpacked_as, name, false );
-            strcpy( temp, fname );
-            strcat( temp, "_NLM_installed" );
-            SetBoolVariableByName( temp, true );
-            SetVariableByHandle( var_handle, temp );
+    VbufInit( &unpacked_as );
+    VbufInit( &temp );
+    VbufInit( &drive );
+    VbufInit( &dir );
+    VbufInit( &fname );
+    VbufInit( &ext );
+
+    VbufSplitpath( name, &drive, &dir, &fname, &ext );
+    VbufSetStr( &temp, "._N_" );
+    VbufMakepath( &unpacked_as, &drive, &dir, &fname, &temp );
+    if( CheckNewer( &unpacked_as, name ) ) {
+        VbufSetStr( &dir, sysPath );
+        VbufMakepath( &temp, NULL, &dir, &fname, &ext );
+        if( CheckNewer( &unpacked_as, &temp ) ) {
+            chmod( VbufString( name ), PMODE_RWX );
+            DoCopyFile( VbufString( &unpacked_as ), VbufString( name ), false );
+            VbufSetVbuf( &temp, &fname );
+            VbufConcStr( &temp, "_NLM_installed" );
+            SetBoolVariableByName( VbufString( &temp ), true );
+            SetVariableByHandle( var_handle, VbufString( &temp ) );
         }
     }
-    remove( unpacked_as );
+    remove( VbufString( &unpacked_as ) );
+
+    VbufFree( &ext );
+    VbufFree( &fname );
+    VbufFree( &dir );
+    VbufFree( &drive );
+    VbufFree( &temp );
+    VbufFree( &unpacked_as );
     return( GUI_RET_OK );
 }
 
