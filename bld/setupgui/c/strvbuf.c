@@ -96,7 +96,7 @@ void VbufFree(                  // FREE BUFFER
 // Vbufs comparision
 // ****************************************************
 
-int VbufComp(               // COMPARE A VBUFs
+int VbufCompVbuf(           // COMPARE A VBUFs
     const VBUF *vbuf1,      // - VBUF structure
     const VBUF *vbuf2,      // - VBUF structure
     bool igncase )          // - bool ignore case
@@ -105,6 +105,31 @@ int VbufComp(               // COMPARE A VBUFs
         return( stricmp( vbuf1->buf, vbuf2->buf ) );
     } else {
         return( strcmp( vbuf1->buf, vbuf2->buf ) );
+    }
+}
+
+int VbufCompStr(            // COMPARE A VBUFs
+    const VBUF *vbuf1,      // - VBUF structure
+    const char *str,        // - string
+    bool igncase )          // - bool ignore case
+{
+    if( igncase ) {
+        return( stricmp( vbuf1->buf, str ) );
+    } else {
+        return( strcmp( vbuf1->buf, str ) );
+    }
+}
+
+int VbufCompBuffer(         // COMPARE A VBUFs
+    const VBUF *vbuf1,      // - VBUF structure
+    char const *buffer,     // - buffer
+    size_t size,            // - size of buffer
+    bool igncase )          // - bool ignore case
+{
+    if( igncase ) {
+        return( memicmp( vbuf1->buf, buffer, size ) );
+    } else {
+        return( memcmp( vbuf1->buf, buffer, size ) );
     }
 }
 
@@ -153,8 +178,8 @@ void VbufSetVbuf(               // SET A VBUF TO VBUF
 
 void VbufConcBuffer(            // CONCATENATE A BUFFER TO VBUF
     VBUF *vbuf,                 // - VBUF structure
-    size_t size,                // - size of buffer
-    char const *buffer )        // - buffer
+    char const *buffer,         // - size of buffer
+    size_t size )               // - buffer
 {
     if( size > 0 ) {
         VbufReqd( vbuf, vbuf->used + size );
@@ -166,8 +191,8 @@ void VbufConcBuffer(            // CONCATENATE A BUFFER TO VBUF
 
 void VbufPrepBuffer(            // PREPEND A BUFFER TO VBUF
     VBUF *vbuf,                 // - VBUF structure
-    size_t size,                // - size of buffer
-    char const *buffer )        // - buffer
+    char const *buffer,         // - size of buffer
+    size_t size )               // - buffer
 {
     VBUF    temp;
 
@@ -185,11 +210,11 @@ void VbufPrepBuffer(            // PREPEND A BUFFER TO VBUF
 
 void VbufSetBuffer(             // SET A BUFFER TO VBUF
     VBUF *vbuf,                 // - VBUF structure
-    size_t size,                // - size of buffer
-    char const *buffer )        // - buffer
+    char const *buffer,         // - size of buffer
+    size_t size )               // - buffer
 {
     VbufSetLen( vbuf, 0 );
-    VbufConcBuffer( vbuf, size, buffer );
+    VbufConcBuffer( vbuf, buffer, size );
 }
 
 
@@ -197,14 +222,14 @@ void VbufConcStr(               // CONCATENATE A STRING TO VBUF
     VBUF *vbuf,                 // - VBUF structure
     char const *string )        // - string to be concatenated
 {
-    VbufConcBuffer( vbuf, strlen( string ), string );
+    VbufConcBuffer( vbuf, string, strlen( string ) );
 }
 
 void VbufPrepStr(               // PREPEND A STRING TO VBUF
     VBUF *vbuf,                 // - VBUF structure
     char const *string )        // - string to be prepended
 {
-    VbufPrepBuffer( vbuf, strlen( string ), string );
+    VbufPrepBuffer( vbuf, string, strlen( string ) );
 }
 
 void VbufSetStr(                // SET A STRING TO VBUF
@@ -212,7 +237,7 @@ void VbufSetStr(                // SET A STRING TO VBUF
     char const *string )        // - string to be concatenated
 {
     VbufSetLen( vbuf, 0 );
-    VbufConcBuffer( vbuf, strlen( string ), string );
+    VbufConcBuffer( vbuf, string, strlen( string ) );
 }
 
 
@@ -468,7 +493,7 @@ void VbufSplitpath(             // GET A FILE PATH COMPONENTS FROM VBUF
         }
     }
     if( drive != NULL ) {
-        VbufSetBuffer( drive, path - startp, startp );
+        VbufSetBuffer( drive, startp, path - startp );
     }
 
 #elif defined(__NETWARE__)
@@ -476,7 +501,7 @@ void VbufSplitpath(             // GET A FILE PATH COMPONENTS FROM VBUF
     startp = strchr( path, DRIVE_SEP );
     if( startp != NULL ) {
         if( drive != NULL ) {
-            VbufSetBuffer( drive, startp - path + 1, path );
+            VbufSetBuffer( drive, path, startp - path + 1 );
         }
         path = startp + 1;
     } else {
@@ -519,13 +544,13 @@ void VbufSplitpath(             // GET A FILE PATH COMPONENTS FROM VBUF
     if( dotp == NULL )
         dotp = path;
     if( dir != NULL ) {
-        VbufSetBuffer( dir, namep - startp, startp );
+        VbufSetBuffer( dir, startp, namep - startp );
     }
     if( name != NULL ) {
-        VbufSetBuffer( name, dotp - namep, namep );
+        VbufSetBuffer( name, namep, dotp - namep );
     }
     if( ext != NULL ) {
-        VbufSetBuffer( ext, path - dotp, dotp );
+        VbufSetBuffer( ext, dotp, path - dotp );
     }
 }
 

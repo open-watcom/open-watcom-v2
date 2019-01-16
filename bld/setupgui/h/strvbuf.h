@@ -57,9 +57,20 @@ void VbufInit(                  // INITIALIZE BUFFER STRUCTURE
 void VbufFree(                  // FREE BUFFER
     VBUF *vbuf )                // - VBUF structure
 ;
-int VbufComp(                   // COMPARE A VBUF
+int VbufCompVbuf(               // COMPARE A VBUF
     const VBUF *vbuf1,          // - VBUF structure
     const VBUF *vbuf2,          // - VBUF structure
+    bool igncase )              // - bool ignore case
+;
+int VbufCompStr(                // COMPARE A VBUFs
+    const VBUF *vbuf1,          // - VBUF structure
+    const char *str,            // - string
+    bool igncase )              // - bool ignore case
+;
+int VbufCompBuffer(             // COMPARE A VBUFs
+    const VBUF *vbuf1,          // - VBUF structure
+    char const *buffer,         // - buffer
+    size_t size,                // - size of buffer
     bool igncase )              // - bool ignore case
 ;
 void VbufConcVbuf(              // CONCATENATE A VBUF TO VBUF
@@ -76,18 +87,18 @@ void VbufSetVbuf(               // SET A VBUF
 ;
 void VbufConcBuffer(            // CONCATENATE A BUFFER TO VBUF
     VBUF *vbuf,                 // - VBUF structure
-    size_t size,                // - size of buffer
-    char const *buffer )        // - buffer
+    char const *buffer,         // - buffer
+    size_t size )               // - size of buffer
 ;
 void VbufPrepBuffer(            // PREPEND A BUFFER TO VBUF
     VBUF *vbuf,                 // - VBUF structure
-    size_t size,                // - size of buffer
-    char const *buffer )        // - buffer
+    char const *buffer,         // - buffer
+    size_t size )               // - size of buffer
 ;
 void VbufSetBuffer(             // SET A BUFFER
     VBUF *vbuf,                 // - VBUF structure
-    size_t size,                // - size of buffer
-    char const *buffer )        // - buffer
+    char const *buffer,         // - buffer
+    size_t size )               // - size of buffer
 ;
 void VbufConcStr(               // CONCATENATE A STRING TO VBUF
     VBUF *vbuf,                 // - VBUF structure

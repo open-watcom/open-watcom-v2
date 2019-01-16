@@ -169,7 +169,7 @@ static void NoDupPaths( VBUF *old_value, const VBUF *new_value, char delim )
                     value_start = dup + len + 1;
                 } else if( dup[-1] == delim ) {
                     // copy previous data
-                    VbufConcBuffer( &tmp, dup - value_start, value_start );
+                    VbufConcBuffer( &tmp, value_start, dup - value_start );
                     value_start = dup + len + 1;
                 }
                 // correct "look" pointer by 1 for next lookup after delimiter
@@ -181,7 +181,7 @@ static void NoDupPaths( VBUF *old_value, const VBUF *new_value, char delim )
                     value_start = dup + len;
                 } else if( dup[-1] == delim ) {
                     // copy previous data
-                    VbufConcBuffer( &tmp, dup - value_start, value_start );
+                    VbufConcBuffer( &tmp, value_start, dup - value_start );
                     value_start = dup + len;
                 }
             }
@@ -190,7 +190,7 @@ static void NoDupPaths( VBUF *old_value, const VBUF *new_value, char delim )
         look += strlen( look );
         if( value_start != look ) {
             // copy rest of data not copied to "tmp"
-            VbufConcBuffer( &tmp, look - value_start, value_start );
+            VbufConcBuffer( &tmp, value_start, look - value_start );
         }
         // copy result into "old_value"
         VbufSetVbuf( old_value, &tmp );
@@ -304,7 +304,7 @@ static var_type parse_line( char *line, VBUF *name, VBUF *value, var_type vt_set
     s = line;
     for( c = *line; c != '\0' && !isspace( c ) && c != '='; c = *(++line) )
         ;
-    VbufConcBuffer( name, line - s, s );
+    VbufConcBuffer( name, s, line - s );
     VbufRewind( value );
     while( isspace( *line ) )
         ++line;
@@ -369,11 +369,11 @@ static void CheckEnvironmentLine( char *line, int num_env, bool *found_env, bool
     case VAR_SETENV_ASSIGN:
         break;
     case VAR_ASSIGN:
-        if( memicmp( VbufString( &line_var ), "LIBPATH", 7 ) == 0 )
+        if( VbufCompStr( &line_var, "LIBPATH", true ) == 0 )
             break;
         // fall down
     case VAR_CMD:
-        if( memicmp( VbufString( &line_var ), "PATH", 4 ) == 0 )
+        if( VbufCompStr( &line_var, "PATH", true ) == 0 )
             break;
         // fall down
     default:
@@ -388,7 +388,7 @@ static void CheckEnvironmentLine( char *line, int num_env, bool *found_env, bool
         if( found_env[i] || !uninstall && !SimCheckEnvironmentCondition( i ) )
             continue;
         append = SimGetEnvironmentStrings( i, &next_var, &next_val );
-        if( VbufComp( &line_var, &next_var, true ) == 0 ) {
+        if( VbufCompVbuf( &line_var, &next_var, true ) == 0 ) {
             // found an environment variable, replace its value
             found_env[i] = true;
             modify_value_list( &line_val, &next_val, PATH_LIST_SEP, append, uninstall );
@@ -467,7 +467,7 @@ static void FinishEnvironmentLines( FILE *fp, int num_env, bool *found_env, bool
             if( found_env[j] || !SimCheckEnvironmentCondition( j ) )
                 continue;
             append = SimGetEnvironmentStrings( j, &next_var, &next_val );
-            if( VbufComp( &cur_var, &next_var, true ) == 0 ) {
+            if( VbufCompVbuf( &cur_var, &next_var, true ) == 0 ) {
                 found_env[j] = true;
                 if( libpath_batch ) {
                     modify_value_list_libpath( &val_before, &val_after, &next_val, PATH_LIST_SEP, append );
@@ -604,7 +604,7 @@ static var_type getAutoVarType( const VBUF *auto_var )
 {
     var_type        vt;
 
-    if( memicmp( VbufString( auto_var ), SETENV, SETENV_LEN ) == 0 ) {
+    if( VbufCompBuffer( auto_var, SETENV, SETENV_LEN, true ) == 0 ) {
         vt = VAR_ASSIGN_SETENV;
     } else {
         vt = VAR_CMD;
@@ -633,7 +633,7 @@ static void CheckAutoLine( char *line, int num_auto, bool *found_auto, bool unin
     case VAR_ASSIGN_SETENV:
         break;
     case VAR_CMD:
-        if( memicmp( VbufString( &line_var ), "PATH", 4 ) != 0 ) {
+        if( VbufCompStr( &line_var, "PATH", true ) != 0 ) {
             if( uninstall )
                 break;
             _splitpath( VbufString( &line_var ), NULL, NULL, fname, fext );
@@ -655,7 +655,7 @@ static void CheckAutoLine( char *line, int num_auto, bool *found_auto, bool unin
         if( found_auto[i] || !uninstall && !SimCheckAutoExecCondition( i ) )
             continue;
         append = SimGetAutoExecStrings( i, &next_var, &next_val );
-        if( VbufComp( &line_var, &next_var, true ) == 0 ) {
+        if( VbufCompVbuf( &line_var, &next_var, true ) == 0 ) {
             // found an command, replace its value
             found_auto[i] = true;
             modify_value_list( &line_val, &next_val, PATH_LIST_SEP, append, uninstall );
@@ -703,7 +703,7 @@ static void FinishAutoLines( FILE *fp, int num_auto, bool *found_auto, bool batc
             if( found_auto[j] || !SimCheckAutoExecCondition( j ) )
                 continue;
             append = SimGetAutoExecStrings( j, &next_var, &next_val );
-            if( VbufComp( &cur_var, &next_var, true ) == 0 ) {
+            if( VbufCompVbuf( &cur_var, &next_var, true ) == 0 ) {
                 found_auto[j] = true;
                 modify_value_list( &cur_val, &next_val, PATH_LIST_SEP, append, false );
             }
@@ -757,7 +757,7 @@ static var_type getConfigVarType( const VBUF *cfg_var )
 {
     var_type        vt;
 
-    if( memicmp( VbufString( cfg_var ), SETENV, SETENV_LEN ) == 0 ) {
+    if( VbufCompBuffer( cfg_var, SETENV, SETENV_LEN, true ) == 0 ) {
         vt = VAR_ASSIGN_SETENV;
     } else {
         vt = VAR_ASSIGN;
@@ -800,11 +800,11 @@ static void CheckConfigLine( char *line, int num_cfg, bool *found_cfg, bool unin
         if( found_cfg[i] || !uninstall && !SimCheckConfigCondition( i ) )
             continue;
         append = SimGetConfigStrings( i, &next_var, &next_val );
-        if( VbufComp( &line_var, &next_var, true ) == 0 ) {
+        if( VbufCompVbuf( &line_var, &next_var, true ) == 0 ) {
             // found an variable
             if( run_find ) {
                 // found RUN variable
-                if( memicmp( VbufString( &line_val ), VbufString( &next_val ), VbufLen( &next_val ) ) == 0 ) {
+                if( VbufCompVbuf( &line_val, &next_val, true ) == 0 ) {
                     // if already there, just mark it as found
                     found_cfg[i] = true;
                     run_found = true;
@@ -875,7 +875,7 @@ static void FinishConfigLines( FILE *fp, int num_cfg, bool *found_cfg, bool batc
             if( found_cfg[j] || !SimCheckConfigCondition( j ) )
                 continue;
             append = SimGetConfigStrings( j, &next_var, &next_val );
-            if( VbufComp( &cur_var, &next_var, true ) == 0 ) {
+            if( VbufCompVbuf( &cur_var, &next_var, true ) == 0 ) {
                 found_cfg[j] = true;
                 modify_value_list( &cur_val, &next_val, PATH_LIST_SEP, append, false );
             }
@@ -1157,7 +1157,7 @@ void ReplaceVars( VBUF *dst, const char *src )
         if( e == NULL ) {
             break;
         }
-        VbufSetBuffer( &tmp, e - p, p );
+        VbufSetBuffer( &tmp, p, e - p );
         varname = VbufString( &tmp );
         for( ;; ) {     // loop for multiple '?' operators
             quest = strchr( varname, '?' );
@@ -1678,7 +1678,7 @@ bool ModifyConfiguration( bool uninstall )
                     if( found[j] || !SimCheckEnvironmentCondition( j ) )
                         continue;
                     append = SimGetEnvironmentStrings( j, &next_var, &next_val );
-                    if( VbufComp( &cur_var, &next_var, true ) == 0 ) {
+                    if( VbufCompVbuf( &cur_var, &next_var, true ) == 0 ) {
                         found[j] = true;
                         modify_value_list( &cur_val, &next_val, PATH_LIST_SEP, append, uninstall );
                     }

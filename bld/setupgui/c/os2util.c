@@ -216,7 +216,7 @@ bool CreatePMInfo( bool uninstall )
                     /*
                      * Format is: "+folder_name+parameters"
                      */
-                    VbufSetBuffer( &Folder, p - VbufString( &PMParams ) - 1, VbufString( &PMParams ) + 1 );
+                    VbufSetBuffer( &Folder, VbufString( &PMParams ) + 1, p - VbufString( &PMParams ) - 1 );
                     VbufSetStr( &PMParams, p + 1);
                 }
             } else {
