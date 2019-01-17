@@ -1672,7 +1672,7 @@ static bool CheckPendingFiles( void )
     for( curr = fileCheck; curr != NULL; curr = next ) {
         next = curr->next;
         if( curr->is_dll ) {
-            cancel = CheckInstallDLL( VbufString( &curr->name ), curr->var_handle );
+            cancel = CheckInstallDLL( &curr->name, curr->var_handle );
         } else {
             cancel = CheckInstallNLM( &curr->name, curr->var_handle );
         }

@@ -2483,18 +2483,17 @@ static int PrepareSetupInfo( file_handle fh, pass_type pass )
     return( result );
 }
 
-bool CheckForceDLLInstall( char *name )
-/*************************************/
+bool CheckForceDLLInstall( const VBUF *name )
+/*******************************************/
 {
     int         i;
     size_t      len;
+    const char  *fname;
 
-    if( name == NULL ) {
-        return( true );
-    }
-    len = strlen( name );
+    len = VbufLen( name );
+    fname = VbufString( name );
     for( i = 0; i < SetupInfo.force_DLL_install.num; i++ ) {
-        if( stristr( ForceDLLInstall[i].name, name, len ) != NULL ) {
+        if( stristr( ForceDLLInstall[i].name, fname, len ) != NULL ) {
             return( true );
         }
     }

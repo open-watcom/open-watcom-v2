@@ -256,8 +256,9 @@ static bool output_line( VBUF *vbuf, var_type vt, const VBUF *name, const VBUF *
     return( VbufLen( vbuf ) > 0 );
 }
 
-static void modify_value_list_libpath( VBUF *val_before, VBUF *val_after, const VBUF *new_value, char delim, append_mode append )
-/*******************************************************************************************************************************/
+static void modify_value_list_libpath( VBUF *val_before, VBUF *val_after,
+                    const VBUF *new_value, char delim, append_mode append )
+/*************************************************************************/
 {
     if( append == AM_AFTER ) {
         NoDupPaths( val_before, new_value, delim );
@@ -1206,30 +1207,38 @@ static char *AdditionalPaths[] = { "drive:\\directory\\",
                                    /* insert paths here */
                                    NULL };
 
-static void secondarysearch( char *filename, char *buffer )
-/*********************************************************/
+static void secondarysearch( const VBUF *filename, VBUF *buffer )
+/***************************************************************/
 {
-    char                drive[_MAX_DRIVE];
-    char                dir[_MAX_DIR];
-    char                ext[_MAX_EXT];
-    char                path[_MAX_PATH];
-    char                name[_MAX_PATH];
+    VBUF                drive;
+    VBUF                dir;
+    VBUF                ext;
+    VBUF                path;
+    VBUF                name;
     unsigned int        counter;
 
-    strcpy( buffer, "" );
-    _splitpath( filename, NULL, NULL, name, ext );
-    for( counter = 0; AdditionalPaths[counter]; counter++ ) {
-        _splitpath( AdditionalPaths[counter],
-                    drive,
-                    dir,
-                    NULL,
-                    NULL );
-        _makepath( path, drive, dir, name, ext );
-        if( access( path, F_OK ) == 0 ) {
-            strcpy( buffer, path );
+    VbufInit( &path );
+    VbufInit( &drive );
+    VbufInit( &dir );
+    VbufInit( &name );
+    VbufInit( &ext );
+
+    VbufRewind( buffer );
+    VbufSplitpath( filename, NULL, NULL, &name, &ext );
+    for( counter = 0; AdditionalPaths[counter] != NULL; counter++ ) {
+        VbufSetStr( &path, AdditionalPaths[counter] );
+        VbufSplitpath( &path, &drive, &dir, NULL, NULL );
+        VbufMakepath( &path, &drive, &dir, &name, &ext );
+        if( access( VbufString( &path ), F_OK ) == 0 ) {
+            VbufSetVbuf( buffer, &path );
             break;
         }
     }
+    VbufFree( &ext );
+    VbufFree( &name );
+    VbufFree( &dir );
+    VbufFree( &drive );
+    VbufFree( &path );
 }
 
 static void VersionStr( int fp, char *ver, int verlen, char *verbuf, size_t verbuflen )
@@ -1266,7 +1275,7 @@ static void VersionStr( int fp, char *ver, int verlen, char *verbuf, size_t verb
 }
 
 
-static void CheckVersion( char *path, char *drive, char *dir )
+static void CheckVersion( VBUF *path, VBUF *drive, VBUF *dir )
 /************************************************************/
 {
     int                 fp, hours;
@@ -1276,7 +1285,7 @@ static void CheckVersion( char *path, char *drive, char *dir )
     struct stat         statbuf;
     struct tm           *timeptr;
 
-    fp = open( path, O_RDONLY | O_BINARY );
+    fp = open( VbufString( path ), O_RDONLY | O_BINARY );
     if( fp == -1 ) {
         return;     // shouldn't happen
     }
@@ -1301,74 +1310,77 @@ static void CheckVersion( char *path, char *drive, char *dir )
             hours -= 12;
         }
     }
-    _splitpath( path, drive, dir, NULL, NULL );
-    _makepath( path, drive, dir, NULL, NULL );
+    VbufSplitpath( path, drive, dir, NULL, NULL );
+    VbufMakepath( path, drive, dir, NULL, NULL );
     sprintf( buf, "  (%.2d-%.2d-%.4d %.2d:%.2d%cm)  ",
              timeptr->tm_mon + 1, timeptr->tm_mday, timeptr->tm_year + 1900,
              hours, timeptr->tm_min, am_pm );
-    strcat( path, buf );
+    VbufConcStr( path, buf );
 
     // also concat version number if it exists
     VersionStr( fp, "VeRsIoN=", 8, buf, sizeof( buf ) );
     if( buf[0] != '\0' ) {
         // Novell DLL
-        strcat( path, buf );
+        VbufConcStr( path, buf );
     } else {
         lseek( fp, 0, SEEK_SET );
         VersionStr( fp, "FileVersion", 12, buf, sizeof( buf ) ); // includes terminating '\0' of "FileVersion"
         if( buf[0] != '\0' ) {
             // Windows DLL
-            strcat( path, buf );
+            VbufConcStr( path, buf );
         }
     }
     close( fp );
 }
 
-bool CheckInstallDLL( const char *name, vhandle var_handle )
+bool CheckInstallDLL( const VBUF *name, vhandle var_handle )
 /**********************************************************/
 {
-    const char          *dst;
-    size_t              dst_len;
-    char                drive[_MAX_DRIVE];
-    char                dir[_MAX_DIR];
-    char                fname[_MAX_FNAME];
-    char                ext[_MAX_EXT];
-    char                unpacked_as[_MAX_PATH];
-    char                dll_name[_MAX_FNAME + _MAX_EXT];
-    char                path1[_MAX_PATH + 100];
-    char                path2[_MAX_PATH + 100];
+    VBUF                dst;
+    VBUF                drive;
+    VBUF                dir;
+    VBUF                fname;
+    VBUF                ext;
+    VBUF                unpacked_as;
+    VBUF                dll_name;
+    VBUF                path1;
+    VBUF                path2;
+    VBUF                prev_path;
 #if defined( __WINDOWS__ )
     OFSTRUCT            ofPrev;
-    #define prev_path   ofPrev.szPathName
 #else
-    char                prev_path[_MAX_PATH];
+    char                buffer[_MAX_PATH];
 #endif
     bool                cancel;
     bool                ok;
 
-    _splitpath( name, drive, dir, fname, ext );
-    _makepath( dll_name, NULL, NULL, fname, ext );
+    VbufSplitpath( name, &drive, &dir, &fname, &ext );
+    VbufMakepath( &dll_name, NULL, NULL, &fname, &ext );
 #ifdef EXTRA_CAUTIOUS_FOR_DLLS
-    _makepath( unpacked_as, drive, dir, fname, "._D_" );
+    VbufSetStr( &ext, "._D_" );
+    VbufMakepath( &unpacked_as, &drive, &dir, &fname, &ext );
 #else
-    _makepath( unpacked_as, drive, dir, fname, ext );
+    VbufMakepath( &unpacked_as, &drive, &dir, &fname, &ext );
 #endif
     cancel = false;
     ok = true;
 #if defined( __WINDOWS__ )
-    if( OpenFile( dll_name, &ofPrev, OF_EXIST ) == -1 ) {
+    if( OpenFile( VbufString( &dll_name ), &ofPrev, OF_EXIST ) != -1 ) {
+        VbufSetStr( &prev_path, ofPrev.szPathName );
 #else
-    _searchenv( dll_name, "PATH", prev_path );
-    if( prev_path[0] == '\0' ) {
+    _searchenv( VbufString( &dll_name ), "PATH", buffer );
+    if( buffer[0] != '\0' ) {
+        VbufSetStr( &prev_path, buffer );
 #endif
-        secondarysearch( dll_name, prev_path );
-        if( prev_path[0] == '\0' ) {
+    } else {
+        secondarysearch( &dll_name, &prev_path );
+        if( VbufLen( &prev_path ) == 0 ) {
 #ifdef EXTRA_CAUTIOUS_FOR_DLLS
-            if( access( name, F_OK ) != 0 || remove( name ) == 0 ) {
-                rename( unpacked_as, name );
+            if( access( VbufString( name ), F_OK ) != 0 || remove( VbufString( name ) ) == 0 ) {
+                rename( VbufString( &unpacked_as ), VbufString( name ) );
             } else {
-                remove( unpacked_as );
-                if( MsgBox( NULL, "IDS_CANTREPLACE", GUI_YES_NO, name ) == GUI_RET_NO ) {
+                remove( VbufString( &unpacked_as ) );
+                if( MsgBoxVbuf( NULL, "IDS_CANTREPLACE", GUI_YES_NO, name ) == GUI_RET_NO ) {
                     cancel = true;
                 }
             }
@@ -1377,22 +1389,21 @@ bool CheckInstallDLL( const char *name, vhandle var_handle )
         }
     }
     if( ok ) {
-        _splitpath( name, drive, dir, NULL, NULL );
-        _makepath( path1, drive, dir, NULL, NULL );
-        strupr( path1 );
-        _splitpath( prev_path, drive, dir, NULL, NULL );
-        _makepath( path2, drive, dir, NULL, NULL );
-        strupr( path2 );
-        dst = GetVariableStrVal( "DstDir" );
-        dst_len = strlen( dst );
-        if( memicmp( path1, dst, dst_len ) == 0 && memicmp( path2, dst, dst_len ) == 0 ) {
+        VbufSplitpath( name, &drive, &dir, NULL, NULL );
+        VbufMakepath( &path1, &drive, &dir, NULL, NULL );
+//        strupr( &path1 );
+        VbufSplitpath( &prev_path, &drive, &dir, NULL, NULL );
+        VbufMakepath( &path2, &drive, &dir, NULL, NULL );
+//        strupr( &path2 );
+        VbufSetStr( &dst, GetVariableStrVal( "DstDir" ) );
+        if( VbufComp( &path1, &dst, true ) == 0 && VbufComp( &path2, &dst, true ) == 0 ) {
             /* both files are going into the main installation sub-tree */
 #ifdef EXTRA_CAUTIOUS_FOR_DLLS
-            if( access( name, F_OK ) != 0 || remove( name ) == 0 ) {
-                rename( unpacked_as, name );
+            if( access( VbufString( name ), F_OK ) != 0 || remove( VbufString( name ) ) == 0 ) {
+                rename( VbufString( &unpacked_as ), VbufString( name ) );
             } else {
-                remove( unpacked_as );
-                if( MsgBox( NULL, "IDS_CANTREPLACE", GUI_YES_NO, name ) == GUI_RET_NO ) {
+                remove( VbufString( &unpacked_as ) );
+                if( MsgBoxVbuf( NULL, "IDS_CANTREPLACE", GUI_YES_NO, name ) == GUI_RET_NO ) {
                     cancel = true;
                 }
             }
@@ -1400,35 +1411,36 @@ bool CheckInstallDLL( const char *name, vhandle var_handle )
             ok = false;
         }
     }
-    if( ok && stricmp( path1, path2 ) == 0 ) {
+    if( ok && VbufComp( &path1, &path2, true ) == 0 ) {
 #ifdef EXTRA_CAUTIOUS_FOR_DLLS
         /* both files are going into the same directory */
         struct stat         new, old;
 
-        stat( prev_path, &old );
-        stat( unpacked_as, &new );
+        stat( VbufString( &prev_path ), &old );
+        stat( VbufString( &unpacked_as ), &new );
         if( new.st_mtime < old.st_mtime ) {
-            remove( unpacked_as );
+            remove( VbufString( &unpacked_as ) );
         } else {
-            if( access( name, F_OK ) != 0 || remove( name ) == 0 ) {
-                rename( unpacked_as, name );
+            if( access( VbufString( name ), F_OK ) != 0 || remove( VbufString( name ) ) == 0 ) {
+                rename( VbufString( &unpacked_as ), VbufString( name ) );
             } else {
-                remove( unpacked_as );
-                if( MsgBox( NULL, "IDS_CANTREPLACE", GUI_YES_NO, name ) == GUI_RET_NO ) {
+                remove( VbufString( &unpacked_as ) );
+                if( MsgBoxVbuf( NULL, "IDS_CANTREPLACE", GUI_YES_NO, name ) == GUI_RET_NO ) {
                     cancel = true;
                 }
             }
         }
 #endif
+        /* there is only one file & it's been zapped */
         ok = false;
     }
-    if( ok && CheckForceDLLInstall( dll_name ) ) {
+    if( ok && CheckForceDLLInstall( &dll_name ) ) {
 #ifdef EXTRA_CAUTIOUS_FOR_DLLS
-        if( access( name, F_OK ) != 0 || remove( name ) == 0 ) {
-            rename( unpacked_as, name );
+        if( access( VbufString( name ), F_OK ) != 0 || remove( VbufString( name ) ) == 0 ) {
+            rename( VbufString( &unpacked_as ), VbufString( name ) );
         } else {
-            remove( unpacked_as );
-            if( MsgBox( NULL, "IDS_CANTREPLACE", GUI_YES_NO, name ) == GUI_RET_NO ) {
+            remove( VbufString( &unpacked_as ) );
+            if( MsgBoxVbuf( NULL, "IDS_CANTREPLACE", GUI_YES_NO, name ) == GUI_RET_NO ) {
                 cancel = true;
             }
         }
@@ -1436,19 +1448,19 @@ bool CheckInstallDLL( const char *name, vhandle var_handle )
         ok = false;
     }
     if( ok ) {
-        strupr( dll_name );
-        strcpy( path1, unpacked_as );
-        strcpy( path2, prev_path );
-        CheckVersion( path1, drive, dir );
-        CheckVersion( path2, drive, dir );
-        SetVariableByName( "FileDesc", dll_name );
-        SetVariableByName( "DLLDir", path1 );
-        SetVariableByName( "OtherDLLDir", path2 );
+//        strupr( &dll_name );
+        VbufSetVbuf( &path1, &unpacked_as );
+        VbufSetVbuf( &path2, &prev_path );
+        CheckVersion( &path1, &drive, &dir );
+        CheckVersion( &path2, &drive, &dir );
+        SetVariableByName( "FileDesc", VbufString( &dll_name ) );
+        SetVariableByName( "DLLDir", VbufString( &path1 ) );
+        SetVariableByName( "OtherDLLDir", VbufString( &path2 ) );
 
         // don't display the dialog if the user selected the "Skip dialog" option
         if( !GetVariableBoolVal( "DLL_Skip_Dialog" ) ) {
             if( DoDialog( "DLLInstall" ) == DLG_CAN ) {
-                remove( unpacked_as );
+                remove( VbufString( &unpacked_as ) );
                 cancel = true;
                 ok = false;
             }
@@ -1456,38 +1468,38 @@ bool CheckInstallDLL( const char *name, vhandle var_handle )
     }
     if( ok ) {
         if( GetVariableBoolVal( "DLL_Delete_Old" ) ) {
-            remove( prev_path );
+            remove( VbufString( &prev_path ) );
 #ifdef EXTRA_CAUTIOUS_FOR_DLLS
-            if( access( name, F_OK ) != 0 || remove( name ) == 0 ) {
-                rename( unpacked_as, name );
+            if( access( VbufString( name ), F_OK ) != 0 || remove( VbufString( name ) ) == 0 ) {
+                rename( VbufString( &unpacked_as ), VbufString( name ) );
             } else {
-                remove( unpacked_as );
-                if( MsgBox( NULL, "IDS_CANTREPLACE", GUI_YES_NO, name ) == GUI_RET_NO ) {
+                remove( VbufString( &unpacked_as ) );
+                if( MsgBoxVbuf( NULL, "IDS_CANTREPLACE", GUI_YES_NO, name ) == GUI_RET_NO ) {
                     cancel = true;
                 }
             }
 #endif
         } else if( GetVariableBoolVal( "DLL_Keep_Both" ) ) {
 #ifdef EXTRA_CAUTIOUS_FOR_DLLS
-            if( access( name, F_OK ) != 0 || remove( name ) == 0 ) {
-                rename( unpacked_as, name );
+            if( access( VbufString( name ), F_OK ) != 0 || remove( VbufString( name ) ) == 0 ) {
+                rename( VbufString( &unpacked_as ), VbufString( name ) );
             } else {
-                remove( unpacked_as );
-                if( MsgBox( NULL, "IDS_CANTREPLACE", GUI_YES_NO, name ) == GUI_RET_NO ) {
+                remove( VbufString( &unpacked_as ) );
+                if( MsgBoxVbuf( NULL, "IDS_CANTREPLACE", GUI_YES_NO, name ) == GUI_RET_NO ) {
                     cancel = true;
                 }
             }
 #endif
         } else if( GetVariableBoolVal( "DLL_Replace_Old" ) ) {
-            DoCopyFile( unpacked_as, prev_path, false );
-            SetVariableByHandle( var_handle, prev_path );
-            remove( unpacked_as );
+            DoCopyFile( VbufString( &unpacked_as ), VbufString( &prev_path ), false );
+            SetVariableByHandle( var_handle, VbufString( &prev_path ) );
+            remove( VbufString( &unpacked_as ) );
         } else if( GetVariableBoolVal( "DLL_Dont_Install" ) ) {
-            SetVariableByHandle( var_handle, prev_path );
-            remove( unpacked_as );
+            SetVariableByHandle( var_handle, VbufString( &prev_path ) );
+            remove( VbufString( &unpacked_as ) );
         } else if( GetVariableBoolVal( "DLL_Abort_Install" ) ) {
-            SetVariableByHandle( var_handle, prev_path );
-            remove( unpacked_as );
+            SetVariableByHandle( var_handle, VbufString( &prev_path ) );
+            remove( VbufString( &unpacked_as ) );
             cancel = true;
         }
     }
@@ -1810,8 +1822,8 @@ bool GenerateBatchFile( bool uninstall )
 /**************************************/
 {
     int                 num_env;
-    VBUF                batch_file;
     FILE                *fp;
+    VBUF                batch_file;
     VBUF                drive;
     VBUF                dir;
     VBUF                fname;
