@@ -55,7 +55,6 @@ extern void ResetDiskInfo( void );
 
 extern bool     SkipDialogs;
 extern bool     CancelSetup;
-extern vhandle  UnInstall;
 
 int IsPatch = 0;
 

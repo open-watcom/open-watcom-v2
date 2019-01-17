@@ -81,9 +81,6 @@ typedef struct dlg_window_set {
     a_dialog_header     *current_dialog;     /* stuff needed in future */
 } DLG_WINDOW_SET;
 
-extern vhandle  FullInstall;
-extern vhandle  SelectiveInstall;
-
 bool    VisibilityCondition = false;
 
 static gui_control_class ControlClass( gui_ctl_id id, a_dialog_header *curr_dialog )

@@ -693,6 +693,7 @@ static void GetDestDir( int i, VBUF *vbuf )
     VbufFree( &temp );
 }
 
+// calback for DoPatch in bld/bdiff project
 bool SecondaryPatchSearch( const char *filename, char *buff )
 /***********************************************************/
 {
@@ -707,34 +708,36 @@ bool SecondaryPatchSearch( const char *filename, char *buff )
 // if first two searches fail and this function returns nonzero.
 
     VBUF                path;
-    char                ext[_MAX_EXT];
+    char                temp[_MAX_PATH];
+    bool                ok;
 
-    buff[0] = '\0';
     VbufInit( &path );
+
     GetDestDir( patchDirIndex, &path );
     VbufConcStr( &path, filename );
-    if( access( VbufString( &path ), F_OK ) == 0 ) {
-        strcpy( buff, VbufString( &path ) );
-        VbufFree( &path );
-        return( true );
-    } else {
+    ok = ( access( VbufString( &path ), F_OK ) == 0 );
+    if( !ok ) {
         ReplaceVars( &path, GetVariableStrVal( "DstDir" ) );
         VbufAddDirSep( &path );
         VbufConcStr( &path, filename );
-        if( access( VbufString( &path ), F_OK ) == 0 ) {
-            strcpy( buff, VbufString( &path ) );
-            VbufFree( &path );
-            return( true );
+        ok = ( access( VbufString( &path ), F_OK ) == 0 );
+    }
+    if( ok ) {
+        strcpy( buff, VbufString( &path ) );
+    } else {
+        buff[0] = '\0';
+        _splitpath( filename, NULL, NULL, NULL, temp );
+        if( stricmp( temp, ".dll" ) == 0 ) {
+            _searchenv( filename, "PATH", buff );
         }
+        ok = ( buff[0] != '\0' );
     }
+
     VbufFree( &path );
-    _splitpath( filename, NULL, NULL, NULL, ext );
-    if( stricmp( ext, ".dll" ) == 0 ) {
-        _searchenv( filename, "PATH", buff );
-    }
-    return( buff[0] != '\0' );
+    return( ok );
 }
 
+// calback for DoPatch in bld/bdiff project
 void PatchingFileStatusShow( const char *patchname, const char *path )
 /********************************************************************/
 {
@@ -747,6 +750,7 @@ void PatchingFileStatusShow( const char *patchname, const char *path )
     StatusShow( true );
 }
 
+// calback for DoPatch in bld/bdiff project
 bool PatchStatusCancelled( void )
 /*******************************/
 {

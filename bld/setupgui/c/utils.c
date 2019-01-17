@@ -95,8 +95,6 @@ static enum { SRC_UNKNOWN, SRC_CD, SRC_DISK } SrcInstState;
 
 extern int      IsPatch;
 extern bool     CancelSetup;
-extern vhandle  UnInstall;
-extern vhandle  PreviousInstall;
 bool            SkipDialogs;
 char            *VariablesFile;
 DEF_VAR         *ExtraVariables;
@@ -1143,7 +1141,7 @@ bool CheckUpgrade( void )
     char                disk[_MAX_PATH];
     dlg_state           return_state;
 
-    if( GetVariableBoolVal( "PreviousInstall" ) )
+    if( VarGetBoolVal( PreviousInstall ) )
         return( true );
     DoDialog( "UpgradeStart" );
 #if defined( __UNIX__ )
@@ -2218,39 +2216,37 @@ void DeleteObsoleteFiles( void )
     GUIMemFree( found );
 }
 
-char *GetInstallName( void )
-/**************************/
+void GetInstallName( VBUF *name )
+/*******************************/
 {
-    static char name[_MAX_FNAME];
     int         argc;
     char        **argv;
+    VBUF        argv0;
 
-    if( name[0] == '\0' ) {
-        if( GetVariableByName( "InstallerName" ) != NO_VAR ) {
-            strncpy( name, GetVariableStrVal( "InstallerName" ), sizeof( name ) );
-            name[sizeof( name ) - 1] = '\0';
-            return( name );
-        }
-
+    if( GetVariableByName( "InstallerName" ) != NO_VAR ) {
+        VbufSetStr( name, GetVariableStrVal( "InstallerName" ) );
+    } else {
         GUIGetArgs( &argv, &argc );
-        _splitpath( argv[0], NULL, NULL, name, NULL );
-        strupr( name );
+        VbufSetStr( &argv0, argv[0] );
+        VbufSplitpath( &argv0, NULL, NULL, name, NULL );
+//        strupr( name );
     }
-    return( name );
 }
 
 void AddInstallName( VBUF *str )
 /******************************/
 {
-    char                *inst_name;
     const char          *p;
     VBUF                tmp;
+    VBUF                inst_name;
     size_t              len;
+
+    VbufInit( &tmp );
+    VbufInit( &inst_name );
 
     // DBCS should be handled on more places
     // code need rework
-    VbufInit( &tmp );
-    inst_name = GetInstallName();
+    GetInstallName( &inst_name );
     // p = strchr( text, '@' ); no good for dbcs!!!
     p = VbufString( str );
     while( *p != '\0' ) {
@@ -2258,13 +2254,15 @@ void AddInstallName( VBUF *str )
             len = p - VbufString( str );
             VbufSetStr( &tmp, p + 1 );
             VbufSetLen( str, len );
-            VbufConcStr( str, inst_name );
+            VbufConcVbuf( str, &inst_name );
             VbufConcVbuf( str, &tmp );
             p = VbufString( str ) + len;
             continue;
         }
         p += GUICharLen( UCHAR_VALUE( *p ) );
     }
+
+    VbufFree( &inst_name );
     VbufFree( &tmp );
 }
 
@@ -2297,6 +2295,7 @@ gui_message_return MsgBox( gui_window *gui, const char *msg_id,
     const char          *errormessage;
     va_list             arglist;
     VBUF                msg_text;
+    VBUF                inst_name;
 
     VbufInit( &msg_text );
     if( !SkipDialogs ) {
@@ -2351,9 +2350,14 @@ gui_message_return MsgBox( gui_window *gui, const char *msg_id,
             result = GUI_RET_OK;
         }
     } else {
+        VbufInit( &inst_name );
+
         AddInstallName( &msg_text );
         remove_ampersand( &msg_text );
-        result = GUIDisplayMessage( gui == NULL ? MainWnd : gui, VbufString( &msg_text ), GetInstallName(), wType );
+        GetInstallName( &inst_name );
+        result = GUIDisplayMessage( gui == NULL ? MainWnd : gui, VbufString( &msg_text ), VbufString( &inst_name ), wType );
+
+        VbufFree( &inst_name );
     }
     VbufFree( &msg_text );
     return( result );
