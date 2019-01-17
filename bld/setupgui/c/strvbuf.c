@@ -563,3 +563,14 @@ void VbufFullpath(              // GET A FULL FILE PATH TO VBUF
     _fullpath( buffer, file, sizeof( buffer ) );
     VbufSetStr( vbuf, buffer );
 }
+
+bool VbufSetDrive(              // SET A DRIVE FOR FILE PATH IN VBUF
+    VBUF *vbuf,                 // - VBUF structure
+    char drive )                // - drive character
+{
+    if( vbuf->used > 0 ) {
+        vbuf->buf[0] = drive;
+        return( false );
+    }
+    return( true );
+}
