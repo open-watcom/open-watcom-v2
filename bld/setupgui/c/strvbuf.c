@@ -564,7 +564,7 @@ void VbufSplitpath(             // GET A FILE PATH COMPONENTS FROM VBUF
 }
 
 void VbufFullpath(              // GET A FULL FILE PATH TO VBUF
-    VBUF *vbuf,                 // - VBUF structure
+    VBUF *vbuf,                 // - full file path
     const char *file )          // - file name
 {
     char    buffer[_MAX_PATH];
@@ -573,8 +573,8 @@ void VbufFullpath(              // GET A FULL FILE PATH TO VBUF
     VbufSetStr( vbuf, buffer );
 }
 
-bool VbufSetDrive(              // SET A DRIVE FOR FILE PATH IN VBUF
-    VBUF *vbuf,                 // - VBUF structure
+bool VbufSetPathDrive(          // SET A DRIVE FOR FILE PATH IN VBUF
+    VBUF *vbuf,                 // - full file path
     char drive )                // - drive character
 {
     if( vbuf->used > 0 ) {
@@ -582,4 +582,24 @@ bool VbufSetDrive(              // SET A DRIVE FOR FILE PATH IN VBUF
         return( false );
     }
     return( true );
+}
+
+void VbufSetPathExt(            // SET A FILE EXTENSION FOR FILE PATH IN VBUF
+    VBUF *vbuf,                 // - full file path
+    const VBUF *new_ext )       // - file extension
+{
+    VBUF    drive;
+    VBUF    dir;
+    VBUF    name;
+
+    VbufInit( &drive );
+    VbufInit( &dir );
+    VbufInit( &name );
+
+    VbufSplitpath( vbuf, &drive, &dir, &name, NULL );
+    VbufMakepath( vbuf, &drive, &dir, &name, new_ext );
+
+    VbufFree( &name );
+    VbufFree( &dir );
+    VbufFree( &drive );
 }

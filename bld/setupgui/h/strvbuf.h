@@ -171,9 +171,13 @@ void VbufFullpath(              // GET A FULL FILE PATH TO VBUF
     VBUF *vbuf,                 // - VBUF structure
     const char *file )          // - file name
 ;
-bool VbufSetDrive(              // SET A DRIVE FOR FILE PATH IN VBUF
-    VBUF *vbuf,                 // - VBUF structure
+bool VbufSetPathDrive(          // SET A DRIVE FOR FILE PATH IN VBUF
+    VBUF *vbuf,                 // - full file path
     char drive )                // - drive character
+;
+void VbufSetPathExt(            // SET A FILE EXTENSION FOR FILE PATH IN VBUF
+    VBUF *vbuf,                 // - full file path
+    const VBUF *new_ext )       // - file extension
 ;
 #define VbufLen(v)              ((v)->used)                         // RETURN LENGTH OF BUFFER
 ;
