@@ -139,6 +139,11 @@ void VbufConcInteger(           // CONCATENATE A INTEGER TO VBUF
     int value,                  // - value to be concatenated
     int digits )                // - minimal number of digits, prepend leading '0' if necessary
 ;
+void VbufSetInteger(            // SET A INTEGER TO VBUF
+    VBUF *vbuf,                 // - VBUF structure
+    int value,                  // - value to be concatenated
+    int digits )                // - minimal number of digits, prepend leading '0' if necessary
+;
 void VbufTruncWhite(            // TRUNCATE TRAILING WHITESPACE FROM vbuf->buf
     VBUF *vbuf )                // - VBUF structure
 ;

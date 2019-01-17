@@ -127,9 +127,9 @@ int VbufCompBuffer(         // COMPARE A VBUFs
     bool igncase )          // - bool ignore case
 {
     if( igncase ) {
-        return( memicmp( vbuf1->buf, buffer, size ) );
+        return( strnicmp( vbuf1->buf, buffer, size ) );
     } else {
-        return( memcmp( vbuf1->buf, buffer, size ) );
+        return( strncmp( vbuf1->buf, buffer, size ) );
     }
 }
 
@@ -299,6 +299,15 @@ void VbufConcInteger(           // CONCATENATE A INTEGER TO VBUF
         VbufConcChr( vbuf, '0' );
     }
     VbufConcStr( vbuf, buffer );
+}
+
+void VbufSetInteger(            // SET A INTEGER TO VBUF
+    VBUF *vbuf,                 // - VBUF structure
+    int value,                  // - value to be concatenated
+    int digits )                // - minimal number of digits, prepend leading '0' if necessary
+{
+    VbufSetLen( vbuf, 0 );
+    VbufConcInteger( vbuf, value, digits );
 }
 
 
