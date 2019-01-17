@@ -121,7 +121,7 @@ PATCH_RET_CODE OpenOld( foff len, int prompt, foff new_size, foff new_sum )
                 cprintf( msgbuf, oldName );
                 while( kbhit() )
                     getch();
-                gets( temp );
+                fgets( temp, sizeof( temp ), stdin );
                 if( tolower( temp[0] ) == 'n' ) {
                     PatchError( ERR_PATCH_ABORTED );
                 }

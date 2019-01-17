@@ -213,7 +213,7 @@ void GetLevel( const char *name )
 }
 #endif
 
-static PATCH_RET_CODE InitPatch( char **target_given )
+static PATCH_RET_CODE InitPatch( const char **target_given )
 {
     char            *p;
     bool            compare_sig;
@@ -228,7 +228,8 @@ static PATCH_RET_CODE InitPatch( char **target_given )
 #endif
 
 #ifdef BDIFF
-    target_given = target_given;
+    /* unused parameters */ (void)target_given;
+
     pat = PatchFile;
 #else
     ret = OpenPatch();
@@ -258,8 +259,8 @@ static PATCH_RET_CODE InitPatch( char **target_given )
 #ifdef BDIFF
     return( PATCH_RET_OKAY );
 #else
-    if( (*target_given) != NULL ) {
-        temp = SetOld( (*target_given) );
+    if( *target_given != NULL ) {
+        temp = SetOld( *target_given );
     } else {
         temp = FindOld( target );
     }
@@ -308,7 +309,7 @@ PATCH_RET_CODE Execute( void )
 #endif
 #endif
 #ifdef BDIFF
-    char            *dummy = NULL;
+    const char      *dummy = NULL;
 
     InitPatch( &dummy );
 #endif
@@ -432,15 +433,18 @@ PATCH_RET_CODE DoPatch(
     bool        doprompt,
     bool        dobackup,
     bool        printlevel,
-    char        *outfilename )
+    const char  *outfilename )
 {
     char            buffer[sizeof( PATCH_LEVEL )];
-  #ifndef _WPATCH
-    char            *target = NULL;
-  #endif
     PATCH_RET_CODE  ret;
+  #ifndef _WPATCH
+    const char      *target = NULL;
+  #endif
 
-    outfilename=outfilename;
+  #if !defined( _WPATCH ) && !defined( INSTALL_PROGRAM )
+    /* unused parameters */ (void)outfilename;
+  #endif
+
     PatchName = patchname;
     DoPrompt = doprompt;
     DoBackup = dobackup;
@@ -473,7 +477,7 @@ PATCH_RET_CODE DoPatch(
         return( ret );
     }
     if( outfilename != NULL ) {
-        strcpy( outfilename, target );
+        outfilename = target;
         PatchingFileStatusShow( PatchName, outfilename );
     }
   #endif

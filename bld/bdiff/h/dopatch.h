@@ -42,5 +42,5 @@ extern void             GetLevel( const char *name );
 extern PATCH_RET_CODE   Execute( byte *dest );
 #else
 extern PATCH_RET_CODE   Execute( void );
-extern PATCH_RET_CODE   DoPatch( const char *patchname, bool doprompt, bool dobackup, bool printlevel, char *outfilename );
+extern PATCH_RET_CODE   DoPatch( const char *patchname, bool doprompt, bool dobackup, bool printlevel, const char *outfilename );
 #endif
