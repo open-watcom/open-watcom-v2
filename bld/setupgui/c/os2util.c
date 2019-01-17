@@ -177,7 +177,7 @@ bool CreatePMInfo( bool uninstall )
         }
 
         nDirIndex = SimGetPMProgName( i, &PMProgName );
-        if( strcmp( VbufString( &PMProgName ), "GROUP" ) == 0 ) {
+        if( VbufCompStr( &PMProgName, "GROUP", false ) == 0 ) {
             /*
              * Process a group (ie. folder)
              */

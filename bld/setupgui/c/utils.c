@@ -1906,7 +1906,7 @@ static bool DoCopyFiles( void )
 
                 dst_dir = GetVariableStrVal( "DstDir" );
                 len = strlen( dst_dir );
-                if( strncmp( VbufString( &dir ), dst_dir, len ) == 0 ) {
+                if( VbufCompBuffer( &dir, dst_dir, len, false ) == 0 ) {
                     if( VbufString( &dir )[len] == DIR_SEP )       // if 1st char to concat is a backslash, skip it
                         len++;
                     strcpy( src_path_pos1, VbufString( &dir ) + len );  // get rid of the dest directory, just keep the subdir

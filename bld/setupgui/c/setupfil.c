@@ -335,13 +335,13 @@ static var_type getEnvironVarType( const VBUF *env_var )
     if( GetVariableBoolVal( "IsOS2DosBox" ) ) {
 #endif
         // OS/2
-        if( stricmp( VbufString( env_var ), "LIBPATH" ) == 0 ) {
+        if( VbufCompStr( env_var, "LIBPATH", true ) == 0 ) {
             vt = VAR_ASSIGN;
         }
 #ifndef __OS2__
     } else {
         // DOS, WINDOWS, NT
-        if( stricmp( VbufString( env_var ), "PATH" ) == 0 ) {
+        if( VbufCompStr( env_var, "PATH", true ) == 0 ) {
             vt = VAR_CMD;
         }
     }
@@ -441,7 +441,7 @@ static void FinishEnvironmentLines( FILE *fp, int num_env, bool *found_env, bool
         append = SimGetEnvironmentStrings( i, &cur_var, &cur_val );
         libpath_batch = false;
         if( batch ) {
-            if( stricmp( VbufString( &cur_var ), "LIBPATH" ) == 0 ) {
+            if( VbufCompStr( &cur_var, "LIBPATH", true ) == 0 ) {
                 libpath_batch = true;
                 if( append == AM_AFTER ) {
                     VbufSetVbuf( &val_after, &cur_val );
@@ -794,7 +794,7 @@ static void CheckConfigLine( char *line, int num_cfg, bool *found_cfg, bool unin
     }
     VbufInit( &next_var );
     VbufInit( &next_val );
-    run_find = ( stricmp( VbufString( &line_var ), "RUN" ) == 0 );
+    run_find = ( VbufCompStr( &line_var, "RUN", true ) == 0 );
     modified = false;
     run_found = false;
     for( i = 0; i < num_cfg; ++i ) {
@@ -1396,7 +1396,7 @@ bool CheckInstallDLL( const VBUF *name, vhandle var_handle )
         VbufMakepath( &path2, &drive, &dir, NULL, NULL );
 //        strupr( &path2 );
         VbufSetStr( &dst, GetVariableStrVal( "DstDir" ) );
-        if( VbufComp( &path1, &dst, true ) == 0 && VbufComp( &path2, &dst, true ) == 0 ) {
+        if( VbufCompVbuf( &path1, &dst, true ) == 0 && VbufCompVbuf( &path2, &dst, true ) == 0 ) {
             /* both files are going into the main installation sub-tree */
 #ifdef EXTRA_CAUTIOUS_FOR_DLLS
             if( access( VbufString( name ), F_OK ) != 0 || remove( VbufString( name ) ) == 0 ) {
@@ -1411,7 +1411,7 @@ bool CheckInstallDLL( const VBUF *name, vhandle var_handle )
             ok = false;
         }
     }
-    if( ok && VbufComp( &path1, &path2, true ) == 0 ) {
+    if( ok && VbufCompVbuf( &path1, &path2, true ) == 0 ) {
 #ifdef EXTRA_CAUTIOUS_FOR_DLLS
         /* both files are going into the same directory */
         struct stat         new, old;
@@ -1555,7 +1555,7 @@ static bool ModEnv( int num_env, bool uninstall )
                 if( rc != 0 )
                     break;
                 ++k;
-            } while( stricmp( VbufString( &cur_var ), reg_var ) != 0 );
+            } while( VbufCompStr( &cur_var, reg_var, true ) != 0 );
             if( rc == ERROR_NO_MORE_ITEMS ) {
                 // No existing value so add it
                 if( uninstall ) {

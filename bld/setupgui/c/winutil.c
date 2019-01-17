@@ -75,9 +75,9 @@ static void CreateRegEntry( const VBUF *hive_key, const VBUF *app_name, const VB
         VbufConcChr( &buf, '\\' );
     }
     VbufConcVbuf( &buf, app_name );
-    if( stricmp( VbufString( hive_key ), "local_machine" ) == 0 ) {
+    if( VbufCompStr( hive_key, "local_machine", true ) == 0 ) {
         key = HKEY_LOCAL_MACHINE;
-    } else if( stricmp( VbufString( hive_key ), "current_user" ) == 0 ) {
+    } else if( VbufCompStr( hive_key, "current_user", true ) == 0 ) {
         key = HKEY_CURRENT_USER;
     } else {
         key = HKEY_LOCAL_MACHINE;
@@ -284,7 +284,7 @@ static bool ZapKey( const VBUF *app_name, const char *old, const char *new,
         if( buff[0] == '[' ) {
             if( in_sect )
                 break;
-            if( strncmp( VbufString( app_name ), buff + 1, app_len ) == 0 && buff[app_len + 1] == ']' ) {
+            if( VbufCompBuffer( app_name, buff + 1, app_len, false ) == 0 && buff[app_len + 1] == ']' ) {
                 in_sect = true;
             }
         } else if( in_sect ) {
