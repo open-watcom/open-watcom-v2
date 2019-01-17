@@ -215,8 +215,8 @@ static bool CheckWin95Uninstall( int argc, char **argv )
         VbufInit( &unsetup );
         VbufInit( &argv0 );
 
-        VbufSetStr( &argv0, argv[0] );
         // copy setup program to unsetup.exe in system directory
+        VbufSetStr( &argv0, argv[0] );
         GetWindowsDirectoryVbuf( &unsetup );
         VbufConcStr( &unsetup, "\\UnSetup.exe" );
         if( DoCopyFile( VbufString( &argv0 ), VbufString( &unsetup ), false ) == CFE_NOERROR ) {
@@ -225,7 +225,7 @@ static bool CheckWin95Uninstall( int argc, char **argv )
             // add entry to wininit.ini to erase unsetup.exe
             WritePrivateProfileString( "rename", "NUL", VbufString( &unsetup ), "wininit.ini" );
             // setup.inf should be in same directory as setup.exe
-            VbufSetStr( &ext, "inf" );
+            VbufConcStr( &ext, "inf" );
             VbufSetPathExt( &argv0, &ext );
             VbufConcChr( &unsetup, ' ' );
             VbufConcChr( &unsetup, '\"' );
