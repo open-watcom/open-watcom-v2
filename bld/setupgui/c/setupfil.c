@@ -949,7 +949,6 @@ bool ModifyAutoExec( bool uninstall )
     int                 num_cfg;
     int                 num_env;
     char                boot_drive;
-    int                 mod_type;
 #ifndef __OS2__
     char                newauto[_MAX_PATH];
 #endif
@@ -974,12 +973,6 @@ bool ModifyAutoExec( bool uninstall )
         ok = false;
     }
     if( ok ) {
-        if( GetVariableBoolVal( "ModNow" ) ) {
-            mod_type = MOD_IN_PLACE;
-        } else {
-            mod_type = MOD_LATER;
-        }
-
         if( GetVariableBoolVal( "IsWin95" ) ) {
             boot_drive = '\0';
         } else {
@@ -1050,7 +1043,7 @@ bool ModifyAutoExec( bool uninstall )
     }
 #endif
     if( ok ) {
-        if( mod_type == MOD_IN_PLACE ) {
+        if( GetVariableBoolVal( "ModNow" ) ) {
             // copy current files to AUTOEXEC.BAK and CONFIG.BAK
 
 #ifndef __OS2__
@@ -1088,7 +1081,7 @@ bool ModifyAutoExec( bool uninstall )
                     ConfigModified = true;
                 }
             }
-        } else {
+        } else {    // handle "ModLater" case
 #if defined( __OS2__ )
             new_ext = "OS2";
 #elif defined( __NT__ )
@@ -1570,7 +1563,6 @@ bool ModifyConfiguration( bool uninstall )
 /****************************************/
 {
     int                 num_env;
-    int                 mod_type;
     char                changes[_MAX_PATH];
     FILE                *fp;
     int                 i, j;
@@ -1608,10 +1600,13 @@ bool ModifyConfiguration( bool uninstall )
             return( false );
         }
     }
-    if( GetVariableBoolVal( "ModLater" ) ) {
-        mod_type = MOD_LATER;
-    } else {
-        mod_type = MOD_IN_PLACE;
+
+    VbufInit( &cur_var );
+    VbufInit( &cur_val );
+    VbufInit( &next_var );
+    VbufInit( &next_val );
+
+    if( GetVariableBoolVal( "ModNow" ) ) {
         if( uninstall ) { //Clean up everywhere
             RegLocation[LOCAL_MACHINE].modify = true;
             RegLocation[CURRENT_USER].modify  = true;
@@ -1622,17 +1617,10 @@ bool ModifyConfiguration( bool uninstall )
             RegLocation[LOCAL_MACHINE].modify = false;
             RegLocation[CURRENT_USER].modify  = true;
         }
-    }
-
-    VbufInit( &cur_var );
-    VbufInit( &cur_val );
-    VbufInit( &next_var );
-    VbufInit( &next_val );
-    if( mod_type == MOD_IN_PLACE ) {
         bRet = ModEnv( num_env, uninstall );
         // indicate config files were modified if and only if we got this far
         ConfigModified = true;
-    } else {  // handle MOD_LATER case
+    } else {    // handle "ModLater" case
         found = GUIMemAlloc( num_env * sizeof( bool ) );
         memset( found, false, num_env * sizeof( bool ) );
         GetOldConfigFileDir( changes, GetVariableStrVal( "DstDir" ), uninstall );
@@ -1668,6 +1656,7 @@ bool ModifyConfiguration( bool uninstall )
         GUIMemFree( found );
         bRet = true;
     }
+
     VbufFree( &next_val );
     VbufFree( &next_var );
     VbufFree( &cur_val );

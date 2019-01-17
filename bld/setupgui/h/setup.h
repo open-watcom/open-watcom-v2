@@ -99,11 +99,6 @@ typedef enum {
     CFE_DSTREADONLY
 } COPYFILE_ERROR;
 
-enum {
-    MOD_IN_PLACE,
-    MOD_LATER
-};
-
 #if defined( __NT__ )
 enum {
     CURRENT_USER,
