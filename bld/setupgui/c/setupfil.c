@@ -1333,6 +1333,22 @@ static void CheckVersion( VBUF *path, VBUF *drive, VBUF *dir )
     close( fp );
 }
 
+#ifdef EXTRA_CAUTIOUS_FOR_DLLS
+static bool replace_file( const VBUF *name, const VBUF *unpacked_as )
+{
+    if( access( VbufString( name ), F_OK ) != 0 || remove( VbufString( name ) ) == 0 ) {
+        rename( VbufString( unpacked_as ), VbufString( name ) );
+    } else {
+        remove( VbufString( unpacked_as ) );
+        if( MsgBoxVbuf( NULL, "IDS_CANTREPLACE", GUI_YES_NO, name ) == GUI_RET_NO ) {
+            return( true );
+        }
+    }
+    return( false );
+}
+#endif
+
+
 bool CheckInstallDLL( const VBUF *name, vhandle var_handle )
 /**********************************************************/
 {
@@ -1376,14 +1392,7 @@ bool CheckInstallDLL( const VBUF *name, vhandle var_handle )
         secondarysearch( &dll_name, &prev_path );
         if( VbufLen( &prev_path ) == 0 ) {
 #ifdef EXTRA_CAUTIOUS_FOR_DLLS
-            if( access( VbufString( name ), F_OK ) != 0 || remove( VbufString( name ) ) == 0 ) {
-                rename( VbufString( &unpacked_as ), VbufString( name ) );
-            } else {
-                remove( VbufString( &unpacked_as ) );
-                if( MsgBoxVbuf( NULL, "IDS_CANTREPLACE", GUI_YES_NO, name ) == GUI_RET_NO ) {
-                    cancel = true;
-                }
-            }
+            cancel = replace_file( name, &unpacked_as );
 #endif
             ok = false;     // did not previously exist
         }
@@ -1399,14 +1408,7 @@ bool CheckInstallDLL( const VBUF *name, vhandle var_handle )
         if( VbufCompVbuf( &path1, &dst, true ) == 0 && VbufCompVbuf( &path2, &dst, true ) == 0 ) {
             /* both files are going into the main installation sub-tree */
 #ifdef EXTRA_CAUTIOUS_FOR_DLLS
-            if( access( VbufString( name ), F_OK ) != 0 || remove( VbufString( name ) ) == 0 ) {
-                rename( VbufString( &unpacked_as ), VbufString( name ) );
-            } else {
-                remove( VbufString( &unpacked_as ) );
-                if( MsgBoxVbuf( NULL, "IDS_CANTREPLACE", GUI_YES_NO, name ) == GUI_RET_NO ) {
-                    cancel = true;
-                }
-            }
+            cancel = replace_file( name, &unpacked_as );
 #endif
             ok = false;
         }
@@ -1421,14 +1423,7 @@ bool CheckInstallDLL( const VBUF *name, vhandle var_handle )
         if( new.st_mtime < old.st_mtime ) {
             remove( VbufString( &unpacked_as ) );
         } else {
-            if( access( VbufString( name ), F_OK ) != 0 || remove( VbufString( name ) ) == 0 ) {
-                rename( VbufString( &unpacked_as ), VbufString( name ) );
-            } else {
-                remove( VbufString( &unpacked_as ) );
-                if( MsgBoxVbuf( NULL, "IDS_CANTREPLACE", GUI_YES_NO, name ) == GUI_RET_NO ) {
-                    cancel = true;
-                }
-            }
+            cancel = replace_file( name, &unpacked_as );
         }
 #endif
         /* there is only one file & it's been zapped */
@@ -1436,14 +1431,7 @@ bool CheckInstallDLL( const VBUF *name, vhandle var_handle )
     }
     if( ok && CheckForceDLLInstall( &dll_name ) ) {
 #ifdef EXTRA_CAUTIOUS_FOR_DLLS
-        if( access( VbufString( name ), F_OK ) != 0 || remove( VbufString( name ) ) == 0 ) {
-            rename( VbufString( &unpacked_as ), VbufString( name ) );
-        } else {
-            remove( VbufString( &unpacked_as ) );
-            if( MsgBoxVbuf( NULL, "IDS_CANTREPLACE", GUI_YES_NO, name ) == GUI_RET_NO ) {
-                cancel = true;
-            }
-        }
+        cancel = replace_file( name, &unpacked_as );
 #endif
         ok = false;
     }
@@ -1470,25 +1458,11 @@ bool CheckInstallDLL( const VBUF *name, vhandle var_handle )
         if( GetVariableBoolVal( "DLL_Delete_Old" ) ) {
             remove( VbufString( &prev_path ) );
 #ifdef EXTRA_CAUTIOUS_FOR_DLLS
-            if( access( VbufString( name ), F_OK ) != 0 || remove( VbufString( name ) ) == 0 ) {
-                rename( VbufString( &unpacked_as ), VbufString( name ) );
-            } else {
-                remove( VbufString( &unpacked_as ) );
-                if( MsgBoxVbuf( NULL, "IDS_CANTREPLACE", GUI_YES_NO, name ) == GUI_RET_NO ) {
-                    cancel = true;
-                }
-            }
+            cancel = replace_file( name, &unpacked_as );
 #endif
         } else if( GetVariableBoolVal( "DLL_Keep_Both" ) ) {
 #ifdef EXTRA_CAUTIOUS_FOR_DLLS
-            if( access( VbufString( name ), F_OK ) != 0 || remove( VbufString( name ) ) == 0 ) {
-                rename( VbufString( &unpacked_as ), VbufString( name ) );
-            } else {
-                remove( VbufString( &unpacked_as ) );
-                if( MsgBoxVbuf( NULL, "IDS_CANTREPLACE", GUI_YES_NO, name ) == GUI_RET_NO ) {
-                    cancel = true;
-                }
-            }
+            cancel = replace_file( name, &unpacked_as );
 #endif
         } else if( GetVariableBoolVal( "DLL_Replace_Old" ) ) {
             DoCopyFile( VbufString( &unpacked_as ), VbufString( &prev_path ), false );
