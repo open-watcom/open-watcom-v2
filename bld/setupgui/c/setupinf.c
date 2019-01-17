@@ -63,22 +63,149 @@
     #include "exetype.h"
 #endif
 #include "watcom.h"
+#include "dynarray.h"
 
 #include "clibext.h"
 
 
 #define IS_EMPTY(p)     ((p)[0] == '\0' || (p)[0] == '.' && (p)[1] == '\0')
 
+#define RoundUp( v, r ) (((v) + (r) - 1) & ~(unsigned long)((r)-1))
+
+#define BUF_SIZE        8192
+
+#define MAX_WINDOW_WIDTH 90
+
+#define NONMAGICVARS( x, y ) \
+    x( IsDos, y ) \
+    x( IsOS2, y ) \
+    x( IsOS2DosBox, y ) \
+    x( IsWin, y ) \
+    x( IsWin32, y ) \
+    x( IsWin64, y ) \
+    x( IsWin32s, y ) \
+    x( IsWin95, y ) \
+    x( IsWin98, y ) \
+    x( IsWinNT, y ) \
+    x( IsWinNT40, y ) \
+    x( IsWin2000, y ) \
+    x( IsLinux32, y ) \
+    x( IsLinux64, y ) \
+    x( IsAlpha, y ) \
+    x( HelpFiles, y ) \
+
+#ifdef PATCH
+typedef enum {
+    PATCH_NOTHING,
+    PATCH_COPY_FILE,
+    PATCH_DELETE_FILE,
+    PATCH_FILE,
+    PATCH_MAKE_DIR
+} PATCHCOMMANDTYPE;
+
+typedef enum {
+    REG_EXE             = 0
+} FILETYPE;
+#endif
+
+typedef struct a_file_info {
+    char                *name;
+    vhandle             dst_var;
+    unsigned long       disk_size;
+    unsigned long       disk_date;
+    unsigned long       size;
+    unsigned long       date;
+    bool                in_old_dir  : 1;
+    bool                in_new_dir  : 1;
+    bool                read_only   : 1;
+    bool                is_nlm      : 1;
+    bool                is_dll      : 1;
+    bool                executable  : 1;
+} a_file_info;
+
+typedef enum {
+    OP_AND,
+    OP_OR,
+    OP_NOT,
+    OP_EXIST,
+    OP_VAR,
+    OP_FALSE,
+    OP_TRUE
+} tree_op;
+
+typedef struct tree_node {
+    union {
+        struct tree_node    *left;
+        vhandle             v;
+    } u;
+    struct tree_node        *right;
+    tree_op                 op;
+} tree_node;
+
+typedef struct file_cond_info {
+    tree_node   *cond;
+    bool        one_uptodate;
+    bool        dont_touch;
+} file_cond_info;
+
+typedef enum {
+    DELETE_DIALOG,
+    DELETE_FILE,
+    DELETE_DIR,
+} delete_type;
+
+typedef enum {
+    RS_UNDEFINED,
+    RS_APPLICATION,
+    RS_DISKS,
+    RS_DIRS,
+    RS_FILES,
+    RS_PMINFO,
+    RS_PROFILE,
+    RS_AUTOEXEC,
+    RS_CONFIG,
+    RS_ENVIRONMENT,
+    RS_TERMINATE,
+    RS_DIALOG,
+    RS_TARGET,
+    RS_LABEL,
+    RS_UPGRADE,
+    RS_ERRORMESSAGE,
+    RS_SETUPERRORMESSAGE,
+    RS_STATUSLINEMESSAGE,
+    RS_MISCMESSAGE,
+    RS_LICENSEMESSAGE,
+    RS_PATCH,
+    RS_AUTOSET,
+    RS_SPAWN,
+    RS_RESTRICTIONS,
+    RS_DELETEFILES,
+    RS_FORCEDLLINSTALL,
+    RS_ASSOCIATIONS
+} read_state;
+
+typedef struct dialog_info {    // structure used when parsing a dialog
+    array_info          controls;
+    array_info          controls_ext;
+    int                 num_push_buttons;
+    int                 num_variables;
+    int                 num_radio_buttons;
+    int                 max_width;
+    int                 wrap_width;
+    a_dialog_header     *curr_dialog;
+    int                 row_num;
+    int                 col_num;
+} DIALOG_INFO;
+
 extern char             *TrimQuote(char*);
 extern bool             SkipDialogs;
 extern bool             VisibilityCondition;
 extern char             *VariablesFile;
 
-#define RoundUp( v, r ) (((v) + (r) - 1) & ~(unsigned long)((r)-1))
-
-#define BUF_SIZE        8192
-
-#include "dynarray.h"
+#define defvar( x, y ) vhandle x;
+MAGICVARS( defvar, 0 )
+NONMAGICVARS( defvar, 0 )
+#undef defvar
 
 static struct setup_info {
     unsigned long       stamp;
@@ -109,19 +236,7 @@ static struct setup_info {
 } SetupInfo;
 
 #ifdef PATCH
-typedef enum {
-    PATCH_NOTHING,
-    PATCH_COPY_FILE,
-    PATCH_DELETE_FILE,
-    PATCH_FILE,
-    PATCH_MAKE_DIR
-} PATCHCOMMANDTYPE;
-
-typedef enum {
-    REG_EXE             = 0
-} FILETYPE;
-
-struct patch_info {
+static struct patch_info {
     PATCHCOMMANDTYPE    command;
     char                *destdir;
     char                *destfile;
@@ -175,47 +290,7 @@ static struct association_info {
     char    *condition;
 } *AssociationInfo = NULL;
 
-typedef struct a_file_info {
-    char                *name;
-    vhandle             dst_var;
-    unsigned long       disk_size;
-    unsigned long       disk_date;
-    unsigned long       size;
-    unsigned long       date;
-    bool                in_old_dir  : 1;
-    bool                in_new_dir  : 1;
-    bool                read_only   : 1;
-    bool                is_nlm      : 1;
-    bool                is_dll      : 1;
-    bool                executable  : 1;
-} a_file_info;
-
-typedef enum {
-    OP_AND,
-    OP_OR,
-    OP_NOT,
-    OP_EXIST,
-    OP_VAR,
-    OP_FALSE,
-    OP_TRUE
-} tree_op;
-
-typedef struct tree_node {
-    union {
-        struct tree_node    *left;
-        vhandle             v;
-    } u;
-    struct tree_node        *right;
-    tree_op                 op;
-} tree_node;
-
-typedef struct file_cond_info {
-    tree_node   *cond;
-    bool        one_uptodate;
-    bool        dont_touch;
-} file_cond_info;
-
-file_cond_info *FileCondInfo = NULL;
+static file_cond_info   *FileCondInfo = NULL;
 
 static struct file_info {
     char                *filename;
@@ -259,12 +334,6 @@ static struct spawn_info {
     when_time           when;
 } *SpawnInfo = NULL;
 
-typedef enum {
-    DELETE_DIALOG,
-    DELETE_FILE,
-    DELETE_DIR,
-} delete_type;
-
 static struct delete_info {
     char                *name;
     delete_type         type;
@@ -282,43 +351,13 @@ static struct dlls_to_check {
 } *DLLsToCheck = NULL;
 
 static struct force_DLL_install {
-    char        *name;
+    char                *name;
 } *ForceDLLInstall = NULL;
 
 static struct all_pm_groups {
-    char        *group;
-    char        *group_file_name;
+    char                *group;
+    char                *group_file_name;
 } *AllPMGroups = NULL;
-
-typedef enum {
-    RS_UNDEFINED,
-    RS_APPLICATION,
-    RS_DISKS,
-    RS_DIRS,
-    RS_FILES,
-    RS_PMINFO,
-    RS_PROFILE,
-    RS_AUTOEXEC,
-    RS_CONFIG,
-    RS_ENVIRONMENT,
-    RS_TERMINATE,
-    RS_DIALOG,
-    RS_TARGET,
-    RS_LABEL,
-    RS_UPGRADE,
-    RS_ERRORMESSAGE,
-    RS_SETUPERRORMESSAGE,
-    RS_STATUSLINEMESSAGE,
-    RS_MISCMESSAGE,
-    RS_LICENSEMESSAGE,
-    RS_PATCH,
-    RS_AUTOSET,
-    RS_SPAWN,
-    RS_RESTRICTIONS,
-    RS_DELETEFILES,
-    RS_FORCEDLLINSTALL,
-    RS_ASSOCIATIONS
-} read_state;
 
 static read_state       State;
 static size_t           NoLineCount;
@@ -336,55 +375,6 @@ static int              CharWidth;
 #ifdef PATCH
 static int              patchDirIndex = 0;      // used in secondary search during patch
 #endif
-
-
-#define MAX_WINDOW_WIDTH 90
-
-#define MAGICVARS( x, y ) \
-    x( FullInstall, y ) \
-    x( FullCDInstall, y ) \
-    x( UnInstall, y ) \
-    x( MinimalInstall, y ) \
-    x( SelectiveInstall, y ) \
-    x( PreviousInstall, y )
-
-#define NONMAGICVARS( x, y ) \
-    x( IsDos, y ) \
-    x( IsOS2, y ) \
-    x( IsOS2DosBox, y ) \
-    x( IsWin, y ) \
-    x( IsWin32, y ) \
-    x( IsWin64, y ) \
-    x( IsWin32s, y ) \
-    x( IsWin95, y ) \
-    x( IsWin98, y ) \
-    x( IsWinNT, y ) \
-    x( IsWinNT40, y ) \
-    x( IsWin2000, y ) \
-    x( IsLinux32, y ) \
-    x( IsLinux64, y ) \
-    x( IsAlpha, y ) \
-    x( HelpFiles, y ) \
-
-#define defvar( x, y ) vhandle x;
-MAGICVARS( defvar, 0 )
-NONMAGICVARS( defvar, 0 )
-
-#define orvar( x, y ) x == y ||
-#define IsMagicVar( v ) MAGICVARS( orvar, v ) false
-
-typedef struct dialog_info {    // structure used when parsing a dialog
-    array_info          controls;
-    array_info          controls_ext;
-    int                 num_push_buttons;
-    int                 num_variables;
-    int                 num_radio_buttons;
-    int                 max_width;
-    int                 wrap_width;
-    a_dialog_header     *curr_dialog;
-    int                 row_num;
-    int                 col_num;
-} DIALOG_INFO;
 
 static vhandle GetTokenHandle( const char *p );
 static void ZeroAutoSetValues( void );
@@ -548,6 +538,9 @@ static vhandle GetTokenHandle( const char *p )
     }
 }
 
+#define orvar( x, y ) x == y ||
+#define IsMagicVar( v ) MAGICVARS( orvar, v ) false
+
 bool GetOptionVarValue( vhandle var_handle, bool is_minimal )
 /***********************************************************/
 {
@@ -574,6 +567,7 @@ bool GetOptionVarValue( vhandle var_handle, bool is_minimal )
     }
 }
 
+#undef orvar
 
 static bool EvalExprTree( tree_node *tree, bool is_minimal )
 /**********************************************************/
@@ -672,28 +666,31 @@ static void PropagateValue( tree_node *tree, bool value )
 static void GetDestDir( int i, VBUF *vbuf )
 /*****************************************/
 {
-    char                *temp;
-    VBUF                temp2;
-    char                drive[_MAX_DRIVE];
+    VBUF                temp;
+    VBUF                drive;
     int                 intvalue = 0;
 
-    VbufInit( &temp2 );
+    VbufInit( &temp );
+    VbufInit( &drive );
+
     ReplaceVars( vbuf, GetVariableStrVal( "DstDir" ) );
     VbufAddDirSep( vbuf );
     intvalue = atoi( PatchInfo[i].destdir );
     if( intvalue != 0 ) {
-        temp = strchr( DirInfo[intvalue - 1].desc, '=' ) + 1;
+        VbufConcStr( vbuf, strchr( DirInfo[intvalue - 1].desc, '=' ) + 1 );
     } else {
         // if destination dir specifies the drive, just use it
-        ReplaceVars( &temp2, PatchInfo[i].destdir );
-        _splitpath( VbufString( &temp2 ), drive, NULL, NULL, NULL );
-        if( drive[0] != 0 ) {  // drive specified
+        ReplaceVars( &temp, PatchInfo[i].destdir );
+        VbufSplitpath( &temp, &drive, NULL, NULL, NULL );
+        if( VbufLen( &drive ) > 0 ) {   // drive specified
             VbufRewind( vbuf );
         }
-        temp = VbufString( &temp2 );
+        VbufConcVbuf( vbuf, &temp );
     }
-    VbufConcStr( vbuf, temp );
     VbufAddDirSep( vbuf );
+
+    VbufFree( &drive );
+    VbufFree( &temp );
 }
 
 bool SecondaryPatchSearch( const char *filename, char *buff )
@@ -3568,16 +3565,16 @@ bool SimCalcTargetSpaceNeeded( void )
 
 #ifdef PATCH
 
-static void AddFileName( int i, char *buffer, int rename )
-/********************************************************/
+static void AddFileName( int i, VBUF *buffer, bool rename )
+/*********************************************************/
 {
-    ConcatDirSep( buffer );
+    VbufAddDirSep( buffer );
     if( !rename ) {
         if( PatchInfo[i].destfile != NULL ) {
-            strcat( buffer, PatchInfo[i].destfile );
+            VbufConcStr( buffer, PatchInfo[i].destfile );
         } else {
             if( PatchInfo[i].srcfile != NULL ) {
-                strcat( buffer, PatchInfo[i].srcfile );
+                VbufConcStr( buffer, PatchInfo[i].srcfile );
             }
         }
     }
@@ -3592,15 +3589,15 @@ static void GetSourcePath( int i, VBUF *buff )
 }
 
 
-static bool CopyErrorDialog( int ret, int i, char *file )
-/*******************************************************/
+static bool CopyErrorDialog( int ret, int i, const VBUF *file )
+/*************************************************************/
 {
     gui_message_return      guiret;
 
     i = i;
     if( ret != CFE_NOERROR ) {
         if( ret != CFE_ABORT ) {
-            guiret = MsgBox( NULL, "IDS_COPYFILEERROR", GUI_YES_NO, file );
+            guiret = MsgBoxVbuf( NULL, "IDS_COPYFILEERROR", GUI_YES_NO, file );
             if( guiret == GUI_RET_NO ) {
                 return( false );
             }
@@ -3814,12 +3811,12 @@ static void LogWriteMsgStr( log_state *ls, const char *msg_id, const char *str )
 }
 
 
-static int DoPatchFile( const char *src, char *dst, unsigned_32 flag )
-/********************************************************************/
+static int DoPatchFile( const VBUF *src, const VBUF *dst, unsigned_32 flag )
+/**************************************************************************/
 {
     // TODO: Perform some useful function here
 
-    return( DoPatch( src, 0, 0, 0, dst ) );
+    return( DoPatch( VbufString( src ), 0, 0, 0, VbufString( dst ) ) );
 }
 
 
@@ -3883,30 +3880,32 @@ bool PatchFiles( void )
         case PATCH_FILE:
             GetSourcePath( i, &srcfullpath );
             if( access( VbufString( &srcfullpath ), R_OK ) == 0 ) {
-                PATCH_RET_CODE ret;
+                PATCH_RET_CODE  ret;
+                char            temp[_MAX_PATH];
 
                 patchDirIndex = i;       // used in secondary search during patch
-                if( SecondaryPatchSearch( PatchInfo[i].destfile, destfullpath ) ) {
+                if( SecondaryPatchSearch( PatchInfo[i].destfile, temp ) ) {
+                    VbufConcStr( &destfullpath, temp );
                     if( PatchInfo[i].exetype[0] != '.' &&
                         ExeType( VbufString( &destfullpath ), exetype ) &&
                         strcmp( exetype, PatchInfo[i].exetype ) != 0 ) {
                         break;
                     }
-                }
-                StatusLinesVbuf( STAT_PATCHFILE, &destfullpath );
-                StatusShow( true );
-                LogWriteMsgStr( log, "IDS_UNPACKING", VbufString( &destfullpath ) );
-                ret = DoPatchFile( VbufString( &srcfullpath ), VbufString( &destfullpath ), 0 );
-                if( ret == PATCH_RET_OKAY ) {
-                    ++count;
-                    LogWriteMsg( log, "IDS_SUCCESS" );
-                    break;
-                } else {
-                    LogWriteMsg( log, "IDS_FAILED_UNPACKING" );
-                    if( !PatchErrorDialog( ret, i ) ) {
-                        LogWriteMsg( log, "IDS_PATCHABORT" );
-                        ok = false;
+                    StatusLinesVbuf( STAT_PATCHFILE, &destfullpath );
+                    StatusShow( true );
+                    LogWriteMsgStr( log, "IDS_UNPACKING", VbufString( &destfullpath ) );
+                    ret = DoPatchFile( &srcfullpath, &destfullpath, 0 );
+                    if( ret == PATCH_RET_OKAY ) {
+                        ++count;
+                        LogWriteMsg( log, "IDS_SUCCESS" );
                         break;
+                    } else {
+                        LogWriteMsg( log, "IDS_FAILED_UNPACKING" );
+                        if( !PatchErrorDialog( ret, i ) ) {
+                            LogWriteMsg( log, "IDS_PATCHABORT" );
+                            ok = false;
+                            break;
+                        }
                     }
                 }
             }
@@ -3914,14 +3913,10 @@ bool PatchFiles( void )
         case PATCH_COPY_FILE:
             GetSourcePath( i, &srcfullpath );
             GetDestDir( i, &destfullpath );
-
             // get rid of trailing slash: OS/2 needs this for access(...) to work
-            if( VbufString( &destfullpath )[VbufLen( &destfullpath ) - 1] == '\\' ) {
-                VbufString( &destfullpath )[VbufLen( &destfullpath ) - 1] = '\0';
-            }
-
+            VbufRemDirSep( &destfullpath );
             if( access( VbufString( &destfullpath ), F_OK ) == 0 ) {
-                AddFileName( i, VbufString( &destfullpath ), 0 );
+                AddFileName( i, &destfullpath, false );
                 StatusLinesVbuf( STAT_CREATEFILE, &destfullpath );
                 StatusShow( true );
                 if( access( VbufString( &srcfullpath ), R_OK ) == 0 ) {
@@ -3932,7 +3927,7 @@ bool PatchFiles( void )
                         break;
                     }
                     LogWriteMsg( log, "IDS_FAILED_UNPACKING" );
-                    if( !CopyErrorDialog( CFE_ERROR, i, VbufString( &srcfullpath ) ) ) {
+                    if( !CopyErrorDialog( CFE_ERROR, i, &srcfullpath ) ) {
                         LogWriteMsg( log, "IDS_PATCHABORT" );
                         ok = false;
                     }
@@ -3941,7 +3936,7 @@ bool PatchFiles( void )
             break;
         case PATCH_DELETE_FILE:
             GetDestDir( i, &destfullpath );
-            AddFileName( i, VbufString( &destfullpath ), 0 );
+            AddFileName( i, &destfullpath, false );
             StatusLinesVbuf( STAT_DELETEFILE, &destfullpath );
             StatusShow( true );
             if( access( VbufString( &destfullpath ), F_OK | W_OK ) == 0 ) {

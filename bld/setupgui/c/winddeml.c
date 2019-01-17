@@ -40,6 +40,7 @@
 #include "setupinf.h"
 #include "genvbl.h"
 #include "guistat.h"
+#include "utils.h"
 
 #include "clibext.h"
 

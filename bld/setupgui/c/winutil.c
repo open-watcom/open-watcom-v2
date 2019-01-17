@@ -384,7 +384,7 @@ static void WindowsWriteProfile( const VBUF *app_name, const VBUF *key_name,
 
         VbufInit( &hive );
         if( strpbrk( VbufString( file_name ), "\\/:" ) == NULL ) {
-            GetWindowsDirectory( &hive );
+            GetWindowsDirectoryVbuf( &hive );
             VbufConcChr( &hive, '\\' );
         }
         VbufConcStr( &hive, VbufString( file_name ) );
