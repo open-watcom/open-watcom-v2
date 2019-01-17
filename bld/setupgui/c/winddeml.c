@@ -433,8 +433,7 @@ static void get_group_name( VBUF *buff, const VBUF *group )
         SHGetPathFromIDList( ppidl, tmp );
         VbufConcStr( buff, tmp );
     } else {
-        GetWindowsDirectory( tmp, _MAX_PATH );
-        VbufConcStr( buff, tmp );
+        GetWindowsDirectoryVbuf( buff );
         VbufConcStr( buff, "\\Start Menu\\Programs" );
     }
     VbufConcChr( buff, '\\' );

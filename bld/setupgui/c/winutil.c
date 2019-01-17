@@ -384,10 +384,7 @@ static void WindowsWriteProfile( const VBUF *app_name, const VBUF *key_name,
 
         VbufInit( &hive );
         if( strpbrk( VbufString( file_name ), "\\/:" ) == NULL ) {
-            char    windir[_MAX_PATH];
-
-            GetWindowsDirectory( windir, sizeof( windir ) );
-            VbufConcStr( &hive, windir );
+            GetWindowsDirectory( &hive );
             VbufConcChr( &hive, '\\' );
         }
         VbufConcStr( &hive, VbufString( file_name ) );
@@ -406,6 +403,14 @@ static void WindowsWriteProfile( const VBUF *app_name, const VBUF *key_name,
         }
         break;
     }
+}
+
+void    GetWindowsDirectoryVbuf( VBUF *windir )
+{
+    char    temp[_MAX_PATH];
+
+    GetWindowsDirectory( temp, sizeof( temp ) );
+    VbufSetStr( windir, temp );
 }
 
 #endif

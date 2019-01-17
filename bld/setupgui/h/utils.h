@@ -59,6 +59,7 @@ extern bool             PromptUser( const VBUF *name, const char *dlg, const cha
 extern bool             GetRootFromPath( char *root, const char *path );
 extern disk_size        FreeSpace( const char *path );
 extern long             ClusterSize( const char *path );
+extern void             GetWindowsDirectoryVbuf( VBUF *windir );
 #endif
 extern signed int       IncrementDLLUsageCount( const char *path );
 extern signed int       DecrementDLLUsageCount( const char *path );

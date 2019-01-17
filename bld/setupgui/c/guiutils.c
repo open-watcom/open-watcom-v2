@@ -205,32 +205,42 @@ static bool CheckWin95Uninstall( int argc, char **argv )
 // there. The version in the Windows directory gets erased by
 // the WININIT program.
 
-    size_t              len;
-    char                buff[2 * _MAX_PATH];
-    char                drive[_MAX_DRIVE];
-    char                dir[_MAX_DIR];
-    char                name[_MAX_FNAME];
+    VBUF        unsetup;
+    VBUF        argv0;
+    VBUF        ext;
+    bool        ok;
 
+    ok = false;
     if( argc > 1 && stricmp( argv[1], "-u" ) == 0 ) {
+        VbufInit( &unsetup );
+        VbufInit( &argv0 );
+
+        VbufSetStr( &argv0, argv[0] );
         // copy setup program to unsetup.exe in system directory
-        GetWindowsDirectory( buff, _MAX_PATH );
-        strcat( buff, "\\UnSetup.exe" );
-        if( DoCopyFile( argv[0], buff, false ) == CFE_NOERROR ) {
+        GetWindowsDirectoryVbuf( &unsetup );
+        VbufConcStr( &unsetup, "\\UnSetup.exe" );
+        if( DoCopyFile( VbufString( &argv0 ), VbufString( &unsetup ), false ) == CFE_NOERROR ) {
+            VbufInit( &ext );
+
             // add entry to wininit.ini to erase unsetup.exe
-            WritePrivateProfileString( "rename", "NUL", buff, "wininit.ini" );
+            WritePrivateProfileString( "rename", "NUL", VbufString( &unsetup ), "wininit.ini" );
             // setup.inf should be in same directory as setup.exe
-            len = strlen( buff );
-            buff[len] = ' ';
-            buff[len + 1] = '\"';
-            _splitpath( argv[0], drive, dir, name, NULL );
-            _makepath( &buff[len + 2], drive, dir, name, "inf" );
-            strcat( buff, "\"" );
+            VbufSetStr( &ext, "inf" );
+            VbufSetPathExt( &argv0, &ext );
+            VbufConcChr( &unsetup, ' ' );
+            VbufConcChr( &unsetup, '\"' );
+            VbufConcVbuf( &unsetup, &argv0 );
+            VbufConcChr( &unsetup, '\"' );
             // execute unsetup
-            WinExec( buff, SW_SHOW );
-            return( true );
+            WinExec( VbufString( &unsetup ), SW_SHOW );
+            ok = true;
+
+            VbufFree( &ext );
         }
+        VbufFree( &argv0 );
+        VbufFree( &unsetup );
     }
-    return( false );
+    return( ok );
 }
 #endif
 
@@ -246,7 +256,7 @@ bool SetupPreInit( int argc, char **argv )
     if( CheckWin95Uninstall( argc, argv ) )
         return false;
 #else
-    (void)argc; (void)argv;
+    /* unused parameters */ (void)argc; (void)argv;
 #endif
 
     /* Cancel button may be wider in other languages */
