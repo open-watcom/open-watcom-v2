@@ -291,7 +291,7 @@ static var_type parse_line( char *line, VBUF *name, VBUF *value, var_type vt_set
     VbufRewind( name );
     while( isspace( *line ) )
         ++line;
-    if( memicmp( line, SETENV, SETENV_LEN ) == 0 ) {
+    if( strnicmp( line, SETENV, SETENV_LEN ) == 0 ) {
         line += SETENV_LEN;
         while( isspace( *line ) )
             ++line;
@@ -938,19 +938,19 @@ static void BackupName( VBUF *backupname, const VBUF *filename )
 bool ModifyAutoExec( bool uninstall )
 /***********************************/
 {
-    int                 num_auto;
-    int                 num_cfg;
-    int                 num_env;
-    char                boot_drive;
+    int             num_auto;
+    int             num_cfg;
+    int             num_env;
+    char            boot_drive;
 #ifndef __OS2__
-    VBUF                newauto;
+    VBUF            newauto;
 #endif
-    VBUF                newcfg;
-    FILE                *fp;
-    VBUF                new_ext;
-    bool                ok;
-    VBUF                OrigAutoExec;
-    VBUF                OrigConfig;
+    VBUF            newcfg;
+    FILE            *fp;
+    VBUF            new_ext;
+    bool            ok;
+    VBUF            OrigAutoExec;
+    VBUF            OrigConfig;
 
 
     num_auto = SimNumAutoExec();
@@ -959,6 +959,14 @@ bool ModifyAutoExec( bool uninstall )
     if( num_auto == 0 && num_cfg == 0 && num_env == 0 ) {
         return( true );
     }
+    VbufInit( &OrigAutoExec );
+    VbufInit( &OrigConfig );
+    VbufInit( &new_ext );
+    VbufInit( &newcfg );
+#ifndef __OS2__
+    VbufInit( &newauto );
+#endif
+
     ok = true;
 #ifdef __OS2__
     SetVariableByName( "AutoText", GetVariableStrVal( "IDS_MODIFY_CONFIG" ) );
@@ -1112,6 +1120,13 @@ bool ModifyAutoExec( bool uninstall )
             }
         }
     }
+#ifndef __OS2__
+    VbufFree( &newauto );
+#endif
+    VbufFree( &newcfg );
+    VbufFree( &new_ext );
+    VbufFree( &OrigConfig );
+    VbufFree( &OrigAutoExec );
     return( ok );
 }
 
@@ -1201,11 +1216,11 @@ static char *AdditionalPaths[] = { "drive:\\directory\\",
 static void secondarysearch( const VBUF *filename, VBUF *buffer )
 /***************************************************************/
 {
+    VBUF                path;
     VBUF                drive;
     VBUF                dir;
-    VBUF                ext;
-    VBUF                path;
     VBUF                name;
+    VBUF                ext;
     unsigned int        counter;
 
     VbufInit( &path );
@@ -1225,6 +1240,7 @@ static void secondarysearch( const VBUF *filename, VBUF *buffer )
             break;
         }
     }
+
     VbufFree( &ext );
     VbufFree( &name );
     VbufFree( &dir );
@@ -1343,7 +1359,7 @@ static bool replace_file( const VBUF *name, const VBUF *unpacked_as )
 bool CheckInstallDLL( const VBUF *name, vhandle var_handle )
 /**********************************************************/
 {
-    VBUF                dst;
+    VBUF                dst_dir;
     VBUF                drive;
     VBUF                dir;
     VBUF                fname;
@@ -1360,6 +1376,17 @@ bool CheckInstallDLL( const VBUF *name, vhandle var_handle )
 #endif
     bool                cancel;
     bool                ok;
+
+    VbufInit( &dst_dir );
+    VbufInit( &drive );
+    VbufInit( &dir );
+    VbufInit( &fname );
+    VbufInit( &ext );
+    VbufInit( &unpacked_as );
+    VbufInit( &dll_name );
+    VbufInit( &path1 );
+    VbufInit( &path2 );
+    VbufInit( &prev_path );
 
     VbufSplitpath( name, &drive, &dir, &fname, &ext );
     VbufMakepath( &dll_name, NULL, NULL, &fname, &ext );
@@ -1391,12 +1418,12 @@ bool CheckInstallDLL( const VBUF *name, vhandle var_handle )
     if( ok ) {
         VbufSplitpath( name, &drive, &dir, NULL, NULL );
         VbufMakepath( &path1, &drive, &dir, NULL, NULL );
-//        strupr( &path1 );
+//        strupr( path1 );
         VbufSplitpath( &prev_path, &drive, &dir, NULL, NULL );
         VbufMakepath( &path2, &drive, &dir, NULL, NULL );
-//        strupr( &path2 );
-        VbufSetStr( &dst, GetVariableStrVal( "DstDir" ) );
-        if( VbufCompVbuf( &path1, &dst, true ) == 0 && VbufCompVbuf( &path2, &dst, true ) == 0 ) {
+//        strupr( path2 );
+        VbufSetStr( &dst_dir, GetVariableStrVal( "DstDir" ) );
+        if( VbufCompVbuf( &path1, &dst_dir, true ) == 0 && VbufCompVbuf( &path2, &dst_dir, true ) == 0 ) {
             /* both files are going into the main installation sub-tree */
 #ifdef EXTRA_CAUTIOUS_FOR_DLLS
             cancel = replace_file( name, &unpacked_as );
@@ -1468,6 +1495,17 @@ bool CheckInstallDLL( const VBUF *name, vhandle var_handle )
             cancel = true;
         }
     }
+
+    VbufFree( &prev_path );
+    VbufFree( &path2 );
+    VbufFree( &path1 );
+    VbufFree( &dll_name );
+    VbufFree( &unpacked_as );
+    VbufFree( &ext );
+    VbufFree( &fname );
+    VbufFree( &dir );
+    VbufFree( &drive );
+    VbufFree( &dst_dir );
     return( cancel );
 }
 
@@ -1600,11 +1638,6 @@ bool ModifyConfiguration( bool uninstall )
         }
     }
 
-    VbufInit( &cur_var );
-    VbufInit( &cur_val );
-    VbufInit( &next_var );
-    VbufInit( &next_val );
-
     if( GetVariableBoolVal( "ModNow" ) ) {
         if( uninstall ) { //Clean up everywhere
             RegLocation[LOCAL_MACHINE].modify = true;
@@ -1631,6 +1664,11 @@ bool ModifyConfiguration( bool uninstall )
         MsgBoxVbuf( NULL, "IDS_CHANGES", GUI_OK, &changes );
         fp = fopen( VbufString( &changes ), "wt" );
         if( fp != NULL ) {
+            VbufInit( &cur_var );
+            VbufInit( &cur_val );
+            VbufInit( &next_var );
+            VbufInit( &next_val );
+
             fprintf( fp, "%s\n\n", GetVariableStrVal( "IDS_ENV_CHANGES" ) );
             for( i = 0; i < num_env; i ++ ) {
                 if( found[i] || !SimCheckEnvironmentCondition( i ) )
@@ -1655,6 +1693,11 @@ bool ModifyConfiguration( bool uninstall )
                 fprintf( fp, "\n    %s\n", VbufString( &cur_val ) );
             }
             fclose( fp );
+
+            VbufFree( &next_val );
+            VbufFree( &next_var );
+            VbufFree( &cur_val );
+            VbufFree( &cur_var );
         }
         GUIMemFree( found );
         bRet = true;
@@ -1662,11 +1705,6 @@ bool ModifyConfiguration( bool uninstall )
         VbufFree( &temp );
         VbufFree( &changes );
     }
-
-    VbufFree( &next_val );
-    VbufFree( &next_var );
-    VbufFree( &cur_val );
-    VbufFree( &cur_var );
 
     if( RegLocation[CURRENT_USER].key_is_open ) {
         RegCloseKey( RegLocation[CURRENT_USER].key );

@@ -1399,7 +1399,7 @@ bool DoDeleteFile( const VBUF *path )
 // ******************* Functions for Copying Files ***************************
 
 COPYFILE_ERROR DoCopyFile( const VBUF *src_path, const VBUF *dst_path, bool append )
-/*********************************************************************************/
+/**********************************************************************************/
 {
     static char         lastchance[1024];
     size_t              buffer_size = 16 * 1024;
@@ -1715,39 +1715,30 @@ static void CopySetupInfFile( void )
 static int UnPackHook( int filenum, int subfilenum, VBUF *name )
 /**************************************************************/
 {
-    VBUF        drive;
-    VBUF        dir;
-    VBUF        fname;
     VBUF        ext;
     int         rc;
 
-    VbufInit( &drive );
-    VbufInit( &dir );
-    VbufInit( &fname );
     VbufInit( &ext );
+
     if( SimSubFileIsNLM( filenum, subfilenum ) ) {
         NewFileToCheck( name, false );
-        VbufSplitpath( name, &drive, &dir, &fname, &ext );
         VbufSetStr( &ext, "._N_" );
-        VbufMakepath( name, &drive, &dir, &fname, &ext );
+        VbufSetPathExt( name, &ext );
         rc = 1;
     } else if( SimSubFileIsDLL( filenum, subfilenum ) ) {
         NewFileToCheck( name, true );
 #ifdef EXTRA_CAUTIOUS_FOR_DLLS
         if( !IsPatch ) {
-            VbufSplitpath( name, &drive, &dir, &fname, &ext );
             VbufSetStr( &ext, "._D_" );
-            VbufMakepath( name, &drive, &dir, &fname, &ext );
+            VbufSetPathExt( name, &ext );
         }
 #endif
         rc = 1;
     } else {
         rc = 0;
     }
+
     VbufFree( &ext );
-    VbufFree( &fname );
-    VbufFree( &dir );
-    VbufFree( &drive );
     return( rc );
 }
 
@@ -1758,7 +1749,7 @@ static bool DoCopyFiles( void )
 //    int                 disk_num;
     int                 subfilenum, max_subfiles;
     COPYFILE_ERROR      copy_error;
-    VBUF                dst_path;
+//    VBUF                dst_path;
     VBUF                tmp_path;
     VBUF                src_path;
 //    VBUF                file_name;
@@ -1787,6 +1778,8 @@ static bool DoCopyFiles( void )
     VbufInit( &tmp );
     VbufInit( &file_desc );
     VbufInit( &tmp_path );
+    VbufInit( &src_path );
+
     num_total_install = 0;
     ok = true;
     for( filenum = 0; ok && filenum < max_files; filenum++ ) {
@@ -1907,22 +1900,23 @@ static bool DoCopyFiles( void )
 //                SimFileDisk( filenum, &disk_desc );
 
 //                _splitpath( file_desc, NULL, NULL, NULL, file_ext );
-                VbufMakepath( &dst_path, NULL, &dir, &file_desc, NULL );
+//                VbufMakepath( &dst_path, NULL, &dir, &file_desc, NULL );
 
+                VbufSetLen( &src_path, src_path_pos1 );     // nuke sub-dir and name from end of src_path
                 dst_dir = GetVariableStrVal( "DstDir" );
                 len = strlen( dst_dir );
-                VbufSetLen( &src_path, src_path_pos1 );
                 if( VbufCompBuffer( &dir, dst_dir, len, false ) == 0 ) {
-                    if( VbufString( &dir )[len] == DIR_SEP )       // if 1st char to concat is a backslash, skip it
+                    if( VbufString( &dir )[len] == DIR_SEP ) {      // if 1st char to concat is a backslash, skip it
                         len++;
-                    VbufConcStr( &src_path, VbufString( &dir ) + len );  // get rid of the dest directory, just keep the subdir
+                    }
                 } else {
                     // use the macro as the directory name   eg: cd_drive:\winsys\filename
                     SimTargetDirName( SimDirTargNum( SimFileDirNum( filenum ) ), &tmp );
                     len = strlen( GetVariableStrVal( VbufString( &tmp ) ) );
                     VbufConcVbuf( &src_path, &tmp );
-                    VbufConcStr( &src_path, VbufString( &dir ) + len );
                 }
+                VbufConcStr( &src_path, VbufString( &dir ) + len );  // get rid of the dest directory, just keep the subdir
+
                 src_path_pos2 = VbufLen( &src_path );
                 VbufConcVbuf( &src_path, &file_desc );
 
@@ -1938,8 +1932,8 @@ static bool DoCopyFiles( void )
                         var_handle = SimSubFileVar( filenum, subfilenum );
                         VbufMakepath( &tmp_path, NULL, &dir, &file_desc, NULL );
 
-                        VbufSetLen( &src_path, src_path_pos2 );   // nuke name from end of src_path
-                        VbufSetStr( &src_path, VbufString( &file_desc ) );   // nuke name from end of src_path
+                        VbufSetLen( &src_path, src_path_pos2 );     // nuke name from end of src_path
+                        VbufConcStr( &src_path, VbufString( &file_desc ) );
                         StatusLinesVbuf( STAT_COPYINGFILE, &tmp_path );
                         UnPackHook( filenum, subfilenum, &tmp_path );
                         copy_error = DoCopyFile( &src_path, &tmp_path, false );
@@ -1998,6 +1992,8 @@ static bool DoCopyFiles( void )
         }
         StatusAmount( num_total_install, num_total_install );
     }
+
+    VbufFree( &src_path );
     VbufFree( &tmp_path );
     VbufFree( &file_desc );
     VbufFree( &tmp );
@@ -2235,10 +2231,14 @@ void GetInstallName( VBUF *name )
     if( GetVariableByName( "InstallerName" ) != NO_VAR ) {
         VbufSetStr( name, GetVariableStrVal( "InstallerName" ) );
     } else {
+        VbufInit( &argv0 );
+
         GUIGetArgs( &argv, &argc );
         VbufSetStr( &argv0, argv[0] );
         VbufSplitpath( &argv0, NULL, NULL, name, NULL );
 //        strupr( name );
+
+        VbufFree( &argv0 );
     }
 }
 
@@ -2307,8 +2307,8 @@ gui_message_return MsgBox( gui_window *gui, const char *msg_id,
     VBUF                inst_name;
 
     VbufInit( &msg_text );
+
     if( !SkipDialogs ) {
-        VbufInit( &msg_text );
         if( stricmp( msg_id, "IDS_NOSETUPINFOFILE" ) == 0 ) {
             // If the message is "can't find the setup.inf file", then
             // don't look up the string, because it is in the file we can't find
@@ -2368,6 +2368,7 @@ gui_message_return MsgBox( gui_window *gui, const char *msg_id,
 
         VbufFree( &inst_name );
     }
+
     VbufFree( &msg_text );
     return( result );
 }
