@@ -741,13 +741,17 @@ bool SecondaryPatchSearch( const char *filename, char *buff )
 void PatchingFileStatusShow( const char *patchname, const char *path )
 /********************************************************************/
 {
-    char        buff[200];
+    VBUF    buff;
 
-    strcpy( buff, patchname );
-    strcat( buff, " to file " );
-    strcat( buff, path );
-    StatusLines( STAT_PATCHFILE, buff );
+    VbufInit( &buff );
+
+    VbufConcStr( &buff, patchname );
+    VbufConcStr( &buff, " to file " );
+    VbufConcStr( &buff, path );
+    StatusLinesVbuf( STAT_PATCHFILE, &buff );
     StatusShow( true );
+
+    VbufFree( &buff );
 }
 
 // calback for DoPatch in bld/bdiff project
@@ -3890,9 +3894,9 @@ bool PatchFiles( void )
                 patchDirIndex = i;       // used in secondary search during patch
                 if( SecondaryPatchSearch( PatchInfo[i].destfile, temp ) ) {
                     VbufConcStr( &destfullpath, temp );
-                    if( PatchInfo[i].exetype[0] != '.' &&
-                        ExeType( VbufString( &destfullpath ), exetype ) &&
-                        strcmp( exetype, PatchInfo[i].exetype ) != 0 ) {
+                    if( PatchInfo[i].exetype[0] != '.'
+                      && ExeType( VbufString( &destfullpath ), exetype )
+                      && strcmp( exetype, PatchInfo[i].exetype ) != 0 ) {
                         break;
                     }
                     StatusLinesVbuf( STAT_PATCHFILE, &destfullpath );
