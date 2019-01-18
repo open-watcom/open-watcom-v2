@@ -104,7 +104,7 @@ type="l"    usr="plibmt3s.lib"  conda="3s"
 type="l"    usr="plbxmt3r.lib"  conda="3r"
 type="l"    usr="plbxmt3s.lib"  conda="3s"
 
-[ DEFAULT cond="cplusplus" cond="cplusplus alphatarg" where="ac" desc="C++ Runtime Libraries 32-bit" ]
+[ DEFAULT cond="cplusplus alphatarg" where="ac" desc="C++ Runtime Libraries 32-bit" ]
 # ---------- Dec Alpha libraries -----------
 type="l"    dir="libaxp/nt"     usr="plib.lib"
 type="l"    dir="libaxp/nt"     usr="plbx.lib"
