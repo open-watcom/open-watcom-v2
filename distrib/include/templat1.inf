@@ -300,7 +300,7 @@ push_button=^\
 name=LocCfg
 static_text=\
     //1"@ Can not find the following file:"\
-    //2"@は、以下のファイルが見つけられません。"
+    //2"@は、以下のファイルが見つけられません。"\
     //0
 dynamic_text=FileToFind,""
 static_text=
@@ -315,7 +315,7 @@ static_text=\
     //0
 edit_control=CfgDir,,\
     //1"Drive Letter:"\
-    //2"ドライブ名:"
+    //2"ドライブ名:"\
     //0
 static_text=
 push_button=+"&OK"
