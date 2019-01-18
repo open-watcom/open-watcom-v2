@@ -219,7 +219,7 @@ static bool CheckWin95Uninstall( int argc, char **argv )
         VbufSetStr( &argv0, argv[0] );
         GetWindowsDirectoryVbuf( &unsetup );
         VbufConcStr( &unsetup, "\\UnSetup.exe" );
-        if( DoCopyFile( VbufString( &argv0 ), VbufString( &unsetup ), false ) == CFE_NOERROR ) {
+        if( DoCopyFile( &argv0, &unsetup, false ) == CFE_NOERROR ) {
             VbufInit( &ext );
 
             // add entry to wininit.ini to erase unsetup.exe

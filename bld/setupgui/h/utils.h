@@ -37,7 +37,7 @@ extern bool             ModifyStartup( bool );
 extern bool             ModifyAssociations( bool );
 extern bool             ModifyUninstall( bool );
 extern bool             SpawnNextScript( );
-extern COPYFILE_ERROR   DoCopyFile( const char *, const char *, bool );
+extern COPYFILE_ERROR   DoCopyFile( const VBUF *, const VBUF *, bool );
 extern bool             CopyAllFiles( void );
 extern gui_message_return MsgBox( gui_window *, const char *, gui_message_type, ... );
 extern bool             CheckDrive( bool );

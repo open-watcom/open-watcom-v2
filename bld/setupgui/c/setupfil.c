@@ -92,10 +92,6 @@ static struct reg_location {
 static char     *WinDotCom = NULL;
 #endif
 
-static char     OrigAutoExec[] = "?:\\AUTOEXEC.BAT";
-static char     OrigConfig[] = "?:\\CONFIG.SYS";
-
-
 static char GetBootDrive( void )
 /*******************************/
 {
@@ -120,20 +116,24 @@ static char GetBootDrive( void )
 }
 
 
-static bool GetOldConfigFileDir( char *newauto, const char *drive_path, bool uninstall )
+static bool GetOldConfigFileDir( VBUF *newauto, const VBUF *drive_path, bool uninstall )
 /**************************************************************************************/
 {
-    char        drive[_MAX_DRIVE];
+    VBUF        drive;
 
     if( uninstall ) {
-        _splitpath( drive_path, drive, NULL, NULL, NULL );
-        if( drive[0] == '\0' ) {
-            _fullpath( newauto, drive_path, _MAX_PATH );
-            _splitpath( newauto, drive, NULL, NULL, NULL );
+        VbufInit( &drive );
+
+        VbufSplitpath( drive_path, &drive, NULL, NULL, NULL );
+        if( VbufLen( &drive ) == 0 ) {
+            VbufFullpath( newauto, VbufString( drive_path ) );
+            VbufSplitpath( newauto, &drive, NULL, NULL, NULL );
         }
-        _makepath( newauto, drive, NULL, NULL, NULL );
+        VbufMakepath( newauto, &drive, NULL, NULL, NULL );
+
+        VbufFree( &drive );
     } else {
-        strcpy( newauto, GetVariableStrVal( "DstDir" ) );
+        VbufSetStr( newauto, GetVariableStrVal( "DstDir" ) );
     }
 
     return( true );
@@ -516,7 +516,7 @@ static void FinishEnvironmentLines( FILE *fp, int num_env, bool *found_env, bool
 
 #if !defined( __UNIX__ )
 
-static bool ModFile( char *orig, char *new,
+static bool ModFile( const VBUF *orig, const VBUF *new,
                      void (*func_xxx)( char *, int, bool *, bool ),
                      void (*finish_xxx)( FILE *, int, bool *, bool ),
                      int num_xxx, int num_env, bool uninstall )
@@ -528,14 +528,14 @@ static bool ModFile( char *orig, char *new,
     bool                *found_env = NULL;
     char                envbuf[MAXENVVAR + 1];
 
-    fp1 = fopen( orig, "rt" );
+    fp1 = fopen( VbufString( orig ), "rt" );
     if( fp1 == NULL ) {
-        MsgBox( NULL, "IDS_ERROR_OPENING", GUI_OK, orig );
+        MsgBoxVbuf( NULL, "IDS_ERROR_OPENING", GUI_OK, orig );
         return( false );
     }
-    fp2 = fopen( new, "wt" );
+    fp2 = fopen( VbufString( new ), "wt" );
     if( fp2 == NULL ) {
-        MsgBox( NULL, "IDS_ERROR_OPENING", GUI_OK, new );
+        MsgBoxVbuf( NULL, "IDS_ERROR_OPENING", GUI_OK, new );
         fclose( fp1 );
         return( false );
     }
@@ -574,7 +574,7 @@ static bool ModFile( char *orig, char *new,
         }
         strcat( envbuf, "\n" );
         if( fputs( envbuf, fp2 ) < 0 ) {
-            MsgBox( NULL, "IDS_ERROR_WRITING", GUI_OK, new );
+            MsgBoxVbuf( NULL, "IDS_ERROR_WRITING", GUI_OK, new );
             return( false );
         }
     }
@@ -591,7 +591,7 @@ static bool ModFile( char *orig, char *new,
         GUIMemFree( found_env );
     }
     if( fclose( fp2 ) != 0 ) {
-        MsgBox( NULL, "IDS_ERROR_CLOSING", GUI_OK, new );
+        MsgBoxVbuf( NULL, "IDS_ERROR_CLOSING", GUI_OK, new );
         return( false );
     }
     return( true );
@@ -728,8 +728,8 @@ static void FinishAutoLines( FILE *fp, int num_auto, bool *found_auto, bool batc
 }
 
 
-static bool ModAuto( char *orig, char *new, bool uninstall )
-/**********************************************************/
+static bool ModAuto( const VBUF *orig, const VBUF *new, bool uninstall )
+/**********************************************************************/
 {
     int         num_auto;
     int         num_env;
@@ -893,8 +893,8 @@ static void FinishConfigLines( FILE *fp, int num_cfg, bool *found_cfg, bool batc
     VbufFree( &cur_var );
 }
 
-static bool ModConfig( char *orig, char *new, bool uninstall )
-/************************************************************/
+static bool ModConfig( const VBUF *orig, const VBUF *new, bool uninstall )
+/************************************************************************/
 {
     int         num_cfg;
     int         num_env;
@@ -915,31 +915,24 @@ static bool ModConfig( char *orig, char *new, bool uninstall )
     return( ModFile( orig, new, CheckConfigLine, FinishConfigLines, num_cfg, num_env, uninstall ) );
 }
 
-static void ReplaceExt( char *filename, const char *new_ext )
-/***********************************************************/
+static void BackupName( VBUF *backupname, const VBUF *filename )
+/**************************************************************/
 {
-    char        drive[_MAX_DRIVE];
-    char        dir[_MAX_DIR];
-    char        fname[_MAX_FNAME];
-
-    _splitpath( filename, drive, dir, fname, NULL );
-    _makepath( filename, drive, dir, fname, new_ext );
-}
-
-
-static void BackupName( char *filename )
-/**************************************/
-{
-    char        num_buf[5];
+    VBUF        temp;
     int         num;
 
+    VbufInit( &temp );
+
+    VbufSetVbuf( backupname, filename );
     for( num = 0; num < 999; num++ ) {
-        sprintf( num_buf, "%3.3d", num );
-        ReplaceExt( filename, num_buf );
-        if( access( filename, F_OK ) != 0 ) {
+        VbufSetInteger( &temp, num, 3 );
+        VbufSetPathExt( backupname, &temp );
+        if( access( VbufString( backupname ), F_OK ) != 0 ) {
             break;
         }
     }
+
+    VbufFree( &temp );
 }
 
 bool ModifyAutoExec( bool uninstall )
@@ -950,12 +943,15 @@ bool ModifyAutoExec( bool uninstall )
     int                 num_env;
     char                boot_drive;
 #ifndef __OS2__
-    char                newauto[_MAX_PATH];
+    VBUF                newauto;
 #endif
-    char                newcfg[_MAX_PATH];
+    VBUF                newcfg;
     FILE                *fp;
-    const char          *new_ext;
+    VBUF                new_ext;
     bool                ok;
+    VBUF                OrigAutoExec;
+    VBUF                OrigConfig;
+
 
     num_auto = SimNumAutoExec();
     num_cfg = SimNumConfig();
@@ -995,24 +991,27 @@ bool ModifyAutoExec( bool uninstall )
             boot_drive = 'C';       // assume C
 #endif
         }
-        OrigAutoExec[0] = boot_drive;
-        OrigConfig[0] = boot_drive;
+        VbufSetStr( &OrigAutoExec, "?:\\AUTOEXEC.BAT" );
+        VbufSetStr( &OrigConfig, "?:\\CONFIG.SYS" );
+        VbufSetPathDrive( &OrigAutoExec, boot_drive );
+        VbufSetPathDrive( &OrigConfig, boot_drive );
 
         SetVariableByName( "FileToFind", "CONFIG.SYS" );
-        while( access( OrigConfig, F_OK ) != 0 ) {
-            SetVariableByName( "CfgDir", OrigConfig );
+        while( access( VbufString( &OrigConfig ), F_OK ) != 0 ) {
+            SetVariableByName( "CfgDir", VbufString( &OrigConfig ) );
             if( DoDialog( "LocCfg" ) == DLG_CAN ) {
                 MsgBox( NULL, "IDS_CANTFINDCONFIGSYS", GUI_OK );
                 ok = false;
                 break;
             }
-            strcpy( newcfg, GetVariableStrVal( "CfgDir" ) );
-            OrigConfig[0] = newcfg[0];
-            OrigAutoExec[0] = OrigConfig[0];
+            VbufSetStr( &newcfg, GetVariableStrVal( "CfgDir" ) );
+            boot_drive = VbufString( &newcfg )[0];
+            VbufSetPathDrive( &OrigConfig, boot_drive );
+            VbufSetPathDrive( &OrigAutoExec, boot_drive );
             if( GetVariableBoolVal( "CfgFileCreate" ) ) {
-                fp = fopen( OrigConfig, "wt" );
+                fp = fopen( VbufString( &OrigConfig ), "wt" );
                 if( fp == NULL ) {
-                    MsgBox( NULL, "IDS_CANTCREATEFILE", GUI_OK, OrigConfig );
+                    MsgBoxVbuf( NULL, "IDS_CANTCREATEFILE", GUI_OK, &OrigConfig );
                 } else {
                     fclose( fp );
                 }
@@ -1022,19 +1021,20 @@ bool ModifyAutoExec( bool uninstall )
 #ifndef __OS2__
     if( ok ) {
         SetVariableByName( "FileToFind", "AUTOEXEC.BAT" );
-        while( access( OrigAutoExec, F_OK ) != 0 ) {
-            SetVariableByName( "CfgDir", OrigAutoExec );
+        while( access( VbufString( &OrigAutoExec ), F_OK ) != 0 ) {
+            SetVariableByName( "CfgDir", VbufString( &OrigAutoExec ) );
             if( DoDialog( "LocCfg" ) == DLG_CAN ) {
                 MsgBox( NULL, "IDS_CANTFINDAUTOEXEC", GUI_OK );
                 ok = false;
                 break;
             }
-            strcpy( newcfg, GetVariableStrVal("CfgDir") );
-            OrigAutoExec[0] = newcfg[0];
+            VbufSetStr( &newcfg, GetVariableStrVal("CfgDir") );
+            boot_drive = VbufString( &newcfg )[0];
+            VbufSetPathDrive( &OrigAutoExec, boot_drive );
             if( GetVariableBoolVal( "CfgFileCreate" ) ) {
-                fp = fopen( OrigAutoExec, "wt" );
+                fp = fopen( VbufString( &OrigAutoExec ), "wt" );
                 if( fp == NULL ) {
-                    MsgBox( NULL, "IDS_CANTCREATEFILE", GUI_OK, OrigAutoExec );
+                    MsgBoxVbuf( NULL, "IDS_CANTCREATEFILE", GUI_OK, &OrigAutoExec );
                 } else {
                     fclose( fp );
                 }
@@ -1047,29 +1047,27 @@ bool ModifyAutoExec( bool uninstall )
             // copy current files to AUTOEXEC.BAK and CONFIG.BAK
 
 #ifndef __OS2__
-            strcpy( newauto, OrigAutoExec );
-            BackupName( newauto );
+            BackupName( &newauto, &OrigAutoExec );
 #endif
-            strcpy( newcfg, OrigConfig );
-            BackupName( newcfg );
+            BackupName( &newcfg, &OrigConfig );
 
 #ifndef __OS2__
-            MsgBox( NULL, "IDS_COPYAUTOEXEC", GUI_OK, newauto, newcfg );
-            if( DoCopyFile( OrigAutoExec, newauto, false ) != CFE_NOERROR ) {
+            MsgBoxVbuf2( NULL, "IDS_COPYAUTOEXEC", GUI_OK, &newauto, &newcfg );
+            if( DoCopyFile( &OrigAutoExec, &newauto, false ) != CFE_NOERROR ) {
                 MsgBox( NULL, "IDS_ERRORBACKAUTO", GUI_OK );
             } else {
-                if( !ModAuto( newauto, OrigAutoExec, uninstall ) ) {
+                if( !ModAuto( &newauto, &OrigAutoExec, uninstall ) ) {
                     ok = false;
                 }
             }
 #else
-            MsgBox( NULL, "IDS_COPYCONFIGSYS", GUI_OK, newcfg );
+            MsgBoxVbuf( NULL, "IDS_COPYCONFIGSYS", GUI_OK, &newcfg );
 #endif
             if( ok ) {
-                if( DoCopyFile( OrigConfig, newcfg, false ) != CFE_NOERROR ) {
+                if( DoCopyFile( &OrigConfig, &newcfg, false ) != CFE_NOERROR ) {
                     MsgBox( NULL, "IDS_ERRORBACKCONFIG", GUI_OK );
                 } else {
-                    if( !ModConfig( newcfg, OrigConfig, uninstall ) ) {
+                    if( !ModConfig( &newcfg, &OrigConfig, uninstall ) ) {
                         ok = false;
                     }
 #ifdef __OS2__
@@ -1083,32 +1081,32 @@ bool ModifyAutoExec( bool uninstall )
             }
         } else {    // handle "ModLater" case
 #if defined( __OS2__ )
-            new_ext = "OS2";
+            VbufConcStr( &new_ext, "OS2" );
 #elif defined( __NT__ )
-            new_ext = "W95";
+            VbufConcStr( &new_ext, "W95" );
 #else
-            new_ext = "DOS";
+            VbufConcStr( &new_ext, "DOS" );
 #endif
             // place modifications in AUTOEXEC.NEW and CONFIG.NEW
 #ifndef __OS2__
-            GetOldConfigFileDir( newauto, OrigAutoExec, uninstall );
-            strcat( newauto, &OrigAutoExec[2] );
-            ReplaceExt( newauto, new_ext );
+            GetOldConfigFileDir( &newauto, &OrigAutoExec, uninstall );
+            VbufConcStr( &newauto, VbufString( &OrigAutoExec ) + 2 );
+            VbufSetPathExt( &newauto, &new_ext );
 #endif
-            GetOldConfigFileDir( newcfg, OrigConfig, uninstall );
-            strcat( newcfg, &OrigConfig[2] );
-            ReplaceExt( newcfg, new_ext );
+            GetOldConfigFileDir( &newcfg, &OrigConfig, uninstall );
+            VbufConcStr( &newcfg, VbufString( &OrigConfig ) + 2 );
+            VbufSetPathExt( &newcfg, &new_ext );
 
 #ifndef __OS2__
-            MsgBox( NULL, "IDS_NEWAUTOEXEC", GUI_OK, newauto, newcfg );
-            if( !ModAuto( OrigAutoExec, newauto, uninstall ) ) {
+            MsgBoxVbuf2( NULL, "IDS_NEWAUTOEXEC", GUI_OK, &newauto, &newcfg );
+            if( !ModAuto( &OrigAutoExec, &newauto, uninstall ) ) {
                 ok = false;
             }
 #else
-            MsgBox( NULL, "IDS_NEWCONFIGSYS", GUI_OK, newcfg );
+            MsgBoxVbuf( NULL, "IDS_NEWCONFIGSYS", GUI_OK, &newcfg );
 #endif
             if( ok ) {
-                if( !ModConfig( OrigConfig, newcfg, uninstall ) ) {
+                if( !ModConfig( &OrigConfig, &newcfg, uninstall ) ) {
                     ok = false;
                 }
             }
@@ -1458,7 +1456,7 @@ bool CheckInstallDLL( const VBUF *name, vhandle var_handle )
             cancel = replace_file( name, &unpacked_as );
 #endif
         } else if( GetVariableBoolVal( "DLL_Replace_Old" ) ) {
-            DoCopyFile( VbufString( &unpacked_as ), VbufString( &prev_path ), false );
+            DoCopyFile( &unpacked_as, &prev_path, false );
             SetVariableByHandle( var_handle, VbufString( &prev_path ) );
             remove( VbufString( &unpacked_as ) );
         } else if( GetVariableBoolVal( "DLL_Dont_Install" ) ) {
@@ -1563,7 +1561,8 @@ bool ModifyConfiguration( bool uninstall )
 /****************************************/
 {
     int                 num_env;
-    char                changes[_MAX_PATH];
+    VBUF                changes;
+    VBUF                temp;
     FILE                *fp;
     int                 i, j;
     bool                bRet;
@@ -1621,12 +1620,16 @@ bool ModifyConfiguration( bool uninstall )
         // indicate config files were modified if and only if we got this far
         ConfigModified = true;
     } else {    // handle "ModLater" case
+        VbufInit( &changes );
+        VbufInit( &temp );
+
         found = GUIMemAlloc( num_env * sizeof( bool ) );
         memset( found, false, num_env * sizeof( bool ) );
-        GetOldConfigFileDir( changes, GetVariableStrVal( "DstDir" ), uninstall );
-        strcat( changes, "\\CHANGES.ENV" );
-        MsgBox( NULL, "IDS_CHANGES", GUI_OK, changes );
-        fp = fopen( changes, "wt" );
+        VbufConcStr( &temp, GetVariableStrVal( "DstDir" ) );
+        GetOldConfigFileDir( &changes, &temp, uninstall );
+        VbufConcStr( &changes, "\\CHANGES.ENV" );
+        MsgBoxVbuf( NULL, "IDS_CHANGES", GUI_OK, &changes );
+        fp = fopen( VbufString( &changes ), "wt" );
         if( fp != NULL ) {
             fprintf( fp, "%s\n\n", GetVariableStrVal( "IDS_ENV_CHANGES" ) );
             for( i = 0; i < num_env; i ++ ) {
@@ -1655,6 +1658,9 @@ bool ModifyConfiguration( bool uninstall )
         }
         GUIMemFree( found );
         bRet = true;
+
+        VbufFree( &temp );
+        VbufFree( &changes );
     }
 
     VbufFree( &next_val );

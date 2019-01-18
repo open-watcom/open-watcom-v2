@@ -3925,7 +3925,7 @@ bool PatchFiles( void )
                 StatusShow( true );
                 if( access( VbufString( &srcfullpath ), R_OK ) == 0 ) {
                     LogWriteMsgStr( log, "IDS_UNPACKING", VbufString( &destfullpath ) );
-                    if( DoCopyFile( VbufString( &srcfullpath ), VbufString( &destfullpath ), false ) == CFE_NOERROR ) {
+                    if( DoCopyFile( &srcfullpath, &destfullpath, false ) == CFE_NOERROR ) {
                         ++count;
                         LogWriteMsg( log, "IDS_SUCCESS" );
                         break;
@@ -3945,7 +3945,7 @@ bool PatchFiles( void )
             StatusShow( true );
             if( access( VbufString( &destfullpath ), F_OK | W_OK ) == 0 ) {
                 LogWriteMsgStr( log, "IDS_DELETING", VbufString( &destfullpath ) );
-                if( DoDeleteFile( VbufString( &destfullpath ) ) ) {
+                if( DoDeleteFile( &destfullpath ) ) {
                     ++count;
                     LogWriteMsg( log, "IDS_SUCCESS" );
                 } else {

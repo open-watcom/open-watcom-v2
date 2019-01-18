@@ -209,7 +209,7 @@ bool CheckInstallNLM( const VBUF *name, vhandle var_handle )
         VbufMakepath( &temp, NULL, &dir, &fname, &ext );
         if( CheckNewer( &unpacked_as, &temp ) ) {
             chmod( VbufString( name ), PMODE_RWX );
-            DoCopyFile( VbufString( &unpacked_as ), VbufString( name ), false );
+            DoCopyFile( &unpacked_as, name, false );
             VbufSetVbuf( &temp, &fname );
             VbufConcStr( &temp, "_NLM_installed" );
             SetBoolVariableByName( VbufString( &temp ), true );

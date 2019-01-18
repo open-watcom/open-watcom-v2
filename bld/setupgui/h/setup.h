@@ -157,4 +157,4 @@ extern bool             CreateServices( void );
 extern bool             UpdateODBC( void );
 extern bool             RegUpdateODBC( void );
 extern bool             ApplyLicense( void );
-extern bool             DoDeleteFile( const char * );
+extern bool             DoDeleteFile( const VBUF * );
