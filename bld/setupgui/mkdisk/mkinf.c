@@ -835,6 +835,7 @@ bool ReadList( FILE *fp )
 #define STRING_assoc            "assoc="
 #define STRING_errmsg           "errmsg="
 #define STRING_setuperrmsg      "setuperrmsg="
+#define STRING_setup            "setup="
 
 #define STRING_IS( buf, new, string ) \
         ( strnicmp( buf, string, sizeof( string ) - 1 ) == 0 && \
@@ -904,115 +905,123 @@ static char *ReplaceEnv( char *file_name )
     return( strdup( buff ) );
 }
 
+static bool processLine( const char *line, LIST **list )
+{
+    LIST            *new;
+
+    new = malloc( sizeof( LIST ) );
+    if( new == NULL ) {
+        return( true );
+    }
+    new->next = NULL;
+    if( STRING_IS( line, new, STRING_icon ) ) {
+        AddToList( new, &IconList );
+    } else if( STRING_IS( line, new, STRING_supplimental ) ) {
+        AddToList( new, &SupplimentList );
+    } else if( STRING_IS( line, new, STRING_ini ) ) {
+        AddToList( new, &IniList );
+    } else if( STRING_IS( line, new, STRING_auto ) ) {
+        AddToList( new, &AutoList );
+    } else if( STRING_IS( line, new, STRING_cfg ) ) {
+        AddToList( new, &CfgList );
+    } else if( STRING_IS( line, new, STRING_autoset ) ) {
+        AddToList( new, &AutoSetList );
+    } else if( STRING_IS( line, new, STRING_spawnafter ) ) {
+        AddToList( new, &AfterList );
+    } else if( STRING_IS( line, new, STRING_spawnbefore ) ) {
+        AddToList( new, &BeforeList );
+    } else if( STRING_IS( line, new, STRING_spawnend ) ) {
+        AddToList( new, &EndList );
+    } else if( STRING_IS( line, new, STRING_env ) ) {
+        AddToList( new, &EnvList );
+    } else if( STRING_IS( line, new, STRING_dialog ) ) {
+        AddToList( new, &DialogList );
+    } else if( STRING_IS( line, new, STRING_boottext ) ) {
+        AddToList( new, &BootTextList );
+    } else if( STRING_IS( line, new, STRING_exe ) ) {
+        new->item = ReplaceEnv( new->item );
+        AddToList( new, &ExeList );
+    } else if( STRING_IS( line, new, STRING_label ) ) {
+        AddToList( new, &LabelList );
+    } else if( STRING_IS( line, new, STRING_upgrade ) ) {
+        AddToList( new, &UpgradeList );
+    } else if( STRING_IS( line, new, STRING_deletedialog ) ) {
+        new->type = DELETE_DIALOG;
+        AddToList( new, &DeleteList );
+    } else if( STRING_IS( line, new, STRING_deletefile ) ) {
+        new->type = DELETE_FILE;
+        AddToList( new, &DeleteList );
+    } else if( STRING_IS( line, new, STRING_deletedir ) ) {
+        new->type = DELETE_DIR;
+        AddToList( new, &DeleteList );
+    } else if( STRING_IS( line, new, STRING_language ) ) {
+        Lang = new->item[0] - '0';
+        free( new->item );
+        free( new );
+    } else if( STRING_IS( line, new, STRING_forcedll ) ) {
+        AddToList( new, &ForceDLLInstallList );
+    } else if( STRING_IS( line, new, STRING_assoc ) ) {
+        AddToList( new, &AssociationList );
+    } else if( STRING_IS( line, new, STRING_errmsg ) ) {
+        AddToList( new, &ErrMsgList );
+    } else if( STRING_IS( line, new, STRING_setuperrmsg ) ) {
+        AddToList( new, &SetupErrMsgList );
+    } else {
+        new->item = strdup( line );
+        AddToList( new, list );
+    }
+    return( false );
+}
+
 #define SECTION_BUF_SIZE 8192   // allow long text strings
 
-static char             SectionBuf[SECTION_BUF_SIZE];
+static char     SectionBuf[SECTION_BUF_SIZE];
 
 void ReadSection( FILE *fp, const char *section, LIST **list )
 /************************************************************/
 {
-    LIST                *new;
-    int                 file_curr = 0;
-    FILE                *file_stack[20];
+    int             file_curr = 0;
+    FILE            *file_stack[20];
+    bool            found;
 
+    found = false;
     for( ;; ) {
         if( mygets( SectionBuf, SECTION_BUF_SIZE, fp ) == NULL ) {
-            printf( "%s section not found in '%s'\n", section, MksetupInf );
-            return;
-        }
-        if( SectionBuf[0]== '#' || SectionBuf[0]== '\0' )
-            continue;
-        if( stricmp( SectionBuf, section ) == 0 ) {
-            break;
-        }
-    }
-    for( ;; ) {
-        if( mygets( SectionBuf, SECTION_BUF_SIZE, fp ) == NULL ) {
-            fclose( fp );
-            if( --file_curr >= 0 ) {
+            if( file_curr-- > 0 ) {
+                fclose( fp );
                 fp = file_stack[file_curr];
                 continue;
-            } else {
-                break;
             }
+            break;
         }
         if( SectionBuf[0]== '#' || SectionBuf[0]== '\0' )
             continue;
-        if( strnicmp( SectionBuf, "setup=", 6 ) == 0 ) {
-            char *p;
-            p = strdup( &SectionBuf[6] );
-            free( Setup );
-            Setup = ReplaceEnv( p );
-            continue;
+        if( SectionBuf[0] == '[' && SectionBuf[strlen( SectionBuf ) - 1] == ']' ) {
+            if( stricmp( SectionBuf, section ) == 0 ) {
+                found = true;
+            } else if( found ) {
+                break;
+            }
+        } else if( found ) {
+            if( strnicmp( SectionBuf, STRING_setup, sizeof( STRING_setup ) - 1 ) == 0 ) {
+                free( Setup );
+                Setup = ReplaceEnv( strdup( SectionBuf + sizeof( STRING_setup ) - 1 ) );
+            } else if( strnicmp( SectionBuf, STRING_include, sizeof( STRING_include ) - 1 ) == 0 ) {
+                file_stack[file_curr++] = fp;
+                fp = PathOpen( SectionBuf + sizeof( STRING_include ) - 1 );
+            } else if( processLine( SectionBuf, list ) ) {
+                fclose( fp );
+                while( file_curr-- > 0 ) {
+                    fp = file_stack[file_curr];
+                    fclose( fp );
+                }
+                printf( "\nOut of memory\n" );
+                exit( 1 );
+            }
         }
-        new = malloc( sizeof( LIST ) );
-        if( new == NULL ) {
-            fclose( fp );
-            printf( "\nOut of memory\n" );
-            exit( 1 );
-        }
-        new->next = NULL;
-        if( STRING_IS( SectionBuf, new, STRING_include ) ) {
-            file_stack[file_curr++] = fp;
-            fp = PathOpen( new->item );
-            free( new->item );
-            free( new );
-        } else if( STRING_IS( SectionBuf, new, STRING_icon ) ) {
-            AddToList( new, &IconList );
-        } else if( STRING_IS( SectionBuf, new, STRING_supplimental ) ) {
-            AddToList( new, &SupplimentList );
-        } else if( STRING_IS( SectionBuf, new, STRING_ini ) ) {
-            AddToList( new, &IniList );
-        } else if( STRING_IS( SectionBuf, new, STRING_auto ) ) {
-            AddToList( new, &AutoList );
-        } else if( STRING_IS( SectionBuf, new, STRING_cfg ) ) {
-            AddToList( new, &CfgList );
-        } else if( STRING_IS( SectionBuf, new, STRING_autoset ) ) {
-            AddToList( new, &AutoSetList );
-        } else if( STRING_IS( SectionBuf, new, STRING_spawnafter ) ) {
-            AddToList( new, &AfterList );
-        } else if( STRING_IS( SectionBuf, new, STRING_spawnbefore ) ) {
-            AddToList( new, &BeforeList );
-        } else if( STRING_IS( SectionBuf, new, STRING_spawnend ) ) {
-            AddToList( new, &EndList );
-        } else if( STRING_IS( SectionBuf, new, STRING_env ) ) {
-            AddToList( new, &EnvList );
-        } else if( STRING_IS( SectionBuf, new, STRING_dialog ) ) {
-            AddToList( new, &DialogList );
-        } else if( STRING_IS( SectionBuf, new, STRING_boottext ) ) {
-            AddToList( new, &BootTextList );
-        } else if( STRING_IS( SectionBuf, new, STRING_exe ) ) {
-            new->item = ReplaceEnv( new->item );
-            AddToList( new, &ExeList );
-        } else if( STRING_IS( SectionBuf, new, STRING_label ) ) {
-            AddToList( new, &LabelList );
-        } else if( STRING_IS( SectionBuf, new, STRING_upgrade ) ) {
-            AddToList( new, &UpgradeList );
-        } else if( STRING_IS( SectionBuf, new, STRING_deletedialog ) ) {
-            new->type = DELETE_DIALOG;
-            AddToList( new, &DeleteList );
-        } else if( STRING_IS( SectionBuf, new, STRING_deletefile ) ) {
-            new->type = DELETE_FILE;
-            AddToList( new, &DeleteList );
-        } else if( STRING_IS( SectionBuf, new, STRING_deletedir ) ) {
-            new->type = DELETE_DIR;
-            AddToList( new, &DeleteList );
-        } else if( STRING_IS( SectionBuf, new, STRING_language ) ) {
-            Lang = new->item[0] - '0';
-            free( new->item );
-            free( new );
-        } else if( STRING_IS( SectionBuf, new, STRING_forcedll ) ) {
-            AddToList( new, &ForceDLLInstallList );
-        } else if( STRING_IS( SectionBuf, new, STRING_assoc ) ) {
-            AddToList( new, &AssociationList );
-        } else if( STRING_IS( SectionBuf, new, STRING_errmsg ) ) {
-            AddToList( new, &ErrMsgList );
-        } else if( STRING_IS( SectionBuf, new, STRING_setuperrmsg ) ) {
-            AddToList( new, &SetupErrMsgList );
-        } else {
-            new->item = strdup( SectionBuf );
-            AddToList( new, list );
-        }
+    }
+    if( !found ) {
+        printf( "%s section not found in '%s'\n", section, MksetupInf );
     }
 }
 
@@ -1125,10 +1134,11 @@ void DumpFile( FILE *out, const char *fname )
         buf = malloc( SECTION_BUF_SIZE );
         if( buf != NULL ) {
             for( ; mygets( buf, SECTION_BUF_SIZE, in ) != NULL; ) {
-                if( strnicmp( buf, "include=", 8 ) == 0 ) {
-                    DumpFile( out, buf + 8 );
+                if( strnicmp( buf, STRING_include, sizeof( STRING_include ) - 1 ) == 0 ) {
+                    DumpFile( out, buf + sizeof( STRING_include ) - 1 );
                 } else {
                     fputs( buf, out );
+                    fputc( '\n', out );
                 }
             }
             free( buf );
@@ -1136,8 +1146,9 @@ void DumpFile( FILE *out, const char *fname )
             printf( "Out of memory\n" );
         }
         fclose( in );
+    } else {
+        printf( "Cannot open '%s'\n", fname );
     }
-    printf( "Cannot open '%s'\n", fname );
 }
 
 
