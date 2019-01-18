@@ -450,6 +450,7 @@ static char *item_def( const char *old, const char *new, const char *item )
 {
     if( old != NULL ) {
         printf( "langdat warning: default item '%s' already defined\n", item );
+        printf( "(in file %s line %d)\n", IncludeStk->name, IncludeStk->lineno );
         MFree( (void *)old );
     }
     return( MStrdup( new ) );
