@@ -125,10 +125,10 @@ static void EndOfPragma( void )
 /*****************************/
 {
     if( CurToken == T_SEMI_COLON )
-        NextToken();
+        PPNextToken();
     ExpectingToken( T_NULL );
     while( CurToken != T_NULL && CurToken != T_EOF ) {
-        NextToken();
+        PPNextToken();
     }
 }
 
@@ -157,7 +157,7 @@ static bool PragIdRecog( const char *what )
 
     rc = ( stricmp( what, SkipUnderscorePrefix( Buffer, NULL ) ) == 0 );
     if( rc ) {
-        NextToken();
+        PPNextToken();
     }
     return( rc );
 }
@@ -184,20 +184,20 @@ bool GetPragAuxAliasInfo( void )
 {
     if( CurToken != T_LEFT_PAREN )          /* #pragma aux symbol ..... */
         return( IS_ID_OR_KEYWORD( CurToken ) );
-    NextToken();
+    PPNextToken();
     if( !IS_ID_OR_KEYWORD( CurToken ) )     /* error */
         return( false );
     LookAhead();
     if( LAToken == T_RIGHT_PAREN ) {        /* #pragma aux (alias) symbol ..... */
         CurrAlias = SearchPragAuxAlias( SavedId );
         advanceToken();
-        NextToken();
+        PPNextToken();
         return( IS_ID_OR_KEYWORD( CurToken ) );
     } else if( LAToken == T_COMMA ) {       /* #pragma aux (symbol, alias) */
         HashValue = SavedHash;
         SetCurrInfo( SavedId );
         advanceToken();
-        NextToken();
+        PPNextToken();
         if( !IS_ID_OR_KEYWORD( CurToken ) )
             return( false );                /* error */
         GetPragAuxAlias();
@@ -454,7 +454,7 @@ void PragObjNameInfo( char **objname )
 {
     if( CurToken == T_STRING ) {
         *objname = CStrSave( Buffer );
-        NextToken();
+        PPNextToken();
     }
 }
 
@@ -535,7 +535,7 @@ hw_reg_set PragRegList( void )
     HW_CAsgn( reg, HW_EMPTY );
     close = PragRegSet();
     if( close != T_NULL ) {
-        for( ; NextToken() != close; ) {
+        while( PPNextToken() != close ) {
             reg = PragReg();
             HW_TurnOn( res, reg );
             if( CurToken == close ) {
@@ -608,12 +608,10 @@ static void pragFlag( int value )
 /*******************************/
 {
     PPCTL_ENABLE_MACROS();
-    NextToken();
+    PPNextToken();
     if( ExpectingToken( T_LEFT_PAREN ) ) {
-        NextToken();
-        while( IS_ID_OR_KEYWORD( CurToken ) ) {
+        for( PPNextToken(); IS_ID_OR_KEYWORD( CurToken ); PPNextToken() ) {
             SetToggleFlag( Buffer, value );
-            NextToken();
         }
         MustRecog( T_RIGHT_PAREN );
     }
@@ -658,7 +656,7 @@ static void GetLibraryNames( void )
 {
     while( IS_ID_OR_KEYWORD( CurToken ) || CurToken == T_STRING ) {
         AddLibraryName( Buffer, USER_LIB_PRIO );
-        NextToken();
+        PPNextToken();
     }
 }
 
@@ -671,9 +669,9 @@ static void pragLibs( void )
 /**************************/
 {
     PPCTL_ENABLE_MACROS();
-    NextToken();
+    PPNextToken();
     if( CurToken == T_LEFT_PAREN ) {
-        NextToken();
+        PPNextToken();
         GetLibraryNames();
         MustRecog( T_RIGHT_PAREN );
     } else {
@@ -690,12 +688,12 @@ static void pragComment( void )
 /*****************************/
 {
     PPCTL_ENABLE_MACROS();
-    NextToken();
+    PPNextToken();
     if( ExpectingToken( T_LEFT_PAREN ) ) {
-        NextToken();
+        PPNextToken();
         if( PragRecog( "lib" ) ) {
             if( ExpectingToken( T_COMMA ) ) {
-                NextToken();
+                PPNextToken();
             }
             GetLibraryNames();
         }
@@ -732,11 +730,11 @@ static void getPackArgs( void )
         pi->pack_amount = PackAmount;
         PackInfo = pi;
         if( CurToken == T_COMMA ) {
-            NextToken();
+            PPNextToken();
             if( ExpectingConstant() ) {
                 SetPackAmount( Constant );
             }
-            NextToken();
+            PPNextToken();
         }
     } else if( PragRecog( "pop" ) ) {
         pi = PackInfo;
@@ -761,12 +759,12 @@ static void pragPack( void )
 /**************************/
 {
     PPCTL_ENABLE_MACROS();
-    NextToken();
+    PPNextToken();
     if( ExpectingToken( T_LEFT_PAREN ) ) {
-        NextToken();
+        PPNextToken();
         if( CurToken == T_CONSTANT ) {
             SetPackAmount( Constant );
-            NextToken();
+            PPNextToken();
         } else if( IS_ID_OR_KEYWORD( CurToken ) ) {
             getPackArgs();
         } else if( CurToken == T_RIGHT_PAREN ) {
@@ -829,12 +827,12 @@ static void pragAllocText( void )
     auto SYM_ENTRY      sym;
 
     PPCTL_ENABLE_MACROS();
-    NextToken();
+    PPNextToken();
     if( ExpectingToken( T_LEFT_PAREN ) ) {
-        NextToken();
+        PPNextToken();
         /* current token can be an T_ID or a T_STRING */
         tseg = LkSegName( Buffer, "" );
-        NextToken();
+        PPNextToken();
         for( ;; ) {
             MustRecog( T_COMMA );
             /* current token can be an T_ID or a T_STRING */
@@ -850,7 +848,7 @@ static void pragAllocText( void )
                     /* error, must be function */
                 }
             }
-            NextToken();
+            PPNextToken();
             if( CurToken == T_RIGHT_PAREN )
                 break;
             if( CurToken == T_EOF )
@@ -897,14 +895,14 @@ static void pragEnableDisableMessage( int enable )
 /************************************************/
 {
     PPCTL_ENABLE_MACROS();
-    NextToken();
+    PPNextToken();
     if( ExpectingToken( T_LEFT_PAREN ) ) {
-        NextToken();
+        PPNextToken();
         while( CurToken == T_CONSTANT ) {
             EnableDisableMessage( enable, Constant );
-            NextToken();
+            PPNextToken();
             if( CurToken == T_COMMA ) {
-                NextToken();
+                PPNextToken();
             }
         }
         MustRecog( T_RIGHT_PAREN );
@@ -925,9 +923,9 @@ static void pragMessage( void )
 /*****************************/
 {
     PPCTL_ENABLE_MACROS();
-    NextToken();
+    PPNextToken();
     if( ExpectingToken( T_LEFT_PAREN ) ) {
-        while( NextToken() == T_STRING ) {
+        while( PPNextToken() == T_STRING ) {
             printf( "%s", Buffer );
         }
         printf( "\n" );
@@ -981,7 +979,7 @@ static void pragEnum( void )
 /**************************/
 {
     PPCTL_ENABLE_MACROS();
-    NextToken();
+    PPNextToken();
     if( PragRecog( "int" ) ) {
         PushEnum();
         CompFlags.make_enums_an_int = true;
@@ -1008,10 +1006,9 @@ static void pragIntrinsic( int intrinsic )
     SYM_ENTRY   sym;
 
     PPCTL_ENABLE_MACROS();
-    NextToken();
+    PPNextToken();
     if( ExpectingToken( T_LEFT_PAREN ) ) {
-        NextToken();
-        while( IS_ID_OR_KEYWORD( CurToken ) ) {
+        for( PPNextToken(); IS_ID_OR_KEYWORD( CurToken ); PPNextToken() ) {
             sym_handle = SymLook( HashValue, Buffer );
             if( sym_handle != SYM_NULL ) {
                 SymGet( &sym, sym_handle );
@@ -1020,10 +1017,10 @@ static void pragIntrinsic( int intrinsic )
                     sym.flags |= SYM_INTRINSIC;
                 SymReplace( &sym, sym_handle );
             }
-            NextToken();
-            if( CurToken != T_COMMA )
+            PPNextToken();
+            if( CurToken != T_COMMA ) {
                 break;
-            NextToken();
+            }
         }
         MustRecog( T_RIGHT_PAREN );
     }
@@ -1042,21 +1039,21 @@ static void pragCodeSeg( void )
     char            *classname;
 
     PPCTL_ENABLE_MACROS();
-    NextToken();
+    PPNextToken();
     if( CurToken == T_LEFT_PAREN ) {
         tseg = NULL;
-        NextToken();
+        PPNextToken();
         if( ( CurToken == T_STRING ) || ( CurToken == T_ID ) ) {
             segname = CStrSave( Buffer );
             classname = CStrSave( "" );
-            NextToken();
+            PPNextToken();
             if( CurToken == T_COMMA ) {
-                NextToken();
+                PPNextToken();
                 if( ( CurToken == T_STRING ) || ( CurToken == T_ID ) ) {
                     CMemFree( classname );
                     classname = CStrSave( Buffer );
 //                  CodeClassName = CStrSave( Buffer ); */
-                    NextToken();
+                    PPNextToken();
                 }
             }
             tseg = LkSegName( segname, classname );
@@ -1083,18 +1080,18 @@ static void pragDataSeg( void )
     segment_id  segid;
 
     PPCTL_ENABLE_MACROS();
-    NextToken();
+    PPNextToken();
     if( CurToken == T_LEFT_PAREN ) {
         segid = SEG_UNKNOWN;
-        NextToken();
+        PPNextToken();
         if( ( CurToken == T_STRING ) || ( CurToken == T_ID ) ) {
             segname = CStrSave( Buffer );
-            NextToken();
+            PPNextToken();
             if( CurToken == T_COMMA ) {
-                NextToken();
+                PPNextToken();
                 if( ( CurToken == T_STRING ) || ( CurToken == T_ID ) ) {
                     segid = AddSegName( segname, Buffer, SEGTYPE_DATA );
-                    NextToken();
+                    PPNextToken();
                 } else {
                     segid = AddSegName( segname, NULL, SEGTYPE_DATA );
                 }
@@ -1119,13 +1116,13 @@ static void pragUnroll( void )
     unroll_type unroll_count;
 
     PPCTL_ENABLE_MACROS();
-    NextToken();
+    PPNextToken();
     if( ExpectingToken( T_LEFT_PAREN ) ) {
         unroll_count = 0;
-        NextToken();
+        PPNextToken();
         if( CurToken == T_CONSTANT ) {
             unroll_count = ( Constant > 255 ) ? 255 : (unroll_type)Constant;
-            NextToken();
+            PPNextToken();
         }
         UnrollCount = unroll_count;
         MustRecog( T_RIGHT_PAREN );
@@ -1146,13 +1143,13 @@ static void pragReadOnlyFile( void )
 /**********************************/
 {
     PPCTL_ENABLE_MACROS();
-    NextToken();
+    PPNextToken();
     if( CurToken == T_STRING ) {
         do {
             SrcFileReadOnlyFile( Buffer );
-            NextToken();
+            PPNextToken();
             if( CurToken == T_SEMI_COLON ) {
-                NextToken();
+                PPNextToken();
             }
         } while( CurToken == T_STRING );
     } else {
@@ -1172,12 +1169,12 @@ static void pragReadOnlyDir( void )
 /*********************************/
 {
     PPCTL_ENABLE_MACROS();
-    NextToken();
+    PPNextToken();
     while( CurToken == T_STRING ) {
         SrcFileReadOnlyDir( Buffer );
-        NextToken();
+        PPNextToken();
         if( CurToken == T_SEMI_COLON ) {
-            NextToken();
+            PPNextToken();
         }
     }
     PPCTL_DISABLE_MACROS();
@@ -1195,18 +1192,18 @@ static void pragIncludeAlias( void )
 /**********************************/
 {
     PPCTL_ENABLE_MACROS();
-    NextToken();
+    PPNextToken();
     if( ExpectingToken( T_LEFT_PAREN ) ) {
-        NextToken();
+        PPNextToken();
         if( CurToken == T_STRING ) {
             char    *alias_name;
 
             alias_name = CStrSave( Buffer );
-            NextToken();
+            PPNextToken();
             MustRecog( T_COMMA );
             if( CurToken == T_STRING ) {
                 SrcFileIncludeAlias( alias_name, Buffer, false );
-                NextToken();
+                PPNextToken();
             }
             CMemFree( alias_name );
         } else if( CurToken == T_LT ) {
@@ -1214,9 +1211,9 @@ static void pragIncludeAlias( void )
             char    r_buf[82];
 
             a_buf[0] = '\0';
-            for( ; NextToken() != T_NULL; ) {
+            for( ; PPNextToken() != T_NULL; ) {
                 if( CurToken == T_GT ) {
-                    NextToken();
+                    PPNextToken();
                     break;
                 }
                 strncat( a_buf, Buffer, sizeof( a_buf ) - 2 );
@@ -1224,9 +1221,9 @@ static void pragIncludeAlias( void )
             MustRecog( T_COMMA );
             if( CurToken == T_LT ) {
                 r_buf[0] = '\0';
-                for( ; NextToken() != T_NULL; ) {
+                for( ; PPNextToken() != T_NULL; ) {
                     if( CurToken == T_GT ) {
-                        NextToken();
+                        PPNextToken();
                         break;
                     }
                     strncat( r_buf, Buffer, sizeof( r_buf ) - 2 );
@@ -1249,7 +1246,7 @@ static void pragOnce( void )
 /**************************/
 {
     PPCTL_ENABLE_MACROS();
-    NextToken();
+    PPNextToken();
     SetSrcFNameOnce();
     PPCTL_DISABLE_MACROS();
 }
@@ -1271,7 +1268,7 @@ static void pragSTDC( void )
 /**************************/
 {
     PPCTL_ENABLE_MACROS();
-    NextToken();
+    PPNextToken();
     if( PragRecog( "FP_CONTRACT" ) ) {
         OptionPragSTDC();
     } else if( PragRecog( "FENV_ACCESS" ) ) {
@@ -1340,19 +1337,19 @@ static void pragExtRef( void )
 /****************************/
 {
     PPCTL_ENABLE_MACROS();
-    NextToken();
+    PPNextToken();
     if( CurToken == T_LEFT_PAREN ) {
         do {
-            NextToken();
+            PPNextToken();
             if( !IS_ID_OR_KEYWORD( CurToken ) && CurToken != T_STRING )
                 break;
             parseExtRef();
-            NextToken();
+            PPNextToken();
         } while( CurToken == T_COMMA );
         MustRecog( T_RIGHT_PAREN );
     } else if( IS_ID_OR_KEYWORD( CurToken ) || CurToken == T_STRING ) {
         parseExtRef();
-        NextToken();
+        PPNextToken();
     }
     PPCTL_DISABLE_MACROS();
 }
@@ -1381,7 +1378,7 @@ static void pragAlias( void )
     subst_sym = SYM_NULL;
 
     PPCTL_ENABLE_MACROS();
-    NextToken();
+    PPNextToken();
     if( ExpectingToken( T_LEFT_PAREN ) ) {
         PPNextToken();
         if( CurToken == T_ID ) {
@@ -1438,7 +1435,7 @@ void CPragma( void )
      * because it's intended for the preprocessor, not the compiler.
      */
     CompFlags.in_pragma = true;
-    NextToken();
+    PPNextToken();
     if( IS_ID_OR_KEYWORD( CurToken ) && pragmaNameRecog( "include_alias" ) ) {
         pragIncludeAlias();
     } else if( CompFlags.cpp_output ) {

@@ -85,6 +85,21 @@ void VbufSetVbuf(               // SET A VBUF
     VBUF *vbuf1,                // - VBUF structure
     const VBUF *vbuf2 )         // - VBUF structure
 ;
+void VbufConcVbufPos(           // CONCATENATE A VBUF TO VBUF
+    VBUF *vbuf1,                // - VBUF structure
+    const VBUF *vbuf2,          // - VBUF structure
+    size_t start_pos )          // - start position in second VBUF
+;
+void VbufPrepVbufPos(           // PREPEND A VBUF TO VBUF
+    VBUF *vbuf1,                // - VBUF structure
+    const VBUF *vbuf2,          // - VBUF structure to be prepended
+    size_t start_pos )          // - start position in second VBUF
+;
+void VbufSetVbufPos(            // SET A VBUF TO VBUF
+    VBUF *vbuf1,                // - VBUF structure
+    const VBUF *vbuf2,          // - VBUF structure
+    size_t start_pos )          // - start position in second VBUF
+;
 void VbufConcBuffer(            // CONCATENATE A BUFFER TO VBUF
     VBUF *vbuf,                 // - VBUF structure
     char const *buffer,         // - buffer
@@ -169,7 +184,7 @@ void VbufSplitpath(             // GET A FILE PATH COMPONENTS FROM VBUF
 ;
 void VbufFullpath(              // GET A FULL FILE PATH TO VBUF
     VBUF *vbuf,                 // - VBUF structure
-    const VBUF *file )          // - file name
+    const VBUF *file )          // - file name VBUF
 ;
 bool VbufSetPathDrive(          // SET A DRIVE FOR FILE PATH IN VBUF
     VBUF *vbuf,                 // - full file path

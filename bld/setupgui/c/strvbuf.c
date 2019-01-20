@@ -176,6 +176,53 @@ void VbufSetVbuf(               // SET A VBUF TO VBUF
 }
 
 
+void VbufConcVbufPos(           // CONCATENATE A VBUF TO VBUF
+    VBUF *vbuf1,                // - VBUF structure
+    const VBUF *vbuf2,          // - VBUF structure
+    size_t start_pos )          // - start position in second VBUF
+{
+    size_t  len2;
+
+    if( vbuf2->used > start_pos ) {
+        len2 = vbuf2->used - start_pos;
+        VbufReqd( vbuf1, vbuf1->used + len2 );
+        memcpy( vbuf1->buf + vbuf1->used, vbuf2->buf + start_pos, len2 );
+        vbuf1->used += len2;
+        vbuf1->buf[vbuf1->used] = '\0';
+    }
+}
+
+void VbufPrepVbufPos(           // PREPEND A VBUF TO VBUF
+    VBUF *vbuf1,                // - VBUF structure
+    const VBUF *vbuf2,          // - VBUF structure to be prepended
+    size_t start_pos )          // - start position in second VBUF
+{
+    VBUF    temp;
+    size_t  len2;
+
+    if( vbuf2->used > start_pos ) {
+        len2 = vbuf2->used - start_pos;
+        VbufInit( &temp );
+        VbufReqd( &temp, vbuf1->used + len2 );
+        memcpy( temp.buf, vbuf2->buf + start_pos, len2 );
+        memcpy( temp.buf + len2, vbuf1->buf, vbuf1->used );
+        temp.used = vbuf1->used + len2;
+        temp.buf[temp.used] = '\0';
+        VbufFree( vbuf1 );
+        *vbuf1 = temp;
+    }
+}
+
+void VbufSetVbufPos(            // SET A VBUF TO VBUF
+    VBUF *vbuf1,                // - VBUF structure
+    const VBUF *vbuf2,          // - VBUF structure
+    size_t start_pos )          // - start position in second VBUF
+{
+    VbufSetLen( vbuf1, 0 );
+    VbufConcVbufPos(  vbuf1, vbuf2, start_pos );
+}
+
+
 void VbufConcBuffer(            // CONCATENATE A BUFFER TO VBUF
     VBUF *vbuf,                 // - VBUF structure
     char const *buffer,         // - size of buffer
@@ -398,6 +445,7 @@ void VbufMakepath(              // SET A FILE PATH NAME TO VBUF
     const VBUF *name,           // - file name
     const VBUF *ext )           // - file extension
 {
+    VbufRewind( full );
     if( drive != NULL ) {
         if( VbufLen( drive ) > 0 ) {
 #if defined( __UNIX__ )
@@ -424,7 +472,7 @@ void VbufMakepath(              // SET A FILE PATH NAME TO VBUF
     if( dir != NULL ) {
         if( VbufLen( dir ) > 0 ) {
             if( VbufString( dir )[0] == DIR_SEP && VbufString( full )[VbufLen( full ) - 1] == DIR_SEP ) {
-                VbufConcStr( full, VbufString( dir ) + 1 );
+                VbufConcVbufPos( full, dir, 1 );
             } else {
                 VbufConcVbuf( full, dir );
             }
@@ -434,7 +482,7 @@ void VbufMakepath(              // SET A FILE PATH NAME TO VBUF
     if( name != NULL ) {
         if( VbufLen( name ) > 0 ) {
             if( VbufString( name )[0] == DIR_SEP && VbufString( full )[VbufLen( full ) - 1] == DIR_SEP ) {
-                VbufConcStr( full, VbufString( name ) + 1 );
+                VbufConcVbufPos( full, name, 1 );
             } else {
                 VbufConcVbuf( full, name );
             }

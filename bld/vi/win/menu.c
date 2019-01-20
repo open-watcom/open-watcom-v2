@@ -1227,13 +1227,13 @@ vi_rc DoWindowGadgetMenu( void )
 /*
  * Stubs
  */
-int GetMenuIdFromCoord( int x )
+ctl_id GetMenuIdFromCoord( int x )
 {
     x = x;
-    return( -1 );
+    return( NO_ID );
 }
 
-int GetCurrentMenuId( void )
+ctl_id GetCurrentMenuId( void )
 {
-    return( -1 );
+    return( NO_ID );
 }

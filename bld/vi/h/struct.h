@@ -624,7 +624,7 @@ typedef struct {
 typedef struct {
     file                *f;                     // file with data for lines
     char                **vals;                 // values associated with each line
-    int                 valoff;                 // offset to display values beside line data
+    unsigned            valoff;                 // offset to display values beside line data
     window_info         *wi;                    // info describing window to create
     list_linenum        sl;                     // selected line
     char                *title;                 // title of window

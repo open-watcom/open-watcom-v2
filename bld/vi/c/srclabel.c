@@ -40,7 +40,7 @@
  */
 int FindLabel( labels *labs, const char *lbl )
 {
-    int i;
+    unsigned i;
 
     for( i = 0; i < labs->cnt; i++ ) {
         if( stricmp( lbl, labs->name[i] ) == 0 )  {

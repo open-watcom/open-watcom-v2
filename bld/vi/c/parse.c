@@ -169,15 +169,15 @@ char *GetNextWord2( const char *buff, char *res, char alt_delim )
  */
 char *GetNextWord( const char *buff, char *res, const char *ign )
 {
-    int         sl;
+    size_t      ign_len;
     char        c;
 
     /*
      * past any leading ignorable chars (if ignore list has single
      * character, then only skip past FIRST ignorable char)
      */
-    sl = strlen( ign );
-    if( sl == 1 ) {
+    ign_len = strlen( ign );
+    if( ign_len == 1 ) {
         if( isIgnorable( *buff, ign ) ) {
             ++buff;
         }
@@ -193,7 +193,7 @@ char *GetNextWord( const char *buff, char *res, const char *ign )
         /*
          * look for escaped delimiters
          */
-        if( c == '\\' && sl == 1 ) {
+        if( c == '\\' && ign_len == 1 ) {
             if( buff[1] == ign[0] ) {
                 ++buff;
                 *res++ = *buff;

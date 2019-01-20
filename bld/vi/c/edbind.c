@@ -282,7 +282,7 @@ int main( int argc, char *argv[] )
     char                *buffn, *buffs;
     char                *ptr;
     int                 j, k;
-    size_t              len, sl;
+    size_t              len, arg_len;
     bind_size           fi;
     FILE                *fp;
     struct stat         fs;
@@ -299,8 +299,8 @@ int main( int argc, char *argv[] )
 
     for( j = argc - 1; j > 0; --j ) {
         if( argv[j][0] == '/' || argv[j][0] == '-' ) {
-            sl = strlen( argv[j] );
-            for( len = 1; len < sl; len++ ) {
+            arg_len = strlen( argv[j] );
+            for( len = 1; len < arg_len; len++ ) {
                 switch( argv[j][len] ) {
                 case 's': sflag = true;
                     break;
@@ -308,7 +308,7 @@ int main( int argc, char *argv[] )
                     break;
                 case 'd':
                     bindfile = &argv[j][len + 1];
-                    len = sl;
+                    len = arg_len;
                     break;
                 case '?':
                     Banner();

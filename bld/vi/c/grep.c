@@ -229,7 +229,8 @@ static list_linenum initList( window_id wid, const char *dirlist, char **list )
 
 static void getOneFile( HWND dlg, char **files, int *count, bool leave )
 {
-    int         i, j;
+    int         i;
+    int         j;
     HWND        list_box;
   #ifdef __NT__
     LVITEM      lvi;
@@ -245,8 +246,7 @@ static void getOneFile( HWND dlg, char **files, int *count, bool leave )
   #ifdef __NT__
     }
   #endif
-    if( i == -1 ) {
-    } else {
+    if( i != -1 ) {
         getFile( files[i] );
         if( leave ) {
             EndDialog( dlg, ERR_NO_ERR );
@@ -540,14 +540,14 @@ static vi_rc doGREP( const char *dirlist )
                     si.event_wid = wid;
                     rc = SelectItem( &si );
                     n = si.num;
-                    if( rc != ERR_NO_ERR || n < 0 ) {
+                    if( rc != ERR_NO_ERR || si.num < 0 ) {
                         break;
                     }
                     if( si.event == VI_KEY( F3 ) ) {
                         s = 0;
                         e = clist - 1;
                     } else {
-                        s = e = n;
+                        s = e = si.num;
                     }
                     for( i = s; i <= e; i++ ) {
                         rc = getFile( list[i] );
@@ -559,8 +559,8 @@ static vi_rc doGREP( const char *dirlist )
                         si.event == VI_KEY( F1 ) || si.event == VI_KEY( F3 ) ) {
                         break;
                     }
-                    MemFree( list[n] );
-                    for( i = n; i < clist - 1; i++ ) {
+                    MemFree( list[si.num] );
+                    for( i = si.num; i < clist - 1; i++ ) {
                         list[i] = list[i + 1];
                     }
                     clist--;
