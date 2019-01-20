@@ -213,7 +213,7 @@ bool CreatePMInfo( bool uninstall )
                     /*
                      * Format is: "+folder_name"
                      */
-                    VbufSetStr( &Folder, VbufString( &PMParams ) + 1 );
+                    VbufSetVbufPos( &Folder, &PMParams, 1 );
                     VbufRewind( &PMParams );
                 } else {
                     /*
@@ -242,7 +242,7 @@ bool CreatePMInfo( bool uninstall )
             if( VbufString( &PMProgName )[0] == '+' ) {
                 VbufSetStr( &Cmd, "SHADOWID=" );
                 VbufConcVbuf( &Cmd, &WorkingDir );
-                VbufConcStr( &Cmd, VbufString( &PMProgName ) + 1 );
+                VbufConcVbufPos( &Cmd, &PMProgName, 1 );
                 obj = WinCreateObject( "WPShadow", VbufString( &PMProgDesc ), VbufString( &Cmd ), VbufString( &Folder ), CO_REPLACEIFEXISTS );
             } else {
                 /*

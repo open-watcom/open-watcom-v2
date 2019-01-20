@@ -141,8 +141,8 @@ static bool GetOldConfigFileDir( VBUF *newauto, const VBUF *drive_path, bool uni
 
 #endif  // !__UNIX__
 
-static void NoDupPaths( VBUF *old_value, const VBUF *new_value, char delim )
-/**************************************************************************/
+static void NoDupPaths( VBUF *old_value, const VBUF *new_value, char list_delim )
+/*******************************************************************************/
 {
     const char  *dup;
     const char  *look;
@@ -155,7 +155,7 @@ static void NoDupPaths( VBUF *old_value, const VBUF *new_value, char delim )
     VbufInit( &tmp );
     new_start = VbufString( new_value );
     for( ;; ) {
-        new_end = strchr( new_start, delim );
+        new_end = strchr( new_start, list_delim );
         if( new_end == NULL ) {
             len = strlen( new_start );
         } else {
@@ -163,11 +163,11 @@ static void NoDupPaths( VBUF *old_value, const VBUF *new_value, char delim )
         }
         value_start = VbufString( old_value );
         for( look = value_start; (dup = stristr( look, new_start, len )) != NULL; look = dup + len ) {
-            if( dup[len] == delim ) {
+            if( dup[len] == list_delim ) {
                 if( dup == value_start ) {
                     // no data to copy
                     value_start = dup + len + 1;
-                } else if( dup[-1] == delim ) {
+                } else if( dup[-1] == list_delim ) {
                     // copy previous data
                     VbufConcBuffer( &tmp, value_start, dup - value_start );
                     value_start = dup + len + 1;
@@ -179,7 +179,7 @@ static void NoDupPaths( VBUF *old_value, const VBUF *new_value, char delim )
                 if( dup == value_start ) {
                     // no data to copy
                     value_start = dup + len;
-                } else if( dup[-1] == delim ) {
+                } else if( dup[-1] == list_delim ) {
                     // copy previous data
                     VbufConcBuffer( &tmp, value_start, dup - value_start );
                     value_start = dup + len;
@@ -201,23 +201,23 @@ static void NoDupPaths( VBUF *old_value, const VBUF *new_value, char delim )
     len = VbufLen( old_value );
     if( len > 0 ) {
         // remove delimiter from the end
-        if( VbufString( old_value )[len - 1] == delim ) {
+        if( VbufString( old_value )[len - 1] == list_delim ) {
             VbufSetLen( old_value, len - 1 );
         }
     }
     VbufFree( &tmp );
 }
 
-static void modify_value_list( VBUF *value, const VBUF *new_value, char delim, append_mode append, bool uninstall )
-/*****************************************************************************************************************/
+static void modify_value_list( VBUF *value, const VBUF *new_value, char list_delim, append_mode append, bool uninstall )
+/**********************************************************************************************************************/
 {
-    NoDupPaths( value, new_value, delim );
+    NoDupPaths( value, new_value, list_delim );
     if( !uninstall ) {
         if( append == AM_AFTER ) {
-            VbufConcChr( value, delim );
+            VbufConcChr( value, list_delim );
             VbufConcVbuf( value, new_value );
         } else if( append == AM_BEFORE ) {
-            VbufPrepChr( value, delim );
+            VbufPrepChr( value, list_delim );
             VbufPrepVbuf( value, new_value );
         } else {
             VbufSetVbuf( value, new_value );
@@ -257,19 +257,19 @@ static bool output_line( VBUF *vbuf, var_type vt, const VBUF *name, const VBUF *
 }
 
 static void modify_value_list_libpath( VBUF *val_before, VBUF *val_after,
-                    const VBUF *new_value, char delim, append_mode append )
-/*************************************************************************/
+                const VBUF *new_value, char list_delim, append_mode append )
+/**************************************************************************/
 {
     if( append == AM_AFTER ) {
-        NoDupPaths( val_before, new_value, delim );
-        NoDupPaths( val_after, new_value, delim );
-        VbufConcChr( val_after, delim );
+        NoDupPaths( val_before, new_value, list_delim );
+        NoDupPaths( val_after, new_value, list_delim );
+        VbufConcChr( val_after, list_delim );
         VbufConcVbuf( val_after, new_value );
     } else if( append == AM_BEFORE ) {
-        NoDupPaths( val_before, new_value, delim );
-        VbufPrepChr( val_before, delim );
+        NoDupPaths( val_before, new_value, list_delim );
+        VbufPrepChr( val_before, list_delim );
         VbufPrepVbuf( val_before, new_value );
-        NoDupPaths( val_after, new_value, delim );
+        NoDupPaths( val_after, new_value, list_delim );
     } else {
         VbufSetVbuf( val_before, new_value );
         VbufRewind( val_after );
@@ -618,8 +618,8 @@ static void CheckAutoLine( char *line, int num_auto, bool *found_auto, bool unin
 {
     int                 i;
     append_mode         append;
-    char                fname[_MAX_FNAME];
-    char                fext[_MAX_EXT];
+    VBUF                fname;
+    VBUF                fext;
     var_type            vt;
     bool                modified;
     VBUF                line_var;
@@ -634,15 +634,19 @@ static void CheckAutoLine( char *line, int num_auto, bool *found_auto, bool unin
     case VAR_ASSIGN_SETENV:
         break;
     case VAR_CMD:
+        VbufInit( &fname );
+        VbufInit( &fext );
         if( VbufCompStr( &line_var, "PATH", true ) != 0 ) {
             if( uninstall )
                 break;
-            _splitpath( VbufString( &line_var ), NULL, NULL, fname, fext );
-            if( stricmp( fname, "win" ) != 0 || ( stricmp( fext, ".com" ) != 0 && fext[0] != '\0' ) )
+            VbufSplitpath( &line_var, NULL, NULL, &fname, &fext );
+            if( VbufCompStr( &fname, "win", true ) != 0 || ( VbufCompStr( &fext, ".com", true ) != 0 && VbufLen( &fext ) > 0 ) )
                 break;
             WinDotCom = GUIStrDup( line, NULL );
             line[0] = '\0';
         }
+        VbufFree( &fext );
+        VbufFree( &fname );
         // fall through
     default:
         VbufFree( &line_val );
@@ -1098,11 +1102,11 @@ bool ModifyAutoExec( bool uninstall )
             // place modifications in AUTOEXEC.NEW and CONFIG.NEW
 #ifndef __OS2__
             GetOldConfigFileDir( &newauto, &OrigAutoExec, uninstall );
-            VbufConcStr( &newauto, VbufString( &OrigAutoExec ) + 2 );
+            VbufConcVbufPos( &newauto, &OrigAutoExec, 2 );
             VbufSetPathExt( &newauto, &new_ext );
 #endif
             GetOldConfigFileDir( &newcfg, &OrigConfig, uninstall );
-            VbufConcStr( &newcfg, VbufString( &OrigConfig ) + 2 );
+            VbufConcVbufPos( &newcfg, &OrigConfig, 2 );
             VbufSetPathExt( &newcfg, &new_ext );
 
 #ifndef __OS2__

@@ -1915,7 +1915,7 @@ static bool DoCopyFiles( void )
                     len = strlen( GetVariableStrVal( VbufString( &tmp ) ) );
                     VbufConcVbuf( &src_path, &tmp );
                 }
-                VbufConcStr( &src_path, VbufString( &dir ) + len );  // get rid of the dest directory, just keep the subdir
+                VbufConcVbufPos( &src_path, &dir, len );  // get rid of the dest directory, just keep the subdir
 
                 src_path_pos2 = VbufLen( &src_path );
                 VbufConcVbuf( &src_path, &file_desc );
@@ -2060,27 +2060,29 @@ static void RemoveExtraFiles( void )
 #endif
 }
 
-static void DetermineSrcState( const char *src_dir )
+static void DetermineSrcState( const VBUF *src_dir )
 /**************************************************/
 {
-    char        dir[_MAX_PATH];
+    VBUF        dir;
 
 //  if( SrcInstState != SRC_UNKNOWN ) return;
 
+    VbufInit( &dir );
     // if installing from CD or hard disk, add DISK# to source path
-    strcpy( dir, src_dir );
+    VbufConcVbuf( &dir, src_dir );
 #if defined( __UNIX__ )
-    strcat( dir, "/diskimgs/disk01" );
+    VbufConcStr( &dir, "/diskimgs/disk01" );
 #else
-    strcat( dir, "\\cd_source" );
+    VbufConcStr( &dir, "\\cd_source" );
 #endif
-    if( access( dir, F_OK ) == 0 ) {
+    if( access( VbufString( &dir ), F_OK ) == 0 ) {
         SetBoolVariableByName( "SrcIsCD", true );
         SrcInstState = SRC_CD;
     } else {
         SetBoolVariableByName( "SrcIsCD", false );
         SrcInstState = SRC_DISK;
     }
+    VbufFree( &dir );
 }
 
 bool CopyAllFiles( void )
@@ -2683,7 +2685,7 @@ bool InitInfo( const VBUF *inf_name, const VBUF *src_path )
     int                 ret;
 
     SetVariableByName( "SrcDir", VbufString( src_path ) );
-    DetermineSrcState( VbufString( src_path ) );
+    DetermineSrcState( src_path );
     SetVariableByName( "SrcDir2", VbufString( src_path ) );
 //    VbufSplitpath( VbufString( inf_name ), drive, dir, NULL, NULL );
 
