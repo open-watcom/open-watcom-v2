@@ -35,8 +35,6 @@
 #if !defined( __UNIX__ )
 #include <direct.h>
 #endif
-#include "wio.h"
-#include "setupio.h"
 #include "zip.h"
 
 
