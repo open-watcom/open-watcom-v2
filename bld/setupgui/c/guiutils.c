@@ -158,43 +158,48 @@ gui_coord               GUIScale;
 #if defined( __WINDOWS__ )
 static bool CheckForSetup32( int argc, char **argv )
 {
-    DWORD       version = GetVersion();
+    DWORD       version;
     int         winver;
-    char        *buff;
-    size_t      mem_needed;
+    VBUF        buff;
     int         i;
-    char        new_exe[_MAX_PATH];
-    char        drive[_MAX_DRIVE];
-    char        path[_MAX_PATH];
-    char        name[_MAX_FNAME];
-    char        ext[_MAX_EXT];
+    VBUF        drive;
+    VBUF        path;
+    VBUF        name;
+    VBUF        ext;
     char        *os;
+    bool        ok;
 
+    ok = false;
+    version = GetVersion();
     winver = LOBYTE( LOWORD( version ) ) * 100 + HIBYTE( LOWORD( version ) );
     os = getenv( "OS" );
     if( winver >= 390 || ( os != NULL && stricmp( os, "Windows_NT" ) == 0 ) ) {
-        _splitpath( argv[0], drive, path, name, ext );
-        _makepath( new_exe, drive, path, "SETUP32", ext );
-        mem_needed = strlen( new_exe );
-        for( i = 1; i < argc; i++ ) {
-            mem_needed += strlen( argv[i] ); // command line arguments
-        }
-        mem_needed += i; // spaces between arguments + terminating null
-        buff = malloc( mem_needed );
-        if( buff == NULL ) {
-            return( false );
-        }
-        strcpy( buff, new_exe );
-        if( access( buff, F_OK ) == 0 ) {
+        VbufInit( &buff );
+        VbufInit( &drive );
+        VbufInit( &path );
+        VbufInit( &name );
+        VbufInit( &ext );
+
+        VbufConcStr( &buff, argv[0] );
+        VbufConcStr( &name, "SETUP32" );
+        VbufSplitpath( &buff, &drive, &path, NULL, &ext );
+        VbufMakepath( &buff, &drive, &path, &name, &ext );
+        if( access( VbufString( &buff ), F_OK ) == 0 ) {
             for( i = 1; i < argc; i++ ) {
-                strcat( buff, " " );
-                strcat( buff, argv[i] );
+                VbufConcChr( &buff, ' ' );
+                VbufConcStr( &buff, argv[i] );
             }
-            WinExec( buff, SW_SHOW );
-            return( true );
+            WinExec( VbufString( &buff ), SW_SHOW );
+            ok = true;
         }
+
+        VbufFree( &ext );
+        VbufFree( &name );
+        VbufFree( &path );
+        VbufFree( &drive );
+        VbufFree( &buff );
     }
-    return( false );
+    return( ok );
 }
 #elif defined( __NT__ ) && !defined( _M_X64 )
 static bool CheckWin95Uninstall( int argc, char **argv )

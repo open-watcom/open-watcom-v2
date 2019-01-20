@@ -371,7 +371,7 @@ static void WindowsWriteProfile( const VBUF *app_name, const VBUF *key_name,
             if( add ) {
                 if( VbufLen( &vbuf ) > 0 )
                     VbufConcChr( &vbuf, ' ' );
-                VbufConcStr( &vbuf, VbufString( value ) );
+                VbufConcVbuf( &vbuf, value );
             }
         }
         WritePrivateProfileString( VbufString( app_name ), VbufString( key_name ) + 1, VbufString( &vbuf ), VbufString( file_name ) );
@@ -387,7 +387,7 @@ static void WindowsWriteProfile( const VBUF *app_name, const VBUF *key_name,
             GetWindowsDirectoryVbuf( &hive );
             VbufConcChr( &hive, '\\' );
         }
-        VbufConcStr( &hive, VbufString( file_name ) );
+        VbufConcVbuf( &hive, file_name );
         AddDevice( app_name, value, file_name, &hive, add );
         VbufFree( &hive );
         break;
@@ -423,28 +423,38 @@ static void OS2WriteProfile( const VBUF *app_name, const VBUF *key_name,
     HAB                 hab;
     HINI                hini;
     PRFPROFILE          profile;
-    char                userfname[1], drive[_MAX_DRIVE], dir[_MAX_DIR];
-    char                inifile[_MAX_PATH];
+    char                userfname[1];
+    VBUF                inifile;
+    VBUF                drive;
+    VBUF                dir;
+    char                buffer[_MAX_PATH];
 
     // get an anchor block
     hab = WinQueryAnchorBlock( HWND_DESKTOP );
     // find location of os2.ini the file we want should be there too
     profile.cchUserName = 1;
     profile.pszUserName = userfname;
-    profile.cchSysName = _MAX_PATH - 1;
-    profile.pszSysName = inifile;
+    profile.cchSysName = sizeof( buffer ) - 1;
+    profile.pszSysName = buffer;
     if( !PrfQueryProfile( hab, &profile ) ) {
         return;
     }
+    VbufInit( &inifile );
+    VbufInit( &drive );
+    VbufInit( &dir );
+    VbufConcStr( &inifile, buffer );
     // replace os2.ini with filename
-    _splitpath( inifile, drive, dir, NULL, NULL );
-    _makepath( inifile, drive, dir, VbufString( file_name ), NULL );
+    VbufSplitpath( &inifile, &drive, &dir, NULL, NULL );
+    VbufMakepath( &inifile, &drive, &dir, file_name, NULL );
     // now we can open the correct ini file
-    hini = PrfOpenProfile( hab, inifile );
+    hini = PrfOpenProfile( hab, VbufString( &inifile ) );
     if( hini != NULLHANDLE ) {
         PrfWriteProfileString( hini, VbufString( app_name ), VbufString( key_name ), add ? VbufString( value ) : NULL );
         PrfCloseProfile( hini );
     }
+    VbufFree( &dir );
+    VbufFree( &drive );
+    VbufFree( &inifile );
 }
 
 #endif

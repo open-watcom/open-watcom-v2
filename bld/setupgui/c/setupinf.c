@@ -708,7 +708,7 @@ bool SecondaryPatchSearch( const char *filename, char *buff )
 // if first two searches fail and this function returns nonzero.
 
     VBUF                path;
-    char                temp[_MAX_PATH];
+    VBUF                ext;
     bool                ok;
 
     VbufInit( &path );
@@ -725,11 +725,14 @@ bool SecondaryPatchSearch( const char *filename, char *buff )
     if( ok ) {
         strcpy( buff, VbufString( &path ) );
     } else {
+        VbufInit( &ext );
         buff[0] = '\0';
-        _splitpath( filename, NULL, NULL, NULL, temp );
-        if( stricmp( temp, ".dll" ) == 0 ) {
+        VbufSetStr( &path, filename );
+        VbufSplitpath( &path, NULL, NULL, NULL, &ext );
+        if( VbufCompStr( &ext, ".dll", true ) == 0 ) {
             _searchenv( filename, "PATH", buff );
         }
+        VbufFree( &ext );
         ok = ( buff[0] != '\0' );
     }
 
@@ -3378,23 +3381,24 @@ static bool CheckDLLSupplemental( int i, const char *filename )
 //            char        disk_desc[MAXBUF];
 //            VBUF        file_name;
 //            int         disk_num;
-            char        dst_path[_MAX_PATH];
+            VBUF        dst_path;
             bool        flag;
             int         m;
 
+            VbufInit( &dst_path );
             VbufInit( &dir );
             VbufInit( &file_desc );
             SimFileDir( i, &dir );
             SimGetFileDesc( i, &file_desc );
 //            SimGetFileName( i, &file_name );
 //            disk_num = SimFileDisk( i, &disk_desc );
-            _makepath( dst_path, NULL, VbufString( &dir ), VbufString( &file_desc ), NULL );
+            VbufMakepath( &dst_path, NULL, &dir, &file_desc, NULL );
             VbufFree( &file_desc );
             VbufFree( &dir );
 
             flag = false;
             for( m = 0; m < SetupInfo.dlls_to_count.num; m++ ) {
-                if( stricmp( DLLsToCheck[m].full_path, dst_path ) == 0 ) {
+                if( VbufCompStr( &dst_path, DLLsToCheck[m].full_path, true ) == 0 ) {
                     flag = true;
                     break;
                 }
@@ -3402,12 +3406,13 @@ static bool CheckDLLSupplemental( int i, const char *filename )
             if( !flag ) {
                 ok = BumpArray( &SetupInfo.dlls_to_count );
                 if( ok ) {
-                    DLLsToCheck[SetupInfo.dlls_to_count.num - 1].full_path = GUIStrDup( dst_path, &ok );
+                    DLLsToCheck[SetupInfo.dlls_to_count.num - 1].full_path = GUIStrDup( VbufString( &dst_path ), &ok );
                     if( ok ) {
                         DLLsToCheck[SetupInfo.dlls_to_count.num - 1].index = i;
                     }
                 }
             }
+            VbufFree( &dst_path );
         }
     }
     return( ok );
