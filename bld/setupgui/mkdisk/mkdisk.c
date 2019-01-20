@@ -831,7 +831,7 @@ bool ReadList( FILE *fp )
 
 #define STRING_include          "include="
 #define STRING_icon             "icon="
-#define STRING_supplimental     "supplimental="
+#define STRING_supplemental     "supplemental="
 #define STRING_ini              "ini="
 #define STRING_auto             "auto="
 #define STRING_cfg              "cfg="
@@ -931,7 +931,7 @@ static bool processLine( const char *line, LIST **list )
     new->next = NULL;
     if( STRING_IS( line, new, STRING_icon ) ) {
         AddToList( new, &IconList );
-    } else if( STRING_IS( line, new, STRING_supplimental ) ) {
+    } else if( STRING_IS( line, new, STRING_supplemental ) ) {
         AddToList( new, &SupplimentList );
     } else if( STRING_IS( line, new, STRING_ini ) ) {
         AddToList( new, &IniList );
@@ -1093,7 +1093,7 @@ void DumpSizes( FILE *fp, FILE_INFO *curr )
             fprintf( fp, "%s", csize->dst_var );
         }
         if( csize->redist != ' ' ) {
-            // 's' for supplimental file (not deleted)
+            // 's' for supplemental file (not deleted)
             fprintf( fp, "!%c", tolower( csize->redist ) );
         }
         if( csize->dst_var ) {
@@ -1198,7 +1198,7 @@ int CreateScript( long init_size, unsigned padding )
         fprintf( fp, "%s", list->item );
         for( list2 = SupplimentList; list2 != NULL; list2 = list2->next ) {
             if( stricmp( list->item, list2->item ) == 0 ) {
-                fprintf( fp, ",supplimental" );
+                fprintf( fp, ",supplemental" );
             }
         }
         fprintf( fp, "\n" );

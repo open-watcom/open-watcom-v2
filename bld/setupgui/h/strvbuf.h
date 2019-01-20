@@ -169,7 +169,7 @@ void VbufSplitpath(             // GET A FILE PATH COMPONENTS FROM VBUF
 ;
 void VbufFullpath(              // GET A FULL FILE PATH TO VBUF
     VBUF *vbuf,                 // - VBUF structure
-    const char *file )          // - file name
+    const VBUF *file )          // - file name
 ;
 bool VbufSetPathDrive(          // SET A DRIVE FOR FILE PATH IN VBUF
     VBUF *vbuf,                 // - full file path

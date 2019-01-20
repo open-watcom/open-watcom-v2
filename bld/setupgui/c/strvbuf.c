@@ -565,11 +565,11 @@ void VbufSplitpath(             // GET A FILE PATH COMPONENTS FROM VBUF
 
 void VbufFullpath(              // GET A FULL FILE PATH TO VBUF
     VBUF *vbuf,                 // - full file path
-    const char *file )          // - file name
+    const VBUF *file )          // - file name
 {
     char    buffer[_MAX_PATH];
 
-    _fullpath( buffer, file, sizeof( buffer ) );
+    _fullpath( buffer, VbufString( file ), sizeof( buffer ) );
     VbufSetStr( vbuf, buffer );
 }
 

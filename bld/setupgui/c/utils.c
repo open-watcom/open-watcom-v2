@@ -2596,7 +2596,7 @@ bool GetDirParams( int argc, char **argv, VBUF *inf_name, VBUF *src_path, VBUF *
             VbufSplitpath( inf_name, &drive, &dir, NULL, NULL );
             VbufSetStr( inf_name, "setup.inf" );
             VbufMakepath( &temp, &drive, &dir, inf_name, NULL );
-            VbufFullpath( inf_name, VbufString( &temp ) );
+            VbufFullpath( inf_name, &temp );
             VbufFree( &temp );
         }
     }

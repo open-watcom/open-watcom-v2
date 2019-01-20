@@ -126,7 +126,7 @@ static bool GetOldConfigFileDir( VBUF *newauto, const VBUF *drive_path, bool uni
 
         VbufSplitpath( drive_path, &drive, NULL, NULL, NULL );
         if( VbufLen( &drive ) == 0 ) {
-            VbufFullpath( newauto, VbufString( drive_path ) );
+            VbufFullpath( newauto, drive_path );
             VbufSplitpath( newauto, &drive, NULL, NULL, NULL );
         }
         VbufMakepath( newauto, &drive, NULL, NULL, NULL );

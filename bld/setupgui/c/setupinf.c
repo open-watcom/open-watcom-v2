@@ -266,7 +266,7 @@ static struct target_info {
     disk_ssize          space_needed;
     disk_size           max_tmp_file;
     int                 num_files;
-    int                 supplimental;
+    int                 supplemental;
     bool                needs_update;
     char                *temp_disk;
 } *TargetInfo = NULL;
@@ -306,7 +306,7 @@ static struct file_info {
     char                file_type;
     bool                add             : 1;
     bool                remove          : 1;
-    bool                supplimental    : 1;
+    bool                supplemental    : 1;
     bool                core_component  : 1;
 } *FileInfo = NULL;
 
@@ -1912,7 +1912,7 @@ static bool ProcLine( char *line, pass_type pass )
                 return( false );
             }
         }
-        FileInfo[num].supplimental = false;
+        FileInfo[num].supplemental = false;
         FileInfo[num].core_component = false;
         FileInfo[num].num_files = tmp;
         while( --tmp >= 0 ) {
@@ -1950,7 +1950,7 @@ static bool ProcLine( char *line, pass_type pass )
             line = p; p = NextToken( line, '!' );
             if( p != NULL ) {
                 if( *p == 's' ) {
-                    FileInfo[num].supplimental = true;
+                    FileInfo[num].supplemental = true;
                 } else if( *p == 'k' ) {
                     FileInfo[num].core_component = true;
                 }
@@ -2134,9 +2134,9 @@ static bool ProcLine( char *line, pass_type pass )
             return( false );
         next = NextToken( line, ',' );
         TargetInfo[num].name = GUIStrDup( line, NULL );
-        TargetInfo[num].supplimental = false;
-        if( next != NULL && stricmp( next, "supplimental" ) == 0 ) {
-            TargetInfo[num].supplimental = true;
+        TargetInfo[num].supplemental = false;
+        if( next != NULL && stricmp( next, "supplemental" ) == 0 ) {
+            TargetInfo[num].supplemental = true;
         }
         TargetInfo[num].temp_disk = GUIMemAlloc( _MAX_PATH );
         if( TargetInfo[num].temp_disk == NULL ) {
@@ -2246,10 +2246,10 @@ static bool GetFileInfo( int dir_index, int i, bool in_old_dir, bool *pzeroed )
     VbufAddDirSep( &buff );
     dir_end = VbufLen( &buff );
     found = false;
-    supp = TargetInfo[DirInfo[FileInfo[i].dir_index].target].supplimental;
+    supp = TargetInfo[DirInfo[FileInfo[i].dir_index].target].supplemental;
     if( supp ) {
-        // don't turn off supplimental bit if file is already marked
-        FileInfo[i].supplimental = supp;
+        // don't turn off supplemental bit if file is already marked
+        FileInfo[i].supplemental = supp;
     }
     for( j = 0; j < FileInfo[i].num_files; ++j ) {
         file = &FileInfo[i].files[j];
@@ -2348,7 +2348,7 @@ static bool GetDiskSizes( void )
     for( i = 0; i < SetupInfo.files.num; ++i ) {
         if( FileInfo[i].condition.p->one_uptodate &&
             FileInfo[i].num_files != 0 &&
-            !FileInfo[i].supplimental &&
+            !FileInfo[i].supplemental &&
             !SimFileUpToDate( i ) ) {
             if( !asked ) {
                 dont_touch = MsgBox( NULL, "IDS_INCONSISTENT", GUI_YES_NO ) == GUI_RET_NO;
@@ -3360,6 +3360,58 @@ void CheckDLLCount( const char *install_name )
     }
 }
 
+static bool CheckDLLSupplemental( int i, const char *filename )
+/*************************************************************/
+{
+    bool    ok;
+
+    // if ( supplemental is_dll & ) then we want to
+    // keep a usage count of this dll.  Store its full path for later.
+    ok = true;
+    if( FileInfo[i].supplemental ) {
+        char    ext[_MAX_EXT];
+
+        _splitpath( filename, NULL, NULL, NULL, ext );
+        if( stricmp( ext, ".DLL" ) == 0 ) {
+            VBUF        file_desc;
+            VBUF        dir;
+//            char        disk_desc[MAXBUF];
+//            VBUF        file_name;
+//            int         disk_num;
+            char        dst_path[_MAX_PATH];
+            bool        flag;
+            int         m;
+
+            VbufInit( &dir );
+            VbufInit( &file_desc );
+            SimFileDir( i, &dir );
+            SimGetFileDesc( i, &file_desc );
+//            SimGetFileName( i, &file_name );
+//            disk_num = SimFileDisk( i, &disk_desc );
+            _makepath( dst_path, NULL, VbufString( &dir ), VbufString( &file_desc ), NULL );
+            VbufFree( &file_desc );
+            VbufFree( &dir );
+
+            flag = false;
+            for( m = 0; m < SetupInfo.dlls_to_count.num; m++ ) {
+                if( stricmp( DLLsToCheck[m].full_path, dst_path ) == 0 ) {
+                    flag = true;
+                    break;
+                }
+            }
+            if( !flag ) {
+                ok = BumpArray( &SetupInfo.dlls_to_count );
+                if( ok ) {
+                    DLLsToCheck[SetupInfo.dlls_to_count.num - 1].full_path = GUIStrDup( dst_path, &ok );
+                    if( ok ) {
+                        DLLsToCheck[SetupInfo.dlls_to_count.num - 1].index = i;
+                    }
+                }
+            }
+        }
+    }
+    return( ok );
+}
 #endif
 
 void SimCalcAddRemove( void )
@@ -3378,9 +3430,6 @@ void SimCalcAddRemove( void )
     long                diskette;
     disk_size           tmp_size = 0;
     vhandle             reinstall;
-#if defined( __NT__ )
-    char                ext[_MAX_EXT];
-#endif
 
     // for each file that will be installed, total the size
     diskette = strtol( GetVariableStrVal( "DisketteSize" ), NULL, 10 );
@@ -3402,7 +3451,7 @@ void SimCalcAddRemove( void )
         dir_index = FileInfo[i].dir_index;
         targ_index = DirInfo[dir_index].target;
         add = EvalExprTree( FileInfo[i].condition.p->cond, VarGetBoolVal( MinimalInstall ) );
-        if( FileInfo[i].supplimental ) {
+        if( FileInfo[i].supplemental ) {
             remove = false;
             if( uninstall ) {
                 add = false;
@@ -3445,54 +3494,16 @@ void SimCalcAddRemove( void )
                 continue;
             if( file->disk_size != 0 ) {
                 DirInfo[dir_index].num_existing++;
-                if( !TargetInfo[targ_index].supplimental ) {
+                if( !TargetInfo[targ_index].supplemental ) {
                     SetBoolVariableByHandle( PreviousInstall, true );
                 }
             }
 
 #if defined( __NT__ )
-            // if ( supplimental is_dll & ) then we want to
+            // if ( supplemental is_dll & ) then we want to
             // keep a usage count of this dll.  Store its full path for later.
-            if( FileInfo[i].supplimental ) {
-                _splitpath( file->name, NULL, NULL, NULL, ext );
-                if( stricmp( ext, ".DLL" ) == 0 ) {
-                    VBUF        file_desc;
-                    VBUF        dir;
-//                    char        disk_desc[MAXBUF];
-//                    VBUF        file_name;
-//                    int         disk_num;
-                    char        dst_path[_MAX_PATH];
-                    bool        flag;
-                    int         m;
-
-                    VbufInit( &dir );
-                    VbufInit( &file_desc );
-                    SimFileDir( i, &dir );
-                    SimGetFileDesc( i, &file_desc );
-//                    SimGetFileName( i, &file_name );
-//                    disk_num = SimFileDisk( i, &disk_desc );
-                    _makepath( dst_path, NULL, VbufString( &dir ), VbufString( &file_desc ), NULL );
-                    VbufFree( &file_desc );
-                    VbufFree( &dir );
-
-                    flag = false;
-                    for( m = 0; m < SetupInfo.dlls_to_count.num; m++ ) {
-                        if( stricmp( DLLsToCheck[m].full_path, dst_path ) == 0 ) {
-                            flag = true;
-                            break;
-                        }
-                    }
-                    if( !flag ) {
-                        bool    ok;
-
-                        if( !BumpArray( &SetupInfo.dlls_to_count ) )
-                            return;
-                        DLLsToCheck[SetupInfo.dlls_to_count.num - 1].full_path = GUIStrDup( dst_path, &ok );
-                        if( !ok )
-                            return;
-                        DLLsToCheck[SetupInfo.dlls_to_count.num - 1].index = i;
-                    }
-                }
+            if( !CheckDLLSupplemental( i, file->name ) ) {
+                return;
             }
 #endif
 
