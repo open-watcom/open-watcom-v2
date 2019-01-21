@@ -40,6 +40,9 @@
 #include "memory.h"
 #include "stub.h"
 
+#include "clibext.h"
+
+
 #ifndef __NT__
     #error stub.c is for NT only
 #endif
