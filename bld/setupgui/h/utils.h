@@ -56,13 +56,13 @@ extern bool             CheckUpgrade( void );
 extern void             GetInstallName( VBUF * );
 extern bool             PromptUser( const VBUF *name, const char *dlg, const char *skip, const char *replace, bool *resp_replace );
 #if defined( __NT__ ) || defined( __WINDOWS__ )
-extern bool             GetRootFromPath( char *root, const char *path );
+extern bool             GetRootFromPath( VBUF *root, const char *path );
 extern disk_size        FreeSpace( const char *path );
 extern long             ClusterSize( const char *path );
 extern void             GetWindowsDirectoryVbuf( VBUF *windir );
 #endif
-extern signed int       IncrementDLLUsageCount( const char *path );
-extern signed int       DecrementDLLUsageCount( const char *path );
+extern signed int       IncrementDLLUsageCount( const VBUF *path );
+extern signed int       DecrementDLLUsageCount( const VBUF *path );
 extern void             ReadVariablesFile( const char * name );
 extern void             ConcatDirSep( char *dir );
 extern void             RemoveDirSep( char *dir );

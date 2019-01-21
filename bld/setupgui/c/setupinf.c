@@ -109,7 +109,7 @@ typedef enum {
 #endif
 
 typedef struct a_file_info {
-    char                *name;
+    VBUF                name;
     vhandle             dst_var;
     unsigned long       disk_size;
     unsigned long       disk_date;
@@ -347,7 +347,7 @@ static struct config_info {
 
 static struct dlls_to_check {
     int                 index;
-    char                *full_path;
+    VBUF                full_path;
 } *DLLsToCheck = NULL;
 
 static struct force_DLL_install {
@@ -1895,6 +1895,9 @@ static bool ProcLine( char *line, pass_type pass )
         break;
 
     case RS_FILES:
+      {
+        VBUF    fext;
+
         num = SetupInfo.files.num;
         if( !BumpArray( &SetupInfo.files ) )
             return( false );
@@ -1915,6 +1918,7 @@ static bool ProcLine( char *line, pass_type pass )
                 return( false );
             }
         }
+        VbufInit( &fext );
         FileInfo[num].supplemental = false;
         FileInfo[num].core_component = false;
         FileInfo[num].num_files = tmp;
@@ -1923,13 +1927,11 @@ static bool ProcLine( char *line, pass_type pass )
 
             line = next; next = NextToken( line, ',' );
             p = NextToken( line, '!' );
-            file->name = GUIStrDup( line, NULL );
-            {
-                char    fext[_MAX_EXT];
-                _splitpath( file->name, NULL, NULL, NULL, fext );
-                file->is_nlm = stricmp( fext, ".nlm" ) == 0;
-                file->is_dll = stricmp( fext, ".dll" ) == 0;
-            }
+            VbufInit( &file->name );
+            VbufConcStr( &file->name, line );
+            VbufSplitpath( &file->name, NULL, NULL, NULL, &fext );
+            file->is_nlm = VbufCompStr( &fext, ".nlm", true ) == 0;
+            file->is_dll = VbufCompStr( &fext, ".dll", true ) == 0;
             line = p; p = NextToken( line, '!' );
             file->size = get36( line ) * 512UL;
             if( p != NULL && *p != '\0' && *p != '!' ) {
@@ -1973,6 +1975,7 @@ static bool ProcLine( char *line, pass_type pass )
         line = next; next = NextToken( line, ',' );
         FileInfo[num].condition.i = NewFileCond( line );
         break;
+      }
 
 #ifdef PATCH
     case RS_PATCH:
@@ -2174,7 +2177,7 @@ static bool ProcLine( char *line, pass_type pass )
     case RS_ASSOCIATIONS:
         num = SetupInfo.associations.num;
         if( !BumpArray( &SetupInfo.associations ) )
-            return (false );
+            return( false );
         next = NextToken( line, '=' );
         AssociationInfo[num].ext = GUIStrDup( line, NULL );
         line = next; next = NextToken( line, ',' );
@@ -2257,10 +2260,10 @@ static bool GetFileInfo( int dir_index, int i, bool in_old_dir, bool *pzeroed )
     for( j = 0; j < FileInfo[i].num_files; ++j ) {
         file = &FileInfo[i].files[j];
         file->disk_size = 0;
-        if( file->name == NULL )
+        if( VbufLen( &file->name ) == 0 )
             continue;
         VbufSetLen( &buff, dir_end );
-        VbufConcStr( &buff, file->name );
+        VbufConcVbuf( &buff, &file->name );
         if( access( VbufString( &buff ), F_OK ) == 0 ) {
             stat( VbufString( &buff ), &buf );
             found = true;
@@ -2764,7 +2767,7 @@ void SimGetFileDesc( int parm, VBUF *buff )
     if( FileInfo[parm].num_files == 0 ) {
         VbufSetStr( buff, FileInfo[parm].filename );
     } else {
-        VbufSetStr( buff, FileInfo[parm].files[0].name );
+        VbufSetVbuf( buff, &FileInfo[parm].files[0].name );
     }
 }
 
@@ -2915,7 +2918,7 @@ bool SimSubFileExists( int parm, int subfile )
 void SimSubFileName( int parm, int subfile, VBUF *buff )
 /******************************************************/
 {
-    VbufSetStr( buff, FileInfo[parm].files[subfile].name );
+    VbufSetVbuf( buff, &FileInfo[parm].files[subfile].name );
 }
 
 vhandle SimSubFileVar( int parm, int subfile )
@@ -3006,7 +3009,7 @@ static int SimFindDirForFile( const char *buff )
 
     for( i = 0; i < SetupInfo.files.num; i++ ) {
         for( j = 0; j < FileInfo[i].num_files; ++j ) {
-            if( stricmp( buff, FileInfo[i].files[j].name ) == 0 ) {
+            if( VbufCompStr( &FileInfo[i].files[j].name, buff, true ) == 0 ) {
                 return( FileInfo[i].dir_index );
             }
         }
@@ -3350,20 +3353,20 @@ void CheckDLLCount( const char *install_name )
         }
         if( VarGetBoolVal( UnInstall ) || FileInfo[DLLsToCheck[i].index].remove
           || ( !FileInfo[DLLsToCheck[i].index].add && GetVariableBoolVal( "ReInstall" ) ) ) {
-            if( DecrementDLLUsageCount( DLLsToCheck[i].full_path ) == 0 ) {
+            if( DecrementDLLUsageCount( &DLLsToCheck[i].full_path ) == 0 ) {
                 if( MsgBox( MainWnd, "IDS_REMOVE_DLL", GUI_YES_NO,
-                            DLLsToCheck[i].full_path ) == GUI_RET_YES ) {
+                            &DLLsToCheck[i].full_path ) == GUI_RET_YES ) {
                     FileInfo[DLLsToCheck[i].index].add = false;
                     FileInfo[DLLsToCheck[i].index].remove = true;
                 }
             }
         } else if( FileInfo[DLLsToCheck[i].index].add ) {
-            IncrementDLLUsageCount( DLLsToCheck[i].full_path );
+            IncrementDLLUsageCount( &DLLsToCheck[i].full_path );
         }
     }
 }
 
-static bool CheckDLLSupplemental( int i, const char *filename )
+static bool CheckDLLSupplemental( int i, const VBUF *filename )
 /*************************************************************/
 {
     bool    ok;
@@ -3372,10 +3375,11 @@ static bool CheckDLLSupplemental( int i, const char *filename )
     // keep a usage count of this dll.  Store its full path for later.
     ok = true;
     if( FileInfo[i].supplemental ) {
-        char    ext[_MAX_EXT];
+        VBUF    ext;
 
-        _splitpath( filename, NULL, NULL, NULL, ext );
-        if( stricmp( ext, ".DLL" ) == 0 ) {
+        VbufInit( &ext );
+        VbufSplitpath( filename, NULL, NULL, NULL, &ext );
+        if( VbufCompStr( &ext, ".DLL", true ) == 0 ) {
             VBUF        file_desc;
             VBUF        dir;
 //            char        disk_desc[MAXBUF];
@@ -3398,7 +3402,7 @@ static bool CheckDLLSupplemental( int i, const char *filename )
 
             flag = false;
             for( m = 0; m < SetupInfo.dlls_to_count.num; m++ ) {
-                if( VbufCompStr( &dst_path, DLLsToCheck[m].full_path, true ) == 0 ) {
+                if( VbufCompVbuf( &dst_path, &DLLsToCheck[m].full_path, true ) == 0 ) {
                     flag = true;
                     break;
                 }
@@ -3406,14 +3410,13 @@ static bool CheckDLLSupplemental( int i, const char *filename )
             if( !flag ) {
                 ok = BumpArray( &SetupInfo.dlls_to_count );
                 if( ok ) {
-                    DLLsToCheck[SetupInfo.dlls_to_count.num - 1].full_path = GUIStrDup( VbufString( &dst_path ), &ok );
-                    if( ok ) {
-                        DLLsToCheck[SetupInfo.dlls_to_count.num - 1].index = i;
-                    }
+                    VbufSetVbuf( &DLLsToCheck[SetupInfo.dlls_to_count.num - 1].full_path, &dst_path );
+                    DLLsToCheck[SetupInfo.dlls_to_count.num - 1].index = i;
                 }
             }
             VbufFree( &dst_path );
         }
+        VbufFree( &ext );
     }
     return( ok );
 }
@@ -3507,7 +3510,7 @@ void SimCalcAddRemove( void )
 #if defined( __NT__ )
             // if ( supplemental is_dll & ) then we want to
             // keep a usage count of this dll.  Store its full path for later.
-            if( !CheckDLLSupplemental( i, file->name ) ) {
+            if( !CheckDLLSupplemental( i, &file->name ) ) {
                 return;
             }
 #endif
@@ -4198,7 +4201,7 @@ static void FreeFileInfo( void )
         for( i = 0; i < SetupInfo.files.num; i++ ) {
             GUIMemFree( FileInfo[i].filename );
             for( j = 0; j < FileInfo[i].num_files; ++j ) {
-                GUIMemFree( FileInfo[i].files[j].name );
+                VbufFree( &FileInfo[i].files[j].name );
             }
             GUIMemFree( FileInfo[i].files );
         }
@@ -4213,7 +4216,7 @@ static void FreeDLLsToCheck( void )
 
     if( DLLsToCheck != NULL ) {
         for( i = 0; i < SetupInfo.dlls_to_count.num; i++ ) {
-            GUIMemFree( DLLsToCheck[i].full_path );
+            VbufFree( &DLLsToCheck[i].full_path );
         }
         GUIMemFree( DLLsToCheck );
         DLLsToCheck = NULL;

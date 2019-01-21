@@ -172,7 +172,7 @@ static DWORD ConvertDataToDWORD( BYTE *data, DWORD num_bytes, DWORD type )
 }
 
 static BYTE *ConvertDWORDToData( DWORD number, DWORD type )
-/**************************************************/
+/*********************************************************/
 {
     int                         i;
     static BYTE                 buff[5];
@@ -188,7 +188,7 @@ static BYTE *ConvertDWORDToData( DWORD number, DWORD type )
     return( buff );
 }
 
-static signed int AddToUsageCount( const char *path, signed int value )
+static signed int AddToUsageCount( const VBUF *path, signed int value )
 /*********************************************************************/
 {
     HKEY                        key_handle;
@@ -207,7 +207,7 @@ static signed int AddToUsageCount( const char *path, signed int value )
         return( -1 );
     }
 
-    result = RegQueryValueEx( key_handle, path, 0, &value_type, buff, &buff_size );
+    result = RegQueryValueEx( key_handle, VbufString( path ), 0, &value_type, buff, &buff_size );
     if( result != ERROR_SUCCESS ) {
         orig_value = 0;
         value_type = REG_DWORD;
@@ -224,9 +224,9 @@ static signed int AddToUsageCount( const char *path, signed int value )
 
     if( new_value > 0 ) {
         memcpy( buff, ConvertDWORDToData( new_value, value_type ), sizeof( new_value ) );
-        result = RegSetValueEx( key_handle, path, 0, value_type, buff, sizeof( new_value ) );
+        result = RegSetValueEx( key_handle, VbufString( path ), 0, value_type, buff, sizeof( new_value ) );
     } else if( new_value == 0 ) {
-        result = RegDeleteValue( key_handle, path );
+        result = RegDeleteValue( key_handle, VbufString( path ) );
     }
 
     return_value = new_value;
@@ -246,16 +246,16 @@ static signed int AddToUsageCount( const char *path, signed int value )
     return( return_value );
 }
 
-signed int IncrementDLLUsageCount( const char *path )
+signed int IncrementDLLUsageCount( const VBUF *path )
 /***************************************************/
 {
-    return AddToUsageCount( path, 1 );
+    return( AddToUsageCount( path, 1 ) );
 }
 
-signed int DecrementDLLUsageCount( const char *path )
+signed int DecrementDLLUsageCount( const VBUF *path )
 /***************************************************/
 {
-    return AddToUsageCount( path, -1 );
+    return( AddToUsageCount( path, -1 ) );
 }
 
 #endif
@@ -312,19 +312,27 @@ static void AddDevice( const VBUF *app_name, const VBUF *value, const VBUF *file
 /**********************************************************************************/
 {
     int         i;
-    char        old_name[_MAX_FNAME];
-    char        new_name[_MAX_FNAME];
-    char        old_ext[_MAX_EXT];
-    char        new_ext[_MAX_EXT];
+    VBUF        old_name;
+    VBUF        new_name;
+    VBUF        old_ext;
+    VBUF        new_ext;
+    VBUF        old_value;
     bool        done = false;
 
-    _splitpath( VbufString( value ), NULL, NULL, new_name, new_ext );
-    for( i = 0; ZapKey( app_name, DEVICE_STRING, ALT_DEVICE, file, hive, i ); ++i ) {
-        char    value_buf[_MAX_PATH];
+    VbufInit( &new_name );
+    VbufInit( &new_ext );
+    VbufInit( &old_value );
+    VbufInit( &old_name );
+    VbufInit( &old_ext );
 
-        GetPrivateProfileString( VbufString( app_name ), ALT_DEVICE, "", value_buf, sizeof( value_buf ), VbufString( file ) );
-        _splitpath( value_buf, NULL, NULL, old_name, old_ext );
-        if( stricmp( old_name, new_name ) == 0 && stricmp( old_ext, new_ext ) == 0 ) {
+    VbufSplitpath( value, NULL, NULL, &new_name, &new_ext );
+    for( i = 0; ZapKey( app_name, DEVICE_STRING, ALT_DEVICE, file, hive, i ); ++i ) {
+        char    buffer[_MAX_PATH];
+
+        GetPrivateProfileString( VbufString( app_name ), ALT_DEVICE, "", buffer, sizeof( buffer ), VbufString( file ) );
+        VbufSetStr( &old_value, buffer );
+        VbufSplitpath( &old_value, NULL, NULL, &old_name, &old_ext );
+        if( VbufCompVbuf( &old_name, &new_name, true ) == 0 && VbufCompVbuf( &old_ext, &new_ext, true ) == 0 ) {
             WritePrivateProfileString( VbufString( app_name ), ALT_DEVICE, add ? VbufString( value ) : NULL, VbufString( file ) );
             done = true;
         }
@@ -337,6 +345,12 @@ static void AddDevice( const VBUF *app_name, const VBUF *value, const VBUF *file
         WritePrivateProfileString( VbufString( app_name ), ALT_DEVICE, VbufString( value ), VbufString( file ) );
         ZapKey( app_name, ALT_DEVICE, DEVICE_STRING, file, hive, 0 );
     }
+
+    VbufFree( &old_ext );
+    VbufFree( &old_name );
+    VbufFree( &old_value );
+    VbufFree( &new_ext );
+    VbufFree( &new_name );
 }
 
 static void WindowsWriteProfile( const VBUF *app_name, const VBUF *key_name,

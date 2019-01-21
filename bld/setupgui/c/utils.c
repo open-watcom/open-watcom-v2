@@ -461,19 +461,20 @@ void DoSpawn( when_time when )
 
 
 #if defined( UNC_SUPPORT )
-static void GetTmpFileNameUNC( const char *path, char *buff )
+static void GetTmpFileNameUNC( const VBUF *path, VBUF *buff )
 /***********************************************************/
 {
     if( path == NULL || buff == NULL ) {
         return;
     }
-    if( TEST_UNC( path ) ) {
-        strcpy( buff, path );
-        ConcatDirSep( buff );
-        strcat( buff, TMPFILENAME );
+    VbufRewind( buff );
+    if( TEST_UNC( VbufString( path ) ) ) {
+        VbufConcVbuf( buff, path );
+        VbufAddDirSep( buff );
+        VbufConcStr( buff, TMPFILENAME );
     } else {
-        buff[0] = *path;
-        strcpy( buff + 1, ":\\" TMPFILENAME );
+        VbufConcChr( buff, VbufString( path )[0] );
+        VbufConcStr( buff, ":\\" TMPFILENAME );
     }
 }
 #endif
@@ -770,29 +771,26 @@ unsigned GetClusterSize( char drive )
 // The 3 functions: GetRootFromPath(), FreeSpace() and ClusterSize() were originally in
 // bkoffice.c, but now they are being used by utils.c and setupinf.c to support UNC
 // naming for regular installs.
-bool GetRootFromPath( char *root, const char *path )
+bool GetRootFromPath( VBUF *root, const char *path )
 /**************************************************/
 {
-    char        *index;
+    const char  *index;
     char        curr_dir[_MAX_PATH];
     int         i;
 
     if( path == NULL || root == NULL ) {
         return( false );
     }
-
+    VbufRewind( root );
     if( isalpha( path[0] ) && path[1] == ':' ) {
         // turn a path like "c:\dir" into "c:\"
-        root[0] = path[0];
-        root[1] = path[1];
-        root[2] = DIR_SEP;
-        root[3] = '\0';
+        VbufConcChr( root, path[0] );
+        VbufConcChr( root, path[1] );
+        VbufConcChr( root, DIR_SEP );
         return( true );
     } else if( TEST_UNC( path ) ) {
         // turn a UNC name like "\\root\share\dir\subdir" into "\\root\share\"
-        strcpy( root, path );
-        ConcatDirSep( root );
-        index = root;
+        index = path;
         i = 0;
         while( *index != '\0' ) {
             if( IS_DIR_SEP( *index ) ) {
@@ -800,132 +798,155 @@ bool GetRootFromPath( char *root, const char *path )
             }
             index++;
             if( i == 4 ) { // cut off string at character after 4th backslash
-                *index = '\0';
+                VbufConcBuffer( root, path, index - path );
                 return( true );
             }
         }
         return( false );  // invalid UNC name such as: "\\missingshare\"
     } else {
+        VBUF    temp;
+
         // for relative paths like "\dir" use the current drive.
         if( getcwd( curr_dir, sizeof( curr_dir ) ) == NULL ) {
             return( false );
         }
-        _splitpath( curr_dir, root, NULL, NULL, NULL );
-        ConcatDirSep( root );
+        VbufInit( &temp );
+        VbufConcStr( &temp, curr_dir );
+        VbufSplitpath( &temp, root, NULL, NULL, NULL );
+        VbufAddDirSep( root );
+        VbufFree( &temp );
         return( true );
     }
 }
 
 disk_size FreeSpace( const char *path )
-/***********************************/
+/*************************************/
 {
+    disk_size   size = 0;
 #ifdef __NT__
     DWORD       sectors_per_cluster;
     DWORD       bytes_per_sector;
     DWORD       avail_clusters;
     DWORD       total_clusters;
-    char        root[_MAX_PATH];
+    VBUF        root;
 
-    if( GetRootFromPath( root, path ) ) {
-        if( GetDiskFreeSpace( root, &sectors_per_cluster, &bytes_per_sector,
-                              &avail_clusters, &total_clusters ) ) {
-            return( (disk_size)sectors_per_cluster * (disk_size)bytes_per_sector * (disk_size)avail_clusters );
+    VbufInit( &root );
+    if( GetRootFromPath( &root, path ) ) {
+        if( GetDiskFreeSpace( VbufString( &root ), &sectors_per_cluster, &bytes_per_sector, &avail_clusters, &total_clusters ) ) {
+            size = (disk_size)sectors_per_cluster * (disk_size)bytes_per_sector * (disk_size)avail_clusters ;
         }
     }
+    VbufFree( &root );
 #else
     struct diskfree_t info;
+
+    size = 0;
     if( isalpha( *path ) ) {
         if( _getdiskfree( toupper( *path ) - 'A' + 1, &info ) == 0 ) {
-            return( (disk_size)info.sectors_per_cluster * (disk_size)info.bytes_per_sector * (disk_size)info.avail_clusters );
+            size = (disk_size)info.sectors_per_cluster * (disk_size)info.bytes_per_sector * (disk_size)info.avail_clusters;
         }
     }
 #endif
-    return( 0 );
+    return( size );
 }
 
 long ClusterSize( const char *path )
 /**********************************/
 {
+    long        size = 0;
 #ifdef __NT__
     DWORD       sectors_per_cluster;
     DWORD       bytes_per_sector;
     DWORD       avail_clusters;
     DWORD       total_of_clusters;
-    char        root[_MAX_PATH];
+    VBUF        root;
 
-    if( GetRootFromPath( root, path ) ) {
-        if( GetDiskFreeSpace( root, &sectors_per_cluster, &bytes_per_sector,
+    VbufInit( &root );
+
+    if( GetRootFromPath( &root, path ) ) {
+        if( GetDiskFreeSpace( VbufString( &root ), &sectors_per_cluster, &bytes_per_sector,
                               &avail_clusters, &total_of_clusters ) ) {
-            return( sectors_per_cluster * bytes_per_sector );
+            size = sectors_per_cluster * bytes_per_sector;
         }
     }
 
+    VbufFree( &root );
 #else
     struct diskfree_t info;
+
     if( isalpha( *path ) ) {
         if( _getdiskfree( toupper( *path ) - 'A' + 1, &info ) == 0 ) {
-            return( (long)info.sectors_per_cluster * info.bytes_per_sector );
+            size = (long)info.sectors_per_cluster * info.bytes_per_sector;
         }
     }
 #endif
-    return( 0 );
+    return( size );
 }
 
 static bool IsDriveWritable( const char *path )
-/**************************************/
+/*********************************************/
 {
     int         io;
-    char        tempfile[_MAX_PATH];
-    char        root[_MAX_PATH];
+    VBUF        tempfile;
+    VBUF        root;
+    bool        ok;
 
     if( path == NULL ) {
         return( false );
     }
 
-    if( !GetRootFromPath( root, path ) ) {
-        return( false );
+    VbufInit( &root );
+    VbufInit( &tempfile );
+
+    ok = GetRootFromPath( &root, path ) != 0;
+    if( ok ) {
+        GetTmpFileNameUNC( &root, &tempfile );
+        io = open( VbufString( &tempfile ), O_RDWR | O_CREAT | O_TRUNC, PMODE_RW );
+        ok = io != -1;
+        if( ok ) {
+            close( io );
+            remove( VbufString( &tempfile ) );
+        }
     }
 
-    GetTmpFileNameUNC( root, tempfile );
-
-    io = open( tempfile, O_RDWR | O_CREAT | O_TRUNC, PMODE_RW );
-    if( io == -1 ) {
-        return( false );
-    } else {
-        close( io );
-        remove( tempfile );
-        return( true );
-    }
+    VbufFree( &tempfile );
+    VbufFree( &root );
+    return( ok );
 }
 #endif
 
 #ifdef UNC_SUPPORT
 static bool DriveInfoIsAvailable( const char *path )
-/*******************************************/
+/**************************************************/
 {
+    bool        ok = false;
 #ifdef __NT__
     DWORD       sectors_per_cluster;
     DWORD       bytes_per_sector;
     DWORD       avail_clusters;
     DWORD       total_clusters;
-    char        root[_MAX_PATH];
+    VBUF        root;
 
-    if( GetRootFromPath( root, path ) ) {
-        if( GetDiskFreeSpace( root, &sectors_per_cluster, &bytes_per_sector,
+    VbufInit( &root );
+
+    if( GetRootFromPath( &root, path ) ) {
+        if( GetDiskFreeSpace( VbufString( &root ), &sectors_per_cluster, &bytes_per_sector,
                               &avail_clusters, &total_clusters ) ) {
-            return( true );
+            ok = true;
         }
     }
+
+    VbufFree( &root );
 #else
     struct diskfree_t info;
 
     if( isalpha( *path ) ) {
         if( _getdiskfree( toupper( *path ) - 'A' + 1, &info ) == 0 ) {
-            return( true );
+            ok = true;
         }
     }
 #endif
-    return( false );
+    return( ok );
 }
 #endif
 
@@ -954,13 +975,14 @@ static void RemoveDstDir( int dir_index, VBUF *buff )
 }
 
 
-static void MakeParentDir( const char *dir, char *drive, char *path )
+static void MakeParentDir( const VBUF *dir, char *drive, char *path )
 /*******************************************************************/
 {
-    char                *parent, *end;
+    char                *end;
     size_t              path_len;
+    VBUF                parent;
 
-    _splitpath( dir, drive, path, NULL, NULL );
+    _splitpath( VbufString( dir ), drive, path, NULL, NULL );
     if( *path == '\0' )
         return;
     path_len = strlen( path );
@@ -969,15 +991,16 @@ static void MakeParentDir( const char *dir, char *drive, char *path )
         *end = '\0';
     if( *path == '\0' )
         return;
-    parent = alloca( strlen( drive ) + path_len + 10 ); // lotsa room
-    strcpy( parent, drive );
-    strcat( parent, path );
-    MakeParentDir( parent, drive, path );
+    VbufInit( &parent );
+    VbufConcStr( &parent, drive );
+    VbufConcStr( &parent, path );
+    MakeParentDir( &parent, drive, path );
 #if defined( __UNIX__ )
-    mkdir( parent, PMODE_RWX );
+    mkdir( VbufString( &parent ), PMODE_RWX );
 #else
-    mkdir( parent );
+    mkdir( VbufString( &parent ) );
 #endif
+    VbufFree( &parent );
 }
 
 
@@ -1001,7 +1024,7 @@ static bool CreateDstDir( int i, VBUF *buff )
     SimDirNoSlash( i, buff );
     if( access( VbufString( buff ), F_OK ) == 0 )          // check for existance
         return( true );
-    MakeParentDir( VbufString( buff ), drive, path );
+    MakeParentDir( buff, drive, path );
 #if defined( __UNIX__ )
     if( mkdir( VbufString( buff ), PMODE_RWX ) == 0 )
 #else
@@ -1202,8 +1225,8 @@ bool CheckDrive( bool issue_message )
         int         num_files;
     }                   space[MAX_DRIVES];
 #ifdef UNC_SUPPORT
-    char                root[2][_MAX_PATH];
-    char                UNC_root[_MAX_PATH];
+    VBUF                root[2];
+    VBUF                UNC_root;
 #endif
 
     ret = true;
@@ -1233,13 +1256,13 @@ bool CheckDrive( bool issue_message )
             max_tmp_file = SimMaxTmpFile( i );
             for( j = i + 1; j < max_targs; ++j ) {
 #ifdef UNC_SUPPORT
-                GetRootFromPath( root[0], disks[i] );
-                GetRootFromPath( root[1], disks[j] );
+                GetRootFromPath( root + 0, disks[i] );
+                GetRootFromPath( root + 1, disks[j] );
                 // identical drives are combined, and so are UNC paths pointing to the same share
                 // BUT:  drives and UNC paths that happen to be the same are NOT combined. (I am lazy)
 
                 if( ( tolower( *disks[j] ) == tolower( *disks[i] ) &&
-                    isalpha( *disks[i] ) ) || stricmp( root[0], root[1] ) == 0 ) {
+                    isalpha( *disks[i] ) ) || VbufCompVbuf( root + 0, root + 1, true ) == 0 ) {
 #else
                 if( tolower( *disks[j] ) == tolower( *disks[i] ) &&
                     isalpha( *disks[i] ) ) {
@@ -1256,11 +1279,11 @@ bool CheckDrive( bool issue_message )
             if( TEST_UNC( disks[i] ) ) {
                 if( !IsDriveWritable( disks[i] ) ) {
                     if( issue_message ) {
-                        GetRootFromPath( UNC_root, disks[i] );
-                        if( access( UNC_root, F_OK ) == 0 ) {
-                            MsgBox( NULL, "IDS_UNCPATH_NOTWRITABLE", GUI_OK, UNC_root );
+                        GetRootFromPath( &UNC_root, disks[i] );
+                        if( access( VbufString( &UNC_root ), F_OK ) == 0 ) {
+                            MsgBoxVbuf( NULL, "IDS_UNCPATH_NOTWRITABLE", GUI_OK, &UNC_root );
                         } else {
-                            MsgBox( NULL, "IDS_UNCPATH_NOTEXIST", GUI_OK, UNC_root );
+                            MsgBox( NULL, "IDS_UNCPATH_NOTEXIST", GUI_OK, &UNC_root );
                         }
                         free_disks( disks, max_targs );
                         return( false );
@@ -1311,8 +1334,8 @@ bool CheckDrive( bool issue_message )
                                             disks[i], free_disk_space / 1000,
                                             disk_space_needed / 1000 );
                         } else {
-                            GetRootFromPath( UNC_root, disks[i] );
-                            reply = MsgBox( NULL, "IDS_ASSUME_ENOUGHSPACE", GUI_YES_NO, UNC_root );
+                            GetRootFromPath( &UNC_root, disks[i] );
+                            reply = MsgBoxVbuf( NULL, "IDS_ASSUME_ENOUGHSPACE", GUI_YES_NO, &UNC_root );
                         }
                     } else {
     #endif
@@ -1336,8 +1359,8 @@ bool CheckDrive( bool issue_message )
         if( *space[i].drive != '\0' && SimTargetNeedsUpdate( i ) ) {
 #ifdef UNC_SUPPORT
             if( TEST_UNC( space[i].drive ) ) {
-                GetRootFromPath( UNC_root, space[i].drive );
-                sprintf( buff, GetVariableStrVal( "IDS_DRIVE_SPEC_UNC" ), UNC_root );
+                GetRootFromPath( &UNC_root, space[i].drive );
+                sprintf( buff, GetVariableStrVal( "IDS_DRIVE_SPEC_UNC" ), &UNC_root );
             } else
 #endif
             {
