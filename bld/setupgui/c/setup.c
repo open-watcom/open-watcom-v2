@@ -299,7 +299,6 @@ void GUImain( void )
     bool                ok;
     dlg_state           state;
 
-    GUIMemOpen();
     GUIGetArgs( &argv, &argc );
 
     // initialize paths and env. vbls.
@@ -377,5 +376,4 @@ void GUImain( void )
         FreeGlobalVarList( true );
         SetupFini();
     }
-    GUIMemClose();
 }
