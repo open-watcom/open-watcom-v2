@@ -624,7 +624,10 @@ static void performSearch( char *fn )
         printFileName();
     }
     PrtFn = true;
-    red = readFile( fp, Buff, BSize );
+    /*
+     * reserve first character in Buff for '\n'
+     */
+    red = readFile( fp, Buff + 1, BSize - 1 );
     if( red == READ_ERROR ) {
         // Warning( "Error reading file", fn ); // removed for 0 length files
         if( fp != stdin ) {
@@ -632,6 +635,13 @@ static void performSearch( char *fn )
         }
         return;
     }
+    /*
+     * add '\n' as first character before file first character
+     * and correct red by adding 1
+     * it fix problem with searching start of line on file first line
+     */
+    Buff[0] = '\n';
+    red++;
 
     // look for two '\n's with no preceeding '\r'
     probe = (char *)memchr( Buff, '\n', red );          // look for a newline
@@ -645,7 +655,11 @@ static void performSearch( char *fn )
     } else {
         OutMode( O_BINARY );
     }
-    Recs = 1;
+    /*
+     * set Recs must be 0, searchBuffer increment it by first '\n' to correct value
+     * fix problem with searching start of first line
+     */
+    Recs = 0;
     locn = Buff;
     size = BSize;
     for( ;; ) {
