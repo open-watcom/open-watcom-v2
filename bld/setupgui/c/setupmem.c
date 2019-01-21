@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2018-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -24,80 +25,112 @@
 *
 *  ========================================================================
 *
-* Description:  Setup memory management functions.
+* Description:  Cover routines to access the trmem memory tracker
 *
 ****************************************************************************/
 
 
 #include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include "gui.h"
-#include "standard.h"
-#include "utmem.h"
-#include "utmemdbg.h"
-
-#if DMEM_OVERRUNS
-    extern unsigned     MaxAllocSize;
+#include "guimem.h"
+#ifdef TRMEM
+    #include "trmem.h"
 #endif
 
-void ut_fatal( char *s )
+
+#ifdef TRMEM
+_trmem_hdl  GUIMemHandle;
+
+static FILE *GUIMemFP = NULL;   /* stream to put output on */
+static int  GUIMemOpened = 0;
+
+static void GUIMemPrintLine( void *parm, const char *buff, size_t len )
+/*********************************************************************/
 {
-    GUIDisplayMessage( NULL, s, " Memory ERROR ", GUI_OK ); // nyi - kanji
-    exit( 1 );
+    /* unused parameters */ (void)parm;
+
+    fwrite( buff, 1, len, GUIMemFP );
 }
 
-void ut_out_of_memory( char *s )
-{
-    s = s;
-}
+#endif
 
-void *GUIAlloc( unsigned size )
+void GUIMemRedirect( FILE *fp )
+/*****************************/
 {
-    return( ut_alloc( size ) );
-}
-
-void GUIFree( void *chunk )
-{
-    ut_free( chunk );
-}
-
-void *GUIRealloc( void * chunk, unsigned size )
-{
-    return( ut_realloc( chunk, size ) );
-}
-
-void *bdiff_malloc( size_t size )
-{
-    return( ut_alloc( size ) );
-}
-
-void bdiff_free( void *chunk )
-{
-    ut_free( chunk );
-}
-
-void *bdiff_realloc( void * chunk, size_t size )
-{
-    return( ut_realloc( chunk, size ) );
+#ifdef TRMEM
+    GUIMemFP = fp;
+#else
+    /* unused parameters */ (void)fp;
+#endif
 }
 
 void GUIMemOpen( void )
+/*********************/
 {
-#if DMEM_OVERRUNS
-#ifdef _M_I86
-    MaxAllocSize = 0xfff8;
-#else
-    MaxAllocSize = 0xfffffff8;
-#endif
+#ifdef TRMEM
+    char * tmpdir;
+
+    if( !GUIMemOpened ) {
+        GUIMemFP = stderr;
+        GUIMemHandle = _trmem_open( malloc, free, realloc, NULL,
+            NULL, GUIMemPrintLine,
+            _TRMEM_ALLOC_SIZE_0 | _TRMEM_REALLOC_SIZE_0 |
+            _TRMEM_OUT_OF_MEMORY | _TRMEM_CLOSE_CHECK_FREE );
+
+        tmpdir = getenv( "TRMEMFILE" );
+        if( tmpdir != NULL ) {
+            GUIMemFP = fopen( tmpdir, "w" );
+        }
+        GUIMemOpened = 1;
+    }
 #endif
 }
 
 void GUIMemClose( void )
+/**********************/
 {
+#ifdef TRMEM
+    _trmem_prt_list( GUIMemHandle );
+    _trmem_close( GUIMemHandle );
+    if( GUIMemFP != stderr ) {
+        fclose( GUIMemFP );
+    }
+#endif
 }
 
 void GUIMemPrtUsage( void )
+/*************************/
 {
+#ifdef TRMEM
+    _trmem_prt_usage( GUIMemHandle );
+#endif
 }
 
+void *GUIMemAlloc( size_t size )
+/******************************/
+{
+#ifdef TRMEM
+    return( _trmem_alloc( size, _trmem_guess_who(), GUIMemHandle ) );
+#else
+    return( malloc( size ) );
+#endif
+}
+
+void GUIMemFree( void *ptr )
+/**************************/
+{
+#ifdef TRMEM
+    _trmem_free( ptr, _trmem_guess_who(), GUIMemHandle );
+#else
+    free( ptr );
+#endif
+}
+
+void *GUIMemRealloc( void *ptr, size_t size )
+/*******************************************/
+{
+#ifdef TRMEM
+    return( _trmem_realloc( ptr, size, _trmem_guess_who(), GUIMemHandle ) );
+#else
+    return( realloc( ptr, size ) );
+#endif
+}

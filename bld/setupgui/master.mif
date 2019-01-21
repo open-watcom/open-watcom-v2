@@ -2,6 +2,8 @@ proj_name = setupgui
 
 setupgui_autodepends = .AUTODEPEND
 
+setupgui_trmem = 1
+
 .EXTENSIONS: .rc .ico .res
 
 .ERROR:
@@ -19,6 +21,7 @@ additional_cleanup = *.i *.rex setup.inf
 !include $(ui_dir)/client.mif
 
 !include wres.mif
+!include trmem.mif
 
 # systems where manifest file resource must be added to .EXE
 manifest_nt_386 = ntmanif.res
@@ -55,6 +58,10 @@ objs +=             &
     dopatch.obj
 !endif
 
+mem_objs = &
+    setupmem.obj     &
+    $(trmem_objs)
+
 #                     i_dos i_linux i_nt i_os2 i_win i_wini86 i_win386 i_osx
 #===========================================================================
 !inject setupio.obj   i_dos i_linux i_nt i_os2                i_win386 i_osx
@@ -63,7 +70,7 @@ objs +=             &
 !inject winutil.obj                 i_nt i_os2 i_win
 !inject winddeml.obj                i_nt       i_win
 
-objs += $(i_$(host_os)) $(i_$(host_os)$(host_cpu))
+objs += $(i_$(host_os)) $(i_$(host_os)$(host_cpu)) $(mem_objs)
 
 !ifeq sys_windowed 1
 
@@ -133,8 +140,11 @@ extra_c_flags = -s
 
 extra_c_flags_i86 = -zc
 
-#extra_c_flags_common = -fi=setupmem.h
-#extra_c_flags_io = -fi=setupmem.h
+# memory tracker routines
+extra_c_flags_trmem = $(trmem_cflags)
+
+# memory tracker cover routines
+extra_c_flags_setupmem = $(trmem_cover_cflags)
 
 # lflags
 #########
